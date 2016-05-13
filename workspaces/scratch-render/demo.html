@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scratch WebGL rendering demo</title>
+</head>
+<body>
+<canvas id="scratch-stage" width="10" height="10"></canvas>
+</body>
+<script src="render-webgl.js"></script>
+<script>
+    var canvas = document.getElementById('scratch-stage');
+    var renderer = new RenderWebGL(canvas);
+
+    function step() {
+        renderer.draw();
+        requestAnimationFrame(step);
+    }
+    step();
+</script>
+</html>
