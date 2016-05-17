@@ -1,5 +1,11 @@
 var twgl = require('twgl.js');
 
+/**
+ * An object which can be drawn by the renderer.
+ * @param renderer The renderer which owns this Drawable.
+ * @param gl The OpenGL context.
+ * @constructor
+ */
 function Drawable(renderer, gl) {
     this._id = Drawable._nextDrawable++;
     Drawable._allDrawables[this._id] = this;
@@ -51,6 +57,10 @@ Drawable.getDrawableByID = function (drawableID) {
     return Drawable._allDrawables[drawableID];
 };
 
+/**
+ * Dirty the transforms of all Drawables.
+ * Call this when the projection matrix changes, for example.
+ */
 Drawable.dirtyAllTransforms = function () {
     for (var drawableID in Drawable._allDrawables) {
         if (Drawable._allDrawables.hasOwnProperty(drawableID)) {
@@ -66,6 +76,9 @@ Drawable.prototype._DEFAULT_SKIN = {
     bus: '66895930177178ea01d9e610917f8acf.png'
 }.squirrel;
 
+/**
+ * Dispose of this Drawable. Do not use it after calling this method.
+ */
 Drawable.prototype.dispose = function () {
     this.setSkin(null);
     if (this._id >= 0) {
@@ -73,14 +86,27 @@ Drawable.prototype.dispose = function () {
     }
 };
 
+/**
+ * Mark this Drawable's transform as dirty.
+ * It will be recalculated next time it's needed.
+ */
 Drawable.prototype.setTransformDirty = function () {
     this._transformDirty = true;
 };
 
+/**
+ * Retrieve the ID for this Drawable.
+ * @returns {number} The ID for this Drawable.
+ */
 Drawable.prototype.getID = function () {
     return this._id;
 };
 
+/**
+ * Set this Drawable's skin.
+ * The Drawable will briefly use a 1x1 skin while waiting for the
+ * @param {string} skin_md5ext The MD5 and file extension of the skin.
+ */
 Drawable.prototype.setSkin = function (skin_md5ext) {
     // TODO: share Skins across Drawables - see also destroy()
     if (this._uniforms.u_texture) {
@@ -109,6 +135,10 @@ Drawable.prototype.setSkin = function (skin_md5ext) {
     }
 };
 
+/**
+ * Retrieve the shader uniforms to be used when rendering this Drawable.
+ * @returns {Object.<string, *>}
+ */
 Drawable.prototype.getUniforms = function () {
     if (this._transformDirty) {
         this._calculateTransform();
@@ -116,6 +146,11 @@ Drawable.prototype.getUniforms = function () {
     return this._uniforms;
 };
 
+/**
+ * Set the position of this Drawable.
+ * @param {number} x The new X position for this Drawable.
+ * @param {number} y The new Y position for this Drawable.
+ */
 Drawable.prototype.setPosition = function (x, y) {
     if (this._position[0] != x || this._position[1] != y) {
         this._position[0] = x;
@@ -124,6 +159,10 @@ Drawable.prototype.setPosition = function (x, y) {
     }
 };
 
+/**
+ * Set the direction of this Drawable.
+ * @param {number} directionDegrees The direction for this Drawable, in degrees.
+ */
 Drawable.prototype.setDirection = function (directionDegrees) {
     if (this._direction != directionDegrees) {
         this._direction = directionDegrees;
@@ -131,6 +170,10 @@ Drawable.prototype.setDirection = function (directionDegrees) {
     }
 };
 
+/**
+ * Set the scale of this Drawable.
+ * @param {number} scalePercent The scale for this Drawable, as a percentage.
+ */
 Drawable.prototype.setScale = function (scalePercent) {
     if(this._scale != scalePercent) {
         this._scale = scalePercent;
@@ -138,6 +181,10 @@ Drawable.prototype.setScale = function (scalePercent) {
     }
 };
 
+/**
+ * Calculate the transform to use when rendering this Drawable.
+ * @private
+ */
 Drawable.prototype._calculateTransform = function () {
     var rotation = (270 - this._direction) * Math.PI / 180;
     var scale = this._scale / 100 / this._costumeResolution;

@@ -133,6 +133,12 @@ RenderWebGL.prototype.destroyDrawable = function (drawableID) {
     return false;
 };
 
+/**
+ * Set the position of a Drawable.
+ * @param {int} drawableID The ID of the Drawable.
+ * @param {number} x The new X position for the Drawable.
+ * @param {number} y The new Y position for the Drawable.
+ */
 RenderWebGL.prototype.setDrawablePosition = function (drawableID, x, y) {
     var drawable = Drawable.getDrawableByID(drawableID);
     if (drawable) {
@@ -140,13 +146,25 @@ RenderWebGL.prototype.setDrawablePosition = function (drawableID, x, y) {
     }
 };
 
-RenderWebGL.prototype.setDrawableDirection = function (drawableID, directionDegrees) {
+/**
+ * Set the direction of a Drawable.
+ * @param {int} drawableID The ID of the Drawable.
+ * @param {number} directionDegrees The direction for the Drawable, in degrees.
+ */
+RenderWebGL.prototype.setDrawableDirection = function (
+    drawableID, directionDegrees) {
+
     var drawable = Drawable.getDrawableByID(drawableID);
     if (drawable) {
         drawable.setDirection(directionDegrees);
     }
 };
 
+/**
+ * Set the scale of a Drawable.
+ * @param {int} drawableID The ID of the Drawable.
+ * @param {number} scalePercent The new scale for the Drawable, as a percentage.
+ */
 RenderWebGL.prototype.setDrawableScale = function (drawableID, scalePercent) {
     var drawable = Drawable.getDrawableByID(drawableID);
     if (drawable) {
@@ -154,6 +172,10 @@ RenderWebGL.prototype.setDrawableScale = function (drawableID, scalePercent) {
     }
 };
 
+/**
+ * Retrieve the renderer's projection matrix.
+ * @returns {module:twgl/m4.Mat4} The projection matrix.
+ */
 RenderWebGL.prototype.getProjectionMatrix = function () {
     return this._projection;
 };
