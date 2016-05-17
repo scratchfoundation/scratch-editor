@@ -1,12 +1,11 @@
 precision mediump float;
 
-uniform sampler2D u_image;
-varying vec2 v_texCoord;
-
-uniform float u_hue_shift;
+uniform sampler2D u_skin;
 uniform float u_brightness_shift;
-
+uniform float u_hue_shift;
 uniform float u_whirl_radians;
+
+varying vec2 v_texCoord;
 
 vec3 convertRGB2HSV(vec3 rgb)
 {
@@ -98,7 +97,7 @@ void main()
 		}
 	}
 
-	gl_FragColor = texture2D(u_image, texcoord0);
+	gl_FragColor = texture2D(u_skin, texcoord0);
 
 	// TODO: See if we can/should use actual alpha test.
 	// Does bgfx offer a way to set u_alphaRef? Would that help?

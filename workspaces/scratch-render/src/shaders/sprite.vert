@@ -1,12 +1,11 @@
-attribute vec4 position;
+uniform mat4 u_mvp;
+
+attribute vec2 a_position;
+attribute vec2 a_texCoord;
+
 varying vec2 v_texCoord;
 
-uniform mat4 u_transform;
-uniform mat4 u_projection;
-
 void main() {
-    gl_Position = u_projection * u_transform * position;
-
-    // Map clipspace coordinates to texture coordinates
-    v_texCoord = (position.xy * vec2(1.0, -1.0)) + vec2(0.5);
+    gl_Position = u_mvp * vec4(a_position, 0, 1);
+    v_texCoord = a_texCoord;
 }

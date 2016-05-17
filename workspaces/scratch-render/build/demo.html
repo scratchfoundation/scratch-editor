@@ -11,11 +11,23 @@
 <script>
     var canvas = document.getElementById('scratch-stage');
     var renderer = new RenderWebGL(canvas);
+    var drawableID = renderer.createDrawable();
 
-    function step() {
+    function drawStep() {
         renderer.draw();
-        requestAnimationFrame(step);
+        requestAnimationFrame(drawStep);
     }
-    step();
+    var direction = 90;
+    var posX = 0;
+    var posY = 0;
+    var scale = 100;
+    function thinkStep() {
+        direction += 0.1;
+        renderer.setDrawablePosition(drawableID, posX, posY);
+        renderer.setDrawableDirection(drawableID, direction);
+        renderer.setDrawableScale(drawableID, scale);
+    }
+    drawStep();
+    setInterval(thinkStep, 1/60);
 </script>
 </html>
