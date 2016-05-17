@@ -77,6 +77,8 @@ void main()
 
 	vec2 texcoord0 = v_texCoord;
 
+    // TODO: conditional compilation instead of a runtime 'if' to avoid undefined texture2D behavior
+    // see: https://www.opengl.org/wiki/Sampler_%28GLSL%29#Non-uniform_flow_control
 	if (whirlRadians != 0.0)
 	{
 		const vec2 kCenter = vec2(0.5, 0.5);
