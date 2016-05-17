@@ -108,6 +108,7 @@ Drawable.prototype.getID = function () {
  * @param {string} skin_md5ext The MD5 and file extension of the skin.
  */
 Drawable.prototype.setSkin = function (skin_md5ext) {
+    // TODO: cache Skins instead of loading each time. Ref count them?
     // TODO: share Skins across Drawables - see also destroy()
     if (this._uniforms.u_texture) {
         this._gl.deleteTexture(this._uniforms);
@@ -117,18 +118,25 @@ Drawable.prototype.setSkin = function (skin_md5ext) {
             'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
             skin_md5ext +
             '/get/';
+        var options = {
+            auto: true,
+            src: url
+        };
         var instance = this;
-        this._uniforms.u_texture =
-            twgl.createTexture(this._gl, {
-                auto: true,
-                src: url
-            }, function (err, texture, source) {
-                if (!err) {
-                    instance._dimensions[0] = source.width;
-                    instance._dimensions[1] = source.height;
-                    instance.setTransformDirty();
-                }
-            });
+        var callback = function (err, texture, source) {
+            if (!err) {
+                instance._uniforms.u_texture = texture;
+                instance._setDimensions(source.width, source.height);
+            }
+        };
+        // If we already have a texture, keep it until the new one loads.
+        if (this._uniforms.u_texture) {
+            twgl.createTexture(this._gl, options, callback);
+        }
+        else {
+            this._uniforms.u_texture =
+                twgl.createTexture(this._gl, options, callback);
+        }
     }
     else {
         this._uniforms.u_texture = null;
@@ -177,6 +185,20 @@ Drawable.prototype.setDirection = function (directionDegrees) {
 Drawable.prototype.setScale = function (scalePercent) {
     if(this._scale != scalePercent) {
         this._scale = scalePercent;
+        this.setTransformDirty();
+    }
+};
+
+/**
+ * Set the dimensions of this Drawable's skin.
+ * @param {int} width The width of the new skin.
+ * @param {int} height The height of the new skin.
+ * @private
+ */
+Drawable.prototype._setDimensions = function (width, height) {
+    if (this._dimensions[0] != width || this._dimensions[1] != height) {
+        this._dimensions[0] = width;
+        this._dimensions[1] = height;
         this.setTransformDirty();
     }
 };
