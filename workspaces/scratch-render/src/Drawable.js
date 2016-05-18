@@ -1,4 +1,6 @@
 var twgl = require('twgl.js');
+var svgToImage = require('svg-to-image');
+var xhr = require('xhr');
 
 /**
  * An object which can be drawn by the renderer.
@@ -73,8 +75,9 @@ Drawable.dirtyAllTransforms = function () {
 // TODO: fall back on a built-in skin to protect against network problems
 Drawable.prototype._DEFAULT_SKIN = {
     squirrel: '7e24c99c1b853e52f8e7f9004416fa34.png',
-    bus: '66895930177178ea01d9e610917f8acf.png'
-}.squirrel;
+    bus: '66895930177178ea01d9e610917f8acf.png',
+    scratch_cat: '09dc888b0b7df19f70d81588ae73420e.svg'
+}.scratch_cat;
 
 /**
  * Dispose of this Drawable. Do not use it after calling this method.
@@ -111,35 +114,105 @@ Drawable.prototype.setSkin = function (skin_md5ext) {
     // TODO: cache Skins instead of loading each time. Ref count them?
     // TODO: share Skins across Drawables - see also destroy()
     if (this._uniforms.u_texture) {
-        this._gl.deleteTexture(this._uniforms);
+        this._gl.deleteTexture(this._uniforms.u_texture);
     }
     if (skin_md5ext) {
-        var url =
-            'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
-            skin_md5ext +
-            '/get/';
-        var options = {
-            auto: true,
-            src: url
-        };
-        var instance = this;
-        var callback = function (err, texture, source) {
-            if (!err) {
-                instance._uniforms.u_texture = texture;
-                instance._setDimensions(source.width, source.height);
-            }
-        };
-        // If we already have a texture, keep it until the new one loads.
-        if (this._uniforms.u_texture) {
-            twgl.createTexture(this._gl, options, callback);
-        }
-        else {
-            this._uniforms.u_texture =
-                twgl.createTexture(this._gl, options, callback);
+        var ext = skin_md5ext.substring(skin_md5ext.indexOf('.')+1);
+        switch (ext) {
+        case 'svg':
+        case 'svgz':
+            this._setSkinSVG(skin_md5ext);
+            break;
+        default:
+            this._setSkinBitmap(skin_md5ext);
+            break;
         }
     }
     else {
         this._uniforms.u_texture = null;
+    }
+};
+
+/**
+ * Load a bitmap skin. Supports the same formats as the Image element.
+ * @param {string} skin_md5ext The MD5 and file extension of the bitmap skin.
+ * @private
+ */
+Drawable.prototype._setSkinBitmap = function (skin_md5ext) {
+    var url =
+        'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
+        skin_md5ext +
+        '/get/';
+    this._setSkinCore(url, 2);
+};
+
+/**
+ * Load an SVG-based skin. This still needs quite a bit of work to match the
+ * level of quality found in Scratch 2.0:
+ * - We should detect when a skin is being scaled up and render the SVG at a
+ *   higher resolution in those cases.
+ * - Colors seem a little off. This may be browser-specific.
+ * - This method works in Chrome, Firefox, Safari, and Edge but causes a
+ *   security error in IE.
+ * @param {string} skin_md5ext The MD5 and file extension of the SVG skin.
+ * @private
+ */
+Drawable.prototype._setSkinSVG = function (skin_md5ext) {
+    var url =
+        'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
+        skin_md5ext +
+        '/get/';
+    var instance = this;
+    function gotSVG(err, response, body) {
+        if (!err) {
+            svgToImage(body, gotImage);
+        }
+    }
+    function gotImage(err, image) {
+        if (!err) {
+            instance._setSkinCore(image, 1);
+        }
+    }
+    xhr.get({
+        useXDR: true,
+        url: url
+    }, gotSVG);
+};
+
+/**
+ * Common code for setting all skin types.
+ * @param {string|Image} source The source of image data for the skin.
+ * @param costumeResolution {int} The resolution to use for this skin.
+ * @private
+ */
+Drawable.prototype._setSkinCore = function (source, costumeResolution) {
+    var instance = this;
+    var callback = function (err, texture, source) {
+        if (!err) {
+            instance._costumeResolution = costumeResolution || 1;
+            instance._uniforms.u_texture = texture;
+            instance._setDimensions(source.width, source.height);
+        }
+    };
+
+    var options = {
+        auto: true,
+        src: source
+    };
+    var willCallCallback = typeof source == 'string';
+    var texture = twgl.createTexture(
+        this._gl, options, willCallCallback ? callback : null);
+
+    // If we don't already have a texture, or if we won't get a callback when
+    // the new one loads, then just start using the texture immediately.
+    if (willCallCallback) {
+        if (!this._uniforms.u_texture) {
+            this._uniforms.u_texture = texture;
+            this._setDimensions(0, 0);
+        }
+    }
+    else {
+        callback(null, texture, source);
     }
 };
 

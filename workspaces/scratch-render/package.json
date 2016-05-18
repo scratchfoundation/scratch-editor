@@ -13,11 +13,13 @@
   "scripts": {
     "test": "make test"
   },
-  "devDependencies": {
+  "dependencies": {
     "eslint": "2.7.0",
     "json-loader": "0.5.4",
+    "svg-to-image": "1.1.3",
     "tap": "5.7.1",
     "twgl.js": "1.5.2",
-    "webpack": "1.13.0"
+    "webpack": "1.13.0",
+    "xhr": "2.2.0"
   }
 }
