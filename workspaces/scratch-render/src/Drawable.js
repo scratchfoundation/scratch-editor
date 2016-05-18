@@ -37,6 +37,43 @@ function Drawable(renderer, gl) {
 module.exports = Drawable;
 
 /**
+ * Mapping of each effect to a conversion function. The conversion function
+ * takes a Scratch value (generally in the range 0..100 or -100..100) and maps
+ * it to a value useful to the shader.
+ * @type {Object.<string,function>}
+ * @private
+ */
+Drawable._effectCoverter = {
+    color: function(x) {
+        return (360 * x / 200) % 360;
+    },
+    fisheye: function(x) {
+        return Math.max(0, (x + 100) / 100);
+    },
+    whirl: function(x) {
+        return x * Math.PI / 180;
+    },
+    pixelate: function(x) {
+        // TODO: if (targetObj == stagePane) n *= stagePane.scaleX;
+        // TODO: n = Math.min(n, Math.min(srcWidth, srcHeight));
+        return Math.abs(x) / 10 + 1;
+    },
+    mosaic: function(x) {
+        x = Math.round((Math.abs(x) + 10) / 10);
+        // TODO: cap by Math.min(srcWidth, srcHeight)
+        return Math.max(1, Math.min(x, 512));
+    },
+    brightness: function(x) {
+        return Math.max(-100, Math.min(x, 100));
+    },
+    ghost: function(x) {
+        return Math.max(0, Math.min(x, 100));
+    }
+};
+
+Drawable.EFFECTS = Object.keys(Drawable._effectCoverter);
+
+/**
  * The ID to be assigned next time the Drawable constructor is called.
  * @type {number}
  * @private
@@ -228,37 +265,37 @@ Drawable.prototype.getUniforms = function () {
 };
 
 /**
- * Set the position of this Drawable.
- * @param {number} x The new X position for this Drawable.
- * @param {number} y The new Y position for this Drawable.
+ * Update the position, direction, scale, or effect properties of this Drawable.
+ * @param {Object.<string,*>} properties The new property values to set.
  */
-Drawable.prototype.setPosition = function (x, y) {
-    if (this._position[0] != x || this._position[1] != y) {
-        this._position[0] = x;
-        this._position[1] = y;
+Drawable.prototype.updateProperties = function (properties) {
+    var dirty = false;
+    if ('position' in properties && (
+        this._position[0] != properties.position[0] ||
+        this._position[1] != properties.position[1])) {
+        this._position[0] = properties.position[0];
+        this._position[1] = properties.position[1];
+        dirty = true;
+    }
+    if ('direction' in properties && this._direction != properties.direction) {
+        this._direction = properties.direction;
+        dirty = true;
+    }
+    if ('scale' in properties && this._scale != properties.scale) {
+        this._scale = properties.scale;
+        dirty = true;
+    }
+    if (dirty) {
         this.setTransformDirty();
     }
-};
-
-/**
- * Set the direction of this Drawable.
- * @param {number} directionDegrees The direction for this Drawable, in degrees.
- */
-Drawable.prototype.setDirection = function (directionDegrees) {
-    if (this._direction != directionDegrees) {
-        this._direction = directionDegrees;
-        this.setTransformDirty();
-    }
-};
-
-/**
- * Set the scale of this Drawable.
- * @param {number} scalePercent The scale for this Drawable, as a percentage.
- */
-Drawable.prototype.setScale = function (scalePercent) {
-    if(this._scale != scalePercent) {
-        this._scale = scalePercent;
-        this.setTransformDirty();
+    var numEffects = Drawable.EFFECTS.length;
+    for (var index = 0; index < numEffects; ++index) {
+        var propertyName = Drawable.EFFECTS[index];
+        if (propertyName in properties) {
+            var converter = Drawable.effectCoverter[propertyName];
+            var rawValue = properties[propertyName];
+            this._uniforms['u_' + propertyName] = converter(rawValue);
+        }
     }
 };
 

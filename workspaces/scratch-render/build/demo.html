@@ -23,9 +23,13 @@
     var scale = 100;
     function thinkStep() {
         direction += 0.1;
-        renderer.setDrawablePosition(drawableID, posX, posY);
-        renderer.setDrawableDirection(drawableID, direction);
-        renderer.setDrawableScale(drawableID, scale);
+
+        var props = {};
+        //props.position = [posX, posY];
+        props.direction = direction;
+        //props.scale = 100;
+
+        renderer.updateDrawableProperties(drawableID, props);
     }
     drawStep();
     setInterval(thinkStep, 1/60);

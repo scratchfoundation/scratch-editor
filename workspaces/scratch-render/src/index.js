@@ -134,41 +134,16 @@ RenderWebGL.prototype.destroyDrawable = function (drawableID) {
 };
 
 /**
- * Set the position of a Drawable.
- * @param {int} drawableID The ID of the Drawable.
- * @param {number} x The new X position for the Drawable.
- * @param {number} y The new Y position for the Drawable.
+ * Update the position, direction, scale, or effect properties of this Drawable.
+ * @param {int} drawableID The ID of the Drawable to update.
+ * @param {Object.<string,*>} properties The new property values to set.
  */
-RenderWebGL.prototype.setDrawablePosition = function (drawableID, x, y) {
-    var drawable = Drawable.getDrawableByID(drawableID);
-    if (drawable) {
-        drawable.setPosition(x, y);
-    }
-};
-
-/**
- * Set the direction of a Drawable.
- * @param {int} drawableID The ID of the Drawable.
- * @param {number} directionDegrees The direction for the Drawable, in degrees.
- */
-RenderWebGL.prototype.setDrawableDirection = function (
-    drawableID, directionDegrees) {
+RenderWebGL.prototype.updateDrawableProperties = function (
+    drawableID, properties) {
 
     var drawable = Drawable.getDrawableByID(drawableID);
     if (drawable) {
-        drawable.setDirection(directionDegrees);
-    }
-};
-
-/**
- * Set the scale of a Drawable.
- * @param {int} drawableID The ID of the Drawable.
- * @param {number} scalePercent The new scale for the Drawable, as a percentage.
- */
-RenderWebGL.prototype.setDrawableScale = function (drawableID, scalePercent) {
-    var drawable = Drawable.getDrawableByID(drawableID);
-    if (drawable) {
-        drawable.setScale(scalePercent);
+        drawable.updateProperties(properties);
     }
 };
 
