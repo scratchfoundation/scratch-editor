@@ -35,6 +35,7 @@ function RenderWebGL(
 
     this._createGeometry();
 
+    this.setBackgroundColor(1, 1, 1, 1);
     this.setStageSize(
         xLeft || -240, xRight || 240, yBottom || -180, yTop || 180);
     this.resize(
@@ -52,6 +53,18 @@ util.inherits(RenderWebGL, EventEmitter);
  */
 module.exports = RenderWebGL;
 if (typeof window !== 'undefined') window.RenderWebGL = module.exports;
+
+/**
+ * Set the background color for the stage. The stage will be cleared with this
+ * color each frame.
+ * @param {number} red The red component for the background.
+ * @param {number} green The green component for the background.
+ * @param {number} blue The blue component for the background.
+ * @param {number} alpha The alpha (transparency) component for the background.
+ */
+RenderWebGL.prototype.setBackgroundColor = function(red, green, blue, alpha) {
+    this._backgroundColor = [red, green, blue, alpha];
+};
 
 /**
  * Set logical size of the stage in Scratch units.
@@ -88,7 +101,7 @@ RenderWebGL.prototype.draw = function () {
     var gl = this._gl;
 
     gl.viewport(0, 0, gl.canvas.clientWidth, gl.canvas.clientHeight);
-    gl.clearColor(1, 0, 1, 1);
+    gl.clearColor.apply(gl, this._backgroundColor);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.enable(gl.BLEND);

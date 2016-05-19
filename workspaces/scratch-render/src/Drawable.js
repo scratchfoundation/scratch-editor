@@ -77,6 +77,10 @@ Drawable._effectCoverter = {
     }
 };
 
+/**
+ * The name of each supported effect.
+ * @type {Array}
+ */
 Drawable.EFFECTS = Object.keys(Drawable._effectCoverter);
 
 /**
@@ -183,6 +187,11 @@ Drawable.prototype.setSkin = function (skin_md5ext) {
     }
 };
 
+/**
+ * Fetch the shader for this Drawable's set of active effects.
+ * Build the shader if necessary.
+ * @returns {module:twgl.ProgramInfo?} The shader's program info.
+ */
 Drawable.prototype.getShader = function () {
     var shader = Drawable._shaderCache[this._shaderIndex];
     if (!shader) {
@@ -192,6 +201,11 @@ Drawable.prototype.getShader = function () {
     return shader;
 };
 
+/**
+ * Build the shader for this Drawable's set of active effects.
+ * @returns {module:twgl.ProgramInfo?} The new shader's program info.
+ * @private
+ */
 Drawable.prototype._buildShader = function () {
     var defines = [];
     var numEffects = Drawable.EFFECTS.length;
