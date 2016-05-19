@@ -211,7 +211,7 @@ Drawable.prototype._buildShader = function () {
     var numEffects = Drawable.EFFECTS.length;
 
     for (var index = 0; index < numEffects; ++index) {
-        if (this._shaderIndex & (1 << index) != 0) {
+        if ((this._shaderIndex & (1 << index)) != 0) {
             defines.push('#define ENABLE_' + Drawable.EFFECTS[index]);
         }
     }
@@ -353,7 +353,7 @@ Drawable.prototype.updateProperties = function (properties) {
             else {
                 this._shaderIndex &= ~mask;
             }
-            var converter = Drawable.effectCoverter[propertyName];
+            var converter = Drawable._effectCoverter[propertyName];
             this._uniforms['u_' + propertyName] = converter(rawValue);
         }
     }

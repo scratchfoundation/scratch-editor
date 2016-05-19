@@ -1,9 +1,28 @@
 precision mediump float;
 
+#ifdef ENABLE_color
+uniform float u_color;
+#endif
+#ifdef ENABLE_fisheye
+uniform float u_fisheye;
+#endif
+#ifdef ENABLE_whirl
+uniform float u_whirl;
+#endif
+#ifdef ENABLE_pixelate
+uniform float u_pixelate;
+#endif
+#ifdef ENABLE_mosaic
+uniform float u_mosaic;
+#endif
+#ifdef ENABLE_brightness
+uniform float u_brightness;
+#endif
+#ifdef ENABLE_ghost
+uniform float u_ghost;
+#endif
+
 uniform sampler2D u_skin;
-uniform float u_brightness_shift;
-uniform float u_hue_shift;
-uniform float u_whirl_radians;
 
 varying vec2 v_texCoord;
 
@@ -72,32 +91,31 @@ vec3 convertHSV2RGB(vec3 hsv)
 
 void main()
 {
-	float hueShift = u_hue_shift;
-	float whirlRadians = u_whirl_radians;
-
 	vec2 texcoord0 = v_texCoord;
 
-    // TODO: conditional compilation instead of a runtime 'if' to avoid undefined texture2D behavior
-    // see: https://www.opengl.org/wiki/Sampler_%28GLSL%29#Non-uniform_flow_control
-	if (whirlRadians != 0.0)
+	#ifdef ENABLE_whirl
 	{
 		const vec2 kCenter = vec2(0.5, 0.5);
 		const float kRadius = 0.5;
 		vec2 offset = texcoord0 - kCenter;
 		float offsetMagnitude = length(offset);
 		float whirlFactor = 1.0 - (offsetMagnitude / kRadius);
-		float whirlActual = whirlRadians * whirlFactor * whirlFactor;
+		float whirlActual = u_whirl * whirlFactor * whirlFactor;
 		float sinWhirl = sin(whirlActual);
 		float cosWhirl = cos(whirlActual);
 		mat2 rotationMatrix = mat2(
 			cosWhirl, -sinWhirl,
 			sinWhirl, cosWhirl
 		);
+
+		// TODO: tweak this algorithm such that texture coordinates don't depend on conditionals.
+		// see: https://www.opengl.org/wiki/Sampler_%28GLSL%29#Non-uniform_flow_control
 		if (offsetMagnitude <= kRadius)
 		{
 			texcoord0 = rotationMatrix * offset + kCenter;
 		}
 	}
+	#endif // ENABLE_whirl
 
 	gl_FragColor = texture2D(u_skin, texcoord0);
 
@@ -108,22 +126,23 @@ void main()
 		discard;
 	}
 
-	const bool needHSV = true;
-	if (needHSV)
+	#if defined(ENABLE_color) || defined(ENABLE_brightness)
 	{
 		vec3 hsv = convertRGB2HSV(gl_FragColor.rgb);
 
-		if (hueShift != 0.0)
+		#ifdef ENABLE_color
 		{
 			// this code forces grayscale values to be slightly saturated
 			// so that some slight change of hue will be visible
 			if (hsv.b < 0.11) hsv = vec3(0.0, 1.0, 0.11); // force black to dark gray, fully-saturated
 			if (hsv.g < 0.09) hsv = vec3(0.0, 0.09, hsv.b); // make saturation at least 0.09
 
-			hsv.r = mod(hsv.r + hueShift, 360.0);
+			hsv.r = mod(hsv.r + u_color, 360.0);
 			if (hsv.r < 0.0) hsv.r += 360.0;
 		}
+		#endif // ENABLE_color
 
 		gl_FragColor.rgb = convertHSV2RGB(hsv);
 	}
+	#endif // defined(ENABLE_color) || defined(ENABLE_brightness)
 }
