@@ -18,20 +18,26 @@ function Drawable(renderer, gl) {
     // TODO: double-buffer uniforms
     this._uniforms = {
         u_texture: null,
-        u_mvp: twgl.m4.identity(),
-        u_brightness_shift: 0,
-        u_hue_shift: 0,
-        u_whirl_radians: 0
+        u_mvp: twgl.m4.identity()
     };
+
+    // Effect values are uniforms too
+    var numEffects = Drawable.EFFECTS.length;
+    for (var index = 0; index < numEffects; ++index) {
+        var effectName = Drawable.EFFECTS[index];
+        var converter = Drawable._effectCoverter[effectName];
+        this._uniforms['u_' + effectName] = converter(0);
+    }
 
     this._position = twgl.v3.create(0, 0);
     this._scale = 100;
     this._direction = 90;
     this._dimensions = twgl.v3.create(0, 0);
     this._transformDirty = true;
+    this._shaderIndex = 0;
     this._costumeResolution = 2; // TODO: only for bitmaps
 
-    this.setSkin(this._DEFAULT_SKIN);
+    this.setSkin(Drawable._DEFAULT_SKIN);
 }
 
 module.exports = Drawable;
@@ -74,6 +80,13 @@ Drawable._effectCoverter = {
 Drawable.EFFECTS = Object.keys(Drawable._effectCoverter);
 
 /**
+ * The cache of all shaders compiled so far. These are generated on demand.
+ * @type {Array}
+ * @private
+ */
+Drawable._shaderCache = [];
+
+/**
  * The ID to be assigned next time the Drawable constructor is called.
  * @type {number}
  * @private
@@ -110,7 +123,7 @@ Drawable.dirtyAllTransforms = function () {
 };
 
 // TODO: fall back on a built-in skin to protect against network problems
-Drawable.prototype._DEFAULT_SKIN = {
+Drawable._DEFAULT_SKIN = {
     squirrel: '7e24c99c1b853e52f8e7f9004416fa34.png',
     bus: '66895930177178ea01d9e610917f8acf.png',
     scratch_cat: '09dc888b0b7df19f70d81588ae73420e.svg'
@@ -168,6 +181,32 @@ Drawable.prototype.setSkin = function (skin_md5ext) {
     else {
         this._uniforms.u_texture = null;
     }
+};
+
+Drawable.prototype.getShader = function () {
+    var shader = Drawable._shaderCache[this._shaderIndex];
+    if (!shader) {
+        shader = Drawable._shaderCache[this._shaderIndex] =
+            this._buildShader();
+    }
+    return shader;
+};
+
+Drawable.prototype._buildShader = function () {
+    var defines = [];
+    var numEffects = Drawable.EFFECTS.length;
+
+    for (var index = 0; index < numEffects; ++index) {
+        if (this._shaderIndex & (1 << index) != 0) {
+            defines.push('#define ENABLE_' + Drawable.EFFECTS[index]);
+        }
+    }
+
+    var definesText = defines.join('\n') + '\n';
+    var vsFullText = definesText + require('./shaders/sprite.vert');
+    var fsFullText = definesText + require('./shaders/sprite.frag');
+
+    return twgl.createProgramInfo(this._gl, [vsFullText, fsFullText]);
 };
 
 /**
@@ -292,8 +331,15 @@ Drawable.prototype.updateProperties = function (properties) {
     for (var index = 0; index < numEffects; ++index) {
         var propertyName = Drawable.EFFECTS[index];
         if (propertyName in properties) {
-            var converter = Drawable.effectCoverter[propertyName];
             var rawValue = properties[propertyName];
+            var mask = 1 << index;
+            if (rawValue != 0) {
+                this._shaderIndex |= mask;
+            }
+            else {
+                this._shaderIndex &= ~mask;
+            }
+            var converter = Drawable.effectCoverter[propertyName];
             this._uniforms['u_' + propertyName] = converter(rawValue);
         }
     }

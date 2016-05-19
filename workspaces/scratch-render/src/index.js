@@ -33,7 +33,6 @@ function RenderWebGL(
     this._drawables = [];
     this._projection = twgl.m4.identity();
 
-    this._createPrograms();
     this._createGeometry();
 
     this.setStageSize(
@@ -95,14 +94,19 @@ RenderWebGL.prototype.draw = function () {
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     
-    gl.useProgram(this._programInfo.program);
-    twgl.setBuffersAndAttributes(gl, this._programInfo, this._bufferInfo);
+    var currentShader = null;
 
     var numDrawables = this._drawables.length;
     for (var drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
         var drawableID = this._drawables[drawableIndex];
         var drawable = Drawable.getDrawableByID(drawableID);
-        twgl.setUniforms(this._programInfo, drawable.getUniforms());
+        var newShader = drawable.getShader();
+        if (currentShader != newShader) {
+            currentShader = newShader;
+            gl.useProgram(currentShader.program);
+            twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
+        }
+        twgl.setUniforms(currentShader, drawable.getUniforms());
         twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
     }
 };
@@ -153,17 +157,6 @@ RenderWebGL.prototype.updateDrawableProperties = function (
  */
 RenderWebGL.prototype.getProjectionMatrix = function () {
     return this._projection;
-};
-
-/**
- * Build shaders.
- * @private
- */
-RenderWebGL.prototype._createPrograms = function () {
-    var vsText = require('./shaders/sprite.vert');
-    var fsText = require('./shaders/sprite.frag');
-
-    this._programInfo = twgl.createProgramInfo(this._gl, [vsText, fsText]);
 };
 
 /**
