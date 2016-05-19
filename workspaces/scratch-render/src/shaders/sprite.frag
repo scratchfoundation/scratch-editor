@@ -23,9 +23,11 @@ uniform float u_ghost;
 #endif
 
 uniform sampler2D u_skin;
+#define u_pixelate_half vec2(0.5,0.5) // TODO
 
 varying vec2 v_texCoord;
 
+#if defined(ENABLE_color) || defined(ENABLE_brightness)
 vec3 convertRGB2HSV(vec3 rgb)
 {
 	float maxRGB = max(max(rgb.r, rgb.g), rgb.b);
@@ -88,14 +90,24 @@ vec3 convertHSV2RGB(vec3 hsv)
 
 	return rgb;
 }
+#endif // defined(ENABLE_color) || defined(ENABLE_brightness)
+
+const vec2 kCenter = vec2(0.5, 0.5);
 
 void main()
 {
 	vec2 texcoord0 = v_texCoord;
 
+	#ifdef ENABLE_mosaic
+	texcoord0 = fract(u_mosaic * texcoord0);
+	#endif // ENABLE_mosaic
+
+	#ifdef ENABLE_pixelate
+	texcoord0 = floor(texcoord0 / u_pixelate) * u_pixelate + u_pixelate_half;
+	#endif // ENABLE_pixelate
+
 	#ifdef ENABLE_whirl
 	{
-		const vec2 kCenter = vec2(0.5, 0.5);
 		const float kRadius = 0.5;
 		vec2 offset = texcoord0 - kCenter;
 		float offsetMagnitude = length(offset);
@@ -117,10 +129,22 @@ void main()
 	}
 	#endif // ENABLE_whirl
 
+	#ifdef ENABLE_fisheye
+	{
+		vec2 vec = (texcoord0 - kCenter) / kCenter;
+		float r = pow(length(vec), u_fisheye);
+		float angle = atan(vec.y, vec.x);
+		// TODO: tweak this algorithm such that texture coordinates don't depend on conditionals.
+		// see: https://www.opengl.org/wiki/Sampler_%28GLSL%29#Non-uniform_flow_control
+		if (r <= 1.0)
+		{
+			texcoord0 = kCenter + r * vec2(cos(angle), sin(angle)) * kCenter;
+		}
+	}
+	#endif // ENABLE_fisheye
+
 	gl_FragColor = texture2D(u_skin, texcoord0);
 
-	// TODO: See if we can/should use actual alpha test.
-	// Does bgfx offer a way to set u_alphaRef? Would that help?
 	if (gl_FragColor.a == 0.0)
 	{
 		discard;
@@ -142,7 +166,15 @@ void main()
 		}
 		#endif // ENABLE_color
 
+		#ifdef ENABLE_brightness
+		hsv.b = clamp(hsv.b + u_brightness, 0.0, 1.0);
+		#endif // ENABLE_brightness
+
 		gl_FragColor.rgb = convertHSV2RGB(hsv);
 	}
 	#endif // defined(ENABLE_color) || defined(ENABLE_brightness)
+
+	#ifdef ENABLE_ghost
+	gl_FragColor.a *= u_ghost;
+	#endif // ENABLE_ghost
 }
