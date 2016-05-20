@@ -29,7 +29,7 @@ function RenderWebGL(
     // TODO: remove?
     twgl.setDefaults({crossOrigin: true});
 
-    this._gl = twgl.getWebGLContext(canvas);
+    this._gl = twgl.getWebGLContext(canvas, {alpha: false});
     this._drawables = [];
     this._projection = twgl.m4.identity();
 
@@ -105,8 +105,8 @@ RenderWebGL.prototype.draw = function () {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    
+    gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
+
     var currentShader = null;
 
     var numDrawables = this._drawables.length;

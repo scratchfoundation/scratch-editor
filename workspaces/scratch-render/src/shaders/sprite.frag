@@ -108,9 +108,9 @@ void main()
 
 	#ifdef ENABLE_pixelate
 	{
-	    // TODO: understand why this padding helps clean up "pixel" edges
-	    const vec2 pixelPadding = vec2(0.125, 0.125);
-	    vec2 pixelTexelSize = u_skinSize * u_scale / u_pixelate;
+		// TODO: understand why this padding helps clean up "pixel" edges
+		const vec2 pixelPadding = vec2(0.125, 0.125);
+		vec2 pixelTexelSize = u_skinSize * u_scale / u_pixelate;
 		texcoord0 = (floor(texcoord0 * pixelTexelSize + pixelPadding)) / pixelTexelSize;
 	}
 	#endif // ENABLE_pixelate
@@ -186,4 +186,7 @@ void main()
 	#ifdef ENABLE_ghost
 	gl_FragColor.a *= u_ghost;
 	#endif // ENABLE_ghost
+
+	// WebGL defaults to premultiplied alpha
+	gl_FragColor.rgb *= gl_FragColor.a;
 }

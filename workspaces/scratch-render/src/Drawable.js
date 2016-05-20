@@ -95,10 +95,10 @@ Drawable._effectConverter = {
         return Math.max(1, Math.min(x, 512));
     },
     brightness: function(x) {
-        return Math.max(-100, Math.min(x, 100));
+        return Math.max(-100, Math.min(x, 100)) / 100;
     },
     ghost: function(x) {
-        return Math.max(0, Math.min(x, 100));
+        return 1 - Math.max(0, Math.min(x, 100)) / 100;
     }
 };
 
@@ -312,6 +312,8 @@ Drawable.prototype._setSkinCore = function (source, costumeResolution) {
 
     var options = {
         auto: true,
+        mag: this._gl.NEAREST,
+        min: this._gl.LINEAR, // TODO: mipmaps
         src: source
     };
     var willCallCallback = typeof source == 'string';
