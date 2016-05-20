@@ -4,6 +4,7 @@ var xhr = require('xhr');
 
 /**
  * An object which can be drawn by the renderer.
+ * TODO: double-buffer all rendering state (position, skin, shader index, etc.)
  * @param renderer The renderer which owns this Drawable.
  * @param gl The OpenGL context.
  * @constructor
@@ -15,24 +16,50 @@ function Drawable(renderer, gl) {
     this._renderer = renderer;
     this._gl = gl;
 
-    // TODO: double-buffer uniforms
+    /**
+     * The uniforms to be used by the vertex and pixel shaders.
+     * Some of these are used by other parts of the renderer as well.
+     * @type {Object.<string,*>}
+     * @private
+     */
     this._uniforms = {
-        u_texture: null,
-        u_mvp: twgl.m4.identity()
+        /**
+         * The model-view-projection matrix.
+         * @type {module:twgl/m4.Mat4}
+         */
+        u_mvp: twgl.m4.identity(),
+
+        /**
+         * The scaling factor to use when drawing.
+         * This is updated at the same time as u_mvp.
+         * @type {number}
+         */
+        u_scale: 1,
+
+        /**
+         * The nominal (not necessarily current) size of the current skin.
+         * @type {number[]}
+         */
+        u_skinSize: [0, 0],
+
+        /**
+         * The actual WebGL texture object for the skin.
+         * @type {WebGLTexture}
+         */
+        u_texture: null
     };
 
     // Effect values are uniforms too
     var numEffects = Drawable.EFFECTS.length;
     for (var index = 0; index < numEffects; ++index) {
         var effectName = Drawable.EFFECTS[index];
-        var converter = Drawable._effectCoverter[effectName];
+        var converter = Drawable._effectConverter[effectName];
         this._uniforms['u_' + effectName] = converter(0);
     }
 
     this._position = twgl.v3.create(0, 0);
     this._scale = 100;
     this._direction = 90;
-    this._dimensions = twgl.v3.create(0, 0);
     this._transformDirty = true;
     this._shaderIndex = 0;
     this._costumeResolution = 2; // TODO: only for bitmaps
@@ -49,7 +76,7 @@ module.exports = Drawable;
  * @type {Object.<string,function>}
  * @private
  */
-Drawable._effectCoverter = {
+Drawable._effectConverter = {
     color: function(x) {
         return (360 * x / 200) % 360;
     },
@@ -60,9 +87,7 @@ Drawable._effectCoverter = {
         return x * Math.PI / 180;
     },
     pixelate: function(x) {
-        // TODO: if (targetObj == stagePane) n *= stagePane.scaleX;
-        // TODO: n = Math.min(n, Math.min(srcWidth, srcHeight));
-        return Math.abs(x) / 10 + 1;
+        return Math.abs(x) / 10;
     },
     mosaic: function(x) {
         x = Math.round((Math.abs(x) + 10) / 10);
@@ -81,7 +106,7 @@ Drawable._effectCoverter = {
  * The name of each supported effect.
  * @type {Array}
  */
-Drawable.EFFECTS = Object.keys(Drawable._effectCoverter);
+Drawable.EFFECTS = Object.keys(Drawable._effectConverter);
 
 /**
  * The cache of all shaders compiled so far. These are generated on demand.
@@ -131,7 +156,7 @@ Drawable._DEFAULT_SKIN = {
     squirrel: '7e24c99c1b853e52f8e7f9004416fa34.png',
     bus: '66895930177178ea01d9e610917f8acf.png',
     scratch_cat: '09dc888b0b7df19f70d81588ae73420e.svg'
-}.scratch_cat;
+}.squirrel;
 
 /**
  * Dispose of this Drawable. Do not use it after calling this method.
@@ -281,7 +306,7 @@ Drawable.prototype._setSkinCore = function (source, costumeResolution) {
         if (!err) {
             instance._costumeResolution = costumeResolution || 1;
             instance._uniforms.u_texture = texture;
-            instance._setDimensions(source.width, source.height);
+            instance._setSkinSize(source.width, source.height);
         }
     };
 
@@ -298,7 +323,7 @@ Drawable.prototype._setSkinCore = function (source, costumeResolution) {
     if (willCallCallback) {
         if (!this._uniforms.u_texture) {
             this._uniforms.u_texture = texture;
-            this._setDimensions(0, 0);
+            this._setSkinSize(0, 0);
         }
     }
     else {
@@ -353,7 +378,7 @@ Drawable.prototype.updateProperties = function (properties) {
             else {
                 this._shaderIndex &= ~mask;
             }
-            var converter = Drawable._effectCoverter[propertyName];
+            var converter = Drawable._effectConverter[propertyName];
             this._uniforms['u_' + propertyName] = converter(rawValue);
         }
     }
@@ -365,10 +390,11 @@ Drawable.prototype.updateProperties = function (properties) {
  * @param {int} height The height of the new skin.
  * @private
  */
-Drawable.prototype._setDimensions = function (width, height) {
-    if (this._dimensions[0] != width || this._dimensions[1] != height) {
-        this._dimensions[0] = width;
-        this._dimensions[1] = height;
+Drawable.prototype._setSkinSize = function (width, height) {
+    if (this._uniforms.u_skinSize[0] != width
+        || this._uniforms.u_skinSize[1] != height) {
+        this._uniforms.u_skinSize[0] = width;
+        this._uniforms.u_skinSize[1] = height;
         this.setTransformDirty();
     }
 };
@@ -378,12 +404,20 @@ Drawable.prototype._setDimensions = function (width, height) {
  * @private
  */
 Drawable.prototype._calculateTransform = function () {
-    var rotation = (270 - this._direction) * Math.PI / 180;
-    var scale = this._scale / 100 / this._costumeResolution;
-    var projection = this._renderer.getProjectionMatrix();
     var mvp = this._uniforms.u_mvp;
+
+    var projection = this._renderer.getProjectionMatrix();
     twgl.m4.translate(projection, this._position, mvp);
+
+    var rotation = (270 - this._direction) * Math.PI / 180;
     twgl.m4.rotateZ(mvp, rotation, mvp);
-    twgl.m4.scale(mvp, twgl.v3.mulScalar(this._dimensions, scale), mvp);
+
+    var scale = this._scale / 100;
+    scale /= this._costumeResolution;
+    this._uniforms.u_scale = scale;
+    var scaledSize = twgl.v3.mulScalar(this._uniforms.u_skinSize, scale);
+    scaledSize[2] = 0; // was NaN because u_skinSize has only 2 components
+    twgl.m4.scale(mvp, scaledSize, mvp);
+
     this._transformDirty = false;
 };

@@ -5,10 +5,29 @@
     <title>Scratch WebGL rendering demo</title>
 </head>
 <body>
-<canvas id="scratch-stage" width="10" height="10" style="border:1px dashed black;"></canvas>
+<canvas id="scratch-stage" width="10" height="10" style="border:1px dashed black; margin-top: 9px;"></canvas>
+<p>
+    <input type="range" id="fudge" style="width:50%" min="0" max="100" step="any" oninput="onFudgeChanged(this.value)" onchange="onFudgeChanged(this.value)">
+</p>
+<p>
+    Min: <input id="fudgeMin" type="number" onchange="onFudgeMinChanged(this.value)">
+    Max: <input id="fudgeMax" type="number" onchange="onFudgeMaxChanged(this.value)">
+</p>
 </body>
 <script src="render-webgl.js"></script>
 <script>
+    window.fudge = 0;
+    var fudgeInput = document.getElementById('fudge');
+    function onFudgeMinChanged(newValue) {
+        fudgeInput.min = newValue;
+    }
+    function onFudgeMaxChanged(newValue) {
+        fudgeInput.max = newValue;
+    }
+    function onFudgeChanged(newValue) {
+        window.fudge = newValue;
+    }
+
     var canvas = document.getElementById('scratch-stage');
     var renderer = new RenderWebGL(canvas);
     var drawableID = renderer.createDrawable();
@@ -17,12 +36,14 @@
         renderer.draw();
         requestAnimationFrame(drawStep);
     }
+    renderer.updateDrawableProperties(drawableID, {
+        position: [0, 0],
+        scale: 300,
+        direction: 90
+    });
     var direction = 90;
-    var posX = 0;
-    var posY = 0;
-    var scale = 100;
     function thinkStep() {
-        direction += 0.1;
+        //direction += 0.1;
 
         var props = {};
         //props.position = [posX, posY];

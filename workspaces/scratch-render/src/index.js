@@ -120,6 +120,7 @@ RenderWebGL.prototype.draw = function () {
             twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
         }
         twgl.setUniforms(currentShader, drawable.getUniforms());
+        twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
         twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
     }
 };

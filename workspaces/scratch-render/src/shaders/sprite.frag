@@ -1,5 +1,7 @@
 precision mediump float;
 
+uniform float u_fudge;
+
 #ifdef ENABLE_color
 uniform float u_color;
 #endif
@@ -11,6 +13,8 @@ uniform float u_whirl;
 #endif
 #ifdef ENABLE_pixelate
 uniform float u_pixelate;
+uniform float u_scale;
+uniform vec2 u_skinSize;
 #endif
 #ifdef ENABLE_mosaic
 uniform float u_mosaic;
@@ -103,7 +107,12 @@ void main()
 	#endif // ENABLE_mosaic
 
 	#ifdef ENABLE_pixelate
-	texcoord0 = floor(texcoord0 / u_pixelate) * u_pixelate + u_pixelate_half;
+	{
+	    // TODO: understand why this padding helps clean up "pixel" edges
+	    const vec2 pixelPadding = vec2(0.125, 0.125);
+	    vec2 pixelTexelSize = u_skinSize * u_scale / u_pixelate;
+		texcoord0 = (floor(texcoord0 * pixelTexelSize + pixelPadding)) / pixelTexelSize;
+	}
 	#endif // ENABLE_pixelate
 
 	#ifdef ENABLE_whirl
