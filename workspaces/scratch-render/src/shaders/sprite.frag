@@ -32,67 +32,42 @@ uniform sampler2D u_skin;
 varying vec2 v_texCoord;
 
 #if defined(ENABLE_color) || defined(ENABLE_brightness)
-vec3 convertRGB2HSV(vec3 rgb)
+// Branchless color conversions based on code from:
+// http://www.chilliant.com/rgb2hsv.html by Ian Taylor
+// Based in part on work by Sam Hocevar and Emil Persson
+
+const float kEpsilon = 1e-6;
+
+vec3 convertRGB2HCV(vec3 rgb)
 {
-	float maxRGB = max(max(rgb.r, rgb.g), rgb.b);
-	float minRGB = min(min(rgb.r, rgb.g), rgb.b);
-	float span = maxRGB - minRGB;
-	float h, s;
-	if (span == 0.0)
-	{
-		h = s = 0.0;
-	}
-	else
-	{
-		if (maxRGB == rgb.r) h = 60.0 * ((rgb.g - rgb.b) / span);
-		else if (maxRGB == rgb.g) h = 120.0 + 60.0 * ((rgb.b - rgb.r) / span);
-		else h = 240.0 + 60.0 * ((rgb.r - rgb.g) / span);
-		s = span / maxRGB;
-	}
-	return vec3(h, s, maxRGB);
+	vec4 p = (rgb.g < rgb.b) ? vec4(rgb.bg, -1, 2.0/3.0) : vec4(rgb.gb, 0, -1.0/3.0);
+	vec4 q = (rgb.r < p.x) ? vec4(p.xyw, rgb.r) : vec4(rgb.r, p.yzx);
+	float c = q.x - min(q.w, q.y);
+	float h = abs((q.w - q.y) / (6.0 * c + kEpsilon) + q.z);
+	return vec3(h, c, q.x);
 }
 
-vec3 convertHSV2RGB(vec3 hsv)
+vec3 convertRGB2HSL(vec3 rgb)
 {
-	float h = hsv.r;
-	float s = hsv.g;
-	float v = hsv.b;
+	vec3 hcv = convertRGB2HCV(rgb);
+	float l = hcv.z - hcv.y * 0.5;
+	float s = hcv.y / (1.0 - abs(l * 2.0 - 1.0) + kEpsilon);
+	return vec3(hcv.x, s, l);
+}
 
-	float f = h / 60.0;
-	int i = int(f);
-	f -= float(i);
-	float p = v * (1.0 - s);
-	float q = v * (1.0 - (s * f));
-	float t = v * (1.0 - (s * (1.0 - f)));
+vec3 convertHue2RGB(float hue)
+{
+	float r = abs(hue * 6.0 - 3.0) - 1.0;
+	float g = 2.0 - abs(hue * 6.0 - 2.0);
+	float b = 2.0 - abs(hue * 6.0 - 4.0);
+	return clamp(vec3(r, g, b), 0.0, 1.0);
+}
 
-	vec3 rgb;
-
-	if (i == 1)
-	{
-		rgb = vec3(q, v, p);
-	}
-	else if (i == 2)
-	{
-		rgb = vec3(p, v, t);
-	}
-	else if (i == 3)
-	{
-		rgb = vec3(p, q, v);
-	}
-	else if (i == 4)
-	{
-		rgb = vec3(t, p, v);
-	}
-	else if (i == 5)
-	{
-		rgb = vec3(v, p, q);
-	}
-	else // i == 0, i == 6, or h was out of range
-	{
-		rgb = vec3(v, t, p);
-	}
-
-	return rgb;
+vec3 convertHSL2RGB(vec3 hsl)
+{
+	vec3 rgb = convertHue2RGB(hsl.x);
+	float c = (1.0 - abs(2.0 * hsl.z - 1.0)) * hsl.y;
+	return (rgb - 0.5) * c + hsl.z;
 }
 #endif // defined(ENABLE_color) || defined(ENABLE_brightness)
 
@@ -161,25 +136,25 @@ void main()
 
 	#if defined(ENABLE_color) || defined(ENABLE_brightness)
 	{
-		vec3 hsv = convertRGB2HSV(gl_FragColor.rgb);
+		vec3 hsl = convertRGB2HSL(gl_FragColor.xyz);
 
 		#ifdef ENABLE_color
 		{
 			// this code forces grayscale values to be slightly saturated
 			// so that some slight change of hue will be visible
-			if (hsv.b < 0.11) hsv = vec3(0.0, 1.0, 0.11); // force black to dark gray, fully-saturated
-			if (hsv.g < 0.09) hsv = vec3(0.0, 0.09, hsv.b); // make saturation at least 0.09
+			if (hsl.z < 0.11) hsl = vec3(0.0, 1.0, 0.11); // force black to dark gray, fully-saturated
+			else if (hsl.y < 0.09) hsl = vec3(0.0, 0.09, hsl.z); // make saturation at least 0.09
 
-			hsv.r = mod(hsv.r + u_color, 360.0);
-			if (hsv.r < 0.0) hsv.r += 360.0;
+			hsl.x = mod(hsl.x + u_color, 1.0);
+			if (hsl.x < 0.0) hsl.x += 1.0;
 		}
 		#endif // ENABLE_color
 
 		#ifdef ENABLE_brightness
-		hsv.b = clamp(hsv.b + u_brightness, 0.0, 1.0);
+		hsl.z = clamp(hsl.z + u_brightness, 0.0, 1.0);
 		#endif // ENABLE_brightness
 
-		gl_FragColor.rgb = convertHSV2RGB(hsv);
+		gl_FragColor.rgb = convertHSL2RGB(hsl);
 	}
 	#endif // defined(ENABLE_color) || defined(ENABLE_brightness)
 

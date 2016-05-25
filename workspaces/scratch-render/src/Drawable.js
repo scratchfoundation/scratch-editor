@@ -78,7 +78,7 @@ module.exports = Drawable;
  */
 Drawable._effectConverter = {
     color: function(x) {
-        return (360 * x / 200) % 360;
+        return (x / 200) % 1;
     },
     fisheye: function(x) {
         return Math.max(0, (x + 100) / 100);

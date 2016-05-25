@@ -38,7 +38,7 @@
     }
     renderer.updateDrawableProperties(drawableID, {
         position: [0, 0],
-        scale: 300,
+        scale: 100,
         direction: 90
     });
     var direction = 90;
@@ -48,6 +48,7 @@
         var props = {};
         //props.position = [posX, posY];
         props.direction = direction;
+        props.color = fudge;
         //props.scale = 100;
 
         renderer.updateDrawableProperties(drawableID, props);
