@@ -13,7 +13,6 @@ uniform float u_whirl;
 #endif
 #ifdef ENABLE_pixelate
 uniform float u_pixelate;
-uniform float u_scale;
 uniform vec2 u_skinSize;
 #endif
 #ifdef ENABLE_mosaic
@@ -27,7 +26,6 @@ uniform float u_ghost;
 #endif
 
 uniform sampler2D u_skin;
-#define u_pixelate_half vec2(0.5,0.5) // TODO
 
 varying vec2 v_texCoord;
 
@@ -83,10 +81,9 @@ void main()
 
 	#ifdef ENABLE_pixelate
 	{
-		// TODO: understand why this padding helps clean up "pixel" edges
-		const vec2 pixelPadding = vec2(0.125, 0.125);
-		vec2 pixelTexelSize = u_skinSize * u_scale / u_pixelate;
-		texcoord0 = (floor(texcoord0 * pixelTexelSize + pixelPadding)) / pixelTexelSize;
+		// TODO: clean up "pixel" edges
+		vec2 pixelTexelSize = u_skinSize / u_pixelate;
+		texcoord0 = (floor(texcoord0 * pixelTexelSize) + kCenter) / pixelTexelSize;
 	}
 	#endif // ENABLE_pixelate
 

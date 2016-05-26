@@ -30,14 +30,8 @@ function Drawable(renderer, gl) {
         u_mvp: twgl.m4.identity(),
 
         /**
-         * The scaling factor to use when drawing.
-         * This is updated at the same time as u_mvp.
-         * @type {number}
-         */
-        u_scale: 1,
-
-        /**
          * The nominal (not necessarily current) size of the current skin.
+         * This is scaled by _costumeResolution.
          * @type {number[]}
          */
         u_skinSize: [0, 0],
@@ -62,7 +56,6 @@ function Drawable(renderer, gl) {
     this._direction = 90;
     this._transformDirty = true;
     this._shaderIndex = 0;
-    this._costumeResolution = 2; // TODO: only for bitmaps
 
     this.setSkin(Drawable._DEFAULT_SKIN);
 }
@@ -297,23 +290,23 @@ Drawable.prototype._setSkinSVG = function (skin_md5ext) {
 /**
  * Common code for setting all skin types.
  * @param {string|Image} source The source of image data for the skin.
- * @param costumeResolution {int} The resolution to use for this skin.
+ * @param {int} costumeResolution The resolution to use for this skin.
  * @private
  */
 Drawable.prototype._setSkinCore = function (source, costumeResolution) {
     var instance = this;
     var callback = function (err, texture, source) {
         if (!err) {
-            instance._costumeResolution = costumeResolution || 1;
             instance._uniforms.u_texture = texture;
-            instance._setSkinSize(source.width, source.height);
+            instance._setSkinSize(
+                source.width, source.height, costumeResolution);
         }
     };
 
     var options = {
         auto: true,
         mag: this._gl.NEAREST,
-        min: this._gl.LINEAR, // TODO: mipmaps
+        min: this._gl.NEAREST, // TODO: mipmaps, linear (except pixelate)
         src: source
     };
     var willCallCallback = typeof source == 'string';
@@ -390,9 +383,13 @@ Drawable.prototype.updateProperties = function (properties) {
  * Set the dimensions of this Drawable's skin.
  * @param {int} width The width of the new skin.
  * @param {int} height The height of the new skin.
+ * @param {int} costumeResolution The resolution to use for this skin.
  * @private
  */
-Drawable.prototype._setSkinSize = function (width, height) {
+Drawable.prototype._setSkinSize = function (width, height, costumeResolution) {
+    costumeResolution = costumeResolution || 1;
+    width /= costumeResolution;
+    height /= costumeResolution;
     if (this._uniforms.u_skinSize[0] != width
         || this._uniforms.u_skinSize[1] != height) {
         this._uniforms.u_skinSize[0] = width;
@@ -414,10 +411,8 @@ Drawable.prototype._calculateTransform = function () {
     var rotation = (270 - this._direction) * Math.PI / 180;
     twgl.m4.rotateZ(mvp, rotation, mvp);
 
-    var scale = this._scale / 100;
-    scale /= this._costumeResolution;
-    this._uniforms.u_scale = scale;
-    var scaledSize = twgl.v3.mulScalar(this._uniforms.u_skinSize, scale);
+    var scaledSize = twgl.v3.mulScalar(
+        this._uniforms.u_skinSize, this._scale / 100);
     scaledSize[2] = 0; // was NaN because u_skinSize has only 2 components
     twgl.m4.scale(mvp, scaledSize, mvp);
 
