@@ -96,17 +96,28 @@ Drawable._effectConverter = {
 };
 
 /**
+ * An invalid Drawable ID which can be used to signify absence, etc.
+ * @type {int}
+ */
+Drawable.NONE = -1;
+
+/**
  * The name of each supported effect.
  * @type {Array}
  */
 Drawable.EFFECTS = Object.keys(Drawable._effectConverter);
 
+Drawable.DRAW_MODE = {
+    default: 'default',
+    pick: 'pick'
+};
+
 /**
  * The cache of all shaders compiled so far. These are generated on demand.
- * @type {Array}
+ * @type {Object.<Drawable.DRAW_MODE, Array.<module:twgl.ProgramInfo>>}
  * @private
  */
-Drawable._shaderCache = [];
+Drawable._shaderCache = {};
 
 /**
  * The ID to be assigned next time the Drawable constructor is called.
@@ -195,26 +206,33 @@ Drawable.prototype.setSkin = function (skin_md5ext) {
 /**
  * Fetch the shader for this Drawable's set of active effects.
  * Build the shader if necessary.
+ * @param {Drawable.DRAW_MODE} drawMode Draw normally or for picking, etc.
  * @returns {module:twgl.ProgramInfo?} The shader's program info.
  */
-Drawable.prototype.getShader = function () {
-    var shader = Drawable._shaderCache[this._shaderIndex];
+Drawable.prototype.getShader = function (drawMode) {
+    var cache = Drawable._shaderCache[drawMode];
+    if (!cache) {
+        cache = Drawable._shaderCache[drawMode] = [];
+    }
+    var shader = cache[this._shaderIndex];
     if (!shader) {
-        shader = Drawable._shaderCache[this._shaderIndex] =
-            this._buildShader();
+        shader = cache[this._shaderIndex] = this._buildShader(drawMode);
     }
     return shader;
 };
 
 /**
  * Build the shader for this Drawable's set of active effects.
+ * @param {Drawable.DRAW_MODE} drawMode Draw normally or for picking, etc.
  * @returns {module:twgl.ProgramInfo?} The new shader's program info.
  * @private
  */
-Drawable.prototype._buildShader = function () {
-    var defines = [];
+Drawable.prototype._buildShader = function (drawMode) {
     var numEffects = Drawable.EFFECTS.length;
 
+    var defines = [
+        '#define DRAW_MODE_' + drawMode
+    ];
     for (var index = 0; index < numEffects; ++index) {
         if ((this._shaderIndex & (1 << index)) != 0) {
             defines.push('#define ENABLE_' + Drawable.EFFECTS[index]);
@@ -404,4 +422,33 @@ Drawable.prototype._calculateTransform = function () {
     twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
 
     this._transformDirty = false;
+};
+
+/**
+ * Calculate a color to represent the given ID number. At least one component of
+ * the resulting color will be non-zero if the ID is not Drawable.NONE.
+ * @param {int} id The ID to convert.
+ * @returns {number[]} An array of [r,g,b,a], each component in the range [0,1].
+ */
+Drawable.color4fFromID = function(id) {
+    id -= Drawable.NONE;
+    var r = ((id >> 0) & 255) / 255.0;
+    var g = ((id >> 8) & 255) / 255.0;
+    var b = ((id >> 16) & 255) / 255.0;
+    return [r, g, b, 1.0];
+};
+
+/**
+ * Calculate the ID number represented by the given color. If all components of
+ * the color are zero, the result will be Drawable.NONE; otherwise the result
+ * will be a valid ID.
+ * @param {Array.<int>} rgba An array of [r,g,b,a], each component a byte.
+ * @returns {int} The ID represented by that color.
+ */
+Drawable.color4ubToID = function(rgba) {
+    var id;
+    id = (rgba[0] & 255) << 0;
+    id |= (rgba[1] & 255) << 8;
+    id |= (rgba[2] & 255) << 16;
+    return id + Drawable.NONE;
 };

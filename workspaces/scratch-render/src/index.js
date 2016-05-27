@@ -41,6 +41,7 @@ function RenderWebGL(
     this.resize(
         pixelsWide || Math.abs(this._xRight - this._xLeft),
         pixelsTall || Math.abs(this._yTop - this._yBottom));
+    this._createQueryBuffers();
 }
 
 /**
@@ -99,6 +100,7 @@ RenderWebGL.prototype.resize = function (pixelsWide, pixelsTall) {
 RenderWebGL.prototype.draw = function () {
     var gl = this._gl;
 
+    twgl.bindFramebufferInfo(gl, null);
     gl.viewport(0, 0, gl.canvas.clientWidth, gl.canvas.clientHeight);
     gl.clearColor.apply(gl, this._backgroundColor);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -106,22 +108,45 @@ RenderWebGL.prototype.draw = function () {
     gl.enable(gl.BLEND);
     gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
 
+    this._drawExcept(Drawable.DRAW_MODE.default, null, this._projection);
+};
+
+/**
+ * Draw all Drawables, with the possible exception of
+ * @param {Drawable.DRAW_MODE} drawMode Draw normally or for picking, etc.
+ * @param {int} skipID The Drawable to skip, if any.
+ * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
+ * @private
+ */
+RenderWebGL.prototype._drawExcept = function(drawMode, skipID, projection) {
+    var gl = this._gl;
     var currentShader = null;
 
     var numDrawables = this._drawables.length;
     for (var drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
         var drawableID = this._drawables[drawableIndex];
+        if (drawableID == skipID) continue;
+
         var drawable = Drawable.getDrawableByID(drawableID);
-        var newShader = drawable.getShader();
+        // TODO: check if drawable is inside the viewport before anything else
+
+        var newShader = drawable.getShader(drawMode);
         if (currentShader != newShader) {
             currentShader = newShader;
             gl.useProgram(currentShader.program);
             twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
-            twgl.setUniforms(
-                currentShader, {u_projectionMatrix: this._projection});
+            twgl.setUniforms(currentShader, {u_projectionMatrix: projection});
             twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
         }
+
         twgl.setUniforms(currentShader, drawable.getUniforms());
+
+        // TODO: consider moving u_pickColor into Drawable's getUniforms()...
+        if (drawMode == Drawable.DRAW_MODE.pick) {
+            twgl.setUniforms(currentShader,
+                {u_pickColor: Drawable.color4fFromID(drawableID)});
+        }
+
         twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
     }
 };
@@ -204,4 +229,70 @@ RenderWebGL.prototype._createGeometry = function () {
         }
     };
     this._bufferInfo = twgl.createBufferInfoFromArrays(this._gl, quad);
+};
+
+/**
+ * Create the frame buffers used for queries such as picking and color-touching.
+ * These buffers are fixed in size regardless of the size of the main render
+ * target. The fixed size allows (more) consistent behavior across devices and
+ * presentation modes.
+ * @private
+ */
+RenderWebGL.prototype._createQueryBuffers = function () {
+    var gl = this._gl;
+    var attachments = [
+        {format: gl.RGBA },
+        {format: gl.DEPTH_STENCIL }
+    ];
+
+    // TODO: consider larger sizes for multi-sample touch picking
+    var pickBufferWidth = 1;
+    var pickBufferHeight = 1;
+
+    this._pickBufferInfo = twgl.createFramebufferInfo(
+        gl, attachments, pickBufferWidth, pickBufferHeight);
+};
+
+/**
+ * @param {int} centerX The canvas x coordinate of the picking location.
+ * @param {int} centerY The canvas y coordinate of the picking location.
+ * @returns {int} The ID of the topmost Drawable under the picking location, or
+ * Drawable.NONE if there is no Drawable at that location.
+ */
+RenderWebGL.prototype.pick = function (centerX, centerY) {
+    var gl = this._gl;
+
+    // TODO: consider larger sizes for multi-sample touch picking
+    var touchWidth = 1;
+    var touchHeight = 1;
+    var pixelLeft = centerX - Math.floor(touchWidth / 2);
+    var pixelRight = centerX + Math.ceil(touchWidth / 2);
+    var pixelTop = centerY - Math.floor(touchHeight / 2);
+    var pixelBottom = centerY + Math.ceil(touchHeight / 2);
+
+    twgl.bindFramebufferInfo(gl, this._pickBufferInfo);
+    gl.viewport(0, 0, touchWidth, touchHeight);
+    gl.disable(gl.BLEND);
+
+    var noneColor = Drawable.color4fFromID(Drawable.NONE);
+    gl.clearColor.apply(gl, noneColor);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    var widthPerPixel = (this._xRight - this._xLeft) / this._gl.canvas.width;
+    var heightPerPixel = (this._yBottom - this._yTop) / this._gl.canvas.height;
+
+    var pickLeft = this._xLeft + pixelLeft * widthPerPixel;
+    var pickRight = this._xLeft + pixelRight * widthPerPixel;
+    var pickTop = this._yTop + pixelTop * heightPerPixel;
+    var pickBottom = this._yTop + pixelBottom * heightPerPixel;
+
+    var projection = twgl.m4.ortho(
+        pickLeft, pickRight, pickTop, pickBottom, -1, 1);
+
+    this._drawExcept(Drawable.DRAW_MODE.pick, null, projection);
+
+    var pixels = new Uint8Array(1 * 1 * 4);
+    gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+    return Drawable.color4ubToID(pixels);
 };

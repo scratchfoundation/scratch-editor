@@ -7,7 +7,7 @@
 <body>
 <canvas id="scratch-stage" width="10" height="10" style="border:1px dashed black; margin-top: 9px;"></canvas>
 <p>
-    <input type="range" id="fudge" style="width:50%" min="0" max="100" step="any" oninput="onFudgeChanged(this.value)" onchange="onFudgeChanged(this.value)">
+    <input type="range" id="fudge" style="width:50%" value="90" min="-90" max="270" step="any" oninput="onFudgeChanged(this.value)" onchange="onFudgeChanged(this.value)">
 </p>
 <p>
     Min: <input id="fudgeMin" type="number" onchange="onFudgeMinChanged(this.value)">
@@ -16,7 +16,7 @@
 </body>
 <script src="render-webgl.js"></script>
 <script>
-    window.fudge = 0;
+    window.fudge = 90;
     var fudgeInput = document.getElementById('fudge');
     function onFudgeMinChanged(newValue) {
         fudgeInput.min = newValue;
@@ -47,8 +47,8 @@
 
         var props = {};
         //props.position = [posX, posY];
-        props.direction = direction;
-        props.color = fudge;
+        props.direction = fudge;
+        //props.pixelate = fudge;
         //props.scale = 100;
 
         renderer.updateDrawableProperties(drawableID, props);

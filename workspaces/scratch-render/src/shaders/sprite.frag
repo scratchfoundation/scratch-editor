@@ -2,34 +2,39 @@ precision mediump float;
 
 uniform float u_fudge;
 
-#ifdef ENABLE_color
+#ifdef DRAW_MODE_pick
+uniform vec4 u_pickColor;
+#else // DRAW_MODE_pick
+# ifdef ENABLE_color
 uniform float u_color;
-#endif
+# endif // ENABLE_color
+# ifdef ENABLE_brightness
+uniform float u_brightness;
+# endif // ENABLE_brightness
+#endif // DRAW_MODE_pick
+
 #ifdef ENABLE_fisheye
 uniform float u_fisheye;
-#endif
+#endif // ENABLE_fisheye
 #ifdef ENABLE_whirl
 uniform float u_whirl;
-#endif
+#endif // ENABLE_whirl
 #ifdef ENABLE_pixelate
 uniform float u_pixelate;
 uniform vec2 u_skinSize;
-#endif
+#endif // ENABLE_pixelate
 #ifdef ENABLE_mosaic
 uniform float u_mosaic;
-#endif
-#ifdef ENABLE_brightness
-uniform float u_brightness;
-#endif
+#endif // ENABLE_mosaic
 #ifdef ENABLE_ghost
 uniform float u_ghost;
-#endif
+#endif // ENABLE_ghost
 
 uniform sampler2D u_skin;
 
 varying vec2 v_texCoord;
 
-#if defined(ENABLE_color) || defined(ENABLE_brightness)
+#if !defined(DRAW_MODE_pick) && (defined(ENABLE_color) || defined(ENABLE_brightness))
 // Branchless color conversions based on code from:
 // http://www.chilliant.com/rgb2hsv.html by Ian Taylor
 // Based in part on work by Sam Hocevar and Emil Persson
@@ -67,7 +72,7 @@ vec3 convertHSL2RGB(vec3 hsl)
 	float c = (1.0 - abs(2.0 * hsl.z - 1.0)) * hsl.y;
 	return (rgb - 0.5) * c + hsl.z;
 }
-#endif // defined(ENABLE_color) || defined(ENABLE_brightness)
+#endif // !defined(DRAW_MODE_pick) && (defined(ENABLE_color) || defined(ENABLE_brightness))
 
 const vec2 kCenter = vec2(0.5, 0.5);
 
@@ -126,10 +131,19 @@ void main()
 
 	gl_FragColor = texture2D(u_skin, texcoord0);
 
+	#ifdef ENABLE_ghost
+	gl_FragColor.a *= u_ghost;
+	#endif // ENABLE_ghost
+
 	if (gl_FragColor.a == 0.0)
 	{
 		discard;
 	}
+
+	#ifdef DRAW_MODE_pick
+	// switch to u_pickColor only AFTER the alpha test
+	gl_FragColor = u_pickColor;
+	#else // DRAW_MODE_pick
 
 	#if defined(ENABLE_color) || defined(ENABLE_brightness)
 	{
@@ -155,10 +169,8 @@ void main()
 	}
 	#endif // defined(ENABLE_color) || defined(ENABLE_brightness)
 
-	#ifdef ENABLE_ghost
-	gl_FragColor.a *= u_ghost;
-	#endif // ENABLE_ghost
-
 	// WebGL defaults to premultiplied alpha
 	gl_FragColor.rgb *= gl_FragColor.a;
+
+	#endif // DRAW_MODE_pick
 }
