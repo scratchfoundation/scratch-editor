@@ -24,10 +24,10 @@ function Drawable(renderer, gl) {
      */
     this._uniforms = {
         /**
-         * The model-view-projection matrix.
+         * The model matrix, to concat with the projection matrix at draw time.
          * @type {module:twgl/m4.Mat4}
          */
-        u_mvp: twgl.m4.identity(),
+        u_modelMatrix: twgl.m4.identity(),
 
         /**
          * The nominal (not necessarily current) size of the current skin.
@@ -129,19 +129,6 @@ Drawable._allDrawables = {};
  */
 Drawable.getDrawableByID = function (drawableID) {
     return Drawable._allDrawables[drawableID];
-};
-
-/**
- * Dirty the transforms of all Drawables.
- * Call this when the projection matrix changes, for example.
- */
-Drawable.dirtyAllTransforms = function () {
-    for (var drawableID in Drawable._allDrawables) {
-        if (Drawable._allDrawables.hasOwnProperty(drawableID)) {
-            var drawable = Drawable._allDrawables[drawableID];
-            drawable.setTransformDirty();
-        }
-    }
 };
 
 // TODO: fall back on a built-in skin to protect against network problems
@@ -403,18 +390,18 @@ Drawable.prototype._setSkinSize = function (width, height, costumeResolution) {
  * @private
  */
 Drawable.prototype._calculateTransform = function () {
-    var mvp = this._uniforms.u_mvp;
+    var modelMatrix = this._uniforms.u_modelMatrix;
 
-    var projection = this._renderer.getProjectionMatrix();
-    twgl.m4.translate(projection, this._position, mvp);
+    twgl.m4.identity(modelMatrix);
+    twgl.m4.translate(modelMatrix, this._position, modelMatrix);
 
     var rotation = (270 - this._direction) * Math.PI / 180;
-    twgl.m4.rotateZ(mvp, rotation, mvp);
+    twgl.m4.rotateZ(modelMatrix, rotation, modelMatrix);
 
     var scaledSize = twgl.v3.mulScalar(
         this._uniforms.u_skinSize, this._scale / 100);
     scaledSize[2] = 0; // was NaN because u_skinSize has only 2 components
-    twgl.m4.scale(mvp, scaledSize, mvp);
+    twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
 
     this._transformDirty = false;
 };

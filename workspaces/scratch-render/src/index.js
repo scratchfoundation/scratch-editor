@@ -79,7 +79,6 @@ RenderWebGL.prototype.setStageSize = function (xLeft, xRight, yBottom, yTop) {
     this._yBottom = yBottom;
     this._yTop = yTop;
     this._projection = twgl.m4.ortho(xLeft, xRight, yBottom, yTop, -1, 1);
-    Drawable.dirtyAllTransforms();
 };
 
 /**
@@ -118,9 +117,11 @@ RenderWebGL.prototype.draw = function () {
             currentShader = newShader;
             gl.useProgram(currentShader.program);
             twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
+            twgl.setUniforms(
+                currentShader, {u_projectionMatrix: this._projection});
+            twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
         }
         twgl.setUniforms(currentShader, drawable.getUniforms());
-        twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
         twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
     }
 };
