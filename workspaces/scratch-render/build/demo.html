@@ -16,7 +16,12 @@
 </body>
 <script src="render-webgl.js"></script>
 <script>
+    var canvas = document.getElementById('scratch-stage');
+    var renderer = new RenderWebGL(canvas);
+    var drawableID = renderer.createDrawable();
+    var direction = 90;
     window.fudge = 90;
+
     var fudgeInput = document.getElementById('fudge');
     function onFudgeMinChanged(newValue) {
         fudgeInput.min = newValue;
@@ -28,20 +33,17 @@
         window.fudge = newValue;
     }
 
-    var canvas = document.getElementById('scratch-stage');
-    var renderer = new RenderWebGL(canvas);
-    var drawableID = renderer.createDrawable();
+    canvas.onclick = function(event) {
+        var x = event.pageX - canvas.offsetLeft;
+        var y = event.pageY - canvas.offsetTop;
+        var pickID = renderer.pick(x,y);
+        console.log('You clicked on ' + (pickID < 0 ? 'nothing' : 'ID# ' + pickID));
+    };
 
     function drawStep() {
         renderer.draw();
         requestAnimationFrame(drawStep);
     }
-    renderer.updateDrawableProperties(drawableID, {
-        position: [0, 0],
-        scale: 100,
-        direction: 90
-    });
-    var direction = 90;
     function thinkStep() {
         //direction += 0.1;
 
@@ -53,6 +55,13 @@
 
         renderer.updateDrawableProperties(drawableID, props);
     }
+
+    renderer.updateDrawableProperties(drawableID, {
+        position: [0, 0],
+        scale: 100,
+        direction: 90
+    });
+
     drawStep();
     setInterval(thinkStep, 1/60);
 </script>
