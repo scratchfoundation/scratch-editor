@@ -45,6 +45,13 @@ function RenderWebGL(
 }
 
 /**
+ * Maximum touch size for a picking check.
+ * TODO: Figure out a reasonable max size. Maybe this should be configurable?
+ * @type {int[]}
+ */
+RenderWebGL.MAX_TOUCH_SIZE = [3, 3];
+
+/**
  * Inherit from EventEmitter
  */
 util.inherits(RenderWebGL, EventEmitter);
@@ -101,7 +108,7 @@ RenderWebGL.prototype.draw = function () {
     var gl = this._gl;
 
     twgl.bindFramebufferInfo(gl, null);
-    gl.viewport(0, 0, gl.canvas.clientWidth, gl.canvas.clientHeight);
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor.apply(gl, this._backgroundColor);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -245,30 +252,44 @@ RenderWebGL.prototype._createQueryBuffers = function () {
         {format: gl.DEPTH_STENCIL }
     ];
 
-    // TODO: consider larger sizes for multi-sample touch picking
-    var pickBufferWidth = 1;
-    var pickBufferHeight = 1;
-
     this._pickBufferInfo = twgl.createFramebufferInfo(
-        gl, attachments, pickBufferWidth, pickBufferHeight);
+        gl, attachments,
+        RenderWebGL.MAX_TOUCH_SIZE[0], RenderWebGL.MAX_TOUCH_SIZE[1]);
 };
 
 /**
- * @param {int} centerX The canvas x coordinate of the picking location.
- * @param {int} centerY The canvas y coordinate of the picking location.
+ * Detect which sprite, if any, is at the given location.
+ * @param {int} centerX The client x coordinate of the picking location.
+ * @param {int} centerY The client y coordinate of the picking location.
+ * @param {int} touchWidth The client width of the touch event (optional).
+ * @param {int} touchHeight The client height of the touch event (optional).
  * @returns {int} The ID of the topmost Drawable under the picking location, or
  * Drawable.NONE if there is no Drawable at that location.
  */
-RenderWebGL.prototype.pick = function (centerX, centerY) {
+RenderWebGL.prototype.pick = function (
+    centerX, centerY, touchWidth, touchHeight) {
     var gl = this._gl;
 
-    // TODO: consider larger sizes for multi-sample touch picking
-    var touchWidth = 1;
-    var touchHeight = 1;
-    var pixelLeft = centerX - Math.floor(touchWidth / 2);
-    var pixelRight = centerX + Math.ceil(touchWidth / 2);
-    var pixelTop = centerY - Math.floor(touchHeight / 2);
-    var pixelBottom = centerY + Math.ceil(touchHeight / 2);
+    touchWidth = touchWidth || 1;
+    touchHeight = touchHeight || 1;
+
+    var clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
+    var clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
+
+    centerX *= clientToGLX;
+    centerY *= clientToGLY;
+    touchWidth *= clientToGLX;
+    touchHeight *= clientToGLY;
+
+    touchWidth =
+        Math.max(1, Math.min(touchWidth, RenderWebGL.MAX_TOUCH_SIZE[0]));
+    touchHeight =
+        Math.max(1, Math.min(touchHeight, RenderWebGL.MAX_TOUCH_SIZE[1]));
+
+    var pixelLeft = Math.floor(centerX - Math.floor(touchWidth / 2) + 0.5);
+    var pixelRight = Math.floor(centerX + Math.ceil(touchWidth / 2) + 0.5);
+    var pixelTop = Math.floor(centerY - Math.floor(touchHeight / 2) + 0.5);
+    var pixelBottom = Math.floor(centerY + Math.ceil(touchHeight / 2) + 0.5);
 
     twgl.bindFramebufferInfo(gl, this._pickBufferInfo);
     gl.viewport(0, 0, touchWidth, touchHeight);
@@ -291,8 +312,42 @@ RenderWebGL.prototype.pick = function (centerX, centerY) {
 
     this._drawExcept(Drawable.DRAW_MODE.pick, null, projection);
 
-    var pixels = new Uint8Array(1 * 1 * 4);
-    gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+    var pixels = new Uint8Array(touchWidth * touchHeight * 4);
+    gl.readPixels(
+        0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-    return Drawable.color4ubToID(pixels);
+    // Uncomment this and make a canvas with id="pick-image" to debug picking
+    /*
+    var pickImage = document.getElementById('pick-image');
+    pickImage.width = touchWidth;
+    pickImage.height = touchHeight;
+    var context = pickImage.getContext('2d');
+    var imageData = context.getImageData(0, 0, touchWidth, touchHeight);
+    for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
+        imageData.data[i] = pixels[i];
+    }
+    context.putImageData(imageData, 0, 0);
+    */
+
+    var hits = {};
+    for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
+        var pixelID = Drawable.color4ubToID(
+            pixels[pixelBase],
+            pixels[pixelBase + 1],
+            pixels[pixelBase + 2],
+            pixels[pixelBase + 3]);
+        hits[pixelID] = (hits[pixelID] || 0) + 1;
+    }
+
+    // Bias toward selecting anything over nothing
+    hits[Drawable.NONE] = 0;
+
+    var hit = Drawable.NONE;
+    for (var hitID in hits) {
+        if (hits.hasOwnProperty(hitID) && (hits[hitID] > hits[hit])) {
+            hit = hitID;
+        }
+    }
+
+    return hit | 0;
 };

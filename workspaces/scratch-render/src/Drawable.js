@@ -442,13 +442,16 @@ Drawable.color4fFromID = function(id) {
  * Calculate the ID number represented by the given color. If all components of
  * the color are zero, the result will be Drawable.NONE; otherwise the result
  * will be a valid ID.
- * @param {Array.<int>} rgba An array of [r,g,b,a], each component a byte.
+ * @param {int} r The red value of the color, in the range [0,255].
+ * @param {int} g The green value of the color, in the range [0,255].
+ * @param {int} b The blue value of the color, in the range [0,255].
+ * @param {int} a The alpha value of the color, in the range [0,255].
  * @returns {int} The ID represented by that color.
  */
-Drawable.color4ubToID = function(rgba) {
+Drawable.color4ubToID = function(r, g, b, a) {
     var id;
-    id = (rgba[0] & 255) << 0;
-    id |= (rgba[1] & 255) << 8;
-    id |= (rgba[2] & 255) << 16;
+    id = (r & 255) << 0;
+    id |= (g & 255) << 8;
+    id |= (b & 255) << 16;
     return id + Drawable.NONE;
 };
