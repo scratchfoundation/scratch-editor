@@ -153,8 +153,10 @@ void main()
 		{
 			// this code forces grayscale values to be slightly saturated
 			// so that some slight change of hue will be visible
-			if (hsl.z < 0.11) hsl = vec3(0.0, 1.0, 0.11); // force black to dark gray, fully-saturated
-			else if (hsl.y < 0.09) hsl = vec3(0.0, 0.09, hsl.z); // make saturation at least 0.09
+			const float minLightness = 0.11 / 2.0;
+			const float minSaturation = 0.09;
+			if (hsl.z < minLightness) hsl = vec3(0.0, 1.0, minLightness);
+			else if (hsl.y < minSaturation) hsl = vec3(0.0, minSaturation, hsl.z);
 
 			hsl.x = mod(hsl.x + u_color, 1.0);
 			if (hsl.x < 0.0) hsl.x += 1.0;
