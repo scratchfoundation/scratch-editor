@@ -293,7 +293,11 @@ RenderWebGL.prototype.pick = function (
 
     twgl.bindFramebufferInfo(gl, this._pickBufferInfo);
     gl.viewport(0, 0, touchWidth, touchHeight);
-    gl.disable(gl.BLEND);
+
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.enable(gl.BLEND); // TODO: track when a costume has partial transparency?
+    gl.disable(gl.DEPTH_TEST);
+    gl.disable(gl.STENCIL_TEST);
 
     var noneColor = Drawable.color4fFromID(Drawable.NONE);
     gl.clearColor.apply(gl, noneColor);

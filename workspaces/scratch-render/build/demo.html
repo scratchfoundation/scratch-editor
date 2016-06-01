@@ -19,6 +19,7 @@
     var canvas = document.getElementById('scratch-stage');
     var renderer = new RenderWebGL(canvas);
     var drawableID = renderer.createDrawable();
+    var drawableID2 = renderer.createDrawable();
     var direction = 90;
     window.fudge = 90;
 
@@ -94,6 +95,9 @@
         position: [0, 0],
         scale: 100,
         direction: 90
+    });
+    renderer.updateDrawableProperties(drawableID2, {
+        skin: '09dc888b0b7df19f70d81588ae73420e.svg'
     });
 
     drawStep();

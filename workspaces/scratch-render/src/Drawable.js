@@ -40,7 +40,7 @@ function Drawable(renderer, gl) {
          * The actual WebGL texture object for the skin.
          * @type {WebGLTexture}
          */
-        u_texture: null
+        u_skin: null
     };
 
     // Effect values are uniforms too
@@ -146,7 +146,8 @@ Drawable.getDrawableByID = function (drawableID) {
 Drawable._DEFAULT_SKIN = {
     squirrel: '7e24c99c1b853e52f8e7f9004416fa34.png',
     bus: '66895930177178ea01d9e610917f8acf.png',
-    scratch_cat: '09dc888b0b7df19f70d81588ae73420e.svg'
+    scratch_cat: '09dc888b0b7df19f70d81588ae73420e.svg',
+    gradient: 'a49ff276b9b8f997a1ae163992c2c145.png'
 }.squirrel;
 
 /**
@@ -183,9 +184,6 @@ Drawable.prototype.getID = function () {
 Drawable.prototype.setSkin = function (skin_md5ext) {
     // TODO: cache Skins instead of loading each time. Ref count them?
     // TODO: share Skins across Drawables - see also destroy()
-    if (this._uniforms.u_texture) {
-        this._gl.deleteTexture(this._uniforms.u_texture);
-    }
     if (skin_md5ext) {
         var ext = skin_md5ext.substring(skin_md5ext.indexOf('.')+1);
         switch (ext) {
@@ -199,7 +197,30 @@ Drawable.prototype.setSkin = function (skin_md5ext) {
         }
     }
     else {
-        this._uniforms.u_texture = null;
+        this._useSkin(null, 0, 0, 1, true);
+    }
+};
+
+/**
+ * Use a skin if it is the currently-pending skin, or if skipPendingCheck==true.
+ * If the passed skin is used (for either reason) _pendingSkin will be cleared.
+ * @param {WebGLTexture} skin The skin to use.
+ * @param {int} width The width of the skin.
+ * @param {int} height The height of the skin.
+ * @param {int} costumeResolution The resolution to use for this skin.
+ * @param {boolean} [skipPendingCheck] If true, don't compare to _pendingSkin.
+ * @private
+ */
+Drawable.prototype._useSkin = function(
+    skin, width, height, costumeResolution, skipPendingCheck) {
+
+    if (skipPendingCheck || (skin == this._pendingSkin)) {
+        this._pendingSkin = null;
+        if (this._uniforms.u_skin && (this._uniforms.u_skin != skin)) {
+            this._gl.deleteTexture(this._uniforms.u_skin);
+        }
+        this._setSkinSize(width, height, costumeResolution);
+        this._uniforms.u_skin = skin;
     }
 };
 
@@ -290,6 +311,7 @@ Drawable.prototype._setSkinSVG = function (skin_md5ext) {
         useXDR: true,
         url: url
     }, gotSVG);
+    // TODO: if there's no current u_skin, install *something* before returning
 };
 
 /**
@@ -301,33 +323,34 @@ Drawable.prototype._setSkinSVG = function (skin_md5ext) {
 Drawable.prototype._setSkinCore = function (source, costumeResolution) {
     var instance = this;
     var callback = function (err, texture, source) {
-        if (!err) {
-            instance._uniforms.u_texture = texture;
-            instance._setSkinSize(
-                source.width, source.height, costumeResolution);
+        if (!err && (instance._pendingSkin == texture)) {
+            instance._useSkin(
+                texture, source.width, source.height, costumeResolution);
         }
     };
 
+    var gl = this._gl;
     var options = {
         auto: true,
-        mag: this._gl.NEAREST,
-        min: this._gl.NEAREST, // TODO: mipmaps, linear (except pixelate)
+        mag: gl.NEAREST,
+        min: gl.NEAREST, // TODO: mipmaps, linear (except pixelate)
+        wrap: gl.CLAMP_TO_EDGE,
         src: source
     };
     var willCallCallback = typeof source == 'string';
-    var texture = twgl.createTexture(
-        this._gl, options, willCallCallback ? callback : null);
+    instance._pendingSkin = twgl.createTexture(
+        gl, options, willCallCallback ? callback : null);
 
     // If we don't already have a texture, or if we won't get a callback when
     // the new one loads, then just start using the texture immediately.
     if (willCallCallback) {
-        if (!this._uniforms.u_texture) {
-            this._uniforms.u_texture = texture;
+        if (!this._uniforms.u_skin) {
+            this._uniforms.u_skin = instance._pendingSkin;
             this._setSkinSize(0, 0);
         }
     }
     else {
-        callback(null, texture, source);
+        callback(null, instance._pendingSkin, source);
     }
 };
 
@@ -348,6 +371,9 @@ Drawable.prototype.getUniforms = function () {
  */
 Drawable.prototype.updateProperties = function (properties) {
     var dirty = false;
+    if ('skin' in properties) {
+        this.setSkin(properties.skin);
+    }
     if ('position' in properties && (
         this._position[0] != properties.position[0] ||
         this._position[1] != properties.position[1])) {
