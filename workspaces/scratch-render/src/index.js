@@ -115,24 +115,30 @@ RenderWebGL.prototype.draw = function () {
     gl.enable(gl.BLEND);
     gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
 
-    this._drawExcept(Drawable.DRAW_MODE.default, null, this._projection);
+    this._drawThese(
+        this._drawables, Drawable.DRAW_MODE.default, this._projection);
 };
 
 /**
  * Draw all Drawables, with the possible exception of
+ * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawables.
  * @param {Drawable.DRAW_MODE} drawMode Draw normally or for picking, etc.
- * @param {int} skipID The Drawable to skip, if any.
  * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
+ * @param {Drawable~idFilterFunc} [filter] An optional filter function.
  * @private
  */
-RenderWebGL.prototype._drawExcept = function(drawMode, skipID, projection) {
+RenderWebGL.prototype._drawThese = function(
+    drawables, drawMode, projection, filter) {
+
     var gl = this._gl;
     var currentShader = null;
 
-    var numDrawables = this._drawables.length;
+    var numDrawables = drawables.length;
     for (var drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
-        var drawableID = this._drawables[drawableIndex];
-        if (drawableID == skipID) continue;
+        var drawableID = drawables[drawableIndex];
+
+        // If we have a filter, check whether the ID fails
+        if (filter && !filter(drawableID)) continue;
 
         var drawable = Drawable.getDrawableByID(drawableID);
         // TODO: check if drawable is inside the viewport before anything else
@@ -314,7 +320,7 @@ RenderWebGL.prototype.pick = function (
     var projection = twgl.m4.ortho(
         pickLeft, pickRight, pickTop, pickBottom, -1, 1);
 
-    this._drawExcept(Drawable.DRAW_MODE.pick, null, projection);
+    this._drawThese(this._drawables, Drawable.DRAW_MODE.pick, projection);
 
     var pixels = new Uint8Array(touchWidth * touchHeight * 4);
     gl.readPixels(

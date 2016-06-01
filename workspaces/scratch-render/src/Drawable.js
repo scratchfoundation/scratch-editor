@@ -96,6 +96,12 @@ Drawable._effectConverter = {
 };
 
 /**
+ * @callback Drawable~idFilterFunc
+ * @param {int} drawableID The ID to filter.
+ * @return {bool} True if the ID passes the filter, otherwise false.
+ */
+
+/**
  * An invalid Drawable ID which can be used to signify absence, etc.
  * @type {int}
  */
@@ -107,6 +113,11 @@ Drawable.NONE = -1;
  */
 Drawable.EFFECTS = Object.keys(Drawable._effectConverter);
 
+/**
+ * The available draw modes.
+ * @readonly
+ * @enum {string}
+ */
 Drawable.DRAW_MODE = {
     default: 'default',
     pick: 'pick'
