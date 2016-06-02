@@ -485,6 +485,7 @@ Drawable.color4fFromID = function(id) {
  * @param {int} a The alpha value of the color, in the range [0,255].
  * @returns {int} The ID represented by that color.
  */
+// eslint-disable-next-line no-unused-vars
 Drawable.color4ubToID = function(r, g, b, a) {
     var id;
     id = (r & 255) << 0;

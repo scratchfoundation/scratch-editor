@@ -333,7 +333,7 @@ RenderWebGL.prototype.pick = function (
 
     this._drawThese(this._drawables, Drawable.DRAW_MODE.pick, projection);
 
-    var pixels = new Uint8Array(touchWidth * touchHeight * 4);
+    var pixels = new Buffer(touchWidth * touchHeight * 4);
     gl.readPixels(
         0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
@@ -412,7 +412,7 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub) {
         gl.disable(gl.STENCIL_TEST);
     }
 
-    var pixels = new Uint8Array(
+    var pixels = new Buffer(
         RenderWebGL.QUERY_SIZE[0] * RenderWebGL.QUERY_SIZE[1] * 4);
     gl.readPixels(
         0, 0, RenderWebGL.QUERY_SIZE[0], RenderWebGL.QUERY_SIZE[1],
