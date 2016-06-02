@@ -29,19 +29,24 @@ function RenderWebGL(
     // TODO: remove?
     twgl.setDefaults({crossOrigin: true});
 
-    this._gl = twgl.getWebGLContext(canvas, {alpha: false});
+    this._gl = twgl.getWebGLContext(canvas, {alpha: false, stencil: true});
     this._drawables = [];
     this._projection = twgl.m4.identity();
 
     this._createGeometry();
 
-    this.setBackgroundColor(1, 1, 1, 1);
+    this.setBackgroundColor(1, 1, 1);
     this.setStageSize(
         xLeft || -240, xRight || 240, yBottom || -180, yTop || 180);
     this.resize(
         pixelsWide || Math.abs(this._xRight - this._xLeft),
         pixelsTall || Math.abs(this._yTop - this._yBottom));
     this._createQueryBuffers();
+
+    var gl = this._gl;
+    gl.disable(gl.DEPTH_TEST);
+    gl.enable(gl.BLEND); // TODO: track when a costume has partial transparency?
+    gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
 }
 
 /**
@@ -50,6 +55,15 @@ function RenderWebGL(
  * @type {int[]}
  */
 RenderWebGL.MAX_TOUCH_SIZE = [3, 3];
+
+/**
+ * The size of the stage when checking if two sprites are touching, if a sprite
+ * is touching a particular color, etc. Fixing this size means that projects
+ * will behave the same regardless of the visual sizing of the stage.
+ * TODO: Consider using [pixelsWide,pixelsTall] by default, allow override.
+ * @type {int[]}
+ */
+RenderWebGL.QUERY_SIZE = [480, 360];
 
 /**
  * Inherit from EventEmitter
@@ -68,10 +82,9 @@ if (typeof window !== 'undefined') window.RenderWebGL = module.exports;
  * @param {number} red The red component for the background.
  * @param {number} green The green component for the background.
  * @param {number} blue The blue component for the background.
- * @param {number} alpha The alpha (transparency) component for the background.
  */
-RenderWebGL.prototype.setBackgroundColor = function(red, green, blue, alpha) {
-    this._backgroundColor = [red, green, blue, alpha];
+RenderWebGL.prototype.setBackgroundColor = function(red, green, blue) {
+    this._backgroundColor = [red, green, blue, 1];
 };
 
 /**
@@ -111,9 +124,6 @@ RenderWebGL.prototype.draw = function () {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor.apply(gl, this._backgroundColor);
     gl.clear(gl.COLOR_BUFFER_BIT);
-
-    gl.enable(gl.BLEND);
-    gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
 
     this._drawThese(
         this._drawables, Drawable.DRAW_MODE.default, this._projection);
@@ -261,6 +271,12 @@ RenderWebGL.prototype._createQueryBuffers = function () {
     this._pickBufferInfo = twgl.createFramebufferInfo(
         gl, attachments,
         RenderWebGL.MAX_TOUCH_SIZE[0], RenderWebGL.MAX_TOUCH_SIZE[1]);
+
+    // TODO: should we create this on demand to save memory?
+    // A 480x360 32-bpp buffer is 675 KiB.
+    this._queryBufferInfo = twgl.createFramebufferInfo(
+        gl, attachments,
+        RenderWebGL.QUERY_SIZE[0], RenderWebGL.QUERY_SIZE[1]);
 };
 
 /**
@@ -300,11 +316,6 @@ RenderWebGL.prototype.pick = function (
     twgl.bindFramebufferInfo(gl, this._pickBufferInfo);
     gl.viewport(0, 0, touchWidth, touchHeight);
 
-    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-    gl.enable(gl.BLEND); // TODO: track when a costume has partial transparency?
-    gl.disable(gl.DEPTH_TEST);
-    gl.disable(gl.STENCIL_TEST);
-
     var noneColor = Drawable.color4fFromID(Drawable.NONE);
     gl.clearColor.apply(gl, noneColor);
     gl.clear(gl.COLOR_BUFFER_BIT);
@@ -326,7 +337,7 @@ RenderWebGL.prototype.pick = function (
     gl.readPixels(
         0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-    // Uncomment this and make a canvas with id="pick-image" to debug picking
+    // Uncomment this and make a canvas with id="pick-image" to debug
     /*
     var pickImage = document.getElementById('pick-image');
     pickImage.width = touchWidth;
@@ -360,4 +371,75 @@ RenderWebGL.prototype.pick = function (
     }
 
     return hit | 0;
+};
+
+RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub) {
+    var gl = this._gl;
+
+    twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+
+    // TODO: restrict to only the area overlapped by the target Drawable
+    // - limit size of viewport to the AABB around the target Drawable
+    // - draw only the Drawables which could overlap the target Drawable
+    // - read only the pixels in the AABB around the target Drawable
+    gl.viewport(0, 0, RenderWebGL.QUERY_SIZE[0], RenderWebGL.QUERY_SIZE[1]);
+
+    gl.clearColor.apply(gl, this._backgroundColor);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+
+    try {
+        gl.enable(gl.STENCIL_TEST);
+        gl.stencilFunc(gl.ALWAYS, 1, 1);
+        gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
+        gl.colorMask(false, false, false, false);
+        this._drawThese(
+            [drawableID], Drawable.DRAW_MODE.pick, this._projection);
+
+        gl.stencilFunc(gl.EQUAL, 1, 1);
+        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+        gl.colorMask(true, true, true, true);
+
+        // TODO: only draw items which could possibly overlap target Drawable
+        // It might work to use the filter function for that
+        this._drawThese(
+            this._drawables, Drawable.DRAW_MODE.default, this._projection,
+            function (testID) {
+                return testID != drawableID;
+            });
+    }
+    finally {
+        gl.colorMask(true, true, true, true);
+        gl.disable(gl.STENCIL_TEST);
+    }
+
+    var pixels = new Uint8Array(
+        RenderWebGL.QUERY_SIZE[0] * RenderWebGL.QUERY_SIZE[1] * 4);
+    gl.readPixels(
+        0, 0, RenderWebGL.QUERY_SIZE[0], RenderWebGL.QUERY_SIZE[1],
+        gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+    // Uncomment this and make a canvas with id="query-image" to debug
+    /*
+    var pickImage = document.getElementById('query-image');
+    pickImage.width = RenderWebGL.QUERY_SIZE[0];
+    pickImage.height = RenderWebGL.QUERY_SIZE[1];
+    var context = pickImage.getContext('2d');
+    var imageData = context.getImageData(
+        0, 0, RenderWebGL.QUERY_SIZE[0], RenderWebGL.QUERY_SIZE[1]);
+    for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
+        imageData.data[i] = pixels[i];
+    }
+    context.putImageData(imageData, 0, 0);
+    */
+
+    for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
+        // TODO: tolerance?
+        if ((pixels[pixelBase] == color3ub[0]) &&
+            (pixels[pixelBase + 1] == color3ub[1]) &&
+            (pixels[pixelBase + 2] == color3ub[2])) {
+            return true;
+        }
+    }
+
+    return false;
 };
