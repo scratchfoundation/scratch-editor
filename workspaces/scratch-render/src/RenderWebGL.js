@@ -281,15 +281,17 @@ RenderWebGL.prototype._createQueryBuffers = function () {
  * @param {int} centerY The client y coordinate of the picking location.
  * @param {int} touchWidth The client width of the touch event (optional).
  * @param {int} touchHeight The client height of the touch event (optional).
+ * @param {int[]} candidateIDs The Drawable IDs to pick from, otherwise all.
  * @returns {int} The ID of the topmost Drawable under the picking location, or
  * Drawable.NONE if there is no Drawable at that location.
  */
 RenderWebGL.prototype.pick = function (
-    centerX, centerY, touchWidth, touchHeight) {
+    centerX, centerY, touchWidth, touchHeight, candidateIDs) {
     var gl = this._gl;
 
     touchWidth = touchWidth || 1;
     touchHeight = touchHeight || 1;
+    candidateIDs = candidateIDs || this._drawables;
 
     var clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
     var clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
@@ -327,7 +329,7 @@ RenderWebGL.prototype.pick = function (
     var projection = twgl.m4.ortho(
         pickLeft, pickRight, pickTop, pickBottom, -1, 1);
 
-    this._drawThese(this._drawables, Drawable.DRAW_MODE.pick, projection);
+    this._drawThese(candidateIDs, Drawable.DRAW_MODE.pick, projection);
 
     var pixels = new Buffer(touchWidth * touchHeight * 4);
     gl.readPixels(
