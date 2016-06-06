@@ -128,13 +128,14 @@ RenderWebGL.prototype.draw = function () {
 /**
  * Draw all Drawables, with the possible exception of
  * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawables.
- * @param {Drawable.DRAW_MODE} drawMode Draw normally or for picking, etc.
+ * @param {Drawable.DRAW_MODE} drawMode Draw normally, silhouette, etc.
  * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
  * @param {Drawable~idFilterFunc} [filter] An optional filter function.
+ * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
  * @private
  */
 RenderWebGL.prototype._drawThese = function(
-    drawables, drawMode, projection, filter) {
+    drawables, drawMode, projection, filter, extraUniforms) {
 
     var gl = this._gl;
     var currentShader = null;
@@ -156,14 +157,20 @@ RenderWebGL.prototype._drawThese = function(
             twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
             twgl.setUniforms(currentShader, {u_projectionMatrix: projection});
             twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
+
+            // TODO: should these be set after the Drawable's uniforms?
+            // That would allow Drawable-scope uniforms to be overridden...
+            if (extraUniforms) {
+                twgl.setUniforms(currentShader, extraUniforms);
+            }
         }
 
         twgl.setUniforms(currentShader, drawable.getUniforms());
 
-        // TODO: consider moving u_pickColor into Drawable's getUniforms()...
-        if (drawMode == Drawable.DRAW_MODE.pick) {
+        // TODO: move u_silhouetteColor into Drawable's getUniforms()
+        if (drawMode == Drawable.DRAW_MODE.silhouette) {
             twgl.setUniforms(currentShader,
-                {u_pickColor: Drawable.color4fFromID(drawableID)});
+                {u_silhouetteColor: Drawable.color4fFromID(drawableID)});
         }
 
         twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
@@ -329,7 +336,7 @@ RenderWebGL.prototype.pick = function (
     var projection = twgl.m4.ortho(
         pickLeft, pickRight, pickTop, pickBottom, -1, 1);
 
-    this._drawThese(candidateIDs, Drawable.DRAW_MODE.pick, projection);
+    this._drawThese(candidateIDs, Drawable.DRAW_MODE.silhouette, projection);
 
     var pixels = new Buffer(touchWidth * touchHeight * 4);
     gl.readPixels(
@@ -371,7 +378,15 @@ RenderWebGL.prototype.pick = function (
     return hit | 0;
 };
 
-RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub) {
+/**
+ * Check if a particular Drawable is touching a particular color.
+ * @param {int} drawableID The ID of the Drawable to check.
+ * @param {int[]} color3ub Test if the Drawable is touching this color.
+ * @param {float[]} [mask3f] Optionally mask the check to this part of Drawable.
+ * @returns {boolean} True iff the Drawable is touching the color.
+ */
+RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub, mask3f) {
+
     var gl = this._gl;
 
     twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
@@ -385,13 +400,26 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub) {
     gl.clearColor.apply(gl, this._backgroundColor);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
+    var extraUniforms;
+    if (mask3f) {
+        extraUniforms = {
+            u_colorMask: mask3f,
+            u_colorMaskTolerance: 1 / 255
+        };
+    }
+
     try {
         gl.enable(gl.STENCIL_TEST);
         gl.stencilFunc(gl.ALWAYS, 1, 1);
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
         gl.colorMask(false, false, false, false);
         this._drawThese(
-            [drawableID], Drawable.DRAW_MODE.pick, this._projection);
+            [drawableID],
+            mask3f ?
+                Drawable.DRAW_MODE.colorMask : Drawable.DRAW_MODE.silhouette,
+            this._projection,
+            undefined,
+            extraUniforms);
 
         gl.stencilFunc(gl.EQUAL, 1, 1);
         gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
@@ -432,6 +460,7 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub) {
 
     for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
         // TODO: tolerance?
+        // TODO: use u_colorMask to make this test something like "pixel != 0"
         if ((pixels[pixelBase] == color3ub[0]) &&
             (pixels[pixelBase + 1] == color3ub[1]) &&
             (pixels[pixelBase + 2] == color3ub[2])) {

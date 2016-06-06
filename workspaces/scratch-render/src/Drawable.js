@@ -119,8 +119,20 @@ Drawable.EFFECTS = Object.keys(Drawable._effectConverter);
  * @enum {string}
  */
 Drawable.DRAW_MODE = {
+    /**
+     * Draw normally.
+     */
     default: 'default',
-    pick: 'pick'
+
+    /**
+     * Draw the Drawable's silhouette using a particular color.
+     */
+    silhouette: 'silhouette',
+
+    /**
+     * Draw only the parts of the drawable which match a particular color.
+     */
+    colorMask: 'colorMask'
 };
 
 /**
@@ -238,7 +250,7 @@ Drawable.prototype._useSkin = function(
 /**
  * Fetch the shader for this Drawable's set of active effects.
  * Build the shader if necessary.
- * @param {Drawable.DRAW_MODE} drawMode Draw normally or for picking, etc.
+ * @param {Drawable.DRAW_MODE} drawMode Draw normally, silhouette, etc.
  * @returns {module:twgl.ProgramInfo?} The shader's program info.
  */
 Drawable.prototype.getShader = function (drawMode) {
@@ -255,7 +267,7 @@ Drawable.prototype.getShader = function (drawMode) {
 
 /**
  * Build the shader for this Drawable's set of active effects.
- * @param {Drawable.DRAW_MODE} drawMode Draw normally or for picking, etc.
+ * @param {Drawable.DRAW_MODE} drawMode Draw normally, silhouette, etc.
  * @returns {module:twgl.ProgramInfo?} The new shader's program info.
  * @private
  */

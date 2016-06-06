@@ -2,16 +2,21 @@ precision mediump float;
 
 uniform float u_fudge;
 
-#ifdef DRAW_MODE_pick
-uniform vec4 u_pickColor;
-#else // DRAW_MODE_pick
+#ifdef DRAW_MODE_silhouette
+uniform vec4 u_silhouetteColor;
+#else // DRAW_MODE_silhouette
 # ifdef ENABLE_color
 uniform float u_color;
 # endif // ENABLE_color
 # ifdef ENABLE_brightness
 uniform float u_brightness;
 # endif // ENABLE_brightness
-#endif // DRAW_MODE_pick
+#endif // DRAW_MODE_silhouette
+
+#ifdef DRAW_MODE_colorMask
+uniform vec3 u_colorMask;
+uniform float u_colorMaskTolerance;
+#endif // DRAW_MODE_colorMask
 
 #ifdef ENABLE_fisheye
 uniform float u_fisheye;
@@ -34,7 +39,7 @@ uniform sampler2D u_skin;
 
 varying vec2 v_texCoord;
 
-#if !defined(DRAW_MODE_pick) && (defined(ENABLE_color) || defined(ENABLE_brightness))
+#if !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color) || defined(ENABLE_brightness))
 // Branchless color conversions based on code from:
 // http://www.chilliant.com/rgb2hsv.html by Ian Taylor
 // Based in part on work by Sam Hocevar and Emil Persson
@@ -72,7 +77,7 @@ vec3 convertHSL2RGB(vec3 hsl)
 	float c = (1.0 - abs(2.0 * hsl.z - 1.0)) * hsl.y;
 	return (rgb - 0.5) * c + hsl.z;
 }
-#endif // !defined(DRAW_MODE_pick) && (defined(ENABLE_color) || defined(ENABLE_brightness))
+#endif // !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color) || defined(ENABLE_brightness))
 
 const vec2 kCenter = vec2(0.5, 0.5);
 
@@ -140,10 +145,10 @@ void main()
 		discard;
 	}
 
-	#ifdef DRAW_MODE_pick
-	// switch to u_pickColor only AFTER the alpha test
-	gl_FragColor = u_pickColor;
-	#else // DRAW_MODE_pick
+	#ifdef DRAW_MODE_silhouette
+	// switch to u_silhouetteColor only AFTER the alpha test
+	gl_FragColor = u_silhouetteColor;
+	#else // DRAW_MODE_silhouette
 
 	#if defined(ENABLE_color) || defined(ENABLE_brightness)
 	{
@@ -171,8 +176,17 @@ void main()
 	}
 	#endif // defined(ENABLE_color) || defined(ENABLE_brightness)
 
+	#ifdef DRAW_MODE_colorMask
+	vec3 maskDistance = abs(gl_FragColor.rgb - u_colorMask);
+	vec3 colorMaskTolerance = vec3(u_colorMaskTolerance, u_colorMaskTolerance, u_colorMaskTolerance);
+	if (any(greaterThan(maskDistance, colorMaskTolerance)))
+	{
+		discard;
+	}
+	#endif // DRAW_MODE_colorMask
+
 	// WebGL defaults to premultiplied alpha
 	gl_FragColor.rgb *= gl_FragColor.a;
 
-	#endif // DRAW_MODE_pick
+	#endif // DRAW_MODE_silhouette
 }
