@@ -3,6 +3,7 @@ var twgl = require('twgl.js');
 var util = require('util');
 
 var Drawable = require('./Drawable');
+var ShaderManager = require('./ShaderManager');
 
 /**
  * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
@@ -47,6 +48,7 @@ function RenderWebGL(
     gl.disable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND); // TODO: track when a costume has partial transparency?
     gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
+    this._shaderManager = new ShaderManager(gl);
 }
 
 module.exports = RenderWebGL;
@@ -122,13 +124,13 @@ RenderWebGL.prototype.draw = function () {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     this._drawThese(
-        this._drawables, Drawable.DRAW_MODE.default, this._projection);
+        this._drawables, ShaderManager.DRAW_MODE.default, this._projection);
 };
 
 /**
  * Draw all Drawables, with the possible exception of
  * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawables.
- * @param {Drawable.DRAW_MODE} drawMode Draw normally, silhouette, etc.
+ * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
  * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
  * @param {Drawable~idFilterFunc} [filter] An optional filter function.
  * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
@@ -150,7 +152,8 @@ RenderWebGL.prototype._drawThese = function(
         var drawable = Drawable.getDrawableByID(drawableID);
         // TODO: check if drawable is inside the viewport before anything else
 
-        var newShader = drawable.getShader(drawMode);
+        var effectBits = drawable.getEnabledEffects();
+        var newShader = this._shaderManager.getShader(drawMode, effectBits);
         if (currentShader != newShader) {
             currentShader = newShader;
             gl.useProgram(currentShader.program);
@@ -168,7 +171,7 @@ RenderWebGL.prototype._drawThese = function(
         twgl.setUniforms(currentShader, drawable.getUniforms());
 
         // TODO: move u_silhouetteColor into Drawable's getUniforms()
-        if (drawMode == Drawable.DRAW_MODE.silhouette) {
+        if (drawMode == ShaderManager.DRAW_MODE.silhouette) {
             twgl.setUniforms(currentShader,
                 {u_silhouetteColor: Drawable.color4fFromID(drawableID)});
         }
@@ -182,7 +185,7 @@ RenderWebGL.prototype._drawThese = function(
  * @returns {int} The ID of the new Drawable.
  */
 RenderWebGL.prototype.createDrawable = function () {
-    var drawable = new Drawable(this, this._gl);
+    var drawable = new Drawable(this._gl);
     var drawableID = drawable.getID();
     this._drawables.push(drawableID);
     return drawableID;
@@ -336,7 +339,8 @@ RenderWebGL.prototype.pick = function (
     var projection = twgl.m4.ortho(
         pickLeft, pickRight, pickTop, pickBottom, -1, 1);
 
-    this._drawThese(candidateIDs, Drawable.DRAW_MODE.silhouette, projection);
+    this._drawThese(
+        candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection);
 
     var pixels = new Buffer(touchWidth * touchHeight * 4);
     gl.readPixels(
@@ -416,7 +420,8 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub, mask3f) {
         this._drawThese(
             [drawableID],
             mask3f ?
-                Drawable.DRAW_MODE.colorMask : Drawable.DRAW_MODE.silhouette,
+                ShaderManager.DRAW_MODE.colorMask :
+                ShaderManager.DRAW_MODE.silhouette,
             this._projection,
             undefined,
             extraUniforms);
@@ -428,7 +433,7 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub, mask3f) {
         // TODO: only draw items which could possibly overlap target Drawable
         // It might work to use the filter function for that
         this._drawThese(
-            this._drawables, Drawable.DRAW_MODE.default, this._projection,
+            this._drawables, ShaderManager.DRAW_MODE.default, this._projection,
             function (testID) {
                 return testID != drawableID;
             });

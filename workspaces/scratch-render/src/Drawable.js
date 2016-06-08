@@ -2,18 +2,18 @@ var twgl = require('twgl.js');
 var svgToImage = require('svg-to-image');
 var xhr = require('xhr');
 
+var ShaderManager = require('./ShaderManager');
+
 /**
  * An object which can be drawn by the renderer.
- * TODO: double-buffer all rendering state (position, skin, shader index, etc.)
- * @param renderer The renderer which owns this Drawable.
+ * TODO: double-buffer all rendering state (position, skin, effectBits, etc.)
  * @param gl The OpenGL context.
  * @constructor
  */
-function Drawable(renderer, gl) {
+function Drawable(gl) {
     this._id = Drawable._nextDrawable++;
     Drawable._allDrawables[this._id] = this;
 
-    this._renderer = renderer;
     this._gl = gl;
 
     /**
@@ -44,10 +44,10 @@ function Drawable(renderer, gl) {
     };
 
     // Effect values are uniforms too
-    var numEffects = Drawable.EFFECTS.length;
+    var numEffects = ShaderManager.EFFECTS.length;
     for (var index = 0; index < numEffects; ++index) {
-        var effectName = Drawable.EFFECTS[index];
-        var converter = Drawable._effectConverter[effectName];
+        var effectName = ShaderManager.EFFECTS[index];
+        var converter = ShaderManager.EFFECT_VALUE_CONVERTER[effectName];
         this._uniforms['u_' + effectName] = converter(0);
     }
 
@@ -55,45 +55,12 @@ function Drawable(renderer, gl) {
     this._scale = 100;
     this._direction = 90;
     this._transformDirty = true;
-    this._shaderIndex = 0;
+    this._effectBits = 0;
 
     this.setSkin(Drawable._DEFAULT_SKIN);
 }
 
 module.exports = Drawable;
-
-/**
- * Mapping of each effect to a conversion function. The conversion function
- * takes a Scratch value (generally in the range 0..100 or -100..100) and maps
- * it to a value useful to the shader.
- * @type {Object.<string,function>}
- * @private
- */
-Drawable._effectConverter = {
-    color: function(x) {
-        return (x / 200) % 1;
-    },
-    fisheye: function(x) {
-        return Math.max(0, (x + 100) / 100);
-    },
-    whirl: function(x) {
-        return x * Math.PI / 180;
-    },
-    pixelate: function(x) {
-        return Math.abs(x) / 10;
-    },
-    mosaic: function(x) {
-        x = Math.round((Math.abs(x) + 10) / 10);
-        // TODO: cap by Math.min(srcWidth, srcHeight)
-        return Math.max(1, Math.min(x, 512));
-    },
-    brightness: function(x) {
-        return Math.max(-100, Math.min(x, 100)) / 100;
-    },
-    ghost: function(x) {
-        return 1 - Math.max(0, Math.min(x, 100)) / 100;
-    }
-};
 
 /**
  * @callback Drawable~idFilterFunc
@@ -106,41 +73,6 @@ Drawable._effectConverter = {
  * @type {int}
  */
 Drawable.NONE = -1;
-
-/**
- * The name of each supported effect.
- * @type {Array}
- */
-Drawable.EFFECTS = Object.keys(Drawable._effectConverter);
-
-/**
- * The available draw modes.
- * @readonly
- * @enum {string}
- */
-Drawable.DRAW_MODE = {
-    /**
-     * Draw normally.
-     */
-    default: 'default',
-
-    /**
-     * Draw the Drawable's silhouette using a particular color.
-     */
-    silhouette: 'silhouette',
-
-    /**
-     * Draw only the parts of the drawable which match a particular color.
-     */
-    colorMask: 'colorMask'
-};
-
-/**
- * The cache of all shaders compiled so far. These are generated on demand.
- * @type {Object.<Drawable.DRAW_MODE, Array.<module:twgl.ProgramInfo>>}
- * @private
- */
-Drawable._shaderCache = {};
 
 /**
  * The ID to be assigned next time the Drawable constructor is called.
@@ -201,7 +133,8 @@ Drawable.prototype.getID = function () {
 
 /**
  * Set this Drawable's skin.
- * The Drawable will briefly use a 1x1 skin while waiting for the
+ * The Drawable will continue using the existing skin until the new one loads.
+ * If there is no existing skin, the Drawable will use a 1x1 transparent image.
  * @param {string} skin_md5ext The MD5 and file extension of the skin.
  */
 Drawable.prototype.setSkin = function (skin_md5ext) {
@@ -248,46 +181,10 @@ Drawable.prototype._useSkin = function(
 };
 
 /**
- * Fetch the shader for this Drawable's set of active effects.
- * Build the shader if necessary.
- * @param {Drawable.DRAW_MODE} drawMode Draw normally, silhouette, etc.
- * @returns {module:twgl.ProgramInfo?} The shader's program info.
+ * @returns {int} A bitmask identifying which effects are currently in use.
  */
-Drawable.prototype.getShader = function (drawMode) {
-    var cache = Drawable._shaderCache[drawMode];
-    if (!cache) {
-        cache = Drawable._shaderCache[drawMode] = [];
-    }
-    var shader = cache[this._shaderIndex];
-    if (!shader) {
-        shader = cache[this._shaderIndex] = this._buildShader(drawMode);
-    }
-    return shader;
-};
-
-/**
- * Build the shader for this Drawable's set of active effects.
- * @param {Drawable.DRAW_MODE} drawMode Draw normally, silhouette, etc.
- * @returns {module:twgl.ProgramInfo?} The new shader's program info.
- * @private
- */
-Drawable.prototype._buildShader = function (drawMode) {
-    var numEffects = Drawable.EFFECTS.length;
-
-    var defines = [
-        '#define DRAW_MODE_' + drawMode
-    ];
-    for (var index = 0; index < numEffects; ++index) {
-        if ((this._shaderIndex & (1 << index)) != 0) {
-            defines.push('#define ENABLE_' + Drawable.EFFECTS[index]);
-        }
-    }
-
-    var definesText = defines.join('\n') + '\n';
-    var vsFullText = definesText + require('./shaders/sprite.vert');
-    var fsFullText = definesText + require('./shaders/sprite.frag');
-
-    return twgl.createProgramInfo(this._gl, [vsFullText, fsFullText]);
+Drawable.prototype.getEnabledEffects = function () {
+    return this._effectBits;
 };
 
 /**
@@ -415,19 +312,19 @@ Drawable.prototype.updateProperties = function (properties) {
     if (dirty) {
         this.setTransformDirty();
     }
-    var numEffects = Drawable.EFFECTS.length;
+    var numEffects = ShaderManager.EFFECTS.length;
     for (var index = 0; index < numEffects; ++index) {
-        var propertyName = Drawable.EFFECTS[index];
+        var propertyName = ShaderManager.EFFECTS[index];
         if (propertyName in properties) {
             var rawValue = properties[propertyName];
             var mask = 1 << index;
             if (rawValue != 0) {
-                this._shaderIndex |= mask;
+                this._effectBits |= mask;
             }
             else {
-                this._shaderIndex &= ~mask;
+                this._effectBits &= ~mask;
             }
-            var converter = Drawable._effectConverter[propertyName];
+            var converter = ShaderManager.EFFECT_VALUE_CONVERTER[propertyName];
             this._uniforms['u_' + propertyName] = converter(rawValue);
         }
     }
