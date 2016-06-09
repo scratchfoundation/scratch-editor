@@ -7,22 +7,20 @@ var ShaderManager = require('./ShaderManager');
 
 /**
  * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
- * Optionally, specify the logical and/or physical size of the Scratch stage.
- * Logical coordinates will default to Scratch 2.0 values if unspecified.
- * Unspecified physical size will be calculated from the logical size.
+ * Coordinates will default to Scratch 2.0 values if unspecified.
+ * The stage's "native" size will be calculated from the these coordinates.
+ * For example, the defaults result in a native size of 480x360.
+ * Queries such as "touching color?" will always be executed at the native size.
  * @see setStageSize
  * @see resize
  * @param {canvas} canvas The canvas to draw onto.
- * @param {number} [xLeft=-240] The x-coordinate of the left edge.
- * @param {number} [xRight=240] The x-coordinate of the right edge.
- * @param {number} [yBottom=-180] The y-coordinate of the bottom edge.
- * @param {number} [yTop=180] The y-coordinate of the top edge.
- * @param {int} [pixelsWide] The desired width in device-independent pixels.
- * @param {int} [pixelsTall] The desired height in device-independent pixels.
+ * @param {int} [xLeft=-240] The x-coordinate of the left edge.
+ * @param {int} [xRight=240] The x-coordinate of the right edge.
+ * @param {int} [yBottom=-180] The y-coordinate of the bottom edge.
+ * @param {int} [yTop=180] The y-coordinate of the top edge.
  * @constructor
  */
-function RenderWebGL(
-    canvas, xLeft, xRight, yBottom, yTop, pixelsWide, pixelsTall) {
+function RenderWebGL(canvas, xLeft, xRight, yBottom, yTop) {
 
     // Bind event emitter and runtime to VM instance
     EventEmitter.call(this);
@@ -39,9 +37,7 @@ function RenderWebGL(
     this.setBackgroundColor(1, 1, 1);
     this.setStageSize(
         xLeft || -240, xRight || 240, yBottom || -180, yTop || 180);
-    this.resize(
-        pixelsWide || Math.abs(this._xRight - this._xLeft),
-        pixelsTall || Math.abs(this._yTop - this._yBottom));
+    this.resize(this._nativeSize[0], this._nativeSize[1]);
     this._createQueryBuffers();
 
     var gl = this._gl;
@@ -61,15 +57,6 @@ module.exports = RenderWebGL;
 RenderWebGL.MAX_TOUCH_SIZE = [3, 3];
 
 /**
- * The size of the stage when checking if two sprites are touching, if a sprite
- * is touching a particular color, etc. Fixing this size means that projects
- * will behave the same regardless of the visual sizing of the stage.
- * TODO: Consider using [pixelsWide,pixelsTall] by default, allow override.
- * @type {int[]}
- */
-RenderWebGL.QUERY_SIZE = [480, 360];
-
-/**
  * Inherit from EventEmitter
  */
 util.inherits(RenderWebGL, EventEmitter);
@@ -87,16 +74,17 @@ RenderWebGL.prototype.setBackgroundColor = function(red, green, blue) {
 
 /**
  * Set logical size of the stage in Scratch units.
- * @param {number} xLeft The left edge's x-coordinate. Scratch 2 uses -240.
- * @param {number} xRight The right edge's x-coordinate. Scratch 2 uses 240.
- * @param {number} yBottom The bottom edge's y-coordinate. Scratch 2 uses -180.
- * @param {number} yTop The top edge's y-coordinate. Scratch 2 uses 180.
+ * @param {int} xLeft The left edge's x-coordinate. Scratch 2 uses -240.
+ * @param {int} xRight The right edge's x-coordinate. Scratch 2 uses 240.
+ * @param {int} yBottom The bottom edge's y-coordinate. Scratch 2 uses -180.
+ * @param {int} yTop The top edge's y-coordinate. Scratch 2 uses 180.
  */
 RenderWebGL.prototype.setStageSize = function (xLeft, xRight, yBottom, yTop) {
     this._xLeft = xLeft;
     this._xRight = xRight;
     this._yBottom = yBottom;
     this._yTop = yTop;
+    this._nativeSize = [Math.abs(xRight - xLeft), Math.abs(yBottom - yTop)];
     this._projection = twgl.m4.ortho(xLeft, xRight, yBottom, yTop, -1, 1);
 };
 
@@ -281,8 +269,7 @@ RenderWebGL.prototype._createQueryBuffers = function () {
     // TODO: should we create this on demand to save memory?
     // A 480x360 32-bpp buffer is 675 KiB.
     this._queryBufferInfo = twgl.createFramebufferInfo(
-        gl, attachments,
-        RenderWebGL.QUERY_SIZE[0], RenderWebGL.QUERY_SIZE[1]);
+        gl, attachments, this._nativeSize[0], this._nativeSize[1]);
 };
 
 /**
@@ -399,7 +386,7 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub, mask3f) {
     // - limit size of viewport to the AABB around the target Drawable
     // - draw only the Drawables which could overlap the target Drawable
     // - read only the pixels in the AABB around the target Drawable
-    gl.viewport(0, 0, RenderWebGL.QUERY_SIZE[0], RenderWebGL.QUERY_SIZE[1]);
+    gl.viewport(0, 0, this._nativeSize[0], this._nativeSize[1]);
 
     gl.clearColor.apply(gl, this._backgroundColor);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
@@ -443,20 +430,19 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub, mask3f) {
         gl.disable(gl.STENCIL_TEST);
     }
 
-    var pixels = new Buffer(
-        RenderWebGL.QUERY_SIZE[0] * RenderWebGL.QUERY_SIZE[1] * 4);
+    var pixels = new Buffer(this._nativeSize[0] * this._nativeSize[1] * 4);
     gl.readPixels(
-        0, 0, RenderWebGL.QUERY_SIZE[0], RenderWebGL.QUERY_SIZE[1],
+        0, 0, this._nativeSize[0], this._nativeSize[1],
         gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
     // Uncomment this and make a canvas with id="query-image" to debug
     /*
     var pickImage = document.getElementById('query-image');
-    pickImage.width = RenderWebGL.QUERY_SIZE[0];
-    pickImage.height = RenderWebGL.QUERY_SIZE[1];
+    pickImage.width = this._nativeSize[0];
+    pickImage.height = this._nativeSize[1];
     var context = pickImage.getContext('2d');
     var imageData = context.getImageData(
-        0, 0, RenderWebGL.QUERY_SIZE[0], RenderWebGL.QUERY_SIZE[1]);
+        0, 0, this._nativeSize[0], this._nativeSize[1]);
     for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
         imageData.data[i] = pixels[i];
     }
