@@ -401,7 +401,7 @@ Drawable.color4fFromID = function(id) {
  * @returns {int} The ID represented by that color.
  */
 // eslint-disable-next-line no-unused-vars
-Drawable.color4ubToID = function(r, g, b, a) {
+Drawable.color4bToID = function(r, g, b, a) {
     var id;
     id = (r & 255) << 0;
     id |= (g & 255) << 8;

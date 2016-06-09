@@ -57,6 +57,14 @@ module.exports = RenderWebGL;
 RenderWebGL.MAX_TOUCH_SIZE = [3, 3];
 
 /**
+ * "touching {color}?" or "{color} touching {color}?" tests will be true if the
+ * target is touching a color whose components are each within this tolerance of
+ * the corresponding component of the query color.
+ * @type {int} between 0 (exact matches only) and 255 (match anything).
+ */
+RenderWebGL.TOLERANCE_TOUCHING_COLOR = 2;
+
+/**
  * Inherit from EventEmitter
  */
 util.inherits(RenderWebGL, EventEmitter);
@@ -349,7 +357,7 @@ RenderWebGL.prototype.pick = function (
 
     var hits = {};
     for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-        var pixelID = Drawable.color4ubToID(
+        var pixelID = Drawable.color4bToID(
             pixels[pixelBase],
             pixels[pixelBase + 1],
             pixels[pixelBase + 2],
@@ -373,11 +381,11 @@ RenderWebGL.prototype.pick = function (
 /**
  * Check if a particular Drawable is touching a particular color.
  * @param {int} drawableID The ID of the Drawable to check.
- * @param {int[]} color3ub Test if the Drawable is touching this color.
- * @param {float[]} [mask3f] Optionally mask the check to this part of Drawable.
+ * @param {int[]} color3b Test if the Drawable is touching this color.
+ * @param {int[]} [mask3b] Optionally mask the check to this part of Drawable.
  * @returns {boolean} True iff the Drawable is touching the color.
  */
-RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub, mask3f) {
+RenderWebGL.prototype.isTouchingColor = function(drawableID, color3b, mask3b) {
 
     var gl = this._gl;
 
@@ -393,10 +401,10 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub, mask3f) {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
     var extraUniforms;
-    if (mask3f) {
+    if (mask3b) {
         extraUniforms = {
-            u_colorMask: mask3f,
-            u_colorMaskTolerance: 1 / 255
+            u_colorMask: [mask3b[0] / 255, mask3b[1] / 255, mask3b[2] / 255],
+            u_colorMaskTolerance: RenderWebGL.TOLERANCE_TOUCHING_COLOR / 255
         };
     }
 
@@ -407,7 +415,7 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub, mask3f) {
         gl.colorMask(false, false, false, false);
         this._drawThese(
             [drawableID],
-            mask3f ?
+            mask3b ?
                 ShaderManager.DRAW_MODE.colorMask :
                 ShaderManager.DRAW_MODE.silhouette,
             this._projection,
@@ -449,11 +457,13 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub, mask3f) {
     }
 
     for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-        // TODO: tolerance?
-        // TODO: use u_colorMask to make this test something like "pixel != 0"
-        if ((pixels[pixelBase] == color3ub[0]) &&
-            (pixels[pixelBase + 1] == color3ub[1]) &&
-            (pixels[pixelBase + 2] == color3ub[2])) {
+        var pixelDistanceR = Math.abs(pixels[pixelBase] - color3b[0]);
+        var pixelDistanceG = Math.abs(pixels[pixelBase + 1] - color3b[1]);
+        var pixelDistanceB = Math.abs(pixels[pixelBase + 2] - color3b[2]);
+
+        if (pixelDistanceR <= RenderWebGL.TOLERANCE_TOUCHING_COLOR &&
+            pixelDistanceG <= RenderWebGL.TOLERANCE_TOUCHING_COLOR &&
+            pixelDistanceB <= RenderWebGL.TOLERANCE_TOUCHING_COLOR) {
             return true;
         }
     }
