@@ -47,7 +47,7 @@ function Drawable(gl) {
     var numEffects = ShaderManager.EFFECTS.length;
     for (var index = 0; index < numEffects; ++index) {
         var effectName = ShaderManager.EFFECTS[index];
-        var converter = ShaderManager.EFFECT_VALUE_CONVERTER[effectName];
+        var converter = ShaderManager.EFFECT_INFO[effectName].converter;
         this._uniforms['u_' + effectName] = converter(0);
     }
 
@@ -314,18 +314,18 @@ Drawable.prototype.updateProperties = function (properties) {
     }
     var numEffects = ShaderManager.EFFECTS.length;
     for (var index = 0; index < numEffects; ++index) {
-        var propertyName = ShaderManager.EFFECTS[index];
-        if (propertyName in properties) {
-            var rawValue = properties[propertyName];
-            var mask = 1 << index;
+        var effectName = ShaderManager.EFFECTS[index];
+        if (effectName in properties) {
+            var rawValue = properties[effectName];
+            var effectInfo = ShaderManager.EFFECT_INFO[effectName];
             if (rawValue != 0) {
-                this._effectBits |= mask;
+                this._effectBits |= effectInfo.mask;
             }
             else {
-                this._effectBits &= ~mask;
+                this._effectBits &= ~effectInfo.mask;
             }
-            var converter = ShaderManager.EFFECT_VALUE_CONVERTER[propertyName];
-            this._uniforms['u_' + propertyName] = converter(rawValue);
+            var converter = effectInfo.converter;
+            this._uniforms['u_' + effectName] = converter(rawValue);
         }
     }
 };
@@ -334,7 +334,7 @@ Drawable.prototype.updateProperties = function (properties) {
  * Set the dimensions of this Drawable's skin.
  * @param {int} width The width of the new skin.
  * @param {int} height The height of the new skin.
- * @param {int} costumeResolution The resolution to use for this skin.
+ * @param {int} [costumeResolution] The resolution to use for this skin.
  * @private
  */
 Drawable.prototype._setSkinSize = function (width, height, costumeResolution) {
