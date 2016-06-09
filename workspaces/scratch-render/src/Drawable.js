@@ -40,7 +40,13 @@ function Drawable(gl) {
          * The actual WebGL texture object for the skin.
          * @type {WebGLTexture}
          */
-        u_skin: null
+        u_skin: null,
+
+        /**
+         * The color to use in the silhouette draw mode.
+         * @type {number[]}
+         */
+        u_silhouetteColor: Drawable.color4fFromID(this._id)
     };
 
     // Effect values are uniforms too

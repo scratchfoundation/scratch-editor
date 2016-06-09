@@ -158,12 +158,6 @@ RenderWebGL.prototype._drawThese = function(
 
         twgl.setUniforms(currentShader, drawable.getUniforms());
 
-        // TODO: move u_silhouetteColor into Drawable's getUniforms()
-        if (drawMode == ShaderManager.DRAW_MODE.silhouette) {
-            twgl.setUniforms(currentShader,
-                {u_silhouetteColor: Drawable.color4fFromID(drawableID)});
-        }
-
         twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
     }
 };
