@@ -267,6 +267,15 @@ RenderWebGL.prototype._createQueryBuffers = function () {
 };
 
 /**
+ * Tell the renderer to draw various debug information to the provided canvas
+ * during certain operations.
+ * @param {canvas} canvas The canvas to use for debug output.
+ */
+RenderWebGL.prototype.setDebugCanvas = function (canvas) {
+    this._debugCanvas = canvas;
+};
+
+/**
  * Detect which sprite, if any, is at the given location.
  * @param {int} centerX The client x coordinate of the picking location.
  * @param {int} centerY The client y coordinate of the picking location.
@@ -327,18 +336,16 @@ RenderWebGL.prototype.pick = function (
     gl.readPixels(
         0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-    // Uncomment this and make a canvas with id="pick-image" to debug
-    /*
-    var pickImage = document.getElementById('pick-image');
-    pickImage.width = touchWidth;
-    pickImage.height = touchHeight;
-    var context = pickImage.getContext('2d');
-    var imageData = context.getImageData(0, 0, touchWidth, touchHeight);
-    for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
-        imageData.data[i] = pixels[i];
+    if (this._debugCanvas) {
+        this._debugCanvas.width = touchWidth;
+        this._debugCanvas.height = touchHeight;
+        var context = this._debugCanvas.getContext('2d');
+        var imageData = context.getImageData(0, 0, touchWidth, touchHeight);
+        for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
+            imageData.data[i] = pixels[i];
+        }
+        context.putImageData(imageData, 0, 0);
     }
-    context.putImageData(imageData, 0, 0);
-    */
 
     var hits = {};
     for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
@@ -429,19 +436,17 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3ub, mask3f) {
         0, 0, this._nativeSize[0], this._nativeSize[1],
         gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-    // Uncomment this and make a canvas with id="query-image" to debug
-    /*
-    var pickImage = document.getElementById('query-image');
-    pickImage.width = this._nativeSize[0];
-    pickImage.height = this._nativeSize[1];
-    var context = pickImage.getContext('2d');
-    var imageData = context.getImageData(
-        0, 0, this._nativeSize[0], this._nativeSize[1]);
-    for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
-        imageData.data[i] = pixels[i];
+    if (this._debugCanvas) {
+        this._debugCanvas.width = this._nativeSize[0];
+        this._debugCanvas.height = this._nativeSize[1];
+        var context = this._debugCanvas.getContext('2d');
+        var imageData = context.getImageData(
+            0, 0, this._nativeSize[0], this._nativeSize[1]);
+        for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
+            imageData.data[i] = pixels[i];
+        }
+        context.putImageData(imageData, 0, 0);
     }
-    context.putImageData(imageData, 0, 0);
-    */
 
     for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
         // TODO: tolerance?
