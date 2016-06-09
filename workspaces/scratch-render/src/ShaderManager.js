@@ -5,27 +5,15 @@ function ShaderManager(gl) {
 
     /**
      * The cache of all shaders compiled so far. These are generated on demand.
-     * The outer index represents the draw mode and the inner index the effects.
-     * @type {Array.<Array.<module:twgl.ProgramInfo>>}
+     * @type {Object.<ShaderManager.DRAW_MODE, Array.<module:twgl.ProgramInfo>>}
      * @private
      */
-    this._shaderCache = [];
-
-    var drawModes = Object.keys(ShaderManager.DRAW_MODE);
-    var shaderCache = this._shaderCache;
-    function initCache(index, mask) {
-        if (index >= drawModes.length) {
-            shaderCache[mask] = shaderCache[mask] || [];
-        }
-        else {
-            var drawModeName = drawModes[index];
-
-            // Fill high index first to potentially reduce array resize count
-            initCache(index+1, mask | ShaderManager.DRAW_MODE[drawModeName]);
-            initCache(index+1, mask);
+    this._shaderCache = {};
+    for (var modeName in ShaderManager.DRAW_MODE) {
+        if (ShaderManager.DRAW_MODE.hasOwnProperty(modeName)) {
+            this._shaderCache[modeName] = [];
         }
     }
-    initCache(0, 0);
 }
 
 module.exports = ShaderManager;
@@ -93,25 +81,25 @@ ShaderManager.EFFECT_INFO = {
 ShaderManager.EFFECTS = Object.keys(ShaderManager.EFFECT_INFO);
 
 /**
- * The available draw modes. May be combined with bitwise OR.
+ * The available draw modes.
  * @readonly
- * @enum {int}
+ * @enum {string}
  */
 ShaderManager.DRAW_MODE = {
     /**
      * Draw normally.
      */
-    default: 0,
+    default: 'default',
 
     /**
      * Draw a silhouette using a solid color.
      */
-    silhouette: 1 << 0,
+    silhouette: 'silhouette',
 
     /**
      * Draw only the parts of the drawable which match a particular color.
      */
-    colorMask: 1 << 1
+    colorMask: 'colorMask'
 };
 
 /**
@@ -123,7 +111,7 @@ ShaderManager.DRAW_MODE = {
  */
 ShaderManager.prototype.getShader = function (drawMode, effectBits) {
     var cache = this._shaderCache[drawMode];
-    if ((drawMode & ShaderManager.DRAW_MODE.silhouette) != 0) {
+    if (drawMode == ShaderManager.DRAW_MODE.silhouette) {
         // Silhouette mode isn't affected by these effects.
         effectBits &= ~(
             ShaderManager.EFFECT_INFO.color.mask |
@@ -147,15 +135,9 @@ ShaderManager.prototype.getShader = function (drawMode, effectBits) {
 ShaderManager.prototype._buildShader = function (drawMode, effectBits) {
     var numEffects = ShaderManager.EFFECTS.length;
 
-    var defines = [];
-    for (var drawModeName in ShaderManager.DRAW_MODE) {
-        if (ShaderManager.DRAW_MODE.hasOwnProperty(drawModeName)) {
-            var mask = ShaderManager.DRAW_MODE[drawModeName];
-            if ((drawMode & mask) != 0) {
-                defines.push('#define DRAW_MODE_' + drawModeName);
-            }
-        }
-    }
+    var defines = [
+        '#define DRAW_MODE_' + drawMode
+    ];
     for (var index = 0; index < numEffects; ++index) {
         if ((effectBits & (1 << index)) != 0) {
             defines.push('#define ENABLE_' + ShaderManager.EFFECTS[index]);
