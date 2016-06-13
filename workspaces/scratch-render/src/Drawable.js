@@ -63,6 +63,10 @@ function Drawable(gl) {
     this._transformDirty = true;
     this._effectBits = 0;
 
+    // Create a transparent 1x1 texture for temporary use
+    this._useSkin(twgl.createTexture(gl, {src: [0, 0, 0, 0]}), 0, 0, 1, true);
+
+    // Load a real skin
     this.setSkin(Drawable._DEFAULT_SKIN);
 }
 
@@ -170,7 +174,7 @@ Drawable.prototype.setSkin = function (skin_md5ext) {
  * @param {int} width The width of the skin.
  * @param {int} height The height of the skin.
  * @param {int} costumeResolution The resolution to use for this skin.
- * @param {boolean} [skipPendingCheck] If true, don't compare to _pendingSkin.
+ * @param {Boolean} [skipPendingCheck] If true, don't compare to _pendingSkin.
  * @private
  */
 Drawable.prototype._useSkin = function(
@@ -267,15 +271,9 @@ Drawable.prototype._setSkinCore = function (source, costumeResolution) {
     instance._pendingSkin = twgl.createTexture(
         gl, options, willCallCallback ? callback : null);
 
-    // If we don't already have a texture, or if we won't get a callback when
-    // the new one loads, then just start using the texture immediately.
-    if (willCallCallback) {
-        if (!this._uniforms.u_skin) {
-            this._uniforms.u_skin = instance._pendingSkin;
-            this._setSkinSize(0, 0);
-        }
-    }
-    else {
+    // If we won't get a callback, start using the skin immediately.
+    // This will happen if the data is already local.
+    if (!willCallCallback) {
         callback(null, instance._pendingSkin, source);
     }
 };

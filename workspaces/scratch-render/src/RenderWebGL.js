@@ -184,7 +184,7 @@ RenderWebGL.prototype.createDrawable = function () {
 /**
  * Destroy a Drawable, removing it from the scene.
  * @param {int} drawableID The ID of the Drawable to remove.
- * @returns {boolean} True iff the drawable was found and removed.
+ * @returns {Boolean} True iff the drawable was found and removed.
  */
 RenderWebGL.prototype.destroyDrawable = function (drawableID) {
     var index = this._drawables.indexOf(drawableID);
@@ -383,7 +383,7 @@ RenderWebGL.prototype.pick = function (
  * @param {int} drawableID The ID of the Drawable to check.
  * @param {int[]} color3b Test if the Drawable is touching this color.
  * @param {int[]} [mask3b] Optionally mask the check to this part of Drawable.
- * @returns {boolean} True iff the Drawable is touching the color.
+ * @returns {Boolean} True iff the Drawable is touching the color.
  */
 RenderWebGL.prototype.isTouchingColor = function(drawableID, color3b, mask3b) {
 
