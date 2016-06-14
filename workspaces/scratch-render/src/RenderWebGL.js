@@ -3,6 +3,7 @@ var twgl = require('twgl.js');
 var util = require('util');
 
 var Drawable = require('./Drawable');
+var WorkerMessages = require('./WorkerMessages');
 var ShaderManager = require('./ShaderManager');
 
 /**
@@ -194,20 +195,6 @@ RenderWebGL.prototype.destroyDrawable = function (drawableID) {
         return true;
     }
     return false;
-};
-
-/**
- * Update the position, direction, scale, or effect properties of this Drawable.
- * @param {int} drawableID The ID of the Drawable to update.
- * @param {Object.<string,*>} properties The new property values to set.
- */
-RenderWebGL.prototype.updateDrawableProperties = function (
-    drawableID, properties) {
-
-    var drawable = Drawable.getDrawableByID(drawableID);
-    if (drawable) {
-        drawable.updateProperties(properties);
-    }
 };
 
 /**
@@ -469,4 +456,46 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3b, mask3b) {
     }
 
     return false;
+};
+
+/**
+ * Handle an event (message) from the specified worker.
+ * @param {Worker} worker The originating worker for the event.
+ * @param {MessageEvent} message The event to be handled.
+ * @private
+ */
+RenderWebGL.prototype._onWorkerMessage = function(worker, message) {
+    if (message.data.drawableID != null) {
+        var drawable = Drawable.getDrawableByID(message.data.drawableID);
+    }
+    switch(message.data.id) {
+    case WorkerMessages.ToRenderer.Ping:
+        worker.postMessage(WorkerMessages.FromRenderer.Pong);
+        break;
+    case WorkerMessages.ToRenderer.CreateDrawable:
+        worker.postMessage({
+            id: WorkerMessages.FromRenderer.ResultValue,
+            token: message.data.token,
+            value: this.createDrawable()
+        });
+        break;
+    case WorkerMessages.ToRenderer.UpdateDrawableProperties:
+        drawable.updateProperties(message.data.properties);
+        break;
+    }
+};
+
+/**
+ * Listen for messages from a worker.
+ * The renderer will post a message to this worker with data='rendererConnected'
+ * immediately. After that, the renderer will not send messages to the worker
+ * except in response to messages from that worker.
+ * @param {Worker} worker Listen to this worker.
+ */
+RenderWebGL.prototype.connectWorker = function(worker) {
+    var instance = this;
+    worker.addEventListener('message', function (event) {
+        instance._onWorkerMessage(worker, event);
+    });
+    worker.postMessage({id: WorkerMessages.FromRenderer.RendererConnected});
 };

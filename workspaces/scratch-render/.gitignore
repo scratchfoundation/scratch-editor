@@ -1,7 +1,11 @@
 .idea/workspace.xml
 .idea/dictionaries
 /node_modules
+/build/render-webgl.js
 /build/render-webgl.js.map
 /build/render-webgl.min.js
-/build/render-webgl.js
 /build/render-webgl.min.js.map
+/build/render-webgl-worker.js
+/build/render-webgl-worker.js.map
+/build/render-webgl-worker.min.js
+/build/render-webgl-worker.min.js.map

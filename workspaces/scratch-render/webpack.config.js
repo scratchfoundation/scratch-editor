@@ -4,7 +4,9 @@ var webpack = require('webpack');
 module.exports = {
     entry: {
         'render-webgl': './src/index.js',
-        'render-webgl.min': './src/index.js'
+        'render-webgl.min': './src/index.js',
+        'render-webgl-worker': './src/worker.js',
+        'render-webgl-worker.min': './src/worker.js'
     },
     devtool: 'source-map',
     output: {
