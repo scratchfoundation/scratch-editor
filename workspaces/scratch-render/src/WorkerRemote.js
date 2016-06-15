@@ -1,26 +1,28 @@
 
 var WorkerMessages = require('./WorkerMessages');
 
-function WorkerRemote() {
-    var instance = this;
+class WorkerRemote{
+    constructor() {
+        var instance = this;
 
-    /**
-     * Handle a message from this worker's host.
-     * Call this from your worker's onmessage function or install it directly.
-     * @param {MessageEvent} message The message to be handled.
-     */
-    this.onmessage = function(message) {
-        instance._onmessage(message);
-    };
+        /**
+         * Handle a message from this worker's host. Call this from your
+         * worker's onmessage function or install it directly.
+         * @param {MessageEvent} message The message to be handled.
+         */
+        this.onmessage = function(message) {
+            instance._onmessage(message);
+        };
 
-    /**
-     * Mapping of message token to Promise resolve function.
-     * @type {Object.<string, Promise>}
-     * @private
-     */
-    this._pendingTokens = {};
+        /**
+         * Mapping of message token to Promise resolve function.
+         * @type {Object.<string, Promise>}
+         * @private
+         */
+        this._pendingTokens = {};
 
-    this._nextToken = 0;
+        this._nextToken = 0;
+    }
 }
 
 module.exports = WorkerRemote;

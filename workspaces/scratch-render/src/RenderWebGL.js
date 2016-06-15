@@ -1,51 +1,47 @@
-var EventEmitter = require('events');
 var twgl = require('twgl.js');
-var util = require('util');
 
 var Drawable = require('./Drawable');
 var WorkerMessages = require('./WorkerMessages');
 var ShaderManager = require('./ShaderManager');
 
-/**
- * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
- * Coordinates will default to Scratch 2.0 values if unspecified.
- * The stage's "native" size will be calculated from the these coordinates.
- * For example, the defaults result in a native size of 480x360.
- * Queries such as "touching color?" will always be executed at the native size.
- * @see setStageSize
- * @see resize
- * @param {canvas} canvas The canvas to draw onto.
- * @param {int} [xLeft=-240] The x-coordinate of the left edge.
- * @param {int} [xRight=240] The x-coordinate of the right edge.
- * @param {int} [yBottom=-180] The y-coordinate of the bottom edge.
- * @param {int} [yTop=180] The y-coordinate of the top edge.
- * @constructor
- */
-function RenderWebGL(canvas, xLeft, xRight, yBottom, yTop) {
+class RenderWebGL {
+    /**
+     * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
+     * Coordinates will default to Scratch 2.0 values if unspecified.
+     * The stage's "native" size will be calculated from the these coordinates.
+     * For example, the defaults result in a native size of 480x360.
+     * Queries such as "touching color?" will always execute at the native size.
+     * @see setStageSize
+     * @see resize
+     * @param {canvas} canvas The canvas to draw onto.
+     * @param {int} [xLeft=-240] The x-coordinate of the left edge.
+     * @param {int} [xRight=240] The x-coordinate of the right edge.
+     * @param {int} [yBottom=-180] The y-coordinate of the bottom edge.
+     * @param {int} [yTop=180] The y-coordinate of the top edge.
+     * @constructor
+     */
+    constructor(canvas, xLeft, xRight, yBottom, yTop) {
+        // TODO: remove?
+        twgl.setDefaults({crossOrigin: true});
 
-    // Bind event emitter and runtime to VM instance
-    EventEmitter.call(this);
+        this._gl = twgl.getWebGLContext(canvas, {alpha: false, stencil: true});
+        this._drawables = [];
+        this._projection = twgl.m4.identity();
 
-    // TODO: remove?
-    twgl.setDefaults({crossOrigin: true});
+        this._createGeometry();
 
-    this._gl = twgl.getWebGLContext(canvas, {alpha: false, stencil: true});
-    this._drawables = [];
-    this._projection = twgl.m4.identity();
+        this.setBackgroundColor(1, 1, 1);
+        this.setStageSize(
+            xLeft || -240, xRight || 240, yBottom || -180, yTop || 180);
+        this.resize(this._nativeSize[0], this._nativeSize[1]);
+        this._createQueryBuffers();
 
-    this._createGeometry();
-
-    this.setBackgroundColor(1, 1, 1);
-    this.setStageSize(
-        xLeft || -240, xRight || 240, yBottom || -180, yTop || 180);
-    this.resize(this._nativeSize[0], this._nativeSize[1]);
-    this._createQueryBuffers();
-
-    var gl = this._gl;
-    gl.disable(gl.DEPTH_TEST);
-    gl.enable(gl.BLEND); // TODO: track when a costume has partial transparency?
-    gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
-    this._shaderManager = new ShaderManager(gl);
+        var gl = this._gl;
+        gl.disable(gl.DEPTH_TEST);
+        gl.enable(gl.BLEND); // TODO: disable when no partial transparency?
+        gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
+        this._shaderManager = new ShaderManager(gl);
+    }
 }
 
 module.exports = RenderWebGL;
@@ -64,11 +60,6 @@ RenderWebGL.MAX_TOUCH_SIZE = [3, 3];
  * @type {int} between 0 (exact matches only) and 255 (match anything).
  */
 RenderWebGL.TOLERANCE_TOUCHING_COLOR = 2;
-
-/**
- * Inherit from EventEmitter
- */
-util.inherits(RenderWebGL, EventEmitter);
 
 /**
  * Set the background color for the stage. The stage will be cleared with this

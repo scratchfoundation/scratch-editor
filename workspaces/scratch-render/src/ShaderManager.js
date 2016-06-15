@@ -1,17 +1,19 @@
 var twgl = require('twgl.js');
 
-function ShaderManager(gl) {
-    this._gl = gl;
+class ShaderManager {
+    constructor(gl) {
+        this._gl = gl;
 
-    /**
-     * The cache of all shaders compiled so far. These are generated on demand.
-     * @type {Object.<ShaderManager.DRAW_MODE, Array.<module:twgl.ProgramInfo>>}
-     * @private
-     */
-    this._shaderCache = {};
-    for (var modeName in ShaderManager.DRAW_MODE) {
-        if (ShaderManager.DRAW_MODE.hasOwnProperty(modeName)) {
-            this._shaderCache[modeName] = [];
+        /**
+         * The cache of all shaders compiled so far, filled on demand.
+         * @type {Object.<ShaderManager.DRAW_MODE, Array.<ProgramInfo>>}
+         * @private
+         */
+        this._shaderCache = {};
+        for (var modeName in ShaderManager.DRAW_MODE) {
+            if (ShaderManager.DRAW_MODE.hasOwnProperty(modeName)) {
+                this._shaderCache[modeName] = [];
+            }
         }
     }
 }
@@ -107,7 +109,7 @@ ShaderManager.DRAW_MODE = {
  * Build the shader if necessary.
  * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
  * @param {int} effectBits Bitmask representing the enabled effects.
- * @returns {module:twgl.ProgramInfo?} The shader's program info.
+ * @returns {ProgramInfo} The shader's program info.
  */
 ShaderManager.prototype.getShader = function (drawMode, effectBits) {
     var cache = this._shaderCache[drawMode];
@@ -129,7 +131,7 @@ ShaderManager.prototype.getShader = function (drawMode, effectBits) {
  * Build the shader for a particular set of active effects.
  * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
  * @param {int} effectBits Bitmask representing the enabled effects.
- * @returns {module:twgl.ProgramInfo?} The new shader's program info.
+ * @returns {ProgramInfo} The new shader's program info.
  * @private
  */
 ShaderManager.prototype._buildShader = function (drawMode, effectBits) {

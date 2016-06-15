@@ -4,70 +4,73 @@ var xhr = require('xhr');
 
 var ShaderManager = require('./ShaderManager');
 
-/**
- * An object which can be drawn by the renderer.
- * TODO: double-buffer all rendering state (position, skin, effectBits, etc.)
- * @param gl The OpenGL context.
- * @constructor
- */
-function Drawable(gl) {
-    this._id = Drawable._nextDrawable++;
-    Drawable._allDrawables[this._id] = this;
-
-    this._gl = gl;
-
+class Drawable {
     /**
-     * The uniforms to be used by the vertex and pixel shaders.
-     * Some of these are used by other parts of the renderer as well.
-     * @type {Object.<string,*>}
-     * @private
+     * An object which can be drawn by the renderer.
+     * TODO: double-buffer all rendering state (position, skin, effects, etc.)
+     * @param gl The OpenGL context.
+     * @constructor
      */
-    this._uniforms = {
-        /**
-         * The model matrix, to concat with the projection matrix at draw time.
-         * @type {module:twgl/m4.Mat4}
-         */
-        u_modelMatrix: twgl.m4.identity(),
+    constructor(gl) {
+        this._id = Drawable._nextDrawable++;
+        Drawable._allDrawables[this._id] = this;
+
+        this._gl = gl;
 
         /**
-         * The nominal (not necessarily current) size of the current skin.
-         * This is scaled by _costumeResolution.
-         * @type {number[]}
+         * The uniforms to be used by the vertex and pixel shaders.
+         * Some of these are used by other parts of the renderer as well.
+         * @type {Object.<string,*>}
+         * @private
          */
-        u_skinSize: [0, 0],
+        this._uniforms = {
+            /**
+             * The model matrix, to concat with projection at draw time.
+             * @type {module:twgl/m4.Mat4}
+             */
+            u_modelMatrix: twgl.m4.identity(),
 
-        /**
-         * The actual WebGL texture object for the skin.
-         * @type {WebGLTexture}
-         */
-        u_skin: null,
+            /**
+             * The nominal (not necessarily current) size of the current skin.
+             * This is scaled by _costumeResolution.
+             * @type {number[]}
+             */
+            u_skinSize: [0, 0],
 
-        /**
-         * The color to use in the silhouette draw mode.
-         * @type {number[]}
-         */
-        u_silhouetteColor: Drawable.color4fFromID(this._id)
-    };
+            /**
+             * The actual WebGL texture object for the skin.
+             * @type {WebGLTexture}
+             */
+            u_skin: null,
 
-    // Effect values are uniforms too
-    var numEffects = ShaderManager.EFFECTS.length;
-    for (var index = 0; index < numEffects; ++index) {
-        var effectName = ShaderManager.EFFECTS[index];
-        var converter = ShaderManager.EFFECT_INFO[effectName].converter;
-        this._uniforms['u_' + effectName] = converter(0);
+            /**
+             * The color to use in the silhouette draw mode.
+             * @type {number[]}
+             */
+            u_silhouetteColor: Drawable.color4fFromID(this._id)
+        };
+
+        // Effect values are uniforms too
+        var numEffects = ShaderManager.EFFECTS.length;
+        for (var index = 0; index < numEffects; ++index) {
+            var effectName = ShaderManager.EFFECTS[index];
+            var converter = ShaderManager.EFFECT_INFO[effectName].converter;
+            this._uniforms['u_' + effectName] = converter(0);
+        }
+
+        this._position = twgl.v3.create(0, 0);
+        this._scale = 100;
+        this._direction = 90;
+        this._transformDirty = true;
+        this._effectBits = 0;
+
+        // Create a transparent 1x1 texture for temporary use
+        var tempTexture = twgl.createTexture(gl, {src: [0, 0, 0, 0]});
+        this._useSkin(tempTexture, 0, 0, 1, true);
+
+        // Load a real skin
+        this.setSkin(Drawable._DEFAULT_SKIN);
     }
-
-    this._position = twgl.v3.create(0, 0);
-    this._scale = 100;
-    this._direction = 90;
-    this._transformDirty = true;
-    this._effectBits = 0;
-
-    // Create a transparent 1x1 texture for temporary use
-    this._useSkin(twgl.createTexture(gl, {src: [0, 0, 0, 0]}), 0, 0, 1, true);
-
-    // Load a real skin
-    this.setSkin(Drawable._DEFAULT_SKIN);
 }
 
 module.exports = Drawable;
