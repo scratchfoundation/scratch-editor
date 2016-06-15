@@ -1,7 +1,6 @@
 var RenderWebGL = require('./RenderWebGL');
 
 /**
- * Export and bind to `window`
+ * Export for NPM / Node.js
  */
 module.exports = RenderWebGL;
-if (typeof self !== 'undefined') self.RenderWebGL = RenderWebGL;

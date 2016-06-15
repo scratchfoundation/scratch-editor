@@ -3,10 +3,10 @@ var webpack = require('webpack');
 
 module.exports = {
     entry: {
-        'render-webgl': './src/index.js',
-        'render-webgl.min': './src/index.js',
-        'render-webgl-worker': './src/worker.js',
-        'render-webgl-worker.min': './src/worker.js'
+        'render-webgl': './src/index-web.js',
+        'render-webgl.min': './src/index-web.js',
+        'render-webgl-worker': './src/index-webworker.js',
+        'render-webgl-worker.min': './src/index-webworker.js'
     },
     devtool: 'source-map',
     output: {
