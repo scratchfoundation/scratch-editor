@@ -14,9 +14,12 @@
     "test": "make test"
   },
   "dependencies": {
+    "babel-core": "6.9.1",
+    "babel-eslint": "6.0.4",
+    "babel-loader": "6.2.4",
+    "babel-preset-es2015": "6.9.0",
     "eslint": "2.7.0",
     "json-loader": "0.5.4",
-    "promise": "7.1.1",
     "raw-loader": "0.5.1",
     "svg-to-image": "1.1.3",
     "tap": "5.7.1",

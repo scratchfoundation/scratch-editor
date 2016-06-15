@@ -1,6 +1,4 @@
 
-var Promise = require('promise');
-
 var WorkerMessages = require('./WorkerMessages');
 
 function WorkerRemote() {
@@ -54,7 +52,7 @@ WorkerRemote.prototype._onmessage = function(message) {
 
 /**
  * Create a new Drawable and add it to the scene.
- * @returns {int} The ID of the new Drawable.
+ * @returns {Promise.<int>} The ID of the new Drawable.
  */
 WorkerRemote.prototype.createDrawable = function() {
     var instance = this;

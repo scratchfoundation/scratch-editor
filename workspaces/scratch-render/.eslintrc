@@ -1,4 +1,7 @@
 {
+    "parserOptions": {
+        "ecmaVersion": 6
+    },
     "rules": {
         "curly": [2, "multi-line"],
         "eol-last": [2],
