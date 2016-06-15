@@ -1,6 +1,6 @@
-var WorkerRemote = require('./WorkerRemote');
+var RenderWebGLWorker = require('./RenderWebGLWorker');
 
 /**
  * Export for use in a Web Worker
  */
-self.RenderWebGLRemote = WorkerRemote;
+self.RenderWebGLWorker = RenderWebGLWorker;

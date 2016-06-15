@@ -1,7 +1,7 @@
 
 var WorkerMessages = require('./WorkerMessages');
 
-class WorkerRemote{
+class RenderWebGLWorker {
     constructor() {
         var instance = this;
 
@@ -10,7 +10,7 @@ class WorkerRemote{
          * worker's onmessage function or install it directly.
          * @param {MessageEvent} message The message to be handled.
          */
-        this.onmessage = function(message) {
+        this.onmessage = function (message) {
             instance._onmessage(message);
         };
 
@@ -25,9 +25,9 @@ class WorkerRemote{
     }
 }
 
-module.exports = WorkerRemote;
+module.exports = RenderWebGLWorker;
 
-WorkerRemote.prototype._getToken = function() {
+RenderWebGLWorker.prototype._getToken = function() {
     return (this._nextToken++) + '';
 };
 
@@ -36,7 +36,7 @@ WorkerRemote.prototype._getToken = function() {
  * @param {MessageEvent} message The message to be handled.
  * @private
  */
-WorkerRemote.prototype._onmessage = function(message) {
+RenderWebGLWorker.prototype._onmessage = function(message) {
 
     // It's sometimes valid for a message to have no token
     var token = message.data.token;
@@ -56,7 +56,7 @@ WorkerRemote.prototype._onmessage = function(message) {
  * Create a new Drawable and add it to the scene.
  * @returns {Promise.<int>} The ID of the new Drawable.
  */
-WorkerRemote.prototype.createDrawable = function() {
+RenderWebGLWorker.prototype.createDrawable = function() {
     var instance = this;
     return new Promise(function (resolve) {
         var token = instance._getToken();
@@ -73,7 +73,7 @@ WorkerRemote.prototype.createDrawable = function() {
  * @param {int} drawableID The ID of the Drawable to update.
  * @param {Object.<string,*>} properties The new property values to set.
  */
-WorkerRemote.prototype.updateDrawableProperties = function (
+RenderWebGLWorker.prototype.updateDrawableProperties = function (
     drawableID, properties) {
 
     self.postMessage({

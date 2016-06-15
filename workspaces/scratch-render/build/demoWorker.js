@@ -1,31 +1,33 @@
 
 importScripts('./render-webgl-worker.js');
 
-var remote;
+var renderer;
 var drawableID;
 var drawableID2;
 var fudge = 90;
 
 onmessage = function(message) {
 
-    if (message.data.id == 'RendererConnected') {
-        initWorker();
-    }
-    else if (message.data.fudge != undefined) {
+    if (message.data.fudge != undefined) {
         fudge = message.data.fudge;
     }
+    else {
+        if (message.data.id == 'RendererConnected') {
+            initWorker();
+        }
 
-    remote.onmessage(message);
+        renderer.onmessage(message);
+    }
 };
 
 function initWorker() {
-    remote = new RenderWebGLRemote();
-    var create1 = remote.createDrawable();
-    var create2 = remote.createDrawable();
+    renderer = new RenderWebGLWorker();
+    var create1 = renderer.createDrawable();
+    var create2 = renderer.createDrawable();
 
     create1.then(function (id) {
         drawableID = id;
-        remote.updateDrawableProperties(drawableID, {
+        renderer.updateDrawableProperties(drawableID, {
             position: [0, 0],
             scale: 100,
             direction: 90
@@ -33,7 +35,7 @@ function initWorker() {
     });
     create2.then(function (id) {
         drawableID2 = id;
-        remote.updateDrawableProperties(drawableID2, {
+        renderer.updateDrawableProperties(drawableID2, {
             skin: '09dc888b0b7df19f70d81588ae73420e.svg'
         });
     });
@@ -52,5 +54,5 @@ function thinkStep() {
     //props.pixelate = fudge;
     //props.scale = 100;
 
-    remote.updateDrawableProperties(drawableID, props);
+    renderer.updateDrawableProperties(drawableID, props);
 }
