@@ -1,6 +1,6 @@
-var RenderWebGL = require('./RenderWebGL');
+var RenderWebGLLocal = require('./RenderWebGLLocal');
 
 /**
  * Export for use in a web page
  */
-window.RenderWebGL = RenderWebGL;
+window.RenderWebGLLocal = RenderWebGLLocal;

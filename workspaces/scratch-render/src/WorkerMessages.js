@@ -15,11 +15,18 @@ var WorkerMessages = {
      * If the renderer replies to the message, the 'token' property will be
      * copied into the reply message. If a message generates no reply, the
      * 'token' property is optional.
+     * In general these messages correspond to a function on RenderWebGLLocal,
+     * and in particular each argument in the RenderWebGLLocal method can be
+     * encoded as a property on the message data object with the same name.
      * @enum {string}
      */
     ToRenderer: {
         Ping: 'Ping',
         CreateDrawable: 'CreateDrawable',
+        DestroyDrawable: 'DestroyDrawable',
+        Draw: 'Draw',
+        IsTouchingColor: 'IsTouchingColor',
+        Pick: 'Pick',
         UpdateDrawableProperties: 'UpdateDrawableProperties'
     },
 

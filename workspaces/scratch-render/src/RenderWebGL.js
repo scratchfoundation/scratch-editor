@@ -4,6 +4,7 @@ var Drawable = require('./Drawable');
 var WorkerMessages = require('./WorkerMessages');
 var ShaderManager = require('./ShaderManager');
 
+
 class RenderWebGL {
     /**
      * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
@@ -61,6 +62,23 @@ RenderWebGL.MAX_TOUCH_SIZE = [3, 3];
  */
 RenderWebGL.TOLERANCE_TOUCHING_COLOR = 2;
 
+
+/********
+ * Functions called only locally: these are not available from a worker.
+ ********/
+
+/**
+ * Set the physical size of the stage in device-independent pixels.
+ * This will be multiplied by the device's pixel ratio on high-DPI displays.
+ * @param {int} pixelsWide The desired width in device-independent pixels.
+ * @param {int} pixelsTall The desired height in device-independent pixels.
+ */
+RenderWebGL.prototype.resize = function (pixelsWide, pixelsTall) {
+    var pixelRatio = window.devicePixelRatio || 1;
+    this._gl.canvas.width = pixelsWide * pixelRatio;
+    this._gl.canvas.height = pixelsTall * pixelRatio;
+};
+
 /**
  * Set the background color for the stage. The stage will be cleared with this
  * color each frame.
@@ -70,6 +88,15 @@ RenderWebGL.TOLERANCE_TOUCHING_COLOR = 2;
  */
 RenderWebGL.prototype.setBackgroundColor = function(red, green, blue) {
     this._backgroundColor = [red, green, blue, 1];
+};
+
+/**
+ * Tell the renderer to draw various debug information to the provided canvas
+ * during certain operations.
+ * @param {canvas} canvas The canvas to use for debug output.
+ */
+RenderWebGL.prototype.setDebugCanvas = function (canvas) {
+    this._debugCanvas = canvas;
 };
 
 /**
@@ -88,22 +115,41 @@ RenderWebGL.prototype.setStageSize = function (xLeft, xRight, yBottom, yTop) {
     this._projection = twgl.m4.ortho(xLeft, xRight, yBottom, yTop, -1, 1);
 };
 
+
+/********
+ * Functions supporting RenderWebGL{Local,Worker}: access from those classes.
+ ********/
+
 /**
- * Set the physical size of the stage in device-independent pixels.
- * This will be multiplied by the device's pixel ratio on high-DPI displays.
- * @param {int} pixelsWide The desired width in device-independent pixels.
- * @param {int} pixelsTall The desired height in device-independent pixels.
+ * Create a new Drawable and add it to the scene.
+ * @returns {int} The ID of the new Drawable.
  */
-RenderWebGL.prototype.resize = function (pixelsWide, pixelsTall) {
-    var pixelRatio = window.devicePixelRatio || 1;
-    this._gl.canvas.width = pixelsWide * pixelRatio;
-    this._gl.canvas.height = pixelsTall * pixelRatio;
+RenderWebGL.prototype._createDrawable = function () {
+    var drawable = new Drawable(this._gl);
+    var drawableID = drawable.getID();
+    this._drawables.push(drawableID);
+    return drawableID;
+};
+
+/**
+ * Destroy a Drawable, removing it from the scene.
+ * @param {int} drawableID The ID of the Drawable to remove.
+ * @returns {Boolean} True iff the drawable was found and removed.
+ */
+RenderWebGL.prototype._destroyDrawable = function (drawableID) {
+    var index = this._drawables.indexOf(drawableID);
+    if (index >= 0) {
+        Drawable.getDrawableByID(drawableID).dispose();
+        this._drawables.splice(index, 1);
+        return true;
+    }
+    return false;
 };
 
 /**
  * Draw all current drawables and present the frame on the canvas.
  */
-RenderWebGL.prototype.draw = function () {
+RenderWebGL.prototype._draw = function () {
     var gl = this._gl;
 
     twgl.bindFramebufferInfo(gl, null);
@@ -116,254 +162,13 @@ RenderWebGL.prototype.draw = function () {
 };
 
 /**
- * Draw all Drawables, with the possible exception of
- * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawables.
- * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
- * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
- * @param {Drawable~idFilterFunc} [filter] An optional filter function.
- * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
- * @private
- */
-RenderWebGL.prototype._drawThese = function(
-    drawables, drawMode, projection, filter, extraUniforms) {
-
-    var gl = this._gl;
-    var currentShader = null;
-
-    var numDrawables = drawables.length;
-    for (var drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
-        var drawableID = drawables[drawableIndex];
-
-        // If we have a filter, check whether the ID fails
-        if (filter && !filter(drawableID)) continue;
-
-        var drawable = Drawable.getDrawableByID(drawableID);
-        // TODO: check if drawable is inside the viewport before anything else
-
-        var effectBits = drawable.getEnabledEffects();
-        var newShader = this._shaderManager.getShader(drawMode, effectBits);
-        if (currentShader != newShader) {
-            currentShader = newShader;
-            gl.useProgram(currentShader.program);
-            twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
-            twgl.setUniforms(currentShader, {u_projectionMatrix: projection});
-            twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
-
-            // TODO: should these be set after the Drawable's uniforms?
-            // That would allow Drawable-scope uniforms to be overridden...
-            if (extraUniforms) {
-                twgl.setUniforms(currentShader, extraUniforms);
-            }
-        }
-
-        twgl.setUniforms(currentShader, drawable.getUniforms());
-
-        twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
-    }
-};
-
-/**
- * Create a new Drawable and add it to the scene.
- * @returns {int} The ID of the new Drawable.
- */
-RenderWebGL.prototype.createDrawable = function () {
-    var drawable = new Drawable(this._gl);
-    var drawableID = drawable.getID();
-    this._drawables.push(drawableID);
-    return drawableID;
-};
-
-/**
- * Destroy a Drawable, removing it from the scene.
- * @param {int} drawableID The ID of the Drawable to remove.
- * @returns {Boolean} True iff the drawable was found and removed.
- */
-RenderWebGL.prototype.destroyDrawable = function (drawableID) {
-    var index = this._drawables.indexOf(drawableID);
-    if (index >= 0) {
-        Drawable.getDrawableByID(drawableID).dispose();
-        this._drawables.splice(index, 1);
-        return true;
-    }
-    return false;
-};
-
-/**
- * Retrieve the renderer's projection matrix.
- * @returns {module:twgl/m4.Mat4} The projection matrix.
- */
-RenderWebGL.prototype.getProjectionMatrix = function () {
-    return this._projection;
-};
-
-/**
- * Build geometry (vertex and index) buffers.
- * @private
- */
-RenderWebGL.prototype._createGeometry = function () {
-    var quad = {
-        a_position: {
-            numComponents: 2,
-            data: [
-                -0.5, -0.5,
-                0.5, -0.5,
-                -0.5, 0.5,
-                -0.5, 0.5,
-                0.5, -0.5,
-                0.5, 0.5
-            ]
-        },
-        a_texCoord: {
-            numComponents: 2,
-            data: [
-                1, 0,
-                0, 0,
-                1, 1,
-                1, 1,
-                0, 0,
-                0, 1
-            ]
-        }
-    };
-    this._bufferInfo = twgl.createBufferInfoFromArrays(this._gl, quad);
-};
-
-/**
- * Create the frame buffers used for queries such as picking and color-touching.
- * These buffers are fixed in size regardless of the size of the main render
- * target. The fixed size allows (more) consistent behavior across devices and
- * presentation modes.
- * @private
- */
-RenderWebGL.prototype._createQueryBuffers = function () {
-    var gl = this._gl;
-    var attachments = [
-        {format: gl.RGBA },
-        {format: gl.DEPTH_STENCIL }
-    ];
-
-    this._pickBufferInfo = twgl.createFramebufferInfo(
-        gl, attachments,
-        RenderWebGL.MAX_TOUCH_SIZE[0], RenderWebGL.MAX_TOUCH_SIZE[1]);
-
-    // TODO: should we create this on demand to save memory?
-    // A 480x360 32-bpp buffer is 675 KiB.
-    this._queryBufferInfo = twgl.createFramebufferInfo(
-        gl, attachments, this._nativeSize[0], this._nativeSize[1]);
-};
-
-/**
- * Tell the renderer to draw various debug information to the provided canvas
- * during certain operations.
- * @param {canvas} canvas The canvas to use for debug output.
- */
-RenderWebGL.prototype.setDebugCanvas = function (canvas) {
-    this._debugCanvas = canvas;
-};
-
-/**
- * Detect which sprite, if any, is at the given location.
- * @param {int} centerX The client x coordinate of the picking location.
- * @param {int} centerY The client y coordinate of the picking location.
- * @param {int} touchWidth The client width of the touch event (optional).
- * @param {int} touchHeight The client height of the touch event (optional).
- * @param {int[]} candidateIDs The Drawable IDs to pick from, otherwise all.
- * @returns {int} The ID of the topmost Drawable under the picking location, or
- * Drawable.NONE if there is no Drawable at that location.
- */
-RenderWebGL.prototype.pick = function (
-    centerX, centerY, touchWidth, touchHeight, candidateIDs) {
-    var gl = this._gl;
-
-    touchWidth = touchWidth || 1;
-    touchHeight = touchHeight || 1;
-    candidateIDs = candidateIDs || this._drawables;
-
-    var clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
-    var clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
-
-    centerX *= clientToGLX;
-    centerY *= clientToGLY;
-    touchWidth *= clientToGLX;
-    touchHeight *= clientToGLY;
-
-    touchWidth =
-        Math.max(1, Math.min(touchWidth, RenderWebGL.MAX_TOUCH_SIZE[0]));
-    touchHeight =
-        Math.max(1, Math.min(touchHeight, RenderWebGL.MAX_TOUCH_SIZE[1]));
-
-    var pixelLeft = Math.floor(centerX - Math.floor(touchWidth / 2) + 0.5);
-    var pixelRight = Math.floor(centerX + Math.ceil(touchWidth / 2) + 0.5);
-    var pixelTop = Math.floor(centerY - Math.floor(touchHeight / 2) + 0.5);
-    var pixelBottom = Math.floor(centerY + Math.ceil(touchHeight / 2) + 0.5);
-
-    twgl.bindFramebufferInfo(gl, this._pickBufferInfo);
-    gl.viewport(0, 0, touchWidth, touchHeight);
-
-    var noneColor = Drawable.color4fFromID(Drawable.NONE);
-    gl.clearColor.apply(gl, noneColor);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-
-    var widthPerPixel = (this._xRight - this._xLeft) / this._gl.canvas.width;
-    var heightPerPixel = (this._yBottom - this._yTop) / this._gl.canvas.height;
-
-    var pickLeft = this._xLeft + pixelLeft * widthPerPixel;
-    var pickRight = this._xLeft + pixelRight * widthPerPixel;
-    var pickTop = this._yTop + pixelTop * heightPerPixel;
-    var pickBottom = this._yTop + pixelBottom * heightPerPixel;
-
-    var projection = twgl.m4.ortho(
-        pickLeft, pickRight, pickTop, pickBottom, -1, 1);
-
-    this._drawThese(
-        candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection);
-
-    var pixels = new Buffer(touchWidth * touchHeight * 4);
-    gl.readPixels(
-        0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
-    if (this._debugCanvas) {
-        this._debugCanvas.width = touchWidth;
-        this._debugCanvas.height = touchHeight;
-        var context = this._debugCanvas.getContext('2d');
-        var imageData = context.getImageData(0, 0, touchWidth, touchHeight);
-        for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
-            imageData.data[i] = pixels[i];
-        }
-        context.putImageData(imageData, 0, 0);
-    }
-
-    var hits = {};
-    for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-        var pixelID = Drawable.color4bToID(
-            pixels[pixelBase],
-            pixels[pixelBase + 1],
-            pixels[pixelBase + 2],
-            pixels[pixelBase + 3]);
-        hits[pixelID] = (hits[pixelID] || 0) + 1;
-    }
-
-    // Bias toward selecting anything over nothing
-    hits[Drawable.NONE] = 0;
-
-    var hit = Drawable.NONE;
-    for (var hitID in hits) {
-        if (hits.hasOwnProperty(hitID) && (hits[hitID] > hits[hit])) {
-            hit = hitID;
-        }
-    }
-
-    return hit | 0;
-};
-
-/**
  * Check if a particular Drawable is touching a particular color.
  * @param {int} drawableID The ID of the Drawable to check.
  * @param {int[]} color3b Test if the Drawable is touching this color.
  * @param {int[]} [mask3b] Optionally mask the check to this part of Drawable.
  * @returns {Boolean} True iff the Drawable is touching the color.
  */
-RenderWebGL.prototype.isTouchingColor = function(drawableID, color3b, mask3b) {
+RenderWebGL.prototype._isTouchingColor = function(drawableID, color3b, mask3b) {
 
     var gl = this._gl;
 
@@ -450,31 +255,212 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3b, mask3b) {
 };
 
 /**
- * Handle an event (message) from the specified worker.
- * @param {Worker} worker The originating worker for the event.
- * @param {MessageEvent} message The event to be handled.
+ * Detect which sprite, if any, is at the given location.
+ * @param {int} centerX The client x coordinate of the picking location.
+ * @param {int} centerY The client y coordinate of the picking location.
+ * @param {int} touchWidth The client width of the touch event (optional).
+ * @param {int} touchHeight The client height of the touch event (optional).
+ * @param {int[]} candidateIDs The Drawable IDs to pick from, otherwise all.
+ * @returns {int} The ID of the topmost Drawable under the picking location, or
+ * Drawable.NONE if there is no Drawable at that location.
+ */
+RenderWebGL.prototype._pick = function (
+    centerX, centerY, touchWidth, touchHeight, candidateIDs) {
+    var gl = this._gl;
+
+    touchWidth = touchWidth || 1;
+    touchHeight = touchHeight || 1;
+    candidateIDs = candidateIDs || this._drawables;
+
+    var clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
+    var clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
+
+    centerX *= clientToGLX;
+    centerY *= clientToGLY;
+    touchWidth *= clientToGLX;
+    touchHeight *= clientToGLY;
+
+    touchWidth =
+        Math.max(1, Math.min(touchWidth, RenderWebGL.MAX_TOUCH_SIZE[0]));
+    touchHeight =
+        Math.max(1, Math.min(touchHeight, RenderWebGL.MAX_TOUCH_SIZE[1]));
+
+    var pixelLeft = Math.floor(centerX - Math.floor(touchWidth / 2) + 0.5);
+    var pixelRight = Math.floor(centerX + Math.ceil(touchWidth / 2) + 0.5);
+    var pixelTop = Math.floor(centerY - Math.floor(touchHeight / 2) + 0.5);
+    var pixelBottom = Math.floor(centerY + Math.ceil(touchHeight / 2) + 0.5);
+
+    twgl.bindFramebufferInfo(gl, this._pickBufferInfo);
+    gl.viewport(0, 0, touchWidth, touchHeight);
+
+    var noneColor = Drawable.color4fFromID(Drawable.NONE);
+    gl.clearColor.apply(gl, noneColor);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    var widthPerPixel = (this._xRight - this._xLeft) / this._gl.canvas.width;
+    var heightPerPixel = (this._yBottom - this._yTop) / this._gl.canvas.height;
+
+    var pickLeft = this._xLeft + pixelLeft * widthPerPixel;
+    var pickRight = this._xLeft + pixelRight * widthPerPixel;
+    var pickTop = this._yTop + pixelTop * heightPerPixel;
+    var pickBottom = this._yTop + pixelBottom * heightPerPixel;
+
+    var projection = twgl.m4.ortho(
+        pickLeft, pickRight, pickTop, pickBottom, -1, 1);
+
+    this._drawThese(
+        candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection);
+
+    var pixels = new Buffer(touchWidth * touchHeight * 4);
+    gl.readPixels(
+        0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+    if (this._debugCanvas) {
+        this._debugCanvas.width = touchWidth;
+        this._debugCanvas.height = touchHeight;
+        var context = this._debugCanvas.getContext('2d');
+        var imageData = context.getImageData(0, 0, touchWidth, touchHeight);
+        for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
+            imageData.data[i] = pixels[i];
+        }
+        context.putImageData(imageData, 0, 0);
+    }
+
+    var hits = {};
+    for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
+        var pixelID = Drawable.color4bToID(
+            pixels[pixelBase],
+            pixels[pixelBase + 1],
+            pixels[pixelBase + 2],
+            pixels[pixelBase + 3]);
+        hits[pixelID] = (hits[pixelID] || 0) + 1;
+    }
+
+    // Bias toward selecting anything over nothing
+    hits[Drawable.NONE] = 0;
+
+    var hit = Drawable.NONE;
+    for (var hitID in hits) {
+        if (hits.hasOwnProperty(hitID) && (hits[hitID] > hits[hit])) {
+            hit = hitID;
+        }
+    }
+
+    return hit | 0;
+};
+
+
+/********
+ * Truly internal functions: these support the functions above.
+ ********/
+
+/**
+ * Build geometry (vertex and index) buffers.
  * @private
  */
-RenderWebGL.prototype._onWorkerMessage = function(worker, message) {
-    if (message.data.drawableID != null) {
-        var drawable = Drawable.getDrawableByID(message.data.drawableID);
-    }
-    switch(message.data.id) {
-    case WorkerMessages.ToRenderer.Ping:
-        worker.postMessage(WorkerMessages.FromRenderer.Pong);
-        break;
-    case WorkerMessages.ToRenderer.CreateDrawable:
-        worker.postMessage({
-            id: WorkerMessages.FromRenderer.ResultValue,
-            token: message.data.token,
-            value: this.createDrawable()
-        });
-        break;
-    case WorkerMessages.ToRenderer.UpdateDrawableProperties:
-        drawable.updateProperties(message.data.properties);
-        break;
+RenderWebGL.prototype._createGeometry = function () {
+    var quad = {
+        a_position: {
+            numComponents: 2,
+            data: [
+                -0.5, -0.5,
+                0.5, -0.5,
+                -0.5, 0.5,
+                -0.5, 0.5,
+                0.5, -0.5,
+                0.5, 0.5
+            ]
+        },
+        a_texCoord: {
+            numComponents: 2,
+            data: [
+                1, 0,
+                0, 0,
+                1, 1,
+                1, 1,
+                0, 0,
+                0, 1
+            ]
+        }
+    };
+    this._bufferInfo = twgl.createBufferInfoFromArrays(this._gl, quad);
+};
+
+/**
+ * Create the frame buffers used for queries such as picking and color-touching.
+ * These buffers are fixed in size regardless of the size of the main render
+ * target. The fixed size allows (more) consistent behavior across devices and
+ * presentation modes.
+ * @private
+ */
+RenderWebGL.prototype._createQueryBuffers = function () {
+    var gl = this._gl;
+    var attachments = [
+        {format: gl.RGBA },
+        {format: gl.DEPTH_STENCIL }
+    ];
+
+    this._pickBufferInfo = twgl.createFramebufferInfo(
+        gl, attachments,
+        RenderWebGL.MAX_TOUCH_SIZE[0], RenderWebGL.MAX_TOUCH_SIZE[1]);
+
+    // TODO: should we create this on demand to save memory?
+    // A 480x360 32-bpp buffer is 675 KiB.
+    this._queryBufferInfo = twgl.createFramebufferInfo(
+        gl, attachments, this._nativeSize[0], this._nativeSize[1]);
+};
+
+/**
+ * Draw all Drawables, with the possible exception of
+ * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawables.
+ * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
+ * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
+ * @param {Drawable~idFilterFunc} [filter] An optional filter function.
+ * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
+ * @private
+ */
+RenderWebGL.prototype._drawThese = function(
+    drawables, drawMode, projection, filter, extraUniforms) {
+
+    var gl = this._gl;
+    var currentShader = null;
+
+    var numDrawables = drawables.length;
+    for (var drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
+        var drawableID = drawables[drawableIndex];
+
+        // If we have a filter, check whether the ID fails
+        if (filter && !filter(drawableID)) continue;
+
+        var drawable = Drawable.getDrawableByID(drawableID);
+        // TODO: check if drawable is inside the viewport before anything else
+
+        var effectBits = drawable.getEnabledEffects();
+        var newShader = this._shaderManager.getShader(drawMode, effectBits);
+        if (currentShader != newShader) {
+            currentShader = newShader;
+            gl.useProgram(currentShader.program);
+            twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
+            twgl.setUniforms(currentShader, {u_projectionMatrix: projection});
+            twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
+
+            // TODO: should these be set after the Drawable's uniforms?
+            // That would allow Drawable-scope uniforms to be overridden...
+            if (extraUniforms) {
+                twgl.setUniforms(currentShader, extraUniforms);
+            }
+        }
+
+        twgl.setUniforms(currentShader, drawable.getUniforms());
+
+        twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
     }
 };
+
+/********
+ * Worker interface
+ * TODO: Consider moving this to a separate "dispatcher" class or similar.
+ ********/
 
 /**
  * Listen for messages from a worker.
@@ -489,4 +475,64 @@ RenderWebGL.prototype.connectWorker = function(worker) {
         instance._onWorkerMessage(worker, event);
     });
     worker.postMessage({id: WorkerMessages.FromRenderer.RendererConnected});
+};
+
+/**
+ * Post a ResultValue message to a worker in reply to a particular message.
+ * The outgoing message's reply token will be copied from the provided message.
+ * @param {Worker} worker The worker to receive the ResultValue message.
+ * @param {Object} message The originating message to which this is a reply.
+ * @param {*} value The value to send as a result.
+ * @private
+ */
+RenderWebGL.prototype._postResultValue = function(worker, message, value) {
+    worker.postMessage({
+        id: WorkerMessages.FromRenderer.ResultValue,
+        token: message.data.token,
+        value: value
+    });
+};
+
+/**
+ * Handle an event (message) from the specified worker.
+ * @param {Worker} worker The originating worker for the event.
+ * @param {MessageEvent} message The event to be handled.
+ * @private
+ */
+RenderWebGL.prototype._onWorkerMessage = function(worker, message) {
+    switch(message.data.id) {
+    case WorkerMessages.ToRenderer.Ping:
+        worker.postMessage(WorkerMessages.FromRenderer.Pong);
+        break;
+    case WorkerMessages.ToRenderer.CreateDrawable:
+        this._postResultValue(worker, message, this._createDrawable());
+        break;
+    case WorkerMessages.ToRenderer.DestroyDrawable:
+        this._postResultValue(worker, message,
+            this._destroyDrawable(message.data.drawableID));
+        break;
+    case WorkerMessages.ToRenderer.Draw:
+        this._draw();
+        break;
+    case WorkerMessages.ToRenderer.IsTouchingColor:
+        this._postResultValue(worker, message,
+            this._isTouchingColor(
+                message.data.drawableID,
+                message.data.color3b,
+                message.data.mask3b));
+        break;
+    case WorkerMessages.ToRenderer.Pick:
+        this._postResultValue(worker, message,
+            this._pick(
+                message.data.centerX,
+                message.data.centerY,
+                message.data.touchWidth,
+                message.data.touchHeight,
+                message.data.candidateIDs));
+        break;
+    case WorkerMessages.ToRenderer.UpdateDrawableProperties:
+        var drawable = Drawable.getDrawableByID(message.data.drawableID);
+        drawable.updateProperties(message.data.properties);
+        break;
+    }
 };
