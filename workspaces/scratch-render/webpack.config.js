@@ -16,6 +16,9 @@ module.exports = {
     module: {
         loaders: [
             {
+                include: [
+                    path.resolve(__dirname, 'src')
+                ],
                 test: /\.js$/,
                 loader: 'babel-loader',
                 query: {

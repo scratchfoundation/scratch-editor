@@ -1,3 +1,5 @@
+require('babel-polyfill');
+
 var RenderWebGLWorker = require('./RenderWebGLWorker');
 
 /**

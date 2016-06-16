@@ -14,7 +14,6 @@
     Min: <input id="fudgeMin" type="number" onchange="onFudgeMinChanged(this.value)">
     Max: <input id="fudgeMax" type="number" onchange="onFudgeMaxChanged(this.value)">
 </p>
-</body>
 <script src="render-webgl.js"></script>
 <script>
     var canvas = document.getElementById('scratch-stage');
@@ -83,4 +82,5 @@
     var demoWorker = new Worker('demoWorker.js');
     renderer.connectWorker(demoWorker);
 </script>
+</body>
 </html>
