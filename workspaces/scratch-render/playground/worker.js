@@ -1,6 +1,5 @@
 importScripts('../render-worker.js');
 
-var window = self;
 var renderer;
 var drawableID;
 var drawableID2;
@@ -21,7 +20,7 @@ onmessage = function(message) {
 };
 
 function initWorker() {
-    renderer = new window.RenderWebGLWorker();
+    renderer = new self.RenderWebGLWorker();
     var create1 = renderer.createDrawable();
     var create2 = renderer.createDrawable();
 
