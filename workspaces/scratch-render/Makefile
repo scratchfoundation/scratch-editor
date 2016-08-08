@@ -1,5 +1,6 @@
 ESLINT=./node_modules/.bin/eslint
 WEBPACK=./node_modules/.bin/webpack --progress --colors
+WEBPACK_DEV_SERVER=./node_modules/.bin/webpack-dev-server
 
 # ------------------------------------------------------------------------------
 
@@ -8,6 +9,9 @@ build:
 
 watch:
 	$(WEBPACK) --watch --watch-poll
+
+serve:
+	$(WEBPACK_DEV_SERVER) --host 0.0.0.0 --content-base ./
 
 # ------------------------------------------------------------------------------
 
@@ -21,4 +25,4 @@ test:
 
 # ------------------------------------------------------------------------------
 
-.PHONY: build watch lint test
+.PHONY: build watch serve lint test

@@ -29,7 +29,7 @@ function initWorker() {
         drawableID = id;
         renderer.updateDrawableProperties(drawableID, {
             position: [0, 0],
-            scale: 100,
+            scale: [100, 100],
             direction: 90
         });
     });
@@ -50,9 +50,9 @@ function thinkStep() {
 
     var props = {};
     //props.position = [posX, posY];
-    props.direction = fudge;
+    //props.direction = fudge;
     //props.pixelate = fudge;
-    //props.scale = 100;
+    props.scale = [fudge, 100];
 
     renderer.updateDrawableProperties(drawableID, props);
 }

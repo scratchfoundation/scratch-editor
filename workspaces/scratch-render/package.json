@@ -27,6 +27,8 @@
     "eslint": "2.7.0",
     "json-loader": "0.5.4",
     "raw-loader": "0.5.1",
-    "webpack": "1.13.0"
+    "tap": "5.7.1",
+    "webpack": "1.13.0",
+    "webpack-dev-server": "1.14.1"
   }
 }

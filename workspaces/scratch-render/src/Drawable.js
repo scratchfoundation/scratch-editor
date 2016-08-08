@@ -59,9 +59,10 @@ class Drawable {
         }
 
         this._position = twgl.v3.create(0, 0);
-        this._scale = 100;
+        this._scale = twgl.v3.create(100, 100);
         this._direction = 90;
         this._transformDirty = true;
+        this._visible = true;
         this._effectBits = 0;
 
         // Create a transparent 1x1 texture for temporary use
@@ -293,6 +294,14 @@ Drawable.prototype.getUniforms = function () {
 };
 
 /**
+ * Retrieve whether this Drawable is visible.
+ * @returns {boolean}
+ */
+Drawable.prototype.getVisible = function () {
+    return this._visible;
+};
+
+/**
  * Update the position, direction, scale, or effect properties of this Drawable.
  * @param {Object.<string,*>} properties The new property values to set.
  */
@@ -312,9 +321,15 @@ Drawable.prototype.updateProperties = function (properties) {
         this._direction = properties.direction;
         dirty = true;
     }
-    if ('scale' in properties && this._scale != properties.scale) {
-        this._scale = properties.scale;
+    if ('scale' in properties && (
+        this._scale[0] != properties.scale[0] ||
+        this._scale[1] != properties.scale[1])) {
+        this._scale[0] = properties.scale[0];
+        this._scale[1] = properties.scale[1];
         dirty = true;
+    }
+    if ('visible' in properties) {
+        this._visible = properties.visible;
     }
     if (dirty) {
         this.setTransformDirty();
@@ -369,9 +384,9 @@ Drawable.prototype._calculateTransform = function () {
     var rotation = (270 - this._direction) * Math.PI / 180;
     twgl.m4.rotateZ(modelMatrix, rotation, modelMatrix);
 
-    var scaledSize = twgl.v3.mulScalar(
-        this._uniforms.u_skinSize, this._scale / 100);
-    scaledSize[2] = 0; // was NaN because u_skinSize has only 2 components
+    var scaledSize = twgl.v3.divScalar(twgl.v3.multiply(
+        this._uniforms.u_skinSize, this._scale), 100);
+    scaledSize[3] = 0; // was NaN because the vectors have only 2 components.
     twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
 
     this._transformDirty = false;

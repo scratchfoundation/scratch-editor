@@ -435,6 +435,9 @@ RenderWebGL.prototype._drawThese = function(
         var drawable = Drawable.getDrawableByID(drawableID);
         // TODO: check if drawable is inside the viewport before anything else
 
+        // Hidden drawables (e.g., by a "hide" block) are never drawn.
+        if (!drawable.getVisible()) continue;
+
         var effectBits = drawable.getEnabledEffects();
         var newShader = this._shaderManager.getShader(drawMode, effectBits);
         if (currentShader != newShader) {
