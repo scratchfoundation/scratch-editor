@@ -1,6 +1,6 @@
 {
-  "name": "scratch-render-webgl",
-  "version": "1.0.0",
+  "name": "scratch-render",
+  "version": "0.1.0",
   "description": "WebGL Renderer for Scratch 3.0",
   "author": "Massachusetts Institute of Technology",
   "license": "BSD-3-Clause",
@@ -14,6 +14,11 @@
     "test": "make test"
   },
   "dependencies": {
+    "svg-to-image": "1.1.3",
+    "twgl.js": "1.5.2",
+    "xhr": "2.2.0"
+  },
+  "devDependencies": {
     "babel-core": "6.9.1",
     "babel-eslint": "6.0.4",
     "babel-loader": "6.2.4",
@@ -22,10 +27,6 @@
     "eslint": "2.7.0",
     "json-loader": "0.5.4",
     "raw-loader": "0.5.1",
-    "svg-to-image": "1.1.3",
-    "tap": "5.7.1",
-    "twgl.js": "1.5.2",
-    "webpack": "1.13.0",
-    "xhr": "2.2.0"
+    "webpack": "1.13.0"
   }
 }
