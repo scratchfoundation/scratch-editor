@@ -1,5 +1,6 @@
 importScripts('../render-worker.js');
 
+var window = self;
 var renderer;
 var drawableID;
 var drawableID2;
