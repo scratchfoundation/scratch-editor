@@ -35,7 +35,8 @@ function initWorker() {
     create2.then(function (id) {
         drawableID2 = id;
         renderer.updateDrawableProperties(drawableID2, {
-            skin: '09dc888b0b7df19f70d81588ae73420e.svg'
+            skin: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
+                '09dc888b0b7df19f70d81588ae73420e.svg/get/'
         });
     });
 
