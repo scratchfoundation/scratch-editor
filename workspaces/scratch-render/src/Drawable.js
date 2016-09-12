@@ -113,14 +113,14 @@ Drawable.getDrawableByID = function (drawableID) {
 
 // TODO: fall back on a built-in skin to protect against network problems
 Drawable._DEFAULT_SKIN = {
-    squirrel: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/\
-        7e24c99c1b853e52f8e7f9004416fa34.png/get/',
-    bus: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/\
-        66895930177178ea01d9e610917f8acf.png/get/',
-    scratch_cat: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/\
-        09dc888b0b7df19f70d81588ae73420e.svg/get/',
-    gradient: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/\
-        a49ff276b9b8f997a1ae163992c2c145.png/get/'
+    squirrel: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
+        '7e24c99c1b853e52f8e7f9004416fa34.png/get/',
+    bus: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
+        '66895930177178ea01d9e610917f8acf.png/get/',
+    scratch_cat: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
+        '09dc888b0b7df19f70d81588ae73420e.svg/get/',
+    gradient: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
+        'a49ff276b9b8f997a1ae163992c2c145.png/get/'
 }.scratch_cat;
 
 /**
@@ -153,20 +153,22 @@ Drawable.prototype.getID = function () {
  * Set this Drawable's skin.
  * The Drawable will continue using the existing skin until the new one loads.
  * If there is no existing skin, the Drawable will use a 1x1 transparent image.
- * @param {string} skin_md5ext The MD5 and file extension of the skin.
+ * @param {string} skin_url The URL of the skin.
  */
-Drawable.prototype.setSkin = function (skin_md5ext) {
+Drawable.prototype.setSkin = function (skin_url) {
     // TODO: cache Skins instead of loading each time. Ref count them?
     // TODO: share Skins across Drawables - see also destroy()
-    if (skin_md5ext) {
-        var ext = skin_md5ext.substring(skin_md5ext.indexOf('.')+1);
+    if (skin_url) {
+        var ext = skin_url.substring(skin_url.lastIndexOf('.')+1);
         switch (ext) {
         case 'svg':
+        case 'svg/get/':
         case 'svgz':
-            this._setSkinSVG(skin_md5ext);
+        case 'svgz/get/':
+            this._setSkinSVG(skin_url);
             break;
         default:
-            this._setSkinBitmap(skin_md5ext);
+            this._setSkinBitmap(skin_url);
             break;
         }
     }
