@@ -48,12 +48,12 @@
 
 	__webpack_require__(1);
 
-	var RenderWebGLLocal = __webpack_require__(298);
+	var RenderWebGL = __webpack_require__(298);
 
 	/**
 	 * Export for use in a web page
 	 */
-	window.RenderWebGLLocal = RenderWebGLLocal;
+	window.RenderWebGL = RenderWebGL;
 
 /***/ },
 /* 1 */
@@ -8168,111 +8168,14 @@
 /* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-	var RenderWebGL = __webpack_require__(299);
-
-	var Drawable = __webpack_require__(305);
-
-	var RenderWebGLLocal = function (_RenderWebGL) {
-	    _inherits(RenderWebGLLocal, _RenderWebGL);
-
-	    function RenderWebGLLocal() {
-	        _classCallCheck(this, RenderWebGLLocal);
-
-	        return _possibleConstructorReturn(this, Object.getPrototypeOf(RenderWebGLLocal).apply(this, arguments));
-	    }
-
-	    return RenderWebGLLocal;
-	}(RenderWebGL);
-
-	module.exports = RenderWebGLLocal;
-
-	/**
-	 * Create a new Drawable and add it to the scene.
-	 * @returns {Promise.<int>} The ID of the new Drawable.
-	 */
-	RenderWebGLLocal.prototype.createDrawable = function () {
-	    var drawableID = this._createDrawable();
-	    return Promise.resolve(drawableID);
-	};
-
-	/**
-	 * Destroy a Drawable, removing it from the scene.
-	 * @param {int} drawableID The ID of the Drawable to remove.
-	 * @returns {Promise.<Boolean>} True iff the drawable was found and removed.
-	 */
-	RenderWebGLLocal.prototype.destroyDrawable = function (drawableID) {
-	    var wasRemoved = this._destroyDrawable(drawableID);
-	    return Promise.resolve(wasRemoved);
-	};
-
-	/**
-	 * Draw all current drawables and present the frame on the canvas.
-	 */
-	RenderWebGLLocal.prototype.draw = function () {
-	    this._draw();
-	};
-
-	/**
-	 * Check if a particular Drawable is touching a particular color.
-	 * @param {int} drawableID The ID of the Drawable to check.
-	 * @param {int[]} color3b Test if the Drawable is touching this color.
-	 * @param {int[]} [mask3b] Optionally mask the check to this part of Drawable.
-	 * @returns {Promise.<Boolean>} True iff the Drawable is touching the color.
-	 */
-	RenderWebGLLocal.prototype.isTouchingColor = function (drawableID, color3b, mask3b) {
-
-	    var isTouching = this._isTouchingColor(drawableID, color3b, mask3b);
-	    return Promise.resolve(isTouching);
-	};
-
-	/**
-	 * Detect which sprite, if any, is at the given location.
-	 * @param {int} centerX The client x coordinate of the picking location.
-	 * @param {int} centerY The client y coordinate of the picking location.
-	 * @param {int} touchWidth The client width of the touch event (optional).
-	 * @param {int} touchHeight The client height of the touch event (optional).
-	 * @param {int[]} candidateIDs The Drawable IDs to pick from, otherwise all.
-	 * @returns {int} The ID of the topmost Drawable under the picking location, or
-	 * Drawable.NONE if there is no Drawable at that location.
-	 */
-	RenderWebGLLocal.prototype.pick = function (centerX, centerY, touchWidth, touchHeight, candidateIDs) {
-
-	    var drawableID = this._pick(centerX, centerY, touchWidth, touchHeight, candidateIDs);
-	    return Promise.resolve(drawableID);
-	};
-
-	/**
-	 * Update the position, direction, scale, or effect properties of this Drawable.
-	 * @param {int} drawableID The ID of the Drawable to update.
-	 * @param {Object.<string,*>} properties The new property values to set.
-	 */
-	RenderWebGLLocal.prototype.updateDrawableProperties = function (drawableID, properties) {
-
-	    var drawable = Drawable.getDrawableByID(drawableID);
-	    drawable.updateProperties(properties);
-	};
-
-/***/ },
-/* 299 */
-/***/ function(module, exports, __webpack_require__) {
-
 	/* WEBPACK VAR INJECTION */(function(Buffer) {'use strict';
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var twgl = __webpack_require__(304);
+	var twgl = __webpack_require__(303);
 
-	var Drawable = __webpack_require__(305);
-	var WorkerMessages = __webpack_require__(319);
-	var ShaderManager = __webpack_require__(316);
+	var Drawable = __webpack_require__(304);
+	var ShaderManager = __webpack_require__(315);
 
 	var RenderWebGL =
 	/**
@@ -8383,15 +8286,11 @@
 	    this._projection = twgl.m4.ortho(xLeft, xRight, yBottom, yTop, -1, 1);
 	};
 
-	/********
-	 * Functions supporting RenderWebGL{Local,Worker}: access from those classes.
-	 ********/
-
 	/**
 	 * Create a new Drawable and add it to the scene.
 	 * @returns {int} The ID of the new Drawable.
 	 */
-	RenderWebGL.prototype._createDrawable = function () {
+	RenderWebGL.prototype.createDrawable = function () {
 	    var drawable = new Drawable(this._gl);
 	    var drawableID = drawable.getID();
 	    this._drawables.push(drawableID);
@@ -8403,7 +8302,7 @@
 	 * @param {int} drawableID The ID of the Drawable to remove.
 	 * @returns {Boolean} True iff the drawable was found and removed.
 	 */
-	RenderWebGL.prototype._destroyDrawable = function (drawableID) {
+	RenderWebGL.prototype.destroyDrawable = function (drawableID) {
 	    var index = this._drawables.indexOf(drawableID);
 	    if (index >= 0) {
 	        Drawable.getDrawableByID(drawableID).dispose();
@@ -8416,7 +8315,7 @@
 	/**
 	 * Draw all current drawables and present the frame on the canvas.
 	 */
-	RenderWebGL.prototype._draw = function () {
+	RenderWebGL.prototype.draw = function () {
 	    var gl = this._gl;
 
 	    twgl.bindFramebufferInfo(gl, null);
@@ -8434,7 +8333,7 @@
 	 * @param {int[]} [mask3b] Optionally mask the check to this part of Drawable.
 	 * @returns {Boolean} True iff the Drawable is touching the color.
 	 */
-	RenderWebGL.prototype._isTouchingColor = function (drawableID, color3b, mask3b) {
+	RenderWebGL.prototype.isTouchingColor = function (drawableID, color3b, mask3b) {
 
 	    var gl = this._gl;
 
@@ -8515,7 +8414,7 @@
 	 * @returns {int} The ID of the topmost Drawable under the picking location, or
 	 * Drawable.NONE if there is no Drawable at that location.
 	 */
-	RenderWebGL.prototype._pick = function (centerX, centerY, touchWidth, touchHeight, candidateIDs) {
+	RenderWebGL.prototype.pick = function (centerX, centerY, touchWidth, touchHeight, candidateIDs) {
 	    var gl = this._gl;
 
 	    touchWidth = touchWidth || 1;
@@ -8588,6 +8487,16 @@
 	    }
 
 	    return hit | 0;
+	};
+
+	/**
+	* Update the position, direction, scale, or effect properties of this Drawable.
+	* @param {int} drawableID The ID of the Drawable to update.
+	* @param {Object.<string,*>} properties The new property values to set.
+	 */
+	RenderWebGL.prototype.updateDrawableProperties = function (drawableID, properties) {
+	    var drawable = Drawable.getDrawableByID(drawableID);
+	    drawable.updateProperties(properties);
 	};
 
 	/********
@@ -8678,79 +8587,10 @@
 	        twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
 	    }
 	};
-
-	/********
-	 * Worker interface
-	 * TODO: Consider moving this to a separate "dispatcher" class or similar.
-	 ********/
-
-	/**
-	 * Listen for messages from a worker.
-	 * The renderer will post a message to this worker with data='rendererConnected'
-	 * immediately. After that, the renderer will not send messages to the worker
-	 * except in response to messages from that worker.
-	 * @param {Worker} worker Listen to this worker.
-	 */
-	RenderWebGL.prototype.connectWorker = function (worker) {
-	    var instance = this;
-	    worker.addEventListener('message', function (event) {
-	        instance._onWorkerMessage(worker, event);
-	    });
-	    worker.postMessage({ id: WorkerMessages.FromRenderer.RendererConnected });
-	};
-
-	/**
-	 * Post a ResultValue message to a worker in reply to a particular message.
-	 * The outgoing message's reply token will be copied from the provided message.
-	 * @param {Worker} worker The worker to receive the ResultValue message.
-	 * @param {Object} message The originating message to which this is a reply.
-	 * @param {*} value The value to send as a result.
-	 * @private
-	 */
-	RenderWebGL.prototype._postResultValue = function (worker, message, value) {
-	    worker.postMessage({
-	        id: WorkerMessages.FromRenderer.ResultValue,
-	        token: message.data.token,
-	        value: value
-	    });
-	};
-
-	/**
-	 * Handle an event (message) from the specified worker.
-	 * @param {Worker} worker The originating worker for the event.
-	 * @param {MessageEvent} message The event to be handled.
-	 * @private
-	 */
-	RenderWebGL.prototype._onWorkerMessage = function (worker, message) {
-	    switch (message.data.id) {
-	        case WorkerMessages.ToRenderer.Ping:
-	            worker.postMessage(WorkerMessages.FromRenderer.Pong);
-	            break;
-	        case WorkerMessages.ToRenderer.CreateDrawable:
-	            this._postResultValue(worker, message, this._createDrawable());
-	            break;
-	        case WorkerMessages.ToRenderer.DestroyDrawable:
-	            this._postResultValue(worker, message, this._destroyDrawable(message.data.drawableID));
-	            break;
-	        case WorkerMessages.ToRenderer.Draw:
-	            this._draw();
-	            break;
-	        case WorkerMessages.ToRenderer.IsTouchingColor:
-	            this._postResultValue(worker, message, this._isTouchingColor(message.data.drawableID, message.data.color3b, message.data.mask3b));
-	            break;
-	        case WorkerMessages.ToRenderer.Pick:
-	            this._postResultValue(worker, message, this._pick(message.data.centerX, message.data.centerY, message.data.touchWidth, message.data.touchHeight, message.data.candidateIDs));
-	            break;
-	        case WorkerMessages.ToRenderer.UpdateDrawableProperties:
-	            var drawable = Drawable.getDrawableByID(message.data.drawableID);
-	            drawable.updateProperties(message.data.properties);
-	            break;
-	    }
-	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(300).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(299).Buffer))
 
 /***/ },
-/* 300 */
+/* 299 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer, global) {/*!
@@ -8763,9 +8603,9 @@
 
 	'use strict'
 
-	var base64 = __webpack_require__(301)
-	var ieee754 = __webpack_require__(302)
-	var isArray = __webpack_require__(303)
+	var base64 = __webpack_require__(300)
+	var ieee754 = __webpack_require__(301)
+	var isArray = __webpack_require__(302)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -10302,10 +10142,10 @@
 	  return i
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(300).Buffer, (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(299).Buffer, (function() { return this; }())))
 
 /***/ },
-/* 301 */
+/* 300 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -10435,7 +10275,7 @@
 
 
 /***/ },
-/* 302 */
+/* 301 */
 /***/ function(module, exports) {
 
 	exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -10525,7 +10365,7 @@
 
 
 /***/ },
-/* 303 */
+/* 302 */
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
@@ -10536,7 +10376,7 @@
 
 
 /***/ },
-/* 304 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -18856,18 +18696,18 @@
 
 
 /***/ },
-/* 305 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var twgl = __webpack_require__(304);
-	var svgToImage = __webpack_require__(306);
-	var xhr = __webpack_require__(308);
+	var twgl = __webpack_require__(303);
+	var svgToImage = __webpack_require__(305);
+	var xhr = __webpack_require__(307);
 
-	var ShaderManager = __webpack_require__(316);
+	var ShaderManager = __webpack_require__(315);
 
 	var Drawable =
 	/**
@@ -19277,10 +19117,10 @@
 	};
 
 /***/ },
-/* 306 */
+/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(process) {var loadImage = __webpack_require__(307)
+	/* WEBPACK VAR INJECTION */(function(process) {var loadImage = __webpack_require__(306)
 	var noop = function () {}
 
 	module.exports = svgToImage
@@ -19350,7 +19190,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(294)))
 
 /***/ },
-/* 307 */
+/* 306 */
 /***/ function(module, exports) {
 
 	module.exports = loadImage;
@@ -19388,15 +19228,15 @@
 
 
 /***/ },
-/* 308 */
+/* 307 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
-	var window = __webpack_require__(309)
-	var once = __webpack_require__(310)
-	var isFunction = __webpack_require__(311)
-	var parseHeaders = __webpack_require__(312)
-	var xtend = __webpack_require__(315)
+	var window = __webpack_require__(308)
+	var once = __webpack_require__(309)
+	var isFunction = __webpack_require__(310)
+	var parseHeaders = __webpack_require__(311)
+	var xtend = __webpack_require__(314)
 
 	module.exports = createXHR
 	createXHR.XMLHttpRequest = window.XMLHttpRequest || noop
@@ -19613,7 +19453,7 @@
 
 
 /***/ },
-/* 309 */
+/* 308 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {if (typeof window !== "undefined") {
@@ -19629,7 +19469,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 310 */
+/* 309 */
 /***/ function(module, exports) {
 
 	module.exports = once
@@ -19654,7 +19494,7 @@
 
 
 /***/ },
-/* 311 */
+/* 310 */
 /***/ function(module, exports) {
 
 	module.exports = isFunction
@@ -19675,11 +19515,11 @@
 
 
 /***/ },
-/* 312 */
+/* 311 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var trim = __webpack_require__(313)
-	  , forEach = __webpack_require__(314)
+	var trim = __webpack_require__(312)
+	  , forEach = __webpack_require__(313)
 	  , isArray = function(arg) {
 	      return Object.prototype.toString.call(arg) === '[object Array]';
 	    }
@@ -19711,7 +19551,7 @@
 	}
 
 /***/ },
-/* 313 */
+/* 312 */
 /***/ function(module, exports) {
 
 	
@@ -19731,10 +19571,10 @@
 
 
 /***/ },
-/* 314 */
+/* 313 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isFunction = __webpack_require__(311)
+	var isFunction = __webpack_require__(310)
 
 	module.exports = forEach
 
@@ -19783,7 +19623,7 @@
 
 
 /***/ },
-/* 315 */
+/* 314 */
 /***/ function(module, exports) {
 
 	module.exports = extend
@@ -19808,14 +19648,14 @@
 
 
 /***/ },
-/* 316 */
+/* 315 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var twgl = __webpack_require__(304);
+	var twgl = __webpack_require__(303);
 
 	var ShaderManager = function ShaderManager(gl) {
 	    _classCallCheck(this, ShaderManager);
@@ -19959,94 +19799,23 @@
 	    }
 
 	    var definesText = defines.join('\n') + '\n';
-	    var vsFullText = definesText + __webpack_require__(317);
-	    var fsFullText = definesText + __webpack_require__(318);
+	    var vsFullText = definesText + __webpack_require__(316);
+	    var fsFullText = definesText + __webpack_require__(317);
 
 	    return twgl.createProgramInfo(this._gl, [vsFullText, fsFullText]);
 	};
 
 /***/ },
-/* 317 */
+/* 316 */
 /***/ function(module, exports) {
 
 	module.exports = "uniform mat4 u_projectionMatrix;\nuniform mat4 u_modelMatrix;\n\nattribute vec2 a_position;\nattribute vec2 a_texCoord;\n\nvarying vec2 v_texCoord;\n\nvoid main() {\n    gl_Position = u_projectionMatrix * u_modelMatrix * vec4(a_position, 0, 1);\n    v_texCoord = a_texCoord;\n}\n"
 
 /***/ },
-/* 318 */
+/* 317 */
 /***/ function(module, exports) {
 
 	module.exports = "precision mediump float;\n\nuniform float u_fudge;\n\n#ifdef DRAW_MODE_silhouette\nuniform vec4 u_silhouetteColor;\n#else // DRAW_MODE_silhouette\n# ifdef ENABLE_color\nuniform float u_color;\n# endif // ENABLE_color\n# ifdef ENABLE_brightness\nuniform float u_brightness;\n# endif // ENABLE_brightness\n#endif // DRAW_MODE_silhouette\n\n#ifdef DRAW_MODE_colorMask\nuniform vec3 u_colorMask;\nuniform float u_colorMaskTolerance;\n#endif // DRAW_MODE_colorMask\n\n#ifdef ENABLE_fisheye\nuniform float u_fisheye;\n#endif // ENABLE_fisheye\n#ifdef ENABLE_whirl\nuniform float u_whirl;\n#endif // ENABLE_whirl\n#ifdef ENABLE_pixelate\nuniform float u_pixelate;\nuniform vec2 u_skinSize;\n#endif // ENABLE_pixelate\n#ifdef ENABLE_mosaic\nuniform float u_mosaic;\n#endif // ENABLE_mosaic\n#ifdef ENABLE_ghost\nuniform float u_ghost;\n#endif // ENABLE_ghost\n\nuniform sampler2D u_skin;\n\nvarying vec2 v_texCoord;\n\n#if !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color) || defined(ENABLE_brightness))\n// Branchless color conversions based on code from:\n// http://www.chilliant.com/rgb2hsv.html by Ian Taylor\n// Based in part on work by Sam Hocevar and Emil Persson\n\nconst float kEpsilon = 1e-6;\n\nvec3 convertRGB2HCV(vec3 rgb)\n{\n\tvec4 p = (rgb.g < rgb.b) ? vec4(rgb.bg, -1, 2.0/3.0) : vec4(rgb.gb, 0, -1.0/3.0);\n\tvec4 q = (rgb.r < p.x) ? vec4(p.xyw, rgb.r) : vec4(rgb.r, p.yzx);\n\tfloat c = q.x - min(q.w, q.y);\n\tfloat h = abs((q.w - q.y) / (6.0 * c + kEpsilon) + q.z);\n\treturn vec3(h, c, q.x);\n}\n\nvec3 convertRGB2HSL(vec3 rgb)\n{\n\tvec3 hcv = convertRGB2HCV(rgb);\n\tfloat l = hcv.z - hcv.y * 0.5;\n\tfloat s = hcv.y / (1.0 - abs(l * 2.0 - 1.0) + kEpsilon);\n\treturn vec3(hcv.x, s, l);\n}\n\nvec3 convertHue2RGB(float hue)\n{\n\tfloat r = abs(hue * 6.0 - 3.0) - 1.0;\n\tfloat g = 2.0 - abs(hue * 6.0 - 2.0);\n\tfloat b = 2.0 - abs(hue * 6.0 - 4.0);\n\treturn clamp(vec3(r, g, b), 0.0, 1.0);\n}\n\nvec3 convertHSL2RGB(vec3 hsl)\n{\n\tvec3 rgb = convertHue2RGB(hsl.x);\n\tfloat c = (1.0 - abs(2.0 * hsl.z - 1.0)) * hsl.y;\n\treturn (rgb - 0.5) * c + hsl.z;\n}\n#endif // !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color) || defined(ENABLE_brightness))\n\nconst vec2 kCenter = vec2(0.5, 0.5);\n\nvoid main()\n{\n\tvec2 texcoord0 = v_texCoord;\n\n\t#ifdef ENABLE_mosaic\n\ttexcoord0 = fract(u_mosaic * texcoord0);\n\t#endif // ENABLE_mosaic\n\n\t#ifdef ENABLE_pixelate\n\t{\n\t\t// TODO: clean up \"pixel\" edges\n\t\tvec2 pixelTexelSize = u_skinSize / u_pixelate;\n\t\ttexcoord0 = (floor(texcoord0 * pixelTexelSize) + kCenter) / pixelTexelSize;\n\t}\n\t#endif // ENABLE_pixelate\n\n\t#ifdef ENABLE_whirl\n\t{\n\t\tconst float kRadius = 0.5;\n\t\tvec2 offset = texcoord0 - kCenter;\n\t\tfloat offsetMagnitude = length(offset);\n\t\tfloat whirlFactor = 1.0 - (offsetMagnitude / kRadius);\n\t\tfloat whirlActual = u_whirl * whirlFactor * whirlFactor;\n\t\tfloat sinWhirl = sin(whirlActual);\n\t\tfloat cosWhirl = cos(whirlActual);\n\t\tmat2 rotationMatrix = mat2(\n\t\t\tcosWhirl, -sinWhirl,\n\t\t\tsinWhirl, cosWhirl\n\t\t);\n\n\t\t// TODO: tweak this algorithm such that texture coordinates don't depend on conditionals.\n\t\t// see: https://www.opengl.org/wiki/Sampler_%28GLSL%29#Non-uniform_flow_control\n\t\tif (offsetMagnitude <= kRadius)\n\t\t{\n\t\t\ttexcoord0 = rotationMatrix * offset + kCenter;\n\t\t}\n\t}\n\t#endif // ENABLE_whirl\n\n\t#ifdef ENABLE_fisheye\n\t{\n\t\tvec2 vec = (texcoord0 - kCenter) / kCenter;\n\t\tfloat r = pow(length(vec), u_fisheye);\n\t\tfloat angle = atan(vec.y, vec.x);\n\t\t// TODO: tweak this algorithm such that texture coordinates don't depend on conditionals.\n\t\t// see: https://www.opengl.org/wiki/Sampler_%28GLSL%29#Non-uniform_flow_control\n\t\tif (r <= 1.0)\n\t\t{\n\t\t\ttexcoord0 = kCenter + r * vec2(cos(angle), sin(angle)) * kCenter;\n\t\t}\n\t}\n\t#endif // ENABLE_fisheye\n\n\tgl_FragColor = texture2D(u_skin, texcoord0);\n\n\t#ifdef ENABLE_ghost\n\tgl_FragColor.a *= u_ghost;\n\t#endif // ENABLE_ghost\n\n\tif (gl_FragColor.a == 0.0)\n\t{\n\t\tdiscard;\n\t}\n\n\t#ifdef DRAW_MODE_silhouette\n\t// switch to u_silhouetteColor only AFTER the alpha test\n\tgl_FragColor = u_silhouetteColor;\n\t#else // DRAW_MODE_silhouette\n\n\t#if defined(ENABLE_color) || defined(ENABLE_brightness)\n\t{\n\t\tvec3 hsl = convertRGB2HSL(gl_FragColor.xyz);\n\n\t\t#ifdef ENABLE_color\n\t\t{\n\t\t\t// this code forces grayscale values to be slightly saturated\n\t\t\t// so that some slight change of hue will be visible\n\t\t\tconst float minLightness = 0.11 / 2.0;\n\t\t\tconst float minSaturation = 0.09;\n\t\t\tif (hsl.z < minLightness) hsl = vec3(0.0, 1.0, minLightness);\n\t\t\telse if (hsl.y < minSaturation) hsl = vec3(0.0, minSaturation, hsl.z);\n\n\t\t\thsl.x = mod(hsl.x + u_color, 1.0);\n\t\t\tif (hsl.x < 0.0) hsl.x += 1.0;\n\t\t}\n\t\t#endif // ENABLE_color\n\n\t\t#ifdef ENABLE_brightness\n\t\thsl.z = clamp(hsl.z + u_brightness, 0.0, 1.0);\n\t\t#endif // ENABLE_brightness\n\n\t\tgl_FragColor.rgb = convertHSL2RGB(hsl);\n\t}\n\t#endif // defined(ENABLE_color) || defined(ENABLE_brightness)\n\n\t#ifdef DRAW_MODE_colorMask\n\tvec3 maskDistance = abs(gl_FragColor.rgb - u_colorMask);\n\tvec3 colorMaskTolerance = vec3(u_colorMaskTolerance, u_colorMaskTolerance, u_colorMaskTolerance);\n\tif (any(greaterThan(maskDistance, colorMaskTolerance)))\n\t{\n\t\tdiscard;\n\t}\n\t#endif // DRAW_MODE_colorMask\n\n\t// WebGL defaults to premultiplied alpha\n\tgl_FragColor.rgb *= gl_FragColor.a;\n\n\t#endif // DRAW_MODE_silhouette\n}\n"
-
-/***/ },
-/* 319 */
-/***/ function(module, exports) {
-
-	'use strict';
-
-	/**
-	 * All messages sent to or from the renderer.
-	 */
-	var WorkerMessages = {
-
-	  /**
-	   * Messages that are sent to the renderer from a worker.
-	   * A message should have this form:
-	   * postMessage({
-	   *   id: MessagesToRenderer.ping,
-	   *   token: 'uniqueString',
-	   *   ...
-	   * });
-	   * If the renderer replies to the message, the 'token' property will be
-	   * copied into the reply message. If a message generates no reply, the
-	   * 'token' property is optional.
-	   * In general these messages correspond to a function on RenderWebGLLocal,
-	   * and in particular each argument in the RenderWebGLLocal method can be
-	   * encoded as a property on the message data object with the same name.
-	   * @enum {string}
-	   */
-	  ToRenderer: {
-	    Ping: 'Ping',
-	    CreateDrawable: 'CreateDrawable',
-	    DestroyDrawable: 'DestroyDrawable',
-	    Draw: 'Draw',
-	    IsTouchingColor: 'IsTouchingColor',
-	    Pick: 'Pick',
-	    UpdateDrawableProperties: 'UpdateDrawableProperties'
-	  },
-
-	  /**
-	   * Messages that are sent from the renderer to a worker.
-	   * A message will have this form:
-	   * postMessage({
-	   *   id: MessagesFromRenderer.ping,
-	   *   token: 'uniqueString',
-	   *   ...
-	   * });
-	   * If the message is being sent in reply to another message from the worker,
-	   * the 'token' property will match the originating message. Otherwise the
-	   * 'token' property will be undefined.
-	   * @enum {string}
-	   */
-	  FromRenderer: {
-	    /**
-	     * The renderer has connected to this worker.
-	     */
-	    RendererConnected: 'RendererConnected',
-
-	    /**
-	     * The response to a Ping from a worker.
-	     */
-	    Pong: 'Pong',
-
-	    /**
-	     * The message will contain a 'value' field with the result of the
-	     * request with matching token.
-	     */
-	    ResultValue: 'ResultValue'
-	  }
-	};
-
-	module.exports = WorkerMessages;
 
 /***/ }
 /******/ ]);

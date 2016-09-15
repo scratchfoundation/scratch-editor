@@ -1,7 +1,6 @@
 var twgl = require('twgl.js');
 
 var Drawable = require('./Drawable');
-var WorkerMessages = require('./WorkerMessages');
 var ShaderManager = require('./ShaderManager');
 
 
@@ -116,15 +115,11 @@ RenderWebGL.prototype.setStageSize = function (xLeft, xRight, yBottom, yTop) {
 };
 
 
-/********
- * Functions supporting RenderWebGL{Local,Worker}: access from those classes.
- ********/
-
 /**
  * Create a new Drawable and add it to the scene.
  * @returns {int} The ID of the new Drawable.
  */
-RenderWebGL.prototype._createDrawable = function () {
+RenderWebGL.prototype.createDrawable = function () {
     var drawable = new Drawable(this._gl);
     var drawableID = drawable.getID();
     this._drawables.push(drawableID);
@@ -136,7 +131,7 @@ RenderWebGL.prototype._createDrawable = function () {
  * @param {int} drawableID The ID of the Drawable to remove.
  * @returns {Boolean} True iff the drawable was found and removed.
  */
-RenderWebGL.prototype._destroyDrawable = function (drawableID) {
+RenderWebGL.prototype.destroyDrawable = function (drawableID) {
     var index = this._drawables.indexOf(drawableID);
     if (index >= 0) {
         Drawable.getDrawableByID(drawableID).dispose();
@@ -149,7 +144,7 @@ RenderWebGL.prototype._destroyDrawable = function (drawableID) {
 /**
  * Draw all current drawables and present the frame on the canvas.
  */
-RenderWebGL.prototype._draw = function () {
+RenderWebGL.prototype.draw = function () {
     var gl = this._gl;
 
     twgl.bindFramebufferInfo(gl, null);
@@ -168,7 +163,7 @@ RenderWebGL.prototype._draw = function () {
  * @param {int[]} [mask3b] Optionally mask the check to this part of Drawable.
  * @returns {Boolean} True iff the Drawable is touching the color.
  */
-RenderWebGL.prototype._isTouchingColor = function(drawableID, color3b, mask3b) {
+RenderWebGL.prototype.isTouchingColor = function(drawableID, color3b, mask3b) {
 
     var gl = this._gl;
 
@@ -264,7 +259,7 @@ RenderWebGL.prototype._isTouchingColor = function(drawableID, color3b, mask3b) {
  * @returns {int} The ID of the topmost Drawable under the picking location, or
  * Drawable.NONE if there is no Drawable at that location.
  */
-RenderWebGL.prototype._pick = function (
+RenderWebGL.prototype.pick = function (
     centerX, centerY, touchWidth, touchHeight, candidateIDs) {
     var gl = this._gl;
 
@@ -349,6 +344,16 @@ RenderWebGL.prototype._pick = function (
     return hit | 0;
 };
 
+/**
+* Update the position, direction, scale, or effect properties of this Drawable.
+* @param {int} drawableID The ID of the Drawable to update.
+* @param {Object.<string,*>} properties The new property values to set.
+ */
+RenderWebGL.prototype.updateDrawableProperties = function (
+        drawableID, properties) {
+    var drawable = Drawable.getDrawableByID(drawableID);
+    drawable.updateProperties(properties);
+};
 
 /********
  * Truly internal functions: these support the functions above.
@@ -457,85 +462,5 @@ RenderWebGL.prototype._drawThese = function(
         twgl.setUniforms(currentShader, drawable.getUniforms());
 
         twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
-    }
-};
-
-/********
- * Worker interface
- * TODO: Consider moving this to a separate "dispatcher" class or similar.
- ********/
-
-/**
- * Listen for messages from a worker.
- * The renderer will post a message to this worker with data='rendererConnected'
- * immediately. After that, the renderer will not send messages to the worker
- * except in response to messages from that worker.
- * @param {Worker} worker Listen to this worker.
- */
-RenderWebGL.prototype.connectWorker = function(worker) {
-    var instance = this;
-    worker.addEventListener('message', function (event) {
-        instance._onWorkerMessage(worker, event);
-    });
-    worker.postMessage({id: WorkerMessages.FromRenderer.RendererConnected});
-};
-
-/**
- * Post a ResultValue message to a worker in reply to a particular message.
- * The outgoing message's reply token will be copied from the provided message.
- * @param {Worker} worker The worker to receive the ResultValue message.
- * @param {Object} message The originating message to which this is a reply.
- * @param {*} value The value to send as a result.
- * @private
- */
-RenderWebGL.prototype._postResultValue = function(worker, message, value) {
-    worker.postMessage({
-        id: WorkerMessages.FromRenderer.ResultValue,
-        token: message.data.token,
-        value: value
-    });
-};
-
-/**
- * Handle an event (message) from the specified worker.
- * @param {Worker} worker The originating worker for the event.
- * @param {MessageEvent} message The event to be handled.
- * @private
- */
-RenderWebGL.prototype._onWorkerMessage = function(worker, message) {
-    switch(message.data.id) {
-    case WorkerMessages.ToRenderer.Ping:
-        worker.postMessage(WorkerMessages.FromRenderer.Pong);
-        break;
-    case WorkerMessages.ToRenderer.CreateDrawable:
-        this._postResultValue(worker, message, this._createDrawable());
-        break;
-    case WorkerMessages.ToRenderer.DestroyDrawable:
-        this._postResultValue(worker, message,
-            this._destroyDrawable(message.data.drawableID));
-        break;
-    case WorkerMessages.ToRenderer.Draw:
-        this._draw();
-        break;
-    case WorkerMessages.ToRenderer.IsTouchingColor:
-        this._postResultValue(worker, message,
-            this._isTouchingColor(
-                message.data.drawableID,
-                message.data.color3b,
-                message.data.mask3b));
-        break;
-    case WorkerMessages.ToRenderer.Pick:
-        this._postResultValue(worker, message,
-            this._pick(
-                message.data.centerX,
-                message.data.centerY,
-                message.data.touchWidth,
-                message.data.touchHeight,
-                message.data.candidateIDs));
-        break;
-    case WorkerMessages.ToRenderer.UpdateDrawableProperties:
-        var drawable = Drawable.getDrawableByID(message.data.drawableID);
-        drawable.updateProperties(message.data.properties);
-        break;
     }
 };

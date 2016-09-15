@@ -17,7 +17,20 @@
 <script src="../render.js"></script>
 <script>
     var canvas = document.getElementById('scratch-stage');
-    var renderer = new RenderWebGLLocal(canvas);
+    var fudge = 90;
+    var renderer = new RenderWebGL(canvas);
+
+    var drawableID = renderer.createDrawable();
+    renderer.updateDrawableProperties(drawableID, {
+        position: [0, 0],
+        scale: [100, 100],
+        direction: 90
+    });
+    var drawableID2 = renderer.createDrawable();
+    renderer.updateDrawableProperties(drawableID2, {
+        skin: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
+            '09dc888b0b7df19f70d81588ae73420e.svg/get/'
+    });
 
     var fudgeInput = document.getElementById('fudge');
     function onFudgeMinChanged(newValue) {
@@ -27,7 +40,13 @@
         fudgeInput.max = newValue;
     }
     function onFudgeChanged(newValue) {
-        demoWorker.postMessage({fudge: newValue});
+        fudge = newValue;
+        var props = {};
+        //props.position = [posX, posY];
+        //props.direction = fudge;
+        //props.pixelate = fudge;
+        props.scale = [fudge, 100];
+        renderer.updateDrawableProperties(drawableID, props);
     }
 
     // Adapted from code by Simon Sarris: http://stackoverflow.com/a/10450761
@@ -67,10 +86,8 @@
 
     canvas.onclick = function(event) {
         var mousePos = getMousePos(event, canvas);
-        var pickPromise = renderer.pick(mousePos.x, mousePos.y);
-        pickPromise.then(function(pickID) {
-            console.log('You clicked on ' + (pickID < 0 ? 'nothing' : 'ID# ' + pickID));
-        });
+        var pickID = renderer.pick(mousePos.x, mousePos.y);
+        console.log('You clicked on ' + (pickID < 0 ? 'nothing' : 'ID# ' + pickID));
     };
 
     function drawStep() {
@@ -80,9 +97,6 @@
     drawStep();
 
     renderer.setDebugCanvas(document.getElementById('debug-canvas'));
-
-    var demoWorker = new Worker('worker.js');
-    renderer.connectWorker(demoWorker);
 </script>
 </body>
 </html>

@@ -4,9 +4,7 @@ var webpack = require('webpack');
 module.exports = {
     entry: {
         'render': './src/index-web.js',
-        'render.min': './src/index-web.js',
-        'render-worker': './src/index-webworker.js',
-        'render-worker.min': './src/index-webworker.js'
+        'render.min': './src/index-web.js'
     },
     output: {
         path: __dirname,

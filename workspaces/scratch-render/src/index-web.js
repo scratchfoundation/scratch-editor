@@ -1,8 +1,8 @@
 require('babel-polyfill');
 
-var RenderWebGLLocal = require('./RenderWebGLLocal');
+var RenderWebGL = require('./RenderWebGL');
 
 /**
  * Export for use in a web page
  */
-window.RenderWebGLLocal = RenderWebGLLocal;
+window.RenderWebGL = RenderWebGL;
