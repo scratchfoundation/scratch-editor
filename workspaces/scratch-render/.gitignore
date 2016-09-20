@@ -4,3 +4,4 @@
 # NPM
 /node_modules
 npm-*
+/dist.js

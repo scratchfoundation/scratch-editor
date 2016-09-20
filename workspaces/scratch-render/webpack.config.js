@@ -1,15 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
 
-module.exports = {
-    entry: {
-        'render': './src/index-web.js',
-        'render.min': './src/index-web.js'
-    },
-    output: {
-        path: __dirname,
-        filename: '[name].js'
-    },
+var base = {
     module: {
         loaders: [
             {
@@ -42,3 +34,25 @@ module.exports = {
         })
     ]
 };
+
+module.exports = [Object.assign({}, base, {
+    entry: {
+        'render': './src/index-web.js',
+        'render.min': './src/index-web.js'
+    },
+    output: {
+        path: __dirname,
+        filename: '[name].js'
+    },
+}),
+Object.assign({}, base, {
+    entry: {
+        'render': './src/index.js'
+    },
+    output: {
+        library: 'ScratchRender',
+        libraryTarget: 'commonjs2',
+        path: __dirname,
+        filename: 'dist.js'
+    }
+})];
