@@ -11,7 +11,7 @@
   },
   "main": "./dist.js",
   "scripts": {
-    "postinstall": "webpack",
+    "postinstall": "./node_modules/.bin/webpack",
     "test": "make test"
   },
   "dependencies": {
