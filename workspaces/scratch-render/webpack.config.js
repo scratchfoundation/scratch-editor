@@ -2,6 +2,10 @@ var path = require('path');
 var webpack = require('webpack');
 
 var base = {
+    devServer: {
+        contentBase: path.resolve(__dirname, 'playground'),
+        host: '0.0.0.0'
+    },
     module: {
         loaders: [
             {

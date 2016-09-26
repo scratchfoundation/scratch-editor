@@ -12,6 +12,7 @@
   "main": "./dist.js",
   "scripts": {
     "prepublish": "make build",
+    "start": "make serve",
     "test": "make test"
   },
   "dependencies": {},
@@ -24,6 +25,7 @@
     "eslint": "2.7.0",
     "gh-pages": "0.11.0",
     "json-loader": "0.5.4",
+    "lodash.defaultsdeep": "4.6.0",
     "raw-loader": "0.5.1",
     "svg-to-image": "1.1.3",
     "tap": "5.7.1",
