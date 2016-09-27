@@ -50,7 +50,7 @@ module.exports = [
         output: {
             path: __dirname,
             filename: '[name].js'
-        },
+        }
     }),
     // Webpack-compatible
     Object.assign({}, base, {
