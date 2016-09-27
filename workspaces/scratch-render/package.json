@@ -16,7 +16,6 @@
     "start": "make serve",
     "test": "make test"
   },
-  "dependencies": {},
   "devDependencies": {
     "babel-core": "6.9.1",
     "babel-eslint": "6.0.4",
