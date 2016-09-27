@@ -4,4 +4,8 @@
 # NPM
 /node_modules
 npm-*
+
+# Build
+/render*.js
 /dist.js
+/playground/render.js
