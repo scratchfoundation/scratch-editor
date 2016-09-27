@@ -11,10 +11,10 @@
   },
   "main": "./dist.js",
   "scripts": {
-    "version": "./node_modules/.bin/json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\"",
     "prepublish": "make build",
     "start": "make serve",
-    "test": "make test"
+    "test": "make test",
+    "version": "./node_modules/.bin/json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\""
   },
   "devDependencies": {
     "babel-core": "6.9.1",
