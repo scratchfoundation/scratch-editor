@@ -285,6 +285,83 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3b, mask3b) {
 };
 
 /**
+ * Check if a particular Drawable is touching any in a set of Drawables.
+ * @param {int} drawableID The ID of the Drawable to check.
+ * @param {int[]} candidateIDs The Drawable IDs to check, otherwise all.
+ * @returns {Boolean} True iff the Drawable is touching one of candidateIDs.
+ */
+RenderWebGL.prototype.isTouchingDrawables = function(drawableID, candidateIDs) {
+    candidateIDs = candidateIDs || this._drawables;
+
+    const gl = this._gl;
+
+    twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+
+    // TODO: restrict to only the area overlapped by the target Drawable
+    // - limit size of viewport to the AABB around the target Drawable
+    // - draw only the Drawables which could overlap the target Drawable
+    // - read only the pixels in the AABB around the target Drawable
+    gl.viewport(0, 0, this._nativeSize[0], this._nativeSize[1]);
+
+    const noneColor = Drawable.color4fFromID(Drawable.NONE);
+    gl.clearColor.apply(gl, noneColor);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+
+    try {
+        gl.enable(gl.STENCIL_TEST);
+        gl.stencilFunc(gl.ALWAYS, 1, 1);
+        gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
+        gl.colorMask(false, false, false, false);
+        this._drawThese(
+            [drawableID], ShaderManager.DRAW_MODE.silhouette, this._projection
+        );
+
+        gl.stencilFunc(gl.EQUAL, 1, 1);
+        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+        gl.colorMask(true, true, true, true);
+
+        // TODO: only draw items which could possibly overlap target Drawable
+        // It might work to use the filter function for that
+        this._drawThese(
+            candidateIDs, ShaderManager.DRAW_MODE.silhouette, this._projection
+        );
+    } finally {
+        gl.colorMask(true, true, true, true);
+        gl.disable(gl.STENCIL_TEST);
+    }
+
+    let pixels = new Buffer(this._nativeSize[0] * this._nativeSize[1] * 4);
+    gl.readPixels(
+        0, 0, this._nativeSize[0], this._nativeSize[1],
+        gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+    if (this._debugCanvas) {
+        this._debugCanvas.width = this._nativeSize[0];
+        this._debugCanvas.height = this._nativeSize[1];
+        const context = this._debugCanvas.getContext('2d');
+        let imageData = context.getImageData(
+            0, 0, this._nativeSize[0], this._nativeSize[1]);
+        for (let i = 0, bytes = pixels.length; i < bytes; ++i) {
+            imageData.data[i] = pixels[i];
+        }
+        context.putImageData(imageData, 0, 0);
+    }
+
+    for (let pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
+        let pixelID = Drawable.color4bToID(
+            pixels[pixelBase],
+            pixels[pixelBase + 1],
+            pixels[pixelBase + 2],
+            pixels[pixelBase + 3]);
+        if (pixelID > Drawable.NONE) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+/**
  * Detect which sprite, if any, is at the given location.
  * @param {int} centerX The client x coordinate of the picking location.
  * @param {int} centerY The client y coordinate of the picking location.
