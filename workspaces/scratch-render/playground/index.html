@@ -3,11 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Scratch WebGL rendering demo</title>
+    <style>
+        #scratch-stage { width: 480px; }
+        #debug-canvas { width: 480px; }
+    </style>
 </head>
 <body style="background: lightsteelblue">
 <canvas id="debug-canvas" width="10" height="10" style="border:3px dashed red"></canvas>
 <canvas id="scratch-stage" width="10" height="10" style="border:3px dashed black"></canvas>
 <p>
+    <select id="fudgeproperty" onchange="onFudgePropertyChanged(this.value)">
+        <option value="posx">Position X</option>
+        <option value="posy">Position Y</option>
+        <option value="direction">Direction</option>
+        <option value="scalex">Scale X</option>
+        <option value="scaley">Scale Y</option>
+        <option value="color">Color</option>
+        <option value="fisheye">Fisheye</option>
+        <option value="whirl">Whirl</option>
+        <option value="pixelate">Pixelate</option>
+        <option value="mosaic">Mosaic</option>
+        <option value="brightness">Brightness</option>
+        <option value="ghost">Ghost</option>
+    </select>
     <input type="range" id="fudge" style="width:50%" value="90" min="-90" max="270" step="any" oninput="onFudgeChanged(this.value)" onchange="onFudgeChanged(this.value)">
 </p>
 <p>
@@ -32,6 +50,15 @@
             '09dc888b0b7df19f70d81588ae73420e.svg/get/'
     });
 
+    var fudgeSelect = document.getElementById('fudgeproperty');
+    var posX = 0;
+    var posY = 0;
+    var scaleX = 100;
+    var scaleY = 100;
+    var fudgeProperty = 'posx';
+    function onFudgePropertyChanged(newValue) {
+        fudgeProperty = newValue;
+    }
     var fudgeInput = document.getElementById('fudge');
     function onFudgeMinChanged(newValue) {
         fudgeInput.min = newValue;
@@ -42,11 +69,21 @@
     function onFudgeChanged(newValue) {
         fudge = newValue;
         var props = {};
-        //props.position = [posX, posY];
-        //props.direction = fudge;
-        //props.pixelate = fudge;
-        props.scale = [fudge, 100];
-        renderer.updateDrawableProperties(drawableID, props);
+        switch (fudgeProperty) {
+            case 'posx': props.position = [fudge, posY]; posX = fudge; break;
+            case 'posy': props.position = [posX, fudge]; posY = fudge; break;
+            case 'direction': props.direction = fudge; break;
+            case 'scalex': props.scale = [fudge, scaleY]; scaleX = fudge; break;
+            case 'scaley': props.scale = [scaleX, fudge]; scaleY = fudge; break;
+            case 'color': props.color = fudge; break;
+            case 'whirl': props.whirl = fudge; break;
+            case 'fisheye': props.fisheye = fudge; break;
+            case 'pixelate': props.pixelate = fudge; break;
+            case 'mosaic': props.mosaic = fudge; break;
+            case 'brightness': props.brightness = fudge; break;
+            case 'ghost': props.ghost = fudge; break;
+        }
+        renderer.updateDrawableProperties(drawableID2, props);
     }
 
     // Adapted from code by Simon Sarris: http://stackoverflow.com/a/10450761
@@ -92,6 +129,7 @@
 
     function drawStep() {
         renderer.draw();
+        renderer.getBounds(drawableID2);
         requestAnimationFrame(drawStep);
     }
     drawStep();

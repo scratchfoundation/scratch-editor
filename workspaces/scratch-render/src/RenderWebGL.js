@@ -1,3 +1,4 @@
+var hull = require('hull.js');
 var twgl = require('twgl.js');
 
 var Drawable = require('./Drawable');
@@ -190,6 +191,40 @@ RenderWebGL.prototype.draw = function () {
     this._drawThese(
         this._drawables, ShaderManager.DRAW_MODE.default, this._projection);
 };
+
+
+/**
+ * Get the precise bounds for a Drawable.
+ * @param {int} drawableID ID of Drawable to get bounds for.
+ * @return {Object} Bounds for a tight box around the Drawable.
+ */
+RenderWebGL.prototype.getBounds = function (drawableID) {
+    const drawable = Drawable.getDrawableByID(drawableID);
+    // Tell the Drawable about its updated convex hull, if necessary.
+    if (drawable.needsConvexHullPoints()) {
+        const points = this._getConvexHullPointsForDrawable(drawableID);
+        drawable.setConvexHullPoints(points);
+    }
+    let bounds = drawable.getBounds();
+    // In debug mode, draw the bounds.
+    if (this._debugCanvas) {
+        let gl = this._gl;
+        this._debugCanvas.width = gl.canvas.width;
+        this._debugCanvas.height = gl.canvas.height;
+        let context = this._debugCanvas.getContext('2d');
+        context.drawImage(gl.canvas, 0, 0);
+        context.strokeStyle = '#FF0000';
+        let pr = window.devicePixelRatio;
+        context.strokeRect(
+            pr * (bounds.left + this._nativeSize[0]/2),
+            pr * (bounds.top + this._nativeSize[1]/2),
+            pr * (bounds.right - bounds.left),
+            pr * (bounds.bottom - bounds.top)
+        );
+    }
+    return bounds;
+};
+
 
 /**
  * Check if a particular Drawable is touching a particular color.
@@ -563,16 +598,101 @@ RenderWebGL.prototype._drawThese = function(
             twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
             twgl.setUniforms(currentShader, {u_projectionMatrix: projection});
             twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
-
-            // TODO: should these be set after the Drawable's uniforms?
-            // That would allow Drawable-scope uniforms to be overridden...
-            if (extraUniforms) {
-                twgl.setUniforms(currentShader, extraUniforms);
-            }
         }
 
         twgl.setUniforms(currentShader, drawable.getUniforms());
 
+        // Apply extra uniforms after the Drawable's, to allow overwriting.
+        if (extraUniforms) {
+            twgl.setUniforms(currentShader, extraUniforms);
+        }
+
         twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
     }
+};
+
+/**
+ * Get the convex hull points for a particular Drawable.
+ * To do this, draw the Drawable unrotated, unscaled, and untranslated.
+ * Read back the pixels and find all boundary points.
+ * Finally, apply a convex hull algorithm to simplify the set.
+ * @param {int} drawablesID The Drawable IDs calculate convex hull for.
+ * @return {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
+ */
+RenderWebGL.prototype._getConvexHullPointsForDrawable = function (drawableID) {
+    const drawable = Drawable.getDrawableByID(drawableID);
+    const [width, height] = drawable._uniforms.u_skinSize;
+    // No points in the hull if invisible or size is 0.
+    if (!drawable.getVisible() || width == 0 || height == 0) {
+        return [];
+    }
+
+    // Only draw to the size of the untransformed drawable.
+    const gl = this._gl;
+    twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+    gl.viewport(0, 0, width, height);
+
+    // Clear the canvas with Drawable.NONE.
+    const noneColor = Drawable.color4fFromID(Drawable.NONE);
+    gl.clearColor.apply(gl, noneColor);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    // Overwrite the model matrix to be unrotated, unscaled, untranslated.
+    let modelMatrix = twgl.m4.identity();
+    twgl.m4.rotateZ(modelMatrix, Math.PI, modelMatrix);
+    twgl.m4.scale(modelMatrix, [width, height], modelMatrix);
+
+    const projection = twgl.m4.ortho(
+        -0.5 * width, 0.5 * width,
+        -0.5 * height, 0.5 * height,
+        -1, 1
+    );
+
+    this._drawThese([drawableID],
+        ShaderManager.DRAW_MODE.silhouette,
+        projection,
+        undefined,
+        {u_modelMatrix: modelMatrix}
+    );
+
+    const pixels = new Buffer(width * height * 4);
+    gl.readPixels(
+        0, 0, width, height,
+        gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+    // Known boundary points on left/right edges of pixels.
+    let boundaryPoints = [];
+
+    /**
+     * Helper method to look up a pixel.
+     * @param {int} x X coordinate of the pixel in `pixels`.
+     * @param {int} y Y coordinate of the pixel in `pixels`.
+     * @return Known ID at that pixel, or Drawable.NONE.
+     */
+    const _getPixel = function (x, y) {
+        var pixelBase = ((width * y) + x) * 4;
+        return Drawable.color4bToID(
+            pixels[pixelBase],
+            pixels[pixelBase + 1],
+            pixels[pixelBase + 2],
+            pixels[pixelBase + 3]);
+    };
+    for (let y = 0; y <= height; y++) {
+        // Scan from left.
+        for (let x = 0; x < width; x++) {
+            if (_getPixel(x, y) > Drawable.NONE) {
+                boundaryPoints.push([x, y]);
+                break;
+            }
+        }
+        // Scan from right.
+        for (let x = width - 1; x >= 0; x--) {
+            if (_getPixel(x, y) > Drawable.NONE) {
+                boundaryPoints.push([x, y]);
+                break;
+            }
+        }
+    }
+    // Simplify boundary points using convex hull.
+    return hull(boundaryPoints, Infinity);
 };

@@ -27,6 +27,7 @@ module.exports = ShaderManager;
  * - A conversion function which takes a Scratch value (generally in the range
  *   0..100 or -100..100) and maps it to a value useful to the shader. This
  *   mapping may not be reversible.
+ * - `shapeChanges`, whether the effect could change the drawn shape.
  * @type {Object.<string,Object.<string,*>>}
  */
 ShaderManager.EFFECT_INFO = {
@@ -34,25 +35,29 @@ ShaderManager.EFFECT_INFO = {
         mask: 1 << 0,
         converter: function(x) {
             return (x / 200) % 1;
-        }
+        },
+        shapeChanges: false
     },
     fisheye: {
         mask: 1 << 1,
         converter: function(x) {
             return Math.max(0, (x + 100) / 100);
-        }
+        },
+        shapeChanges: true
     },
     whirl: {
         mask: 1 << 2,
         converter: function(x) {
             return x * Math.PI / 180;
-        }
+        },
+        shapeChanges: true
     },
     pixelate: {
         mask: 1 << 3,
         converter: function(x) {
             return Math.abs(x) / 10;
-        }
+        },
+        shapeChanges: true
     },
     mosaic: {
         mask: 1 << 4,
@@ -60,19 +65,22 @@ ShaderManager.EFFECT_INFO = {
             x = Math.round((Math.abs(x) + 10) / 10);
             // TODO: cap by Math.min(srcWidth, srcHeight)
             return Math.max(1, Math.min(x, 512));
-        }
+        },
+        shapeChanges: true
     },
     brightness: {
         mask: 1 << 5,
         converter: function(x) {
             return Math.max(-100, Math.min(x, 100)) / 100;
-        }
+        },
+        shapeChanges: false
     },
     ghost: {
         mask: 1 << 6,
         converter: function(x) {
             return 1 - Math.max(0, Math.min(x, 100)) / 100;
-        }
+        },
+        shapeChanges: false
     }
 };
 

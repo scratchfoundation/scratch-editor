@@ -65,6 +65,9 @@ class Drawable {
         this._visible = true;
         this._effectBits = 0;
 
+        this._convexHullPoints = null;
+        this._convexHullDirty = true;
+
         // Create a transparent 1x1 texture for temporary use
         var tempTexture = twgl.createTexture(gl, {src: [0, 0, 0, 0]});
         this._useSkin(tempTexture, 0, 0, 1, true);
@@ -309,6 +312,7 @@ Drawable.prototype.updateProperties = function (properties) {
     var dirty = false;
     if ('skin' in properties) {
         this.setSkin(properties.skin);
+        this.setConvexHullDirty();
     }
     if ('position' in properties && (
         this._position[0] != properties.position[0] ||
@@ -330,6 +334,7 @@ Drawable.prototype.updateProperties = function (properties) {
     }
     if ('visible' in properties) {
         this._visible = properties.visible;
+        this.setConvexHullDirty();
     }
     if (dirty) {
         this.setTransformDirty();
@@ -348,6 +353,9 @@ Drawable.prototype.updateProperties = function (properties) {
             }
             var converter = effectInfo.converter;
             this._uniforms['u_' + effectName] = converter(rawValue);
+            if (effectInfo.shapeChanges) {
+                this.setConvexHullDirty();
+            }
         }
     }
 };
@@ -369,6 +377,7 @@ Drawable.prototype._setSkinSize = function (width, height, costumeResolution) {
         this._uniforms.u_skinSize[1] = height;
         this.setTransformDirty();
     }
+    this.setConvexHullDirty();
 };
 
 /**
@@ -386,10 +395,89 @@ Drawable.prototype._calculateTransform = function () {
 
     var scaledSize = twgl.v3.divScalar(twgl.v3.multiply(
         this._uniforms.u_skinSize, this._scale), 100);
-    scaledSize[3] = 0; // was NaN because the vectors have only 2 components.
+    scaledSize[2] = 0; // was NaN because the vectors have only 2 components.
     twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
 
     this._transformDirty = false;
+};
+
+/**
+ * Whether the Drawable needs convex hull points provided by the renderer.
+ * @return {boolean} True when no convex hull known, or it's dirty.
+ */
+Drawable.prototype.needsConvexHullPoints = function () {
+    return !this._convexHullPoints || this._convexHullDirty;
+};
+
+/**
+ * Set the convex hull to be dirty.
+ * Do this whenever the Drawable's shape has possibly changed.
+ */
+Drawable.prototype.setConvexHullDirty = function () {
+    this._convexHullDirty = true;
+};
+
+/**
+ * Set the convex hull points for the Drawable.
+ * @param {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
+ */
+Drawable.prototype.setConvexHullPoints = function (points) {
+    this._convexHullPoints = points;
+    this._convexHullDirty = false;
+};
+
+/**
+ * Get the precise bounds for a Drawable.
+ * This function applies the transform matrix to the known convex hull,
+ * and then finds the minimum box along the axes.
+ * Before calling this, ensure the renderer has updated convex hull points.
+ * @return {Object} Bounds for a tight box around the Drawable.
+ */
+Drawable.prototype.getBounds = function () {
+    if (this.needsConvexHullPoints()) {
+        throw 'Needs updated convex hull points before bounds calculation.';
+    }
+    // First, transform all the convex hull points by the current Drawable's
+    // transform. This allows us to skip recalculating the convex hull
+    // for many Drawable updates, including translation, rotation, scaling.
+    const projection = twgl.m4.ortho(-1, 1, 1, -1, -1, 1);
+    const skinSize = this._uniforms.u_skinSize;
+    const tm = twgl.m4.multiply(this._uniforms.u_modelMatrix, projection);
+    let transformedHullPoints = [];
+    for (let i = 0; i < this._convexHullPoints.length; i++) {
+        let point = this._convexHullPoints[i];
+        let glPoint = twgl.v3.create(
+            0.5 + (-point[0] / skinSize[0]),
+            0.5 + (-point[1] / skinSize[1]),
+            0
+        );
+        twgl.m4.transformPoint(tm, glPoint, glPoint);
+        transformedHullPoints.push(glPoint);
+    }
+    // Search through transformed points to generate box on axes.
+    let bounds = {
+        left: Infinity,
+        right: -Infinity,
+        top: Infinity,
+        bottom: -Infinity
+    };
+    for (let i = 0; i < transformedHullPoints.length; i++) {
+        let x = transformedHullPoints[i][0];
+        let y = transformedHullPoints[i][1];
+        if (x < bounds.left) {
+            bounds.left = x;
+        }
+        if (x > bounds.right) {
+            bounds.right = x;
+        }
+        if (y < bounds.top) {
+            bounds.top = y;
+        }
+        if (y > bounds.bottom) {
+            bounds.bottom = y;
+        }
+    }
+    return bounds;
 };
 
 /**
