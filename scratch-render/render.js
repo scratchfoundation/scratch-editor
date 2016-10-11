@@ -8411,6 +8411,16 @@
 	};
 
 	/**
+	 * Get the current skin (costume) size of a Drawable.
+	 * @param {int} drawableID The ID of the Drawable to measure.
+	 * @return {Array.<number>} Skin size, width and height.
+	 */
+	RenderWebGL.prototype.getSkinSize = function (drawableID) {
+	    var drawable = Drawable.getDrawableByID(drawableID);
+	    return drawable.getSkinSize();
+	};
+
+	/**
 	 * Check if a particular Drawable is touching a particular color.
 	 * @param {int} drawableID The ID of the Drawable to check.
 	 * @param {int[]} color3b Test if the Drawable is touching this color.
@@ -19905,6 +19915,14 @@
 	        this.setTransformDirty();
 	    }
 	    this.setConvexHullDirty();
+	};
+
+	/**
+	 * Get the size of the Drawable's current skin.
+	 * @return {Array.<number>} Skin size, width and height.
+	 */
+	Drawable.prototype.getSkinSize = function () {
+	    return this._uniforms.u_skinSize.slice();
 	};
 
 	/**
