@@ -381,6 +381,14 @@ Drawable.prototype._setSkinSize = function (width, height, costumeResolution) {
 };
 
 /**
+ * Get the size of the Drawable's current skin.
+ * @return {Array.<number>} Skin size, width and height.
+ */
+Drawable.prototype.getSkinSize = function () {
+    return this._uniforms.u_skinSize.slice();
+};
+
+/**
  * Calculate the transform to use when rendering this Drawable.
  * @private
  */

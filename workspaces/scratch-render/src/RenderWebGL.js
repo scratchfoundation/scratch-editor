@@ -225,6 +225,15 @@ RenderWebGL.prototype.getBounds = function (drawableID) {
     return bounds;
 };
 
+/**
+ * Get the current skin (costume) size of a Drawable.
+ * @param {int} drawableID The ID of the Drawable to measure.
+ * @return {Array.<number>} Skin size, width and height.
+ */
+RenderWebGL.prototype.getSkinSize = function (drawableID) {
+    const drawable = Drawable.getDrawableByID(drawableID);
+    return drawable.getSkinSize();
+};
 
 /**
  * Check if a particular Drawable is touching a particular color.
