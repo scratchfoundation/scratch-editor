@@ -448,7 +448,7 @@ Drawable.prototype.getBounds = function () {
     // First, transform all the convex hull points by the current Drawable's
     // transform. This allows us to skip recalculating the convex hull
     // for many Drawable updates, including translation, rotation, scaling.
-    const projection = twgl.m4.ortho(-1, 1, 1, -1, -1, 1);
+    const projection = twgl.m4.ortho(-1, 1, -1, 1, -1, 1);
     const skinSize = this._uniforms.u_skinSize;
     const tm = twgl.m4.multiply(this._uniforms.u_modelMatrix, projection);
     let transformedHullPoints = [];
@@ -466,8 +466,8 @@ Drawable.prototype.getBounds = function () {
     let bounds = {
         left: Infinity,
         right: -Infinity,
-        top: Infinity,
-        bottom: -Infinity
+        top: -Infinity,
+        bottom: Infinity
     };
     for (let i = 0; i < transformedHullPoints.length; i++) {
         let x = transformedHullPoints[i][0];
@@ -478,10 +478,10 @@ Drawable.prototype.getBounds = function () {
         if (x > bounds.right) {
             bounds.right = x;
         }
-        if (y < bounds.top) {
+        if (y > bounds.top) {
             bounds.top = y;
         }
-        if (y > bounds.bottom) {
+        if (y < bounds.bottom) {
             bounds.bottom = y;
         }
     }

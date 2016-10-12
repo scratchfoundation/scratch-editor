@@ -217,9 +217,9 @@ RenderWebGL.prototype.getBounds = function (drawableID) {
         let pr = window.devicePixelRatio;
         context.strokeRect(
             pr * (bounds.left + this._nativeSize[0]/2),
-            pr * (bounds.top + this._nativeSize[1]/2),
+            pr * (-bounds.top + this._nativeSize[1]/2),
             pr * (bounds.right - bounds.left),
-            pr * (bounds.bottom - bounds.top)
+            pr * (-bounds.bottom + bounds.top)
         );
     }
     return bounds;
