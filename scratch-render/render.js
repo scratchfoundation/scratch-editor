@@ -19981,6 +19981,9 @@
 	    if (this.needsConvexHullPoints()) {
 	        throw 'Needs updated convex hull points before bounds calculation.';
 	    }
+	    if (this._transformDirty) {
+	        this._calculateTransform();
+	    }
 	    // First, transform all the convex hull points by the current Drawable's
 	    // transform. This allows us to skip recalculating the convex hull
 	    // for many Drawable updates, including translation, rotation, scaling.
