@@ -167,7 +167,7 @@ RenderWebGL.prototype.setDrawableOrder = function (
             newIndex += oldIndex;
         }
         if (opt_min) {
-            newIndex = Math.min(newIndex, opt_min);
+            newIndex = Math.max(newIndex, opt_min);
         }
         newIndex = Math.max(newIndex, 0);
         // Insert at new index.
