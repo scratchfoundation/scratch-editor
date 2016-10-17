@@ -50,7 +50,7 @@ renderer.connectWorker(worker);
 
 ## Standalone Build
 ```bash
-make build
+npm run build
 ```
 
 ```html
@@ -63,7 +63,7 @@ make build
 
 ## Testing
 ```bash
-make test
+npm test
 ```
 
 ## Donate
