@@ -11,10 +11,14 @@
   },
   "main": "./dist.js",
   "scripts": {
-    "prepublish": "make build",
-    "start": "make serve",
-    "test": "make test",
-    "version": "./node_modules/.bin/json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\""
+    "build": "./node_modules/.bin/webpack --progress --colors",
+    "lint": "./node_modules/.bin/eslint .",
+    "prepublish": "npm run build",
+    "prepublish-watch": "npm run watch",
+    "start": "./node_modules/.bin/webpack-dev-server",
+    "test": "npm run lint",
+    "version": "./node_modules/.bin/json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\"",
+    "watch": "./node_modules/.bin/webpack --progress --colors --watch --watch-poll"
   },
   "devDependencies": {
     "babel-core": "6.9.1",
