@@ -8198,7 +8198,7 @@
 	var twgl = __webpack_require__(308);
 
 	var Drawable = __webpack_require__(309);
-	var ShaderManager = __webpack_require__(320);
+	var ShaderManager = __webpack_require__(321);
 
 	var RenderWebGL =
 	/**
@@ -8428,16 +8428,22 @@
 	 * @returns {Boolean} True iff the Drawable is touching the color.
 	 */
 	RenderWebGL.prototype.isTouchingColor = function (drawableID, color3b, mask3b) {
-
 	    var gl = this._gl;
-
 	    twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
-	    // TODO: restrict to only the area overlapped by the target Drawable
-	    // - limit size of viewport to the AABB around the target Drawable
-	    // - draw only the Drawables which could overlap the target Drawable
-	    // - read only the pixels in the AABB around the target Drawable
-	    gl.viewport(0, 0, this._nativeSize[0], this._nativeSize[1]);
+	    var bounds = this._touchingBounds(drawableID);
+	    if (!bounds) {
+	        return;
+	    }
+	    var candidateIDs = this._filterCandidatesTouching(drawableID, this._drawables, bounds);
+	    if (!candidateIDs) {
+	        return;
+	    }
+
+	    // Limit size of viewport to the bounds around the target Drawable,
+	    // and create the projection matrix for the draw.
+	    gl.viewport(0, 0, bounds.width, bounds.height);
+	    var projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
 
 	    gl.clearColor.apply(gl, this._backgroundColor);
 	    gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
@@ -8455,15 +8461,13 @@
 	        gl.stencilFunc(gl.ALWAYS, 1, 1);
 	        gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
 	        gl.colorMask(false, false, false, false);
-	        this._drawThese([drawableID], mask3b ? ShaderManager.DRAW_MODE.colorMask : ShaderManager.DRAW_MODE.silhouette, this._projection, undefined, extraUniforms);
+	        this._drawThese([drawableID], mask3b ? ShaderManager.DRAW_MODE.colorMask : ShaderManager.DRAW_MODE.silhouette, projection, undefined, extraUniforms);
 
 	        gl.stencilFunc(gl.EQUAL, 1, 1);
 	        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
 	        gl.colorMask(true, true, true, true);
 
-	        // TODO: only draw items which could possibly overlap target Drawable
-	        // It might work to use the filter function for that
-	        this._drawThese(this._drawables, ShaderManager.DRAW_MODE.default, this._projection, function (testID) {
+	        this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.default, projection, function (testID) {
 	            return testID != drawableID;
 	        });
 	    } finally {
@@ -8471,14 +8475,14 @@
 	        gl.disable(gl.STENCIL_TEST);
 	    }
 
-	    var pixels = new Buffer(this._nativeSize[0] * this._nativeSize[1] * 4);
-	    gl.readPixels(0, 0, this._nativeSize[0], this._nativeSize[1], gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+	    var pixels = new Buffer(bounds.width * bounds.height * 4);
+	    gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
 	    if (this._debugCanvas) {
-	        this._debugCanvas.width = this._nativeSize[0];
-	        this._debugCanvas.height = this._nativeSize[1];
+	        this._debugCanvas.width = bounds.width;
+	        this._debugCanvas.height = bounds.height;
 	        var context = this._debugCanvas.getContext('2d');
-	        var imageData = context.getImageData(0, 0, this._nativeSize[0], this._nativeSize[1]);
+	        var imageData = context.getImageData(0, 0, bounds.width, bounds.height);
 	        for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
 	            imageData.data[i] = pixels[i];
 	        }
@@ -8511,11 +8515,19 @@
 
 	    twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
-	    // TODO: restrict to only the area overlapped by the target Drawable
-	    // - limit size of viewport to the AABB around the target Drawable
-	    // - draw only the Drawables which could overlap the target Drawable
-	    // - read only the pixels in the AABB around the target Drawable
-	    gl.viewport(0, 0, this._nativeSize[0], this._nativeSize[1]);
+	    var bounds = this._touchingBounds(drawableID);
+	    if (!bounds) {
+	        return;
+	    }
+	    candidateIDs = this._filterCandidatesTouching(drawableID, candidateIDs, bounds);
+	    if (!candidateIDs) {
+	        return;
+	    }
+
+	    // Limit size of viewport to the bounds around the target Drawable,
+	    // and create the projection matrix for the draw.
+	    gl.viewport(0, 0, bounds.width, bounds.height);
+	    var projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
 
 	    var noneColor = Drawable.color4fFromID(Drawable.NONE);
 	    gl.clearColor.apply(gl, noneColor);
@@ -8526,28 +8538,28 @@
 	        gl.stencilFunc(gl.ALWAYS, 1, 1);
 	        gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
 	        gl.colorMask(false, false, false, false);
-	        this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, this._projection);
+	        this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, projection);
 
 	        gl.stencilFunc(gl.EQUAL, 1, 1);
 	        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
 	        gl.colorMask(true, true, true, true);
 
-	        // TODO: only draw items which could possibly overlap target Drawable
-	        // It might work to use the filter function for that
-	        this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, this._projection);
+	        this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection, function (testID) {
+	            return testID != drawableID;
+	        });
 	    } finally {
 	        gl.colorMask(true, true, true, true);
 	        gl.disable(gl.STENCIL_TEST);
 	    }
 
-	    var pixels = new Buffer(this._nativeSize[0] * this._nativeSize[1] * 4);
-	    gl.readPixels(0, 0, this._nativeSize[0], this._nativeSize[1], gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+	    var pixels = new Buffer(bounds.width * bounds.height * 4);
+	    gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
 	    if (this._debugCanvas) {
-	        this._debugCanvas.width = this._nativeSize[0];
-	        this._debugCanvas.height = this._nativeSize[1];
+	        this._debugCanvas.width = bounds.width;
+	        this._debugCanvas.height = bounds.height;
 	        var context = this._debugCanvas.getContext('2d');
-	        var imageData = context.getImageData(0, 0, this._nativeSize[0], this._nativeSize[1]);
+	        var imageData = context.getImageData(0, 0, bounds.width, bounds.height);
 	        for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
 	            imageData.data[i] = pixels[i];
 	        }
@@ -8647,6 +8659,55 @@
 	    }
 
 	    return hit | 0;
+	};
+
+	/**
+	 * Get the candidate bounding box for a touching query.
+	 * @param {int} drawableID ID for drawable of query.
+	 * @return {?Rectangle} Rectangle bounds for touching query, or null.
+	 */
+	RenderWebGL.prototype._touchingBounds = function (drawableID) {
+	    var drawable = Drawable.getDrawableByID(drawableID);
+	    var bounds = drawable.getFastBounds();
+
+	    // Limit queries to the stage size.
+	    bounds.clamp(this._xLeft, this._xRight, this._yBottom, this._yTop);
+
+	    // Use integer coordinates for queries - weird things happen
+	    // when you provide float width/heights to gl.viewport and projection.
+	    bounds.snapToInt();
+
+	    if (bounds.width == 0 || bounds.height == 0) {
+	        // No space to query.
+	        return null;
+	    }
+	    return bounds;
+	};
+
+	/**
+	 * Filter a list of candidates for a touching query into only those that
+	 * could possibly intersect the given bounds.
+	 * @param {int} drawableID ID for drawable of query.
+	 * @param {Array.<int>} candidateIDs Candidates for touching query.
+	 * @param {Rectangle} Bounds to limit candidates to.
+	 * @return {?Array.<int>} Filtered candidateIDs, or null if none.
+	 */
+	RenderWebGL.prototype._filterCandidatesTouching = function (drawableID, candidateIDs, bounds) {
+	    // Filter candidates by rough bounding box intersection.
+	    // Do this before _drawThese, so we can prevent any GL operations
+	    // and readback by returning early.
+	    candidateIDs = candidateIDs.filter(function (testID) {
+	        if (testID == drawableID) return false;
+	        // Only draw items which could possibly overlap target Drawable.
+	        var candidate = Drawable.getDrawableByID(testID);
+	        var candidateBounds = candidate.getFastBounds();
+	        return bounds.intersects(candidateBounds);
+	    });
+	    if (candidateIDs.length == 0) {
+	        // No possible intersections based on bounding boxes.
+	        return null;
+	    }
+	    return candidateIDs;
 	};
 
 	/**
@@ -19552,7 +19613,8 @@
 	var svgToImage = __webpack_require__(310);
 	var xhr = __webpack_require__(312);
 
-	var ShaderManager = __webpack_require__(320);
+	var Rectangle = __webpack_require__(320);
+	var ShaderManager = __webpack_require__(321);
 
 	var Drawable =
 	/**
@@ -19990,7 +20052,7 @@
 	 * This function applies the transform matrix to the known convex hull,
 	 * and then finds the minimum box along the axes.
 	 * Before calling this, ensure the renderer has updated convex hull points.
-	 * @return {Object} Bounds for a tight box around the Drawable.
+	 * @return {!Rectangle} Bounds for a tight box around the Drawable.
 	 */
 	Drawable.prototype.getBounds = function () {
 	    if (this.needsConvexHullPoints()) {
@@ -20013,29 +20075,41 @@
 	        transformedHullPoints.push(glPoint);
 	    }
 	    // Search through transformed points to generate box on axes.
-	    var bounds = {
-	        left: Infinity,
-	        right: -Infinity,
-	        top: -Infinity,
-	        bottom: Infinity
-	    };
-	    for (var _i = 0; _i < transformedHullPoints.length; _i++) {
-	        var x = transformedHullPoints[_i][0];
-	        var y = transformedHullPoints[_i][1];
-	        if (x < bounds.left) {
-	            bounds.left = x;
-	        }
-	        if (x > bounds.right) {
-	            bounds.right = x;
-	        }
-	        if (y > bounds.top) {
-	            bounds.top = y;
-	        }
-	        if (y < bounds.bottom) {
-	            bounds.bottom = y;
-	        }
-	    }
+	    var bounds = new Rectangle();
+	    bounds.initFromPointsAABB(transformedHullPoints);
 	    return bounds;
+	};
+
+	/**
+	 * Get the rough axis-aligned bounding box for the Drawable.
+	 * Calculated by transforming the skin's bounds.
+	 * Note that this is less precise than the box returned by `getBounds`,
+	 * which is tightly snapped to account for a Drawable's transparent regions.
+	 * `getAABB` returns a much less accurate bounding box, but will be much
+	 * faster to calculate so may be desired for quick checks/optimizations.
+	 * @return {!Rectangle} Rough axis-aligned bounding box for Drawable.
+	 */
+	Drawable.prototype.getAABB = function () {
+	    if (this._transformDirty) {
+	        this._calculateTransform();
+	    }
+	    var tm = this._uniforms.u_modelMatrix;
+	    var bounds = new Rectangle();
+	    bounds.initFromPointsAABB([twgl.m4.transformPoint(tm, [-0.5, -0.5, 0]), twgl.m4.transformPoint(tm, [0.5, -0.5, 0]), twgl.m4.transformPoint(tm, [-0.5, 0.5, 0]), twgl.m4.transformPoint(tm, [0.5, 0.5, 0])]);
+	    return bounds;
+	};
+
+	/**
+	 * Return the best Drawable bounds possible without performing graphics queries.
+	 * I.e., returns the tight bounding box when the convex hull points are already
+	 * known, but otherwise return the rough AABB of the Drawable.
+	 * @return {!Rectangle} Bounds for the Drawable.
+	 */
+	Drawable.prototype.getFastBounds = function () {
+	    if (!this.needsConvexHullPoints()) {
+	        return this.getBounds();
+	    }
+	    return this.getAABB();
 	};
 
 	/**
@@ -20604,6 +20678,175 @@
 
 /***/ },
 /* 320 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	/**
+	 * @fileoverview
+	 * A utility for creating and comparing axis-aligned rectangles.
+	 */
+
+	var Rectangle = function () {
+	    /**
+	     * Rectangles are always initialized to the "largest possible rectangle";
+	     * use one of the init* methods below to set up a particular rectangle.
+	     * @constructor
+	     */
+	    function Rectangle() {
+	        _classCallCheck(this, Rectangle);
+
+	        this.left = -Infinity;
+	        this.right = Infinity;
+	        this.bottom = -Infinity;
+	        this.top = Infinity;
+	    }
+
+	    /**
+	     * Initialize a Rectangle from given Scratch-coordinate bounds.
+	     * @param {number} left Left bound of the rectangle.
+	     * @param {number} right Right bound of the rectangle.
+	     * @param {number} bottom Bottom bound of the rectangle.
+	     * @param {number} top Top bound of the rectangle.
+	     */
+
+
+	    _createClass(Rectangle, [{
+	        key: "initFromBounds",
+	        value: function initFromBounds(left, right, bottom, top) {
+	            this.left = left;
+	            this.right = right;
+	            this.bottom = bottom;
+	            this.top = top;
+	        }
+
+	        /**
+	         * Initialize a Rectangle to the minimum AABB around a set of points.
+	         * @param {Array.<Array.<number>>} points Array of [x, y] points.
+	         */
+
+	    }, {
+	        key: "initFromPointsAABB",
+	        value: function initFromPointsAABB(points) {
+	            this.left = Infinity;
+	            this.right = -Infinity;
+	            this.top = -Infinity;
+	            this.bottom = Infinity;
+	            for (var i = 0; i < points.length; i++) {
+	                var x = points[i][0];
+	                var y = points[i][1];
+	                if (x < this.left) {
+	                    this.left = x;
+	                }
+	                if (x > this.right) {
+	                    this.right = x;
+	                }
+	                if (y > this.top) {
+	                    this.top = y;
+	                }
+	                if (y < this.bottom) {
+	                    this.bottom = y;
+	                }
+	            }
+	        }
+
+	        /**
+	         * Determine if this Rectangle intersects some other.
+	         * Note that this is a comparison assuming the Rectangle was
+	         * initialized with Scratch-space bounds or points.
+	         * @param {!Rectangle} other Rectangle to check if intersecting.
+	         * @return {Boolean} True if this Rectangle intersects other.
+	         */
+
+	    }, {
+	        key: "intersects",
+	        value: function intersects(other) {
+	            return this.left <= other.right && other.left <= this.right && this.top >= other.bottom && other.top >= this.bottom;
+	        }
+
+	        /**
+	         * Determine if this Rectangle fully contains some other.
+	         * Note that this is a comparison assuming the Rectangle was
+	         * initialized with Scratch-space bounds or points.
+	         * @param {!Rectangle} other Rectangle to check if fully contained.
+	         * @return {Boolean} True if this Rectangle fully contains other.
+	         */
+
+	    }, {
+	        key: "contains",
+	        value: function contains(other) {
+	            return other.left > this.left && other.right < this.right && other.top < this.top && other.bottom > this.bottom;
+	        }
+
+	        /**
+	         * Clamp a Rectangle to bounds.
+	         * @param {number} left Left clamp.
+	         * @param {number} right Right clamp.
+	         * @param {number} bottom Bottom clamp.
+	         * @param {number} top Top clamp.
+	         */
+
+	    }, {
+	        key: "clamp",
+	        value: function clamp(left, right, bottom, top) {
+	            this.left = Math.max(this.left, left);
+	            this.right = Math.min(this.right, right);
+	            this.bottom = Math.max(this.bottom, bottom);
+	            this.top = Math.min(this.top, top);
+	            // Ensure rectangle coordinates in order.
+	            this.left = Math.min(this.left, this.right);
+	            this.right = Math.max(this.right, this.left);
+	            this.bottom = Math.min(this.bottom, this.top);
+	            this.top = Math.max(this.top, this.bottom);
+	        }
+
+	        /**
+	         * Push out the Rectangle to integer bounds.
+	         */
+
+	    }, {
+	        key: "snapToInt",
+	        value: function snapToInt() {
+	            this.left = Math.floor(this.left);
+	            this.right = Math.ceil(this.right);
+	            this.bottom = Math.floor(this.bottom);
+	            this.top = Math.ceil(this.top);
+	        }
+
+	        /**
+	         * Width of the Rectangle.
+	         * @return {number} Width of rectangle.
+	         */
+
+	    }, {
+	        key: "width",
+	        get: function get() {
+	            return Math.abs(this.left - this.right);
+	        }
+
+	        /**
+	         * Height of the Rectangle.
+	         * @return {number} Height of rectangle.
+	         */
+
+	    }, {
+	        key: "height",
+	        get: function get() {
+	            return Math.abs(this.top - this.bottom);
+	        }
+	    }]);
+
+	    return Rectangle;
+	}();
+
+	module.exports = Rectangle;
+
+/***/ },
+/* 321 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20762,20 +21005,20 @@
 	    }
 
 	    var definesText = defines.join('\n') + '\n';
-	    var vsFullText = definesText + __webpack_require__(321);
-	    var fsFullText = definesText + __webpack_require__(322);
+	    var vsFullText = definesText + __webpack_require__(322);
+	    var fsFullText = definesText + __webpack_require__(323);
 
 	    return twgl.createProgramInfo(this._gl, [vsFullText, fsFullText]);
 	};
 
 /***/ },
-/* 321 */
+/* 322 */
 /***/ function(module, exports) {
 
 	module.exports = "uniform mat4 u_projectionMatrix;\nuniform mat4 u_modelMatrix;\n\nattribute vec2 a_position;\nattribute vec2 a_texCoord;\n\nvarying vec2 v_texCoord;\n\nvoid main() {\n    gl_Position = u_projectionMatrix * u_modelMatrix * vec4(a_position, 0, 1);\n    v_texCoord = a_texCoord;\n}\n"
 
 /***/ },
-/* 322 */
+/* 323 */
 /***/ function(module, exports) {
 
 	module.exports = "precision mediump float;\n\nuniform float u_fudge;\n\n#ifdef DRAW_MODE_silhouette\nuniform vec4 u_silhouetteColor;\n#else // DRAW_MODE_silhouette\n# ifdef ENABLE_color\nuniform float u_color;\n# endif // ENABLE_color\n# ifdef ENABLE_brightness\nuniform float u_brightness;\n# endif // ENABLE_brightness\n#endif // DRAW_MODE_silhouette\n\n#ifdef DRAW_MODE_colorMask\nuniform vec3 u_colorMask;\nuniform float u_colorMaskTolerance;\n#endif // DRAW_MODE_colorMask\n\n#ifdef ENABLE_fisheye\nuniform float u_fisheye;\n#endif // ENABLE_fisheye\n#ifdef ENABLE_whirl\nuniform float u_whirl;\n#endif // ENABLE_whirl\n#ifdef ENABLE_pixelate\nuniform float u_pixelate;\nuniform vec2 u_skinSize;\n#endif // ENABLE_pixelate\n#ifdef ENABLE_mosaic\nuniform float u_mosaic;\n#endif // ENABLE_mosaic\n#ifdef ENABLE_ghost\nuniform float u_ghost;\n#endif // ENABLE_ghost\n\nuniform sampler2D u_skin;\n\nvarying vec2 v_texCoord;\n\n#if !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color) || defined(ENABLE_brightness))\n// Branchless color conversions based on code from:\n// http://www.chilliant.com/rgb2hsv.html by Ian Taylor\n// Based in part on work by Sam Hocevar and Emil Persson\n\nconst float kEpsilon = 1e-6;\n\nvec3 convertRGB2HCV(vec3 rgb)\n{\n\tvec4 p = (rgb.g < rgb.b) ? vec4(rgb.bg, -1, 2.0/3.0) : vec4(rgb.gb, 0, -1.0/3.0);\n\tvec4 q = (rgb.r < p.x) ? vec4(p.xyw, rgb.r) : vec4(rgb.r, p.yzx);\n\tfloat c = q.x - min(q.w, q.y);\n\tfloat h = abs((q.w - q.y) / (6.0 * c + kEpsilon) + q.z);\n\treturn vec3(h, c, q.x);\n}\n\nvec3 convertRGB2HSL(vec3 rgb)\n{\n\tvec3 hcv = convertRGB2HCV(rgb);\n\tfloat l = hcv.z - hcv.y * 0.5;\n\tfloat s = hcv.y / (1.0 - abs(l * 2.0 - 1.0) + kEpsilon);\n\treturn vec3(hcv.x, s, l);\n}\n\nvec3 convertHue2RGB(float hue)\n{\n\tfloat r = abs(hue * 6.0 - 3.0) - 1.0;\n\tfloat g = 2.0 - abs(hue * 6.0 - 2.0);\n\tfloat b = 2.0 - abs(hue * 6.0 - 4.0);\n\treturn clamp(vec3(r, g, b), 0.0, 1.0);\n}\n\nvec3 convertHSL2RGB(vec3 hsl)\n{\n\tvec3 rgb = convertHue2RGB(hsl.x);\n\tfloat c = (1.0 - abs(2.0 * hsl.z - 1.0)) * hsl.y;\n\treturn (rgb - 0.5) * c + hsl.z;\n}\n#endif // !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color) || defined(ENABLE_brightness))\n\nconst vec2 kCenter = vec2(0.5, 0.5);\n\nvoid main()\n{\n\tvec2 texcoord0 = v_texCoord;\n\n\t#ifdef ENABLE_mosaic\n\ttexcoord0 = fract(u_mosaic * texcoord0);\n\t#endif // ENABLE_mosaic\n\n\t#ifdef ENABLE_pixelate\n\t{\n\t\t// TODO: clean up \"pixel\" edges\n\t\tvec2 pixelTexelSize = u_skinSize / u_pixelate;\n\t\ttexcoord0 = (floor(texcoord0 * pixelTexelSize) + kCenter) / pixelTexelSize;\n\t}\n\t#endif // ENABLE_pixelate\n\n\t#ifdef ENABLE_whirl\n\t{\n\t\tconst float kRadius = 0.5;\n\t\tvec2 offset = texcoord0 - kCenter;\n\t\tfloat offsetMagnitude = length(offset);\n\t\tfloat whirlFactor = 1.0 - (offsetMagnitude / kRadius);\n\t\tfloat whirlActual = u_whirl * whirlFactor * whirlFactor;\n\t\tfloat sinWhirl = sin(whirlActual);\n\t\tfloat cosWhirl = cos(whirlActual);\n\t\tmat2 rotationMatrix = mat2(\n\t\t\tcosWhirl, -sinWhirl,\n\t\t\tsinWhirl, cosWhirl\n\t\t);\n\n\t\t// TODO: tweak this algorithm such that texture coordinates don't depend on conditionals.\n\t\t// see: https://www.opengl.org/wiki/Sampler_%28GLSL%29#Non-uniform_flow_control\n\t\tif (offsetMagnitude <= kRadius)\n\t\t{\n\t\t\ttexcoord0 = rotationMatrix * offset + kCenter;\n\t\t}\n\t}\n\t#endif // ENABLE_whirl\n\n\t#ifdef ENABLE_fisheye\n\t{\n\t\tvec2 vec = (texcoord0 - kCenter) / kCenter;\n\t\tfloat r = pow(length(vec), u_fisheye);\n\t\tfloat angle = atan(vec.y, vec.x);\n\t\t// TODO: tweak this algorithm such that texture coordinates don't depend on conditionals.\n\t\t// see: https://www.opengl.org/wiki/Sampler_%28GLSL%29#Non-uniform_flow_control\n\t\tif (r <= 1.0)\n\t\t{\n\t\t\ttexcoord0 = kCenter + r * vec2(cos(angle), sin(angle)) * kCenter;\n\t\t}\n\t}\n\t#endif // ENABLE_fisheye\n\n\tgl_FragColor = texture2D(u_skin, texcoord0);\n\n\n\tif (gl_FragColor.a == 0.0)\n\t{\n\t\tdiscard;\n\t}\n\n    #ifdef ENABLE_ghost\n    gl_FragColor.a *= u_ghost;\n    #endif // ENABLE_ghost\n\n\t#ifdef DRAW_MODE_silhouette\n\t// switch to u_silhouetteColor only AFTER the alpha test\n\tgl_FragColor = u_silhouetteColor;\n\t#else // DRAW_MODE_silhouette\n\n\t#if defined(ENABLE_color) || defined(ENABLE_brightness)\n\t{\n\t\tvec3 hsl = convertRGB2HSL(gl_FragColor.xyz);\n\n\t\t#ifdef ENABLE_color\n\t\t{\n\t\t\t// this code forces grayscale values to be slightly saturated\n\t\t\t// so that some slight change of hue will be visible\n\t\t\tconst float minLightness = 0.11 / 2.0;\n\t\t\tconst float minSaturation = 0.09;\n\t\t\tif (hsl.z < minLightness) hsl = vec3(0.0, 1.0, minLightness);\n\t\t\telse if (hsl.y < minSaturation) hsl = vec3(0.0, minSaturation, hsl.z);\n\n\t\t\thsl.x = mod(hsl.x + u_color, 1.0);\n\t\t\tif (hsl.x < 0.0) hsl.x += 1.0;\n\t\t}\n\t\t#endif // ENABLE_color\n\n\t\t#ifdef ENABLE_brightness\n\t\thsl.z = clamp(hsl.z + u_brightness, 0.0, 1.0);\n\t\t#endif // ENABLE_brightness\n\n\t\tgl_FragColor.rgb = convertHSL2RGB(hsl);\n\t}\n\t#endif // defined(ENABLE_color) || defined(ENABLE_brightness)\n\n\t#ifdef DRAW_MODE_colorMask\n\tvec3 maskDistance = abs(gl_FragColor.rgb - u_colorMask);\n\tvec3 colorMaskTolerance = vec3(u_colorMaskTolerance, u_colorMaskTolerance, u_colorMaskTolerance);\n\tif (any(greaterThan(maskDistance, colorMaskTolerance)))\n\t{\n\t\tdiscard;\n\t}\n\t#endif // DRAW_MODE_colorMask\n\n\t// WebGL defaults to premultiplied alpha\n\tgl_FragColor.rgb *= gl_FragColor.a;\n\n\t#endif // DRAW_MODE_silhouette\n}\n"

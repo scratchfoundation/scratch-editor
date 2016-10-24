@@ -5,7 +5,6 @@
     <title>Scratch WebGL rendering demo</title>
     <style>
         #scratch-stage { width: 480px; }
-        #debug-canvas { width: 480px; }
     </style>
 </head>
 <body style="background: lightsteelblue">
@@ -129,7 +128,8 @@
 
     function drawStep() {
         renderer.draw();
-        renderer.getBounds(drawableID2);
+        //renderer.getBounds(drawableID2);
+        renderer.isTouchingColor(drawableID2, [255,255,255]);
         requestAnimationFrame(drawStep);
     }
     drawStep();
