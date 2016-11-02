@@ -20903,7 +20903,7 @@
 	    whirl: {
 	        mask: 1 << 2,
 	        converter: function converter(x) {
-	            return x * Math.PI / 180;
+	            return -x * Math.PI / 180;
 	        },
 	        shapeChanges: true
 	    },
