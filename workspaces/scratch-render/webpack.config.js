@@ -4,7 +4,14 @@ var webpack = require('webpack');
 var base = {
     devServer: {
         contentBase: path.resolve(__dirname, 'playground'),
-        host: '0.0.0.0'
+        host: '0.0.0.0',
+        watchOptions: {
+            aggregateTimeout: 300,
+            poll: 1000
+        },
+        stats: {
+            colors: true
+        }
     },
     module: {
         loaders: [
