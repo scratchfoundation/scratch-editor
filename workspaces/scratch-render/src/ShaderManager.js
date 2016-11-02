@@ -48,7 +48,7 @@ ShaderManager.EFFECT_INFO = {
     whirl: {
         mask: 1 << 2,
         converter: function(x) {
-            return x * Math.PI / 180;
+            return -x * Math.PI / 180;
         },
         shapeChanges: true
     },
