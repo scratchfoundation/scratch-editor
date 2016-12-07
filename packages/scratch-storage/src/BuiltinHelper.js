@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 const Asset = require('./Asset');
 const AssetType = require('./AssetType');
 const DataFormat = require('./DataFormat');
@@ -18,20 +20,20 @@ const DefaultAssets = [
     {
         type: AssetType.ImageBitmap,
         format: DataFormat.PNG,
-        id: 'e5cb3b2aa4e1a9b4c735c3415e507e66',
-        data: require('binary!./builtins/e5cb3b2aa4e1a9b4c735c3415e507e66.png') // eslint-disable-line global-require
+        id: null,
+        data: require('arraybuffer!./builtins/defaultBitmap.png') // eslint-disable-line global-require
     },
     {
         type: AssetType.Sound,
         format: DataFormat.WAV,
-        id: 'b586745b98e94d7574f7f7b48d831e20',
-        data: require('binary!./builtins/b586745b98e94d7574f7f7b48d831e20.wav') // eslint-disable-line global-require
+        id: null,
+        data: require('arraybuffer!./builtins/defaultSound.wav') // eslint-disable-line global-require
     },
     {
         type: AssetType.ImageVector,
         format: DataFormat.SVG,
-        id: '8e768a5a5a01891b05c01c9ca15eb6aa',
-        data: require('binary!./builtins/8e768a5a5a01891b05c01c9ca15eb6aa.svg') // eslint-disable-line global-require
+        id: null,
+        data: require('arraybuffer!./builtins/defaultVector.svg') // eslint-disable-line global-require
     }
 ];
 
@@ -59,6 +61,13 @@ class BuiltinHelper extends Helper {
 
             /** @type {AssetIdMap} */
             const typeBucket = this.assets[typeName] = this.assets[typeName] || {};
+
+            if (!assetRecord.id) {
+                const hash = crypto.createHash('md5');
+                hash.update(assetRecord.data);
+                assetRecord.id = hash.digest('hex');
+            }
+
             typeBucket[assetRecord.id] = assetRecord;
         }
     }
@@ -87,7 +96,7 @@ class BuiltinHelper extends Helper {
                 /** @type{BuiltinAssetRecord} */
                 const assetRecord = typeBucket[assetId];
                 const asset =
-                    new Asset(assetRecord.type, assetRecord.id, assetRecord.format, new Buffer(assetRecord.data));
+                    new Asset(assetRecord.type, assetRecord.id, assetRecord.format, new Uint8Array(assetRecord.data));
                 return Promise.resolve(asset);
             }
         }

@@ -4,7 +4,7 @@ class Asset {
      * @param {AssetType} assetType - The type of this asset (sound, image, etc.)
      * @param {string} assetId - The ID of this asset.
      * @param {DataFormat} [dataFormat] - The format of the data (WAV, PNG, etc.); required iff `data` is present.
-     * @param {Buffer} [data] - The in-memory data for this asset; optional.
+     * @param {Uint8Array} [data] - The in-memory data for this asset; optional.
      */
     constructor (assetType, assetId, dataFormat, data) {
         /** @type {AssetType} */
@@ -19,7 +19,7 @@ class Asset {
         /** @type {DataFormat} */
         this.dataFormat = dataFormat;
 
-        /** @type {Buffer} */
+        /** @type {Uint8Array} */
         this.data = data;
 
         /** @type {Asset[]} */
