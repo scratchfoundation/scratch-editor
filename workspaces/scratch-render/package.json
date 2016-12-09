@@ -9,7 +9,7 @@
     "type": "git",
     "url": "git+ssh://git@github.com/LLK/scratch-render.git"
   },
-  "main": "./dist.js",
+  "main": "./dist/node/scratch-render.js",
   "scripts": {
     "build": "./node_modules/.bin/webpack --progress --colors",
     "lint": "./node_modules/.bin/eslint .",
