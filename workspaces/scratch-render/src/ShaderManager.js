@@ -1,4 +1,4 @@
-var twgl = require('twgl.js');
+const twgl = require('twgl.js');
 
 const vertexShaderText = require('./shaders/sprite.vert');
 const fragmentShaderText = require('./shaders/sprite.frag');
@@ -14,7 +14,7 @@ class ShaderManager {
          * @private
          */
         this._shaderCache = {};
-        for (var modeName in ShaderManager.DRAW_MODE) {
+        for (const modeName in ShaderManager.DRAW_MODE) {
             if (ShaderManager.DRAW_MODE.hasOwnProperty(modeName)) {
                 this._shaderCache[modeName] = [];
             }
@@ -82,7 +82,7 @@ ShaderManager.EFFECT_INFO = {
     ghost: {
         mask: 1 << 6,
         converter: function (x) {
-            return 1 - Math.max(0, Math.min(x, 100)) / 100;
+            return 1 - (Math.max(0, Math.min(x, 100)) / 100);
         },
         shapeChanges: false
     }
@@ -124,7 +124,7 @@ ShaderManager.DRAW_MODE = {
  * @returns {ProgramInfo} The shader's program info.
  */
 ShaderManager.prototype.getShader = function (drawMode, effectBits) {
-    var cache = this._shaderCache[drawMode];
+    const cache = this._shaderCache[drawMode];
     if (drawMode === ShaderManager.DRAW_MODE.silhouette) {
         // Silhouette mode isn't affected by these effects.
         effectBits &= ~(
@@ -132,7 +132,7 @@ ShaderManager.prototype.getShader = function (drawMode, effectBits) {
             ShaderManager.EFFECT_INFO.brightness.mask
         );
     }
-    var shader = cache[effectBits];
+    let shader = cache[effectBits];
     if (!shader) {
         shader = cache[effectBits] = this._buildShader(drawMode, effectBits);
     }
@@ -147,20 +147,20 @@ ShaderManager.prototype.getShader = function (drawMode, effectBits) {
  * @private
  */
 ShaderManager.prototype._buildShader = function (drawMode, effectBits) {
-    var numEffects = ShaderManager.EFFECTS.length;
+    const numEffects = ShaderManager.EFFECTS.length;
 
-    var defines = [
+    const defines = [
         `#define DRAW_MODE_${drawMode}`
     ];
-    for (var index = 0; index < numEffects; ++index) {
+    for (let index = 0; index < numEffects; ++index) {
         if ((effectBits & (1 << index)) !== 0) {
             defines.push(`#define ENABLE_${ShaderManager.EFFECTS[index]}`);
         }
     }
 
-    var definesText = `${defines.join('\n')}\n`;
-    var vsFullText = definesText + vertexShaderText;
-    var fsFullText = definesText + fragmentShaderText;
+    const definesText = `${defines.join('\n')}\n`;
+    const vsFullText = definesText + vertexShaderText;
+    const fsFullText = definesText + fragmentShaderText;
 
     return twgl.createProgramInfo(this._gl, [vsFullText, fsFullText]);
 };

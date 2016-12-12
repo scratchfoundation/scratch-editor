@@ -40,8 +40,8 @@ class Rectangle {
         this.top = -Infinity;
         this.bottom = Infinity;
         for (let i = 0; i < points.length; i++) {
-            let x = points[i][0];
-            let y = points[i][1];
+            const x = points[i][0];
+            const y = points[i][1];
             if (x < this.left) {
                 this.left = x;
             }

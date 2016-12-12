@@ -1,8 +1,8 @@
-var hull = require('hull.js');
-var twgl = require('twgl.js');
+const hull = require('hull.js');
+const twgl = require('twgl.js');
 
-var Drawable = require('./Drawable');
-var ShaderManager = require('./ShaderManager');
+const Drawable = require('./Drawable');
+const ShaderManager = require('./ShaderManager');
 
 
 class RenderWebGL {
@@ -37,7 +37,7 @@ class RenderWebGL {
         this.resize(this._nativeSize[0], this._nativeSize[1]);
         this._createQueryBuffers();
 
-        var gl = this._gl;
+        const gl = this._gl;
         gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.BLEND); // TODO: disable when no partial transparency?
         gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
@@ -74,7 +74,7 @@ RenderWebGL.TOLERANCE_TOUCHING_COLOR = 2;
  * @param {int} pixelsTall The desired height in device-independent pixels.
  */
 RenderWebGL.prototype.resize = function (pixelsWide, pixelsTall) {
-    var pixelRatio = window.devicePixelRatio || 1;
+    const pixelRatio = window.devicePixelRatio || 1;
     this._gl.canvas.width = pixelsWide * pixelRatio;
     this._gl.canvas.height = pixelsTall * pixelRatio;
 };
@@ -121,8 +121,8 @@ RenderWebGL.prototype.setStageSize = function (xLeft, xRight, yBottom, yTop) {
  * @returns {int} The ID of the new Drawable.
  */
 RenderWebGL.prototype.createDrawable = function () {
-    var drawable = new Drawable(this._gl);
-    var drawableID = drawable.getID();
+    const drawable = new Drawable(this._gl);
+    const drawableID = drawable.getID();
     this._drawables.push(drawableID);
     return drawableID;
 };
@@ -133,7 +133,7 @@ RenderWebGL.prototype.createDrawable = function () {
  * @returns {boolean} True iff the drawable was found and removed.
  */
 RenderWebGL.prototype.destroyDrawable = function (drawableID) {
-    var index = this._drawables.indexOf(drawableID);
+    const index = this._drawables.indexOf(drawableID);
     if (index >= 0) {
         Drawable.getDrawableByID(drawableID).dispose();
         this._drawables.splice(index, 1);
@@ -157,12 +157,12 @@ RenderWebGL.prototype.destroyDrawable = function (drawableID) {
  */
 RenderWebGL.prototype.setDrawableOrder = function (
     drawableID, order, optIsRelative, optMin) {
-    var oldIndex = this._drawables.indexOf(drawableID);
+    const oldIndex = this._drawables.indexOf(drawableID);
     if (oldIndex >= 0) {
         // Remove drawable from the list.
-        var drawable = this._drawables.splice(oldIndex, 1)[0];
+        const drawable = this._drawables.splice(oldIndex, 1)[0];
         // Determine new index.
-        var newIndex = order;
+        let newIndex = order;
         if (optIsRelative) {
             newIndex += oldIndex;
         }
@@ -181,7 +181,7 @@ RenderWebGL.prototype.setDrawableOrder = function (
  * Draw all current drawables and present the frame on the canvas.
  */
 RenderWebGL.prototype.draw = function () {
-    var gl = this._gl;
+    const gl = this._gl;
 
     twgl.bindFramebufferInfo(gl, null);
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -205,19 +205,19 @@ RenderWebGL.prototype.getBounds = function (drawableID) {
         const points = this._getConvexHullPointsForDrawable(drawableID);
         drawable.setConvexHullPoints(points);
     }
-    let bounds = drawable.getBounds();
+    const bounds = drawable.getBounds();
     // In debug mode, draw the bounds.
     if (this._debugCanvas) {
-        let gl = this._gl;
+        const gl = this._gl;
         this._debugCanvas.width = gl.canvas.width;
         this._debugCanvas.height = gl.canvas.height;
-        let context = this._debugCanvas.getContext('2d');
+        const context = this._debugCanvas.getContext('2d');
         context.drawImage(gl.canvas, 0, 0);
         context.strokeStyle = '#FF0000';
-        let pr = window.devicePixelRatio;
+        const pr = window.devicePixelRatio;
         context.strokeRect(
-            pr * (bounds.left + this._nativeSize[0] / 2),
-            pr * (-bounds.top + this._nativeSize[1] / 2),
+            pr * (bounds.left + (this._nativeSize[0] / 2)),
+            pr * (-bounds.top + (this._nativeSize[1] / 2)),
             pr * (bounds.right - bounds.left),
             pr * (-bounds.bottom + bounds.top)
         );
@@ -246,11 +246,11 @@ RenderWebGL.prototype.isTouchingColor = function (drawableID, color3b, mask3b) {
     const gl = this._gl;
     twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
-    let bounds = this._touchingBounds(drawableID);
+    const bounds = this._touchingBounds(drawableID);
     if (!bounds) {
         return;
     }
-    let candidateIDs = this._filterCandidatesTouching(
+    const candidateIDs = this._filterCandidatesTouching(
         drawableID, this._drawables, bounds);
     if (!candidateIDs) {
         return;
@@ -266,7 +266,7 @@ RenderWebGL.prototype.isTouchingColor = function (drawableID, color3b, mask3b) {
     gl.clearColor.apply(gl, this._backgroundColor);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
-    var extraUniforms;
+    let extraUniforms;
     if (mask3b) {
         extraUniforms = {
             u_colorMask: [mask3b[0] / 255, mask3b[1] / 255, mask3b[2] / 255],
@@ -301,7 +301,7 @@ RenderWebGL.prototype.isTouchingColor = function (drawableID, color3b, mask3b) {
         gl.disable(gl.STENCIL_TEST);
     }
 
-    var pixels = new Buffer(bounds.width * bounds.height * 4);
+    const pixels = new Buffer(bounds.width * bounds.height * 4);
     gl.readPixels(
         0, 0, bounds.width, bounds.height,
         gl.RGBA, gl.UNSIGNED_BYTE, pixels);
@@ -309,19 +309,19 @@ RenderWebGL.prototype.isTouchingColor = function (drawableID, color3b, mask3b) {
     if (this._debugCanvas) {
         this._debugCanvas.width = bounds.width;
         this._debugCanvas.height = bounds.height;
-        var context = this._debugCanvas.getContext('2d');
-        var imageData = context.getImageData(
+        const context = this._debugCanvas.getContext('2d');
+        const imageData = context.getImageData(
             0, 0, bounds.width, bounds.height);
-        for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
+        for (let i = 0, bytes = pixels.length; i < bytes; ++i) {
             imageData.data[i] = pixels[i];
         }
         context.putImageData(imageData, 0, 0);
     }
 
-    for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-        var pixelDistanceR = Math.abs(pixels[pixelBase] - color3b[0]);
-        var pixelDistanceG = Math.abs(pixels[pixelBase + 1] - color3b[1]);
-        var pixelDistanceB = Math.abs(pixels[pixelBase + 2] - color3b[2]);
+    for (let pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
+        const pixelDistanceR = Math.abs(pixels[pixelBase] - color3b[0]);
+        const pixelDistanceG = Math.abs(pixels[pixelBase + 1] - color3b[1]);
+        const pixelDistanceB = Math.abs(pixels[pixelBase + 2] - color3b[2]);
 
         if (pixelDistanceR <= RenderWebGL.TOLERANCE_TOUCHING_COLOR &&
             pixelDistanceG <= RenderWebGL.TOLERANCE_TOUCHING_COLOR &&
@@ -346,7 +346,7 @@ RenderWebGL.prototype.isTouchingDrawables = function (drawableID, candidateIDs) 
 
     twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
-    let bounds = this._touchingBounds(drawableID);
+    const bounds = this._touchingBounds(drawableID);
     if (!bounds) {
         return;
     }
@@ -388,7 +388,7 @@ RenderWebGL.prototype.isTouchingDrawables = function (drawableID, candidateIDs) 
         gl.disable(gl.STENCIL_TEST);
     }
 
-    let pixels = new Buffer(bounds.width * bounds.height * 4);
+    const pixels = new Buffer(bounds.width * bounds.height * 4);
     gl.readPixels(
         0, 0, bounds.width, bounds.height,
         gl.RGBA, gl.UNSIGNED_BYTE, pixels);
@@ -397,7 +397,7 @@ RenderWebGL.prototype.isTouchingDrawables = function (drawableID, candidateIDs) 
         this._debugCanvas.width = bounds.width;
         this._debugCanvas.height = bounds.height;
         const context = this._debugCanvas.getContext('2d');
-        let imageData = context.getImageData(
+        const imageData = context.getImageData(
             0, 0, bounds.width, bounds.height);
         for (let i = 0, bytes = pixels.length; i < bytes; ++i) {
             imageData.data[i] = pixels[i];
@@ -406,7 +406,7 @@ RenderWebGL.prototype.isTouchingDrawables = function (drawableID, candidateIDs) 
     }
 
     for (let pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-        let pixelID = Drawable.color4bToID(
+        const pixelID = Drawable.color4bToID(
             pixels[pixelBase],
             pixels[pixelBase + 1],
             pixels[pixelBase + 2],
@@ -431,14 +431,14 @@ RenderWebGL.prototype.isTouchingDrawables = function (drawableID, candidateIDs) 
  */
 RenderWebGL.prototype.pick = function (
     centerX, centerY, touchWidth, touchHeight, candidateIDs) {
-    var gl = this._gl;
+    const gl = this._gl;
 
     touchWidth = touchWidth || 1;
     touchHeight = touchHeight || 1;
     candidateIDs = candidateIDs || this._drawables;
 
-    var clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
-    var clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
+    const clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
+    const clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
 
     centerX *= clientToGLX;
     centerY *= clientToGLY;
@@ -450,50 +450,50 @@ RenderWebGL.prototype.pick = function (
     touchHeight =
         Math.max(1, Math.min(touchHeight, RenderWebGL.MAX_TOUCH_SIZE[1]));
 
-    var pixelLeft = Math.floor(centerX - Math.floor(touchWidth / 2) + 0.5);
-    var pixelRight = Math.floor(centerX + Math.ceil(touchWidth / 2) + 0.5);
-    var pixelTop = Math.floor(centerY - Math.floor(touchHeight / 2) + 0.5);
-    var pixelBottom = Math.floor(centerY + Math.ceil(touchHeight / 2) + 0.5);
+    const pixelLeft = Math.floor(centerX - Math.floor(touchWidth / 2) + 0.5);
+    const pixelRight = Math.floor(centerX + Math.ceil(touchWidth / 2) + 0.5);
+    const pixelTop = Math.floor(centerY - Math.floor(touchHeight / 2) + 0.5);
+    const pixelBottom = Math.floor(centerY + Math.ceil(touchHeight / 2) + 0.5);
 
     twgl.bindFramebufferInfo(gl, this._pickBufferInfo);
     gl.viewport(0, 0, touchWidth, touchHeight);
 
-    var noneColor = Drawable.color4fFromID(Drawable.NONE);
+    const noneColor = Drawable.color4fFromID(Drawable.NONE);
     gl.clearColor.apply(gl, noneColor);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    var widthPerPixel = (this._xRight - this._xLeft) / this._gl.canvas.width;
-    var heightPerPixel = (this._yBottom - this._yTop) / this._gl.canvas.height;
+    const widthPerPixel = (this._xRight - this._xLeft) / this._gl.canvas.width;
+    const heightPerPixel = (this._yBottom - this._yTop) / this._gl.canvas.height;
 
-    var pickLeft = this._xLeft + pixelLeft * widthPerPixel;
-    var pickRight = this._xLeft + pixelRight * widthPerPixel;
-    var pickTop = this._yTop + pixelTop * heightPerPixel;
-    var pickBottom = this._yTop + pixelBottom * heightPerPixel;
+    const pickLeft = this._xLeft + (pixelLeft * widthPerPixel);
+    const pickRight = this._xLeft + (pixelRight * widthPerPixel);
+    const pickTop = this._yTop + (pixelTop * heightPerPixel);
+    const pickBottom = this._yTop + (pixelBottom * heightPerPixel);
 
-    var projection = twgl.m4.ortho(
+    const projection = twgl.m4.ortho(
         pickLeft, pickRight, pickTop, pickBottom, -1, 1);
 
     this._drawThese(
         candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection);
 
-    var pixels = new Buffer(touchWidth * touchHeight * 4);
+    const pixels = new Buffer(touchWidth * touchHeight * 4);
     gl.readPixels(
         0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
     if (this._debugCanvas) {
         this._debugCanvas.width = touchWidth;
         this._debugCanvas.height = touchHeight;
-        var context = this._debugCanvas.getContext('2d');
-        var imageData = context.getImageData(0, 0, touchWidth, touchHeight);
-        for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
+        const context = this._debugCanvas.getContext('2d');
+        const imageData = context.getImageData(0, 0, touchWidth, touchHeight);
+        for (let i = 0, bytes = pixels.length; i < bytes; ++i) {
             imageData.data[i] = pixels[i];
         }
         context.putImageData(imageData, 0, 0);
     }
 
-    var hits = {};
-    for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-        var pixelID = Drawable.color4bToID(
+    const hits = {};
+    for (let pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
+        const pixelID = Drawable.color4bToID(
             pixels[pixelBase],
             pixels[pixelBase + 1],
             pixels[pixelBase + 2],
@@ -504,8 +504,8 @@ RenderWebGL.prototype.pick = function (
     // Bias toward selecting anything over nothing
     hits[Drawable.NONE] = 0;
 
-    var hit = Drawable.NONE;
-    for (var hitID in hits) {
+    let hit = Drawable.NONE;
+    for (const hitID in hits) {
         if (hits.hasOwnProperty(hitID) && (hits[hitID] > hits[hit])) {
             hit = hitID;
         }
@@ -553,8 +553,8 @@ RenderWebGL.prototype._filterCandidatesTouching = function (
     candidateIDs = candidateIDs.filter(testID => {
         if (testID === drawableID) return false;
         // Only draw items which could possibly overlap target Drawable.
-        let candidate = Drawable.getDrawableByID(testID);
-        let candidateBounds = candidate.getFastBounds();
+        const candidate = Drawable.getDrawableByID(testID);
+        const candidateBounds = candidate.getFastBounds();
         return bounds.intersects(candidateBounds);
     });
     if (candidateIDs.length === 0) {
@@ -571,7 +571,7 @@ RenderWebGL.prototype._filterCandidatesTouching = function (
  */
 RenderWebGL.prototype.updateDrawableProperties = function (
         drawableID, properties) {
-    var drawable = Drawable.getDrawableByID(drawableID);
+    const drawable = Drawable.getDrawableByID(drawableID);
     drawable.updateProperties(properties);
 };
 
@@ -584,7 +584,7 @@ RenderWebGL.prototype.updateDrawableProperties = function (
  * @private
  */
 RenderWebGL.prototype._createGeometry = function () {
-    var quad = {
+    const quad = {
         a_position: {
             numComponents: 2,
             data: [
@@ -619,8 +619,8 @@ RenderWebGL.prototype._createGeometry = function () {
  * @private
  */
 RenderWebGL.prototype._createQueryBuffers = function () {
-    var gl = this._gl;
-    var attachments = [
+    const gl = this._gl;
+    const attachments = [
         {format: gl.RGBA},
         {format: gl.DEPTH_STENCIL}
     ];
@@ -647,24 +647,24 @@ RenderWebGL.prototype._createQueryBuffers = function () {
 RenderWebGL.prototype._drawThese = function (
     drawables, drawMode, projection, filter, extraUniforms) {
 
-    var gl = this._gl;
-    var currentShader = null;
+    const gl = this._gl;
+    let currentShader = null;
 
-    var numDrawables = drawables.length;
-    for (var drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
-        var drawableID = drawables[drawableIndex];
+    const numDrawables = drawables.length;
+    for (let drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
+        const drawableID = drawables[drawableIndex];
 
         // If we have a filter, check whether the ID fails
         if (filter && !filter(drawableID)) continue;
 
-        var drawable = Drawable.getDrawableByID(drawableID);
+        const drawable = Drawable.getDrawableByID(drawableID);
         // TODO: check if drawable is inside the viewport before anything else
 
         // Hidden drawables (e.g., by a "hide" block) are never drawn.
         if (!drawable.getVisible()) continue;
 
-        var effectBits = drawable.getEnabledEffects();
-        var newShader = this._shaderManager.getShader(drawMode, effectBits);
+        const effectBits = drawable.getEnabledEffects();
+        const newShader = this._shaderManager.getShader(drawMode, effectBits);
         if (currentShader !== newShader) {
             currentShader = newShader;
             gl.useProgram(currentShader.program);
@@ -711,7 +711,7 @@ RenderWebGL.prototype._getConvexHullPointsForDrawable = function (drawableID) {
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     // Overwrite the model matrix to be unrotated, unscaled, untranslated.
-    let modelMatrix = twgl.m4.identity();
+    const modelMatrix = twgl.m4.identity();
     twgl.m4.rotateZ(modelMatrix, Math.PI, modelMatrix);
     twgl.m4.scale(modelMatrix, [width, height], modelMatrix);
 
@@ -734,7 +734,7 @@ RenderWebGL.prototype._getConvexHullPointsForDrawable = function (drawableID) {
         gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
     // Known boundary points on left/right edges of pixels.
-    let boundaryPoints = [];
+    const boundaryPoints = [];
 
     /**
      * Helper method to look up a pixel.
@@ -743,7 +743,7 @@ RenderWebGL.prototype._getConvexHullPointsForDrawable = function (drawableID) {
      * @return {int} Known ID at that pixel, or Drawable.NONE.
      */
     const _getPixel = function (x, y) {
-        var pixelBase = ((width * y) + x) * 4;
+        const pixelBase = ((width * y) + x) * 4;
         return Drawable.color4bToID(
             pixels[pixelBase],
             pixels[pixelBase + 1],

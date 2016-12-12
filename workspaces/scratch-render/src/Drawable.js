@@ -1,9 +1,9 @@
-var twgl = require('twgl.js');
-var xhr = require('xhr');
+const twgl = require('twgl.js');
+const xhr = require('xhr');
 
-var Rectangle = require('./Rectangle');
-var SvgRenderer = require('./svg-quirks-mode/svg-renderer');
-var ShaderManager = require('./ShaderManager');
+const Rectangle = require('./Rectangle');
+const SvgRenderer = require('./svg-quirks-mode/svg-renderer');
+const ShaderManager = require('./ShaderManager');
 
 class Drawable {
     /**
@@ -53,10 +53,10 @@ class Drawable {
         };
 
         // Effect values are uniforms too
-        var numEffects = ShaderManager.EFFECTS.length;
-        for (var index = 0; index < numEffects; ++index) {
-            var effectName = ShaderManager.EFFECTS[index];
-            var converter = ShaderManager.EFFECT_INFO[effectName].converter;
+        const numEffects = ShaderManager.EFFECTS.length;
+        for (let index = 0; index < numEffects; ++index) {
+            const effectName = ShaderManager.EFFECTS[index];
+            const converter = ShaderManager.EFFECT_INFO[effectName].converter;
             this._uniforms[`u_${effectName}`] = converter(0);
         }
 
@@ -72,7 +72,7 @@ class Drawable {
         this._convexHullDirty = true;
 
         // Create a transparent 1x1 texture for temporary use
-        var tempTexture = twgl.createTexture(gl, {src: [0, 0, 0, 0]});
+        const tempTexture = twgl.createTexture(gl, {src: [0, 0, 0, 0]});
         this._useSkin(tempTexture, 0, 0, 1, true);
 
         // Load a real skin
@@ -166,7 +166,7 @@ Drawable.prototype.setSkin = function (skinUrl, optCostumeResolution) {
     // TODO: cache Skins instead of loading each time. Ref count them?
     // TODO: share Skins across Drawables - see also destroy()
     if (skinUrl) {
-        var ext = skinUrl.substring(skinUrl.lastIndexOf('.') + 1);
+        const ext = skinUrl.substring(skinUrl.lastIndexOf('.') + 1);
         switch (ext) {
         case 'svg':
         case 'svg/get/':
@@ -220,7 +220,7 @@ Drawable.prototype.getEnabledEffects = function () {
  * @private
  */
 Drawable.prototype._setSkinBitmap = function (skinMd5ext, optCostumeResolution) {
-    var url = skinMd5ext;
+    const url = skinMd5ext;
     this._setSkinCore(url, optCostumeResolution);
 };
 
@@ -236,11 +236,11 @@ Drawable.prototype._setSkinBitmap = function (skinMd5ext, optCostumeResolution) 
  * @private
  */
 Drawable.prototype._setSkinSVG = function (skinMd5ext) {
-    var url = skinMd5ext;
-    var instance = this;
+    const url = skinMd5ext;
+    const instance = this;
 
-    let svgCanvas = document.createElement('canvas');
-    let svgRenderer = new SvgRenderer(svgCanvas);
+    const svgCanvas = document.createElement('canvas');
+    const svgRenderer = new SvgRenderer(svgCanvas);
 
     const gotSVG = (err, response, body) => {
         if (!err) {
@@ -263,23 +263,23 @@ Drawable.prototype._setSkinSVG = function (skinMd5ext) {
  * @private
  */
 Drawable.prototype._setSkinCore = function (source, costumeResolution) {
-    var instance = this;
-    var callback = function (err, texture, sourceInCallback) {
+    const instance = this;
+    const callback = function (err, texture, sourceInCallback) {
         if (!err && (instance._pendingSkin === texture)) {
             instance._useSkin(
                 texture, sourceInCallback.width, sourceInCallback.height, costumeResolution);
         }
     };
 
-    var gl = this._gl;
-    var options = {
+    const gl = this._gl;
+    const options = {
         auto: true,
         mag: gl.NEAREST,
         min: gl.NEAREST, // TODO: mipmaps, linear (except pixelate)
         wrap: gl.CLAMP_TO_EDGE,
         src: source
     };
-    var willCallCallback = typeof source === 'string';
+    const willCallCallback = typeof source === 'string';
     instance._pendingSkin = twgl.createTexture(
         gl, options, willCallCallback ? callback : null);
 
@@ -312,7 +312,7 @@ Drawable.prototype.getVisible = function () {
  * @param {object.<string,*>} properties The new property values to set.
  */
 Drawable.prototype.updateProperties = function (properties) {
-    var dirty = false;
+    let dirty = false;
     if ('skin' in properties) {
         this.setSkin(properties.skin, properties.costumeResolution);
         this.setConvexHullDirty();
@@ -349,18 +349,18 @@ Drawable.prototype.updateProperties = function (properties) {
     if (dirty) {
         this.setTransformDirty();
     }
-    var numEffects = ShaderManager.EFFECTS.length;
-    for (var index = 0; index < numEffects; ++index) {
-        var effectName = ShaderManager.EFFECTS[index];
+    const numEffects = ShaderManager.EFFECTS.length;
+    for (let index = 0; index < numEffects; ++index) {
+        const effectName = ShaderManager.EFFECTS[index];
         if (effectName in properties) {
-            var rawValue = properties[effectName];
-            var effectInfo = ShaderManager.EFFECT_INFO[effectName];
-            if (rawValue !== 0) {
+            const rawValue = properties[effectName];
+            const effectInfo = ShaderManager.EFFECT_INFO[effectName];
+            if (rawValue) {
                 this._effectBits |= effectInfo.mask;
             } else {
                 this._effectBits &= ~effectInfo.mask;
             }
-            var converter = effectInfo.converter;
+            const converter = effectInfo.converter;
             this._uniforms[`u_${effectName}`] = converter(rawValue);
             if (effectInfo.shapeChanges) {
                 this.setConvexHullDirty();
@@ -401,17 +401,17 @@ Drawable.prototype.getSkinSize = function () {
  * @private
  */
 Drawable.prototype._calculateTransform = function () {
-    var modelMatrix = this._uniforms.u_modelMatrix;
+    const modelMatrix = this._uniforms.u_modelMatrix;
 
     twgl.m4.identity(modelMatrix);
     twgl.m4.translate(modelMatrix, this._position, modelMatrix);
 
-    var rotation = (270 - this._direction) * Math.PI / 180;
+    const rotation = (270 - this._direction) * Math.PI / 180;
     twgl.m4.rotateZ(modelMatrix, rotation, modelMatrix);
 
 
     // Adjust rotation center relative to the skin.
-    var rotationAdjusted = twgl.v3.subtract(
+    const rotationAdjusted = twgl.v3.subtract(
         this._rotationCenter,
         twgl.v3.divScalar(this._uniforms.u_skinSize, 2)
     );
@@ -420,7 +420,7 @@ Drawable.prototype._calculateTransform = function () {
 
     twgl.m4.translate(modelMatrix, rotationAdjusted, modelMatrix);
 
-    var scaledSize = twgl.v3.divScalar(twgl.v3.multiply(
+    const scaledSize = twgl.v3.divScalar(twgl.v3.multiply(
         this._uniforms.u_skinSize, this._scale), 100);
     scaledSize[2] = 0; // was NaN because the vectors have only 2 components.
     twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
@@ -473,10 +473,10 @@ Drawable.prototype.getBounds = function () {
     const projection = twgl.m4.ortho(-1, 1, -1, 1, -1, 1);
     const skinSize = this._uniforms.u_skinSize;
     const tm = twgl.m4.multiply(this._uniforms.u_modelMatrix, projection);
-    let transformedHullPoints = [];
+    const transformedHullPoints = [];
     for (let i = 0; i < this._convexHullPoints.length; i++) {
-        let point = this._convexHullPoints[i];
-        let glPoint = twgl.v3.create(
+        const point = this._convexHullPoints[i];
+        const glPoint = twgl.v3.create(
             0.5 + (-point[0] / skinSize[0]),
             0.5 + (-point[1] / skinSize[1]),
             0
@@ -485,7 +485,7 @@ Drawable.prototype.getBounds = function () {
         transformedHullPoints.push(glPoint);
     }
     // Search through transformed points to generate box on axes.
-    let bounds = new Rectangle();
+    const bounds = new Rectangle();
     bounds.initFromPointsAABB(transformedHullPoints);
     return bounds;
 };
@@ -535,9 +535,9 @@ Drawable.prototype.getFastBounds = function () {
  */
 Drawable.color4fFromID = function (id) {
     id -= Drawable.NONE;
-    var r = ((id >> 0) & 255) / 255.0;
-    var g = ((id >> 8) & 255) / 255.0;
-    var b = ((id >> 16) & 255) / 255.0;
+    const r = ((id >> 0) & 255) / 255.0;
+    const g = ((id >> 8) & 255) / 255.0;
+    const b = ((id >> 16) & 255) / 255.0;
     return [r, g, b, 1.0];
 };
 
@@ -553,7 +553,7 @@ Drawable.color4fFromID = function (id) {
  */
 // eslint-disable-next-line no-unused-vars
 Drawable.color4bToID = function (r, g, b, a) {
-    var id;
+    let id;
     id = (r & 255) << 0;
     id |= (g & 255) << 8;
     id |= (b & 255) << 16;
