@@ -21,7 +21,7 @@ class RenderWebGL {
      * @param {int} [yTop=180] The y-coordinate of the top edge.
      * @constructor
      */
-    constructor(canvas, xLeft, xRight, yBottom, yTop) {
+    constructor (canvas, xLeft, xRight, yBottom, yTop) {
         // TODO: remove?
         twgl.setDefaults({crossOrigin: true});
 
@@ -63,9 +63,9 @@ RenderWebGL.MAX_TOUCH_SIZE = [3, 3];
 RenderWebGL.TOLERANCE_TOUCHING_COLOR = 2;
 
 
-/********
- * Functions called only locally: these are not available from a worker.
- ********/
+/* *******
+   * Functions called only locally: these are not available from a worker.
+   *********/
 
 /**
  * Set the physical size of the stage in device-independent pixels.
@@ -86,7 +86,7 @@ RenderWebGL.prototype.resize = function (pixelsWide, pixelsTall) {
  * @param {number} green The green component for the background.
  * @param {number} blue The blue component for the background.
  */
-RenderWebGL.prototype.setBackgroundColor = function(red, green, blue) {
+RenderWebGL.prototype.setBackgroundColor = function (red, green, blue) {
     this._backgroundColor = [red, green, blue, 1];
 };
 
@@ -130,7 +130,7 @@ RenderWebGL.prototype.createDrawable = function () {
 /**
  * Destroy a Drawable, removing it from the scene.
  * @param {int} drawableID The ID of the Drawable to remove.
- * @returns {Boolean} True iff the drawable was found and removed.
+ * @returns {boolean} True iff the drawable was found and removed.
  */
 RenderWebGL.prototype.destroyDrawable = function (drawableID) {
     var index = this._drawables.indexOf(drawableID);
@@ -150,24 +150,24 @@ RenderWebGL.prototype.destroyDrawable = function (drawableID) {
  * "go to back": setDrawableOrder(id, 1); (assuming stage at 0).
  * "go to front": setDrawableOrder(id, Infinity);
  * @param {int} drawableID ID of Drawable to reorder.
- * @param {Number} order New absolute order or relative order adjusment.
- * @param {Boolean=} opt_isRelative If set, `order` refers to a relative change.
- * @param {Number=} opt_min If set, order constrained to be at least `opt_min`.
- * @return {?Number} New order if changed, or null.
+ * @param {number} order New absolute order or relative order adjusment.
+ * @param {boolean=} optIsRelative If set, `order` refers to a relative change.
+ * @param {number=} optMin If set, order constrained to be at least `optMin`.
+ * @return {?number} New order if changed, or null.
  */
 RenderWebGL.prototype.setDrawableOrder = function (
-    drawableID, order, opt_isRelative, opt_min) {
+    drawableID, order, optIsRelative, optMin) {
     var oldIndex = this._drawables.indexOf(drawableID);
     if (oldIndex >= 0) {
         // Remove drawable from the list.
         var drawable = this._drawables.splice(oldIndex, 1)[0];
         // Determine new index.
         var newIndex = order;
-        if (opt_isRelative) {
+        if (optIsRelative) {
             newIndex += oldIndex;
         }
-        if (opt_min) {
-            newIndex = Math.max(newIndex, opt_min);
+        if (optMin) {
+            newIndex = Math.max(newIndex, optMin);
         }
         newIndex = Math.max(newIndex, 0);
         // Insert at new index.
@@ -196,7 +196,7 @@ RenderWebGL.prototype.draw = function () {
 /**
  * Get the precise bounds for a Drawable.
  * @param {int} drawableID ID of Drawable to get bounds for.
- * @return {Object} Bounds for a tight box around the Drawable.
+ * @return {object} Bounds for a tight box around the Drawable.
  */
 RenderWebGL.prototype.getBounds = function (drawableID) {
     const drawable = Drawable.getDrawableByID(drawableID);
@@ -216,8 +216,8 @@ RenderWebGL.prototype.getBounds = function (drawableID) {
         context.strokeStyle = '#FF0000';
         let pr = window.devicePixelRatio;
         context.strokeRect(
-            pr * (bounds.left + this._nativeSize[0]/2),
-            pr * (-bounds.top + this._nativeSize[1]/2),
+            pr * (bounds.left + this._nativeSize[0] / 2),
+            pr * (-bounds.top + this._nativeSize[1] / 2),
             pr * (bounds.right - bounds.left),
             pr * (-bounds.bottom + bounds.top)
         );
@@ -240,9 +240,9 @@ RenderWebGL.prototype.getSkinSize = function (drawableID) {
  * @param {int} drawableID The ID of the Drawable to check.
  * @param {int[]} color3b Test if the Drawable is touching this color.
  * @param {int[]} [mask3b] Optionally mask the check to this part of Drawable.
- * @returns {Boolean} True iff the Drawable is touching the color.
+ * @returns {boolean} True iff the Drawable is touching the color.
  */
-RenderWebGL.prototype.isTouchingColor = function(drawableID, color3b, mask3b) {
+RenderWebGL.prototype.isTouchingColor = function (drawableID, color3b, mask3b) {
     const gl = this._gl;
     twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
@@ -285,7 +285,7 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3b, mask3b) {
                 ShaderManager.DRAW_MODE.colorMask :
                 ShaderManager.DRAW_MODE.silhouette,
             projection,
-            undefined,
+            null,
             extraUniforms);
 
         gl.stencilFunc(gl.EQUAL, 1, 1);
@@ -294,11 +294,9 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3b, mask3b) {
 
         this._drawThese(
             candidateIDs, ShaderManager.DRAW_MODE.default, projection,
-            function (testID) {
-                return testID != drawableID;
-            });
-    }
-    finally {
+            testID => testID !== drawableID
+        );
+    } finally {
         gl.colorMask(true, true, true, true);
         gl.disable(gl.STENCIL_TEST);
     }
@@ -339,9 +337,9 @@ RenderWebGL.prototype.isTouchingColor = function(drawableID, color3b, mask3b) {
  * Check if a particular Drawable is touching any in a set of Drawables.
  * @param {int} drawableID The ID of the Drawable to check.
  * @param {int[]} candidateIDs The Drawable IDs to check, otherwise all.
- * @returns {Boolean} True iff the Drawable is touching one of candidateIDs.
+ * @returns {boolean} True iff the Drawable is touching one of candidateIDs.
  */
-RenderWebGL.prototype.isTouchingDrawables = function(drawableID, candidateIDs) {
+RenderWebGL.prototype.isTouchingDrawables = function (drawableID, candidateIDs) {
     candidateIDs = candidateIDs || this._drawables;
 
     const gl = this._gl;
@@ -383,9 +381,7 @@ RenderWebGL.prototype.isTouchingDrawables = function(drawableID, candidateIDs) {
 
         this._drawThese(
             candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection,
-            function (testID) {
-                return testID != drawableID;
-            }
+            testID => testID !== drawableID
         );
     } finally {
         gl.colorMask(true, true, true, true);
@@ -534,7 +530,7 @@ RenderWebGL.prototype._touchingBounds = function (drawableID) {
     // when you provide float width/heights to gl.viewport and projection.
     bounds.snapToInt();
 
-    if (bounds.width == 0 || bounds.height == 0) {
+    if (bounds.width === 0 || bounds.height === 0) {
         // No space to query.
         return null;
     }
@@ -544,9 +540,9 @@ RenderWebGL.prototype._touchingBounds = function (drawableID) {
 /**
  * Filter a list of candidates for a touching query into only those that
  * could possibly intersect the given bounds.
- * @param {int} drawableID ID for drawable of query.
- * @param {Array.<int>} candidateIDs Candidates for touching query.
- * @param {Rectangle} Bounds to limit candidates to.
+ * @param {int} drawableID - ID for drawable of query.
+ * @param {Array.<int>} candidateIDs - Candidates for touching query.
+ * @param {Rectangle} bounds - Bounds to limit candidates to.
  * @return {?Array.<int>} Filtered candidateIDs, or null if none.
  */
 RenderWebGL.prototype._filterCandidatesTouching = function (
@@ -554,14 +550,14 @@ RenderWebGL.prototype._filterCandidatesTouching = function (
     // Filter candidates by rough bounding box intersection.
     // Do this before _drawThese, so we can prevent any GL operations
     // and readback by returning early.
-    candidateIDs = candidateIDs.filter(function (testID) {
-        if (testID == drawableID) return false;
+    candidateIDs = candidateIDs.filter(testID => {
+        if (testID === drawableID) return false;
         // Only draw items which could possibly overlap target Drawable.
         let candidate = Drawable.getDrawableByID(testID);
         let candidateBounds = candidate.getFastBounds();
         return bounds.intersects(candidateBounds);
     });
-    if (candidateIDs.length == 0) {
+    if (candidateIDs.length === 0) {
         // No possible intersections based on bounding boxes.
         return null;
     }
@@ -571,7 +567,7 @@ RenderWebGL.prototype._filterCandidatesTouching = function (
 /**
 * Update the position, direction, scale, or effect properties of this Drawable.
 * @param {int} drawableID The ID of the Drawable to update.
-* @param {Object.<string,*>} properties The new property values to set.
+* @param {object.<string,*>} properties The new property values to set.
  */
 RenderWebGL.prototype.updateDrawableProperties = function (
         drawableID, properties) {
@@ -579,9 +575,9 @@ RenderWebGL.prototype.updateDrawableProperties = function (
     drawable.updateProperties(properties);
 };
 
-/********
- * Truly internal functions: these support the functions above.
- ********/
+/* ********
+   * Truly internal functions: these support the functions above.
+   ********/
 
 /**
  * Build geometry (vertex and index) buffers.
@@ -625,8 +621,8 @@ RenderWebGL.prototype._createGeometry = function () {
 RenderWebGL.prototype._createQueryBuffers = function () {
     var gl = this._gl;
     var attachments = [
-        {format: gl.RGBA },
-        {format: gl.DEPTH_STENCIL }
+        {format: gl.RGBA},
+        {format: gl.DEPTH_STENCIL}
     ];
 
     this._pickBufferInfo = twgl.createFramebufferInfo(
@@ -648,7 +644,7 @@ RenderWebGL.prototype._createQueryBuffers = function () {
  * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
  * @private
  */
-RenderWebGL.prototype._drawThese = function(
+RenderWebGL.prototype._drawThese = function (
     drawables, drawMode, projection, filter, extraUniforms) {
 
     var gl = this._gl;
@@ -669,7 +665,7 @@ RenderWebGL.prototype._drawThese = function(
 
         var effectBits = drawable.getEnabledEffects();
         var newShader = this._shaderManager.getShader(drawMode, effectBits);
-        if (currentShader != newShader) {
+        if (currentShader !== newShader) {
             currentShader = newShader;
             gl.useProgram(currentShader.program);
             twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
@@ -693,14 +689,14 @@ RenderWebGL.prototype._drawThese = function(
  * To do this, draw the Drawable unrotated, unscaled, and untranslated.
  * Read back the pixels and find all boundary points.
  * Finally, apply a convex hull algorithm to simplify the set.
- * @param {int} drawablesID The Drawable IDs calculate convex hull for.
+ * @param {int} drawableID The Drawable IDs calculate convex hull for.
  * @return {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
  */
 RenderWebGL.prototype._getConvexHullPointsForDrawable = function (drawableID) {
     const drawable = Drawable.getDrawableByID(drawableID);
     const [width, height] = drawable._uniforms.u_skinSize;
     // No points in the hull if invisible or size is 0.
-    if (!drawable.getVisible() || width == 0 || height == 0) {
+    if (!drawable.getVisible() || width === 0 || height === 0) {
         return [];
     }
 
@@ -728,7 +724,7 @@ RenderWebGL.prototype._getConvexHullPointsForDrawable = function (drawableID) {
     this._drawThese([drawableID],
         ShaderManager.DRAW_MODE.silhouette,
         projection,
-        undefined,
+        null,
         {u_modelMatrix: modelMatrix}
     );
 
@@ -744,7 +740,7 @@ RenderWebGL.prototype._getConvexHullPointsForDrawable = function (drawableID) {
      * Helper method to look up a pixel.
      * @param {int} x X coordinate of the pixel in `pixels`.
      * @param {int} y Y coordinate of the pixel in `pixels`.
-     * @return Known ID at that pixel, or Drawable.NONE.
+     * @return {int} Known ID at that pixel, or Drawable.NONE.
      */
     const _getPixel = function (x, y) {
         var pixelBase = ((width * y) + x) * 4;

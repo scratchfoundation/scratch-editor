@@ -20,7 +20,7 @@
 
 # Prefer LF for these files
 .editorconfig text eol=lf
-.eslintrc text eol=lf
+.eslintignore text eol=lf
 .gitattributes text eol=lf
 .gitignore text eol=lf
 .gitmodules text eol=lf

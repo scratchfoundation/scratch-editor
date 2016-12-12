@@ -1,12 +1,14 @@
 // Synchronously load TTF fonts.
 // First, have Webpack load their data as Base 64 strings.
+/* eslint-disable global-require */
 let FONTS = {
-    'Donegal': require('base64!scratch-render-fonts/DonegalOne-Regular.ttf'),
-    'Gloria': require('base64!scratch-render-fonts/GloriaHallelujah.ttf'),
-    'Mystery': require('base64!scratch-render-fonts/MysteryQuest-Regular.ttf'),
-    'Marker': require('base64!scratch-render-fonts/PermanentMarker.ttf'),
-    'Scratch': require('base64!scratch-render-fonts/Scratch.ttf')
+    Donegal: require('base64!scratch-render-fonts/DonegalOne-Regular.ttf'),
+    Gloria: require('base64!scratch-render-fonts/GloriaHallelujah.ttf'),
+    Mystery: require('base64!scratch-render-fonts/MysteryQuest-Regular.ttf'),
+    Marker: require('base64!scratch-render-fonts/PermanentMarker.ttf'),
+    Scratch: require('base64!scratch-render-fonts/Scratch.ttf')
 };
+/* eslint-enable global-require */
 
 // For each Base 64 string,
 // 1. Replace each with a usable @font-face tag that points to a Data URI.
@@ -16,9 +18,8 @@ let documentStyleTag = document.createElement('style');
 documentStyleTag.id = 'scratch-font-styles';
 for (var fontName in FONTS) {
     var fontData = FONTS[fontName];
-    FONTS[fontName] = '@font-face {font-family: "' + fontName + '";' +
-    'src: url("data:application/x-font-ttf;charset=utf-8;base64,' +
-    fontData + '");}';
+    FONTS[fontName] = '@font-face {' +
+        `font-family: "${fontName}";src: url("data:application/x-font-ttf;charset=utf-8;base64,${fontData}");}`;
     documentStyleTag.textContent += FONTS[fontName];
 }
 document.body.insertBefore(documentStyleTag, document.body.firstChild);
@@ -74,8 +75,8 @@ class SvgRenderer {
     _transformText () {
         // Collect all text elements into a list.
         let textElements = [];
-        let collectText = (domElement) => {
-            if (domElement.localName == 'text') {
+        let collectText = domElement => {
+            if (domElement.localName === 'text') {
                 textElements.push(domElement);
             }
             for (let i = 0; i < domElement.children.length; i++) {
@@ -238,7 +239,7 @@ class SvgRenderer {
             }
         };
         let svgText = this._toString();
-        img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgText);
+        img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
     }
 
     /**
@@ -246,7 +247,7 @@ class SvgRenderer {
      * @param {string} tagName Tag name for the element.
      * @return {!DOMElement} Element created.
      */
-    _createSVGElement(tagName) {
+    _createSVGElement (tagName) {
         return document.createElementNS(
             'http://www.w3.org/2000/svg', tagName
         );

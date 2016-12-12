@@ -9,13 +9,14 @@ class Drawable {
     /**
      * An object which can be drawn by the renderer.
      * TODO: double-buffer all rendering state (position, skin, effects, etc.)
-     * @param gl The OpenGL context.
+     * @param {WebGLRenderingContext} gl The OpenGL context.
      * @constructor
      */
-    constructor(gl) {
+    constructor (gl) {
         this._id = Drawable._nextDrawable++;
         Drawable._allDrawables[this._id] = this;
 
+        /** @type {WebGLRenderingContext} */
         this._gl = gl;
 
         /**
@@ -56,7 +57,7 @@ class Drawable {
         for (var index = 0; index < numEffects; ++index) {
             var effectName = ShaderManager.EFFECTS[index];
             var converter = ShaderManager.EFFECT_INFO[effectName].converter;
-            this._uniforms['u_' + effectName] = converter(0);
+            this._uniforms[`u_${effectName}`] = converter(0);
         }
 
         this._position = twgl.v3.create(0, 0);
@@ -109,7 +110,7 @@ Drawable._allDrawables = {};
 
 /**
  * Fetch a Drawable by its ID number.
- * @param drawableID {int} The ID of the Drawable to fetch.
+ * @param {int} drawableID The ID of the Drawable to fetch.
  * @returns {?Drawable} The specified Drawable if found, otherwise null.
  */
 Drawable.getDrawableByID = function (drawableID) {
@@ -158,27 +159,26 @@ Drawable.prototype.getID = function () {
  * Set this Drawable's skin.
  * The Drawable will continue using the existing skin until the new one loads.
  * If there is no existing skin, the Drawable will use a 1x1 transparent image.
- * @param {string} skin_url The URL of the skin.
- * @param {number=} opt_costumeResolution Optionally, a resolution for the skin.
+ * @param {string} skinUrl The URL of the skin.
+ * @param {number=} optCostumeResolution Optionally, a resolution for the skin.
  */
-Drawable.prototype.setSkin = function (skin_url, opt_costumeResolution) {
+Drawable.prototype.setSkin = function (skinUrl, optCostumeResolution) {
     // TODO: cache Skins instead of loading each time. Ref count them?
     // TODO: share Skins across Drawables - see also destroy()
-    if (skin_url) {
-        var ext = skin_url.substring(skin_url.lastIndexOf('.')+1);
+    if (skinUrl) {
+        var ext = skinUrl.substring(skinUrl.lastIndexOf('.') + 1);
         switch (ext) {
         case 'svg':
         case 'svg/get/':
         case 'svgz':
         case 'svgz/get/':
-            this._setSkinSVG(skin_url);
+            this._setSkinSVG(skinUrl);
             break;
         default:
-            this._setSkinBitmap(skin_url, opt_costumeResolution);
+            this._setSkinBitmap(skinUrl, optCostumeResolution);
             break;
         }
-    }
-    else {
+    } else {
         this._useSkin(null, 0, 0, 1, true);
     }
 };
@@ -190,15 +190,15 @@ Drawable.prototype.setSkin = function (skin_url, opt_costumeResolution) {
  * @param {int} width The width of the skin.
  * @param {int} height The height of the skin.
  * @param {int} costumeResolution The resolution to use for this skin.
- * @param {Boolean} [skipPendingCheck] If true, don't compare to _pendingSkin.
+ * @param {boolean} [skipPendingCheck] If true, don't compare to _pendingSkin.
  * @private
  */
-Drawable.prototype._useSkin = function(
+Drawable.prototype._useSkin = function (
     skin, width, height, costumeResolution, skipPendingCheck) {
 
-    if (skipPendingCheck || (skin == this._pendingSkin)) {
+    if (skipPendingCheck || (skin === this._pendingSkin)) {
         this._pendingSkin = null;
-        if (this._uniforms.u_skin && (this._uniforms.u_skin != skin)) {
+        if (this._uniforms.u_skin && (this._uniforms.u_skin !== skin)) {
             this._gl.deleteTexture(this._uniforms.u_skin);
         }
         this._setSkinSize(width, height, costumeResolution);
@@ -215,14 +215,13 @@ Drawable.prototype.getEnabledEffects = function () {
 
 /**
  * Load a bitmap skin. Supports the same formats as the Image element.
- * @param {string} skin_md5ext The MD5 and file extension of the bitmap skin.
- * @param {number=} opt_costumeResolution Optionally, a resolution for the skin.
+ * @param {string} skinMd5ext The MD5 and file extension of the bitmap skin.
+ * @param {number=} optCostumeResolution Optionally, a resolution for the skin.
  * @private
  */
-Drawable.prototype._setSkinBitmap = function (skin_md5ext,
-        opt_costumeResolution) {
-    var url = skin_md5ext;
-    this._setSkinCore(url, opt_costumeResolution);
+Drawable.prototype._setSkinBitmap = function (skinMd5ext, optCostumeResolution) {
+    var url = skinMd5ext;
+    this._setSkinCore(url, optCostumeResolution);
 };
 
 /**
@@ -233,23 +232,23 @@ Drawable.prototype._setSkinBitmap = function (skin_md5ext,
  * - Colors seem a little off. This may be browser-specific.
  * - This method works in Chrome, Firefox, Safari, and Edge but causes a
  *   security error in IE.
- * @param {string} skin_md5ext The MD5 and file extension of the SVG skin.
+ * @param {string} skinMd5ext The MD5 and file extension of the SVG skin.
  * @private
  */
-Drawable.prototype._setSkinSVG = function (skin_md5ext) {
-    var url = skin_md5ext;
+Drawable.prototype._setSkinSVG = function (skinMd5ext) {
+    var url = skinMd5ext;
     var instance = this;
 
     let svgCanvas = document.createElement('canvas');
     let svgRenderer = new SvgRenderer(svgCanvas);
 
-    function gotSVG(err, response, body) {
+    const gotSVG = (err, response, body) => {
         if (!err) {
-            svgRenderer.fromString(body, function () {
+            svgRenderer.fromString(body, () => {
                 instance._setSkinCore(svgCanvas, svgRenderer.getDrawRatio());
             });
         }
-    }
+    };
     xhr.get({
         useXDR: true,
         url: url
@@ -265,10 +264,10 @@ Drawable.prototype._setSkinSVG = function (skin_md5ext) {
  */
 Drawable.prototype._setSkinCore = function (source, costumeResolution) {
     var instance = this;
-    var callback = function (err, texture, source) {
-        if (!err && (instance._pendingSkin == texture)) {
+    var callback = function (err, texture, sourceInCallback) {
+        if (!err && (instance._pendingSkin === texture)) {
             instance._useSkin(
-                texture, source.width, source.height, costumeResolution);
+                texture, sourceInCallback.width, sourceInCallback.height, costumeResolution);
         }
     };
 
@@ -280,7 +279,7 @@ Drawable.prototype._setSkinCore = function (source, costumeResolution) {
         wrap: gl.CLAMP_TO_EDGE,
         src: source
     };
-    var willCallCallback = typeof source == 'string';
+    var willCallCallback = typeof source === 'string';
     instance._pendingSkin = twgl.createTexture(
         gl, options, willCallCallback ? callback : null);
 
@@ -292,8 +291,7 @@ Drawable.prototype._setSkinCore = function (source, costumeResolution) {
 };
 
 /**
- * Retrieve the shader uniforms to be used when rendering this Drawable.
- * @returns {Object.<string, *>}
+ * @returns {object.<string, *>} the shader uniforms to be used when rendering this Drawable.
  */
 Drawable.prototype.getUniforms = function () {
     if (this._transformDirty) {
@@ -303,8 +301,7 @@ Drawable.prototype.getUniforms = function () {
 };
 
 /**
- * Retrieve whether this Drawable is visible.
- * @returns {boolean}
+ * @returns {boolean} whether this Drawable is visible.
  */
 Drawable.prototype.getVisible = function () {
     return this._visible;
@@ -312,7 +309,7 @@ Drawable.prototype.getVisible = function () {
 
 /**
  * Update the position, direction, scale, or effect properties of this Drawable.
- * @param {Object.<string,*>} properties The new property values to set.
+ * @param {object.<string,*>} properties The new property values to set.
  */
 Drawable.prototype.updateProperties = function (properties) {
     var dirty = false;
@@ -321,26 +318,26 @@ Drawable.prototype.updateProperties = function (properties) {
         this.setConvexHullDirty();
     }
     if ('position' in properties && (
-        this._position[0] != properties.position[0] ||
-        this._position[1] != properties.position[1])) {
+        this._position[0] !== properties.position[0] ||
+        this._position[1] !== properties.position[1])) {
         this._position[0] = properties.position[0];
         this._position[1] = properties.position[1];
         dirty = true;
     }
-    if ('direction' in properties && this._direction != properties.direction) {
+    if ('direction' in properties && this._direction !== properties.direction) {
         this._direction = properties.direction;
         dirty = true;
     }
     if ('scale' in properties && (
-        this._scale[0] != properties.scale[0] ||
-        this._scale[1] != properties.scale[1])) {
+        this._scale[0] !== properties.scale[0] ||
+        this._scale[1] !== properties.scale[1])) {
         this._scale[0] = properties.scale[0];
         this._scale[1] = properties.scale[1];
         dirty = true;
     }
     if ('rotationCenter' in properties && (
-        this._rotationCenter[0] != properties.rotationCenter[0] ||
-        this._rotationCenter[1] != properties.rotationCenter[1])) {
+        this._rotationCenter[0] !== properties.rotationCenter[0] ||
+        this._rotationCenter[1] !== properties.rotationCenter[1])) {
         this._rotationCenter[0] = properties.rotationCenter[0];
         this._rotationCenter[1] = properties.rotationCenter[1];
         dirty = true;
@@ -358,14 +355,13 @@ Drawable.prototype.updateProperties = function (properties) {
         if (effectName in properties) {
             var rawValue = properties[effectName];
             var effectInfo = ShaderManager.EFFECT_INFO[effectName];
-            if (rawValue != 0) {
+            if (rawValue !== 0) {
                 this._effectBits |= effectInfo.mask;
-            }
-            else {
+            } else {
                 this._effectBits &= ~effectInfo.mask;
             }
             var converter = effectInfo.converter;
-            this._uniforms['u_' + effectName] = converter(rawValue);
+            this._uniforms[`u_${effectName}`] = converter(rawValue);
             if (effectInfo.shapeChanges) {
                 this.setConvexHullDirty();
             }
@@ -384,8 +380,7 @@ Drawable.prototype._setSkinSize = function (width, height, costumeResolution) {
     costumeResolution = costumeResolution || 1;
     width /= costumeResolution;
     height /= costumeResolution;
-    if (this._uniforms.u_skinSize[0] != width
-        || this._uniforms.u_skinSize[1] != height) {
+    if (this._uniforms.u_skinSize[0] !== width || this._uniforms.u_skinSize[1] !== height) {
         this._uniforms.u_skinSize[0] = width;
         this._uniforms.u_skinSize[1] = height;
         this.setTransformDirty();
@@ -467,7 +462,7 @@ Drawable.prototype.setConvexHullPoints = function (points) {
  */
 Drawable.prototype.getBounds = function () {
     if (this.needsConvexHullPoints()) {
-        throw 'Needs updated convex hull points before bounds calculation.';
+        throw new Error('Needs updated convex hull points before bounds calculation.');
     }
     if (this._transformDirty) {
         this._calculateTransform();
@@ -538,7 +533,7 @@ Drawable.prototype.getFastBounds = function () {
  * @param {int} id The ID to convert.
  * @returns {number[]} An array of [r,g,b,a], each component in the range [0,1].
  */
-Drawable.color4fFromID = function(id) {
+Drawable.color4fFromID = function (id) {
     id -= Drawable.NONE;
     var r = ((id >> 0) & 255) / 255.0;
     var g = ((id >> 8) & 255) / 255.0;
@@ -557,7 +552,7 @@ Drawable.color4fFromID = function(id) {
  * @returns {int} The ID represented by that color.
  */
 // eslint-disable-next-line no-unused-vars
-Drawable.color4bToID = function(r, g, b, a) {
+Drawable.color4bToID = function (r, g, b, a) {
     var id;
     id = (r & 255) << 0;
     id |= (g & 255) << 8;

@@ -62,7 +62,7 @@ class Rectangle {
      * Note that this is a comparison assuming the Rectangle was
      * initialized with Scratch-space bounds or points.
      * @param {!Rectangle} other Rectangle to check if intersecting.
-     * @return {Boolean} True if this Rectangle intersects other.
+     * @return {boolean} True if this Rectangle intersects other.
      */
     intersects (other) {
         return (
@@ -78,7 +78,7 @@ class Rectangle {
      * Note that this is a comparison assuming the Rectangle was
      * initialized with Scratch-space bounds or points.
      * @param {!Rectangle} other Rectangle to check if fully contained.
-     * @return {Boolean} True if this Rectangle fully contains other.
+     * @return {boolean} True if this Rectangle fully contains other.
      */
     contains (other) {
         return (
@@ -111,7 +111,7 @@ class Rectangle {
     /**
      * Push out the Rectangle to integer bounds.
      */
-    snapToInt() {
+    snapToInt () {
         this.left = Math.floor(this.left);
         this.right = Math.ceil(this.right);
         this.bottom = Math.floor(this.bottom);
