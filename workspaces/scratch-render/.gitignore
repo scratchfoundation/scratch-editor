@@ -5,7 +5,13 @@
 /node_modules
 npm-*
 
+# Testing
+/.nyc_output
+/coverage
+
+# IDEA
+/.idea
+
 # Build
-/render*.js
-/dist.js
-/playground/render.js
+/dist
+/playground/scratch-render.js

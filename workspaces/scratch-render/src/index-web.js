@@ -1,8 +1,8 @@
+/* eslint-env browser */
 require('babel-polyfill');
 
-var RenderWebGL = require('./RenderWebGL');
-
 /**
- * Export for use in a web page
+ * Export for use in a web page.
+ * @type {RenderWebGL}
  */
-window.RenderWebGL = RenderWebGL;
+window.RenderWebGL = require('./index');

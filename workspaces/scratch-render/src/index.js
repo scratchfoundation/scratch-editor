@@ -1,6 +1,7 @@
-var RenderWebGL = require('./RenderWebGL');
+const RenderWebGL = require('./RenderWebGL');
 
 /**
- * Export for NPM / Node.js
+ * Export for NPM & Node.js
+ * @type {RenderWebGL}
  */
 module.exports = RenderWebGL;

@@ -1,24 +1,25 @@
 // Synchronously load TTF fonts.
 // First, have Webpack load their data as Base 64 strings.
-let FONTS = {
-    'Donegal': require('base64!scratch-render-fonts/DonegalOne-Regular.ttf'),
-    'Gloria': require('base64!scratch-render-fonts/GloriaHallelujah.ttf'),
-    'Mystery': require('base64!scratch-render-fonts/MysteryQuest-Regular.ttf'),
-    'Marker': require('base64!scratch-render-fonts/PermanentMarker.ttf'),
-    'Scratch': require('base64!scratch-render-fonts/Scratch.ttf')
+/* eslint-disable global-require */
+const FONTS = {
+    Donegal: require('base64!scratch-render-fonts/DonegalOne-Regular.ttf'),
+    Gloria: require('base64!scratch-render-fonts/GloriaHallelujah.ttf'),
+    Mystery: require('base64!scratch-render-fonts/MysteryQuest-Regular.ttf'),
+    Marker: require('base64!scratch-render-fonts/PermanentMarker.ttf'),
+    Scratch: require('base64!scratch-render-fonts/Scratch.ttf')
 };
+/* eslint-enable global-require */
 
 // For each Base 64 string,
 // 1. Replace each with a usable @font-face tag that points to a Data URI.
 // 2. Inject the font into a style on `document.body`, so measurements
 //    can be accurately taken in SvgRenderer._transformMeasurements.
-let documentStyleTag = document.createElement('style');
+const documentStyleTag = document.createElement('style');
 documentStyleTag.id = 'scratch-font-styles';
-for (var fontName in FONTS) {
-    var fontData = FONTS[fontName];
-    FONTS[fontName] = '@font-face {font-family: "' + fontName + '";' +
-    'src: url("data:application/x-font-ttf;charset=utf-8;base64,' +
-    fontData + '");}';
+for (const fontName in FONTS) {
+    const fontData = FONTS[fontName];
+    FONTS[fontName] = '@font-face {' +
+        `font-family: "${fontName}";src: url("data:application/x-font-ttf;charset=utf-8;base64,${fontData}");}`;
     documentStyleTag.textContent += FONTS[fontName];
 }
 document.body.insertBefore(documentStyleTag, document.body.firstChild);
@@ -29,7 +30,7 @@ document.body.insertBefore(documentStyleTag, document.body.firstChild);
 class SvgRenderer {
     /**
      * Create a quirks-mode SVG renderer for a particular canvas.
-     * @param {!DOMElement} canvas A canvas element to draw to.
+     * @param {!HTMLCanvasElement} canvas A canvas element to draw to.
      * @constructor
      */
     constructor (canvas) {
@@ -73,9 +74,9 @@ class SvgRenderer {
      */
     _transformText () {
         // Collect all text elements into a list.
-        let textElements = [];
-        let collectText = (domElement) => {
-            if (domElement.localName == 'text') {
+        const textElements = [];
+        const collectText = domElement => {
+            if (domElement.localName === 'text') {
                 textElements.push(domElement);
             }
             for (let i = 0; i < domElement.children.length; i++) {
@@ -84,8 +85,8 @@ class SvgRenderer {
         };
         collectText(this._svgTag);
         // For each text element, apply quirks.
-        let fontsNeeded = {};
-        for (let textElement of textElements) {
+        const fontsNeeded = {};
+        for (const textElement of textElements) {
             // Remove x and y attributes - they are not used in Scratch.
             textElement.removeAttribute('x');
             textElement.removeAttribute('y');
@@ -101,16 +102,16 @@ class SvgRenderer {
                 textElement.setAttribute('font-family', 'Helvetica');
             }
             // Collect fonts that need injection.
-            let font = textElement.getAttribute('font-family');
+            const font = textElement.getAttribute('font-family');
             fontsNeeded[font] = true;
             // Fix line breaks in text, which are not natively supported by SVG.
             let text = textElement.textContent;
             if (text) {
                 textElement.textContent = '';
-                let lines = text.split('\n');
+                const lines = text.split('\n');
                 text = '';
-                for (let line of lines) {
-                    let tspanNode = this._createSVGElement('tspan');
+                for (const line of lines) {
+                    const tspanNode = this._createSVGElement('tspan');
                     tspanNode.setAttribute('x', '0');
                     tspanNode.setAttribute('dy', '1em');
                     tspanNode.textContent = line;
@@ -126,10 +127,10 @@ class SvgRenderer {
         // External stylesheet linked to by SVG: no effect.
         // Using a <link> or <style>@import</style> to link to font-family
         // injected into the document: no effect.
-        let newDefs = this._createSVGElement('defs');
-        let newStyle = this._createSVGElement('style');
-        let allFonts = Object.keys(fontsNeeded);
-        for (let font of allFonts) {
+        const newDefs = this._createSVGElement('defs');
+        const newStyle = this._createSVGElement('style');
+        const allFonts = Object.keys(fontsNeeded);
+        for (const font of allFonts) {
             if (FONTS.hasOwnProperty(font)) {
                 newStyle.textContent += FONTS[font];
             }
@@ -154,13 +155,13 @@ class SvgRenderer {
      */
     _transformMeasurements () {
         // Save `svgText` for later re-parsing.
-        let svgText = this._toString();
+        const svgText = this._toString();
 
         // Append the SVG dom to the document.
         // This allows us to use `getBBox` on the page,
         // which returns the full bounding-box of all drawn SVG
         // elements, similar to how Scratch 2.0 did measurement.
-        let svgSpot = document.createElement('span');
+        const svgSpot = document.createElement('span');
         let bbox;
         try {
             document.body.appendChild(svgSpot);
@@ -201,8 +202,8 @@ class SvgRenderer {
      * @return {number} Scale ratio to draw to canvases with.
      */
     getDrawRatio () {
-        let devicePixelRatio = window.devicePixelRatio || 1;
-        let backingStoreRatio = this._context.webkitBackingStorePixelRatio ||
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        const backingStoreRatio = this._context.webkitBackingStorePixelRatio ||
             this._context.mozBackingStorePixelRatio ||
             this._context.msBackingStorePixelRatio ||
             this._context.oBackingStorePixelRatio ||
@@ -214,8 +215,8 @@ class SvgRenderer {
      * Draw the SVG to a canvas.
      */
     _draw () {
-        let ratio = this.getDrawRatio();
-        let bbox = this._measurements;
+        const ratio = this.getDrawRatio();
+        const bbox = this._measurements;
 
         // Set up the canvas for drawing.
         this._canvas.width = bbox.width * ratio;
@@ -224,7 +225,7 @@ class SvgRenderer {
         this._context.scale(ratio, ratio);
 
         // Convert the SVG text to an Image, and then draw it to the canvas.
-        let img = new Image();
+        const img = new Image();
         img.onload = () => {
             this._context.drawImage(img, 0, 0);
             // Reset the canvas transform after drawing.
@@ -237,8 +238,8 @@ class SvgRenderer {
                 this._onFinish();
             }
         };
-        let svgText = this._toString();
-        img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgText);
+        const svgText = this._toString();
+        img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
     }
 
     /**
@@ -246,7 +247,7 @@ class SvgRenderer {
      * @param {string} tagName Tag name for the element.
      * @return {!DOMElement} Element created.
      */
-    _createSVGElement(tagName) {
+    _createSVGElement (tagName) {
         return document.createElementNS(
             'http://www.w3.org/2000/svg', tagName
         );
