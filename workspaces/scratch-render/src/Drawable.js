@@ -209,7 +209,6 @@ class Drawable {
      */
     _setSkinSVG (skinMd5ext) {
         const url = skinMd5ext;
-        const instance = this;
 
         const svgCanvas = document.createElement('canvas');
         const svgRenderer = new SvgRenderer(svgCanvas);
@@ -217,7 +216,7 @@ class Drawable {
         const gotSVG = (err, response, body) => {
             if (!err) {
                 svgRenderer.fromString(body, () => {
-                    instance._setSkinCore(svgCanvas, svgRenderer.getDrawRatio());
+                    this._setSkinCore(svgCanvas, svgRenderer.getDrawRatio());
                 });
             }
         };
@@ -235,10 +234,9 @@ class Drawable {
      * @private
      */
     _setSkinCore (source, costumeResolution) {
-        const instance = this;
         const callback = (err, texture, sourceInCallback) => {
-            if (!err && (instance._pendingSkin === texture)) {
-                instance._useSkin(texture, sourceInCallback.width, sourceInCallback.height, costumeResolution);
+            if (!err && (this._pendingSkin === texture)) {
+                this._useSkin(texture, sourceInCallback.width, sourceInCallback.height, costumeResolution);
             }
         };
 
@@ -251,12 +249,12 @@ class Drawable {
             src: source
         };
         const willCallCallback = typeof source === 'string';
-        instance._pendingSkin = twgl.createTexture(gl, options, willCallCallback ? callback : null);
+        this._pendingSkin = twgl.createTexture(gl, options, willCallCallback ? callback : null);
 
         // If we won't get a callback, start using the skin immediately.
         // This will happen if the data is already local.
         if (!willCallCallback) {
-            callback(null, instance._pendingSkin, source);
+            callback(null, this._pendingSkin, source);
         }
     }
 
