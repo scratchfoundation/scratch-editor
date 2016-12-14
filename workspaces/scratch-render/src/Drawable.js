@@ -515,11 +515,9 @@ class Drawable {
      * @param {int} r The red value of the color, in the range [0,255].
      * @param {int} g The green value of the color, in the range [0,255].
      * @param {int} b The blue value of the color, in the range [0,255].
-     * @param {int} a The alpha value of the color, in the range [0,255].
      * @returns {int} The ID represented by that color.
      */
-    // eslint-disable-next-line no-unused-vars
-    static color4bToID (r, g, b, a) {
+    static color4bToID (r, g, b) {
         let id;
         id = (r & 255) << 0;
         id |= (g & 255) << 8;
@@ -544,14 +542,10 @@ Drawable._allDrawables = {};
 
 // TODO: fall back on a built-in skin to protect against network problems
 Drawable._DEFAULT_SKIN = {
-    squirrel: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
-    '7e24c99c1b853e52f8e7f9004416fa34.png/get/',
-    bus: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
-    '66895930177178ea01d9e610917f8acf.png/get/',
-    scratch_cat: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
-    '09dc888b0b7df19f70d81588ae73420e.svg/get/',
-    gradient: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
-    'a49ff276b9b8f997a1ae163992c2c145.png/get/'
+    squirrel: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/7e24c99c1b853e52f8e7f9004416fa34.png/get/',
+    bus: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/66895930177178ea01d9e610917f8acf.png/get/',
+    scratch_cat: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/09dc888b0b7df19f70d81588ae73420e.svg/get/',
+    gradient: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/a49ff276b9b8f997a1ae163992c2c145.png/get/'
 }.squirrel;
 
 module.exports = Drawable;

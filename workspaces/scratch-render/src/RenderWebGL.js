@@ -382,8 +382,7 @@ class RenderWebGL {
             const pixelID = Drawable.color4bToID(
                 pixels[pixelBase],
                 pixels[pixelBase + 1],
-                pixels[pixelBase + 2],
-                pixels[pixelBase + 3]);
+                pixels[pixelBase + 2]);
             if (pixelID > Drawable.NONE) {
                 return true;
             }
@@ -463,8 +462,7 @@ class RenderWebGL {
             const pixelID = Drawable.color4bToID(
                 pixels[pixelBase],
                 pixels[pixelBase + 1],
-                pixels[pixelBase + 2],
-                pixels[pixelBase + 3]);
+                pixels[pixelBase + 2]);
             hits[pixelID] = (hits[pixelID] || 0) + 1;
         }
 
@@ -701,8 +699,7 @@ class RenderWebGL {
             return Drawable.color4bToID(
                 pixels[pixelBase],
                 pixels[pixelBase + 1],
-                pixels[pixelBase + 2],
-                pixels[pixelBase + 3]);
+                pixels[pixelBase + 2]);
         };
         for (let y = 0; y <= height; y++) {
             // Scan from left.
