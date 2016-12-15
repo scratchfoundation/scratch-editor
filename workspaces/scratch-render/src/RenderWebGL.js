@@ -4,6 +4,13 @@ const twgl = require('twgl.js');
 const Drawable = require('./Drawable');
 const PenLayer = require('./PenLayer');
 const ShaderManager = require('./ShaderManager');
+const SkinnedDrawable = require('./SkinnedDrawable');
+
+/**
+ * @callback idFilterFunc
+ * @param {int} drawableID The ID to filter.
+ * @return {bool} True if the ID passes the filter, otherwise false.
+ */
 
 /**
  * Maximum touch size for a picking check.
@@ -109,12 +116,12 @@ class RenderWebGL {
     }
 
     /**
-     * Create a new Drawable and add it to the scene.
-     * @returns {int} The ID of the new Drawable.
+     * Create a new SkinnedDrawable and add it to the scene.
+     * @returns {int} The ID of the new SkinnedDrawable.
      */
     createDrawable () {
-        const drawable = new Drawable(this._gl);
-        const drawableID = drawable.getID();
+        const drawable = new SkinnedDrawable(this._gl);
+        const drawableID = drawable.id;
         this._drawables.push(drawableID);
         return drawableID;
     }
@@ -604,7 +611,7 @@ class RenderWebGL {
      * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawables.
      * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
      * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
-     * @param {Drawable~idFilterFunc} [filter] An optional filter function.
+     * @param {idFilterFunc} [filter] An optional filter function.
      * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
      * @private
      */
