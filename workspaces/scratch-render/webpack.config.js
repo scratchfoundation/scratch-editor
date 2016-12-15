@@ -13,6 +13,7 @@ const base = {
             colors: true
         }
     },
+    devtool: 'source-map',
     module: {
         loaders: [
             {
