@@ -517,7 +517,7 @@ class Drawable {
      * @param {int} b The blue value of the color, in the range [0,255].
      * @returns {int} The ID represented by that color.
      */
-    static color4bToID (r, g, b) {
+    static color3bToID (r, g, b) {
         let id;
         id = (r & 255) << 0;
         id |= (g & 255) << 8;

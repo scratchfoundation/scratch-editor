@@ -379,7 +379,7 @@ class RenderWebGL {
         }
 
         for (let pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-            const pixelID = Drawable.color4bToID(
+            const pixelID = Drawable.color3bToID(
                 pixels[pixelBase],
                 pixels[pixelBase + 1],
                 pixels[pixelBase + 2]);
@@ -459,7 +459,7 @@ class RenderWebGL {
 
         const hits = {};
         for (let pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-            const pixelID = Drawable.color4bToID(
+            const pixelID = Drawable.color3bToID(
                 pixels[pixelBase],
                 pixels[pixelBase + 1],
                 pixels[pixelBase + 2]);
@@ -696,7 +696,7 @@ class RenderWebGL {
          */
         const _getPixel = (x, y) => {
             const pixelBase = ((width * y) + x) * 4;
-            return Drawable.color4bToID(
+            return Drawable.color3bToID(
                 pixels[pixelBase],
                 pixels[pixelBase + 1],
                 pixels[pixelBase + 2]);
