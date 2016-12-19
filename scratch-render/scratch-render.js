@@ -8207,6 +8207,8 @@
 
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var hull = __webpack_require__(304);
@@ -8215,54 +8217,12 @@
 	var Drawable = __webpack_require__(310);
 	var ShaderManager = __webpack_require__(326);
 
-	var RenderWebGL =
-	/**
-	 * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
-	 * Coordinates will default to Scratch 2.0 values if unspecified.
-	 * The stage's "native" size will be calculated from the these coordinates.
-	 * For example, the defaults result in a native size of 480x360.
-	 * Queries such as "touching color?" will always execute at the native size.
-	 * @see setStageSize
-	 * @see resize
-	 * @param {canvas} canvas The canvas to draw onto.
-	 * @param {int} [xLeft=-240] The x-coordinate of the left edge.
-	 * @param {int} [xRight=240] The x-coordinate of the right edge.
-	 * @param {int} [yBottom=-180] The y-coordinate of the bottom edge.
-	 * @param {int} [yTop=180] The y-coordinate of the top edge.
-	 * @constructor
-	 */
-	function RenderWebGL(canvas, xLeft, xRight, yBottom, yTop) {
-	    _classCallCheck(this, RenderWebGL);
-
-	    // TODO: remove?
-	    twgl.setDefaults({ crossOrigin: true });
-
-	    this._gl = twgl.getWebGLContext(canvas, { alpha: false, stencil: true });
-	    this._drawables = [];
-	    this._projection = twgl.m4.identity();
-
-	    this._createGeometry();
-
-	    this.setBackgroundColor(1, 1, 1);
-	    this.setStageSize(xLeft || -240, xRight || 240, yBottom || -180, yTop || 180);
-	    this.resize(this._nativeSize[0], this._nativeSize[1]);
-	    this._createQueryBuffers();
-
-	    var gl = this._gl;
-	    gl.disable(gl.DEPTH_TEST);
-	    gl.enable(gl.BLEND); // TODO: disable when no partial transparency?
-	    gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
-	    this._shaderManager = new ShaderManager(gl);
-	};
-
-	module.exports = RenderWebGL;
-
 	/**
 	 * Maximum touch size for a picking check.
 	 * TODO: Figure out a reasonable max size. Maybe this should be configurable?
 	 * @type {int[]}
 	 */
-	RenderWebGL.MAX_TOUCH_SIZE = [3, 3];
+	var MAX_TOUCH_SIZE = [3, 3];
 
 	/**
 	 * "touching {color}?" or "{color} touching {color}?" tests will be true if the
@@ -8270,634 +8230,736 @@
 	 * the corresponding component of the query color.
 	 * @type {int} between 0 (exact matches only) and 255 (match anything).
 	 */
-	RenderWebGL.TOLERANCE_TOUCHING_COLOR = 2;
+	var TOLERANCE_TOUCHING_COLOR = 2;
 
-	/* *******
-	   * Functions called only locally: these are not available from a worker.
-	   *********/
+	var RenderWebGL = function () {
+	    /**
+	     * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
+	     * Coordinates will default to Scratch 2.0 values if unspecified.
+	     * The stage's "native" size will be calculated from the these coordinates.
+	     * For example, the defaults result in a native size of 480x360.
+	     * Queries such as "touching color?" will always execute at the native size.
+	     * @see setStageSize
+	     * @see resize
+	     * @param {canvas} canvas The canvas to draw onto.
+	     * @param {int} [xLeft=-240] The x-coordinate of the left edge.
+	     * @param {int} [xRight=240] The x-coordinate of the right edge.
+	     * @param {int} [yBottom=-180] The y-coordinate of the bottom edge.
+	     * @param {int} [yTop=180] The y-coordinate of the top edge.
+	     * @constructor
+	     */
+	    function RenderWebGL(canvas, xLeft, xRight, yBottom, yTop) {
+	        _classCallCheck(this, RenderWebGL);
 
-	/**
-	 * Set the physical size of the stage in device-independent pixels.
-	 * This will be multiplied by the device's pixel ratio on high-DPI displays.
-	 * @param {int} pixelsWide The desired width in device-independent pixels.
-	 * @param {int} pixelsTall The desired height in device-independent pixels.
-	 */
-	RenderWebGL.prototype.resize = function (pixelsWide, pixelsTall) {
-	    var pixelRatio = window.devicePixelRatio || 1;
-	    this._gl.canvas.width = pixelsWide * pixelRatio;
-	    this._gl.canvas.height = pixelsTall * pixelRatio;
-	};
+	        // TODO: remove?
+	        twgl.setDefaults({ crossOrigin: true });
 
-	/**
-	 * Set the background color for the stage. The stage will be cleared with this
-	 * color each frame.
-	 * @param {number} red The red component for the background.
-	 * @param {number} green The green component for the background.
-	 * @param {number} blue The blue component for the background.
-	 */
-	RenderWebGL.prototype.setBackgroundColor = function (red, green, blue) {
-	    this._backgroundColor = [red, green, blue, 1];
-	};
+	        this._gl = twgl.getWebGLContext(canvas, { alpha: false, stencil: true });
+	        this._drawables = [];
+	        this._projection = twgl.m4.identity();
 
-	/**
-	 * Tell the renderer to draw various debug information to the provided canvas
-	 * during certain operations.
-	 * @param {canvas} canvas The canvas to use for debug output.
-	 */
-	RenderWebGL.prototype.setDebugCanvas = function (canvas) {
-	    this._debugCanvas = canvas;
-	};
+	        this._createGeometry();
 
-	/**
-	 * Set logical size of the stage in Scratch units.
-	 * @param {int} xLeft The left edge's x-coordinate. Scratch 2 uses -240.
-	 * @param {int} xRight The right edge's x-coordinate. Scratch 2 uses 240.
-	 * @param {int} yBottom The bottom edge's y-coordinate. Scratch 2 uses -180.
-	 * @param {int} yTop The top edge's y-coordinate. Scratch 2 uses 180.
-	 */
-	RenderWebGL.prototype.setStageSize = function (xLeft, xRight, yBottom, yTop) {
-	    this._xLeft = xLeft;
-	    this._xRight = xRight;
-	    this._yBottom = yBottom;
-	    this._yTop = yTop;
-	    this._nativeSize = [Math.abs(xRight - xLeft), Math.abs(yBottom - yTop)];
-	    this._projection = twgl.m4.ortho(xLeft, xRight, yBottom, yTop, -1, 1);
-	};
+	        this.setBackgroundColor(1, 1, 1);
+	        this.setStageSize(xLeft || -240, xRight || 240, yBottom || -180, yTop || 180);
+	        this.resize(this._nativeSize[0], this._nativeSize[1]);
+	        this._createQueryBuffers();
 
-	/**
-	 * Create a new Drawable and add it to the scene.
-	 * @returns {int} The ID of the new Drawable.
-	 */
-	RenderWebGL.prototype.createDrawable = function () {
-	    var drawable = new Drawable(this._gl);
-	    var drawableID = drawable.getID();
-	    this._drawables.push(drawableID);
-	    return drawableID;
-	};
-
-	/**
-	 * Destroy a Drawable, removing it from the scene.
-	 * @param {int} drawableID The ID of the Drawable to remove.
-	 * @returns {boolean} True iff the drawable was found and removed.
-	 */
-	RenderWebGL.prototype.destroyDrawable = function (drawableID) {
-	    var index = this._drawables.indexOf(drawableID);
-	    if (index >= 0) {
-	        Drawable.getDrawableByID(drawableID).dispose();
-	        this._drawables.splice(index, 1);
-	        return true;
-	    }
-	    return false;
-	};
-
-	/**
-	 * Set a drawable's order in the drawable list (effectively, z/layer).
-	 * Can be used to move drawables to absolute positions in the list,
-	 * or relative to their current positions.
-	 * "go back N layers": setDrawableOrder(id, -N, true, 1); (assuming stage at 0).
-	 * "go to back": setDrawableOrder(id, 1); (assuming stage at 0).
-	 * "go to front": setDrawableOrder(id, Infinity);
-	 * @param {int} drawableID ID of Drawable to reorder.
-	 * @param {number} order New absolute order or relative order adjusment.
-	 * @param {boolean=} optIsRelative If set, `order` refers to a relative change.
-	 * @param {number=} optMin If set, order constrained to be at least `optMin`.
-	 * @return {?number} New order if changed, or null.
-	 */
-	RenderWebGL.prototype.setDrawableOrder = function (drawableID, order, optIsRelative, optMin) {
-	    var oldIndex = this._drawables.indexOf(drawableID);
-	    if (oldIndex >= 0) {
-	        // Remove drawable from the list.
-	        var drawable = this._drawables.splice(oldIndex, 1)[0];
-	        // Determine new index.
-	        var newIndex = order;
-	        if (optIsRelative) {
-	            newIndex += oldIndex;
-	        }
-	        if (optMin) {
-	            newIndex = Math.max(newIndex, optMin);
-	        }
-	        newIndex = Math.max(newIndex, 0);
-	        // Insert at new index.
-	        this._drawables.splice(newIndex, 0, drawable);
-	        return this._drawables.indexOf(drawable);
-	    }
-	    return null;
-	};
-
-	/**
-	 * Draw all current drawables and present the frame on the canvas.
-	 */
-	RenderWebGL.prototype.draw = function () {
-	    var gl = this._gl;
-
-	    twgl.bindFramebufferInfo(gl, null);
-	    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-	    gl.clearColor.apply(gl, this._backgroundColor);
-	    gl.clear(gl.COLOR_BUFFER_BIT);
-
-	    this._drawThese(this._drawables, ShaderManager.DRAW_MODE.default, this._projection);
-	};
-
-	/**
-	 * Get the precise bounds for a Drawable.
-	 * @param {int} drawableID ID of Drawable to get bounds for.
-	 * @return {object} Bounds for a tight box around the Drawable.
-	 */
-	RenderWebGL.prototype.getBounds = function (drawableID) {
-	    var drawable = Drawable.getDrawableByID(drawableID);
-	    // Tell the Drawable about its updated convex hull, if necessary.
-	    if (drawable.needsConvexHullPoints()) {
-	        var points = this._getConvexHullPointsForDrawable(drawableID);
-	        drawable.setConvexHullPoints(points);
-	    }
-	    var bounds = drawable.getBounds();
-	    // In debug mode, draw the bounds.
-	    if (this._debugCanvas) {
 	        var gl = this._gl;
-	        this._debugCanvas.width = gl.canvas.width;
-	        this._debugCanvas.height = gl.canvas.height;
-	        var context = this._debugCanvas.getContext('2d');
-	        context.drawImage(gl.canvas, 0, 0);
-	        context.strokeStyle = '#FF0000';
-	        var pr = window.devicePixelRatio;
-	        context.strokeRect(pr * (bounds.left + this._nativeSize[0] / 2), pr * (-bounds.top + this._nativeSize[1] / 2), pr * (bounds.right - bounds.left), pr * (-bounds.bottom + bounds.top));
+	        gl.disable(gl.DEPTH_TEST);
+	        gl.enable(gl.BLEND); // TODO: disable when no partial transparency?
+	        gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
+	        this._shaderManager = new ShaderManager(gl);
 	    }
-	    return bounds;
-	};
-
-	/**
-	 * Get the current skin (costume) size of a Drawable.
-	 * @param {int} drawableID The ID of the Drawable to measure.
-	 * @return {Array.<number>} Skin size, width and height.
-	 */
-	RenderWebGL.prototype.getSkinSize = function (drawableID) {
-	    var drawable = Drawable.getDrawableByID(drawableID);
-	    return drawable.getSkinSize();
-	};
-
-	/**
-	 * Check if a particular Drawable is touching a particular color.
-	 * @param {int} drawableID The ID of the Drawable to check.
-	 * @param {int[]} color3b Test if the Drawable is touching this color.
-	 * @param {int[]} [mask3b] Optionally mask the check to this part of Drawable.
-	 * @returns {boolean} True iff the Drawable is touching the color.
-	 */
-	RenderWebGL.prototype.isTouchingColor = function (drawableID, color3b, mask3b) {
-	    var gl = this._gl;
-	    twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
-
-	    var bounds = this._touchingBounds(drawableID);
-	    if (!bounds) {
-	        return;
-	    }
-	    var candidateIDs = this._filterCandidatesTouching(drawableID, this._drawables, bounds);
-	    if (!candidateIDs) {
-	        return;
-	    }
-
-	    // Limit size of viewport to the bounds around the target Drawable,
-	    // and create the projection matrix for the draw.
-	    gl.viewport(0, 0, bounds.width, bounds.height);
-	    var projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
-
-	    gl.clearColor.apply(gl, this._backgroundColor);
-	    gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-
-	    var extraUniforms = void 0;
-	    if (mask3b) {
-	        extraUniforms = {
-	            u_colorMask: [mask3b[0] / 255, mask3b[1] / 255, mask3b[2] / 255],
-	            u_colorMaskTolerance: RenderWebGL.TOLERANCE_TOUCHING_COLOR / 255
-	        };
-	    }
-
-	    try {
-	        gl.enable(gl.STENCIL_TEST);
-	        gl.stencilFunc(gl.ALWAYS, 1, 1);
-	        gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
-	        gl.colorMask(false, false, false, false);
-	        this._drawThese([drawableID], mask3b ? ShaderManager.DRAW_MODE.colorMask : ShaderManager.DRAW_MODE.silhouette, projection, null, extraUniforms);
-
-	        gl.stencilFunc(gl.EQUAL, 1, 1);
-	        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-	        gl.colorMask(true, true, true, true);
-
-	        this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.default, projection, function (testID) {
-	            return testID !== drawableID;
-	        });
-	    } finally {
-	        gl.colorMask(true, true, true, true);
-	        gl.disable(gl.STENCIL_TEST);
-	    }
-
-	    var pixels = new Buffer(bounds.width * bounds.height * 4);
-	    gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
-	    if (this._debugCanvas) {
-	        this._debugCanvas.width = bounds.width;
-	        this._debugCanvas.height = bounds.height;
-	        var context = this._debugCanvas.getContext('2d');
-	        var imageData = context.getImageData(0, 0, bounds.width, bounds.height);
-	        for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
-	            imageData.data[i] = pixels[i];
-	        }
-	        context.putImageData(imageData, 0, 0);
-	    }
-
-	    for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-	        var pixelDistanceR = Math.abs(pixels[pixelBase] - color3b[0]);
-	        var pixelDistanceG = Math.abs(pixels[pixelBase + 1] - color3b[1]);
-	        var pixelDistanceB = Math.abs(pixels[pixelBase + 2] - color3b[2]);
-
-	        if (pixelDistanceR <= RenderWebGL.TOLERANCE_TOUCHING_COLOR && pixelDistanceG <= RenderWebGL.TOLERANCE_TOUCHING_COLOR && pixelDistanceB <= RenderWebGL.TOLERANCE_TOUCHING_COLOR) {
-	            return true;
-	        }
-	    }
-
-	    return false;
-	};
-
-	/**
-	 * Check if a particular Drawable is touching any in a set of Drawables.
-	 * @param {int} drawableID The ID of the Drawable to check.
-	 * @param {int[]} candidateIDs The Drawable IDs to check, otherwise all.
-	 * @returns {boolean} True iff the Drawable is touching one of candidateIDs.
-	 */
-	RenderWebGL.prototype.isTouchingDrawables = function (drawableID, candidateIDs) {
-	    candidateIDs = candidateIDs || this._drawables;
-
-	    var gl = this._gl;
-
-	    twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
-
-	    var bounds = this._touchingBounds(drawableID);
-	    if (!bounds) {
-	        return;
-	    }
-	    candidateIDs = this._filterCandidatesTouching(drawableID, candidateIDs, bounds);
-	    if (!candidateIDs) {
-	        return;
-	    }
-
-	    // Limit size of viewport to the bounds around the target Drawable,
-	    // and create the projection matrix for the draw.
-	    gl.viewport(0, 0, bounds.width, bounds.height);
-	    var projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
-
-	    var noneColor = Drawable.color4fFromID(Drawable.NONE);
-	    gl.clearColor.apply(gl, noneColor);
-	    gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-
-	    try {
-	        gl.enable(gl.STENCIL_TEST);
-	        gl.stencilFunc(gl.ALWAYS, 1, 1);
-	        gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
-	        gl.colorMask(false, false, false, false);
-	        this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, projection);
-
-	        gl.stencilFunc(gl.EQUAL, 1, 1);
-	        gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-	        gl.colorMask(true, true, true, true);
-
-	        this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection, function (testID) {
-	            return testID !== drawableID;
-	        });
-	    } finally {
-	        gl.colorMask(true, true, true, true);
-	        gl.disable(gl.STENCIL_TEST);
-	    }
-
-	    var pixels = new Buffer(bounds.width * bounds.height * 4);
-	    gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
-	    if (this._debugCanvas) {
-	        this._debugCanvas.width = bounds.width;
-	        this._debugCanvas.height = bounds.height;
-	        var context = this._debugCanvas.getContext('2d');
-	        var imageData = context.getImageData(0, 0, bounds.width, bounds.height);
-	        for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
-	            imageData.data[i] = pixels[i];
-	        }
-	        context.putImageData(imageData, 0, 0);
-	    }
-
-	    for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-	        var pixelID = Drawable.color4bToID(pixels[pixelBase], pixels[pixelBase + 1], pixels[pixelBase + 2], pixels[pixelBase + 3]);
-	        if (pixelID > Drawable.NONE) {
-	            return true;
-	        }
-	    }
-
-	    return false;
-	};
-
-	/**
-	 * Detect which sprite, if any, is at the given location.
-	 * @param {int} centerX The client x coordinate of the picking location.
-	 * @param {int} centerY The client y coordinate of the picking location.
-	 * @param {int} touchWidth The client width of the touch event (optional).
-	 * @param {int} touchHeight The client height of the touch event (optional).
-	 * @param {int[]} candidateIDs The Drawable IDs to pick from, otherwise all.
-	 * @returns {int} The ID of the topmost Drawable under the picking location, or
-	 * Drawable.NONE if there is no Drawable at that location.
-	 */
-	RenderWebGL.prototype.pick = function (centerX, centerY, touchWidth, touchHeight, candidateIDs) {
-	    var gl = this._gl;
-
-	    touchWidth = touchWidth || 1;
-	    touchHeight = touchHeight || 1;
-	    candidateIDs = candidateIDs || this._drawables;
-
-	    var clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
-	    var clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
-
-	    centerX *= clientToGLX;
-	    centerY *= clientToGLY;
-	    touchWidth *= clientToGLX;
-	    touchHeight *= clientToGLY;
-
-	    touchWidth = Math.max(1, Math.min(touchWidth, RenderWebGL.MAX_TOUCH_SIZE[0]));
-	    touchHeight = Math.max(1, Math.min(touchHeight, RenderWebGL.MAX_TOUCH_SIZE[1]));
-
-	    var pixelLeft = Math.floor(centerX - Math.floor(touchWidth / 2) + 0.5);
-	    var pixelRight = Math.floor(centerX + Math.ceil(touchWidth / 2) + 0.5);
-	    var pixelTop = Math.floor(centerY - Math.floor(touchHeight / 2) + 0.5);
-	    var pixelBottom = Math.floor(centerY + Math.ceil(touchHeight / 2) + 0.5);
-
-	    twgl.bindFramebufferInfo(gl, this._pickBufferInfo);
-	    gl.viewport(0, 0, touchWidth, touchHeight);
-
-	    var noneColor = Drawable.color4fFromID(Drawable.NONE);
-	    gl.clearColor.apply(gl, noneColor);
-	    gl.clear(gl.COLOR_BUFFER_BIT);
-
-	    var widthPerPixel = (this._xRight - this._xLeft) / this._gl.canvas.width;
-	    var heightPerPixel = (this._yBottom - this._yTop) / this._gl.canvas.height;
-
-	    var pickLeft = this._xLeft + pixelLeft * widthPerPixel;
-	    var pickRight = this._xLeft + pixelRight * widthPerPixel;
-	    var pickTop = this._yTop + pixelTop * heightPerPixel;
-	    var pickBottom = this._yTop + pixelBottom * heightPerPixel;
-
-	    var projection = twgl.m4.ortho(pickLeft, pickRight, pickTop, pickBottom, -1, 1);
-
-	    this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection);
-
-	    var pixels = new Buffer(touchWidth * touchHeight * 4);
-	    gl.readPixels(0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
-	    if (this._debugCanvas) {
-	        this._debugCanvas.width = touchWidth;
-	        this._debugCanvas.height = touchHeight;
-	        var context = this._debugCanvas.getContext('2d');
-	        var imageData = context.getImageData(0, 0, touchWidth, touchHeight);
-	        for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
-	            imageData.data[i] = pixels[i];
-	        }
-	        context.putImageData(imageData, 0, 0);
-	    }
-
-	    var hits = {};
-	    for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-	        var pixelID = Drawable.color4bToID(pixels[pixelBase], pixels[pixelBase + 1], pixels[pixelBase + 2], pixels[pixelBase + 3]);
-	        hits[pixelID] = (hits[pixelID] || 0) + 1;
-	    }
-
-	    // Bias toward selecting anything over nothing
-	    hits[Drawable.NONE] = 0;
-
-	    var hit = Drawable.NONE;
-	    for (var hitID in hits) {
-	        if (hits.hasOwnProperty(hitID) && hits[hitID] > hits[hit]) {
-	            hit = hitID;
-	        }
-	    }
-
-	    return hit | 0;
-	};
-
-	/**
-	 * Get the candidate bounding box for a touching query.
-	 * @param {int} drawableID ID for drawable of query.
-	 * @return {?Rectangle} Rectangle bounds for touching query, or null.
-	 */
-	RenderWebGL.prototype._touchingBounds = function (drawableID) {
-	    var drawable = Drawable.getDrawableByID(drawableID);
-	    var bounds = drawable.getFastBounds();
-
-	    // Limit queries to the stage size.
-	    bounds.clamp(this._xLeft, this._xRight, this._yBottom, this._yTop);
-
-	    // Use integer coordinates for queries - weird things happen
-	    // when you provide float width/heights to gl.viewport and projection.
-	    bounds.snapToInt();
-
-	    if (bounds.width === 0 || bounds.height === 0) {
-	        // No space to query.
-	        return null;
-	    }
-	    return bounds;
-	};
-
-	/**
-	 * Filter a list of candidates for a touching query into only those that
-	 * could possibly intersect the given bounds.
-	 * @param {int} drawableID - ID for drawable of query.
-	 * @param {Array.<int>} candidateIDs - Candidates for touching query.
-	 * @param {Rectangle} bounds - Bounds to limit candidates to.
-	 * @return {?Array.<int>} Filtered candidateIDs, or null if none.
-	 */
-	RenderWebGL.prototype._filterCandidatesTouching = function (drawableID, candidateIDs, bounds) {
-	    // Filter candidates by rough bounding box intersection.
-	    // Do this before _drawThese, so we can prevent any GL operations
-	    // and readback by returning early.
-	    candidateIDs = candidateIDs.filter(function (testID) {
-	        if (testID === drawableID) return false;
-	        // Only draw items which could possibly overlap target Drawable.
-	        var candidate = Drawable.getDrawableByID(testID);
-	        var candidateBounds = candidate.getFastBounds();
-	        return bounds.intersects(candidateBounds);
-	    });
-	    if (candidateIDs.length === 0) {
-	        // No possible intersections based on bounding boxes.
-	        return null;
-	    }
-	    return candidateIDs;
-	};
-
-	/**
-	* Update the position, direction, scale, or effect properties of this Drawable.
-	* @param {int} drawableID The ID of the Drawable to update.
-	* @param {object.<string,*>} properties The new property values to set.
-	 */
-	RenderWebGL.prototype.updateDrawableProperties = function (drawableID, properties) {
-	    var drawable = Drawable.getDrawableByID(drawableID);
-	    drawable.updateProperties(properties);
-	};
-
-	/* ********
-	   * Truly internal functions: these support the functions above.
-	   ********/
-
-	/**
-	 * Build geometry (vertex and index) buffers.
-	 * @private
-	 */
-	RenderWebGL.prototype._createGeometry = function () {
-	    var quad = {
-	        a_position: {
-	            numComponents: 2,
-	            data: [-0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5]
-	        },
-	        a_texCoord: {
-	            numComponents: 2,
-	            data: [1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1]
-	        }
-	    };
-	    this._bufferInfo = twgl.createBufferInfoFromArrays(this._gl, quad);
-	};
-
-	/**
-	 * Create the frame buffers used for queries such as picking and color-touching.
-	 * These buffers are fixed in size regardless of the size of the main render
-	 * target. The fixed size allows (more) consistent behavior across devices and
-	 * presentation modes.
-	 * @private
-	 */
-	RenderWebGL.prototype._createQueryBuffers = function () {
-	    var gl = this._gl;
-	    var attachments = [{ format: gl.RGBA }, { format: gl.DEPTH_STENCIL }];
-
-	    this._pickBufferInfo = twgl.createFramebufferInfo(gl, attachments, RenderWebGL.MAX_TOUCH_SIZE[0], RenderWebGL.MAX_TOUCH_SIZE[1]);
-
-	    // TODO: should we create this on demand to save memory?
-	    // A 480x360 32-bpp buffer is 675 KiB.
-	    this._queryBufferInfo = twgl.createFramebufferInfo(gl, attachments, this._nativeSize[0], this._nativeSize[1]);
-	};
-
-	/**
-	 * Draw all Drawables, with the possible exception of
-	 * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawables.
-	 * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
-	 * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
-	 * @param {Drawable~idFilterFunc} [filter] An optional filter function.
-	 * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
-	 * @private
-	 */
-	RenderWebGL.prototype._drawThese = function (drawables, drawMode, projection, filter, extraUniforms) {
-
-	    var gl = this._gl;
-	    var currentShader = null;
-
-	    var numDrawables = drawables.length;
-	    for (var drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
-	        var drawableID = drawables[drawableIndex];
-
-	        // If we have a filter, check whether the ID fails
-	        if (filter && !filter(drawableID)) continue;
-
-	        var drawable = Drawable.getDrawableByID(drawableID);
-	        // TODO: check if drawable is inside the viewport before anything else
-
-	        // Hidden drawables (e.g., by a "hide" block) are never drawn.
-	        if (!drawable.getVisible()) continue;
-
-	        var effectBits = drawable.getEnabledEffects();
-	        var newShader = this._shaderManager.getShader(drawMode, effectBits);
-	        if (currentShader !== newShader) {
-	            currentShader = newShader;
-	            gl.useProgram(currentShader.program);
-	            twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
-	            twgl.setUniforms(currentShader, { u_projectionMatrix: projection });
-	            twgl.setUniforms(currentShader, { u_fudge: window.fudge || 0 });
-	        }
-
-	        twgl.setUniforms(currentShader, drawable.getUniforms());
-
-	        // Apply extra uniforms after the Drawable's, to allow overwriting.
-	        if (extraUniforms) {
-	            twgl.setUniforms(currentShader, extraUniforms);
-	        }
-
-	        twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
-	    }
-	};
-
-	/**
-	 * Get the convex hull points for a particular Drawable.
-	 * To do this, draw the Drawable unrotated, unscaled, and untranslated.
-	 * Read back the pixels and find all boundary points.
-	 * Finally, apply a convex hull algorithm to simplify the set.
-	 * @param {int} drawableID The Drawable IDs calculate convex hull for.
-	 * @return {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
-	 */
-	RenderWebGL.prototype._getConvexHullPointsForDrawable = function (drawableID) {
-	    var drawable = Drawable.getDrawableByID(drawableID);
-
-	    var _drawable$_uniforms$u = _slicedToArray(drawable._uniforms.u_skinSize, 2),
-	        width = _drawable$_uniforms$u[0],
-	        height = _drawable$_uniforms$u[1];
-	    // No points in the hull if invisible or size is 0.
-
-
-	    if (!drawable.getVisible() || width === 0 || height === 0) {
-	        return [];
-	    }
-
-	    // Only draw to the size of the untransformed drawable.
-	    var gl = this._gl;
-	    twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
-	    gl.viewport(0, 0, width, height);
-
-	    // Clear the canvas with Drawable.NONE.
-	    var noneColor = Drawable.color4fFromID(Drawable.NONE);
-	    gl.clearColor.apply(gl, noneColor);
-	    gl.clear(gl.COLOR_BUFFER_BIT);
-
-	    // Overwrite the model matrix to be unrotated, unscaled, untranslated.
-	    var modelMatrix = twgl.m4.identity();
-	    twgl.m4.rotateZ(modelMatrix, Math.PI, modelMatrix);
-	    twgl.m4.scale(modelMatrix, [width, height], modelMatrix);
-
-	    var projection = twgl.m4.ortho(-0.5 * width, 0.5 * width, -0.5 * height, 0.5 * height, -1, 1);
-
-	    this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, projection, null, { u_modelMatrix: modelMatrix });
-
-	    var pixels = new Buffer(width * height * 4);
-	    gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
-	    // Known boundary points on left/right edges of pixels.
-	    var boundaryPoints = [];
 
 	    /**
-	     * Helper method to look up a pixel.
-	     * @param {int} x X coordinate of the pixel in `pixels`.
-	     * @param {int} y Y coordinate of the pixel in `pixels`.
-	     * @return {int} Known ID at that pixel, or Drawable.NONE.
+	     * Set the physical size of the stage in device-independent pixels.
+	     * This will be multiplied by the device's pixel ratio on high-DPI displays.
+	     * @param {int} pixelsWide The desired width in device-independent pixels.
+	     * @param {int} pixelsTall The desired height in device-independent pixels.
 	     */
-	    var _getPixel = function _getPixel(x, y) {
-	        var pixelBase = (width * y + x) * 4;
-	        return Drawable.color4bToID(pixels[pixelBase], pixels[pixelBase + 1], pixels[pixelBase + 2], pixels[pixelBase + 3]);
-	    };
-	    for (var y = 0; y <= height; y++) {
-	        // Scan from left.
-	        for (var x = 0; x < width; x++) {
-	            if (_getPixel(x, y) > Drawable.NONE) {
-	                boundaryPoints.push([x, y]);
-	                break;
+
+
+	    _createClass(RenderWebGL, [{
+	        key: 'resize',
+	        value: function resize(pixelsWide, pixelsTall) {
+	            var pixelRatio = window.devicePixelRatio || 1;
+	            this._gl.canvas.width = pixelsWide * pixelRatio;
+	            this._gl.canvas.height = pixelsTall * pixelRatio;
+	        }
+
+	        /**
+	         * Set the background color for the stage. The stage will be cleared with this
+	         * color each frame.
+	         * @param {number} red The red component for the background.
+	         * @param {number} green The green component for the background.
+	         * @param {number} blue The blue component for the background.
+	         */
+
+	    }, {
+	        key: 'setBackgroundColor',
+	        value: function setBackgroundColor(red, green, blue) {
+	            this._backgroundColor = [red, green, blue, 1];
+	        }
+
+	        /**
+	         * Tell the renderer to draw various debug information to the provided canvas
+	         * during certain operations.
+	         * @param {canvas} canvas The canvas to use for debug output.
+	         */
+
+	    }, {
+	        key: 'setDebugCanvas',
+	        value: function setDebugCanvas(canvas) {
+	            this._debugCanvas = canvas;
+	        }
+
+	        /**
+	         * Set logical size of the stage in Scratch units.
+	         * @param {int} xLeft The left edge's x-coordinate. Scratch 2 uses -240.
+	         * @param {int} xRight The right edge's x-coordinate. Scratch 2 uses 240.
+	         * @param {int} yBottom The bottom edge's y-coordinate. Scratch 2 uses -180.
+	         * @param {int} yTop The top edge's y-coordinate. Scratch 2 uses 180.
+	         */
+
+	    }, {
+	        key: 'setStageSize',
+	        value: function setStageSize(xLeft, xRight, yBottom, yTop) {
+	            this._xLeft = xLeft;
+	            this._xRight = xRight;
+	            this._yBottom = yBottom;
+	            this._yTop = yTop;
+	            this._nativeSize = [Math.abs(xRight - xLeft), Math.abs(yBottom - yTop)];
+	            this._projection = twgl.m4.ortho(xLeft, xRight, yBottom, yTop, -1, 1);
+	        }
+
+	        /**
+	         * Create a new Drawable and add it to the scene.
+	         * @returns {int} The ID of the new Drawable.
+	         */
+
+	    }, {
+	        key: 'createDrawable',
+	        value: function createDrawable() {
+	            var drawable = new Drawable(this._gl);
+	            var drawableID = drawable.getID();
+	            this._drawables.push(drawableID);
+	            return drawableID;
+	        }
+
+	        /**
+	         * Destroy a Drawable, removing it from the scene.
+	         * @param {int} drawableID The ID of the Drawable to remove.
+	         * @returns {boolean} True iff the drawable was found and removed.
+	         */
+
+	    }, {
+	        key: 'destroyDrawable',
+	        value: function destroyDrawable(drawableID) {
+	            var index = this._drawables.indexOf(drawableID);
+	            if (index >= 0) {
+	                Drawable.getDrawableByID(drawableID).dispose();
+	                this._drawables.splice(index, 1);
+	                return true;
+	            }
+	            return false;
+	        }
+
+	        /**
+	         * Set a drawable's order in the drawable list (effectively, z/layer).
+	         * Can be used to move drawables to absolute positions in the list,
+	         * or relative to their current positions.
+	         * "go back N layers": setDrawableOrder(id, -N, true, 1); (assuming stage at 0).
+	         * "go to back": setDrawableOrder(id, 1); (assuming stage at 0).
+	         * "go to front": setDrawableOrder(id, Infinity);
+	         * @param {int} drawableID ID of Drawable to reorder.
+	         * @param {number} order New absolute order or relative order adjusment.
+	         * @param {boolean=} optIsRelative If set, `order` refers to a relative change.
+	         * @param {number=} optMin If set, order constrained to be at least `optMin`.
+	         * @return {?number} New order if changed, or null.
+	         */
+
+	    }, {
+	        key: 'setDrawableOrder',
+	        value: function setDrawableOrder(drawableID, order, optIsRelative, optMin) {
+	            var oldIndex = this._drawables.indexOf(drawableID);
+	            if (oldIndex >= 0) {
+	                // Remove drawable from the list.
+	                var drawable = this._drawables.splice(oldIndex, 1)[0];
+	                // Determine new index.
+	                var newIndex = order;
+	                if (optIsRelative) {
+	                    newIndex += oldIndex;
+	                }
+	                if (optMin) {
+	                    newIndex = Math.max(newIndex, optMin);
+	                }
+	                newIndex = Math.max(newIndex, 0);
+	                // Insert at new index.
+	                this._drawables.splice(newIndex, 0, drawable);
+	                return this._drawables.indexOf(drawable);
+	            }
+	            return null;
+	        }
+
+	        /**
+	         * Draw all current drawables and present the frame on the canvas.
+	         */
+
+	    }, {
+	        key: 'draw',
+	        value: function draw() {
+	            var gl = this._gl;
+
+	            twgl.bindFramebufferInfo(gl, null);
+	            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+	            gl.clearColor.apply(gl, this._backgroundColor);
+	            gl.clear(gl.COLOR_BUFFER_BIT);
+
+	            this._drawThese(this._drawables, ShaderManager.DRAW_MODE.default, this._projection);
+	        }
+
+	        /**
+	         * Get the precise bounds for a Drawable.
+	         * @param {int} drawableID ID of Drawable to get bounds for.
+	         * @return {object} Bounds for a tight box around the Drawable.
+	         */
+
+	    }, {
+	        key: 'getBounds',
+	        value: function getBounds(drawableID) {
+	            var drawable = Drawable.getDrawableByID(drawableID);
+	            // Tell the Drawable about its updated convex hull, if necessary.
+	            if (drawable.needsConvexHullPoints()) {
+	                var points = this._getConvexHullPointsForDrawable(drawableID);
+	                drawable.setConvexHullPoints(points);
+	            }
+	            var bounds = drawable.getBounds();
+	            // In debug mode, draw the bounds.
+	            if (this._debugCanvas) {
+	                var gl = this._gl;
+	                this._debugCanvas.width = gl.canvas.width;
+	                this._debugCanvas.height = gl.canvas.height;
+	                var context = this._debugCanvas.getContext('2d');
+	                context.drawImage(gl.canvas, 0, 0);
+	                context.strokeStyle = '#FF0000';
+	                var pr = window.devicePixelRatio;
+	                context.strokeRect(pr * (bounds.left + this._nativeSize[0] / 2), pr * (-bounds.top + this._nativeSize[1] / 2), pr * (bounds.right - bounds.left), pr * (-bounds.bottom + bounds.top));
+	            }
+	            return bounds;
+	        }
+
+	        /**
+	         * Get the current skin (costume) size of a Drawable.
+	         * @param {int} drawableID The ID of the Drawable to measure.
+	         * @return {Array.<number>} Skin size, width and height.
+	         */
+
+	    }, {
+	        key: 'getSkinSize',
+	        value: function getSkinSize(drawableID) {
+	            var drawable = Drawable.getDrawableByID(drawableID);
+	            return drawable.getSkinSize();
+	        }
+
+	        /**
+	         * Check if a particular Drawable is touching a particular color.
+	         * @param {int} drawableID The ID of the Drawable to check.
+	         * @param {int[]} color3b Test if the Drawable is touching this color.
+	         * @param {int[]} [mask3b] Optionally mask the check to this part of Drawable.
+	         * @returns {boolean} True iff the Drawable is touching the color.
+	         */
+
+	    }, {
+	        key: 'isTouchingColor',
+	        value: function isTouchingColor(drawableID, color3b, mask3b) {
+	            var gl = this._gl;
+	            twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+
+	            var bounds = this._touchingBounds(drawableID);
+	            if (!bounds) {
+	                return;
+	            }
+	            var candidateIDs = this._filterCandidatesTouching(drawableID, this._drawables, bounds);
+	            if (!candidateIDs) {
+	                return;
+	            }
+
+	            // Limit size of viewport to the bounds around the target Drawable,
+	            // and create the projection matrix for the draw.
+	            gl.viewport(0, 0, bounds.width, bounds.height);
+	            var projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
+
+	            gl.clearColor.apply(gl, this._backgroundColor);
+	            gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+
+	            var extraUniforms = void 0;
+	            if (mask3b) {
+	                extraUniforms = {
+	                    u_colorMask: [mask3b[0] / 255, mask3b[1] / 255, mask3b[2] / 255],
+	                    u_colorMaskTolerance: TOLERANCE_TOUCHING_COLOR / 255
+	                };
+	            }
+
+	            try {
+	                gl.enable(gl.STENCIL_TEST);
+	                gl.stencilFunc(gl.ALWAYS, 1, 1);
+	                gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
+	                gl.colorMask(false, false, false, false);
+	                this._drawThese([drawableID], mask3b ? ShaderManager.DRAW_MODE.colorMask : ShaderManager.DRAW_MODE.silhouette, projection, null, extraUniforms);
+
+	                gl.stencilFunc(gl.EQUAL, 1, 1);
+	                gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+	                gl.colorMask(true, true, true, true);
+
+	                this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.default, projection, function (testID) {
+	                    return testID !== drawableID;
+	                });
+	            } finally {
+	                gl.colorMask(true, true, true, true);
+	                gl.disable(gl.STENCIL_TEST);
+	            }
+
+	            var pixels = new Buffer(bounds.width * bounds.height * 4);
+	            gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+	            if (this._debugCanvas) {
+	                this._debugCanvas.width = bounds.width;
+	                this._debugCanvas.height = bounds.height;
+	                var context = this._debugCanvas.getContext('2d');
+	                var imageData = context.getImageData(0, 0, bounds.width, bounds.height);
+	                for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
+	                    imageData.data[i] = pixels[i];
+	                }
+	                context.putImageData(imageData, 0, 0);
+	            }
+
+	            for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
+	                var pixelDistanceR = Math.abs(pixels[pixelBase] - color3b[0]);
+	                var pixelDistanceG = Math.abs(pixels[pixelBase + 1] - color3b[1]);
+	                var pixelDistanceB = Math.abs(pixels[pixelBase + 2] - color3b[2]);
+
+	                if (pixelDistanceR <= TOLERANCE_TOUCHING_COLOR && pixelDistanceG <= TOLERANCE_TOUCHING_COLOR && pixelDistanceB <= TOLERANCE_TOUCHING_COLOR) {
+	                    return true;
+	                }
+	            }
+
+	            return false;
+	        }
+
+	        /**
+	         * Check if a particular Drawable is touching any in a set of Drawables.
+	         * @param {int} drawableID The ID of the Drawable to check.
+	         * @param {int[]} candidateIDs The Drawable IDs to check, otherwise all.
+	         * @returns {boolean} True iff the Drawable is touching one of candidateIDs.
+	         */
+
+	    }, {
+	        key: 'isTouchingDrawables',
+	        value: function isTouchingDrawables(drawableID, candidateIDs) {
+	            candidateIDs = candidateIDs || this._drawables;
+
+	            var gl = this._gl;
+
+	            twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+
+	            var bounds = this._touchingBounds(drawableID);
+	            if (!bounds) {
+	                return;
+	            }
+	            candidateIDs = this._filterCandidatesTouching(drawableID, candidateIDs, bounds);
+	            if (!candidateIDs) {
+	                return;
+	            }
+
+	            // Limit size of viewport to the bounds around the target Drawable,
+	            // and create the projection matrix for the draw.
+	            gl.viewport(0, 0, bounds.width, bounds.height);
+	            var projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
+
+	            var noneColor = Drawable.color4fFromID(Drawable.NONE);
+	            gl.clearColor.apply(gl, noneColor);
+	            gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+
+	            try {
+	                gl.enable(gl.STENCIL_TEST);
+	                gl.stencilFunc(gl.ALWAYS, 1, 1);
+	                gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
+	                gl.colorMask(false, false, false, false);
+	                this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, projection);
+
+	                gl.stencilFunc(gl.EQUAL, 1, 1);
+	                gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+	                gl.colorMask(true, true, true, true);
+
+	                this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection, function (testID) {
+	                    return testID !== drawableID;
+	                });
+	            } finally {
+	                gl.colorMask(true, true, true, true);
+	                gl.disable(gl.STENCIL_TEST);
+	            }
+
+	            var pixels = new Buffer(bounds.width * bounds.height * 4);
+	            gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+	            if (this._debugCanvas) {
+	                this._debugCanvas.width = bounds.width;
+	                this._debugCanvas.height = bounds.height;
+	                var context = this._debugCanvas.getContext('2d');
+	                var imageData = context.getImageData(0, 0, bounds.width, bounds.height);
+	                for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
+	                    imageData.data[i] = pixels[i];
+	                }
+	                context.putImageData(imageData, 0, 0);
+	            }
+
+	            for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
+	                var pixelID = Drawable.color3bToID(pixels[pixelBase], pixels[pixelBase + 1], pixels[pixelBase + 2]);
+	                if (pixelID > Drawable.NONE) {
+	                    return true;
+	                }
+	            }
+
+	            return false;
+	        }
+
+	        /**
+	         * Detect which sprite, if any, is at the given location.
+	         * @param {int} centerX The client x coordinate of the picking location.
+	         * @param {int} centerY The client y coordinate of the picking location.
+	         * @param {int} touchWidth The client width of the touch event (optional).
+	         * @param {int} touchHeight The client height of the touch event (optional).
+	         * @param {int[]} candidateIDs The Drawable IDs to pick from, otherwise all.
+	         * @returns {int} The ID of the topmost Drawable under the picking location, or
+	         * Drawable.NONE if there is no Drawable at that location.
+	         */
+
+	    }, {
+	        key: 'pick',
+	        value: function pick(centerX, centerY, touchWidth, touchHeight, candidateIDs) {
+	            var gl = this._gl;
+
+	            touchWidth = touchWidth || 1;
+	            touchHeight = touchHeight || 1;
+	            candidateIDs = candidateIDs || this._drawables;
+
+	            var clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
+	            var clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
+
+	            centerX *= clientToGLX;
+	            centerY *= clientToGLY;
+	            touchWidth *= clientToGLX;
+	            touchHeight *= clientToGLY;
+
+	            touchWidth = Math.max(1, Math.min(touchWidth, MAX_TOUCH_SIZE[0]));
+	            touchHeight = Math.max(1, Math.min(touchHeight, MAX_TOUCH_SIZE[1]));
+
+	            var pixelLeft = Math.floor(centerX - Math.floor(touchWidth / 2) + 0.5);
+	            var pixelRight = Math.floor(centerX + Math.ceil(touchWidth / 2) + 0.5);
+	            var pixelTop = Math.floor(centerY - Math.floor(touchHeight / 2) + 0.5);
+	            var pixelBottom = Math.floor(centerY + Math.ceil(touchHeight / 2) + 0.5);
+
+	            twgl.bindFramebufferInfo(gl, this._pickBufferInfo);
+	            gl.viewport(0, 0, touchWidth, touchHeight);
+
+	            var noneColor = Drawable.color4fFromID(Drawable.NONE);
+	            gl.clearColor.apply(gl, noneColor);
+	            gl.clear(gl.COLOR_BUFFER_BIT);
+
+	            var widthPerPixel = (this._xRight - this._xLeft) / this._gl.canvas.width;
+	            var heightPerPixel = (this._yBottom - this._yTop) / this._gl.canvas.height;
+
+	            var pickLeft = this._xLeft + pixelLeft * widthPerPixel;
+	            var pickRight = this._xLeft + pixelRight * widthPerPixel;
+	            var pickTop = this._yTop + pixelTop * heightPerPixel;
+	            var pickBottom = this._yTop + pixelBottom * heightPerPixel;
+
+	            var projection = twgl.m4.ortho(pickLeft, pickRight, pickTop, pickBottom, -1, 1);
+
+	            this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection);
+
+	            var pixels = new Buffer(touchWidth * touchHeight * 4);
+	            gl.readPixels(0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+	            if (this._debugCanvas) {
+	                this._debugCanvas.width = touchWidth;
+	                this._debugCanvas.height = touchHeight;
+	                var context = this._debugCanvas.getContext('2d');
+	                var imageData = context.getImageData(0, 0, touchWidth, touchHeight);
+	                for (var i = 0, bytes = pixels.length; i < bytes; ++i) {
+	                    imageData.data[i] = pixels[i];
+	                }
+	                context.putImageData(imageData, 0, 0);
+	            }
+
+	            var hits = {};
+	            for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
+	                var pixelID = Drawable.color3bToID(pixels[pixelBase], pixels[pixelBase + 1], pixels[pixelBase + 2]);
+	                hits[pixelID] = (hits[pixelID] || 0) + 1;
+	            }
+
+	            // Bias toward selecting anything over nothing
+	            hits[Drawable.NONE] = 0;
+
+	            var hit = Drawable.NONE;
+	            for (var hitID in hits) {
+	                if (hits.hasOwnProperty(hitID) && hits[hitID] > hits[hit]) {
+	                    hit = hitID;
+	                }
+	            }
+
+	            return hit | 0;
+	        }
+
+	        /**
+	         * Get the candidate bounding box for a touching query.
+	         * @param {int} drawableID ID for drawable of query.
+	         * @return {?Rectangle} Rectangle bounds for touching query, or null.
+	         */
+
+	    }, {
+	        key: '_touchingBounds',
+	        value: function _touchingBounds(drawableID) {
+	            var drawable = Drawable.getDrawableByID(drawableID);
+	            var bounds = drawable.getFastBounds();
+
+	            // Limit queries to the stage size.
+	            bounds.clamp(this._xLeft, this._xRight, this._yBottom, this._yTop);
+
+	            // Use integer coordinates for queries - weird things happen
+	            // when you provide float width/heights to gl.viewport and projection.
+	            bounds.snapToInt();
+
+	            if (bounds.width === 0 || bounds.height === 0) {
+	                // No space to query.
+	                return null;
+	            }
+	            return bounds;
+	        }
+
+	        /**
+	         * Filter a list of candidates for a touching query into only those that
+	         * could possibly intersect the given bounds.
+	         * @param {int} drawableID - ID for drawable of query.
+	         * @param {Array.<int>} candidateIDs - Candidates for touching query.
+	         * @param {Rectangle} bounds - Bounds to limit candidates to.
+	         * @return {?Array.<int>} Filtered candidateIDs, or null if none.
+	         */
+
+	    }, {
+	        key: '_filterCandidatesTouching',
+	        value: function _filterCandidatesTouching(drawableID, candidateIDs, bounds) {
+	            // Filter candidates by rough bounding box intersection.
+	            // Do this before _drawThese, so we can prevent any GL operations
+	            // and readback by returning early.
+	            candidateIDs = candidateIDs.filter(function (testID) {
+	                if (testID === drawableID) return false;
+	                // Only draw items which could possibly overlap target Drawable.
+	                var candidate = Drawable.getDrawableByID(testID);
+	                var candidateBounds = candidate.getFastBounds();
+	                return bounds.intersects(candidateBounds);
+	            });
+	            if (candidateIDs.length === 0) {
+	                // No possible intersections based on bounding boxes.
+	                return null;
+	            }
+	            return candidateIDs;
+	        }
+
+	        /**
+	         * Update the position, direction, scale, or effect properties of this Drawable.
+	         * @param {int} drawableID The ID of the Drawable to update.
+	         * @param {object.<string,*>} properties The new property values to set.
+	         */
+
+	    }, {
+	        key: 'updateDrawableProperties',
+	        value: function updateDrawableProperties(drawableID, properties) {
+	            var drawable = Drawable.getDrawableByID(drawableID);
+	            drawable.updateProperties(properties);
+	        }
+
+	        /* ******
+	         * Truly internal functions: these support the functions above.
+	         ********/
+
+	        /**
+	         * Build geometry (vertex and index) buffers.
+	         * @private
+	         */
+
+	    }, {
+	        key: '_createGeometry',
+	        value: function _createGeometry() {
+	            var quad = {
+	                a_position: {
+	                    numComponents: 2,
+	                    data: [-0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5]
+	                },
+	                a_texCoord: {
+	                    numComponents: 2,
+	                    data: [1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1]
+	                }
+	            };
+	            this._bufferInfo = twgl.createBufferInfoFromArrays(this._gl, quad);
+	        }
+
+	        /**
+	         * Create the frame buffers used for queries such as picking and color-touching.
+	         * These buffers are fixed in size regardless of the size of the main render
+	         * target. The fixed size allows (more) consistent behavior across devices and
+	         * presentation modes.
+	         * @private
+	         */
+
+	    }, {
+	        key: '_createQueryBuffers',
+	        value: function _createQueryBuffers() {
+	            var gl = this._gl;
+	            var attachments = [{ format: gl.RGBA }, { format: gl.DEPTH_STENCIL }];
+
+	            this._pickBufferInfo = twgl.createFramebufferInfo(gl, attachments, MAX_TOUCH_SIZE[0], MAX_TOUCH_SIZE[1]);
+
+	            // TODO: should we create this on demand to save memory?
+	            // A 480x360 32-bpp buffer is 675 KiB.
+	            this._queryBufferInfo = twgl.createFramebufferInfo(gl, attachments, this._nativeSize[0], this._nativeSize[1]);
+	        }
+
+	        /**
+	         * Draw all Drawables, with the possible exception of
+	         * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawables.
+	         * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
+	         * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
+	         * @param {Drawable~idFilterFunc} [filter] An optional filter function.
+	         * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
+	         * @private
+	         */
+
+	    }, {
+	        key: '_drawThese',
+	        value: function _drawThese(drawables, drawMode, projection, filter, extraUniforms) {
+	            var gl = this._gl;
+	            var currentShader = null;
+
+	            var numDrawables = drawables.length;
+	            for (var drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
+	                var drawableID = drawables[drawableIndex];
+
+	                // If we have a filter, check whether the ID fails
+	                if (filter && !filter(drawableID)) continue;
+
+	                var drawable = Drawable.getDrawableByID(drawableID);
+	                // TODO: check if drawable is inside the viewport before anything else
+
+	                // Hidden drawables (e.g., by a "hide" block) are never drawn.
+	                if (!drawable.getVisible()) continue;
+
+	                var effectBits = drawable.getEnabledEffects();
+	                var newShader = this._shaderManager.getShader(drawMode, effectBits);
+	                if (currentShader !== newShader) {
+	                    currentShader = newShader;
+	                    gl.useProgram(currentShader.program);
+	                    twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
+	                    twgl.setUniforms(currentShader, { u_projectionMatrix: projection });
+	                    twgl.setUniforms(currentShader, { u_fudge: window.fudge || 0 });
+	                }
+
+	                twgl.setUniforms(currentShader, drawable.getUniforms());
+
+	                // Apply extra uniforms after the Drawable's, to allow overwriting.
+	                if (extraUniforms) {
+	                    twgl.setUniforms(currentShader, extraUniforms);
+	                }
+
+	                twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
 	            }
 	        }
-	        // Scan from right.
-	        for (var _x = width - 1; _x >= 0; _x--) {
-	            if (_getPixel(_x, y) > Drawable.NONE) {
-	                boundaryPoints.push([_x, y]);
-	                break;
+
+	        /**
+	         * Get the convex hull points for a particular Drawable.
+	         * To do this, draw the Drawable unrotated, unscaled, and untranslated.
+	         * Read back the pixels and find all boundary points.
+	         * Finally, apply a convex hull algorithm to simplify the set.
+	         * @param {int} drawableID The Drawable IDs calculate convex hull for.
+	         * @return {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
+	         */
+
+	    }, {
+	        key: '_getConvexHullPointsForDrawable',
+	        value: function _getConvexHullPointsForDrawable(drawableID) {
+	            var drawable = Drawable.getDrawableByID(drawableID);
+
+	            var _drawable$_uniforms$u = _slicedToArray(drawable._uniforms.u_skinSize, 2),
+	                width = _drawable$_uniforms$u[0],
+	                height = _drawable$_uniforms$u[1];
+	            // No points in the hull if invisible or size is 0.
+
+
+	            if (!drawable.getVisible() || width === 0 || height === 0) {
+	                return [];
 	            }
+
+	            // Only draw to the size of the untransformed drawable.
+	            var gl = this._gl;
+	            twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+	            gl.viewport(0, 0, width, height);
+
+	            // Clear the canvas with Drawable.NONE.
+	            var noneColor = Drawable.color4fFromID(Drawable.NONE);
+	            gl.clearColor.apply(gl, noneColor);
+	            gl.clear(gl.COLOR_BUFFER_BIT);
+
+	            // Overwrite the model matrix to be unrotated, unscaled, untranslated.
+	            var modelMatrix = twgl.m4.identity();
+	            twgl.m4.rotateZ(modelMatrix, Math.PI, modelMatrix);
+	            twgl.m4.scale(modelMatrix, [width, height], modelMatrix);
+
+	            var projection = twgl.m4.ortho(-0.5 * width, 0.5 * width, -0.5 * height, 0.5 * height, -1, 1);
+
+	            this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, projection, null, { u_modelMatrix: modelMatrix });
+
+	            var pixels = new Buffer(width * height * 4);
+	            gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+	            // Known boundary points on left/right edges of pixels.
+	            var boundaryPoints = [];
+
+	            /**
+	             * Helper method to look up a pixel.
+	             * @param {int} x X coordinate of the pixel in `pixels`.
+	             * @param {int} y Y coordinate of the pixel in `pixels`.
+	             * @return {int} Known ID at that pixel, or Drawable.NONE.
+	             */
+	            var _getPixel = function _getPixel(x, y) {
+	                var pixelBase = (width * y + x) * 4;
+	                return Drawable.color3bToID(pixels[pixelBase], pixels[pixelBase + 1], pixels[pixelBase + 2]);
+	            };
+	            for (var y = 0; y <= height; y++) {
+	                // Scan from left.
+	                for (var x = 0; x < width; x++) {
+	                    if (_getPixel(x, y) > Drawable.NONE) {
+	                        boundaryPoints.push([x, y]);
+	                        break;
+	                    }
+	                }
+	                // Scan from right.
+	                for (var _x = width - 1; _x >= 0; _x--) {
+	                    if (_getPixel(_x, y) > Drawable.NONE) {
+	                        boundaryPoints.push([_x, y]);
+	                        break;
+	                    }
+	                }
+	            }
+	            // Simplify boundary points using convex hull.
+	            return hull(boundaryPoints, Infinity);
 	        }
-	    }
-	    // Simplify boundary points using convex hull.
-	    return hull(boundaryPoints, Infinity);
-	};
+	    }]);
+
+	    return RenderWebGL;
+	}();
+
+	module.exports = RenderWebGL;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(300).Buffer))
 
 /***/ },
@@ -19627,6 +19689,8 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var twgl = __webpack_require__(309);
@@ -19636,101 +19700,599 @@
 	var SvgRenderer = __webpack_require__(320);
 	var ShaderManager = __webpack_require__(326);
 
-	var Drawable =
-	/**
-	 * An object which can be drawn by the renderer.
-	 * TODO: double-buffer all rendering state (position, skin, effects, etc.)
-	 * @param {WebGLRenderingContext} gl The OpenGL context.
-	 * @constructor
-	 */
-	function Drawable(gl) {
-	    _classCallCheck(this, Drawable);
-
-	    this._id = Drawable._nextDrawable++;
-	    Drawable._allDrawables[this._id] = this;
-
-	    /** @type {WebGLRenderingContext} */
-	    this._gl = gl;
-
-	    /**
-	     * The uniforms to be used by the vertex and pixel shaders.
-	     * Some of these are used by other parts of the renderer as well.
-	     * @type {Object.<string,*>}
-	     * @private
-	     */
-	    this._uniforms = {
-	        /**
-	         * The model matrix, to concat with projection at draw time.
-	         * @type {module:twgl/m4.Mat4}
-	         */
-	        u_modelMatrix: twgl.m4.identity(),
-
-	        /**
-	         * The nominal (not necessarily current) size of the current skin.
-	         * This is scaled by _costumeResolution.
-	         * @type {number[]}
-	         */
-	        u_skinSize: [0, 0],
-
-	        /**
-	         * The actual WebGL texture object for the skin.
-	         * @type {WebGLTexture}
-	         */
-	        u_skin: null,
-
-	        /**
-	         * The color to use in the silhouette draw mode.
-	         * @type {number[]}
-	         */
-	        u_silhouetteColor: Drawable.color4fFromID(this._id)
-	    };
-
-	    // Effect values are uniforms too
-	    var numEffects = ShaderManager.EFFECTS.length;
-	    for (var index = 0; index < numEffects; ++index) {
-	        var effectName = ShaderManager.EFFECTS[index];
-	        var converter = ShaderManager.EFFECT_INFO[effectName].converter;
-	        this._uniforms['u_' + effectName] = converter(0);
-	    }
-
-	    this._position = twgl.v3.create(0, 0);
-	    this._scale = twgl.v3.create(100, 100);
-	    this._rotationCenter = twgl.v3.create(0, 0);
-	    this._direction = 90;
-	    this._transformDirty = true;
-	    this._visible = true;
-	    this._effectBits = 0;
-
-	    this._convexHullPoints = null;
-	    this._convexHullDirty = true;
-
-	    // Create a transparent 1x1 texture for temporary use
-	    var tempTexture = twgl.createTexture(gl, { src: [0, 0, 0, 0] });
-	    this._useSkin(tempTexture, 0, 0, 1, true);
-
-	    // Load a real skin
-	    this.setSkin(Drawable._DEFAULT_SKIN);
-	};
-
-	module.exports = Drawable;
-
 	/**
 	 * @callback Drawable~idFilterFunc
 	 * @param {int} drawableID The ID to filter.
 	 * @return {bool} True if the ID passes the filter, otherwise false.
 	 */
 
-	/**
-	 * An invalid Drawable ID which can be used to signify absence, etc.
-	 * @type {int}
-	 */
-	Drawable.NONE = -1;
+	var Drawable = function () {
+	    /**
+	     * An object which can be drawn by the renderer.
+	     * TODO: double-buffer all rendering state (position, skin, effects, etc.)
+	     * @param {WebGLRenderingContext} gl The OpenGL context.
+	     * @constructor
+	     */
+	    function Drawable(gl) {
+	        _classCallCheck(this, Drawable);
+
+	        this._id = Drawable._nextDrawable++;
+	        Drawable._allDrawables[this._id] = this;
+
+	        /** @type {WebGLRenderingContext} */
+	        this._gl = gl;
+
+	        /**
+	         * The uniforms to be used by the vertex and pixel shaders.
+	         * Some of these are used by other parts of the renderer as well.
+	         * @type {Object.<string,*>}
+	         * @private
+	         */
+	        this._uniforms = {
+	            /**
+	             * The model matrix, to concat with projection at draw time.
+	             * @type {module:twgl/m4.Mat4}
+	             */
+	            u_modelMatrix: twgl.m4.identity(),
+
+	            /**
+	             * The nominal (not necessarily current) size of the current skin.
+	             * This is scaled by _costumeResolution.
+	             * @type {number[]}
+	             */
+	            u_skinSize: [0, 0],
+
+	            /**
+	             * The actual WebGL texture object for the skin.
+	             * @type {WebGLTexture}
+	             */
+	            u_skin: null,
+
+	            /**
+	             * The color to use in the silhouette draw mode.
+	             * @type {number[]}
+	             */
+	            u_silhouetteColor: Drawable.color4fFromID(this._id)
+	        };
+
+	        // Effect values are uniforms too
+	        var numEffects = ShaderManager.EFFECTS.length;
+	        for (var index = 0; index < numEffects; ++index) {
+	            var effectName = ShaderManager.EFFECTS[index];
+	            var converter = ShaderManager.EFFECT_INFO[effectName].converter;
+	            this._uniforms['u_' + effectName] = converter(0);
+	        }
+
+	        this._position = twgl.v3.create(0, 0);
+	        this._scale = twgl.v3.create(100, 100);
+	        this._rotationCenter = twgl.v3.create(0, 0);
+	        this._direction = 90;
+	        this._transformDirty = true;
+	        this._visible = true;
+	        this._effectBits = 0;
+
+	        this._convexHullPoints = null;
+	        this._convexHullDirty = true;
+
+	        // Create a transparent 1x1 texture for temporary use
+	        var tempTexture = twgl.createTexture(gl, { src: [0, 0, 0, 0] });
+	        this._useSkin(tempTexture, 0, 0, 1, true);
+
+	        // Load a real skin
+	        this.setSkin(Drawable._DEFAULT_SKIN);
+	    }
+
+	    /**
+	     * An invalid Drawable ID which can be used to signify absence, etc.
+	     * @type {int}
+	     */
+
+
+	    _createClass(Drawable, [{
+	        key: 'dispose',
+
+
+	        /**
+	         * Dispose of this Drawable. Do not use it after calling this method.
+	         */
+	        value: function dispose() {
+	            this.setSkin(null);
+	            if (this._id >= 0) {
+	                delete Drawable[this._id];
+	            }
+	        }
+
+	        /**
+	         * Mark this Drawable's transform as dirty.
+	         * It will be recalculated next time it's needed.
+	         */
+
+	    }, {
+	        key: 'setTransformDirty',
+	        value: function setTransformDirty() {
+	            this._transformDirty = true;
+	        }
+
+	        /**
+	         * Retrieve the ID for this Drawable.
+	         * @returns {number} The ID for this Drawable.
+	         */
+
+	    }, {
+	        key: 'getID',
+	        value: function getID() {
+	            return this._id;
+	        }
+
+	        /**
+	         * Set this Drawable's skin.
+	         * The Drawable will continue using the existing skin until the new one loads.
+	         * If there is no existing skin, the Drawable will use a 1x1 transparent image.
+	         * @param {string} skinUrl The URL of the skin.
+	         * @param {number=} optCostumeResolution Optionally, a resolution for the skin.
+	         */
+
+	    }, {
+	        key: 'setSkin',
+	        value: function setSkin(skinUrl, optCostumeResolution) {
+	            // TODO: cache Skins instead of loading each time. Ref count them?
+	            // TODO: share Skins across Drawables - see also destroy()
+	            if (skinUrl) {
+	                var ext = skinUrl.substring(skinUrl.lastIndexOf('.') + 1);
+	                switch (ext) {
+	                    case 'svg':
+	                    case 'svg/get/':
+	                    case 'svgz':
+	                    case 'svgz/get/':
+	                        this._setSkinSVG(skinUrl);
+	                        break;
+	                    default:
+	                        this._setSkinBitmap(skinUrl, optCostumeResolution);
+	                        break;
+	                }
+	            } else {
+	                this._useSkin(null, 0, 0, 1, true);
+	            }
+	        }
+
+	        /**
+	         * Use a skin if it is the currently-pending skin, or if skipPendingCheck==true.
+	         * If the passed skin is used (for either reason) _pendingSkin will be cleared.
+	         * @param {WebGLTexture} skin The skin to use.
+	         * @param {int} width The width of the skin.
+	         * @param {int} height The height of the skin.
+	         * @param {int} costumeResolution The resolution to use for this skin.
+	         * @param {boolean} [skipPendingCheck] If true, don't compare to _pendingSkin.
+	         * @private
+	         */
+
+	    }, {
+	        key: '_useSkin',
+	        value: function _useSkin(skin, width, height, costumeResolution, skipPendingCheck) {
+	            if (skipPendingCheck || skin === this._pendingSkin) {
+	                this._pendingSkin = null;
+	                if (this._uniforms.u_skin && this._uniforms.u_skin !== skin) {
+	                    this._gl.deleteTexture(this._uniforms.u_skin);
+	                }
+	                this._setSkinSize(width, height, costumeResolution);
+	                this._uniforms.u_skin = skin;
+	            }
+	        }
+
+	        /**
+	         * @returns {int} A bitmask identifying which effects are currently in use.
+	         */
+
+	    }, {
+	        key: 'getEnabledEffects',
+	        value: function getEnabledEffects() {
+	            return this._effectBits;
+	        }
+
+	        /**
+	         * Load a bitmap skin. Supports the same formats as the Image element.
+	         * @param {string} skinMd5ext The MD5 and file extension of the bitmap skin.
+	         * @param {number=} optCostumeResolution Optionally, a resolution for the skin.
+	         * @private
+	         */
+
+	    }, {
+	        key: '_setSkinBitmap',
+	        value: function _setSkinBitmap(skinMd5ext, optCostumeResolution) {
+	            var url = skinMd5ext;
+	            this._setSkinCore(url, optCostumeResolution);
+	        }
+
+	        /**
+	         * Load an SVG-based skin. This still needs quite a bit of work to match the
+	         * level of quality found in Scratch 2.0:
+	         * - We should detect when a skin is being scaled up and render the SVG at a
+	         *   higher resolution in those cases.
+	         * - Colors seem a little off. This may be browser-specific.
+	         * - This method works in Chrome, Firefox, Safari, and Edge but causes a
+	         *   security error in IE.
+	         * @param {string} skinMd5ext The MD5 and file extension of the SVG skin.
+	         * @private
+	         */
+
+	    }, {
+	        key: '_setSkinSVG',
+	        value: function _setSkinSVG(skinMd5ext) {
+	            var _this = this;
+
+	            var url = skinMd5ext;
+
+	            var svgCanvas = document.createElement('canvas');
+	            var svgRenderer = new SvgRenderer(svgCanvas);
+
+	            var gotSVG = function gotSVG(err, response, body) {
+	                if (!err) {
+	                    svgRenderer.fromString(body, function () {
+	                        _this._setSkinCore(svgCanvas, svgRenderer.getDrawRatio());
+	                    });
+	                }
+	            };
+	            xhr.get({
+	                useXDR: true,
+	                url: url
+	            }, gotSVG);
+	            // TODO: if there's no current u_skin, install *something* before returning
+	        }
+
+	        /**
+	         * Common code for setting all skin types.
+	         * @param {string|Image} source The source of image data for the skin.
+	         * @param {int} costumeResolution The resolution to use for this skin.
+	         * @private
+	         */
+
+	    }, {
+	        key: '_setSkinCore',
+	        value: function _setSkinCore(source, costumeResolution) {
+	            var _this2 = this;
+
+	            var callback = function callback(err, texture, sourceInCallback) {
+	                if (!err && _this2._pendingSkin === texture) {
+	                    _this2._useSkin(texture, sourceInCallback.width, sourceInCallback.height, costumeResolution);
+	                }
+	            };
+
+	            var gl = this._gl;
+	            var options = {
+	                auto: true,
+	                mag: gl.NEAREST,
+	                min: gl.NEAREST, // TODO: mipmaps, linear (except pixelate)
+	                wrap: gl.CLAMP_TO_EDGE,
+	                src: source
+	            };
+	            var willCallCallback = typeof source === 'string';
+	            this._pendingSkin = twgl.createTexture(gl, options, willCallCallback ? callback : null);
+
+	            // If we won't get a callback, start using the skin immediately.
+	            // This will happen if the data is already local.
+	            if (!willCallCallback) {
+	                callback(null, this._pendingSkin, source);
+	            }
+	        }
+
+	        /**
+	         * @returns {object.<string, *>} the shader uniforms to be used when rendering this Drawable.
+	         */
+
+	    }, {
+	        key: 'getUniforms',
+	        value: function getUniforms() {
+	            if (this._transformDirty) {
+	                this._calculateTransform();
+	            }
+	            return this._uniforms;
+	        }
+
+	        /**
+	         * @returns {boolean} whether this Drawable is visible.
+	         */
+
+	    }, {
+	        key: 'getVisible',
+	        value: function getVisible() {
+	            return this._visible;
+	        }
+
+	        /**
+	         * Update the position, direction, scale, or effect properties of this Drawable.
+	         * @param {object.<string,*>} properties The new property values to set.
+	         */
+
+	    }, {
+	        key: 'updateProperties',
+	        value: function updateProperties(properties) {
+	            var dirty = false;
+	            if ('skin' in properties) {
+	                this.setSkin(properties.skin, properties.costumeResolution);
+	                this.setConvexHullDirty();
+	            }
+	            if ('position' in properties && (this._position[0] !== properties.position[0] || this._position[1] !== properties.position[1])) {
+	                this._position[0] = properties.position[0];
+	                this._position[1] = properties.position[1];
+	                dirty = true;
+	            }
+	            if ('direction' in properties && this._direction !== properties.direction) {
+	                this._direction = properties.direction;
+	                dirty = true;
+	            }
+	            if ('scale' in properties && (this._scale[0] !== properties.scale[0] || this._scale[1] !== properties.scale[1])) {
+	                this._scale[0] = properties.scale[0];
+	                this._scale[1] = properties.scale[1];
+	                dirty = true;
+	            }
+	            if ('rotationCenter' in properties && (this._rotationCenter[0] !== properties.rotationCenter[0] || this._rotationCenter[1] !== properties.rotationCenter[1])) {
+	                this._rotationCenter[0] = properties.rotationCenter[0];
+	                this._rotationCenter[1] = properties.rotationCenter[1];
+	                dirty = true;
+	            }
+	            if ('visible' in properties) {
+	                this._visible = properties.visible;
+	                this.setConvexHullDirty();
+	            }
+	            if (dirty) {
+	                this.setTransformDirty();
+	            }
+	            var numEffects = ShaderManager.EFFECTS.length;
+	            for (var index = 0; index < numEffects; ++index) {
+	                var effectName = ShaderManager.EFFECTS[index];
+	                if (effectName in properties) {
+	                    var rawValue = properties[effectName];
+	                    var effectInfo = ShaderManager.EFFECT_INFO[effectName];
+	                    if (rawValue) {
+	                        this._effectBits |= effectInfo.mask;
+	                    } else {
+	                        this._effectBits &= ~effectInfo.mask;
+	                    }
+	                    var converter = effectInfo.converter;
+	                    this._uniforms['u_' + effectName] = converter(rawValue);
+	                    if (effectInfo.shapeChanges) {
+	                        this.setConvexHullDirty();
+	                    }
+	                }
+	            }
+	        }
+
+	        /**
+	         * Set the dimensions of this Drawable's skin.
+	         * @param {int} width The width of the new skin.
+	         * @param {int} height The height of the new skin.
+	         * @param {int} [costumeResolution] The resolution to use for this skin.
+	         * @private
+	         */
+
+	    }, {
+	        key: '_setSkinSize',
+	        value: function _setSkinSize(width, height, costumeResolution) {
+	            costumeResolution = costumeResolution || 1;
+	            width /= costumeResolution;
+	            height /= costumeResolution;
+	            if (this._uniforms.u_skinSize[0] !== width || this._uniforms.u_skinSize[1] !== height) {
+	                this._uniforms.u_skinSize[0] = width;
+	                this._uniforms.u_skinSize[1] = height;
+	                this.setTransformDirty();
+	            }
+	            this.setConvexHullDirty();
+	        }
+
+	        /**
+	         * Get the size of the Drawable's current skin.
+	         * @return {Array.<number>} Skin size, width and height.
+	         */
+
+	    }, {
+	        key: 'getSkinSize',
+	        value: function getSkinSize() {
+	            return this._uniforms.u_skinSize.slice();
+	        }
+
+	        /**
+	         * Calculate the transform to use when rendering this Drawable.
+	         * @private
+	         */
+
+	    }, {
+	        key: '_calculateTransform',
+	        value: function _calculateTransform() {
+	            var modelMatrix = this._uniforms.u_modelMatrix;
+
+	            twgl.m4.identity(modelMatrix);
+	            twgl.m4.translate(modelMatrix, this._position, modelMatrix);
+
+	            var rotation = (270 - this._direction) * Math.PI / 180;
+	            twgl.m4.rotateZ(modelMatrix, rotation, modelMatrix);
+
+	            // Adjust rotation center relative to the skin.
+	            var rotationAdjusted = twgl.v3.subtract(this._rotationCenter, twgl.v3.divScalar(this._uniforms.u_skinSize, 2));
+	            rotationAdjusted[1] *= -1; // Y flipped to Scratch coordinate.
+	            rotationAdjusted[2] = 0; // Z coordinate is 0.
+
+	            twgl.m4.translate(modelMatrix, rotationAdjusted, modelMatrix);
+
+	            var scaledSize = twgl.v3.divScalar(twgl.v3.multiply(this._uniforms.u_skinSize, this._scale), 100);
+	            scaledSize[2] = 0; // was NaN because the vectors have only 2 components.
+	            twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
+
+	            this._transformDirty = false;
+	        }
+
+	        /**
+	         * Whether the Drawable needs convex hull points provided by the renderer.
+	         * @return {boolean} True when no convex hull known, or it's dirty.
+	         */
+
+	    }, {
+	        key: 'needsConvexHullPoints',
+	        value: function needsConvexHullPoints() {
+	            return !this._convexHullPoints || this._convexHullDirty;
+	        }
+
+	        /**
+	         * Set the convex hull to be dirty.
+	         * Do this whenever the Drawable's shape has possibly changed.
+	         */
+
+	    }, {
+	        key: 'setConvexHullDirty',
+	        value: function setConvexHullDirty() {
+	            this._convexHullDirty = true;
+	        }
+
+	        /**
+	         * Set the convex hull points for the Drawable.
+	         * @param {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
+	         */
+
+	    }, {
+	        key: 'setConvexHullPoints',
+	        value: function setConvexHullPoints(points) {
+	            this._convexHullPoints = points;
+	            this._convexHullDirty = false;
+	        }
+
+	        /**
+	         * Get the precise bounds for a Drawable.
+	         * This function applies the transform matrix to the known convex hull,
+	         * and then finds the minimum box along the axes.
+	         * Before calling this, ensure the renderer has updated convex hull points.
+	         * @return {!Rectangle} Bounds for a tight box around the Drawable.
+	         */
+
+	    }, {
+	        key: 'getBounds',
+	        value: function getBounds() {
+	            if (this.needsConvexHullPoints()) {
+	                throw new Error('Needs updated convex hull points before bounds calculation.');
+	            }
+	            if (this._transformDirty) {
+	                this._calculateTransform();
+	            }
+	            // First, transform all the convex hull points by the current Drawable's
+	            // transform. This allows us to skip recalculating the convex hull
+	            // for many Drawable updates, including translation, rotation, scaling.
+	            var projection = twgl.m4.ortho(-1, 1, -1, 1, -1, 1);
+	            var skinSize = this._uniforms.u_skinSize;
+	            var tm = twgl.m4.multiply(this._uniforms.u_modelMatrix, projection);
+	            var transformedHullPoints = [];
+	            for (var i = 0; i < this._convexHullPoints.length; i++) {
+	                var point = this._convexHullPoints[i];
+	                var glPoint = twgl.v3.create(0.5 + -point[0] / skinSize[0], 0.5 + -point[1] / skinSize[1], 0);
+	                twgl.m4.transformPoint(tm, glPoint, glPoint);
+	                transformedHullPoints.push(glPoint);
+	            }
+	            // Search through transformed points to generate box on axes.
+	            var bounds = new Rectangle();
+	            bounds.initFromPointsAABB(transformedHullPoints);
+	            return bounds;
+	        }
+
+	        /**
+	         * Get the rough axis-aligned bounding box for the Drawable.
+	         * Calculated by transforming the skin's bounds.
+	         * Note that this is less precise than the box returned by `getBounds`,
+	         * which is tightly snapped to account for a Drawable's transparent regions.
+	         * `getAABB` returns a much less accurate bounding box, but will be much
+	         * faster to calculate so may be desired for quick checks/optimizations.
+	         * @return {!Rectangle} Rough axis-aligned bounding box for Drawable.
+	         */
+
+	    }, {
+	        key: 'getAABB',
+	        value: function getAABB() {
+	            if (this._transformDirty) {
+	                this._calculateTransform();
+	            }
+	            var tm = this._uniforms.u_modelMatrix;
+	            var bounds = new Rectangle();
+	            bounds.initFromPointsAABB([twgl.m4.transformPoint(tm, [-0.5, -0.5, 0]), twgl.m4.transformPoint(tm, [0.5, -0.5, 0]), twgl.m4.transformPoint(tm, [-0.5, 0.5, 0]), twgl.m4.transformPoint(tm, [0.5, 0.5, 0])]);
+	            return bounds;
+	        }
+
+	        /**
+	         * Return the best Drawable bounds possible without performing graphics queries.
+	         * I.e., returns the tight bounding box when the convex hull points are already
+	         * known, but otherwise return the rough AABB of the Drawable.
+	         * @return {!Rectangle} Bounds for the Drawable.
+	         */
+
+	    }, {
+	        key: 'getFastBounds',
+	        value: function getFastBounds() {
+	            if (!this.needsConvexHullPoints()) {
+	                return this.getBounds();
+	            }
+	            return this.getAABB();
+	        }
+
+	        /**
+	         * Calculate a color to represent the given ID number. At least one component of
+	         * the resulting color will be non-zero if the ID is not Drawable.NONE.
+	         * @param {int} id The ID to convert.
+	         * @returns {number[]} An array of [r,g,b,a], each component in the range [0,1].
+	         */
+
+	    }], [{
+	        key: 'getDrawableByID',
+
+
+	        /**
+	         * Fetch a Drawable by its ID number.
+	         * @param {int} drawableID The ID of the Drawable to fetch.
+	         * @returns {?Drawable} The specified Drawable if found, otherwise null.
+	         */
+	        value: function getDrawableByID(drawableID) {
+	            return Drawable._allDrawables[drawableID];
+	        }
+	    }, {
+	        key: 'color4fFromID',
+	        value: function color4fFromID(id) {
+	            id -= Drawable.NONE;
+	            var r = (id >> 0 & 255) / 255.0;
+	            var g = (id >> 8 & 255) / 255.0;
+	            var b = (id >> 16 & 255) / 255.0;
+	            return [r, g, b, 1.0];
+	        }
+
+	        /**
+	         * Calculate the ID number represented by the given color. If all components of
+	         * the color are zero, the result will be Drawable.NONE; otherwise the result
+	         * will be a valid ID.
+	         * @param {int} r The red value of the color, in the range [0,255].
+	         * @param {int} g The green value of the color, in the range [0,255].
+	         * @param {int} b The blue value of the color, in the range [0,255].
+	         * @returns {int} The ID represented by that color.
+	         */
+
+	    }, {
+	        key: 'color3bToID',
+	        value: function color3bToID(r, g, b) {
+	            var id = void 0;
+	            id = (r & 255) << 0;
+	            id |= (g & 255) << 8;
+	            id |= (b & 255) << 16;
+	            return id + Drawable.NONE;
+	        }
+	    }, {
+	        key: 'NONE',
+	        get: function get() {
+	            return -1;
+	        }
+	    }]);
+
+	    return Drawable;
+	}();
 
 	/**
 	 * The ID to be assigned next time the Drawable constructor is called.
 	 * @type {number}
 	 * @private
 	 */
+
+
 	Drawable._nextDrawable = 0;
 
 	/**
@@ -19740,430 +20302,15 @@
 	 */
 	Drawable._allDrawables = {};
 
-	/**
-	 * Fetch a Drawable by its ID number.
-	 * @param {int} drawableID The ID of the Drawable to fetch.
-	 * @returns {?Drawable} The specified Drawable if found, otherwise null.
-	 */
-	Drawable.getDrawableByID = function (drawableID) {
-	    return Drawable._allDrawables[drawableID];
-	};
-
 	// TODO: fall back on a built-in skin to protect against network problems
 	Drawable._DEFAULT_SKIN = {
-	    squirrel: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' + '7e24c99c1b853e52f8e7f9004416fa34.png/get/',
-	    bus: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' + '66895930177178ea01d9e610917f8acf.png/get/',
-	    scratch_cat: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' + '09dc888b0b7df19f70d81588ae73420e.svg/get/',
-	    gradient: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' + 'a49ff276b9b8f997a1ae163992c2c145.png/get/'
+	    squirrel: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/7e24c99c1b853e52f8e7f9004416fa34.png/get/',
+	    bus: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/66895930177178ea01d9e610917f8acf.png/get/',
+	    scratch_cat: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/09dc888b0b7df19f70d81588ae73420e.svg/get/',
+	    gradient: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/a49ff276b9b8f997a1ae163992c2c145.png/get/'
 	}.squirrel;
 
-	/**
-	 * Dispose of this Drawable. Do not use it after calling this method.
-	 */
-	Drawable.prototype.dispose = function () {
-	    this.setSkin(null);
-	    if (this._id >= 0) {
-	        delete Drawable[this._id];
-	    }
-	};
-
-	/**
-	 * Mark this Drawable's transform as dirty.
-	 * It will be recalculated next time it's needed.
-	 */
-	Drawable.prototype.setTransformDirty = function () {
-	    this._transformDirty = true;
-	};
-
-	/**
-	 * Retrieve the ID for this Drawable.
-	 * @returns {number} The ID for this Drawable.
-	 */
-	Drawable.prototype.getID = function () {
-	    return this._id;
-	};
-
-	/**
-	 * Set this Drawable's skin.
-	 * The Drawable will continue using the existing skin until the new one loads.
-	 * If there is no existing skin, the Drawable will use a 1x1 transparent image.
-	 * @param {string} skinUrl The URL of the skin.
-	 * @param {number=} optCostumeResolution Optionally, a resolution for the skin.
-	 */
-	Drawable.prototype.setSkin = function (skinUrl, optCostumeResolution) {
-	    // TODO: cache Skins instead of loading each time. Ref count them?
-	    // TODO: share Skins across Drawables - see also destroy()
-	    if (skinUrl) {
-	        var ext = skinUrl.substring(skinUrl.lastIndexOf('.') + 1);
-	        switch (ext) {
-	            case 'svg':
-	            case 'svg/get/':
-	            case 'svgz':
-	            case 'svgz/get/':
-	                this._setSkinSVG(skinUrl);
-	                break;
-	            default:
-	                this._setSkinBitmap(skinUrl, optCostumeResolution);
-	                break;
-	        }
-	    } else {
-	        this._useSkin(null, 0, 0, 1, true);
-	    }
-	};
-
-	/**
-	 * Use a skin if it is the currently-pending skin, or if skipPendingCheck==true.
-	 * If the passed skin is used (for either reason) _pendingSkin will be cleared.
-	 * @param {WebGLTexture} skin The skin to use.
-	 * @param {int} width The width of the skin.
-	 * @param {int} height The height of the skin.
-	 * @param {int} costumeResolution The resolution to use for this skin.
-	 * @param {boolean} [skipPendingCheck] If true, don't compare to _pendingSkin.
-	 * @private
-	 */
-	Drawable.prototype._useSkin = function (skin, width, height, costumeResolution, skipPendingCheck) {
-
-	    if (skipPendingCheck || skin === this._pendingSkin) {
-	        this._pendingSkin = null;
-	        if (this._uniforms.u_skin && this._uniforms.u_skin !== skin) {
-	            this._gl.deleteTexture(this._uniforms.u_skin);
-	        }
-	        this._setSkinSize(width, height, costumeResolution);
-	        this._uniforms.u_skin = skin;
-	    }
-	};
-
-	/**
-	 * @returns {int} A bitmask identifying which effects are currently in use.
-	 */
-	Drawable.prototype.getEnabledEffects = function () {
-	    return this._effectBits;
-	};
-
-	/**
-	 * Load a bitmap skin. Supports the same formats as the Image element.
-	 * @param {string} skinMd5ext The MD5 and file extension of the bitmap skin.
-	 * @param {number=} optCostumeResolution Optionally, a resolution for the skin.
-	 * @private
-	 */
-	Drawable.prototype._setSkinBitmap = function (skinMd5ext, optCostumeResolution) {
-	    var url = skinMd5ext;
-	    this._setSkinCore(url, optCostumeResolution);
-	};
-
-	/**
-	 * Load an SVG-based skin. This still needs quite a bit of work to match the
-	 * level of quality found in Scratch 2.0:
-	 * - We should detect when a skin is being scaled up and render the SVG at a
-	 *   higher resolution in those cases.
-	 * - Colors seem a little off. This may be browser-specific.
-	 * - This method works in Chrome, Firefox, Safari, and Edge but causes a
-	 *   security error in IE.
-	 * @param {string} skinMd5ext The MD5 and file extension of the SVG skin.
-	 * @private
-	 */
-	Drawable.prototype._setSkinSVG = function (skinMd5ext) {
-	    var url = skinMd5ext;
-	    var instance = this;
-
-	    var svgCanvas = document.createElement('canvas');
-	    var svgRenderer = new SvgRenderer(svgCanvas);
-
-	    var gotSVG = function gotSVG(err, response, body) {
-	        if (!err) {
-	            svgRenderer.fromString(body, function () {
-	                instance._setSkinCore(svgCanvas, svgRenderer.getDrawRatio());
-	            });
-	        }
-	    };
-	    xhr.get({
-	        useXDR: true,
-	        url: url
-	    }, gotSVG);
-	    // TODO: if there's no current u_skin, install *something* before returning
-	};
-
-	/**
-	 * Common code for setting all skin types.
-	 * @param {string|Image} source The source of image data for the skin.
-	 * @param {int} costumeResolution The resolution to use for this skin.
-	 * @private
-	 */
-	Drawable.prototype._setSkinCore = function (source, costumeResolution) {
-	    var instance = this;
-	    var callback = function callback(err, texture, sourceInCallback) {
-	        if (!err && instance._pendingSkin === texture) {
-	            instance._useSkin(texture, sourceInCallback.width, sourceInCallback.height, costumeResolution);
-	        }
-	    };
-
-	    var gl = this._gl;
-	    var options = {
-	        auto: true,
-	        mag: gl.NEAREST,
-	        min: gl.NEAREST, // TODO: mipmaps, linear (except pixelate)
-	        wrap: gl.CLAMP_TO_EDGE,
-	        src: source
-	    };
-	    var willCallCallback = typeof source === 'string';
-	    instance._pendingSkin = twgl.createTexture(gl, options, willCallCallback ? callback : null);
-
-	    // If we won't get a callback, start using the skin immediately.
-	    // This will happen if the data is already local.
-	    if (!willCallCallback) {
-	        callback(null, instance._pendingSkin, source);
-	    }
-	};
-
-	/**
-	 * @returns {object.<string, *>} the shader uniforms to be used when rendering this Drawable.
-	 */
-	Drawable.prototype.getUniforms = function () {
-	    if (this._transformDirty) {
-	        this._calculateTransform();
-	    }
-	    return this._uniforms;
-	};
-
-	/**
-	 * @returns {boolean} whether this Drawable is visible.
-	 */
-	Drawable.prototype.getVisible = function () {
-	    return this._visible;
-	};
-
-	/**
-	 * Update the position, direction, scale, or effect properties of this Drawable.
-	 * @param {object.<string,*>} properties The new property values to set.
-	 */
-	Drawable.prototype.updateProperties = function (properties) {
-	    var dirty = false;
-	    if ('skin' in properties) {
-	        this.setSkin(properties.skin, properties.costumeResolution);
-	        this.setConvexHullDirty();
-	    }
-	    if ('position' in properties && (this._position[0] !== properties.position[0] || this._position[1] !== properties.position[1])) {
-	        this._position[0] = properties.position[0];
-	        this._position[1] = properties.position[1];
-	        dirty = true;
-	    }
-	    if ('direction' in properties && this._direction !== properties.direction) {
-	        this._direction = properties.direction;
-	        dirty = true;
-	    }
-	    if ('scale' in properties && (this._scale[0] !== properties.scale[0] || this._scale[1] !== properties.scale[1])) {
-	        this._scale[0] = properties.scale[0];
-	        this._scale[1] = properties.scale[1];
-	        dirty = true;
-	    }
-	    if ('rotationCenter' in properties && (this._rotationCenter[0] !== properties.rotationCenter[0] || this._rotationCenter[1] !== properties.rotationCenter[1])) {
-	        this._rotationCenter[0] = properties.rotationCenter[0];
-	        this._rotationCenter[1] = properties.rotationCenter[1];
-	        dirty = true;
-	    }
-	    if ('visible' in properties) {
-	        this._visible = properties.visible;
-	        this.setConvexHullDirty();
-	    }
-	    if (dirty) {
-	        this.setTransformDirty();
-	    }
-	    var numEffects = ShaderManager.EFFECTS.length;
-	    for (var index = 0; index < numEffects; ++index) {
-	        var effectName = ShaderManager.EFFECTS[index];
-	        if (effectName in properties) {
-	            var rawValue = properties[effectName];
-	            var effectInfo = ShaderManager.EFFECT_INFO[effectName];
-	            if (rawValue) {
-	                this._effectBits |= effectInfo.mask;
-	            } else {
-	                this._effectBits &= ~effectInfo.mask;
-	            }
-	            var converter = effectInfo.converter;
-	            this._uniforms['u_' + effectName] = converter(rawValue);
-	            if (effectInfo.shapeChanges) {
-	                this.setConvexHullDirty();
-	            }
-	        }
-	    }
-	};
-
-	/**
-	 * Set the dimensions of this Drawable's skin.
-	 * @param {int} width The width of the new skin.
-	 * @param {int} height The height of the new skin.
-	 * @param {int} [costumeResolution] The resolution to use for this skin.
-	 * @private
-	 */
-	Drawable.prototype._setSkinSize = function (width, height, costumeResolution) {
-	    costumeResolution = costumeResolution || 1;
-	    width /= costumeResolution;
-	    height /= costumeResolution;
-	    if (this._uniforms.u_skinSize[0] !== width || this._uniforms.u_skinSize[1] !== height) {
-	        this._uniforms.u_skinSize[0] = width;
-	        this._uniforms.u_skinSize[1] = height;
-	        this.setTransformDirty();
-	    }
-	    this.setConvexHullDirty();
-	};
-
-	/**
-	 * Get the size of the Drawable's current skin.
-	 * @return {Array.<number>} Skin size, width and height.
-	 */
-	Drawable.prototype.getSkinSize = function () {
-	    return this._uniforms.u_skinSize.slice();
-	};
-
-	/**
-	 * Calculate the transform to use when rendering this Drawable.
-	 * @private
-	 */
-	Drawable.prototype._calculateTransform = function () {
-	    var modelMatrix = this._uniforms.u_modelMatrix;
-
-	    twgl.m4.identity(modelMatrix);
-	    twgl.m4.translate(modelMatrix, this._position, modelMatrix);
-
-	    var rotation = (270 - this._direction) * Math.PI / 180;
-	    twgl.m4.rotateZ(modelMatrix, rotation, modelMatrix);
-
-	    // Adjust rotation center relative to the skin.
-	    var rotationAdjusted = twgl.v3.subtract(this._rotationCenter, twgl.v3.divScalar(this._uniforms.u_skinSize, 2));
-	    rotationAdjusted[1] *= -1; // Y flipped to Scratch coordinate.
-	    rotationAdjusted[2] = 0; // Z coordinate is 0.
-
-	    twgl.m4.translate(modelMatrix, rotationAdjusted, modelMatrix);
-
-	    var scaledSize = twgl.v3.divScalar(twgl.v3.multiply(this._uniforms.u_skinSize, this._scale), 100);
-	    scaledSize[2] = 0; // was NaN because the vectors have only 2 components.
-	    twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
-
-	    this._transformDirty = false;
-	};
-
-	/**
-	 * Whether the Drawable needs convex hull points provided by the renderer.
-	 * @return {boolean} True when no convex hull known, or it's dirty.
-	 */
-	Drawable.prototype.needsConvexHullPoints = function () {
-	    return !this._convexHullPoints || this._convexHullDirty;
-	};
-
-	/**
-	 * Set the convex hull to be dirty.
-	 * Do this whenever the Drawable's shape has possibly changed.
-	 */
-	Drawable.prototype.setConvexHullDirty = function () {
-	    this._convexHullDirty = true;
-	};
-
-	/**
-	 * Set the convex hull points for the Drawable.
-	 * @param {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
-	 */
-	Drawable.prototype.setConvexHullPoints = function (points) {
-	    this._convexHullPoints = points;
-	    this._convexHullDirty = false;
-	};
-
-	/**
-	 * Get the precise bounds for a Drawable.
-	 * This function applies the transform matrix to the known convex hull,
-	 * and then finds the minimum box along the axes.
-	 * Before calling this, ensure the renderer has updated convex hull points.
-	 * @return {!Rectangle} Bounds for a tight box around the Drawable.
-	 */
-	Drawable.prototype.getBounds = function () {
-	    if (this.needsConvexHullPoints()) {
-	        throw new Error('Needs updated convex hull points before bounds calculation.');
-	    }
-	    if (this._transformDirty) {
-	        this._calculateTransform();
-	    }
-	    // First, transform all the convex hull points by the current Drawable's
-	    // transform. This allows us to skip recalculating the convex hull
-	    // for many Drawable updates, including translation, rotation, scaling.
-	    var projection = twgl.m4.ortho(-1, 1, -1, 1, -1, 1);
-	    var skinSize = this._uniforms.u_skinSize;
-	    var tm = twgl.m4.multiply(this._uniforms.u_modelMatrix, projection);
-	    var transformedHullPoints = [];
-	    for (var i = 0; i < this._convexHullPoints.length; i++) {
-	        var point = this._convexHullPoints[i];
-	        var glPoint = twgl.v3.create(0.5 + -point[0] / skinSize[0], 0.5 + -point[1] / skinSize[1], 0);
-	        twgl.m4.transformPoint(tm, glPoint, glPoint);
-	        transformedHullPoints.push(glPoint);
-	    }
-	    // Search through transformed points to generate box on axes.
-	    var bounds = new Rectangle();
-	    bounds.initFromPointsAABB(transformedHullPoints);
-	    return bounds;
-	};
-
-	/**
-	 * Get the rough axis-aligned bounding box for the Drawable.
-	 * Calculated by transforming the skin's bounds.
-	 * Note that this is less precise than the box returned by `getBounds`,
-	 * which is tightly snapped to account for a Drawable's transparent regions.
-	 * `getAABB` returns a much less accurate bounding box, but will be much
-	 * faster to calculate so may be desired for quick checks/optimizations.
-	 * @return {!Rectangle} Rough axis-aligned bounding box for Drawable.
-	 */
-	Drawable.prototype.getAABB = function () {
-	    if (this._transformDirty) {
-	        this._calculateTransform();
-	    }
-	    var tm = this._uniforms.u_modelMatrix;
-	    var bounds = new Rectangle();
-	    bounds.initFromPointsAABB([twgl.m4.transformPoint(tm, [-0.5, -0.5, 0]), twgl.m4.transformPoint(tm, [0.5, -0.5, 0]), twgl.m4.transformPoint(tm, [-0.5, 0.5, 0]), twgl.m4.transformPoint(tm, [0.5, 0.5, 0])]);
-	    return bounds;
-	};
-
-	/**
-	 * Return the best Drawable bounds possible without performing graphics queries.
-	 * I.e., returns the tight bounding box when the convex hull points are already
-	 * known, but otherwise return the rough AABB of the Drawable.
-	 * @return {!Rectangle} Bounds for the Drawable.
-	 */
-	Drawable.prototype.getFastBounds = function () {
-	    if (!this.needsConvexHullPoints()) {
-	        return this.getBounds();
-	    }
-	    return this.getAABB();
-	};
-
-	/**
-	 * Calculate a color to represent the given ID number. At least one component of
-	 * the resulting color will be non-zero if the ID is not Drawable.NONE.
-	 * @param {int} id The ID to convert.
-	 * @returns {number[]} An array of [r,g,b,a], each component in the range [0,1].
-	 */
-	Drawable.color4fFromID = function (id) {
-	    id -= Drawable.NONE;
-	    var r = (id >> 0 & 255) / 255.0;
-	    var g = (id >> 8 & 255) / 255.0;
-	    var b = (id >> 16 & 255) / 255.0;
-	    return [r, g, b, 1.0];
-	};
-
-	/**
-	 * Calculate the ID number represented by the given color. If all components of
-	 * the color are zero, the result will be Drawable.NONE; otherwise the result
-	 * will be a valid ID.
-	 * @param {int} r The red value of the color, in the range [0,255].
-	 * @param {int} g The green value of the color, in the range [0,255].
-	 * @param {int} b The blue value of the color, in the range [0,255].
-	 * @param {int} a The alpha value of the color, in the range [0,255].
-	 * @returns {int} The ID represented by that color.
-	 */
-	// eslint-disable-next-line no-unused-vars
-	Drawable.color4bToID = function (r, g, b, a) {
-	    var id = void 0;
-	    id = (r & 255) << 0;
-	    id |= (g & 255) << 8;
-	    id |= (b & 255) << 16;
-	    return id + Drawable.NONE;
-	};
+	module.exports = Drawable;
 
 /***/ },
 /* 311 */
@@ -21144,6 +21291,8 @@
 
 	'use strict';
 
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var twgl = __webpack_require__(309);
@@ -21151,25 +21300,79 @@
 	var vertexShaderText = __webpack_require__(327);
 	var fragmentShaderText = __webpack_require__(328);
 
-	var ShaderManager = function ShaderManager(gl) {
-	    _classCallCheck(this, ShaderManager);
+	var ShaderManager = function () {
+	    function ShaderManager(gl) {
+	        _classCallCheck(this, ShaderManager);
 
-	    this._gl = gl;
+	        this._gl = gl;
 
-	    /**
-	     * The cache of all shaders compiled so far, filled on demand.
-	     * @type {Object.<ShaderManager.DRAW_MODE, Array.<ProgramInfo>>}
-	     * @private
-	     */
-	    this._shaderCache = {};
-	    for (var modeName in ShaderManager.DRAW_MODE) {
-	        if (ShaderManager.DRAW_MODE.hasOwnProperty(modeName)) {
-	            this._shaderCache[modeName] = [];
+	        /**
+	         * The cache of all shaders compiled so far, filled on demand.
+	         * @type {Object.<ShaderManager.DRAW_MODE, Array.<ProgramInfo>>}
+	         * @private
+	         */
+	        this._shaderCache = {};
+	        for (var modeName in ShaderManager.DRAW_MODE) {
+	            if (ShaderManager.DRAW_MODE.hasOwnProperty(modeName)) {
+	                this._shaderCache[modeName] = [];
+	            }
 	        }
 	    }
-	};
 
-	module.exports = ShaderManager;
+	    /**
+	     * Fetch the shader for a particular set of active effects.
+	     * Build the shader if necessary.
+	     * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
+	     * @param {int} effectBits Bitmask representing the enabled effects.
+	     * @returns {ProgramInfo} The shader's program info.
+	     */
+
+
+	    _createClass(ShaderManager, [{
+	        key: 'getShader',
+	        value: function getShader(drawMode, effectBits) {
+	            var cache = this._shaderCache[drawMode];
+	            if (drawMode === ShaderManager.DRAW_MODE.silhouette) {
+	                // Silhouette mode isn't affected by these effects.
+	                effectBits &= ~(ShaderManager.EFFECT_INFO.color.mask | ShaderManager.EFFECT_INFO.brightness.mask);
+	            }
+	            var shader = cache[effectBits];
+	            if (!shader) {
+	                shader = cache[effectBits] = this._buildShader(drawMode, effectBits);
+	            }
+	            return shader;
+	        }
+
+	        /**
+	         * Build the shader for a particular set of active effects.
+	         * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
+	         * @param {int} effectBits Bitmask representing the enabled effects.
+	         * @returns {ProgramInfo} The new shader's program info.
+	         * @private
+	         */
+
+	    }, {
+	        key: '_buildShader',
+	        value: function _buildShader(drawMode, effectBits) {
+	            var numEffects = ShaderManager.EFFECTS.length;
+
+	            var defines = ['#define DRAW_MODE_' + drawMode];
+	            for (var index = 0; index < numEffects; ++index) {
+	                if ((effectBits & 1 << index) !== 0) {
+	                    defines.push('#define ENABLE_' + ShaderManager.EFFECTS[index]);
+	                }
+	            }
+
+	            var definesText = defines.join('\n') + '\n';
+	            var vsFullText = definesText + vertexShaderText;
+	            var fsFullText = definesText + fragmentShaderText;
+
+	            return twgl.createProgramInfo(this._gl, [vsFullText, fsFullText]);
+	        }
+	    }]);
+
+	    return ShaderManager;
+	}();
 
 	/**
 	 * Mapping of each effect name to info about that effect.
@@ -21181,6 +21384,8 @@
 	 * - `shapeChanges`, whether the effect could change the drawn shape.
 	 * @type {Object.<string,Object.<string,*>>}
 	 */
+
+
 	ShaderManager.EFFECT_INFO = {
 	    color: {
 	        mask: 1 << 0,
@@ -21263,49 +21468,7 @@
 	    colorMask: 'colorMask'
 	};
 
-	/**
-	 * Fetch the shader for a particular set of active effects.
-	 * Build the shader if necessary.
-	 * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
-	 * @param {int} effectBits Bitmask representing the enabled effects.
-	 * @returns {ProgramInfo} The shader's program info.
-	 */
-	ShaderManager.prototype.getShader = function (drawMode, effectBits) {
-	    var cache = this._shaderCache[drawMode];
-	    if (drawMode === ShaderManager.DRAW_MODE.silhouette) {
-	        // Silhouette mode isn't affected by these effects.
-	        effectBits &= ~(ShaderManager.EFFECT_INFO.color.mask | ShaderManager.EFFECT_INFO.brightness.mask);
-	    }
-	    var shader = cache[effectBits];
-	    if (!shader) {
-	        shader = cache[effectBits] = this._buildShader(drawMode, effectBits);
-	    }
-	    return shader;
-	};
-
-	/**
-	 * Build the shader for a particular set of active effects.
-	 * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
-	 * @param {int} effectBits Bitmask representing the enabled effects.
-	 * @returns {ProgramInfo} The new shader's program info.
-	 * @private
-	 */
-	ShaderManager.prototype._buildShader = function (drawMode, effectBits) {
-	    var numEffects = ShaderManager.EFFECTS.length;
-
-	    var defines = ['#define DRAW_MODE_' + drawMode];
-	    for (var index = 0; index < numEffects; ++index) {
-	        if ((effectBits & 1 << index) !== 0) {
-	            defines.push('#define ENABLE_' + ShaderManager.EFFECTS[index]);
-	        }
-	    }
-
-	    var definesText = defines.join('\n') + '\n';
-	    var vsFullText = definesText + vertexShaderText;
-	    var fsFullText = definesText + fragmentShaderText;
-
-	    return twgl.createProgramInfo(this._gl, [vsFullText, fsFullText]);
-	};
+	module.exports = ShaderManager;
 
 /***/ },
 /* 327 */
