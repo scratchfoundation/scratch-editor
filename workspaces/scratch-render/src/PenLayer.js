@@ -1,7 +1,7 @@
 const twgl = require('twgl.js');
 
-const vertexShaderText = require('./shaders/pen.vert');
-const fragmentShaderText = require('./shaders/pen.frag');
+const vertexShaderText = require('./shaders/sprite.vert');
+const fragmentShaderText = require('./shaders/sprite.frag');
 
 
 class PenLayer {
@@ -24,6 +24,15 @@ class PenLayer {
             type: gl.TRIANGLE_STRIP,
             programInfo: twgl.createProgramInfo(gl, [vertexShaderText, fragmentShaderText]),
             bufferInfo: twgl.createBufferInfoFromArrays(gl, {
+                a_position: {
+                    numComponents: 2,
+                    data: [
+                        -0.5, -0.5,
+                        0.5, -0.5,
+                        -0.5, 0.5,
+                        0.5, 0.5
+                    ]
+                },
                 a_texCoord: {
                     numComponents: 2,
                     data: [
@@ -36,7 +45,13 @@ class PenLayer {
             }),
             uniforms: {
                 /** @type {WebGLTexture} */
-                u_penLayer: null
+                u_skin: null,
+
+                /** @type {module:twgl/m4.Mat4} */
+                u_modelMatrix: null,
+
+                /** @type {module:twgl/m4.Mat4} */
+                u_projectionMatrix: null
             }
         }];
     }
@@ -50,6 +65,7 @@ class PenLayer {
         const gl = this._gl;
         this._canvas.width = width;
         this._canvas.height = height;
+        this._drawObjects[0].uniforms.u_modelMatrix = twgl.m4.scaling([-width, -height, 1]);
         this._texture = twgl.createTexture(
             gl,
             {
@@ -86,8 +102,9 @@ class PenLayer {
 
     /**
      * Draw the pen layer onto the current frame buffer.
+     * @param {module:twgl/m4.Mat4} projectionMatrix The projection matrix to use.
      */
-    draw () {
+    draw (projectionMatrix) {
         if (this._texture) {
             const gl = this._gl;
             if (this._textureDirty) {
@@ -95,18 +112,19 @@ class PenLayer {
                 gl.bindTexture(gl.TEXTURE_2D, this._texture);
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._canvas);
             }
+            this._drawObjects[0].uniforms.u_projectionMatrix = projectionMatrix;
             twgl.drawObjectList(gl, this._drawObjects);
         }
     }
 
     /** @returns {WebGLTexture} The current pen layer texture. */
     get _texture () {
-        return this._drawObjects[0].uniforms.u_penLayer;
+        return this._drawObjects[0].uniforms.u_skin;
     }
 
     /** @param {WebGLTexture} newTexture - The new pen layer texture. */
     set _texture (newTexture) {
-        this._drawObjects[0].uniforms.u_penLayer = newTexture;
+        this._drawObjects[0].uniforms.u_skin = newTexture;
     }
 }
 

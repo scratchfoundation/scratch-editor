@@ -186,7 +186,7 @@ class RenderWebGL {
         gl.clearColor.apply(gl, this._backgroundColor);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        this._penLayer.draw();
+        this._penLayer.draw(this._projection);
         this._drawThese(this._drawables, ShaderManager.DRAW_MODE.default, this._projection);
     }
 
