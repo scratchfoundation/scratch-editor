@@ -2,7 +2,7 @@ const hull = require('hull.js');
 const twgl = require('twgl.js');
 
 const Drawable = require('./Drawable');
-const PenLayer = require('./PenLayer');
+const PenDrawable = require('./PenDrawable');
 const ShaderManager = require('./ShaderManager');
 const SkinnedDrawable = require('./SkinnedDrawable');
 
@@ -49,10 +49,13 @@ class RenderWebGL {
         twgl.setDefaults({crossOrigin: true});
 
         const gl = this._gl = twgl.getWebGLContext(canvas, {alpha: false, stencil: true});
+
+        /** @type {number[]} */
         this._drawables = [];
+
+        /** @type {module:twgl/m4.Mat4} */
         this._projection = twgl.m4.identity();
 
-        this._penLayer = new PenLayer(gl);
         this._shaderManager = new ShaderManager(gl);
 
         this._createGeometry();
@@ -127,6 +130,18 @@ class RenderWebGL {
     }
 
     /**
+     * Create a new PenDrawable and add it to the scene.
+     * @returns {int} The ID of the new PenDrawable.
+     */
+    createPenDrawable () {
+        const drawable = new PenDrawable(this._gl);
+        drawable.resize(this._nativeSize[0], this._nativeSize[1]);
+        const drawableID = drawable.id;
+        this._drawables.push(drawableID);
+        return drawableID;
+    }
+
+    /**
      * Destroy a Drawable, removing it from the scene.
      * @param {int} drawableID The ID of the Drawable to remove.
      * @returns {boolean} True iff the drawable was found and removed.
@@ -186,7 +201,6 @@ class RenderWebGL {
         gl.clearColor.apply(gl, this._backgroundColor);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        this._penLayer.draw(this._projection);
         this._drawThese(this._drawables, ShaderManager.DRAW_MODE.default, this._projection);
     }
 
@@ -602,8 +616,6 @@ class RenderWebGL {
         // TODO: should we create this on demand to save memory?
         // A 480x360 32-bpp buffer is 675 KiB.
         this._queryBufferInfo = twgl.createFramebufferInfo(gl, attachments, this._nativeSize[0], this._nativeSize[1]);
-
-        this._penLayer.resize(this._nativeSize[0], this._nativeSize[1]);
     }
 
     /**
@@ -642,6 +654,7 @@ class RenderWebGL {
                 twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
             }
 
+            drawable.prepareToDraw();
             twgl.setUniforms(currentShader, drawable.getUniforms());
 
             // Apply extra uniforms after the Drawable's, to allow overwriting.

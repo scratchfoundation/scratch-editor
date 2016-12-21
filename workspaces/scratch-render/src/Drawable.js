@@ -121,6 +121,12 @@ class Drawable {
     }
 
     /**
+     * Prepare this object to draw: update uniforms, textures, etc.
+     */
+    prepareToDraw () {
+    }
+
+    /**
      * Update the position, direction, scale, or effect properties of this Drawable.
      * @param {object.<string,*>} properties The new property values to set.
      */
