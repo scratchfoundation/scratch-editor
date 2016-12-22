@@ -2,6 +2,7 @@ const hull = require('hull.js');
 const twgl = require('twgl.js');
 
 const Drawable = require('./Drawable');
+const RenderConstants = require('./RenderConstants');
 const ShaderManager = require('./ShaderManager');
 
 /**
@@ -341,7 +342,7 @@ class RenderWebGL {
         gl.viewport(0, 0, bounds.width, bounds.height);
         const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
 
-        const noneColor = Drawable.color4fFromID(Drawable.NONE);
+        const noneColor = Drawable.color4fFromID(RenderConstants.ID_NONE);
         gl.clearColor.apply(gl, noneColor);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
@@ -383,7 +384,7 @@ class RenderWebGL {
                 pixels[pixelBase],
                 pixels[pixelBase + 1],
                 pixels[pixelBase + 2]);
-            if (pixelID > Drawable.NONE) {
+            if (pixelID > RenderConstants.ID_NONE) {
                 return true;
             }
         }
@@ -399,7 +400,7 @@ class RenderWebGL {
      * @param {int} touchHeight The client height of the touch event (optional).
      * @param {int[]} candidateIDs The Drawable IDs to pick from, otherwise all.
      * @returns {int} The ID of the topmost Drawable under the picking location, or
-     * Drawable.NONE if there is no Drawable at that location.
+     * RenderConstants.ID_NONE if there is no Drawable at that location.
      */
     pick (centerX, centerY, touchWidth, touchHeight, candidateIDs) {
         const gl = this._gl;
@@ -427,7 +428,7 @@ class RenderWebGL {
         twgl.bindFramebufferInfo(gl, this._pickBufferInfo);
         gl.viewport(0, 0, touchWidth, touchHeight);
 
-        const noneColor = Drawable.color4fFromID(Drawable.NONE);
+        const noneColor = Drawable.color4fFromID(RenderConstants.ID_NONE);
         gl.clearColor.apply(gl, noneColor);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -467,9 +468,9 @@ class RenderWebGL {
         }
 
         // Bias toward selecting anything over nothing
-        hits[Drawable.NONE] = 0;
+        hits[RenderConstants.ID_NONE] = 0;
 
-        let hit = Drawable.NONE;
+        let hit = RenderConstants.ID_NONE;
         for (const hitID in hits) {
             if (hits.hasOwnProperty(hitID) && (hits[hitID] > hits[hit])) {
                 hit = hitID;
@@ -663,8 +664,8 @@ class RenderWebGL {
         twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
         gl.viewport(0, 0, width, height);
 
-        // Clear the canvas with Drawable.NONE.
-        const noneColor = Drawable.color4fFromID(Drawable.NONE);
+        // Clear the canvas with RenderConstants.ID_NONE.
+        const noneColor = Drawable.color4fFromID(RenderConstants.ID_NONE);
         gl.clearColor.apply(gl, noneColor);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -692,7 +693,7 @@ class RenderWebGL {
          * Helper method to look up a pixel.
          * @param {int} x X coordinate of the pixel in `pixels`.
          * @param {int} y Y coordinate of the pixel in `pixels`.
-         * @return {int} Known ID at that pixel, or Drawable.NONE.
+         * @return {int} Known ID at that pixel, or RenderConstants.ID_NONE.
          */
         const _getPixel = (x, y) => {
             const pixelBase = ((width * y) + x) * 4;
@@ -704,14 +705,14 @@ class RenderWebGL {
         for (let y = 0; y <= height; y++) {
             // Scan from left.
             for (let x = 0; x < width; x++) {
-                if (_getPixel(x, y) > Drawable.NONE) {
+                if (_getPixel(x, y) > RenderConstants.ID_NONE) {
                     boundaryPoints.push([x, y]);
                     break;
                 }
             }
             // Scan from right.
             for (let x = width - 1; x >= 0; x--) {
-                if (_getPixel(x, y) > Drawable.NONE) {
+                if (_getPixel(x, y) > RenderConstants.ID_NONE) {
                     boundaryPoints.push([x, y]);
                     break;
                 }

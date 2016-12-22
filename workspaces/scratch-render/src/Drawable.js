@@ -2,6 +2,7 @@ const twgl = require('twgl.js');
 const xhr = require('xhr');
 
 const Rectangle = require('./Rectangle');
+const RenderConstants = require('./RenderConstants');
 const SvgRenderer = require('./svg-quirks-mode/svg-renderer');
 const ShaderManager = require('./ShaderManager');
 
@@ -84,14 +85,6 @@ class Drawable {
 
         // Load a real skin
         this.setSkin(Drawable._DEFAULT_SKIN);
-    }
-
-    /**
-     * An invalid Drawable ID which can be used to signify absence, etc.
-     * @type {int}
-     */
-    static get NONE () {
-        return -1;
     }
 
     /**
@@ -496,12 +489,12 @@ class Drawable {
 
     /**
      * Calculate a color to represent the given ID number. At least one component of
-     * the resulting color will be non-zero if the ID is not Drawable.NONE.
+     * the resulting color will be non-zero if the ID is not RenderConstants.ID_NONE.
      * @param {int} id The ID to convert.
      * @returns {number[]} An array of [r,g,b,a], each component in the range [0,1].
      */
     static color4fFromID (id) {
-        id -= Drawable.NONE;
+        id -= RenderConstants.ID_NONE;
         const r = ((id >> 0) & 255) / 255.0;
         const g = ((id >> 8) & 255) / 255.0;
         const b = ((id >> 16) & 255) / 255.0;
@@ -510,7 +503,7 @@ class Drawable {
 
     /**
      * Calculate the ID number represented by the given color. If all components of
-     * the color are zero, the result will be Drawable.NONE; otherwise the result
+     * the color are zero, the result will be RenderConstants.ID_NONE; otherwise the result
      * will be a valid ID.
      * @param {int} r The red value of the color, in the range [0,255].
      * @param {int} g The green value of the color, in the range [0,255].
@@ -522,7 +515,7 @@ class Drawable {
         id = (r & 255) << 0;
         id |= (g & 255) << 8;
         id |= (b & 255) << 16;
-        return id + Drawable.NONE;
+        return id + RenderConstants.ID_NONE;
     }
 }
 
