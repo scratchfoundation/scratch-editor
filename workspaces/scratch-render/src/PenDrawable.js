@@ -1,29 +1,57 @@
 const twgl = require('twgl.js');
 
 const Drawable = require('./Drawable');
+const RenderEvent = require('./RenderEvent');
 
 
 class PenDrawable extends Drawable {
     /**
      * Create a Pen Layer.
+     * @param {RenderWebGL} renderer - The renderer which will draw this object.
      * @param {WebGLRenderingContext} gl - The WebGL rendering context to use.
      */
-    constructor (gl) {
+    constructor (renderer, gl) {
         super(gl);
+
+        /** @type {RenderWebGL} */
+        this._renderer = renderer;
 
         /** @type {HTMLCanvasElement} */
         this._canvas = document.createElement('canvas');
 
         /** @type {boolean} */
         this._canvasDirty = false;
+
+        this.onNativeSizeChanged = this.onNativeSizeChanged.bind(this);
+        this._renderer.on(RenderEvent.NativeSizeChanged, this.onNativeSizeChanged);
+
+        this._setCanvasSize(renderer.getNativeSize());
     }
 
     /**
-     * Resize the pen layer's working area.
-     * @param {int} width - The new width of the working area.
-     * @param {int} height - The new height of the working area.
+     * Dispose of this object. Do not use it after calling this method.
      */
-    resize (width, height) {
+    dispose () {
+        this._renderer.removeListener(RenderEvent.NativeSizeChanged, this.onNativeSizeChanged);
+        super.dispose();
+    }
+
+    /**
+     * React to a change in the renderer's native size.
+     * @param {object} event - The change event.
+     */
+    onNativeSizeChanged (event) {
+        this._setCanvasSize(event.newSize);
+    }
+
+    /**
+     * Set the size of the pen canvas.
+     * @param {[int,int]} canvasSize - the new width and height for the canvas.
+     * @private
+     */
+    _setCanvasSize (canvasSize) {
+        const [width, height] = canvasSize;
+
         const gl = this._gl;
         this._canvas.width = width;
         this._canvas.height = height;

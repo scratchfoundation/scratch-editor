@@ -1,8 +1,11 @@
+const EventEmitter = require('events');
+
 const hull = require('hull.js');
 const twgl = require('twgl.js');
 
 const Drawable = require('./Drawable');
 const PenDrawable = require('./PenDrawable');
+const RenderEvent = require('./RenderEvent');
 const ShaderManager = require('./ShaderManager');
 const SkinnedDrawable = require('./SkinnedDrawable');
 
@@ -28,7 +31,7 @@ const MAX_TOUCH_SIZE = [3, 3];
 const TOLERANCE_TOUCHING_COLOR = 2;
 
 
-class RenderWebGL {
+class RenderWebGL extends EventEmitter {
     /**
      * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
      * Coordinates will default to Scratch 2.0 values if unspecified.
@@ -45,6 +48,8 @@ class RenderWebGL {
      * @constructor
      */
     constructor (canvas, xLeft, xRight, yBottom, yTop) {
+        super();
+
         // TODO: remove?
         twgl.setDefaults({crossOrigin: true});
 
@@ -60,10 +65,11 @@ class RenderWebGL {
 
         this._createGeometry();
 
+        this.on(RenderEvent.NativeSizeChanged, this.onNativeSizeChanged);
+
         this.setBackgroundColor(1, 1, 1);
         this.setStageSize(xLeft || -240, xRight || 240, yBottom || -180, yTop || 180);
         this.resize(this._nativeSize[0], this._nativeSize[1]);
-        this._createFixedBuffers();
 
         gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.BLEND); // TODO: disable when no partial transparency?
@@ -114,8 +120,27 @@ class RenderWebGL {
         this._xRight = xRight;
         this._yBottom = yBottom;
         this._yTop = yTop;
-        this._nativeSize = [Math.abs(xRight - xLeft), Math.abs(yBottom - yTop)];
         this._projection = twgl.m4.ortho(xLeft, xRight, yBottom, yTop, -1, 1);
+
+        this._setNativeSize(Math.abs(xRight - xLeft), Math.abs(yBottom - yTop));
+    }
+
+    /**
+     * @return {[int,int]} the "native" size of the stage, which is used for pen, query renders, etc.
+     */
+    getNativeSize () {
+        return [this._nativeSize[0], this._nativeSize[1]];
+    }
+
+    /**
+     * Set the "native" size of the stage, which is used for pen, query renders, etc.
+     * @param {int} width - the new width to set.
+     * @param {int} height - the new height to set.
+     * @private
+     */
+    _setNativeSize (width, height) {
+        this._nativeSize = [width, height];
+        this.emit(RenderEvent.NativeSizeChanged, {newSize: this._nativeSize});
     }
 
     /**
@@ -134,8 +159,7 @@ class RenderWebGL {
      * @returns {int} The ID of the new PenDrawable.
      */
     createPenDrawable () {
-        const drawable = new PenDrawable(this._gl);
-        drawable.resize(this._nativeSize[0], this._nativeSize[1]);
+        const drawable = new PenDrawable(this, this._gl);
         const drawableID = drawable.id;
         this._drawables.push(drawableID);
         return drawableID;
@@ -599,23 +623,32 @@ class RenderWebGL {
     }
 
     /**
-     * Create those frame buffers which are fixed in size regardless of the size of the main render target. This
-     * includes the buffers used for queries such as picking and color-touching. The fixed size allows (more)
-     * consistent behavior across devices and presentation modes.
+     * Respond to a change in the "native" rendering size. The native size is used by buffers which are fixed in size
+     * regardless of the size of the main render target. This includes the buffers used for queries such as picking and
+     * color-touching. The fixed size allows (more) consistent behavior across devices and presentation modes.
+     * @param {object} event - The change event.
      * @private
      */
-    _createFixedBuffers () {
+    onNativeSizeChanged (event) {
+        const [width, height] = event.newSize;
+
         const gl = this._gl;
         const attachments = [
             {format: gl.RGBA},
             {format: gl.DEPTH_STENCIL}
         ];
 
-        this._pickBufferInfo = twgl.createFramebufferInfo(gl, attachments, MAX_TOUCH_SIZE[0], MAX_TOUCH_SIZE[1]);
+        if (!this._pickBufferInfo) {
+            this._pickBufferInfo = twgl.createFramebufferInfo(gl, attachments, MAX_TOUCH_SIZE[0], MAX_TOUCH_SIZE[1]);
+        }
 
         // TODO: should we create this on demand to save memory?
         // A 480x360 32-bpp buffer is 675 KiB.
-        this._queryBufferInfo = twgl.createFramebufferInfo(gl, attachments, this._nativeSize[0], this._nativeSize[1]);
+        if (this._queryBufferInfo) {
+            twgl.resizeFramebufferInfo(gl, this._queryBufferInfo, attachments, width, height);
+        } else {
+            this._queryBufferInfo = twgl.createFramebufferInfo(gl, attachments, width, height);
+        }
     }
 
     /**

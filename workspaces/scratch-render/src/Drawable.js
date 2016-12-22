@@ -71,7 +71,7 @@ class Drawable {
     }
 
     /**
-     * Dispose of this Drawable. Do not use it after calling this method.
+     * Dispose of this object. Do not use it after calling this method.
      */
     dispose () {
         if (this._id >= 0) {
