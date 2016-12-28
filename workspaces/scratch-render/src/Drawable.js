@@ -15,15 +15,12 @@ class Drawable {
     /**
      * An object which can be drawn by the renderer.
      * TODO: double-buffer all rendering state (position, skin, effects, etc.)
-     * @param {WebGLRenderingContext} gl The OpenGL context.
+     * @param {!int} id - This Drawable's unique ID.
      * @constructor
      */
-    constructor (gl) {
-        this._id = Drawable._nextDrawable++;
-        Drawable._allDrawables[this._id] = this;
-
-        /** @type {WebGLRenderingContext} */
-        this._gl = gl;
+    constructor (id) {
+        /** @type {!int} */
+        this._id = id;
 
         /**
          * The uniforms to be used by the vertex and pixel shaders.
@@ -60,17 +57,9 @@ class Drawable {
         this._visible = true;
         this._effectBits = 0;
 
+        // TODO: move convex hull functionality, maybe bounds functionality overall, to Skin classes
         this._convexHullPoints = null;
         this._convexHullDirty = true;
-    }
-
-    /**
-     * Fetch a Drawable by its ID number.
-     * @param {int} drawableID The ID of the Drawable to fetch.
-     * @returns {?Drawable} The specified Drawable if found, otherwise null.
-     */
-    static getDrawableByID (drawableID) {
-        return Drawable._allDrawables[drawableID];
     }
 
     /**
@@ -91,10 +80,9 @@ class Drawable {
     }
 
     /**
-     * Retrieve the ID for this Drawable.
      * @returns {number} The ID for this Drawable.
      */
-    getID () {
+    get id () {
         return this._id;
     }
 
@@ -212,10 +200,7 @@ class Drawable {
         twgl.m4.rotateZ(modelMatrix, rotation, modelMatrix);
 
         // Adjust rotation center relative to the skin.
-        const rotationAdjusted = twgl.v3.subtract(
-            this.skin.rotationCenter,
-            twgl.v3.divScalar(this.skin.size, 2)
-        );
+        const rotationAdjusted = twgl.v3.subtract(this.skin.rotationCenter, twgl.v3.divScalar(this.skin.size, 2));
         rotationAdjusted[1] *= -1; // Y flipped to Scratch coordinate.
         rotationAdjusted[2] = 0; // Z coordinate is 0.
 
@@ -358,19 +343,5 @@ class Drawable {
         return id + RenderConstants.ID_NONE;
     }
 }
-
-/**
- * The ID to be assigned next time the Drawable constructor is called.
- * @type {number}
- * @private
- */
-Drawable._nextDrawable = 0;
-
-/**
- * All current Drawables, by ID.
- * @type {Object.<int, Drawable>}
- * @private
- */
-Drawable._allDrawables = {};
 
 module.exports = Drawable;

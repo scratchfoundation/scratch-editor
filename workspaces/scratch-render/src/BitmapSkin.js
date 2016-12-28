@@ -11,6 +11,9 @@ class BitmapSkin extends Skin {
     constructor (id, renderer) {
         super(id);
 
+        /** @type {!int} */
+        this._costumeResolution = 1;
+
         /** @type {!RenderWebGL} */
         this._renderer = renderer;
 
@@ -21,6 +24,9 @@ class BitmapSkin extends Skin {
         this._textureSize = [0, 0];
     }
 
+    /**
+     * Dispose of this object. Do not use it after calling this method.
+     */
     dispose () {
         if (this._texture) {
             this._renderer.gl.deleteTexture(this._texture);
@@ -38,7 +44,7 @@ class BitmapSkin extends Skin {
 
     /**
      * @param {[number,number]} scale - The scaling factors to be used.
-     * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given size.
+     * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
      */
     // eslint-disable-next-line no-unused-vars
     getTexture (scale) {
@@ -52,9 +58,6 @@ class BitmapSkin extends Skin {
      */
     setBitmap (bitmapData, costumeResolution) {
         const gl = this._renderer.gl;
-
-        /** @type {!int} */
-        this._costumeResolution = costumeResolution || 1;
 
         if (this._texture) {
             gl.bindTexture(gl.TEXTURE_2D, this._texture);
@@ -71,7 +74,8 @@ class BitmapSkin extends Skin {
             this._texture = twgl.createTexture(gl, textureOptions);
         }
 
-        // Do this last in case any of the above throws an exception
+        // Do these last in case any of the above throws an exception
+        this._costumeResolution = costumeResolution || 1;
         this._textureSize = BitmapSkin._getBitmapSize(bitmapData);
     }
 

@@ -64,12 +64,19 @@ class Skin {
         return [0, 0];
     }
 
+    /**
+     * Set the origin, in object space, about which this Skin should rotate.
+     * @param {number} x - The x coordinate of the new rotation center.
+     * @param {number} y - The y coordinate of the new rotation center.
+     * @returns {boolean} true iff the new rotation center differs from the old one.
+     */
     setRotationCenter (x, y) {
         if (x !== this._rotationCenter[0] || y !== this._rotationCenter[1]) {
             this._rotationCenter[0] = x;
             this._rotationCenter[1] = y;
             return true;
         }
+        return false;
     }
 
     /**
@@ -84,12 +91,11 @@ class Skin {
 
     /**
      * Update and returns the uniforms for this skin.
-     * @param {int} pixelsWide - The width that the skin will be rendered at, in GPU pixels.
-     * @param {int} pixelsTall - The height that the skin will be rendered at, in GPU pixels.
+     * @param {[number,number]} scale - The scaling factors to be used.
      * @returns {object.<string, *>} the shader uniforms to be used when rendering with this Skin.
      */
-    getUniforms (pixelsWide, pixelsTall) {
-        this._uniforms.u_skin = this.getTexture(pixelsWide, pixelsTall);
+    getUniforms (scale) {
+        this._uniforms.u_skin = this.getTexture(scale);
         this._uniforms.u_skinSize = this.size;
         return this._uniforms;
     }

@@ -41,26 +41,29 @@ class RenderWebGL {
      * @constructor
      */
     constructor (canvas, xLeft, xRight, yBottom, yTop) {
-        // TODO: remove?
-        twgl.setDefaults({crossOrigin: true});
+        /** @type {Drawable[]} */
+        this._allDrawables = [];
 
-        /** @type {int} */
-        this._nextSkinId = RenderConstants.ID_NONE + 1;
+        /** @type {Skin[]} */
+        this._allSkins = [];
+
+        /** @type {int[]} */
+        this._drawList = [];
 
         /** @type {WebGLRenderingContext} */
         this._gl = twgl.getWebGLContext(canvas, {alpha: false, stencil: true});
 
-        /** @type {Skin[]} */
-        this._skins = [];
+        /** @type {int} */
+        this._nextDrawableId = RenderConstants.ID_NONE + 1;
 
-        /** @type {Object.<string,int>} */
-        this._skinUrlMap = {};
-
-        /** @type {int[]} */
-        this._drawables = [];
+        /** @type {int} */
+        this._nextSkinId = RenderConstants.ID_NONE + 1;
 
         /** @type {module:twgl/m4.Mat4} */
         this._projection = twgl.m4.identity();
+
+        /** @type {Object.<string,int>} */
+        this._skinUrlMap = {};
 
         this._createGeometry();
 
@@ -178,7 +181,7 @@ class RenderWebGL {
             img.src = skinUrl;
         }
 
-        this._skins[skinId] = newSkin;
+        this._allSkins[skinId] = newSkin;
         return skinId;
     }
 
@@ -192,7 +195,7 @@ class RenderWebGL {
         const skinId = this._nextSkinId++;
         const newSkin = new BitmapSkin(skinId, this);
         newSkin.setBitmap(bitmapData, costumeResolution);
-        this._skins[skinId] = newSkin;
+        this._allSkins[skinId] = newSkin;
         return skinId;
     }
 
@@ -205,7 +208,7 @@ class RenderWebGL {
         const skinId = this._nextSkinId++;
         const newSkin = new SVGSkin(skinId, this);
         newSkin.setSVG(svgData);
-        this._skins[skinId] = newSkin;
+        this._allSkins[skinId] = newSkin;
         return skinId;
     }
 
@@ -214,9 +217,9 @@ class RenderWebGL {
      * @param {!int} skinId - The ID of the skin to destroy.
      */
     destroySkin (skinId) {
-        const oldSkin = this._skins[skinId];
+        const oldSkin = this._allSkins[skinId];
         oldSkin.dispose();
-        delete this._skins[skinId];
+        delete this._allSkins[skinId];
     }
 
     /**
@@ -224,12 +227,13 @@ class RenderWebGL {
      * @returns {int} The ID of the new Drawable.
      */
     createDrawable () {
-        const drawable = new Drawable(this._gl);
-        const drawableID = drawable.getID();
-        this._drawables.push(drawableID);
+        const drawableID = this._nextDrawableId++;
+        const drawable = new Drawable(drawableID, this);
+        this._allDrawables[drawableID] = drawable;
+        this._drawList.push(drawableID);
 
         const defaultSkinId = this.createSkinFromURL(RenderConstants.DEFAULT_SKIN);
-        drawable.skin = this._skins[defaultSkinId];
+        drawable.skin = this._allSkins[defaultSkinId];
 
         return drawableID;
     }
@@ -237,16 +241,16 @@ class RenderWebGL {
     /**
      * Destroy a Drawable, removing it from the scene.
      * @param {int} drawableID The ID of the Drawable to remove.
-     * @returns {boolean} True iff the drawable was found and removed.
      */
     destroyDrawable (drawableID) {
-        const index = this._drawables.indexOf(drawableID);
-        if (index >= 0) {
-            Drawable.getDrawableByID(drawableID).dispose();
-            this._drawables.splice(index, 1);
-            return true;
+        const drawable = this._allDrawables[drawableID];
+        drawable.dispose();
+        delete this._allDrawables[drawableID];
+
+        let index;
+        while ((index = this._drawList.indexOf(drawableID)) >= 0) {
+            this._drawList.splice(index, 1);
         }
-        return false;
     }
 
     /**
@@ -263,10 +267,10 @@ class RenderWebGL {
      * @return {?number} New order if changed, or null.
      */
     setDrawableOrder (drawableID, order, optIsRelative, optMin) {
-        const oldIndex = this._drawables.indexOf(drawableID);
+        const oldIndex = this._drawList.indexOf(drawableID);
         if (oldIndex >= 0) {
             // Remove drawable from the list.
-            const drawable = this._drawables.splice(oldIndex, 1)[0];
+            const drawable = this._drawList.splice(oldIndex, 1)[0];
             // Determine new index.
             let newIndex = order;
             if (optIsRelative) {
@@ -277,8 +281,8 @@ class RenderWebGL {
             }
             newIndex = Math.max(newIndex, 0);
             // Insert at new index.
-            this._drawables.splice(newIndex, 0, drawable);
-            return this._drawables.indexOf(drawable);
+            this._drawList.splice(newIndex, 0, drawable);
+            return this._drawList.indexOf(drawable);
         }
         return null;
     }
@@ -294,7 +298,7 @@ class RenderWebGL {
         gl.clearColor.apply(gl, this._backgroundColor);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        this._drawThese(this._drawables, ShaderManager.DRAW_MODE.default, this._projection);
+        this._drawThese(this._drawList, ShaderManager.DRAW_MODE.default, this._projection);
     }
 
     /**
@@ -303,7 +307,7 @@ class RenderWebGL {
      * @return {object} Bounds for a tight box around the Drawable.
      */
     getBounds (drawableID) {
-        const drawable = Drawable.getDrawableByID(drawableID);
+        const drawable = this._allDrawables[drawableID];
         // Tell the Drawable about its updated convex hull, if necessary.
         if (drawable.needsConvexHullPoints()) {
             const points = this._getConvexHullPointsForDrawable(drawableID);
@@ -335,7 +339,7 @@ class RenderWebGL {
      * @return {Array.<number>} Skin size, width and height.
      */
     getSkinSize (drawableID) {
-        const drawable = Drawable.getDrawableByID(drawableID);
+        const drawable = this._allDrawables[drawableID];
         return drawable.skin.size;
     }
 
@@ -354,7 +358,7 @@ class RenderWebGL {
         if (!bounds) {
             return;
         }
-        const candidateIDs = this._filterCandidatesTouching(drawableID, this._drawables, bounds);
+        const candidateIDs = this._filterCandidatesTouching(drawableID, this._drawList, bounds);
         if (!candidateIDs) {
             return;
         }
@@ -438,7 +442,7 @@ class RenderWebGL {
      * @returns {boolean} True iff the Drawable is touching one of candidateIDs.
      */
     isTouchingDrawables (drawableID, candidateIDs) {
-        candidateIDs = candidateIDs || this._drawables;
+        candidateIDs = candidateIDs || this._drawList;
 
         const gl = this._gl;
 
@@ -523,7 +527,7 @@ class RenderWebGL {
 
         touchWidth = touchWidth || 1;
         touchHeight = touchHeight || 1;
-        candidateIDs = candidateIDs || this._drawables;
+        candidateIDs = candidateIDs || this._drawList;
 
         const clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
         const clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
@@ -602,7 +606,7 @@ class RenderWebGL {
      * @return {?Rectangle} Rectangle bounds for touching query, or null.
      */
     _touchingBounds (drawableID) {
-        const drawable = Drawable.getDrawableByID(drawableID);
+        const drawable = this._allDrawables[drawableID];
 
         // TODO: remove this once URL-based skin setting is removed.
         if (!drawable.skin || !drawable.skin.getTexture([100, 100])) return null;
@@ -638,7 +642,7 @@ class RenderWebGL {
         candidateIDs = candidateIDs.filter(testID => {
             if (testID === drawableID) return false;
             // Only draw items which could possibly overlap target Drawable.
-            const candidate = Drawable.getDrawableByID(testID);
+            const candidate = this._allDrawables[testID];
             const candidateBounds = candidate.getFastBounds();
             return bounds.intersects(candidateBounds);
         });
@@ -655,17 +659,17 @@ class RenderWebGL {
      * @param {object.<string,*>} properties The new property values to set.
      */
     updateDrawableProperties (drawableID, properties) {
-        const drawable = Drawable.getDrawableByID(drawableID);
+        const drawable = this._allDrawables[drawableID];
         // TODO: remove this after fully deprecating URL-based skin paths
         if ('skin' in properties) {
             const {skin, costumeResolution} = properties;
             const skinId = this._skinUrlMap.hasOwnProperty(skin) ?
                 this._skinUrlMap[skin] :
                 this.createSkinFromURL(skin, costumeResolution);
-            drawable.skin = this._skins[skinId];
+            drawable.skin = this._allSkins[skinId];
         }
         if ('skinId' in properties) {
-            drawable.skin = this._skins[properties.skinId];
+            drawable.skin = this._allSkins[properties.skinId];
         }
         if ('rotationCenter' in properties) {
             const centerChanged = drawable.skin.setRotationCenter(properties.rotationCenter);
@@ -735,7 +739,7 @@ class RenderWebGL {
 
     /**
      * Draw all Drawables, with the possible exception of
-     * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawables.
+     * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawList.
      * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
      * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
      * @param {Drawable~idFilterFunc} [filter] An optional filter function.
@@ -745,7 +749,6 @@ class RenderWebGL {
     _drawThese (drawables, drawMode, projection, filter, extraUniforms) {
         const gl = this._gl;
         let currentShader = null;
-        let currentSkin = null;
 
         const numDrawables = drawables.length;
         for (let drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
@@ -754,17 +757,16 @@ class RenderWebGL {
             // If we have a filter, check whether the ID fails
             if (filter && !filter(drawableID)) continue;
 
-            const drawable = Drawable.getDrawableByID(drawableID);
+            const drawable = this._allDrawables[drawableID];
             // TODO: check if drawable is inside the viewport before anything else
 
             // Hidden drawables (e.g., by a "hide" block) are never drawn.
             if (!drawable.getVisible()) continue;
 
             const drawableScale = drawable.scale;
-            const newSkin = drawable.skin;
 
             // If the texture isn't ready yet, skip it.
-            if (!newSkin.getTexture(drawableScale)) continue;
+            if (!drawable.skin.getTexture(drawableScale)) continue;
 
             const effectBits = drawable.getEnabledEffects();
             const newShader = this._shaderManager.getShader(drawMode, effectBits);
@@ -776,11 +778,7 @@ class RenderWebGL {
                 twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
             }
 
-            if (currentSkin !== newSkin) {
-                currentSkin = newSkin;
-                twgl.setUniforms(currentShader, currentSkin.getUniforms(drawableScale));
-            }
-
+            twgl.setUniforms(currentShader, drawable.skin.getUniforms(drawableScale));
             twgl.setUniforms(currentShader, drawable.getUniforms());
 
             // Apply extra uniforms after the Drawable's, to allow overwriting.
@@ -801,7 +799,7 @@ class RenderWebGL {
      * @return {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
      */
     _getConvexHullPointsForDrawable (drawableID) {
-        const drawable = Drawable.getDrawableByID(drawableID);
+        const drawable = this._allDrawables[drawableID];
         const [width, height] = drawable._uniforms.u_skinSize;
         // No points in the hull if invisible or size is 0.
         if (!drawable.getVisible() || width === 0 || height === 0) {

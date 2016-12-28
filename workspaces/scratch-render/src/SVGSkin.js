@@ -4,6 +4,11 @@ const Skin = require('./Skin');
 const SvgRenderer = require('./svg-quirks-mode/svg-renderer');
 
 class SVGSkin extends Skin {
+    /**
+     * Create a new SVG skin.
+     * @param {!int} id - The ID for this Skin.
+     * @param {!RenderWebGL} renderer - The renderer which will use this skin.
+     */
     constructor (id, renderer) {
         super(id);
 
@@ -17,6 +22,9 @@ class SVGSkin extends Skin {
         this._texture = null;
     }
 
+    /**
+     * Dispose of this object. Do not use it after calling this method.
+     */
     dispose () {
         if (this._texture) {
             this._renderer.gl.deleteTexture(this._texture);
@@ -34,7 +42,7 @@ class SVGSkin extends Skin {
 
     /**
      * @param {[number,number]} scale - The scaling factors to be used.
-     * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given size.
+     * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
      */
     // eslint-disable-next-line no-unused-vars
     getTexture (scale) {
