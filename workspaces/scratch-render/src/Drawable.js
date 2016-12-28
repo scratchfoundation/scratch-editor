@@ -1,9 +1,7 @@
 const twgl = require('twgl.js');
-const xhr = require('xhr');
 
 const Rectangle = require('./Rectangle');
 const RenderConstants = require('./RenderConstants');
-const SvgRenderer = require('./svg-quirks-mode/svg-renderer');
 const ShaderManager = require('./ShaderManager');
 
 /**
@@ -41,19 +39,6 @@ class Drawable {
             u_modelMatrix: twgl.m4.identity(),
 
             /**
-             * The nominal (not necessarily current) size of the current skin.
-             * This is scaled by _costumeResolution.
-             * @type {number[]}
-             */
-            u_skinSize: [0, 0],
-
-            /**
-             * The actual WebGL texture object for the skin.
-             * @type {WebGLTexture}
-             */
-            u_skin: null,
-
-            /**
              * The color to use in the silhouette draw mode.
              * @type {number[]}
              */
@@ -70,7 +55,6 @@ class Drawable {
 
         this._position = twgl.v3.create(0, 0);
         this._scale = twgl.v3.create(100, 100);
-        this._rotationCenter = twgl.v3.create(0, 0);
         this._direction = 90;
         this._transformDirty = true;
         this._visible = true;
@@ -78,13 +62,6 @@ class Drawable {
 
         this._convexHullPoints = null;
         this._convexHullDirty = true;
-
-        // Create a transparent 1x1 texture for temporary use
-        const tempTexture = twgl.createTexture(gl, {src: [0, 0, 0, 0]});
-        this._useSkin(tempTexture, 0, 0, 1, true);
-
-        // Load a real skin
-        this.setSkin(Drawable._DEFAULT_SKIN);
     }
 
     /**
@@ -100,7 +77,6 @@ class Drawable {
      * Dispose of this Drawable. Do not use it after calling this method.
      */
     dispose () {
-        this.setSkin(null);
         if (this._id >= 0) {
             delete Drawable[this._id];
         }
@@ -123,52 +99,28 @@ class Drawable {
     }
 
     /**
-     * Set this Drawable's skin.
-     * The Drawable will continue using the existing skin until the new one loads.
-     * If there is no existing skin, the Drawable will use a 1x1 transparent image.
-     * @param {string} skinUrl The URL of the skin.
-     * @param {number=} optCostumeResolution Optionally, a resolution for the skin.
+     * @returns {Skin} the current skin for this Drawable.
      */
-    setSkin (skinUrl, optCostumeResolution) {
-        // TODO: cache Skins instead of loading each time. Ref count them?
-        // TODO: share Skins across Drawables - see also destroy()
-        if (skinUrl) {
-            const ext = skinUrl.substring(skinUrl.lastIndexOf('.') + 1);
-            switch (ext) {
-            case 'svg':
-            case 'svg/get/':
-            case 'svgz':
-            case 'svgz/get/':
-                this._setSkinSVG(skinUrl);
-                break;
-            default:
-                this._setSkinBitmap(skinUrl, optCostumeResolution);
-                break;
-            }
-        } else {
-            this._useSkin(null, 0, 0, 1, true);
+    get skin () {
+        return this._skin;
+    }
+
+    /**
+     * @param {Skin} newSkin - A new Skin for this Drawable.
+     */
+    set skin (newSkin) {
+        if (this._skin !== newSkin) {
+            this._skin = newSkin;
+            this.setConvexHullDirty();
+            this.setTransformDirty();
         }
     }
 
     /**
-     * Use a skin if it is the currently-pending skin, or if skipPendingCheck==true.
-     * If the passed skin is used (for either reason) _pendingSkin will be cleared.
-     * @param {WebGLTexture} skin The skin to use.
-     * @param {int} width The width of the skin.
-     * @param {int} height The height of the skin.
-     * @param {int} costumeResolution The resolution to use for this skin.
-     * @param {boolean} [skipPendingCheck] If true, don't compare to _pendingSkin.
-     * @private
+     * @returns {[number,number]} the current scaling percentages applied to this Drawable. [100,100] is normal size.
      */
-    _useSkin (skin, width, height, costumeResolution, skipPendingCheck) {
-        if (skipPendingCheck || (skin === this._pendingSkin)) {
-            this._pendingSkin = null;
-            if (this._uniforms.u_skin && (this._uniforms.u_skin !== skin)) {
-                this._gl.deleteTexture(this._uniforms.u_skin);
-            }
-            this._setSkinSize(width, height, costumeResolution);
-            this._uniforms.u_skin = skin;
-        }
+    get scale () {
+        return [this._scale[0], this._scale[1]];
     }
 
     /**
@@ -176,79 +128,6 @@ class Drawable {
      */
     getEnabledEffects () {
         return this._effectBits;
-    }
-
-    /**
-     * Load a bitmap skin. Supports the same formats as the Image element.
-     * @param {string} skinMd5ext The MD5 and file extension of the bitmap skin.
-     * @param {number=} optCostumeResolution Optionally, a resolution for the skin.
-     * @private
-     */
-    _setSkinBitmap (skinMd5ext, optCostumeResolution) {
-        const url = skinMd5ext;
-        this._setSkinCore(url, optCostumeResolution);
-    }
-
-    /**
-     * Load an SVG-based skin. This still needs quite a bit of work to match the
-     * level of quality found in Scratch 2.0:
-     * - We should detect when a skin is being scaled up and render the SVG at a
-     *   higher resolution in those cases.
-     * - Colors seem a little off. This may be browser-specific.
-     * - This method works in Chrome, Firefox, Safari, and Edge but causes a
-     *   security error in IE.
-     * @param {string} skinMd5ext The MD5 and file extension of the SVG skin.
-     * @private
-     */
-    _setSkinSVG (skinMd5ext) {
-        const url = skinMd5ext;
-
-        const svgCanvas = document.createElement('canvas');
-        const svgRenderer = new SvgRenderer(svgCanvas);
-
-        const gotSVG = (err, response, body) => {
-            if (!err) {
-                svgRenderer.fromString(body, () => {
-                    this._setSkinCore(svgCanvas, svgRenderer.getDrawRatio());
-                });
-            }
-        };
-        xhr.get({
-            useXDR: true,
-            url: url
-        }, gotSVG);
-        // TODO: if there's no current u_skin, install *something* before returning
-    }
-
-    /**
-     * Common code for setting all skin types.
-     * @param {string|Image} source The source of image data for the skin.
-     * @param {int} costumeResolution The resolution to use for this skin.
-     * @private
-     */
-    _setSkinCore (source, costumeResolution) {
-        const callback = (err, texture, sourceInCallback) => {
-            if (!err && (this._pendingSkin === texture)) {
-                this._useSkin(texture, sourceInCallback.width, sourceInCallback.height, costumeResolution);
-            }
-        };
-
-        const gl = this._gl;
-        const options = {
-            auto: true,
-            mag: gl.NEAREST,
-            min: gl.NEAREST, // TODO: mipmaps, linear (except pixelate)
-            wrap: gl.CLAMP_TO_EDGE,
-            src: source
-        };
-        const willCallCallback = typeof source === 'string';
-        this._pendingSkin = twgl.createTexture(gl, options, willCallCallback ? callback : null);
-
-        // If we won't get a callback, start using the skin immediately.
-        // This will happen if the data is already local.
-        if (!willCallCallback) {
-            callback(null, this._pendingSkin, source);
-        }
     }
 
     /**
@@ -274,10 +153,6 @@ class Drawable {
      */
     updateProperties (properties) {
         let dirty = false;
-        if ('skin' in properties) {
-            this.setSkin(properties.skin, properties.costumeResolution);
-            this.setConvexHullDirty();
-        }
         if ('position' in properties && (
             this._position[0] !== properties.position[0] ||
             this._position[1] !== properties.position[1])) {
@@ -294,13 +169,6 @@ class Drawable {
             this._scale[1] !== properties.scale[1])) {
             this._scale[0] = properties.scale[0];
             this._scale[1] = properties.scale[1];
-            dirty = true;
-        }
-        if ('rotationCenter' in properties && (
-            this._rotationCenter[0] !== properties.rotationCenter[0] ||
-            this._rotationCenter[1] !== properties.rotationCenter[1])) {
-            this._rotationCenter[0] = properties.rotationCenter[0];
-            this._rotationCenter[1] = properties.rotationCenter[1];
             dirty = true;
         }
         if ('visible' in properties) {
@@ -331,33 +199,6 @@ class Drawable {
     }
 
     /**
-     * Set the dimensions of this Drawable's skin.
-     * @param {int} width The width of the new skin.
-     * @param {int} height The height of the new skin.
-     * @param {int} [costumeResolution] The resolution to use for this skin.
-     * @private
-     */
-    _setSkinSize (width, height, costumeResolution) {
-        costumeResolution = costumeResolution || 1;
-        width /= costumeResolution;
-        height /= costumeResolution;
-        if (this._uniforms.u_skinSize[0] !== width || this._uniforms.u_skinSize[1] !== height) {
-            this._uniforms.u_skinSize[0] = width;
-            this._uniforms.u_skinSize[1] = height;
-            this.setTransformDirty();
-        }
-        this.setConvexHullDirty();
-    }
-
-    /**
-     * Get the size of the Drawable's current skin.
-     * @return {Array.<number>} Skin size, width and height.
-     */
-    getSkinSize () {
-        return this._uniforms.u_skinSize.slice();
-    }
-
-    /**
      * Calculate the transform to use when rendering this Drawable.
      * @private
      */
@@ -370,18 +211,17 @@ class Drawable {
         const rotation = (270 - this._direction) * Math.PI / 180;
         twgl.m4.rotateZ(modelMatrix, rotation, modelMatrix);
 
-
         // Adjust rotation center relative to the skin.
         const rotationAdjusted = twgl.v3.subtract(
-            this._rotationCenter,
-            twgl.v3.divScalar(this._uniforms.u_skinSize, 2)
+            this.skin.rotationCenter,
+            twgl.v3.divScalar(this.skin.size, 2)
         );
         rotationAdjusted[1] *= -1; // Y flipped to Scratch coordinate.
         rotationAdjusted[2] = 0; // Z coordinate is 0.
 
         twgl.m4.translate(modelMatrix, rotationAdjusted, modelMatrix);
 
-        const scaledSize = twgl.v3.divScalar(twgl.v3.multiply(this._uniforms.u_skinSize, this._scale), 100);
+        const scaledSize = twgl.v3.divScalar(twgl.v3.multiply(this.skin.size, this._scale), 100);
         scaledSize[2] = 0; // was NaN because the vectors have only 2 components.
         twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
 
@@ -431,7 +271,7 @@ class Drawable {
         // transform. This allows us to skip recalculating the convex hull
         // for many Drawable updates, including translation, rotation, scaling.
         const projection = twgl.m4.ortho(-1, 1, -1, 1, -1, 1);
-        const skinSize = this._uniforms.u_skinSize;
+        const skinSize = this.skin.size;
         const tm = twgl.m4.multiply(this._uniforms.u_modelMatrix, projection);
         const transformedHullPoints = [];
         for (let i = 0; i < this._convexHullPoints.length; i++) {
@@ -532,13 +372,5 @@ Drawable._nextDrawable = 0;
  * @private
  */
 Drawable._allDrawables = {};
-
-// TODO: fall back on a built-in skin to protect against network problems
-Drawable._DEFAULT_SKIN = {
-    squirrel: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/7e24c99c1b853e52f8e7f9004416fa34.png/get/',
-    bus: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/66895930177178ea01d9e610917f8acf.png/get/',
-    scratch_cat: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/09dc888b0b7df19f70d81588ae73420e.svg/get/',
-    gradient: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/a49ff276b9b8f997a1ae163992c2c145.png/get/'
-}.squirrel;
 
 module.exports = Drawable;

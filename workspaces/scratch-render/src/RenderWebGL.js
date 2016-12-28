@@ -1,9 +1,12 @@
 const hull = require('hull.js');
 const twgl = require('twgl.js');
+const xhr = require('xhr');
 
+const BitmapSkin = require('./BitmapSkin');
 const Drawable = require('./Drawable');
 const RenderConstants = require('./RenderConstants');
 const ShaderManager = require('./ShaderManager');
+const SVGSkin = require('./SVGSkin');
 
 /**
  * Maximum touch size for a picking check.
@@ -41,8 +44,22 @@ class RenderWebGL {
         // TODO: remove?
         twgl.setDefaults({crossOrigin: true});
 
+        /** @type {int} */
+        this._nextSkinId = RenderConstants.ID_NONE + 1;
+
+        /** @type {WebGLRenderingContext} */
         this._gl = twgl.getWebGLContext(canvas, {alpha: false, stencil: true});
+
+        /** @type {Skin[]} */
+        this._skins = [];
+
+        /** @type {Object.<string,int>} */
+        this._skinUrlMap = {};
+
+        /** @type {int[]} */
         this._drawables = [];
+
+        /** @type {module:twgl/m4.Mat4} */
         this._projection = twgl.m4.identity();
 
         this._createGeometry();
@@ -57,6 +74,13 @@ class RenderWebGL {
         gl.enable(gl.BLEND); // TODO: disable when no partial transparency?
         gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
         this._shaderManager = new ShaderManager(gl);
+    }
+
+    /**
+     * @returns {WebGLRenderingContext} the WebGL rendering context associated with this renderer.
+     */
+    get gl () {
+        return this._gl;
     }
 
     /**
@@ -108,6 +132,94 @@ class RenderWebGL {
     }
 
     /**
+     * Create a new skin by loading a bitmap or vector image from a URL.
+     * WARNING: This method is deprecated and will be removed in the near future.
+     * Use `createBitmapSkin` or `createSVGSkin` instead.
+     * @param {!string} skinUrl The URL of the skin.
+     * @param {!int} [costumeResolution] Optionally, a resolution for the skin. Bitmap only.
+     * @returns {!int} The ID of the new Skin.
+     * @deprecated
+     */
+    createSkinFromURL (skinUrl, costumeResolution) {
+        const skinId = this._nextSkinId++;
+        let newSkin;
+        let isVector;
+
+        const ext = skinUrl.substring(skinUrl.lastIndexOf('.') + 1);
+        switch (ext) {
+        case 'svg':
+        case 'svg/get/':
+        case 'svgz':
+        case 'svgz/get/':
+            isVector = true;
+            break;
+        default:
+            isVector = false;
+            break;
+        }
+
+        if (isVector) {
+            newSkin = new SVGSkin(skinId, this);
+            xhr.get({
+                useXDR: true,
+                url: skinUrl
+            }, (err, response, body) => {
+                if (!err) {
+                    newSkin.setSVG(body);
+                }
+            });
+        } else {
+            newSkin = new BitmapSkin(skinId, this);
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                newSkin.setBitmap(img, costumeResolution);
+            };
+            img.src = skinUrl;
+        }
+
+        this._skins[skinId] = newSkin;
+        return skinId;
+    }
+
+    /**
+     * Create a new bitmap skin from a snapshot of the provided bitmap data.
+     * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
+     * @param {!int} [costumeResolution=1] - The resolution to use for this bitmap.
+     * @returns {!int} the ID for the new skin.
+     */
+    createBitmapSkin (bitmapData, costumeResolution) {
+        const skinId = this._nextSkinId++;
+        const newSkin = new BitmapSkin(skinId, this);
+        newSkin.setBitmap(bitmapData, costumeResolution);
+        this._skins[skinId] = newSkin;
+        return skinId;
+    }
+
+    /**
+     * Create a new SVG skin.
+     * @param {!string} svgData - new SVG to use.
+     * @returns {!int} the ID for the new skin.
+     */
+    createSVGSkin (svgData) {
+        const skinId = this._nextSkinId++;
+        const newSkin = new SVGSkin(skinId, this);
+        newSkin.setSVG(svgData);
+        this._skins[skinId] = newSkin;
+        return skinId;
+    }
+
+    /**
+     * Destroy an existing skin. Do not use the skin or its ID after calling this.
+     * @param {!int} skinId - The ID of the skin to destroy.
+     */
+    destroySkin (skinId) {
+        const oldSkin = this._skins[skinId];
+        oldSkin.dispose();
+        delete this._skins[skinId];
+    }
+
+    /**
      * Create a new Drawable and add it to the scene.
      * @returns {int} The ID of the new Drawable.
      */
@@ -115,6 +227,10 @@ class RenderWebGL {
         const drawable = new Drawable(this._gl);
         const drawableID = drawable.getID();
         this._drawables.push(drawableID);
+
+        const defaultSkinId = this.createSkinFromURL(RenderConstants.DEFAULT_SKIN);
+        drawable.skin = this._skins[defaultSkinId];
+
         return drawableID;
     }
 
@@ -220,7 +336,7 @@ class RenderWebGL {
      */
     getSkinSize (drawableID) {
         const drawable = Drawable.getDrawableByID(drawableID);
-        return drawable.getSkinSize();
+        return drawable.skin.size;
     }
 
     /**
@@ -487,6 +603,10 @@ class RenderWebGL {
      */
     _touchingBounds (drawableID) {
         const drawable = Drawable.getDrawableByID(drawableID);
+
+        // TODO: remove this once URL-based skin setting is removed.
+        if (!drawable.skin || !drawable.skin.getTexture([100, 100])) return null;
+
         const bounds = drawable.getFastBounds();
 
         // Limit queries to the stage size.
@@ -536,6 +656,23 @@ class RenderWebGL {
      */
     updateDrawableProperties (drawableID, properties) {
         const drawable = Drawable.getDrawableByID(drawableID);
+        // TODO: remove this after fully deprecating URL-based skin paths
+        if ('skin' in properties) {
+            const {skin, costumeResolution} = properties;
+            const skinId = this._skinUrlMap.hasOwnProperty(skin) ?
+                this._skinUrlMap[skin] :
+                this.createSkinFromURL(skin, costumeResolution);
+            drawable.skin = this._skins[skinId];
+        }
+        if ('skinId' in properties) {
+            drawable.skin = this._skins[properties.skinId];
+        }
+        if ('rotationCenter' in properties) {
+            const centerChanged = drawable.skin.setRotationCenter(properties.rotationCenter);
+            if (centerChanged) {
+                drawable.setTransformDirty();
+            }
+        }
         drawable.updateProperties(properties);
     }
 
@@ -608,6 +745,7 @@ class RenderWebGL {
     _drawThese (drawables, drawMode, projection, filter, extraUniforms) {
         const gl = this._gl;
         let currentShader = null;
+        let currentSkin = null;
 
         const numDrawables = drawables.length;
         for (let drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
@@ -622,6 +760,12 @@ class RenderWebGL {
             // Hidden drawables (e.g., by a "hide" block) are never drawn.
             if (!drawable.getVisible()) continue;
 
+            const drawableScale = drawable.scale;
+            const newSkin = drawable.skin;
+
+            // If the texture isn't ready yet, skip it.
+            if (!newSkin.getTexture(drawableScale)) continue;
+
             const effectBits = drawable.getEnabledEffects();
             const newShader = this._shaderManager.getShader(drawMode, effectBits);
             if (currentShader !== newShader) {
@@ -630,6 +774,11 @@ class RenderWebGL {
                 twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
                 twgl.setUniforms(currentShader, {u_projectionMatrix: projection});
                 twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
+            }
+
+            if (currentSkin !== newSkin) {
+                currentSkin = newSkin;
+                twgl.setUniforms(currentShader, currentSkin.getUniforms(drawableScale));
             }
 
             twgl.setUniforms(currentShader, drawable.getUniforms());
