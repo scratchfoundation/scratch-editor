@@ -135,16 +135,27 @@ class RenderWebGL {
     }
 
     /**
-     * Create a new skin by loading a bitmap or vector image from a URL.
+     * Create a skin by loading a bitmap or vector image from a URL, or reuse an existing skin created this way.
      * WARNING: This method is deprecated and will be removed in the near future.
      * Use `createBitmapSkin` or `createSVGSkin` instead.
      * @param {!string} skinUrl The URL of the skin.
-     * @param {!int} [costumeResolution] Optionally, a resolution for the skin. Bitmap only.
-     * @returns {!int} The ID of the new Skin.
+     * @param {!int} [costumeResolution] Optional: resolution for the skin. Ignored unless creating a new Bitmap skin.
+     * @returns {!int} The ID of the Skin.
      * @deprecated
      */
     createSkinFromURL (skinUrl, costumeResolution) {
+        if (this._skinUrlMap.hasOwnProperty(skinUrl)) {
+            const existingId = this._skinUrlMap[skinUrl];
+
+            // Make sure the "existing" skin hasn't been destroyed
+            if (this._allSkins[existingId]) {
+                return existingId;
+            }
+        }
+
         const skinId = this._nextSkinId++;
+        this._skinUrlMap[skinUrl] = skinId;
+
         let newSkin;
         let isVector;
 
@@ -660,12 +671,15 @@ class RenderWebGL {
      */
     updateDrawableProperties (drawableID, properties) {
         const drawable = this._allDrawables[drawableID];
+        if (!drawable) {
+            // TODO: fix whatever's wrong in the VM which causes this, then add a warning or throw here.
+            // Right now this happens so much on some projects that a warning or exception here can hang the browser.
+            return;
+        }
         // TODO: remove this after fully deprecating URL-based skin paths
         if ('skin' in properties) {
             const {skin, costumeResolution} = properties;
-            const skinId = this._skinUrlMap.hasOwnProperty(skin) ?
-                this._skinUrlMap[skin] :
-                this._skinUrlMap[skin] = this.createSkinFromURL(skin, costumeResolution);
+            const skinId = this.createSkinFromURL(skin, costumeResolution);
             drawable.skin = this._allSkins[skinId];
         }
         if ('skinId' in properties) {

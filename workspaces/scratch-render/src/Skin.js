@@ -37,6 +37,8 @@ class Skin extends EventEmitter {
              */
             u_skin: null
         };
+
+        this.setMaxListeners(RenderConstants.SKIN_SHARE_SOFT_LIMIT);
     }
 
     /**

@@ -69,9 +69,8 @@ class Drawable {
      * Dispose of this Drawable. Do not use it after calling this method.
      */
     dispose () {
-        if (this._id >= 0) {
-            delete Drawable[this._id];
-        }
+        // Use the setter: disconnect events
+        this.skin = null;
     }
 
     /**

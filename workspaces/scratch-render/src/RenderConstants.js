@@ -21,5 +21,11 @@ module.exports = {
      * TODO: Remove this in favor of falling back on a built-in skin.
      * @type {string}
      */
-    DEFAULT_SKIN: DEFAULT_SKIN
+    DEFAULT_SKIN: DEFAULT_SKIN,
+
+    /**
+     * Optimize for fewer than this number of Drawables sharing the same Skin.
+     * Going above this may cause middleware warnings or a performance penalty but should otherwise behave correctly.
+     */
+    SKIN_SHARE_SOFT_LIMIT: 300
 };
