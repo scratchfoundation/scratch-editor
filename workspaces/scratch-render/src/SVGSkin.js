@@ -71,6 +71,7 @@ class SVGSkin extends Skin {
 
                 this._texture = twgl.createTexture(gl, textureOptions);
             }
+            this.emit(Skin.Events.WasAltered);
         });
     }
 }

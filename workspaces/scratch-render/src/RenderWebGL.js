@@ -672,10 +672,8 @@ class RenderWebGL {
             drawable.skin = this._allSkins[properties.skinId];
         }
         if ('rotationCenter' in properties) {
-            const centerChanged = drawable.skin.setRotationCenter(properties.rotationCenter);
-            if (centerChanged) {
-                drawable.setTransformDirty();
-            }
+            const newRotationCenter = properties.rotationCenter;
+            drawable.skin.setRotationCenter(newRotationCenter[0], newRotationCenter[1]);
         }
         drawable.updateProperties(properties);
     }

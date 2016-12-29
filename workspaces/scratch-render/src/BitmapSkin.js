@@ -77,6 +77,8 @@ class BitmapSkin extends Skin {
         // Do these last in case any of the above throws an exception
         this._costumeResolution = costumeResolution || 1;
         this._textureSize = BitmapSkin._getBitmapSize(bitmapData);
+
+        this.emit(Skin.Events.WasAltered);
     }
 
     /**

@@ -1,13 +1,17 @@
+const EventEmitter = require('events');
+
 const twgl = require('twgl.js');
 
 const RenderConstants = require('./RenderConstants');
 
-class Skin {
+class Skin extends EventEmitter {
     /**
      * Create a Skin, which stores and/or generates textures for use in rendering.
      * @param {int} id - The unique ID for this Skin.
      */
     constructor (id) {
+        super();
+
         /** @type {int} */
         this._id = id;
 
@@ -68,15 +72,13 @@ class Skin {
      * Set the origin, in object space, about which this Skin should rotate.
      * @param {number} x - The x coordinate of the new rotation center.
      * @param {number} y - The y coordinate of the new rotation center.
-     * @returns {boolean} true iff the new rotation center differs from the old one.
      */
     setRotationCenter (x, y) {
         if (x !== this._rotationCenter[0] || y !== this._rotationCenter[1]) {
             this._rotationCenter[0] = x;
             this._rotationCenter[1] = y;
-            return true;
+            this.emit(Skin.Events.WasAltered);
         }
-        return false;
     }
 
     /**
@@ -100,5 +102,16 @@ class Skin {
         return this._uniforms;
     }
 }
+
+/**
+ * These are the events which can be emitted by instances of this class.
+ * @type {object.<string,string>}
+ */
+Skin.Events = {
+    /**
+     * Emitted when anything about the Skin has been altered, such as the appearance or rotation center.
+     */
+    WasAltered: 'WasAltered'
+};
 
 module.exports = Skin;
