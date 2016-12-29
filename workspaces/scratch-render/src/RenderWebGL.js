@@ -665,7 +665,7 @@ class RenderWebGL {
             const {skin, costumeResolution} = properties;
             const skinId = this._skinUrlMap.hasOwnProperty(skin) ?
                 this._skinUrlMap[skin] :
-                this.createSkinFromURL(skin, costumeResolution);
+                this._skinUrlMap[skin] = this.createSkinFromURL(skin, costumeResolution);
             drawable.skin = this._allSkins[skinId];
         }
         if ('skinId' in properties) {
