@@ -1,17 +1,17 @@
 const twgl = require('twgl.js');
 
-const Drawable = require('./Drawable');
-const RenderEvent = require('./RenderEvent');
+const RenderConstants = require('./RenderConstants');
+const Skin = require('./Skin');
 
 
-class PenDrawable extends Drawable {
+class PenSkin extends Skin {
     /**
-     * Create a Pen Layer.
-     * @param {RenderWebGL} renderer - The renderer which will draw this object.
-     * @param {WebGLRenderingContext} gl - The WebGL rendering context to use.
+     * Create a Skin which implements a Scratch pen layer.
+     * @param {int} id - The unique ID for this Skin.
+     * @param {RenderWebGL} renderer - The renderer which will use this Skin.
      */
-    constructor (renderer, gl) {
-        super(gl);
+    constructor (id, renderer) {
+        super(id);
 
         /** @type {RenderWebGL} */
         this._renderer = renderer;
@@ -22,8 +22,11 @@ class PenDrawable extends Drawable {
         /** @type {boolean} */
         this._canvasDirty = false;
 
+        /** @type {WebGLTexture} */
+        this._texture = null;
+
         this.onNativeSizeChanged = this.onNativeSizeChanged.bind(this);
-        this._renderer.on(RenderEvent.NativeSizeChanged, this.onNativeSizeChanged);
+        this._renderer.on(RenderConstants.Events.NativeSizeChanged, this.onNativeSizeChanged);
 
         this._setCanvasSize(renderer.getNativeSize());
     }
@@ -32,8 +35,35 @@ class PenDrawable extends Drawable {
      * Dispose of this object. Do not use it after calling this method.
      */
     dispose () {
-        this._renderer.removeListener(RenderEvent.NativeSizeChanged, this.onNativeSizeChanged);
+        this._renderer.removeListener(RenderConstants.Events.NativeSizeChanged, this.onNativeSizeChanged);
+        this._renderer.gl.deleteTexture(this._texture);
+        this._texture = null;
         super.dispose();
+    }
+
+    /**
+     * @return {[number,number]} the "native" size, in texels, of this skin.
+     */
+    get size () {
+        return [this._canvas.width, this._canvas.height];
+    }
+
+    /**
+     * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given size.
+     * @param {int} pixelsWide - The width that the skin will be rendered at, in GPU pixels.
+     * @param {int} pixelsTall - The height that the skin will be rendered at, in GPU pixels.
+     */
+    // eslint-disable-next-line no-unused-vars
+    getTexture (pixelsWide, pixelsTall) {
+        if (this._canvasDirty) {
+            this._canvasDirty = false;
+
+            const gl = this._renderer.gl;
+            gl.bindTexture(gl.TEXTURE_2D, this._texture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._canvas);
+        }
+
+        return this._texture;
     }
 
     /**
@@ -52,12 +82,10 @@ class PenDrawable extends Drawable {
     _setCanvasSize (canvasSize) {
         const [width, height] = canvasSize;
 
-        const gl = this._gl;
+        const gl = this._renderer.gl;
         this._canvas.width = width;
         this._canvas.height = height;
-        this._rotationCenter = [width / 2.0, height / 2.0];
-        this._uniforms.u_skinSize = [width, height];
-        this._uniforms.u_skin = twgl.createTexture(
+        this._texture = twgl.createTexture(
             gl,
             {
                 auto: true,
@@ -68,7 +96,6 @@ class PenDrawable extends Drawable {
             }
         );
         this._canvasDirty = true;
-        this.setTransformDirty();
 
         const ctx = this._canvas.getContext('2d');
         ctx.strokeStyle = 'red';
@@ -91,19 +118,6 @@ class PenDrawable extends Drawable {
         ctx.lineTo(width / 10, height / 5);
         ctx.stroke();
     }
-
-    /**
-     * Prepare this object to draw: update uniforms, textures, etc.
-     */
-    prepareToDraw () {
-        if (this._canvasDirty) {
-            this._canvasDirty = false;
-
-            const gl = this._gl;
-            gl.bindTexture(gl.TEXTURE_2D, this._uniforms.u_skin);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._canvas);
-        }
-    }
 }
 
-module.exports = PenDrawable;
+module.exports = PenSkin;

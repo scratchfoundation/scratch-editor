@@ -30,12 +30,20 @@ document.body.insertBefore(documentStyleTag, document.body.firstChild);
 class SvgRenderer {
     /**
      * Create a quirks-mode SVG renderer for a particular canvas.
-     * @param {!HTMLCanvasElement} canvas A canvas element to draw to.
+     * @param {HTMLCanvasElement} [canvas] An optional canvas element to draw to. If this is not provided, the renderer
+     * will create a new canvas.
      * @constructor
      */
     constructor (canvas) {
-        this._canvas = canvas;
-        this._context = canvas.getContext('2d');
+        this._canvas = canvas || document.createElement('canvas');
+        this._context = this._canvas.getContext('2d');
+    }
+
+    /**
+     * @returns {!HTMLCanvasElement} this renderer's target canvas.
+     */
+    get canvas () {
+        return this._canvas;
     }
 
     /**
