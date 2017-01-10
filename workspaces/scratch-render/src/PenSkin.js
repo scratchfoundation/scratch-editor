@@ -102,9 +102,9 @@ class PenSkin extends Skin {
     drawLine (location0, location1, penAttributes) {
         const ctx = this._canvas.getContext('2d');
         this._setAttributes(ctx, penAttributes);
-        ctx.moveTo(location0[0], location0[1]);
+        ctx.moveTo(location0[0] + this._rotationCenter[0], location0[1] + this._rotationCenter[1]);
         ctx.beginPath();
-        ctx.lineTo(location1[0], location1[1]);
+        ctx.lineTo(location1[0] + this._rotationCenter[0], location1[1] + this._rotationCenter[1]);
         ctx.stroke();
         this._canvasDirty = true;
     }
@@ -116,7 +116,7 @@ class PenSkin extends Skin {
      */
     drawStamp (location, stampElement) {
         const ctx = this._canvas.getContext('2d');
-        ctx.drawImage(stampElement, location[0], location[1]);
+        ctx.drawImage(stampElement, location[0] + this._rotationCenter[0], location[1] + this._rotationCenter[1]);
         this._canvasDirty = true;
     }
 
