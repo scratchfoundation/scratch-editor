@@ -48,20 +48,30 @@ const base = {
 };
 
 module.exports = [
+    // Playground
+    Object.assign({}, base, {
+        target: 'web',
+        entry: {
+            'scratch-render': './src/index-web.js'
+        },
+        output: {
+            path: path.resolve(__dirname, 'playground'),
+            filename: '[name].js'
+        }
+    }),
     // Web-compatible
     Object.assign({}, base, {
         target: 'web',
         entry: {
-            'dist/web/scratch-render': './src/index-web.js',
-            'dist/web/scratch-render.min': './src/index-web.js',
-            'playground/scratch-render': './src/index-web.js'
+            'scratch-render': './src/index-web.js',
+            'scratch-render.min': './src/index-web.js'
         },
         output: {
-            path: __dirname,
+            path: path.resolve(__dirname, 'dist/web'),
             filename: '[name].js'
         }
     }),
-    // Webpack-compatible
+    // Node-compatible
     Object.assign({}, base, {
         target: 'node',
         entry: {
@@ -70,8 +80,8 @@ module.exports = [
         output: {
             library: 'ScratchRender',
             libraryTarget: 'commonjs2',
-            path: __dirname,
-            filename: 'dist/node/[name].js'
+            path: path.resolve(__dirname, 'dist/node'),
+            filename: '[name].js'
         }
     })
 ];
