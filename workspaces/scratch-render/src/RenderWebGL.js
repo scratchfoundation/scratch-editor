@@ -145,6 +145,8 @@ class RenderWebGL extends EventEmitter {
         this._xRight = xRight;
         this._yBottom = yBottom;
         this._yTop = yTop;
+
+        // swap yBottom & yTop to fit Scratch convention of +y=up
         this._projection = twgl.m4.ortho(xLeft, xRight, yBottom, yTop, -1, 1);
 
         this._setNativeSize(Math.abs(xRight - xLeft), Math.abs(yBottom - yTop));
@@ -422,7 +424,7 @@ class RenderWebGL extends EventEmitter {
         // Limit size of viewport to the bounds around the target Drawable,
         // and create the projection matrix for the draw.
         gl.viewport(0, 0, bounds.width, bounds.height);
-        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
+        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
 
         gl.clearColor.apply(gl, this._backgroundColor);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
@@ -513,7 +515,7 @@ class RenderWebGL extends EventEmitter {
         // Limit size of viewport to the bounds around the target Drawable,
         // and create the projection matrix for the draw.
         gl.viewport(0, 0, bounds.width, bounds.height);
-        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
+        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
 
         const noneColor = Drawable.color4fFromID(RenderConstants.ID_NONE);
         gl.clearColor.apply(gl, noneColor);
@@ -772,7 +774,7 @@ class RenderWebGL extends EventEmitter {
 
         // Limit size of viewport to the bounds around the stamp Drawable and create the projection matrix for the draw.
         gl.viewport(0, 0, bounds.width, bounds.height);
-        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
+        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
 
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
