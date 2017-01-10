@@ -78,6 +78,9 @@ class RenderWebGL extends EventEmitter {
 
         this._shaderManager = new ShaderManager(gl);
 
+        /** @type {HTMLCanvasElement} */
+        this._tempCanvas = document.createElement('canvas');
+
         this._createGeometry();
 
         this.on(RenderConstants.Events.NativeSizeChanged, this.onNativeSizeChanged);
@@ -416,7 +419,6 @@ class RenderWebGL extends EventEmitter {
             return;
         }
 
-
         // Limit size of viewport to the bounds around the target Drawable,
         // and create the projection matrix for the draw.
         gl.viewport(0, 0, bounds.width, bounds.height);
@@ -459,7 +461,7 @@ class RenderWebGL extends EventEmitter {
             gl.disable(gl.STENCIL_TEST);
         }
 
-        const pixels = new Buffer(bounds.width * bounds.height * 4);
+        const pixels = new Uint8Array(bounds.width * bounds.height * 4);
         gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         if (this._debugCanvas) {
@@ -467,9 +469,7 @@ class RenderWebGL extends EventEmitter {
             this._debugCanvas.height = bounds.height;
             const context = this._debugCanvas.getContext('2d');
             const imageData = context.getImageData(0, 0, bounds.width, bounds.height);
-            for (let i = 0, bytes = pixels.length; i < bytes; ++i) {
-                imageData.data[i] = pixels[i];
-            }
+            imageData.data.set(pixels);
             context.putImageData(imageData, 0, 0);
         }
 
@@ -538,7 +538,7 @@ class RenderWebGL extends EventEmitter {
             gl.disable(gl.STENCIL_TEST);
         }
 
-        const pixels = new Buffer(bounds.width * bounds.height * 4);
+        const pixels = new Uint8Array(bounds.width * bounds.height * 4);
         gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         if (this._debugCanvas) {
@@ -546,9 +546,7 @@ class RenderWebGL extends EventEmitter {
             this._debugCanvas.height = bounds.height;
             const context = this._debugCanvas.getContext('2d');
             const imageData = context.getImageData(0, 0, bounds.width, bounds.height);
-            for (let i = 0, bytes = pixels.length; i < bytes; ++i) {
-                imageData.data[i] = pixels[i];
-            }
+            imageData.data.set(pixels);
             context.putImageData(imageData, 0, 0);
         }
 
@@ -617,7 +615,7 @@ class RenderWebGL extends EventEmitter {
 
         this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection);
 
-        const pixels = new Buffer(touchWidth * touchHeight * 4);
+        const pixels = new Uint8Array(touchWidth * touchHeight * 4);
         gl.readPixels(0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         if (this._debugCanvas) {
@@ -625,9 +623,7 @@ class RenderWebGL extends EventEmitter {
             this._debugCanvas.height = touchHeight;
             const context = this._debugCanvas.getContext('2d');
             const imageData = context.getImageData(0, 0, touchWidth, touchHeight);
-            for (let i = 0, bytes = pixels.length; i < bytes; ++i) {
-                imageData.data[i] = pixels[i];
-            }
+            imageData.data.set(pixels);
             context.putImageData(imageData, 0, 0);
         }
 
@@ -732,6 +728,75 @@ class RenderWebGL extends EventEmitter {
             drawable.skin.setRotationCenter(newRotationCenter[0], newRotationCenter[1]);
         }
         drawable.updateProperties(properties);
+    }
+
+    /**
+     * Draw a point on a pen layer.
+     * @param {int} penSkinID - the unique ID of a Pen Skin.
+     * @param {[number, number]} location - where the point should be drawn.
+     * @param {PenAttributes} penAttributes - how the point should be drawn.
+     */
+    penPoint (penSkinID, location, penAttributes) {
+        const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
+        skin.drawPoint(location, penAttributes);
+    }
+
+    /**
+     * Draw a line on a pen layer.
+     * @param {int} penSkinID - the unique ID of a Pen Skin.
+     * @param {[number, number]} location0 - where the line should start.
+     * @param {[number, number]} location1 - where the line should end.
+     * @param {PenAttributes} penAttributes - how the line should be drawn.
+     */
+    penLine (penSkinID, location0, location1, penAttributes) {
+        const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
+        skin.drawLine(location0, location1, penAttributes);
+    }
+
+    /**
+     * Draw a point on a pen layer.
+     * @param {int} penSkinID - the unique ID of a Pen Skin.
+     * @param {[number, number]} location - where the point should be drawn.
+     * @param {int} stampID - the unique ID of the Drawable to use as the stamp.
+     */
+    penStamp (penSkinID, location, stampID) {
+        const bounds = this._touchingBounds(stampID);
+        if (!bounds) {
+            return;
+        }
+
+        const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
+
+        const gl = this._gl;
+        twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+
+        // Limit size of viewport to the bounds around the stamp Drawable and create the projection matrix for the draw.
+        gl.viewport(0, 0, bounds.width, bounds.height);
+        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
+
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        try {
+            gl.disable(gl.BLEND);
+            this._drawThese([stampID], ShaderManager.DRAW_MODE.default, projection);
+        } finally {
+            gl.enable(gl.BLEND);
+        }
+
+        const stampPixels = new Uint8Array(bounds.width * bounds.height * 4);
+        gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, stampPixels);
+
+        const stampCanvas = this._tempCanvas;
+        stampCanvas.width = bounds.width;
+        stampCanvas.height = bounds.height;
+
+        const stampContext = stampCanvas.getContext('2d');
+        const stampImageData = stampContext.createImageData(bounds.width, bounds.height);
+        stampImageData.data.set(stampPixels);
+        stampContext.putImageData(stampImageData, 0, 0);
+
+        skin.drawStamp(location, stampCanvas);
     }
 
     /* ******
@@ -892,7 +957,7 @@ class RenderWebGL extends EventEmitter {
             {u_modelMatrix: modelMatrix}
         );
 
-        const pixels = new Buffer(width * height * 4);
+        const pixels = new Uint8Array(width * height * 4);
         gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         // Known boundary points on left/right edges of pixels.

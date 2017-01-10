@@ -4,6 +4,23 @@ const RenderConstants = require('./RenderConstants');
 const Skin = require('./Skin');
 
 
+/**
+ * Attributes to use when drawing with the pen
+ * @typedef {object} PenAttributes
+ * @property {number} [diameter] - The size (diameter) of the pen.
+ * @property {number[]} [color4f] - The pen color as an array of [r,g,b,a], each component in the range [0,1].
+ */
+
+/**
+ * The pen attributes to use when unspecified.
+ * @type {PenAttributes}
+ */
+const DefaultPenAttributes = {
+    color4f: [0, 0, 1, 1],
+    diameter: 1
+};
+
+
 class PenSkin extends Skin {
     /**
      * Create a Skin which implements a Scratch pen layer.
@@ -67,6 +84,43 @@ class PenSkin extends Skin {
     }
 
     /**
+     * Draw a point on the pen layer.
+     * @param {[number, number]} location - where the point should be drawn.
+     * @param {PenAttributes} penAttributes - how the point should be drawn.
+     */
+    drawPoint (location, penAttributes) {
+        // Canvas renders a zero-length line as two end-caps back-to-back, which is what we want.
+        this.drawLine(location, location, penAttributes);
+    }
+
+    /**
+     * Draw a point on the pen layer.
+     * @param {[number, number]} location0 - where the line should start.
+     * @param {[number, number]} location1 - where the line should end.
+     * @param {PenAttributes} penAttributes - how the line should be drawn.
+     */
+    drawLine (location0, location1, penAttributes) {
+        const ctx = this._canvas.getContext('2d');
+        this._setAttributes(ctx, penAttributes);
+        ctx.moveTo(location0[0], location0[1]);
+        ctx.beginPath();
+        ctx.lineTo(location1[0], location1[1]);
+        ctx.stroke();
+        this._canvasDirty = true;
+    }
+
+    /**
+     * Stamp an image onto the pen layer.
+     * @param {[number, number]} location - where the stamp should be drawn.
+     * @param {HTMLCanvasElement|HTMLImageElement|HTMLVideoElement} stampElement - the element to use as the stamp.
+     */
+    drawStamp (location, stampElement) {
+        const ctx = this._canvas.getContext('2d');
+        ctx.drawImage(stampElement, location[0], location[1]);
+        this._canvasDirty = true;
+    }
+
+    /**
      * React to a change in the renderer's native size.
      * @param {object} event - The change event.
      */
@@ -85,6 +139,8 @@ class PenSkin extends Skin {
         const gl = this._renderer.gl;
         this._canvas.width = width;
         this._canvas.height = height;
+        this._rotationCenter[0] = width / 2;
+        this._rotationCenter[1] = height / 2;
         this._texture = twgl.createTexture(
             gl,
             {
@@ -117,6 +173,21 @@ class PenSkin extends Skin {
         ctx.moveTo(2, height / 10);
         ctx.lineTo(width / 10, height / 5);
         ctx.stroke();
+    }
+
+    _setAttributes (context, penAttributes) {
+        penAttributes = penAttributes || DefaultPenAttributes;
+        const color4f = penAttributes.color4f || DefaultPenAttributes.color4f;
+        const diameter = penAttributes.diameter || DefaultPenAttributes.diameter;
+
+        const r = Math.round(color4f[0] * 255);
+        const g = Math.round(color4f[1] * 255);
+        const b = Math.round(color4f[2] * 255);
+        const a = Math.round(color4f[3] * 255);
+
+        context.fillStyle = `rgba(${r},${g},${b},${a})`;
+        context.lineCap = 'round';
+        context.lineWidth = diameter;
     }
 }
 
