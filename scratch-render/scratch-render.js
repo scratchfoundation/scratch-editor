@@ -1,41 +1,41 @@
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-
+/******/
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-
+/******/
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-
+/******/
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-
+/******/
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-
+/******/
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-
+/******/
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-
-
+/******/
+/******/
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-
+/******/
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-
+/******/
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-
+/******/
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -45,10 +45,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	/* eslint-env browser */
 	__webpack_require__(1);
-
+	
 	/**
 	 * Export for use in a web page.
 	 * @type {RenderWebGL}
@@ -60,22 +60,22 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {"use strict";
-
+	
 	__webpack_require__(2);
-
+	
 	__webpack_require__(293);
-
+	
 	__webpack_require__(295);
-
+	
 	/* eslint max-len: 0 */
-
+	
 	if (global._babelPolyfill) {
 	  throw new Error("only one instance of babel-polyfill is allowed");
 	}
 	global._babelPolyfill = true;
-
+	
 	// Should be removed in the next major release:
-
+	
 	var DEFINE_PROPERTY = "defineProperty";
 	function define(O, key, value) {
 	  O[key] || Object[DEFINE_PROPERTY](O, key, {
@@ -84,10 +84,10 @@
 	    value: value
 	  });
 	}
-
+	
 	define(String.prototype, "padLeft", "".padStart);
 	define(String.prototype, "padRight", "".padEnd);
-
+	
 	"pop,reverse,shift,keys,values,entries,indexOf,every,some,forEach,map,filter,find,findIndex,includes,join,slice,concat,push,splice,unshift,sort,lastIndexOf,reduce,reduceRight,copyWithin,fill".split(",").forEach(function (key) {
 	  [][key] && define(Array, key, Function.call.bind([][key]));
 	});
@@ -323,7 +323,7 @@
 	  , QObject        = global.QObject;
 	// Don't use setters in Qt Script, https://github.com/zloirock/core-js/issues/173
 	var setter = !QObject || !QObject[PROTOTYPE] || !QObject[PROTOTYPE].findChild;
-
+	
 	// fallback for old Android, https://code.google.com/p/v8/issues/detail?id=687
 	var setSymbolDesc = DESCRIPTORS && $fails(function(){
 	  return _create(dP({}, 'a', {
@@ -335,19 +335,19 @@
 	  dP(it, key, D);
 	  if(protoDesc && it !== ObjectProto)dP(ObjectProto, key, protoDesc);
 	} : dP;
-
+	
 	var wrap = function(tag){
 	  var sym = AllSymbols[tag] = _create($Symbol[PROTOTYPE]);
 	  sym._k = tag;
 	  return sym;
 	};
-
+	
 	var isSymbol = USE_NATIVE && typeof $Symbol.iterator == 'symbol' ? function(it){
 	  return typeof it == 'symbol';
 	} : function(it){
 	  return it instanceof $Symbol;
 	};
-
+	
 	var $defineProperty = function defineProperty(it, key, D){
 	  if(it === ObjectProto)$defineProperty(OPSymbols, key, D);
 	  anObject(it);
@@ -407,7 +407,7 @@
 	    if(has(AllSymbols, key = names[i++]) && (IS_OP ? has(ObjectProto, key) : true))result.push(AllSymbols[key]);
 	  } return result;
 	};
-
+	
 	// 19.4.1.1 Symbol([description])
 	if(!USE_NATIVE){
 	  $Symbol = function Symbol(){
@@ -424,31 +424,31 @@
 	  redefine($Symbol[PROTOTYPE], 'toString', function toString(){
 	    return this._k;
 	  });
-
+	
 	  $GOPD.f = $getOwnPropertyDescriptor;
 	  $DP.f   = $defineProperty;
 	  __webpack_require__(50).f = gOPNExt.f = $getOwnPropertyNames;
 	  __webpack_require__(44).f  = $propertyIsEnumerable;
 	  __webpack_require__(43).f = $getOwnPropertySymbols;
-
+	
 	  if(DESCRIPTORS && !__webpack_require__(28)){
 	    redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
 	  }
-
+	
 	  wksExt.f = function(name){
 	    return wrap(wks(name));
 	  }
 	}
-
+	
 	$export($export.G + $export.W + $export.F * !USE_NATIVE, {Symbol: $Symbol});
-
+	
 	for(var symbols = (
 	  // 19.4.2.2, 19.4.2.3, 19.4.2.4, 19.4.2.6, 19.4.2.8, 19.4.2.9, 19.4.2.10, 19.4.2.11, 19.4.2.12, 19.4.2.13, 19.4.2.14
 	  'hasInstance,isConcatSpreadable,iterator,match,replace,search,species,split,toPrimitive,toStringTag,unscopables'
 	).split(','), i = 0; symbols.length > i; )wks(symbols[i++]);
-
+	
 	for(var symbols = $keys(wks.store), i = 0; symbols.length > i; )wksDefine(symbols[i++]);
-
+	
 	$export($export.S + $export.F * !USE_NATIVE, 'Symbol', {
 	  // 19.4.2.1 Symbol.for(key)
 	  'for': function(key){
@@ -464,7 +464,7 @@
 	  useSetter: function(){ setter = true; },
 	  useSimple: function(){ setter = false; }
 	});
-
+	
 	$export($export.S + $export.F * !USE_NATIVE, 'Object', {
 	  // 19.1.2.2 Object.create(O [, Properties])
 	  create: $create,
@@ -479,7 +479,7 @@
 	  // 19.1.2.8 Object.getOwnPropertySymbols(O)
 	  getOwnPropertySymbols: $getOwnPropertySymbols
 	});
-
+	
 	// 24.3.2 JSON.stringify(value [, replacer [, space]])
 	$JSON && $export($export.S + $export.F * (!USE_NATIVE || $fails(function(){
 	  var S = $Symbol();
@@ -504,7 +504,7 @@
 	    return _stringify.apply($JSON, args);
 	  }
 	});
-
+	
 	// 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
 	$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(10)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
 	// 19.4.3.5 Symbol.prototype[@@toStringTag]
@@ -563,7 +563,7 @@
 	  , redefine  = __webpack_require__(18)
 	  , ctx       = __webpack_require__(20)
 	  , PROTOTYPE = 'prototype';
-
+	
 	var $export = function(type, name, source){
 	  var IS_FORCED = type & $export.F
 	    , IS_GLOBAL = type & $export.G
@@ -629,7 +629,7 @@
 	  , IE8_DOM_DEFINE = __webpack_require__(14)
 	  , toPrimitive    = __webpack_require__(16)
 	  , dP             = Object.defineProperty;
-
+	
 	exports.f = __webpack_require__(6) ? Object.defineProperty : function defineProperty(O, P, Attributes){
 	  anObject(O);
 	  P = toPrimitive(P, true);
@@ -721,11 +721,11 @@
 	  , TO_STRING = 'toString'
 	  , $toString = Function[TO_STRING]
 	  , TPL       = ('' + $toString).split(TO_STRING);
-
+	
 	__webpack_require__(9).inspectSource = function(it){
 	  return $toString.call(it);
 	};
-
+	
 	(module.exports = function(O, key, val, safe){
 	  var isFunction = typeof val == 'function';
 	  if(isFunction)has(val, 'name') || hide(val, 'name', key);
@@ -867,7 +867,7 @@
 	var def = __webpack_require__(11).f
 	  , has = __webpack_require__(5)
 	  , TAG = __webpack_require__(25)('toStringTag');
-
+	
 	module.exports = function(it, tag, stat){
 	  if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
 	};
@@ -880,12 +880,12 @@
 	  , uid        = __webpack_require__(19)
 	  , Symbol     = __webpack_require__(4).Symbol
 	  , USE_SYMBOL = typeof Symbol == 'function';
-
+	
 	var $exports = module.exports = function(name){
 	  return store[name] || (store[name] =
 	    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));
 	};
-
+	
 	$exports.store = store;
 
 /***/ },
@@ -936,7 +936,7 @@
 	// 19.1.2.14 / 15.2.3.14 Object.keys(O)
 	var $keys       = __webpack_require__(31)
 	  , enumBugKeys = __webpack_require__(41);
-
+	
 	module.exports = Object.keys || function keys(O){
 	  return $keys(O, enumBugKeys);
 	};
@@ -949,7 +949,7 @@
 	  , toIObject    = __webpack_require__(32)
 	  , arrayIndexOf = __webpack_require__(36)(false)
 	  , IE_PROTO     = __webpack_require__(40)('IE_PROTO');
-
+	
 	module.exports = function(object, names){
 	  var O      = toIObject(object)
 	    , i      = 0
@@ -989,7 +989,7 @@
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
-
+	
 	module.exports = function(it){
 	  return toString.call(it).slice(8, -1);
 	};
@@ -1136,7 +1136,7 @@
 	  , IE_PROTO    = __webpack_require__(40)('IE_PROTO')
 	  , Empty       = function(){ /* empty */ }
 	  , PROTOTYPE   = 'prototype';
-
+	
 	// Create object with fake `null` prototype: use iframe Object with cleared prototype
 	var createDict = function(){
 	  // Thrash, waste and sodomy: IE GC bug
@@ -1158,7 +1158,7 @@
 	  while(i--)delete createDict[PROTOTYPE][enumBugKeys[i]];
 	  return createDict();
 	};
-
+	
 	module.exports = Object.create || function create(O, Properties){
 	  var result;
 	  if(O !== null){
@@ -1179,7 +1179,7 @@
 	var dP       = __webpack_require__(11)
 	  , anObject = __webpack_require__(12)
 	  , getKeys  = __webpack_require__(30);
-
+	
 	module.exports = __webpack_require__(6) ? Object.defineProperties : function defineProperties(O, Properties){
 	  anObject(O);
 	  var keys   = getKeys(Properties)
@@ -1204,10 +1204,10 @@
 	var toIObject = __webpack_require__(32)
 	  , gOPN      = __webpack_require__(50).f
 	  , toString  = {}.toString;
-
+	
 	var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
 	  ? Object.getOwnPropertyNames(window) : [];
-
+	
 	var getWindowNames = function(it){
 	  try {
 	    return gOPN(it);
@@ -1215,7 +1215,7 @@
 	    return windowNames.slice();
 	  }
 	};
-
+	
 	module.exports.f = function getOwnPropertyNames(it){
 	  return windowNames && toString.call(it) == '[object Window]' ? getWindowNames(it) : gOPN(toIObject(it));
 	};
@@ -1228,7 +1228,7 @@
 	// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
 	var $keys      = __webpack_require__(31)
 	  , hiddenKeys = __webpack_require__(41).concat('length', 'prototype');
-
+	
 	exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
 	  return $keys(O, hiddenKeys);
 	};
@@ -1244,7 +1244,7 @@
 	  , has            = __webpack_require__(5)
 	  , IE8_DOM_DEFINE = __webpack_require__(14)
 	  , gOPD           = Object.getOwnPropertyDescriptor;
-
+	
 	exports.f = __webpack_require__(6) ? gOPD : function getOwnPropertyDescriptor(O, P){
 	  O = toIObject(O);
 	  P = toPrimitive(P, true);
@@ -1285,7 +1285,7 @@
 	// 19.1.2.6 Object.getOwnPropertyDescriptor(O, P)
 	var toIObject                 = __webpack_require__(32)
 	  , $getOwnPropertyDescriptor = __webpack_require__(51).f;
-
+	
 	__webpack_require__(56)('getOwnPropertyDescriptor', function(){
 	  return function getOwnPropertyDescriptor(it, key){
 	    return $getOwnPropertyDescriptor(toIObject(it), key);
@@ -1314,7 +1314,7 @@
 	// 19.1.2.9 Object.getPrototypeOf(O)
 	var toObject        = __webpack_require__(58)
 	  , $getPrototypeOf = __webpack_require__(59);
-
+	
 	__webpack_require__(56)('getPrototypeOf', function(){
 	  return function getPrototypeOf(it){
 	    return $getPrototypeOf(toObject(it));
@@ -1340,7 +1340,7 @@
 	  , toObject    = __webpack_require__(58)
 	  , IE_PROTO    = __webpack_require__(40)('IE_PROTO')
 	  , ObjectProto = Object.prototype;
-
+	
 	module.exports = Object.getPrototypeOf || function(O){
 	  O = toObject(O);
 	  if(has(O, IE_PROTO))return O[IE_PROTO];
@@ -1356,7 +1356,7 @@
 	// 19.1.2.14 Object.keys(O)
 	var toObject = __webpack_require__(58)
 	  , $keys    = __webpack_require__(30);
-
+	
 	__webpack_require__(56)('keys', function(){
 	  return function keys(it){
 	    return $keys(toObject(it));
@@ -1379,7 +1379,7 @@
 	// 19.1.2.5 Object.freeze(O)
 	var isObject = __webpack_require__(13)
 	  , meta     = __webpack_require__(22).onFreeze;
-
+	
 	__webpack_require__(56)('freeze', function($freeze){
 	  return function freeze(it){
 	    return $freeze && isObject(it) ? $freeze(meta(it)) : it;
@@ -1393,7 +1393,7 @@
 	// 19.1.2.17 Object.seal(O)
 	var isObject = __webpack_require__(13)
 	  , meta     = __webpack_require__(22).onFreeze;
-
+	
 	__webpack_require__(56)('seal', function($seal){
 	  return function seal(it){
 	    return $seal && isObject(it) ? $seal(meta(it)) : it;
@@ -1407,7 +1407,7 @@
 	// 19.1.2.15 Object.preventExtensions(O)
 	var isObject = __webpack_require__(13)
 	  , meta     = __webpack_require__(22).onFreeze;
-
+	
 	__webpack_require__(56)('preventExtensions', function($preventExtensions){
 	  return function preventExtensions(it){
 	    return $preventExtensions && isObject(it) ? $preventExtensions(meta(it)) : it;
@@ -1420,7 +1420,7 @@
 
 	// 19.1.2.12 Object.isFrozen(O)
 	var isObject = __webpack_require__(13);
-
+	
 	__webpack_require__(56)('isFrozen', function($isFrozen){
 	  return function isFrozen(it){
 	    return isObject(it) ? $isFrozen ? $isFrozen(it) : false : true;
@@ -1433,7 +1433,7 @@
 
 	// 19.1.2.13 Object.isSealed(O)
 	var isObject = __webpack_require__(13);
-
+	
 	__webpack_require__(56)('isSealed', function($isSealed){
 	  return function isSealed(it){
 	    return isObject(it) ? $isSealed ? $isSealed(it) : false : true;
@@ -1446,7 +1446,7 @@
 
 	// 19.1.2.11 Object.isExtensible(O)
 	var isObject = __webpack_require__(13);
-
+	
 	__webpack_require__(56)('isExtensible', function($isExtensible){
 	  return function isExtensible(it){
 	    return isObject(it) ? $isExtensible ? $isExtensible(it) : true : false;
@@ -1459,7 +1459,7 @@
 
 	// 19.1.3.1 Object.assign(target, source)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S + $export.F, 'Object', {assign: __webpack_require__(69)});
 
 /***/ },
@@ -1474,7 +1474,7 @@
 	  , toObject = __webpack_require__(58)
 	  , IObject  = __webpack_require__(33)
 	  , $assign  = Object.assign;
-
+	
 	// should work with symbols and should have deterministic property order (V8 bug)
 	module.exports = !$assign || __webpack_require__(7)(function(){
 	  var A = {}
@@ -1579,14 +1579,14 @@
 	  , TAG = __webpack_require__(25)('toStringTag')
 	  // ES3 wrong here
 	  , ARG = cof(function(){ return arguments; }()) == 'Arguments';
-
+	
 	// fallback for IE11 Script Access Denied error
 	var tryGet = function(it, key){
 	  try {
 	    return it[key];
 	  } catch(e){ /* empty */ }
 	};
-
+	
 	module.exports = function(it){
 	  var O, T, B;
 	  return it === undefined ? 'Undefined' : it === null ? 'Null'
@@ -1604,7 +1604,7 @@
 
 	// 19.2.3.2 / 15.3.4.5 Function.prototype.bind(thisArg, args...)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.P, 'Function', {bind: __webpack_require__(77)});
 
 /***/ },
@@ -1617,14 +1617,14 @@
 	  , invoke     = __webpack_require__(78)
 	  , arraySlice = [].slice
 	  , factories  = {};
-
+	
 	var construct = function(F, len, args){
 	  if(!(len in factories)){
 	    for(var n = [], i = 0; i < len; i++)n[i] = 'a[' + i + ']';
 	    factories[len] = Function('F,a', 'return new F(' + n.join(',') + ')');
 	  } return factories[len](F, args);
 	};
-
+	
 	module.exports = Function.bind || function bind(that /*, args... */){
 	  var fn       = aFunction(this)
 	    , partArgs = arraySlice.call(arguments, 1);
@@ -1667,11 +1667,11 @@
 	  , FProto     = Function.prototype
 	  , nameRE     = /^\s*function ([^ (]*)/
 	  , NAME       = 'name';
-
+	
 	var isExtensible = Object.isExtensible || function(){
 	  return true;
 	};
-
+	
 	// 19.2.4.2 name
 	NAME in FProto || __webpack_require__(6) && dP(FProto, NAME, {
 	  configurable: true,
@@ -1722,7 +1722,7 @@
 	  , $trim     = __webpack_require__(83).trim
 	  , ws        = __webpack_require__(84)
 	  , hex       = /^[\-+]?0[xX]/;
-
+	
 	module.exports = $parseInt(ws + '08') !== 8 || $parseInt(ws + '0x16') !== 22 ? function parseInt(str, radix){
 	  var string = $trim(String(str), 3);
 	  return $parseInt(string, (radix >>> 0) || (hex.test(string) ? 16 : 10));
@@ -1740,7 +1740,7 @@
 	  , non     = '\u200b\u0085'
 	  , ltrim   = RegExp('^' + space + space + '*')
 	  , rtrim   = RegExp(space + space + '*$');
-
+	
 	var exporter = function(KEY, exec, ALIAS){
 	  var exp   = {};
 	  var FORCE = fails(function(){
@@ -1750,7 +1750,7 @@
 	  if(ALIAS)exp[ALIAS] = fn;
 	  $export($export.P + $export.F * FORCE, 'String', exp);
 	};
-
+	
 	// 1 -> String#trimLeft
 	// 2 -> String#trimRight
 	// 3 -> String#trim
@@ -1760,7 +1760,7 @@
 	  if(TYPE & 2)string = string.replace(rtrim, '');
 	  return string;
 	};
-
+	
 	module.exports = exporter;
 
 /***/ },
@@ -1785,7 +1785,7 @@
 
 	var $parseFloat = __webpack_require__(4).parseFloat
 	  , $trim       = __webpack_require__(83).trim;
-
+	
 	module.exports = 1 / $parseFloat(__webpack_require__(84) + '-0') !== -Infinity ? function parseFloat(str){
 	  var string = $trim(String(str), 3)
 	    , result = $parseFloat(string);
@@ -1814,7 +1814,7 @@
 	  // Opera ~12 has broken Object#toString
 	  , BROKEN_COF        = cof(__webpack_require__(46)(proto)) == NUMBER
 	  , TRIM              = 'trim' in String.prototype;
-
+	
 	// 7.1.3 ToNumber(argument)
 	var toNumber = function(argument){
 	  var it = toPrimitive(argument, false);
@@ -1840,7 +1840,7 @@
 	    }
 	  } return +it;
 	};
-
+	
 	if(!$Number(' 0o1') || !$Number('0b1') || $Number('+0x1')){
 	  $Number = function Number(value){
 	    var it = arguments.length < 1 ? 0 : value
@@ -1893,7 +1893,7 @@
 	  , data         = [0, 0, 0, 0, 0, 0]
 	  , ERROR        = 'Number.toFixed: incorrect invocation!'
 	  , ZERO         = '0';
-
+	
 	var multiply = function(n, c){
 	  var i  = -1
 	    , c2 = c;
@@ -1937,7 +1937,7 @@
 	    x2 /= 2;
 	  } return n;
 	};
-
+	
 	$export($export.P + $export.F * (!!$toFixed && (
 	  0.00008.toFixed(3) !== '0.000' ||
 	  0.9.toFixed(0) !== '1' ||
@@ -2014,7 +2014,7 @@
 	'use strict';
 	var toInteger = __webpack_require__(38)
 	  , defined   = __webpack_require__(35);
-
+	
 	module.exports = function repeat(count){
 	  var str = String(defined(this))
 	    , res = ''
@@ -2033,7 +2033,7 @@
 	  , $fails       = __webpack_require__(7)
 	  , aNumberValue = __webpack_require__(90)
 	  , $toPrecision = 1..toPrecision;
-
+	
 	$export($export.P + $export.F * ($fails(function(){
 	  // IE7-
 	  return $toPrecision.call(1, undefined) !== '1';
@@ -2053,7 +2053,7 @@
 
 	// 20.1.2.1 Number.EPSILON
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Number', {EPSILON: Math.pow(2, -52)});
 
 /***/ },
@@ -2063,7 +2063,7 @@
 	// 20.1.2.2 Number.isFinite(number)
 	var $export   = __webpack_require__(8)
 	  , _isFinite = __webpack_require__(4).isFinite;
-
+	
 	$export($export.S, 'Number', {
 	  isFinite: function isFinite(it){
 	    return typeof it == 'number' && _isFinite(it);
@@ -2076,7 +2076,7 @@
 
 	// 20.1.2.3 Number.isInteger(number)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Number', {isInteger: __webpack_require__(96)});
 
 /***/ },
@@ -2096,7 +2096,7 @@
 
 	// 20.1.2.4 Number.isNaN(number)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Number', {
 	  isNaN: function isNaN(number){
 	    return number != number;
@@ -2111,7 +2111,7 @@
 	var $export   = __webpack_require__(8)
 	  , isInteger = __webpack_require__(96)
 	  , abs       = Math.abs;
-
+	
 	$export($export.S, 'Number', {
 	  isSafeInteger: function isSafeInteger(number){
 	    return isInteger(number) && abs(number) <= 0x1fffffffffffff;
@@ -2124,7 +2124,7 @@
 
 	// 20.1.2.6 Number.MAX_SAFE_INTEGER
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Number', {MAX_SAFE_INTEGER: 0x1fffffffffffff});
 
 /***/ },
@@ -2133,7 +2133,7 @@
 
 	// 20.1.2.10 Number.MIN_SAFE_INTEGER
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Number', {MIN_SAFE_INTEGER: -0x1fffffffffffff});
 
 /***/ },
@@ -2163,7 +2163,7 @@
 	  , log1p   = __webpack_require__(104)
 	  , sqrt    = Math.sqrt
 	  , $acosh  = Math.acosh;
-
+	
 	$export($export.S + $export.F * !($acosh
 	  // V8 bug: https://code.google.com/p/v8/issues/detail?id=3509
 	  && Math.floor($acosh(Number.MAX_VALUE)) == 710
@@ -2193,11 +2193,11 @@
 	// 20.2.2.5 Math.asinh(x)
 	var $export = __webpack_require__(8)
 	  , $asinh  = Math.asinh;
-
+	
 	function asinh(x){
 	  return !isFinite(x = +x) || x == 0 ? x : x < 0 ? -asinh(-x) : Math.log(x + Math.sqrt(x * x + 1));
 	}
-
+	
 	// Tor Browser bug: Math.asinh(0) -> -0 
 	$export($export.S + $export.F * !($asinh && 1 / $asinh(0) > 0), 'Math', {asinh: asinh});
 
@@ -2208,7 +2208,7 @@
 	// 20.2.2.7 Math.atanh(x)
 	var $export = __webpack_require__(8)
 	  , $atanh  = Math.atanh;
-
+	
 	// Tor Browser bug: Math.atanh(-0) -> 0 
 	$export($export.S + $export.F * !($atanh && 1 / $atanh(-0) < 0), 'Math', {
 	  atanh: function atanh(x){
@@ -2223,7 +2223,7 @@
 	// 20.2.2.9 Math.cbrt(x)
 	var $export = __webpack_require__(8)
 	  , sign    = __webpack_require__(108);
-
+	
 	$export($export.S, 'Math', {
 	  cbrt: function cbrt(x){
 	    return sign(x = +x) * Math.pow(Math.abs(x), 1 / 3);
@@ -2245,7 +2245,7 @@
 
 	// 20.2.2.11 Math.clz32(x)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Math', {
 	  clz32: function clz32(x){
 	    return (x >>>= 0) ? 31 - Math.floor(Math.log(x + 0.5) * Math.LOG2E) : 32;
@@ -2259,7 +2259,7 @@
 	// 20.2.2.12 Math.cosh(x)
 	var $export = __webpack_require__(8)
 	  , exp     = Math.exp;
-
+	
 	$export($export.S, 'Math', {
 	  cosh: function cosh(x){
 	    return (exp(x = +x) + exp(-x)) / 2;
@@ -2273,7 +2273,7 @@
 	// 20.2.2.14 Math.expm1(x)
 	var $export = __webpack_require__(8)
 	  , $expm1  = __webpack_require__(112);
-
+	
 	$export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', {expm1: $expm1});
 
 /***/ },
@@ -2303,12 +2303,12 @@
 	  , EPSILON32 = pow(2, -23)
 	  , MAX32     = pow(2, 127) * (2 - EPSILON32)
 	  , MIN32     = pow(2, -126);
-
+	
 	var roundTiesToEven = function(n){
 	  return n + 1 / EPSILON - 1 / EPSILON;
 	};
-
-
+	
+	
 	$export($export.S, 'Math', {
 	  fround: function fround(x){
 	    var $abs  = Math.abs(x)
@@ -2329,7 +2329,7 @@
 	// 20.2.2.17 Math.hypot([value1[, value2[, … ]]])
 	var $export = __webpack_require__(8)
 	  , abs     = Math.abs;
-
+	
 	$export($export.S, 'Math', {
 	  hypot: function hypot(value1, value2){ // eslint-disable-line no-unused-vars
 	    var sum  = 0
@@ -2359,7 +2359,7 @@
 	// 20.2.2.18 Math.imul(x, y)
 	var $export = __webpack_require__(8)
 	  , $imul   = Math.imul;
-
+	
 	// some WebKit versions fails with big numbers, some has wrong arity
 	$export($export.S + $export.F * __webpack_require__(7)(function(){
 	  return $imul(0xffffffff, 5) != -5 || $imul.length != 2;
@@ -2380,7 +2380,7 @@
 
 	// 20.2.2.21 Math.log10(x)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Math', {
 	  log10: function log10(x){
 	    return Math.log(x) / Math.LN10;
@@ -2393,7 +2393,7 @@
 
 	// 20.2.2.20 Math.log1p(x)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Math', {log1p: __webpack_require__(104)});
 
 /***/ },
@@ -2402,7 +2402,7 @@
 
 	// 20.2.2.22 Math.log2(x)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Math', {
 	  log2: function log2(x){
 	    return Math.log(x) / Math.LN2;
@@ -2415,7 +2415,7 @@
 
 	// 20.2.2.28 Math.sign(x)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Math', {sign: __webpack_require__(108)});
 
 /***/ },
@@ -2426,7 +2426,7 @@
 	var $export = __webpack_require__(8)
 	  , expm1   = __webpack_require__(112)
 	  , exp     = Math.exp;
-
+	
 	// V8 near Chromium 38 has a problem with very small numbers
 	$export($export.S + $export.F * __webpack_require__(7)(function(){
 	  return !Math.sinh(-2e-17) != -2e-17;
@@ -2446,7 +2446,7 @@
 	var $export = __webpack_require__(8)
 	  , expm1   = __webpack_require__(112)
 	  , exp     = Math.exp;
-
+	
 	$export($export.S, 'Math', {
 	  tanh: function tanh(x){
 	    var a = expm1(x = +x)
@@ -2461,7 +2461,7 @@
 
 	// 20.2.2.34 Math.trunc(x)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Math', {
 	  trunc: function trunc(it){
 	    return (it > 0 ? Math.floor : Math.ceil)(it);
@@ -2476,7 +2476,7 @@
 	  , toIndex        = __webpack_require__(39)
 	  , fromCharCode   = String.fromCharCode
 	  , $fromCodePoint = String.fromCodePoint;
-
+	
 	// length should be 1, old FF problem
 	$export($export.S + $export.F * (!!$fromCodePoint && $fromCodePoint.length != 1), 'String', {
 	  // 21.1.2.2 String.fromCodePoint(...codePoints)
@@ -2503,7 +2503,7 @@
 	var $export   = __webpack_require__(8)
 	  , toIObject = __webpack_require__(32)
 	  , toLength  = __webpack_require__(37);
-
+	
 	$export($export.S, 'String', {
 	  // 21.1.2.4 String.raw(callSite, ...substitutions)
 	  raw: function raw(callSite){
@@ -2537,7 +2537,7 @@
 
 	'use strict';
 	var $at  = __webpack_require__(127)(true);
-
+	
 	// 21.1.3.27 String.prototype[@@iterator]()
 	__webpack_require__(128)(String, 'String', function(iterated){
 	  this._t = String(iterated); // target
@@ -2594,9 +2594,9 @@
 	  , FF_ITERATOR    = '@@iterator'
 	  , KEYS           = 'keys'
 	  , VALUES         = 'values';
-
+	
 	var returnThis = function(){ return this; };
-
+	
 	module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED){
 	  $iterCreate(Constructor, NAME, next);
 	  var getMethod = function(kind){
@@ -2665,10 +2665,10 @@
 	  , descriptor     = __webpack_require__(17)
 	  , setToStringTag = __webpack_require__(24)
 	  , IteratorPrototype = {};
-
+	
 	// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
 	__webpack_require__(10)(IteratorPrototype, __webpack_require__(25)('iterator'), function(){ return this; });
-
+	
 	module.exports = function(Constructor, NAME, next){
 	  Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
 	  setToStringTag(Constructor, NAME + ' Iterator');
@@ -2699,7 +2699,7 @@
 	  , context   = __webpack_require__(133)
 	  , ENDS_WITH = 'endsWith'
 	  , $endsWith = ''[ENDS_WITH];
-
+	
 	$export($export.P + $export.F * __webpack_require__(135)(ENDS_WITH), 'String', {
 	  endsWith: function endsWith(searchString /*, endPosition = @length */){
 	    var that = context(this, searchString, ENDS_WITH)
@@ -2720,7 +2720,7 @@
 	// helper for String#{startsWith, endsWith, includes}
 	var isRegExp = __webpack_require__(134)
 	  , defined  = __webpack_require__(35);
-
+	
 	module.exports = function(that, searchString, NAME){
 	  if(isRegExp(searchString))throw TypeError('String#' + NAME + " doesn't accept regex!");
 	  return String(defined(that));
@@ -2765,7 +2765,7 @@
 	var $export  = __webpack_require__(8)
 	  , context  = __webpack_require__(133)
 	  , INCLUDES = 'includes';
-
+	
 	$export($export.P + $export.F * __webpack_require__(135)(INCLUDES), 'String', {
 	  includes: function includes(searchString /*, position = 0 */){
 	    return !!~context(this, searchString, INCLUDES)
@@ -2778,7 +2778,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.P, 'String', {
 	  // 21.1.3.13 String.prototype.repeat(count)
 	  repeat: __webpack_require__(91)
@@ -2795,7 +2795,7 @@
 	  , context     = __webpack_require__(133)
 	  , STARTS_WITH = 'startsWith'
 	  , $startsWith = ''[STARTS_WITH];
-
+	
 	$export($export.P + $export.F * __webpack_require__(135)(STARTS_WITH), 'String', {
 	  startsWith: function startsWith(searchString /*, position = 0 */){
 	    var that   = context(this, searchString, STARTS_WITH)
@@ -2993,7 +2993,7 @@
 
 	// 20.3.3.1 / 15.9.4.4 Date.now()
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Date', {now: function(){ return new Date().getTime(); }});
 
 /***/ },
@@ -3004,7 +3004,7 @@
 	var $export     = __webpack_require__(8)
 	  , toObject    = __webpack_require__(58)
 	  , toPrimitive = __webpack_require__(16);
-
+	
 	$export($export.P + $export.F * __webpack_require__(7)(function(){
 	  return new Date(NaN).toJSON() !== null || Date.prototype.toJSON.call({toISOString: function(){ return 1; }}) !== 1;
 	}), 'Date', {
@@ -3024,11 +3024,11 @@
 	var $export = __webpack_require__(8)
 	  , fails   = __webpack_require__(7)
 	  , getTime = Date.prototype.getTime;
-
+	
 	var lz = function(num){
 	  return num > 9 ? num : '0' + num;
 	};
-
+	
 	// PhantomJS / old WebKit has a broken implementations
 	$export($export.P + $export.F * (fails(function(){
 	  return new Date(-5e13 - 1).toISOString() != '0385-07-25T07:06:39.999Z';
@@ -3070,7 +3070,7 @@
 
 	var TO_PRIMITIVE = __webpack_require__(25)('toPrimitive')
 	  , proto        = Date.prototype;
-
+	
 	if(!(TO_PRIMITIVE in proto))__webpack_require__(10)(proto, TO_PRIMITIVE, __webpack_require__(158));
 
 /***/ },
@@ -3081,7 +3081,7 @@
 	var anObject    = __webpack_require__(12)
 	  , toPrimitive = __webpack_require__(16)
 	  , NUMBER      = 'number';
-
+	
 	module.exports = function(hint){
 	  if(hint !== 'string' && hint !== NUMBER && hint !== 'default')throw TypeError('Incorrect hint');
 	  return toPrimitive(anObject(this), hint != NUMBER);
@@ -3093,7 +3093,7 @@
 
 	// 22.1.2.2 / 15.4.3.2 Array.isArray(arg)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Array', {isArray: __webpack_require__(45)});
 
 /***/ },
@@ -3109,7 +3109,7 @@
 	  , toLength       = __webpack_require__(37)
 	  , createProperty = __webpack_require__(163)
 	  , getIterFn      = __webpack_require__(164);
-
+	
 	$export($export.S + $export.F * !__webpack_require__(165)(function(iter){ Array.from(iter); }), 'Array', {
 	  // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
 	  from: function from(arrayLike/*, mapfn = undefined, thisArg = undefined*/){
@@ -3164,7 +3164,7 @@
 	var Iterators  = __webpack_require__(129)
 	  , ITERATOR   = __webpack_require__(25)('iterator')
 	  , ArrayProto = Array.prototype;
-
+	
 	module.exports = function(it){
 	  return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
 	};
@@ -3176,7 +3176,7 @@
 	'use strict';
 	var $defineProperty = __webpack_require__(11)
 	  , createDesc      = __webpack_require__(17);
-
+	
 	module.exports = function(object, index, value){
 	  if(index in object)$defineProperty.f(object, index, createDesc(0, value));
 	  else object[index] = value;
@@ -3201,13 +3201,13 @@
 
 	var ITERATOR     = __webpack_require__(25)('iterator')
 	  , SAFE_CLOSING = false;
-
+	
 	try {
 	  var riter = [7][ITERATOR]();
 	  riter['return'] = function(){ SAFE_CLOSING = true; };
 	  Array.from(riter, function(){ throw 2; });
 	} catch(e){ /* empty */ }
-
+	
 	module.exports = function(exec, skipClosing){
 	  if(!skipClosing && !SAFE_CLOSING)return false;
 	  var safe = false;
@@ -3228,7 +3228,7 @@
 	'use strict';
 	var $export        = __webpack_require__(8)
 	  , createProperty = __webpack_require__(163);
-
+	
 	// WebKit Array.of isn't generic
 	$export($export.S + $export.F * __webpack_require__(7)(function(){
 	  function F(){}
@@ -3254,7 +3254,7 @@
 	var $export   = __webpack_require__(8)
 	  , toIObject = __webpack_require__(32)
 	  , arrayJoin = [].join;
-
+	
 	// fallback for not array-like strings
 	$export($export.P + $export.F * (__webpack_require__(33) != Object || !__webpack_require__(168)(arrayJoin)), 'Array', {
 	  join: function join(separator){
@@ -3267,7 +3267,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var fails = __webpack_require__(7);
-
+	
 	module.exports = function(method, arg){
 	  return !!method && fails(function(){
 	    arg ? method.call(null, function(){}, 1) : method.call(null);
@@ -3285,7 +3285,7 @@
 	  , toIndex    = __webpack_require__(39)
 	  , toLength   = __webpack_require__(37)
 	  , arraySlice = [].slice;
-
+	
 	// fallback for not array-like ES3 strings and DOM objects
 	$export($export.P + $export.F * __webpack_require__(7)(function(){
 	  if(html)arraySlice.call(html);
@@ -3318,7 +3318,7 @@
 	  , fails     = __webpack_require__(7)
 	  , $sort     = [].sort
 	  , test      = [1, 2, 3];
-
+	
 	$export($export.P + $export.F * (fails(function(){
 	  // IE8-
 	  test.sort(undefined);
@@ -3343,7 +3343,7 @@
 	var $export  = __webpack_require__(8)
 	  , $forEach = __webpack_require__(172)(0)
 	  , STRICT   = __webpack_require__(168)([].forEach, true);
-
+	
 	$export($export.P + $export.F * !STRICT, 'Array', {
 	  // 22.1.3.10 / 15.4.4.18 Array.prototype.forEach(callbackfn [, thisArg])
 	  forEach: function forEach(callbackfn /* , thisArg */){
@@ -3406,7 +3406,7 @@
 
 	// 9.4.2.3 ArraySpeciesCreate(originalArray, length)
 	var speciesConstructor = __webpack_require__(174);
-
+	
 	module.exports = function(original, length){
 	  return new (speciesConstructor(original))(length);
 	};
@@ -3418,7 +3418,7 @@
 	var isObject = __webpack_require__(13)
 	  , isArray  = __webpack_require__(45)
 	  , SPECIES  = __webpack_require__(25)('species');
-
+	
 	module.exports = function(original){
 	  var C;
 	  if(isArray(original)){
@@ -3439,7 +3439,7 @@
 	'use strict';
 	var $export = __webpack_require__(8)
 	  , $map    = __webpack_require__(172)(1);
-
+	
 	$export($export.P + $export.F * !__webpack_require__(168)([].map, true), 'Array', {
 	  // 22.1.3.15 / 15.4.4.19 Array.prototype.map(callbackfn [, thisArg])
 	  map: function map(callbackfn /* , thisArg */){
@@ -3454,7 +3454,7 @@
 	'use strict';
 	var $export = __webpack_require__(8)
 	  , $filter = __webpack_require__(172)(2);
-
+	
 	$export($export.P + $export.F * !__webpack_require__(168)([].filter, true), 'Array', {
 	  // 22.1.3.7 / 15.4.4.20 Array.prototype.filter(callbackfn [, thisArg])
 	  filter: function filter(callbackfn /* , thisArg */){
@@ -3469,7 +3469,7 @@
 	'use strict';
 	var $export = __webpack_require__(8)
 	  , $some   = __webpack_require__(172)(3);
-
+	
 	$export($export.P + $export.F * !__webpack_require__(168)([].some, true), 'Array', {
 	  // 22.1.3.23 / 15.4.4.17 Array.prototype.some(callbackfn [, thisArg])
 	  some: function some(callbackfn /* , thisArg */){
@@ -3484,7 +3484,7 @@
 	'use strict';
 	var $export = __webpack_require__(8)
 	  , $every  = __webpack_require__(172)(4);
-
+	
 	$export($export.P + $export.F * !__webpack_require__(168)([].every, true), 'Array', {
 	  // 22.1.3.5 / 15.4.4.16 Array.prototype.every(callbackfn [, thisArg])
 	  every: function every(callbackfn /* , thisArg */){
@@ -3499,7 +3499,7 @@
 	'use strict';
 	var $export = __webpack_require__(8)
 	  , $reduce = __webpack_require__(180);
-
+	
 	$export($export.P + $export.F * !__webpack_require__(168)([].reduce, true), 'Array', {
 	  // 22.1.3.18 / 15.4.4.21 Array.prototype.reduce(callbackfn [, initialValue])
 	  reduce: function reduce(callbackfn /* , initialValue */){
@@ -3515,7 +3515,7 @@
 	  , toObject  = __webpack_require__(58)
 	  , IObject   = __webpack_require__(33)
 	  , toLength  = __webpack_require__(37);
-
+	
 	module.exports = function(that, callbackfn, aLen, memo, isRight){
 	  aFunction(callbackfn);
 	  var O      = toObject(that)
@@ -3547,7 +3547,7 @@
 	'use strict';
 	var $export = __webpack_require__(8)
 	  , $reduce = __webpack_require__(180);
-
+	
 	$export($export.P + $export.F * !__webpack_require__(168)([].reduceRight, true), 'Array', {
 	  // 22.1.3.19 / 15.4.4.22 Array.prototype.reduceRight(callbackfn [, initialValue])
 	  reduceRight: function reduceRight(callbackfn /* , initialValue */){
@@ -3564,7 +3564,7 @@
 	  , $indexOf      = __webpack_require__(36)(false)
 	  , $native       = [].indexOf
 	  , NEGATIVE_ZERO = !!$native && 1 / [1].indexOf(1, -0) < 0;
-
+	
 	$export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(168)($native)), 'Array', {
 	  // 22.1.3.11 / 15.4.4.14 Array.prototype.indexOf(searchElement [, fromIndex])
 	  indexOf: function indexOf(searchElement /*, fromIndex = 0 */){
@@ -3586,7 +3586,7 @@
 	  , toLength      = __webpack_require__(37)
 	  , $native       = [].lastIndexOf
 	  , NEGATIVE_ZERO = !!$native && 1 / [1].lastIndexOf(1, -0) < 0;
-
+	
 	$export($export.P + $export.F * (NEGATIVE_ZERO || !__webpack_require__(168)($native)), 'Array', {
 	  // 22.1.3.14 / 15.4.4.15 Array.prototype.lastIndexOf(searchElement [, fromIndex])
 	  lastIndexOf: function lastIndexOf(searchElement /*, fromIndex = @[*-1] */){
@@ -3608,9 +3608,9 @@
 
 	// 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.P, 'Array', {copyWithin: __webpack_require__(185)});
-
+	
 	__webpack_require__(186)('copyWithin');
 
 /***/ },
@@ -3622,7 +3622,7 @@
 	var toObject = __webpack_require__(58)
 	  , toIndex  = __webpack_require__(39)
 	  , toLength = __webpack_require__(37);
-
+	
 	module.exports = [].copyWithin || function copyWithin(target/*= 0*/, start/*= 0, end = @length*/){
 	  var O     = toObject(this)
 	    , len   = toLength(O.length)
@@ -3662,9 +3662,9 @@
 
 	// 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.P, 'Array', {fill: __webpack_require__(188)});
-
+	
 	__webpack_require__(186)('fill');
 
 /***/ },
@@ -3740,7 +3740,7 @@
 	  , dP          = __webpack_require__(11)
 	  , DESCRIPTORS = __webpack_require__(6)
 	  , SPECIES     = __webpack_require__(25)('species');
-
+	
 	module.exports = function(KEY){
 	  var C = global[KEY];
 	  if(DESCRIPTORS && C && !C[SPECIES])dP.f(C, SPECIES, {
@@ -3758,7 +3758,7 @@
 	  , step             = __webpack_require__(194)
 	  , Iterators        = __webpack_require__(129)
 	  , toIObject        = __webpack_require__(32);
-
+	
 	// 22.1.3.4 Array.prototype.entries()
 	// 22.1.3.13 Array.prototype.keys()
 	// 22.1.3.29 Array.prototype.values()
@@ -3780,10 +3780,10 @@
 	  if(kind == 'values')return step(0, O[index]);
 	  return step(0, [index, O[index]]);
 	}, 'values');
-
+	
 	// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)
 	Iterators.Arguments = Iterators.Array;
-
+	
 	addToUnscopables('keys');
 	addToUnscopables('values');
 	addToUnscopables('entries');
@@ -3813,7 +3813,7 @@
 	  , re2               = /a/g
 	  // "new" creates a new object, old webkit buggy here
 	  , CORRECT_NEW       = new $RegExp(re1) !== re1;
-
+	
 	if(__webpack_require__(6) && (!CORRECT_NEW || __webpack_require__(7)(function(){
 	  re2[__webpack_require__(25)('match')] = false;
 	  // RegExp constructor can alter flags and IsRegExp works correct with @@match
@@ -3841,7 +3841,7 @@
 	  $RegExp.prototype = proto;
 	  __webpack_require__(18)(global, 'RegExp', $RegExp);
 	}
-
+	
 	__webpack_require__(192)('RegExp');
 
 /***/ },
@@ -3873,11 +3873,11 @@
 	  , DESCRIPTORS = __webpack_require__(6)
 	  , TO_STRING   = 'toString'
 	  , $toString   = /./[TO_STRING];
-
+	
 	var define = function(fn){
 	  __webpack_require__(18)(RegExp.prototype, TO_STRING, fn, true);
 	};
-
+	
 	// 21.2.5.14 RegExp.prototype.toString()
 	if(__webpack_require__(7)(function(){ return $toString.call({source: 'a', flags: 'b'}) != '/a/b'; })){
 	  define(function toString(){
@@ -3927,7 +3927,7 @@
 	  , fails    = __webpack_require__(7)
 	  , defined  = __webpack_require__(35)
 	  , wks      = __webpack_require__(25);
-
+	
 	module.exports = function(KEY, length, exec){
 	  var SYMBOL   = wks(KEY)
 	    , fns      = exec(defined, SYMBOL, ''[KEY])
@@ -4082,7 +4082,7 @@
 	  , isNode             = classof(process) == 'process'
 	  , empty              = function(){ /* empty */ }
 	  , Internal, GenericPromiseCapability, Wrapper;
-
+	
 	var USE_NATIVE = !!function(){
 	  try {
 	    // correct subclassing with @@species support
@@ -4092,7 +4092,7 @@
 	    return (isNode || typeof PromiseRejectionEvent == 'function') && promise.then(empty) instanceof FakePromise;
 	  } catch(e){ /* empty */ }
 	}();
-
+	
 	// helpers
 	var sameConstructor = function(a, b){
 	  // with library wrapper special case
@@ -4242,7 +4242,7 @@
 	    $reject.call({_w: promise, _d: false}, e); // wrap
 	  }
 	};
-
+	
 	// constructor polyfill
 	if(!USE_NATIVE){
 	  // 25.4.3.1 Promise(executor)
@@ -4289,12 +4289,12 @@
 	    this.reject  = ctx($reject, promise, 1);
 	  };
 	}
-
+	
 	$export($export.G + $export.W + $export.F * !USE_NATIVE, {Promise: $Promise});
 	__webpack_require__(24)($Promise, PROMISE);
 	__webpack_require__(192)(PROMISE);
 	Wrapper = __webpack_require__(9)[PROMISE];
-
+	
 	// statics
 	$export($export.S + $export.F * !USE_NATIVE, PROMISE, {
 	  // 25.4.4.5 Promise.reject(r)
@@ -4504,10 +4504,10 @@
 	  , process   = global.process
 	  , Promise   = global.Promise
 	  , isNode    = __webpack_require__(34)(process) == 'process';
-
+	
 	module.exports = function(){
 	  var head, last, notify;
-
+	
 	  var flush = function(){
 	    var parent, fn;
 	    if(isNode && (parent = process.domain))parent.exit();
@@ -4524,7 +4524,7 @@
 	    } last = undefined;
 	    if(parent)parent.enter();
 	  };
-
+	
 	  // Node.js
 	  if(isNode){
 	    notify = function(){
@@ -4556,7 +4556,7 @@
 	      macrotask.call(global, flush);
 	    };
 	  }
-
+	
 	  return function(fn){
 	    var task = {fn: fn, next: undefined};
 	    if(last)last.next = task;
@@ -4583,7 +4583,7 @@
 
 	'use strict';
 	var strong = __webpack_require__(212);
-
+	
 	// 23.1 Map Objects
 	module.exports = __webpack_require__(213)('Map', function(get){
 	  return function Map(){ return get(this, arguments.length > 0 ? arguments[0] : undefined); };
@@ -4617,7 +4617,7 @@
 	  , DESCRIPTORS = __webpack_require__(6)
 	  , fastKey     = __webpack_require__(22).fastKey
 	  , SIZE        = DESCRIPTORS ? '_s' : 'size';
-
+	
 	var getEntry = function(that, key){
 	  // fast case
 	  var index = fastKey(key), entry;
@@ -4627,7 +4627,7 @@
 	    if(entry.k == key)return entry;
 	  }
 	};
-
+	
 	module.exports = {
 	  getConstructor: function(wrapper, NAME, IS_MAP, ADDER){
 	    var C = wrapper(function(that, iterable){
@@ -4740,7 +4740,7 @@
 	      if(kind == 'values')return step(0, entry.v);
 	      return step(0, [entry.k, entry.v]);
 	    }, IS_MAP ? 'entries' : 'values' , !IS_MAP, true);
-
+	
 	    // add [@@species], 23.1.2.2, 23.2.2.2
 	    setSpecies(NAME);
 	  }
@@ -4763,7 +4763,7 @@
 	  , $iterDetect       = __webpack_require__(165)
 	  , setToStringTag    = __webpack_require__(24)
 	  , inheritIfRequired = __webpack_require__(88);
-
+	
 	module.exports = function(NAME, wrapper, methods, common, IS_MAP, IS_WEAK){
 	  var Base  = global[NAME]
 	    , C     = Base
@@ -4825,14 +4825,14 @@
 	    // weak collections should not contains .clear method
 	    if(IS_WEAK && proto.clear)delete proto.clear;
 	  }
-
+	
 	  setToStringTag(C, NAME);
-
+	
 	  O[NAME] = C;
 	  $export($export.G + $export.W + $export.F * (C != Base), O);
-
+	
 	  if(!IS_WEAK)common.setStrong(C, NAME, IS_MAP);
-
+	
 	  return C;
 	};
 
@@ -4842,7 +4842,7 @@
 
 	'use strict';
 	var strong = __webpack_require__(212);
-
+	
 	// 23.2 Set Objects
 	module.exports = __webpack_require__(213)('Set', function(get){
 	  return function Set(){ return get(this, arguments.length > 0 ? arguments[0] : undefined); };
@@ -4869,13 +4869,13 @@
 	  , uncaughtFrozenStore = weak.ufstore
 	  , tmp          = {}
 	  , InternalMap;
-
+	
 	var wrapper = function(get){
 	  return function WeakMap(){
 	    return get(this, arguments.length > 0 ? arguments[0] : undefined);
 	  };
 	};
-
+	
 	var methods = {
 	  // 23.3.3.3 WeakMap.prototype.get(key)
 	  get: function get(key){
@@ -4890,10 +4890,10 @@
 	    return weak.def(this, key, value);
 	  }
 	};
-
+	
 	// 23.3 WeakMap Objects
 	var $WeakMap = module.exports = __webpack_require__(213)('WeakMap', wrapper, methods, weak, true, true);
-
+	
 	// IE11 WeakMap frozen keys fix
 	if(new $WeakMap().set((Object.freeze || Object)(tmp), 7).get(tmp) != 7){
 	  InternalMap = weak.getConstructor(wrapper);
@@ -4930,7 +4930,7 @@
 	  , arrayFind         = createArrayMethod(5)
 	  , arrayFindIndex    = createArrayMethod(6)
 	  , id                = 0;
-
+	
 	// fallback for uncaught frozen keys
 	var uncaughtFrozenStore = function(that){
 	  return that._l || (that._l = new UncaughtFrozenStore);
@@ -4964,7 +4964,7 @@
 	    return !!~index;
 	  }
 	};
-
+	
 	module.exports = {
 	  getConstructor: function(wrapper, NAME, IS_MAP, ADDER){
 	    var C = wrapper(function(that, iterable){
@@ -5008,7 +5008,7 @@
 
 	'use strict';
 	var weak = __webpack_require__(216);
-
+	
 	// 23.4 WeakSet Objects
 	__webpack_require__(213)('WeakSet', function(get){
 	  return function WeakSet(){ return get(this, arguments.length > 0 ? arguments[0] : undefined); };
@@ -5039,16 +5039,16 @@
 	  , $slice       = $ArrayBuffer.prototype.slice
 	  , VIEW         = $typed.VIEW
 	  , ARRAY_BUFFER = 'ArrayBuffer';
-
+	
 	$export($export.G + $export.W + $export.F * (ArrayBuffer !== $ArrayBuffer), {ArrayBuffer: $ArrayBuffer});
-
+	
 	$export($export.S + $export.F * !$typed.CONSTR, ARRAY_BUFFER, {
 	  // 24.1.3.1 ArrayBuffer.isView(arg)
 	  isView: function isView(it){
 	    return $isView && $isView(it) || isObject(it) && VIEW in it;
 	  }
 	});
-
+	
 	$export($export.P + $export.U + $export.F * __webpack_require__(7)(function(){
 	  return !new $ArrayBuffer(2).slice(1, undefined).byteLength;
 	}), ARRAY_BUFFER, {
@@ -5067,7 +5067,7 @@
 	    } return result;
 	  }
 	});
-
+	
 	__webpack_require__(192)(ARRAY_BUFFER);
 
 /***/ },
@@ -5082,18 +5082,18 @@
 	  , ABV    = !!(global.ArrayBuffer && global.DataView)
 	  , CONSTR = ABV
 	  , i = 0, l = 9, Typed;
-
+	
 	var TypedArrayConstructors = (
 	  'Int8Array,Uint8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,Float32Array,Float64Array'
 	).split(',');
-
+	
 	while(i < l){
 	  if(Typed = global[TypedArrayConstructors[i++]]){
 	    hide(Typed.prototype, TYPED, true);
 	    hide(Typed.prototype, VIEW, true);
 	  } else CONSTR = false;
 	}
-
+	
 	module.exports = {
 	  ABV:    ABV,
 	  CONSTR: CONSTR,
@@ -5142,7 +5142,7 @@
 	  , $BUFFER        = DESCRIPTORS ? '_b' : BUFFER
 	  , $LENGTH        = DESCRIPTORS ? '_l' : BYTE_LENGTH
 	  , $OFFSET        = DESCRIPTORS ? '_o' : BYTE_OFFSET;
-
+	
 	// IEEE754 conversions based on https://github.com/feross/ieee754
 	var packIEEE754 = function(value, mLen, nBytes){
 	  var buffer = Array(nBytes)
@@ -5214,7 +5214,7 @@
 	    e = e - eBias;
 	  } return (s ? -1 : 1) * m * pow(2, e - mLen);
 	};
-
+	
 	var unpackI32 = function(bytes){
 	  return bytes[3] << 24 | bytes[2] << 16 | bytes[1] << 8 | bytes[0];
 	};
@@ -5233,11 +5233,11 @@
 	var packF32 = function(it){
 	  return packIEEE754(it, 23, 4);
 	};
-
+	
 	var addGetter = function(C, key, internal){
 	  dP(C[PROTOTYPE], key, {get: function(){ return this[internal]; }});
 	};
-
+	
 	var get = function(view, bytes, index, isLittleEndian){
 	  var numIndex = +index
 	    , intIndex = toInteger(numIndex);
@@ -5256,7 +5256,7 @@
 	    , pack  = conversion(+value);
 	  for(var i = 0; i < bytes; i++)store[start + i] = pack[isLittleEndian ? i : bytes - i - 1];
 	};
-
+	
 	var validateArrayBufferArguments = function(that, length){
 	  anInstance(that, $ArrayBuffer, ARRAY_BUFFER);
 	  var numberLength = +length
@@ -5264,14 +5264,14 @@
 	  if(numberLength != byteLength)throw RangeError(WRONG_LENGTH);
 	  return byteLength;
 	};
-
+	
 	if(!$typed.ABV){
 	  $ArrayBuffer = function ArrayBuffer(length){
 	    var byteLength = validateArrayBufferArguments(this, length);
 	    this._b       = arrayFill.call(Array(byteLength), 0);
 	    this[$LENGTH] = byteLength;
 	  };
-
+	
 	  $DataView = function DataView(buffer, byteOffset, byteLength){
 	    anInstance(this, $DataView, DATA_VIEW);
 	    anInstance(buffer, $ArrayBuffer, DATA_VIEW);
@@ -5284,14 +5284,14 @@
 	    this[$OFFSET] = offset;
 	    this[$LENGTH] = byteLength;
 	  };
-
+	
 	  if(DESCRIPTORS){
 	    addGetter($ArrayBuffer, BYTE_LENGTH, '_l');
 	    addGetter($DataView, BUFFER, '_b');
 	    addGetter($DataView, BYTE_LENGTH, '_l');
 	    addGetter($DataView, BYTE_OFFSET, '_o');
 	  }
-
+	
 	  redefineAll($DataView[PROTOTYPE], {
 	    getInt8: function getInt8(byteOffset){
 	      return get(this, 1, byteOffset)[0] << 24 >> 24;
@@ -5481,19 +5481,19 @@
 	    , TYPED_ARRAY         = $typed.TYPED
 	    , VIEW                = $typed.VIEW
 	    , WRONG_LENGTH        = 'Wrong length!';
-
+	
 	  var $map = createArrayMethod(1, function(O, length){
 	    return allocate(speciesConstructor(O, O[DEF_CONSTRUCTOR]), length);
 	  });
-
+	
 	  var LITTLE_ENDIAN = fails(function(){
 	    return new Uint8Array(new Uint16Array([1]).buffer)[0] === 1;
 	  });
-
+	
 	  var FORCED_SET = !!Uint8Array && !!Uint8Array[PROTOTYPE].set && fails(function(){
 	    new Uint8Array(1).set({});
 	  });
-
+	
 	  var strictToLength = function(it, SAME){
 	    if(it === undefined)throw TypeError(WRONG_LENGTH);
 	    var number = +it
@@ -5501,28 +5501,28 @@
 	    if(SAME && !same(number, length))throw RangeError(WRONG_LENGTH);
 	    return length;
 	  };
-
+	
 	  var toOffset = function(it, BYTES){
 	    var offset = toInteger(it);
 	    if(offset < 0 || offset % BYTES)throw RangeError('Wrong offset!');
 	    return offset;
 	  };
-
+	
 	  var validate = function(it){
 	    if(isObject(it) && TYPED_ARRAY in it)return it;
 	    throw TypeError(it + ' is not a typed array!');
 	  };
-
+	
 	  var allocate = function(C, length){
 	    if(!(isObject(C) && TYPED_CONSTRUCTOR in C)){
 	      throw TypeError('It is not a typed array constructor!');
 	    } return new C(length);
 	  };
-
+	
 	  var speciesFromList = function(O, list){
 	    return fromList(speciesConstructor(O, O[DEF_CONSTRUCTOR]), list);
 	  };
-
+	
 	  var fromList = function(C, list){
 	    var index  = 0
 	      , length = list.length
@@ -5530,11 +5530,11 @@
 	    while(length > index)result[index] = list[index++];
 	    return result;
 	  };
-
+	
 	  var addGetter = function(it, key, internal){
 	    dP(it, key, {get: function(){ return this._d[internal]; }});
 	  };
-
+	
 	  var $from = function from(source /*, mapfn, thisArg */){
 	    var O       = toObject(source)
 	      , aLen    = arguments.length
@@ -5553,7 +5553,7 @@
 	    }
 	    return result;
 	  };
-
+	
 	  var $of = function of(/*...items*/){
 	    var index  = 0
 	      , length = arguments.length
@@ -5561,14 +5561,14 @@
 	    while(length > index)result[index] = arguments[index++];
 	    return result;
 	  };
-
+	
 	  // iOS Safari 6.x fails here
 	  var TO_LOCALE_BUG = !!Uint8Array && fails(function(){ arrayToLocaleString.call(new Uint8Array(1)); });
-
+	
 	  var $toLocaleString = function toLocaleString(){
 	    return arrayToLocaleString.apply(TO_LOCALE_BUG ? arraySlice.call(validate(this)) : validate(this), arguments);
 	  };
-
+	
 	  var proto = {
 	    copyWithin: function copyWithin(target, start /*, end */){
 	      return arrayCopyWithin.call(validate(this), target, start, arguments.length > 2 ? arguments[2] : undefined);
@@ -5642,11 +5642,11 @@
 	      );
 	    }
 	  };
-
+	
 	  var $slice = function slice(start, end){
 	    return speciesFromList(this, arraySlice.call(validate(this), start, end));
 	  };
-
+	
 	  var $set = function set(arrayLike /*, offset */){
 	    validate(this);
 	    var offset = toOffset(arguments[1], 1)
@@ -5657,7 +5657,7 @@
 	    if(len + offset > length)throw RangeError(WRONG_LENGTH);
 	    while(index < len)this[offset + index] = src[index++];
 	  };
-
+	
 	  var $iterators = {
 	    entries: function entries(){
 	      return arrayEntries.call(validate(this));
@@ -5669,7 +5669,7 @@
 	      return arrayValues.call(validate(this));
 	    }
 	  };
-
+	
 	  var isTAIndex = function(target, key){
 	    return isObject(target)
 	      && target[TYPED_ARRAY]
@@ -5697,23 +5697,23 @@
 	      return target;
 	    } else return dP(target, key, desc);
 	  };
-
+	
 	  if(!ALL_CONSTRUCTORS){
 	    $GOPD.f = $getDesc;
 	    $DP.f   = $setDesc;
 	  }
-
+	
 	  $export($export.S + $export.F * !ALL_CONSTRUCTORS, 'Object', {
 	    getOwnPropertyDescriptor: $getDesc,
 	    defineProperty:           $setDesc
 	  });
-
+	
 	  if(fails(function(){ arrayToString.call({}); })){
 	    arrayToString = arrayToLocaleString = function toString(){
 	      return arrayJoin.call(this);
 	    }
 	  }
-
+	
 	  var $TypedArrayPrototype$ = redefineAll({}, proto);
 	  redefineAll($TypedArrayPrototype$, $iterators);
 	  hide($TypedArrayPrototype$, ITERATOR, $iterators.values);
@@ -5731,7 +5731,7 @@
 	  dP($TypedArrayPrototype$, TAG, {
 	    get: function(){ return this[TYPED_ARRAY]; }
 	  });
-
+	
 	  module.exports = function(KEY, BYTES, wrapper, CLAMPED){
 	    CLAMPED = !!CLAMPED;
 	    var NAME       = KEY + (CLAMPED ? 'Clamped' : '') + 'Array'
@@ -5838,45 +5838,45 @@
 	    hide(TypedArrayPrototype, TYPED_ARRAY, NAME);
 	    hide(TypedArrayPrototype, VIEW, true);
 	    hide(TypedArrayPrototype, DEF_CONSTRUCTOR, TypedArray);
-
+	
 	    if(CLAMPED ? new TypedArray(1)[TAG] != NAME : !(TAG in TypedArrayPrototype)){
 	      dP(TypedArrayPrototype, TAG, {
 	        get: function(){ return NAME; }
 	      });
 	    }
-
+	
 	    O[NAME] = TypedArray;
-
+	
 	    $export($export.G + $export.W + $export.F * (TypedArray != Base), O);
-
+	
 	    $export($export.S, NAME, {
 	      BYTES_PER_ELEMENT: BYTES,
 	      from: $from,
 	      of: $of
 	    });
-
+	
 	    if(!(BYTES_PER_ELEMENT in TypedArrayPrototype))hide(TypedArrayPrototype, BYTES_PER_ELEMENT, BYTES);
-
+	
 	    $export($export.P, NAME, proto);
-
+	
 	    setSpecies(NAME);
-
+	
 	    $export($export.P + $export.F * FORCED_SET, NAME, {set: $set});
-
+	
 	    $export($export.P + $export.F * !CORRECT_ITER_NAME, NAME, $iterators);
-
+	
 	    $export($export.P + $export.F * (TypedArrayPrototype.toString != arrayToString), NAME, {toString: arrayToString});
-
+	
 	    $export($export.P + $export.F * fails(function(){
 	      new TypedArray(1).slice();
 	    }), NAME, {slice: $slice});
-
+	
 	    $export($export.P + $export.F * (fails(function(){
 	      return [1, 2].toLocaleString() != new TypedArray([1, 2]).toLocaleString()
 	    }) || !fails(function(){
 	      TypedArrayPrototype.toLocaleString.call([1, 2]);
 	    })), NAME, {toLocaleString: $toLocaleString});
-
+	
 	    Iterators[NAME] = CORRECT_ITER_NAME ? $nativeIterator : $iterator;
 	    if(!LIBRARY && !CORRECT_ITER_NAME)hide(TypedArrayPrototype, ITERATOR, $iterator);
 	  };
@@ -5996,7 +5996,7 @@
 	  , fails      = __webpack_require__(7)
 	  , bind       = __webpack_require__(77)
 	  , rConstruct = (__webpack_require__(4).Reflect || {}).construct;
-
+	
 	// MS Edge supports only 2 arguments and argumentsList argument is optional
 	// FF Nightly sets third argument as `new.target`, but does not create `this` from it
 	var NEW_TARGET_BUG = fails(function(){
@@ -6006,7 +6006,7 @@
 	var ARGS_BUG = !fails(function(){
 	  rConstruct(function(){});
 	});
-
+	
 	$export($export.S + $export.F * (NEW_TARGET_BUG || ARGS_BUG), 'Reflect', {
 	  construct: function construct(Target, args /*, newTarget*/){
 	    aFunction(Target);
@@ -6044,7 +6044,7 @@
 	  , $export     = __webpack_require__(8)
 	  , anObject    = __webpack_require__(12)
 	  , toPrimitive = __webpack_require__(16);
-
+	
 	// MS Edge has broken Reflect.defineProperty - throwing instead of returning false
 	$export($export.S + $export.F * __webpack_require__(7)(function(){
 	  Reflect.defineProperty(dP.f({}, 1, {value: 1}), 1, {value: 2});
@@ -6070,7 +6070,7 @@
 	var $export  = __webpack_require__(8)
 	  , gOPD     = __webpack_require__(51).f
 	  , anObject = __webpack_require__(12);
-
+	
 	$export($export.S, 'Reflect', {
 	  deleteProperty: function deleteProperty(target, propertyKey){
 	    var desc = gOPD(anObject(target), propertyKey);
@@ -6102,7 +6102,7 @@
 	  } while(!((key = keys[that._i++]) in that._t));
 	  return {value: key, done: false};
 	});
-
+	
 	$export($export.S, 'Reflect', {
 	  enumerate: function enumerate(target){
 	    return new Enumerate(target);
@@ -6120,7 +6120,7 @@
 	  , $export        = __webpack_require__(8)
 	  , isObject       = __webpack_require__(13)
 	  , anObject       = __webpack_require__(12);
-
+	
 	function get(target, propertyKey/*, receiver*/){
 	  var receiver = arguments.length < 3 ? target : arguments[2]
 	    , desc, proto;
@@ -6132,7 +6132,7 @@
 	      : undefined;
 	  if(isObject(proto = getPrototypeOf(target)))return get(proto, propertyKey, receiver);
 	}
-
+	
 	$export($export.S, 'Reflect', {get: get});
 
 /***/ },
@@ -6143,7 +6143,7 @@
 	var gOPD     = __webpack_require__(51)
 	  , $export  = __webpack_require__(8)
 	  , anObject = __webpack_require__(12);
-
+	
 	$export($export.S, 'Reflect', {
 	  getOwnPropertyDescriptor: function getOwnPropertyDescriptor(target, propertyKey){
 	    return gOPD.f(anObject(target), propertyKey);
@@ -6158,7 +6158,7 @@
 	var $export  = __webpack_require__(8)
 	  , getProto = __webpack_require__(59)
 	  , anObject = __webpack_require__(12);
-
+	
 	$export($export.S, 'Reflect', {
 	  getPrototypeOf: function getPrototypeOf(target){
 	    return getProto(anObject(target));
@@ -6171,7 +6171,7 @@
 
 	// 26.1.9 Reflect.has(target, propertyKey)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Reflect', {
 	  has: function has(target, propertyKey){
 	    return propertyKey in target;
@@ -6186,7 +6186,7 @@
 	var $export       = __webpack_require__(8)
 	  , anObject      = __webpack_require__(12)
 	  , $isExtensible = Object.isExtensible;
-
+	
 	$export($export.S, 'Reflect', {
 	  isExtensible: function isExtensible(target){
 	    anObject(target);
@@ -6200,7 +6200,7 @@
 
 	// 26.1.11 Reflect.ownKeys(target)
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Reflect', {ownKeys: __webpack_require__(243)});
 
 /***/ },
@@ -6226,7 +6226,7 @@
 	var $export            = __webpack_require__(8)
 	  , anObject           = __webpack_require__(12)
 	  , $preventExtensions = Object.preventExtensions;
-
+	
 	$export($export.S, 'Reflect', {
 	  preventExtensions: function preventExtensions(target){
 	    anObject(target);
@@ -6252,7 +6252,7 @@
 	  , createDesc     = __webpack_require__(17)
 	  , anObject       = __webpack_require__(12)
 	  , isObject       = __webpack_require__(13);
-
+	
 	function set(target, propertyKey, V/*, receiver*/){
 	  var receiver = arguments.length < 4 ? target : arguments[3]
 	    , ownDesc  = gOPD.f(anObject(target), propertyKey)
@@ -6272,7 +6272,7 @@
 	  }
 	  return ownDesc.set === undefined ? false : (ownDesc.set.call(receiver, V), true);
 	}
-
+	
 	$export($export.S, 'Reflect', {set: set});
 
 /***/ },
@@ -6282,7 +6282,7 @@
 	// 26.1.14 Reflect.setPrototypeOf(target, proto)
 	var $export  = __webpack_require__(8)
 	  , setProto = __webpack_require__(73);
-
+	
 	if(setProto)$export($export.S, 'Reflect', {
 	  setPrototypeOf: function setPrototypeOf(target, proto){
 	    setProto.check(target, proto);
@@ -6303,13 +6303,13 @@
 	// https://github.com/tc39/Array.prototype.includes
 	var $export   = __webpack_require__(8)
 	  , $includes = __webpack_require__(36)(true);
-
+	
 	$export($export.P, 'Array', {
 	  includes: function includes(el /*, fromIndex = 0 */){
 	    return $includes(this, el, arguments.length > 1 ? arguments[1] : undefined);
 	  }
 	});
-
+	
 	__webpack_require__(186)('includes');
 
 /***/ },
@@ -6320,7 +6320,7 @@
 	// https://github.com/mathiasbynens/String.prototype.at
 	var $export = __webpack_require__(8)
 	  , $at     = __webpack_require__(127)(true);
-
+	
 	$export($export.P, 'String', {
 	  at: function at(pos){
 	    return $at(this, pos);
@@ -6335,7 +6335,7 @@
 	// https://github.com/tc39/proposal-string-pad-start-end
 	var $export = __webpack_require__(8)
 	  , $pad    = __webpack_require__(250);
-
+	
 	$export($export.P, 'String', {
 	  padStart: function padStart(maxLength /*, fillString = ' ' */){
 	    return $pad(this, maxLength, arguments.length > 1 ? arguments[1] : undefined, true);
@@ -6350,7 +6350,7 @@
 	var toLength = __webpack_require__(37)
 	  , repeat   = __webpack_require__(91)
 	  , defined  = __webpack_require__(35);
-
+	
 	module.exports = function(that, maxLength, fillString, left){
 	  var S            = String(defined(that))
 	    , stringLength = S.length
@@ -6372,7 +6372,7 @@
 	// https://github.com/tc39/proposal-string-pad-start-end
 	var $export = __webpack_require__(8)
 	  , $pad    = __webpack_require__(250);
-
+	
 	$export($export.P, 'String', {
 	  padEnd: function padEnd(maxLength /*, fillString = ' ' */){
 	    return $pad(this, maxLength, arguments.length > 1 ? arguments[1] : undefined, false);
@@ -6415,17 +6415,17 @@
 	  , isRegExp    = __webpack_require__(134)
 	  , getFlags    = __webpack_require__(196)
 	  , RegExpProto = RegExp.prototype;
-
+	
 	var $RegExpStringIterator = function(regexp, string){
 	  this._r = regexp;
 	  this._s = string;
 	};
-
+	
 	__webpack_require__(130)($RegExpStringIterator, 'RegExp String', function next(){
 	  var match = this._r.exec(this._s);
 	  return {value: match, done: match === null};
 	});
-
+	
 	$export($export.P, 'String', {
 	  matchAll: function matchAll(regexp){
 	    defined(this);
@@ -6460,7 +6460,7 @@
 	  , toIObject      = __webpack_require__(32)
 	  , gOPD           = __webpack_require__(51)
 	  , createProperty = __webpack_require__(163);
-
+	
 	$export($export.S, 'Object', {
 	  getOwnPropertyDescriptors: function getOwnPropertyDescriptors(object){
 	    var O       = toIObject(object)
@@ -6481,7 +6481,7 @@
 	// https://github.com/tc39/proposal-object-values-entries
 	var $export = __webpack_require__(8)
 	  , $values = __webpack_require__(259)(false);
-
+	
 	$export($export.S, 'Object', {
 	  values: function values(it){
 	    return $values(it);
@@ -6516,7 +6516,7 @@
 	// https://github.com/tc39/proposal-object-values-entries
 	var $export  = __webpack_require__(8)
 	  , $entries = __webpack_require__(259)(true);
-
+	
 	$export($export.S, 'Object', {
 	  entries: function entries(it){
 	    return $entries(it);
@@ -6532,7 +6532,7 @@
 	  , toObject        = __webpack_require__(58)
 	  , aFunction       = __webpack_require__(21)
 	  , $defineProperty = __webpack_require__(11);
-
+	
 	// B.2.2.2 Object.prototype.__defineGetter__(P, getter)
 	__webpack_require__(6) && $export($export.P + __webpack_require__(262), 'Object', {
 	  __defineGetter__: function __defineGetter__(P, getter){
@@ -6561,7 +6561,7 @@
 	  , toObject        = __webpack_require__(58)
 	  , aFunction       = __webpack_require__(21)
 	  , $defineProperty = __webpack_require__(11);
-
+	
 	// B.2.2.3 Object.prototype.__defineSetter__(P, setter)
 	__webpack_require__(6) && $export($export.P + __webpack_require__(262), 'Object', {
 	  __defineSetter__: function __defineSetter__(P, setter){
@@ -6579,7 +6579,7 @@
 	  , toPrimitive              = __webpack_require__(16)
 	  , getPrototypeOf           = __webpack_require__(59)
 	  , getOwnPropertyDescriptor = __webpack_require__(51).f;
-
+	
 	// B.2.2.4 Object.prototype.__lookupGetter__(P)
 	__webpack_require__(6) && $export($export.P + __webpack_require__(262), 'Object', {
 	  __lookupGetter__: function __lookupGetter__(P){
@@ -6602,7 +6602,7 @@
 	  , toPrimitive              = __webpack_require__(16)
 	  , getPrototypeOf           = __webpack_require__(59)
 	  , getOwnPropertyDescriptor = __webpack_require__(51).f;
-
+	
 	// B.2.2.5 Object.prototype.__lookupSetter__(P)
 	__webpack_require__(6) && $export($export.P + __webpack_require__(262), 'Object', {
 	  __lookupSetter__: function __lookupSetter__(P){
@@ -6621,7 +6621,7 @@
 
 	// https://github.com/DavidBruant/Map-Set.prototype.toJSON
 	var $export  = __webpack_require__(8);
-
+	
 	$export($export.P + $export.R, 'Map', {toJSON: __webpack_require__(267)('Map')});
 
 /***/ },
@@ -6643,7 +6643,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var forOf = __webpack_require__(206);
-
+	
 	module.exports = function(iter, ITERATOR){
 	  var result = [];
 	  forOf(iter, false, result.push, result, ITERATOR);
@@ -6657,7 +6657,7 @@
 
 	// https://github.com/DavidBruant/Map-Set.prototype.toJSON
 	var $export  = __webpack_require__(8);
-
+	
 	$export($export.P + $export.R, 'Set', {toJSON: __webpack_require__(267)('Set')});
 
 /***/ },
@@ -6666,7 +6666,7 @@
 
 	// https://github.com/ljharb/proposal-global
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'System', {global: __webpack_require__(4)});
 
 /***/ },
@@ -6676,7 +6676,7 @@
 	// https://github.com/ljharb/proposal-is-error
 	var $export = __webpack_require__(8)
 	  , cof     = __webpack_require__(34);
-
+	
 	$export($export.S, 'Error', {
 	  isError: function isError(it){
 	    return cof(it) === 'Error';
@@ -6689,7 +6689,7 @@
 
 	// https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Math', {
 	  iaddh: function iaddh(x0, x1, y0, y1){
 	    var $x0 = x0 >>> 0
@@ -6705,7 +6705,7 @@
 
 	// https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Math', {
 	  isubh: function isubh(x0, x1, y0, y1){
 	    var $x0 = x0 >>> 0
@@ -6721,7 +6721,7 @@
 
 	// https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Math', {
 	  imulh: function imulh(u, v){
 	    var UINT16 = 0xffff
@@ -6742,7 +6742,7 @@
 
 	// https://gist.github.com/BrendanEich/4294d5c212a6d2254703
 	var $export = __webpack_require__(8);
-
+	
 	$export($export.S, 'Math', {
 	  umulh: function umulh(u, v){
 	    var UINT16 = 0xffff
@@ -6765,7 +6765,7 @@
 	  , anObject                  = __webpack_require__(12)
 	  , toMetaKey                 = metadata.key
 	  , ordinaryDefineOwnMetadata = metadata.set;
-
+	
 	metadata.exp({defineMetadata: function defineMetadata(metadataKey, metadataValue, target, targetKey){
 	  ordinaryDefineOwnMetadata(metadataKey, metadataValue, anObject(target), toMetaKey(targetKey));
 	}});
@@ -6778,7 +6778,7 @@
 	  , $export = __webpack_require__(8)
 	  , shared  = __webpack_require__(23)('metadata')
 	  , store   = shared.store || (shared.store = new (__webpack_require__(215)));
-
+	
 	var getOrCreateMetadataMap = function(target, targetKey, create){
 	  var targetMetadata = store.get(target);
 	  if(!targetMetadata){
@@ -6814,7 +6814,7 @@
 	var exp = function(O){
 	  $export($export.S, 'Reflect', O);
 	};
-
+	
 	module.exports = {
 	  store: store,
 	  map: getOrCreateMetadataMap,
@@ -6835,7 +6835,7 @@
 	  , toMetaKey              = metadata.key
 	  , getOrCreateMetadataMap = metadata.map
 	  , store                  = metadata.store;
-
+	
 	metadata.exp({deleteMetadata: function deleteMetadata(metadataKey, target /*, targetKey */){
 	  var targetKey   = arguments.length < 3 ? undefined : toMetaKey(arguments[2])
 	    , metadataMap = getOrCreateMetadataMap(anObject(target), targetKey, false);
@@ -6856,14 +6856,14 @@
 	  , ordinaryHasOwnMetadata = metadata.has
 	  , ordinaryGetOwnMetadata = metadata.get
 	  , toMetaKey              = metadata.key;
-
+	
 	var ordinaryGetMetadata = function(MetadataKey, O, P){
 	  var hasOwn = ordinaryHasOwnMetadata(MetadataKey, O, P);
 	  if(hasOwn)return ordinaryGetOwnMetadata(MetadataKey, O, P);
 	  var parent = getPrototypeOf(O);
 	  return parent !== null ? ordinaryGetMetadata(MetadataKey, parent, P) : undefined;
 	};
-
+	
 	metadata.exp({getMetadata: function getMetadata(metadataKey, target /*, targetKey */){
 	  return ordinaryGetMetadata(metadataKey, anObject(target), arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 	}});
@@ -6879,7 +6879,7 @@
 	  , getPrototypeOf          = __webpack_require__(59)
 	  , ordinaryOwnMetadataKeys = metadata.keys
 	  , toMetaKey               = metadata.key;
-
+	
 	var ordinaryMetadataKeys = function(O, P){
 	  var oKeys  = ordinaryOwnMetadataKeys(O, P)
 	    , parent = getPrototypeOf(O);
@@ -6887,7 +6887,7 @@
 	  var pKeys  = ordinaryMetadataKeys(parent, P);
 	  return pKeys.length ? oKeys.length ? from(new Set(oKeys.concat(pKeys))) : pKeys : oKeys;
 	};
-
+	
 	metadata.exp({getMetadataKeys: function getMetadataKeys(target /*, targetKey */){
 	  return ordinaryMetadataKeys(anObject(target), arguments.length < 2 ? undefined : toMetaKey(arguments[1]));
 	}});
@@ -6900,7 +6900,7 @@
 	  , anObject               = __webpack_require__(12)
 	  , ordinaryGetOwnMetadata = metadata.get
 	  , toMetaKey              = metadata.key;
-
+	
 	metadata.exp({getOwnMetadata: function getOwnMetadata(metadataKey, target /*, targetKey */){
 	  return ordinaryGetOwnMetadata(metadataKey, anObject(target)
 	    , arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
@@ -6914,7 +6914,7 @@
 	  , anObject                = __webpack_require__(12)
 	  , ordinaryOwnMetadataKeys = metadata.keys
 	  , toMetaKey               = metadata.key;
-
+	
 	metadata.exp({getOwnMetadataKeys: function getOwnMetadataKeys(target /*, targetKey */){
 	  return ordinaryOwnMetadataKeys(anObject(target), arguments.length < 2 ? undefined : toMetaKey(arguments[1]));
 	}});
@@ -6928,14 +6928,14 @@
 	  , getPrototypeOf         = __webpack_require__(59)
 	  , ordinaryHasOwnMetadata = metadata.has
 	  , toMetaKey              = metadata.key;
-
+	
 	var ordinaryHasMetadata = function(MetadataKey, O, P){
 	  var hasOwn = ordinaryHasOwnMetadata(MetadataKey, O, P);
 	  if(hasOwn)return true;
 	  var parent = getPrototypeOf(O);
 	  return parent !== null ? ordinaryHasMetadata(MetadataKey, parent, P) : false;
 	};
-
+	
 	metadata.exp({hasMetadata: function hasMetadata(metadataKey, target /*, targetKey */){
 	  return ordinaryHasMetadata(metadataKey, anObject(target), arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
 	}});
@@ -6948,7 +6948,7 @@
 	  , anObject               = __webpack_require__(12)
 	  , ordinaryHasOwnMetadata = metadata.has
 	  , toMetaKey              = metadata.key;
-
+	
 	metadata.exp({hasOwnMetadata: function hasOwnMetadata(metadataKey, target /*, targetKey */){
 	  return ordinaryHasOwnMetadata(metadataKey, anObject(target)
 	    , arguments.length < 3 ? undefined : toMetaKey(arguments[2]));
@@ -6963,7 +6963,7 @@
 	  , aFunction                 = __webpack_require__(21)
 	  , toMetaKey                 = metadata.key
 	  , ordinaryDefineOwnMetadata = metadata.set;
-
+	
 	metadata.exp({metadata: function metadata(metadataKey, metadataValue){
 	  return function decorator(target, targetKey){
 	    ordinaryDefineOwnMetadata(
@@ -6983,7 +6983,7 @@
 	  , microtask = __webpack_require__(209)()
 	  , process   = __webpack_require__(4).process
 	  , isNode    = __webpack_require__(34)(process) == 'process';
-
+	
 	$export($export.G, {
 	  asap: function asap(fn){
 	    var domain = isNode && process.domain;
@@ -7009,11 +7009,11 @@
 	  , hide        = __webpack_require__(10)
 	  , forOf       = __webpack_require__(206)
 	  , RETURN      = forOf.RETURN;
-
+	
 	var getMethod = function(fn){
 	  return fn == null ? undefined : aFunction(fn);
 	};
-
+	
 	var cleanupSubscription = function(subscription){
 	  var cleanup = subscription._c;
 	  if(cleanup){
@@ -7021,18 +7021,18 @@
 	    cleanup();
 	  }
 	};
-
+	
 	var subscriptionClosed = function(subscription){
 	  return subscription._o === undefined;
 	};
-
+	
 	var closeSubscription = function(subscription){
 	  if(!subscriptionClosed(subscription)){
 	    subscription._o = undefined;
 	    cleanupSubscription(subscription);
 	  }
 	};
-
+	
 	var Subscription = function(observer, subscriber){
 	  anObject(observer);
 	  this._c = undefined;
@@ -7051,15 +7051,15 @@
 	    return;
 	  } if(subscriptionClosed(this))cleanupSubscription(this);
 	};
-
+	
 	Subscription.prototype = redefineAll({}, {
 	  unsubscribe: function unsubscribe(){ closeSubscription(this); }
 	});
-
+	
 	var SubscriptionObserver = function(subscription){
 	  this._s = subscription;
 	};
-
+	
 	SubscriptionObserver.prototype = redefineAll({}, {
 	  next: function next(value){
 	    var subscription = this._s;
@@ -7114,11 +7114,11 @@
 	    }
 	  }
 	});
-
+	
 	var $Observable = function Observable(subscriber){
 	  anInstance(this, $Observable, 'Observable', '_f')._f = aFunction(subscriber);
 	};
-
+	
 	redefineAll($Observable.prototype, {
 	  subscribe: function subscribe(observer){
 	    return new Subscription(observer, this._f);
@@ -7142,7 +7142,7 @@
 	    });
 	  }
 	});
-
+	
 	redefineAll($Observable, {
 	  from: function from(x){
 	    var C = typeof this === 'function' ? this : $Observable;
@@ -7188,11 +7188,11 @@
 	    });
 	  }
 	});
-
+	
 	hide($Observable.prototype, OBSERVABLE, function(){ return this; });
-
+	
 	$export($export.G, {Observable: $Observable});
-
+	
 	__webpack_require__(192)('Observable');
 
 /***/ },
@@ -7278,7 +7278,7 @@
 	  , ITERATOR      = wks('iterator')
 	  , TO_STRING_TAG = wks('toStringTag')
 	  , ArrayValues   = Iterators.Array;
-
+	
 	for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], i = 0; i < 5; i++){
 	  var NAME       = collections[i]
 	    , Collection = global[NAME]
@@ -7305,16 +7305,16 @@
 	 * additional grant of patent rights can be found in the PATENTS file in
 	 * the same directory.
 	 */
-
+	
 	!(function(global) {
 	  "use strict";
-
+	
 	  var hasOwn = Object.prototype.hasOwnProperty;
 	  var undefined; // More compressible than void 0.
 	  var $Symbol = typeof Symbol === "function" ? Symbol : {};
 	  var iteratorSymbol = $Symbol.iterator || "@@iterator";
 	  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-
+	
 	  var inModule = typeof module === "object";
 	  var runtime = global.regeneratorRuntime;
 	  if (runtime) {
@@ -7327,25 +7327,25 @@
 	    // already defined globally.
 	    return;
 	  }
-
+	
 	  // Define the runtime globally (as expected by generated code) as either
 	  // module.exports (if we're in a module) or a new, empty object.
 	  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
-
+	
 	  function wrap(innerFn, outerFn, self, tryLocsList) {
 	    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
 	    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
 	    var generator = Object.create(protoGenerator.prototype);
 	    var context = new Context(tryLocsList || []);
-
+	
 	    // The ._invoke method unifies the implementations of the .next,
 	    // .throw, and .return methods.
 	    generator._invoke = makeInvokeMethod(innerFn, self, context);
-
+	
 	    return generator;
 	  }
 	  runtime.wrap = wrap;
-
+	
 	  // Try/catch helper to minimize deoptimizations. Returns a completion
 	  // record like context.tryEntries[i].completion. This interface could
 	  // have been (and was previously) designed to take a closure to be
@@ -7363,16 +7363,16 @@
 	      return { type: "throw", arg: err };
 	    }
 	  }
-
+	
 	  var GenStateSuspendedStart = "suspendedStart";
 	  var GenStateSuspendedYield = "suspendedYield";
 	  var GenStateExecuting = "executing";
 	  var GenStateCompleted = "completed";
-
+	
 	  // Returning this object from the innerFn has the same effect as
 	  // breaking out of the dispatch switch statement.
 	  var ContinueSentinel = {};
-
+	
 	  // Dummy constructor functions that we use as the .constructor and
 	  // .constructor.prototype properties for functions that return Generator
 	  // objects. For full spec compliance, you may wish to configure your
@@ -7380,12 +7380,12 @@
 	  function Generator() {}
 	  function GeneratorFunction() {}
 	  function GeneratorFunctionPrototype() {}
-
+	
 	  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype;
 	  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
 	  GeneratorFunctionPrototype.constructor = GeneratorFunction;
 	  GeneratorFunctionPrototype[toStringTagSymbol] = GeneratorFunction.displayName = "GeneratorFunction";
-
+	
 	  // Helper for defining the .next, .throw, and .return methods of the
 	  // Iterator interface in terms of a single ._invoke method.
 	  function defineIteratorMethods(prototype) {
@@ -7395,7 +7395,7 @@
 	      };
 	    });
 	  }
-
+	
 	  runtime.isGeneratorFunction = function(genFun) {
 	    var ctor = typeof genFun === "function" && genFun.constructor;
 	    return ctor
@@ -7405,7 +7405,7 @@
 	        (ctor.displayName || ctor.name) === "GeneratorFunction"
 	      : false;
 	  };
-
+	
 	  runtime.mark = function(genFun) {
 	    if (Object.setPrototypeOf) {
 	      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
@@ -7418,7 +7418,7 @@
 	    genFun.prototype = Object.create(Gp);
 	    return genFun;
 	  };
-
+	
 	  // Within the body of any async function, `await x` is transformed to
 	  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
 	  // `value instanceof AwaitArgument` to determine if the yielded value is
@@ -7427,11 +7427,11 @@
 	  runtime.awrap = function(arg) {
 	    return new AwaitArgument(arg);
 	  };
-
+	
 	  function AwaitArgument(arg) {
 	    this.arg = arg;
 	  }
-
+	
 	  function AsyncIterator(generator) {
 	    function invoke(method, arg, resolve, reject) {
 	      var record = tryCatch(generator[method], generator, arg);
@@ -7447,7 +7447,7 @@
 	            invoke("throw", err, resolve, reject);
 	          });
 	        }
-
+	
 	        return Promise.resolve(value).then(function(unwrapped) {
 	          // When a yielded Promise is resolved, its final value becomes
 	          // the .value of the Promise<{value,done}> result for the
@@ -7469,20 +7469,20 @@
 	        }, reject);
 	      }
 	    }
-
+	
 	    if (typeof process === "object" && process.domain) {
 	      invoke = process.domain.bind(invoke);
 	    }
-
+	
 	    var previousPromise;
-
+	
 	    function enqueue(method, arg) {
 	      function callInvokeWithMethodAndArg() {
 	        return new Promise(function(resolve, reject) {
 	          invoke(method, arg, resolve, reject);
 	        });
 	      }
-
+	
 	      return previousPromise =
 	        // If enqueue has been called before, then we want to wait until
 	        // all previous Promises have been resolved before calling invoke,
@@ -7503,14 +7503,14 @@
 	          callInvokeWithMethodAndArg
 	        ) : callInvokeWithMethodAndArg();
 	    }
-
+	
 	    // Define the unified helper method that is used to implement .next,
 	    // .throw, and .return (see defineIteratorMethods).
 	    this._invoke = enqueue;
 	  }
-
+	
 	  defineIteratorMethods(AsyncIterator.prototype);
-
+	
 	  // Note that simple async functions are implemented on top of
 	  // AsyncIterator objects; they just return a Promise for the value of
 	  // the final result produced by the iterator.
@@ -7518,32 +7518,32 @@
 	    var iter = new AsyncIterator(
 	      wrap(innerFn, outerFn, self, tryLocsList)
 	    );
-
+	
 	    return runtime.isGeneratorFunction(outerFn)
 	      ? iter // If outerFn is a generator, return the full iterator.
 	      : iter.next().then(function(result) {
 	          return result.done ? result.value : iter.next();
 	        });
 	  };
-
+	
 	  function makeInvokeMethod(innerFn, self, context) {
 	    var state = GenStateSuspendedStart;
-
+	
 	    return function invoke(method, arg) {
 	      if (state === GenStateExecuting) {
 	        throw new Error("Generator is already running");
 	      }
-
+	
 	      if (state === GenStateCompleted) {
 	        if (method === "throw") {
 	          throw arg;
 	        }
-
+	
 	        // Be forgiving, per 25.3.3.3.3 of the spec:
 	        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
 	        return doneResult();
 	      }
-
+	
 	      while (true) {
 	        var delegate = context.delegate;
 	        if (delegate) {
@@ -7552,7 +7552,7 @@
 	            // A return or throw (when the delegate iterator has no throw
 	            // method) always terminates the yield* loop.
 	            context.delegate = null;
-
+	
 	            // If the delegate iterator has a return method, give it a
 	            // chance to clean up.
 	            var returnMethod = delegate.iterator["return"];
@@ -7566,36 +7566,36 @@
 	                continue;
 	              }
 	            }
-
+	
 	            if (method === "return") {
 	              // Continue with the outer return, now that the delegate
 	              // iterator has been terminated.
 	              continue;
 	            }
 	          }
-
+	
 	          var record = tryCatch(
 	            delegate.iterator[method],
 	            delegate.iterator,
 	            arg
 	          );
-
+	
 	          if (record.type === "throw") {
 	            context.delegate = null;
-
+	
 	            // Like returning generator.throw(uncaught), but without the
 	            // overhead of an extra function call.
 	            method = "throw";
 	            arg = record.arg;
 	            continue;
 	          }
-
+	
 	          // Delegate generator ran and handled its own exceptions so
 	          // regardless of what the method was, we continue as if it is
 	          // "next" with an undefined arg.
 	          method = "next";
 	          arg = undefined;
-
+	
 	          var info = record.arg;
 	          if (info.done) {
 	            context[delegate.resultName] = info.value;
@@ -7604,34 +7604,34 @@
 	            state = GenStateSuspendedYield;
 	            return info;
 	          }
-
+	
 	          context.delegate = null;
 	        }
-
+	
 	        if (method === "next") {
 	          // Setting context._sent for legacy support of Babel's
 	          // function.sent implementation.
 	          context.sent = context._sent = arg;
-
+	
 	        } else if (method === "throw") {
 	          if (state === GenStateSuspendedStart) {
 	            state = GenStateCompleted;
 	            throw arg;
 	          }
-
+	
 	          if (context.dispatchException(arg)) {
 	            // If the dispatched exception was caught by a catch block,
 	            // then let that catch block handle the exception normally.
 	            method = "next";
 	            arg = undefined;
 	          }
-
+	
 	        } else if (method === "return") {
 	          context.abrupt("return", arg);
 	        }
-
+	
 	        state = GenStateExecuting;
-
+	
 	        var record = tryCatch(innerFn, self, context);
 	        if (record.type === "normal") {
 	          // If an exception is thrown from innerFn, we leave state ===
@@ -7639,12 +7639,12 @@
 	          state = context.done
 	            ? GenStateCompleted
 	            : GenStateSuspendedYield;
-
+	
 	          var info = {
 	            value: record.arg,
 	            done: context.done
 	          };
-
+	
 	          if (record.arg === ContinueSentinel) {
 	            if (context.delegate && method === "next") {
 	              // Deliberately forget the last sent value so that we don't
@@ -7654,7 +7654,7 @@
 	          } else {
 	            return info;
 	          }
-
+	
 	        } else if (record.type === "throw") {
 	          state = GenStateCompleted;
 	          // Dispatch the exception by looping back around to the
@@ -7665,43 +7665,43 @@
 	      }
 	    };
 	  }
-
+	
 	  // Define Generator.prototype.{next,throw,return} in terms of the
 	  // unified ._invoke helper method.
 	  defineIteratorMethods(Gp);
-
+	
 	  Gp[iteratorSymbol] = function() {
 	    return this;
 	  };
-
+	
 	  Gp[toStringTagSymbol] = "Generator";
-
+	
 	  Gp.toString = function() {
 	    return "[object Generator]";
 	  };
-
+	
 	  function pushTryEntry(locs) {
 	    var entry = { tryLoc: locs[0] };
-
+	
 	    if (1 in locs) {
 	      entry.catchLoc = locs[1];
 	    }
-
+	
 	    if (2 in locs) {
 	      entry.finallyLoc = locs[2];
 	      entry.afterLoc = locs[3];
 	    }
-
+	
 	    this.tryEntries.push(entry);
 	  }
-
+	
 	  function resetTryEntry(entry) {
 	    var record = entry.completion || {};
 	    record.type = "normal";
 	    delete record.arg;
 	    entry.completion = record;
 	  }
-
+	
 	  function Context(tryLocsList) {
 	    // The root entry object (effectively a try statement without a catch
 	    // or a finally block) gives us a place to store values thrown from
@@ -7710,14 +7710,14 @@
 	    tryLocsList.forEach(pushTryEntry, this);
 	    this.reset(true);
 	  }
-
+	
 	  runtime.keys = function(object) {
 	    var keys = [];
 	    for (var key in object) {
 	      keys.push(key);
 	    }
 	    keys.reverse();
-
+	
 	    // Rather than returning an object with a next method, we keep
 	    // things simple and return the next function itself.
 	    return function next() {
@@ -7729,7 +7729,7 @@
 	          return next;
 	        }
 	      }
-
+	
 	      // To avoid creating an additional object, we just hang the .value
 	      // and .done properties off the next function object itself. This
 	      // also ensures that the minifier will not anonymize the function.
@@ -7737,18 +7737,18 @@
 	      return next;
 	    };
 	  };
-
+	
 	  function values(iterable) {
 	    if (iterable) {
 	      var iteratorMethod = iterable[iteratorSymbol];
 	      if (iteratorMethod) {
 	        return iteratorMethod.call(iterable);
 	      }
-
+	
 	      if (typeof iterable.next === "function") {
 	        return iterable;
 	      }
-
+	
 	      if (!isNaN(iterable.length)) {
 	        var i = -1, next = function next() {
 	          while (++i < iterable.length) {
@@ -7758,29 +7758,29 @@
 	              return next;
 	            }
 	          }
-
+	
 	          next.value = undefined;
 	          next.done = true;
-
+	
 	          return next;
 	        };
-
+	
 	        return next.next = next;
 	      }
 	    }
-
+	
 	    // Return an iterator with no values.
 	    return { next: doneResult };
 	  }
 	  runtime.values = values;
-
+	
 	  function doneResult() {
 	    return { value: undefined, done: true };
 	  }
-
+	
 	  Context.prototype = {
 	    constructor: Context,
-
+	
 	    reset: function(skipTempReset) {
 	      this.prev = 0;
 	      this.next = 0;
@@ -7789,9 +7789,9 @@
 	      this.sent = this._sent = undefined;
 	      this.done = false;
 	      this.delegate = null;
-
+	
 	      this.tryEntries.forEach(resetTryEntry);
-
+	
 	      if (!skipTempReset) {
 	        for (var name in this) {
 	          // Not sure about the optimal order of these conditions:
@@ -7803,24 +7803,24 @@
 	        }
 	      }
 	    },
-
+	
 	    stop: function() {
 	      this.done = true;
-
+	
 	      var rootEntry = this.tryEntries[0];
 	      var rootRecord = rootEntry.completion;
 	      if (rootRecord.type === "throw") {
 	        throw rootRecord.arg;
 	      }
-
+	
 	      return this.rval;
 	    },
-
+	
 	    dispatchException: function(exception) {
 	      if (this.done) {
 	        throw exception;
 	      }
-
+	
 	      var context = this;
 	      function handle(loc, caught) {
 	        record.type = "throw";
@@ -7828,46 +7828,46 @@
 	        context.next = loc;
 	        return !!caught;
 	      }
-
+	
 	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
 	        var entry = this.tryEntries[i];
 	        var record = entry.completion;
-
+	
 	        if (entry.tryLoc === "root") {
 	          // Exception thrown outside of any try block that could handle
 	          // it, so set the completion value of the entire function to
 	          // throw the exception.
 	          return handle("end");
 	        }
-
+	
 	        if (entry.tryLoc <= this.prev) {
 	          var hasCatch = hasOwn.call(entry, "catchLoc");
 	          var hasFinally = hasOwn.call(entry, "finallyLoc");
-
+	
 	          if (hasCatch && hasFinally) {
 	            if (this.prev < entry.catchLoc) {
 	              return handle(entry.catchLoc, true);
 	            } else if (this.prev < entry.finallyLoc) {
 	              return handle(entry.finallyLoc);
 	            }
-
+	
 	          } else if (hasCatch) {
 	            if (this.prev < entry.catchLoc) {
 	              return handle(entry.catchLoc, true);
 	            }
-
+	
 	          } else if (hasFinally) {
 	            if (this.prev < entry.finallyLoc) {
 	              return handle(entry.finallyLoc);
 	            }
-
+	
 	          } else {
 	            throw new Error("try statement without catch or finally");
 	          }
 	        }
 	      }
 	    },
-
+	
 	    abrupt: function(type, arg) {
 	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
 	        var entry = this.tryEntries[i];
@@ -7878,7 +7878,7 @@
 	          break;
 	        }
 	      }
-
+	
 	      if (finallyEntry &&
 	          (type === "break" ||
 	           type === "continue") &&
@@ -7888,25 +7888,25 @@
 	        // location outside the try/catch block.
 	        finallyEntry = null;
 	      }
-
+	
 	      var record = finallyEntry ? finallyEntry.completion : {};
 	      record.type = type;
 	      record.arg = arg;
-
+	
 	      if (finallyEntry) {
 	        this.next = finallyEntry.finallyLoc;
 	      } else {
 	        this.complete(record);
 	      }
-
+	
 	      return ContinueSentinel;
 	    },
-
+	
 	    complete: function(record, afterLoc) {
 	      if (record.type === "throw") {
 	        throw record.arg;
 	      }
-
+	
 	      if (record.type === "break" ||
 	          record.type === "continue") {
 	        this.next = record.arg;
@@ -7917,7 +7917,7 @@
 	        this.next = afterLoc;
 	      }
 	    },
-
+	
 	    finish: function(finallyLoc) {
 	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
 	        var entry = this.tryEntries[i];
@@ -7928,7 +7928,7 @@
 	        }
 	      }
 	    },
-
+	
 	    "catch": function(tryLoc) {
 	      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
 	        var entry = this.tryEntries[i];
@@ -7941,19 +7941,19 @@
 	          return thrown;
 	        }
 	      }
-
+	
 	      // The context.catch method must only be called with a location
 	      // argument that corresponds to a known catch block.
 	      throw new Error("illegal catch attempt");
 	    },
-
+	
 	    delegateYield: function(iterable, resultName, nextLoc) {
 	      this.delegate = {
 	        iterator: values(iterable),
 	        resultName: resultName,
 	        nextLoc: nextLoc
 	      };
-
+	
 	      return ContinueSentinel;
 	    }
 	  };
@@ -7965,7 +7965,7 @@
 	  typeof window === "object" ? window :
 	  typeof self === "object" ? self : this
 	);
-
+	
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(294)))
 
 /***/ },
@@ -7974,15 +7974,15 @@
 
 	// shim for using process in browser
 	var process = module.exports = {};
-
+	
 	// cached from whatever global is present so that test runners that stub it
 	// don't break things.  But we need to wrap it in a try catch in case it is
 	// wrapped in strict mode code which doesn't define any globals.  It's inside a
 	// function because try/catches deoptimize in certain engines.
-
+	
 	var cachedSetTimeout;
 	var cachedClearTimeout;
-
+	
 	function defaultSetTimout() {
 	    throw new Error('setTimeout has not been defined');
 	}
@@ -8031,8 +8031,8 @@
 	            return cachedSetTimeout.call(this, fun, 0);
 	        }
 	    }
-
-
+	
+	
 	}
 	function runClearTimeout(marker) {
 	    if (cachedClearTimeout === clearTimeout) {
@@ -8057,15 +8057,15 @@
 	            return cachedClearTimeout.call(this, marker);
 	        }
 	    }
-
-
-
+	
+	
+	
 	}
 	var queue = [];
 	var draining = false;
 	var currentQueue;
 	var queueIndex = -1;
-
+	
 	function cleanUpNextTick() {
 	    if (!draining || !currentQueue) {
 	        return;
@@ -8080,14 +8080,14 @@
 	        drainQueue();
 	    }
 	}
-
+	
 	function drainQueue() {
 	    if (draining) {
 	        return;
 	    }
 	    var timeout = runTimeout(cleanUpNextTick);
 	    draining = true;
-
+	
 	    var len = queue.length;
 	    while(len) {
 	        currentQueue = queue;
@@ -8104,7 +8104,7 @@
 	    draining = false;
 	    runClearTimeout(timeout);
 	}
-
+	
 	process.nextTick = function (fun) {
 	    var args = new Array(arguments.length - 1);
 	    if (arguments.length > 1) {
@@ -8117,7 +8117,7 @@
 	        runTimeout(drainQueue);
 	    }
 	};
-
+	
 	// v8 likes predictible objects
 	function Item(fun, array) {
 	    this.fun = fun;
@@ -8132,9 +8132,9 @@
 	process.argv = [];
 	process.version = ''; // empty string to avoid regexp issues
 	process.versions = {};
-
+	
 	function noop() {}
-
+	
 	process.on = noop;
 	process.addListener = noop;
 	process.once = noop;
@@ -8142,11 +8142,11 @@
 	process.removeListener = noop;
 	process.removeAllListeners = noop;
 	process.emit = noop;
-
+	
 	process.binding = function (name) {
 	    throw new Error('process.binding is not supported');
 	};
-
+	
 	process.cwd = function () { return '/' };
 	process.chdir = function (dir) {
 	    throw new Error('process.chdir is not supported');
@@ -8168,7 +8168,7 @@
 	// https://github.com/benjamingr/RexExp.escape
 	var $export = __webpack_require__(8)
 	  , $re     = __webpack_require__(297)(/[\\^$*+?.()|[\]{}]/g, '\\$&');
-
+	
 	$export($export.S, 'RegExp', {escape: function escape(it){ return $re(it); }});
 
 
@@ -8190,9 +8190,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var RenderWebGL = __webpack_require__(299);
-
+	
 	/**
 	 * Export for NPM & Node.js
 	 * @type {RenderWebGL}
@@ -8204,30 +8204,30 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(Buffer) {'use strict';
-
+	
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var hull = __webpack_require__(304);
 	var twgl = __webpack_require__(309);
 	var xhr = __webpack_require__(310);
-
+	
 	var BitmapSkin = __webpack_require__(318);
 	var Drawable = __webpack_require__(322);
 	var RenderConstants = __webpack_require__(321);
 	var ShaderManager = __webpack_require__(324);
 	var SVGSkin = __webpack_require__(327);
-
+	
 	/**
 	 * Maximum touch size for a picking check.
 	 * TODO: Figure out a reasonable max size. Maybe this should be configurable?
 	 * @type {int[]}
 	 */
 	var MAX_TOUCH_SIZE = [3, 3];
-
+	
 	/**
 	 * "touching {color}?" or "{color} touching {color}?" tests will be true if the
 	 * target is touching a color whose components are each within this tolerance of
@@ -8235,7 +8235,7 @@
 	 * @type {int} between 0 (exact matches only) and 255 (match anything).
 	 */
 	var TOLERANCE_TOUCHING_COLOR = 2;
-
+	
 	var RenderWebGL = function () {
 	    /**
 	     * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
@@ -8254,54 +8254,54 @@
 	     */
 	    function RenderWebGL(canvas, xLeft, xRight, yBottom, yTop) {
 	        _classCallCheck(this, RenderWebGL);
-
+	
 	        /** @type {Drawable[]} */
 	        this._allDrawables = [];
-
+	
 	        /** @type {Skin[]} */
 	        this._allSkins = [];
-
+	
 	        /** @type {int[]} */
 	        this._drawList = [];
-
+	
 	        /** @type {WebGLRenderingContext} */
 	        this._gl = twgl.getWebGLContext(canvas, { alpha: false, stencil: true });
-
+	
 	        /** @type {int} */
 	        this._nextDrawableId = RenderConstants.ID_NONE + 1;
-
+	
 	        /** @type {int} */
 	        this._nextSkinId = RenderConstants.ID_NONE + 1;
-
+	
 	        /** @type {module:twgl/m4.Mat4} */
 	        this._projection = twgl.m4.identity();
-
+	
 	        /** @type {Object.<string,int>} */
 	        this._skinUrlMap = {};
-
+	
 	        this._createGeometry();
-
+	
 	        this.setBackgroundColor(1, 1, 1);
 	        this.setStageSize(xLeft || -240, xRight || 240, yBottom || -180, yTop || 180);
 	        this.resize(this._nativeSize[0], this._nativeSize[1]);
 	        this._createQueryBuffers();
-
+	
 	        var gl = this._gl;
 	        gl.disable(gl.DEPTH_TEST);
 	        gl.enable(gl.BLEND); // TODO: disable when no partial transparency?
 	        gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
 	        this._shaderManager = new ShaderManager(gl);
 	    }
-
+	
 	    /**
 	     * @returns {WebGLRenderingContext} the WebGL rendering context associated with this renderer.
 	     */
-
-
+	
+	
 	    _createClass(RenderWebGL, [{
 	        key: 'resize',
-
-
+	
+	
 	        /**
 	         * Set the physical size of the stage in device-independent pixels.
 	         * This will be multiplied by the device's pixel ratio on high-DPI displays.
@@ -8313,7 +8313,7 @@
 	            this._gl.canvas.width = pixelsWide * pixelRatio;
 	            this._gl.canvas.height = pixelsTall * pixelRatio;
 	        }
-
+	
 	        /**
 	         * Set the background color for the stage. The stage will be cleared with this
 	         * color each frame.
@@ -8321,25 +8321,25 @@
 	         * @param {number} green The green component for the background.
 	         * @param {number} blue The blue component for the background.
 	         */
-
+	
 	    }, {
 	        key: 'setBackgroundColor',
 	        value: function setBackgroundColor(red, green, blue) {
 	            this._backgroundColor = [red, green, blue, 1];
 	        }
-
+	
 	        /**
 	         * Tell the renderer to draw various debug information to the provided canvas
 	         * during certain operations.
 	         * @param {canvas} canvas The canvas to use for debug output.
 	         */
-
+	
 	    }, {
 	        key: 'setDebugCanvas',
 	        value: function setDebugCanvas(canvas) {
 	            this._debugCanvas = canvas;
 	        }
-
+	
 	        /**
 	         * Set logical size of the stage in Scratch units.
 	         * @param {int} xLeft The left edge's x-coordinate. Scratch 2 uses -240.
@@ -8347,7 +8347,7 @@
 	         * @param {int} yBottom The bottom edge's y-coordinate. Scratch 2 uses -180.
 	         * @param {int} yTop The top edge's y-coordinate. Scratch 2 uses 180.
 	         */
-
+	
 	    }, {
 	        key: 'setStageSize',
 	        value: function setStageSize(xLeft, xRight, yBottom, yTop) {
@@ -8358,7 +8358,7 @@
 	            this._nativeSize = [Math.abs(xRight - xLeft), Math.abs(yBottom - yTop)];
 	            this._projection = twgl.m4.ortho(xLeft, xRight, yBottom, yTop, -1, 1);
 	        }
-
+	
 	        /**
 	         * Create a skin by loading a bitmap or vector image from a URL, or reuse an existing skin created this way.
 	         * WARNING: This method is deprecated and will be removed in the near future.
@@ -8368,27 +8368,27 @@
 	         * @returns {!int} The ID of the Skin.
 	         * @deprecated
 	         */
-
+	
 	    }, {
 	        key: 'createSkinFromURL',
 	        value: function createSkinFromURL(skinUrl, costumeResolution) {
 	            var _this = this;
-
+	
 	            if (this._skinUrlMap.hasOwnProperty(skinUrl)) {
 	                var existingId = this._skinUrlMap[skinUrl];
-
+	
 	                // Make sure the "existing" skin hasn't been destroyed
 	                if (this._allSkins[existingId]) {
 	                    return existingId;
 	                }
 	            }
-
+	
 	            var skinId = this._nextSkinId++;
 	            this._skinUrlMap[skinUrl] = skinId;
-
+	
 	            var newSkin = void 0;
 	            var isVector = void 0;
-
+	
 	            var ext = skinUrl.substring(skinUrl.lastIndexOf('.') + 1);
 	            switch (ext) {
 	                case 'svg':
@@ -8401,7 +8401,7 @@
 	                    isVector = false;
 	                    break;
 	            }
-
+	
 	            if (isVector) {
 	                newSkin = new SVGSkin(skinId, this);
 	                xhr.get({
@@ -8423,18 +8423,18 @@
 	                    img.src = skinUrl;
 	                })();
 	            }
-
+	
 	            this._allSkins[skinId] = newSkin;
 	            return skinId;
 	        }
-
+	
 	        /**
 	         * Create a new bitmap skin from a snapshot of the provided bitmap data.
 	         * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
 	         * @param {!int} [costumeResolution=1] - The resolution to use for this bitmap.
 	         * @returns {!int} the ID for the new skin.
 	         */
-
+	
 	    }, {
 	        key: 'createBitmapSkin',
 	        value: function createBitmapSkin(bitmapData, costumeResolution) {
@@ -8444,13 +8444,13 @@
 	            this._allSkins[skinId] = newSkin;
 	            return skinId;
 	        }
-
+	
 	        /**
 	         * Create a new SVG skin.
 	         * @param {!string} svgData - new SVG to use.
 	         * @returns {!int} the ID for the new skin.
 	         */
-
+	
 	    }, {
 	        key: 'createSVGSkin',
 	        value: function createSVGSkin(svgData) {
@@ -8460,12 +8460,12 @@
 	            this._allSkins[skinId] = newSkin;
 	            return skinId;
 	        }
-
+	
 	        /**
 	         * Destroy an existing skin. Do not use the skin or its ID after calling this.
 	         * @param {!int} skinId - The ID of the skin to destroy.
 	         */
-
+	
 	    }, {
 	        key: 'destroySkin',
 	        value: function destroySkin(skinId) {
@@ -8473,12 +8473,12 @@
 	            oldSkin.dispose();
 	            delete this._allSkins[skinId];
 	        }
-
+	
 	        /**
 	         * Create a new Drawable and add it to the scene.
 	         * @returns {int} The ID of the new Drawable.
 	         */
-
+	
 	    }, {
 	        key: 'createDrawable',
 	        value: function createDrawable() {
@@ -8486,31 +8486,31 @@
 	            var drawable = new Drawable(drawableID, this);
 	            this._allDrawables[drawableID] = drawable;
 	            this._drawList.push(drawableID);
-
+	
 	            var defaultSkinId = this.createSkinFromURL(RenderConstants.DEFAULT_SKIN);
 	            drawable.skin = this._allSkins[defaultSkinId];
-
+	
 	            return drawableID;
 	        }
-
+	
 	        /**
 	         * Destroy a Drawable, removing it from the scene.
 	         * @param {int} drawableID The ID of the Drawable to remove.
 	         */
-
+	
 	    }, {
 	        key: 'destroyDrawable',
 	        value: function destroyDrawable(drawableID) {
 	            var drawable = this._allDrawables[drawableID];
 	            drawable.dispose();
 	            delete this._allDrawables[drawableID];
-
+	
 	            var index = void 0;
 	            while ((index = this._drawList.indexOf(drawableID)) >= 0) {
 	                this._drawList.splice(index, 1);
 	            }
 	        }
-
+	
 	        /**
 	         * Set a drawable's order in the drawable list (effectively, z/layer).
 	         * Can be used to move drawables to absolute positions in the list,
@@ -8524,7 +8524,7 @@
 	         * @param {number=} optMin If set, order constrained to be at least `optMin`.
 	         * @return {?number} New order if changed, or null.
 	         */
-
+	
 	    }, {
 	        key: 'setDrawableOrder',
 	        value: function setDrawableOrder(drawableID, order, optIsRelative, optMin) {
@@ -8547,30 +8547,30 @@
 	            }
 	            return null;
 	        }
-
+	
 	        /**
 	         * Draw all current drawables and present the frame on the canvas.
 	         */
-
+	
 	    }, {
 	        key: 'draw',
 	        value: function draw() {
 	            var gl = this._gl;
-
+	
 	            twgl.bindFramebufferInfo(gl, null);
 	            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 	            gl.clearColor.apply(gl, this._backgroundColor);
 	            gl.clear(gl.COLOR_BUFFER_BIT);
-
+	
 	            this._drawThese(this._drawList, ShaderManager.DRAW_MODE.default, this._projection);
 	        }
-
+	
 	        /**
 	         * Get the precise bounds for a Drawable.
 	         * @param {int} drawableID ID of Drawable to get bounds for.
 	         * @return {object} Bounds for a tight box around the Drawable.
 	         */
-
+	
 	    }, {
 	        key: 'getBounds',
 	        value: function getBounds(drawableID) {
@@ -8594,20 +8594,20 @@
 	            }
 	            return bounds;
 	        }
-
+	
 	        /**
 	         * Get the current skin (costume) size of a Drawable.
 	         * @param {int} drawableID The ID of the Drawable to measure.
 	         * @return {Array.<number>} Skin size, width and height.
 	         */
-
+	
 	    }, {
 	        key: 'getSkinSize',
 	        value: function getSkinSize(drawableID) {
 	            var drawable = this._allDrawables[drawableID];
 	            return drawable.skin.size;
 	        }
-
+	
 	        /**
 	         * Check if a particular Drawable is touching a particular color.
 	         * @param {int} drawableID The ID of the Drawable to check.
@@ -8615,13 +8615,13 @@
 	         * @param {int[]} [mask3b] Optionally mask the check to this part of Drawable.
 	         * @returns {boolean} True iff the Drawable is touching the color.
 	         */
-
+	
 	    }, {
 	        key: 'isTouchingColor',
 	        value: function isTouchingColor(drawableID, color3b, mask3b) {
 	            var gl = this._gl;
 	            twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
-
+	
 	            var bounds = this._touchingBounds(drawableID);
 	            if (!bounds) {
 	                return;
@@ -8630,15 +8630,15 @@
 	            if (!candidateIDs) {
 	                return;
 	            }
-
+	
 	            // Limit size of viewport to the bounds around the target Drawable,
 	            // and create the projection matrix for the draw.
 	            gl.viewport(0, 0, bounds.width, bounds.height);
 	            var projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
-
+	
 	            gl.clearColor.apply(gl, this._backgroundColor);
 	            gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-
+	
 	            var extraUniforms = void 0;
 	            if (mask3b) {
 	                extraUniforms = {
@@ -8646,18 +8646,18 @@
 	                    u_colorMaskTolerance: TOLERANCE_TOUCHING_COLOR / 255
 	                };
 	            }
-
+	
 	            try {
 	                gl.enable(gl.STENCIL_TEST);
 	                gl.stencilFunc(gl.ALWAYS, 1, 1);
 	                gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
 	                gl.colorMask(false, false, false, false);
 	                this._drawThese([drawableID], mask3b ? ShaderManager.DRAW_MODE.colorMask : ShaderManager.DRAW_MODE.silhouette, projection, null, extraUniforms);
-
+	
 	                gl.stencilFunc(gl.EQUAL, 1, 1);
 	                gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
 	                gl.colorMask(true, true, true, true);
-
+	
 	                this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.default, projection, function (testID) {
 	                    return testID !== drawableID;
 	                });
@@ -8665,10 +8665,10 @@
 	                gl.colorMask(true, true, true, true);
 	                gl.disable(gl.STENCIL_TEST);
 	            }
-
+	
 	            var pixels = new Buffer(bounds.width * bounds.height * 4);
 	            gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
+	
 	            if (this._debugCanvas) {
 	                this._debugCanvas.width = bounds.width;
 	                this._debugCanvas.height = bounds.height;
@@ -8679,36 +8679,36 @@
 	                }
 	                context.putImageData(imageData, 0, 0);
 	            }
-
+	
 	            for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
 	                var pixelDistanceR = Math.abs(pixels[pixelBase] - color3b[0]);
 	                var pixelDistanceG = Math.abs(pixels[pixelBase + 1] - color3b[1]);
 	                var pixelDistanceB = Math.abs(pixels[pixelBase + 2] - color3b[2]);
-
+	
 	                if (pixelDistanceR <= TOLERANCE_TOUCHING_COLOR && pixelDistanceG <= TOLERANCE_TOUCHING_COLOR && pixelDistanceB <= TOLERANCE_TOUCHING_COLOR) {
 	                    return true;
 	                }
 	            }
-
+	
 	            return false;
 	        }
-
+	
 	        /**
 	         * Check if a particular Drawable is touching any in a set of Drawables.
 	         * @param {int} drawableID The ID of the Drawable to check.
 	         * @param {int[]} candidateIDs The Drawable IDs to check, otherwise all.
 	         * @returns {boolean} True iff the Drawable is touching one of candidateIDs.
 	         */
-
+	
 	    }, {
 	        key: 'isTouchingDrawables',
 	        value: function isTouchingDrawables(drawableID, candidateIDs) {
 	            candidateIDs = candidateIDs || this._drawList;
-
+	
 	            var gl = this._gl;
-
+	
 	            twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
-
+	
 	            var bounds = this._touchingBounds(drawableID);
 	            if (!bounds) {
 	                return;
@@ -8717,27 +8717,27 @@
 	            if (!candidateIDs) {
 	                return;
 	            }
-
+	
 	            // Limit size of viewport to the bounds around the target Drawable,
 	            // and create the projection matrix for the draw.
 	            gl.viewport(0, 0, bounds.width, bounds.height);
 	            var projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
-
+	
 	            var noneColor = Drawable.color4fFromID(RenderConstants.ID_NONE);
 	            gl.clearColor.apply(gl, noneColor);
 	            gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-
+	
 	            try {
 	                gl.enable(gl.STENCIL_TEST);
 	                gl.stencilFunc(gl.ALWAYS, 1, 1);
 	                gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
 	                gl.colorMask(false, false, false, false);
 	                this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, projection);
-
+	
 	                gl.stencilFunc(gl.EQUAL, 1, 1);
 	                gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
 	                gl.colorMask(true, true, true, true);
-
+	
 	                this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection, function (testID) {
 	                    return testID !== drawableID;
 	                });
@@ -8745,10 +8745,10 @@
 	                gl.colorMask(true, true, true, true);
 	                gl.disable(gl.STENCIL_TEST);
 	            }
-
+	
 	            var pixels = new Buffer(bounds.width * bounds.height * 4);
 	            gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
+	
 	            if (this._debugCanvas) {
 	                this._debugCanvas.width = bounds.width;
 	                this._debugCanvas.height = bounds.height;
@@ -8759,17 +8759,17 @@
 	                }
 	                context.putImageData(imageData, 0, 0);
 	            }
-
+	
 	            for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
 	                var pixelID = Drawable.color3bToID(pixels[pixelBase], pixels[pixelBase + 1], pixels[pixelBase + 2]);
 	                if (pixelID > RenderConstants.ID_NONE) {
 	                    return true;
 	                }
 	            }
-
+	
 	            return false;
 	        }
-
+	
 	        /**
 	         * Detect which sprite, if any, is at the given location.
 	         * @param {int} centerX The client x coordinate of the picking location.
@@ -8780,54 +8780,54 @@
 	         * @returns {int} The ID of the topmost Drawable under the picking location, or
 	         * RenderConstants.ID_NONE if there is no Drawable at that location.
 	         */
-
+	
 	    }, {
 	        key: 'pick',
 	        value: function pick(centerX, centerY, touchWidth, touchHeight, candidateIDs) {
 	            var gl = this._gl;
-
+	
 	            touchWidth = touchWidth || 1;
 	            touchHeight = touchHeight || 1;
 	            candidateIDs = candidateIDs || this._drawList;
-
+	
 	            var clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
 	            var clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
-
+	
 	            centerX *= clientToGLX;
 	            centerY *= clientToGLY;
 	            touchWidth *= clientToGLX;
 	            touchHeight *= clientToGLY;
-
+	
 	            touchWidth = Math.max(1, Math.min(touchWidth, MAX_TOUCH_SIZE[0]));
 	            touchHeight = Math.max(1, Math.min(touchHeight, MAX_TOUCH_SIZE[1]));
-
+	
 	            var pixelLeft = Math.floor(centerX - Math.floor(touchWidth / 2) + 0.5);
 	            var pixelRight = Math.floor(centerX + Math.ceil(touchWidth / 2) + 0.5);
 	            var pixelTop = Math.floor(centerY - Math.floor(touchHeight / 2) + 0.5);
 	            var pixelBottom = Math.floor(centerY + Math.ceil(touchHeight / 2) + 0.5);
-
+	
 	            twgl.bindFramebufferInfo(gl, this._pickBufferInfo);
 	            gl.viewport(0, 0, touchWidth, touchHeight);
-
+	
 	            var noneColor = Drawable.color4fFromID(RenderConstants.ID_NONE);
 	            gl.clearColor.apply(gl, noneColor);
 	            gl.clear(gl.COLOR_BUFFER_BIT);
-
+	
 	            var widthPerPixel = (this._xRight - this._xLeft) / this._gl.canvas.width;
 	            var heightPerPixel = (this._yBottom - this._yTop) / this._gl.canvas.height;
-
+	
 	            var pickLeft = this._xLeft + pixelLeft * widthPerPixel;
 	            var pickRight = this._xLeft + pixelRight * widthPerPixel;
 	            var pickTop = this._yTop + pixelTop * heightPerPixel;
 	            var pickBottom = this._yTop + pixelBottom * heightPerPixel;
-
+	
 	            var projection = twgl.m4.ortho(pickLeft, pickRight, pickTop, pickBottom, -1, 1);
-
+	
 	            this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection);
-
+	
 	            var pixels = new Buffer(touchWidth * touchHeight * 4);
 	            gl.readPixels(0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
+	
 	            if (this._debugCanvas) {
 	                this._debugCanvas.width = touchWidth;
 	                this._debugCanvas.height = touchHeight;
@@ -8838,56 +8838,56 @@
 	                }
 	                context.putImageData(imageData, 0, 0);
 	            }
-
+	
 	            var hits = {};
 	            for (var pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
 	                var pixelID = Drawable.color3bToID(pixels[pixelBase], pixels[pixelBase + 1], pixels[pixelBase + 2]);
 	                hits[pixelID] = (hits[pixelID] || 0) + 1;
 	            }
-
+	
 	            // Bias toward selecting anything over nothing
 	            hits[RenderConstants.ID_NONE] = 0;
-
+	
 	            var hit = RenderConstants.ID_NONE;
 	            for (var hitID in hits) {
 	                if (hits.hasOwnProperty(hitID) && hits[hitID] > hits[hit]) {
 	                    hit = hitID;
 	                }
 	            }
-
+	
 	            return hit | 0;
 	        }
-
+	
 	        /**
 	         * Get the candidate bounding box for a touching query.
 	         * @param {int} drawableID ID for drawable of query.
 	         * @return {?Rectangle} Rectangle bounds for touching query, or null.
 	         */
-
+	
 	    }, {
 	        key: '_touchingBounds',
 	        value: function _touchingBounds(drawableID) {
 	            var drawable = this._allDrawables[drawableID];
-
+	
 	            // TODO: remove this once URL-based skin setting is removed.
 	            if (!drawable.skin || !drawable.skin.getTexture([100, 100])) return null;
-
+	
 	            var bounds = drawable.getFastBounds();
-
+	
 	            // Limit queries to the stage size.
 	            bounds.clamp(this._xLeft, this._xRight, this._yBottom, this._yTop);
-
+	
 	            // Use integer coordinates for queries - weird things happen
 	            // when you provide float width/heights to gl.viewport and projection.
 	            bounds.snapToInt();
-
+	
 	            if (bounds.width === 0 || bounds.height === 0) {
 	                // No space to query.
 	                return null;
 	            }
 	            return bounds;
 	        }
-
+	
 	        /**
 	         * Filter a list of candidates for a touching query into only those that
 	         * could possibly intersect the given bounds.
@@ -8896,12 +8896,12 @@
 	         * @param {Rectangle} bounds - Bounds to limit candidates to.
 	         * @return {?Array.<int>} Filtered candidateIDs, or null if none.
 	         */
-
+	
 	    }, {
 	        key: '_filterCandidatesTouching',
 	        value: function _filterCandidatesTouching(drawableID, candidateIDs, bounds) {
 	            var _this2 = this;
-
+	
 	            // Filter candidates by rough bounding box intersection.
 	            // Do this before _drawThese, so we can prevent any GL operations
 	            // and readback by returning early.
@@ -8918,13 +8918,13 @@
 	            }
 	            return candidateIDs;
 	        }
-
+	
 	        /**
 	         * Update the position, direction, scale, or effect properties of this Drawable.
 	         * @param {int} drawableID The ID of the Drawable to update.
 	         * @param {object.<string,*>} properties The new property values to set.
 	         */
-
+	
 	    }, {
 	        key: 'updateDrawableProperties',
 	        value: function updateDrawableProperties(drawableID, properties) {
@@ -8938,7 +8938,7 @@
 	            if ('skin' in properties) {
 	                var skin = properties.skin,
 	                    costumeResolution = properties.costumeResolution;
-
+	
 	                var skinId = this.createSkinFromURL(skin, costumeResolution);
 	                drawable.skin = this._allSkins[skinId];
 	            }
@@ -8951,16 +8951,16 @@
 	            }
 	            drawable.updateProperties(properties);
 	        }
-
+	
 	        /* ******
 	         * Truly internal functions: these support the functions above.
 	         ********/
-
+	
 	        /**
 	         * Build geometry (vertex and index) buffers.
 	         * @private
 	         */
-
+	
 	    }, {
 	        key: '_createGeometry',
 	        value: function _createGeometry() {
@@ -8976,7 +8976,7 @@
 	            };
 	            this._bufferInfo = twgl.createBufferInfoFromArrays(this._gl, quad);
 	        }
-
+	
 	        /**
 	         * Create the frame buffers used for queries such as picking and color-touching.
 	         * These buffers are fixed in size regardless of the size of the main render
@@ -8984,20 +8984,20 @@
 	         * presentation modes.
 	         * @private
 	         */
-
+	
 	    }, {
 	        key: '_createQueryBuffers',
 	        value: function _createQueryBuffers() {
 	            var gl = this._gl;
 	            var attachments = [{ format: gl.RGBA }, { format: gl.DEPTH_STENCIL }];
-
+	
 	            this._pickBufferInfo = twgl.createFramebufferInfo(gl, attachments, MAX_TOUCH_SIZE[0], MAX_TOUCH_SIZE[1]);
-
+	
 	            // TODO: should we create this on demand to save memory?
 	            // A 480x360 32-bpp buffer is 675 KiB.
 	            this._queryBufferInfo = twgl.createFramebufferInfo(gl, attachments, this._nativeSize[0], this._nativeSize[1]);
 	        }
-
+	
 	        /**
 	         * Draw all Drawables, with the possible exception of
 	         * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawList.
@@ -9007,31 +9007,31 @@
 	         * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
 	         * @private
 	         */
-
+	
 	    }, {
 	        key: '_drawThese',
 	        value: function _drawThese(drawables, drawMode, projection, filter, extraUniforms) {
 	            var gl = this._gl;
 	            var currentShader = null;
-
+	
 	            var numDrawables = drawables.length;
 	            for (var drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
 	                var drawableID = drawables[drawableIndex];
-
+	
 	                // If we have a filter, check whether the ID fails
 	                if (filter && !filter(drawableID)) continue;
-
+	
 	                var drawable = this._allDrawables[drawableID];
 	                // TODO: check if drawable is inside the viewport before anything else
-
+	
 	                // Hidden drawables (e.g., by a "hide" block) are never drawn.
 	                if (!drawable.getVisible()) continue;
-
+	
 	                var drawableScale = drawable.scale;
-
+	
 	                // If the texture isn't ready yet, skip it.
 	                if (!drawable.skin.getTexture(drawableScale)) continue;
-
+	
 	                var effectBits = drawable.getEnabledEffects();
 	                var newShader = this._shaderManager.getShader(drawMode, effectBits);
 	                if (currentShader !== newShader) {
@@ -9041,19 +9041,19 @@
 	                    twgl.setUniforms(currentShader, { u_projectionMatrix: projection });
 	                    twgl.setUniforms(currentShader, { u_fudge: window.fudge || 0 });
 	                }
-
+	
 	                twgl.setUniforms(currentShader, drawable.skin.getUniforms(drawableScale));
 	                twgl.setUniforms(currentShader, drawable.getUniforms());
-
+	
 	                // Apply extra uniforms after the Drawable's, to allow overwriting.
 	                if (extraUniforms) {
 	                    twgl.setUniforms(currentShader, extraUniforms);
 	                }
-
+	
 	                twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
 	            }
 	        }
-
+	
 	        /**
 	         * Get the convex hull points for a particular Drawable.
 	         * To do this, draw the Drawable unrotated, unscaled, and untranslated.
@@ -9062,47 +9062,47 @@
 	         * @param {int} drawableID The Drawable IDs calculate convex hull for.
 	         * @return {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
 	         */
-
+	
 	    }, {
 	        key: '_getConvexHullPointsForDrawable',
 	        value: function _getConvexHullPointsForDrawable(drawableID) {
 	            var drawable = this._allDrawables[drawableID];
-
+	
 	            var _drawable$_uniforms$u = _slicedToArray(drawable._uniforms.u_skinSize, 2),
 	                width = _drawable$_uniforms$u[0],
 	                height = _drawable$_uniforms$u[1];
 	            // No points in the hull if invisible or size is 0.
-
-
+	
+	
 	            if (!drawable.getVisible() || width === 0 || height === 0) {
 	                return [];
 	            }
-
+	
 	            // Only draw to the size of the untransformed drawable.
 	            var gl = this._gl;
 	            twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 	            gl.viewport(0, 0, width, height);
-
+	
 	            // Clear the canvas with RenderConstants.ID_NONE.
 	            var noneColor = Drawable.color4fFromID(RenderConstants.ID_NONE);
 	            gl.clearColor.apply(gl, noneColor);
 	            gl.clear(gl.COLOR_BUFFER_BIT);
-
+	
 	            // Overwrite the model matrix to be unrotated, unscaled, untranslated.
 	            var modelMatrix = twgl.m4.identity();
 	            twgl.m4.rotateZ(modelMatrix, Math.PI, modelMatrix);
 	            twgl.m4.scale(modelMatrix, [width, height], modelMatrix);
-
+	
 	            var projection = twgl.m4.ortho(-0.5 * width, 0.5 * width, -0.5 * height, 0.5 * height, -1, 1);
-
+	
 	            this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, projection, null, { u_modelMatrix: modelMatrix });
-
+	
 	            var pixels = new Buffer(width * height * 4);
 	            gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
+	
 	            // Known boundary points on left/right edges of pixels.
 	            var boundaryPoints = [];
-
+	
 	            /**
 	             * Helper method to look up a pixel.
 	             * @param {int} x X coordinate of the pixel in `pixels`.
@@ -9138,10 +9138,10 @@
 	            return this._gl;
 	        }
 	    }]);
-
+	
 	    return RenderWebGL;
 	}();
-
+	
 	module.exports = RenderWebGL;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(300).Buffer))
 
@@ -9156,17 +9156,17 @@
 	 * @license  MIT
 	 */
 	/* eslint-disable no-proto */
-
+	
 	'use strict'
-
+	
 	var base64 = __webpack_require__(301)
 	var ieee754 = __webpack_require__(302)
 	var isArray = __webpack_require__(303)
-
+	
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
 	exports.INSPECT_MAX_BYTES = 50
-
+	
 	/**
 	 * If `Buffer.TYPED_ARRAY_SUPPORT`:
 	 *   === true    Use Uint8Array implementation (fastest)
@@ -9187,19 +9187,19 @@
 	 *
 	 *   - IE10 has a broken `TypedArray.prototype.subarray` function which returns arrays of
 	 *     incorrect length in some situations.
-
+	
 	 * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
 	 * get the Object implementation, which is slower but behaves correctly.
 	 */
 	Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
 	  ? global.TYPED_ARRAY_SUPPORT
 	  : typedArraySupport()
-
+	
 	/*
 	 * Export kMaxLength after typed array support is determined.
 	 */
 	exports.kMaxLength = kMaxLength()
-
+	
 	function typedArraySupport () {
 	  try {
 	    var arr = new Uint8Array(1)
@@ -9211,13 +9211,13 @@
 	    return false
 	  }
 	}
-
+	
 	function kMaxLength () {
 	  return Buffer.TYPED_ARRAY_SUPPORT
 	    ? 0x7fffffff
 	    : 0x3fffffff
 	}
-
+	
 	function createBuffer (that, length) {
 	  if (kMaxLength() < length) {
 	    throw new RangeError('Invalid typed array length')
@@ -9233,10 +9233,10 @@
 	    }
 	    that.length = length
 	  }
-
+	
 	  return that
 	}
-
+	
 	/**
 	 * The Buffer constructor returns instances of `Uint8Array` that have their
 	 * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
@@ -9246,12 +9246,12 @@
 	 *
 	 * The `Uint8Array` prototype remains unmodified.
 	 */
-
+	
 	function Buffer (arg, encodingOrOffset, length) {
 	  if (!Buffer.TYPED_ARRAY_SUPPORT && !(this instanceof Buffer)) {
 	    return new Buffer(arg, encodingOrOffset, length)
 	  }
-
+	
 	  // Common case.
 	  if (typeof arg === 'number') {
 	    if (typeof encodingOrOffset === 'string') {
@@ -9263,31 +9263,31 @@
 	  }
 	  return from(this, arg, encodingOrOffset, length)
 	}
-
+	
 	Buffer.poolSize = 8192 // not used by this implementation
-
+	
 	// TODO: Legacy, not needed anymore. Remove in next major version.
 	Buffer._augment = function (arr) {
 	  arr.__proto__ = Buffer.prototype
 	  return arr
 	}
-
+	
 	function from (that, value, encodingOrOffset, length) {
 	  if (typeof value === 'number') {
 	    throw new TypeError('"value" argument must not be a number')
 	  }
-
+	
 	  if (typeof ArrayBuffer !== 'undefined' && value instanceof ArrayBuffer) {
 	    return fromArrayBuffer(that, value, encodingOrOffset, length)
 	  }
-
+	
 	  if (typeof value === 'string') {
 	    return fromString(that, value, encodingOrOffset)
 	  }
-
+	
 	  return fromObject(that, value)
 	}
-
+	
 	/**
 	 * Functionally equivalent to Buffer(arg, encoding) but throws a TypeError
 	 * if value is a number.
@@ -9299,7 +9299,7 @@
 	Buffer.from = function (value, encodingOrOffset, length) {
 	  return from(null, value, encodingOrOffset, length)
 	}
-
+	
 	if (Buffer.TYPED_ARRAY_SUPPORT) {
 	  Buffer.prototype.__proto__ = Uint8Array.prototype
 	  Buffer.__proto__ = Uint8Array
@@ -9312,7 +9312,7 @@
 	    })
 	  }
 	}
-
+	
 	function assertSize (size) {
 	  if (typeof size !== 'number') {
 	    throw new TypeError('"size" argument must be a number')
@@ -9320,7 +9320,7 @@
 	    throw new RangeError('"size" argument must not be negative')
 	  }
 	}
-
+	
 	function alloc (that, size, fill, encoding) {
 	  assertSize(size)
 	  if (size <= 0) {
@@ -9336,7 +9336,7 @@
 	  }
 	  return createBuffer(that, size)
 	}
-
+	
 	/**
 	 * Creates a new filled Buffer instance.
 	 * alloc(size[, fill[, encoding]])
@@ -9344,7 +9344,7 @@
 	Buffer.alloc = function (size, fill, encoding) {
 	  return alloc(null, size, fill, encoding)
 	}
-
+	
 	function allocUnsafe (that, size) {
 	  assertSize(size)
 	  that = createBuffer(that, size < 0 ? 0 : checked(size) | 0)
@@ -9355,7 +9355,7 @@
 	  }
 	  return that
 	}
-
+	
 	/**
 	 * Equivalent to Buffer(num), by default creates a non-zero-filled Buffer instance.
 	 * */
@@ -9368,31 +9368,31 @@
 	Buffer.allocUnsafeSlow = function (size) {
 	  return allocUnsafe(null, size)
 	}
-
+	
 	function fromString (that, string, encoding) {
 	  if (typeof encoding !== 'string' || encoding === '') {
 	    encoding = 'utf8'
 	  }
-
+	
 	  if (!Buffer.isEncoding(encoding)) {
 	    throw new TypeError('"encoding" must be a valid string encoding')
 	  }
-
+	
 	  var length = byteLength(string, encoding) | 0
 	  that = createBuffer(that, length)
-
+	
 	  var actual = that.write(string, encoding)
-
+	
 	  if (actual !== length) {
 	    // Writing a hex string, for example, that contains invalid characters will
 	    // cause everything after the first invalid character to be ignored. (e.g.
 	    // 'abxxcd' will be treated as 'ab')
 	    that = that.slice(0, actual)
 	  }
-
+	
 	  return that
 	}
-
+	
 	function fromArrayLike (that, array) {
 	  var length = array.length < 0 ? 0 : checked(array.length) | 0
 	  that = createBuffer(that, length)
@@ -9401,18 +9401,18 @@
 	  }
 	  return that
 	}
-
+	
 	function fromArrayBuffer (that, array, byteOffset, length) {
 	  array.byteLength // this throws if `array` is not a valid ArrayBuffer
-
+	
 	  if (byteOffset < 0 || array.byteLength < byteOffset) {
 	    throw new RangeError('\'offset\' is out of bounds')
 	  }
-
+	
 	  if (array.byteLength < byteOffset + (length || 0)) {
 	    throw new RangeError('\'length\' is out of bounds')
 	  }
-
+	
 	  if (byteOffset === undefined && length === undefined) {
 	    array = new Uint8Array(array)
 	  } else if (length === undefined) {
@@ -9420,7 +9420,7 @@
 	  } else {
 	    array = new Uint8Array(array, byteOffset, length)
 	  }
-
+	
 	  if (Buffer.TYPED_ARRAY_SUPPORT) {
 	    // Return an augmented `Uint8Array` instance, for best performance
 	    that = array
@@ -9431,20 +9431,20 @@
 	  }
 	  return that
 	}
-
+	
 	function fromObject (that, obj) {
 	  if (Buffer.isBuffer(obj)) {
 	    var len = checked(obj.length) | 0
 	    that = createBuffer(that, len)
-
+	
 	    if (that.length === 0) {
 	      return that
 	    }
-
+	
 	    obj.copy(that, 0, 0, len)
 	    return that
 	  }
-
+	
 	  if (obj) {
 	    if ((typeof ArrayBuffer !== 'undefined' &&
 	        obj.buffer instanceof ArrayBuffer) || 'length' in obj) {
@@ -9453,15 +9453,15 @@
 	      }
 	      return fromArrayLike(that, obj)
 	    }
-
+	
 	    if (obj.type === 'Buffer' && isArray(obj.data)) {
 	      return fromArrayLike(that, obj.data)
 	    }
 	  }
-
+	
 	  throw new TypeError('First argument must be a string, Buffer, ArrayBuffer, Array, or array-like object.')
 	}
-
+	
 	function checked (length) {
 	  // Note: cannot use `length < kMaxLength()` here because that fails when
 	  // length is NaN (which is otherwise coerced to zero.)
@@ -9471,28 +9471,28 @@
 	  }
 	  return length | 0
 	}
-
+	
 	function SlowBuffer (length) {
 	  if (+length != length) { // eslint-disable-line eqeqeq
 	    length = 0
 	  }
 	  return Buffer.alloc(+length)
 	}
-
+	
 	Buffer.isBuffer = function isBuffer (b) {
 	  return !!(b != null && b._isBuffer)
 	}
-
+	
 	Buffer.compare = function compare (a, b) {
 	  if (!Buffer.isBuffer(a) || !Buffer.isBuffer(b)) {
 	    throw new TypeError('Arguments must be Buffers')
 	  }
-
+	
 	  if (a === b) return 0
-
+	
 	  var x = a.length
 	  var y = b.length
-
+	
 	  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
 	    if (a[i] !== b[i]) {
 	      x = a[i]
@@ -9500,12 +9500,12 @@
 	      break
 	    }
 	  }
-
+	
 	  if (x < y) return -1
 	  if (y < x) return 1
 	  return 0
 	}
-
+	
 	Buffer.isEncoding = function isEncoding (encoding) {
 	  switch (String(encoding).toLowerCase()) {
 	    case 'hex':
@@ -9524,16 +9524,16 @@
 	      return false
 	  }
 	}
-
+	
 	Buffer.concat = function concat (list, length) {
 	  if (!isArray(list)) {
 	    throw new TypeError('"list" argument must be an Array of Buffers')
 	  }
-
+	
 	  if (list.length === 0) {
 	    return Buffer.alloc(0)
 	  }
-
+	
 	  var i
 	  if (length === undefined) {
 	    length = 0
@@ -9541,7 +9541,7 @@
 	      length += list[i].length
 	    }
 	  }
-
+	
 	  var buffer = Buffer.allocUnsafe(length)
 	  var pos = 0
 	  for (i = 0; i < list.length; ++i) {
@@ -9554,7 +9554,7 @@
 	  }
 	  return buffer
 	}
-
+	
 	function byteLength (string, encoding) {
 	  if (Buffer.isBuffer(string)) {
 	    return string.length
@@ -9566,10 +9566,10 @@
 	  if (typeof string !== 'string') {
 	    string = '' + string
 	  }
-
+	
 	  var len = string.length
 	  if (len === 0) return 0
-
+	
 	  // Use a for loop to avoid recursion
 	  var loweredCase = false
 	  for (;;) {
@@ -9599,13 +9599,13 @@
 	  }
 	}
 	Buffer.byteLength = byteLength
-
+	
 	function slowToString (encoding, start, end) {
 	  var loweredCase = false
-
+	
 	  // No need to verify that "this.length <= MAX_UINT32" since it's a read-only
 	  // property of a typed array.
-
+	
 	  // This behaves neither like String nor Uint8Array in that we set start/end
 	  // to their upper/lower bounds if the value passed is out of range.
 	  // undefined is handled specially as per ECMA-262 6th Edition,
@@ -9618,50 +9618,50 @@
 	  if (start > this.length) {
 	    return ''
 	  }
-
+	
 	  if (end === undefined || end > this.length) {
 	    end = this.length
 	  }
-
+	
 	  if (end <= 0) {
 	    return ''
 	  }
-
+	
 	  // Force coersion to uint32. This will also coerce falsey/NaN values to 0.
 	  end >>>= 0
 	  start >>>= 0
-
+	
 	  if (end <= start) {
 	    return ''
 	  }
-
+	
 	  if (!encoding) encoding = 'utf8'
-
+	
 	  while (true) {
 	    switch (encoding) {
 	      case 'hex':
 	        return hexSlice(this, start, end)
-
+	
 	      case 'utf8':
 	      case 'utf-8':
 	        return utf8Slice(this, start, end)
-
+	
 	      case 'ascii':
 	        return asciiSlice(this, start, end)
-
+	
 	      case 'latin1':
 	      case 'binary':
 	        return latin1Slice(this, start, end)
-
+	
 	      case 'base64':
 	        return base64Slice(this, start, end)
-
+	
 	      case 'ucs2':
 	      case 'ucs-2':
 	      case 'utf16le':
 	      case 'utf-16le':
 	        return utf16leSlice(this, start, end)
-
+	
 	      default:
 	        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
 	        encoding = (encoding + '').toLowerCase()
@@ -9669,17 +9669,17 @@
 	    }
 	  }
 	}
-
+	
 	// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
 	// Buffer instances.
 	Buffer.prototype._isBuffer = true
-
+	
 	function swap (b, n, m) {
 	  var i = b[n]
 	  b[n] = b[m]
 	  b[m] = i
 	}
-
+	
 	Buffer.prototype.swap16 = function swap16 () {
 	  var len = this.length
 	  if (len % 2 !== 0) {
@@ -9690,7 +9690,7 @@
 	  }
 	  return this
 	}
-
+	
 	Buffer.prototype.swap32 = function swap32 () {
 	  var len = this.length
 	  if (len % 4 !== 0) {
@@ -9702,7 +9702,7 @@
 	  }
 	  return this
 	}
-
+	
 	Buffer.prototype.swap64 = function swap64 () {
 	  var len = this.length
 	  if (len % 8 !== 0) {
@@ -9716,20 +9716,20 @@
 	  }
 	  return this
 	}
-
+	
 	Buffer.prototype.toString = function toString () {
 	  var length = this.length | 0
 	  if (length === 0) return ''
 	  if (arguments.length === 0) return utf8Slice(this, 0, length)
 	  return slowToString.apply(this, arguments)
 	}
-
+	
 	Buffer.prototype.equals = function equals (b) {
 	  if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
 	  if (this === b) return true
 	  return Buffer.compare(this, b) === 0
 	}
-
+	
 	Buffer.prototype.inspect = function inspect () {
 	  var str = ''
 	  var max = exports.INSPECT_MAX_BYTES
@@ -9739,12 +9739,12 @@
 	  }
 	  return '<Buffer ' + str + '>'
 	}
-
+	
 	Buffer.prototype.compare = function compare (target, start, end, thisStart, thisEnd) {
 	  if (!Buffer.isBuffer(target)) {
 	    throw new TypeError('Argument must be a Buffer')
 	  }
-
+	
 	  if (start === undefined) {
 	    start = 0
 	  }
@@ -9757,11 +9757,11 @@
 	  if (thisEnd === undefined) {
 	    thisEnd = this.length
 	  }
-
+	
 	  if (start < 0 || end > target.length || thisStart < 0 || thisEnd > this.length) {
 	    throw new RangeError('out of range index')
 	  }
-
+	
 	  if (thisStart >= thisEnd && start >= end) {
 	    return 0
 	  }
@@ -9771,21 +9771,21 @@
 	  if (start >= end) {
 	    return 1
 	  }
-
+	
 	  start >>>= 0
 	  end >>>= 0
 	  thisStart >>>= 0
 	  thisEnd >>>= 0
-
+	
 	  if (this === target) return 0
-
+	
 	  var x = thisEnd - thisStart
 	  var y = end - start
 	  var len = Math.min(x, y)
-
+	
 	  var thisCopy = this.slice(thisStart, thisEnd)
 	  var targetCopy = target.slice(start, end)
-
+	
 	  for (var i = 0; i < len; ++i) {
 	    if (thisCopy[i] !== targetCopy[i]) {
 	      x = thisCopy[i]
@@ -9793,12 +9793,12 @@
 	      break
 	    }
 	  }
-
+	
 	  if (x < y) return -1
 	  if (y < x) return 1
 	  return 0
 	}
-
+	
 	// Finds either the first index of `val` in `buffer` at offset >= `byteOffset`,
 	// OR the last index of `val` in `buffer` at offset <= `byteOffset`.
 	//
@@ -9811,7 +9811,7 @@
 	function bidirectionalIndexOf (buffer, val, byteOffset, encoding, dir) {
 	  // Empty buffer means no match
 	  if (buffer.length === 0) return -1
-
+	
 	  // Normalize byteOffset
 	  if (typeof byteOffset === 'string') {
 	    encoding = byteOffset
@@ -9826,7 +9826,7 @@
 	    // byteOffset: it it's undefined, null, NaN, "foo", etc, search whole buffer
 	    byteOffset = dir ? 0 : (buffer.length - 1)
 	  }
-
+	
 	  // Normalize byteOffset: negative offsets start from the end of the buffer
 	  if (byteOffset < 0) byteOffset = buffer.length + byteOffset
 	  if (byteOffset >= buffer.length) {
@@ -9836,12 +9836,12 @@
 	    if (dir) byteOffset = 0
 	    else return -1
 	  }
-
+	
 	  // Normalize val
 	  if (typeof val === 'string') {
 	    val = Buffer.from(val, encoding)
 	  }
-
+	
 	  // Finally, search either indexOf (if dir is true) or lastIndexOf
 	  if (Buffer.isBuffer(val)) {
 	    // Special case: looking for empty string/buffer always fails
@@ -9861,15 +9861,15 @@
 	    }
 	    return arrayIndexOf(buffer, [ val ], byteOffset, encoding, dir)
 	  }
-
+	
 	  throw new TypeError('val must be string, number or Buffer')
 	}
-
+	
 	function arrayIndexOf (arr, val, byteOffset, encoding, dir) {
 	  var indexSize = 1
 	  var arrLength = arr.length
 	  var valLength = val.length
-
+	
 	  if (encoding !== undefined) {
 	    encoding = String(encoding).toLowerCase()
 	    if (encoding === 'ucs2' || encoding === 'ucs-2' ||
@@ -9883,7 +9883,7 @@
 	      byteOffset /= 2
 	    }
 	  }
-
+	
 	  function read (buf, i) {
 	    if (indexSize === 1) {
 	      return buf[i]
@@ -9891,7 +9891,7 @@
 	      return buf.readUInt16BE(i * indexSize)
 	    }
 	  }
-
+	
 	  var i
 	  if (dir) {
 	    var foundIndex = -1
@@ -9917,22 +9917,22 @@
 	      if (found) return i
 	    }
 	  }
-
+	
 	  return -1
 	}
-
+	
 	Buffer.prototype.includes = function includes (val, byteOffset, encoding) {
 	  return this.indexOf(val, byteOffset, encoding) !== -1
 	}
-
+	
 	Buffer.prototype.indexOf = function indexOf (val, byteOffset, encoding) {
 	  return bidirectionalIndexOf(this, val, byteOffset, encoding, true)
 	}
-
+	
 	Buffer.prototype.lastIndexOf = function lastIndexOf (val, byteOffset, encoding) {
 	  return bidirectionalIndexOf(this, val, byteOffset, encoding, false)
 	}
-
+	
 	function hexWrite (buf, string, offset, length) {
 	  offset = Number(offset) || 0
 	  var remaining = buf.length - offset
@@ -9944,11 +9944,11 @@
 	      length = remaining
 	    }
 	  }
-
+	
 	  // must be an even number of digits
 	  var strLen = string.length
 	  if (strLen % 2 !== 0) throw new TypeError('Invalid hex string')
-
+	
 	  if (length > strLen / 2) {
 	    length = strLen / 2
 	  }
@@ -9959,27 +9959,27 @@
 	  }
 	  return i
 	}
-
+	
 	function utf8Write (buf, string, offset, length) {
 	  return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length)
 	}
-
+	
 	function asciiWrite (buf, string, offset, length) {
 	  return blitBuffer(asciiToBytes(string), buf, offset, length)
 	}
-
+	
 	function latin1Write (buf, string, offset, length) {
 	  return asciiWrite(buf, string, offset, length)
 	}
-
+	
 	function base64Write (buf, string, offset, length) {
 	  return blitBuffer(base64ToBytes(string), buf, offset, length)
 	}
-
+	
 	function ucs2Write (buf, string, offset, length) {
 	  return blitBuffer(utf16leToBytes(string, buf.length - offset), buf, offset, length)
 	}
-
+	
 	Buffer.prototype.write = function write (string, offset, length, encoding) {
 	  // Buffer#write(string)
 	  if (offset === undefined) {
@@ -10007,43 +10007,43 @@
 	      'Buffer.write(string, encoding, offset[, length]) is no longer supported'
 	    )
 	  }
-
+	
 	  var remaining = this.length - offset
 	  if (length === undefined || length > remaining) length = remaining
-
+	
 	  if ((string.length > 0 && (length < 0 || offset < 0)) || offset > this.length) {
 	    throw new RangeError('Attempt to write outside buffer bounds')
 	  }
-
+	
 	  if (!encoding) encoding = 'utf8'
-
+	
 	  var loweredCase = false
 	  for (;;) {
 	    switch (encoding) {
 	      case 'hex':
 	        return hexWrite(this, string, offset, length)
-
+	
 	      case 'utf8':
 	      case 'utf-8':
 	        return utf8Write(this, string, offset, length)
-
+	
 	      case 'ascii':
 	        return asciiWrite(this, string, offset, length)
-
+	
 	      case 'latin1':
 	      case 'binary':
 	        return latin1Write(this, string, offset, length)
-
+	
 	      case 'base64':
 	        // Warning: maxLength not taken into account in base64Write
 	        return base64Write(this, string, offset, length)
-
+	
 	      case 'ucs2':
 	      case 'ucs-2':
 	      case 'utf16le':
 	      case 'utf-16le':
 	        return ucs2Write(this, string, offset, length)
-
+	
 	      default:
 	        if (loweredCase) throw new TypeError('Unknown encoding: ' + encoding)
 	        encoding = ('' + encoding).toLowerCase()
@@ -10051,14 +10051,14 @@
 	    }
 	  }
 	}
-
+	
 	Buffer.prototype.toJSON = function toJSON () {
 	  return {
 	    type: 'Buffer',
 	    data: Array.prototype.slice.call(this._arr || this, 0)
 	  }
 	}
-
+	
 	function base64Slice (buf, start, end) {
 	  if (start === 0 && end === buf.length) {
 	    return base64.fromByteArray(buf)
@@ -10066,11 +10066,11 @@
 	    return base64.fromByteArray(buf.slice(start, end))
 	  }
 	}
-
+	
 	function utf8Slice (buf, start, end) {
 	  end = Math.min(buf.length, end)
 	  var res = []
-
+	
 	  var i = start
 	  while (i < end) {
 	    var firstByte = buf[i]
@@ -10079,10 +10079,10 @@
 	      : (firstByte > 0xDF) ? 3
 	      : (firstByte > 0xBF) ? 2
 	      : 1
-
+	
 	    if (i + bytesPerSequence <= end) {
 	      var secondByte, thirdByte, fourthByte, tempCodePoint
-
+	
 	      switch (bytesPerSequence) {
 	        case 1:
 	          if (firstByte < 0x80) {
@@ -10120,7 +10120,7 @@
 	          }
 	      }
 	    }
-
+	
 	    if (codePoint === null) {
 	      // we did not generate a valid codePoint so insert a
 	      // replacement char (U+FFFD) and advance only 1 byte
@@ -10132,25 +10132,25 @@
 	      res.push(codePoint >>> 10 & 0x3FF | 0xD800)
 	      codePoint = 0xDC00 | codePoint & 0x3FF
 	    }
-
+	
 	    res.push(codePoint)
 	    i += bytesPerSequence
 	  }
-
+	
 	  return decodeCodePointsArray(res)
 	}
-
+	
 	// Based on http://stackoverflow.com/a/22747272/680742, the browser with
 	// the lowest limit is Chrome, with 0x10000 args.
 	// We go 1 magnitude less, for safety
 	var MAX_ARGUMENTS_LENGTH = 0x1000
-
+	
 	function decodeCodePointsArray (codePoints) {
 	  var len = codePoints.length
 	  if (len <= MAX_ARGUMENTS_LENGTH) {
 	    return String.fromCharCode.apply(String, codePoints) // avoid extra slice()
 	  }
-
+	
 	  // Decode in chunks to avoid "call stack size exceeded".
 	  var res = ''
 	  var i = 0
@@ -10162,40 +10162,40 @@
 	  }
 	  return res
 	}
-
+	
 	function asciiSlice (buf, start, end) {
 	  var ret = ''
 	  end = Math.min(buf.length, end)
-
+	
 	  for (var i = start; i < end; ++i) {
 	    ret += String.fromCharCode(buf[i] & 0x7F)
 	  }
 	  return ret
 	}
-
+	
 	function latin1Slice (buf, start, end) {
 	  var ret = ''
 	  end = Math.min(buf.length, end)
-
+	
 	  for (var i = start; i < end; ++i) {
 	    ret += String.fromCharCode(buf[i])
 	  }
 	  return ret
 	}
-
+	
 	function hexSlice (buf, start, end) {
 	  var len = buf.length
-
+	
 	  if (!start || start < 0) start = 0
 	  if (!end || end < 0 || end > len) end = len
-
+	
 	  var out = ''
 	  for (var i = start; i < end; ++i) {
 	    out += toHex(buf[i])
 	  }
 	  return out
 	}
-
+	
 	function utf16leSlice (buf, start, end) {
 	  var bytes = buf.slice(start, end)
 	  var res = ''
@@ -10204,28 +10204,28 @@
 	  }
 	  return res
 	}
-
+	
 	Buffer.prototype.slice = function slice (start, end) {
 	  var len = this.length
 	  start = ~~start
 	  end = end === undefined ? len : ~~end
-
+	
 	  if (start < 0) {
 	    start += len
 	    if (start < 0) start = 0
 	  } else if (start > len) {
 	    start = len
 	  }
-
+	
 	  if (end < 0) {
 	    end += len
 	    if (end < 0) end = 0
 	  } else if (end > len) {
 	    end = len
 	  }
-
+	
 	  if (end < start) end = start
-
+	
 	  var newBuf
 	  if (Buffer.TYPED_ARRAY_SUPPORT) {
 	    newBuf = this.subarray(start, end)
@@ -10237,10 +10237,10 @@
 	      newBuf[i] = this[i + start]
 	    }
 	  }
-
+	
 	  return newBuf
 	}
-
+	
 	/*
 	 * Need to make sure that buffer isn't trying to write out of bounds.
 	 */
@@ -10248,76 +10248,76 @@
 	  if ((offset % 1) !== 0 || offset < 0) throw new RangeError('offset is not uint')
 	  if (offset + ext > length) throw new RangeError('Trying to access beyond buffer length')
 	}
-
+	
 	Buffer.prototype.readUIntLE = function readUIntLE (offset, byteLength, noAssert) {
 	  offset = offset | 0
 	  byteLength = byteLength | 0
 	  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
+	
 	  var val = this[offset]
 	  var mul = 1
 	  var i = 0
 	  while (++i < byteLength && (mul *= 0x100)) {
 	    val += this[offset + i] * mul
 	  }
-
+	
 	  return val
 	}
-
+	
 	Buffer.prototype.readUIntBE = function readUIntBE (offset, byteLength, noAssert) {
 	  offset = offset | 0
 	  byteLength = byteLength | 0
 	  if (!noAssert) {
 	    checkOffset(offset, byteLength, this.length)
 	  }
-
+	
 	  var val = this[offset + --byteLength]
 	  var mul = 1
 	  while (byteLength > 0 && (mul *= 0x100)) {
 	    val += this[offset + --byteLength] * mul
 	  }
-
+	
 	  return val
 	}
-
+	
 	Buffer.prototype.readUInt8 = function readUInt8 (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 1, this.length)
 	  return this[offset]
 	}
-
+	
 	Buffer.prototype.readUInt16LE = function readUInt16LE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 2, this.length)
 	  return this[offset] | (this[offset + 1] << 8)
 	}
-
+	
 	Buffer.prototype.readUInt16BE = function readUInt16BE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 2, this.length)
 	  return (this[offset] << 8) | this[offset + 1]
 	}
-
+	
 	Buffer.prototype.readUInt32LE = function readUInt32LE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 4, this.length)
-
+	
 	  return ((this[offset]) |
 	      (this[offset + 1] << 8) |
 	      (this[offset + 2] << 16)) +
 	      (this[offset + 3] * 0x1000000)
 	}
-
+	
 	Buffer.prototype.readUInt32BE = function readUInt32BE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 4, this.length)
-
+	
 	  return (this[offset] * 0x1000000) +
 	    ((this[offset + 1] << 16) |
 	    (this[offset + 2] << 8) |
 	    this[offset + 3])
 	}
-
+	
 	Buffer.prototype.readIntLE = function readIntLE (offset, byteLength, noAssert) {
 	  offset = offset | 0
 	  byteLength = byteLength | 0
 	  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
+	
 	  var val = this[offset]
 	  var mul = 1
 	  var i = 0
@@ -10325,17 +10325,17 @@
 	    val += this[offset + i] * mul
 	  }
 	  mul *= 0x80
-
+	
 	  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
+	
 	  return val
 	}
-
+	
 	Buffer.prototype.readIntBE = function readIntBE (offset, byteLength, noAssert) {
 	  offset = offset | 0
 	  byteLength = byteLength | 0
 	  if (!noAssert) checkOffset(offset, byteLength, this.length)
-
+	
 	  var i = byteLength
 	  var mul = 1
 	  var val = this[offset + --i]
@@ -10343,74 +10343,74 @@
 	    val += this[offset + --i] * mul
 	  }
 	  mul *= 0x80
-
+	
 	  if (val >= mul) val -= Math.pow(2, 8 * byteLength)
-
+	
 	  return val
 	}
-
+	
 	Buffer.prototype.readInt8 = function readInt8 (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 1, this.length)
 	  if (!(this[offset] & 0x80)) return (this[offset])
 	  return ((0xff - this[offset] + 1) * -1)
 	}
-
+	
 	Buffer.prototype.readInt16LE = function readInt16LE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 2, this.length)
 	  var val = this[offset] | (this[offset + 1] << 8)
 	  return (val & 0x8000) ? val | 0xFFFF0000 : val
 	}
-
+	
 	Buffer.prototype.readInt16BE = function readInt16BE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 2, this.length)
 	  var val = this[offset + 1] | (this[offset] << 8)
 	  return (val & 0x8000) ? val | 0xFFFF0000 : val
 	}
-
+	
 	Buffer.prototype.readInt32LE = function readInt32LE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 4, this.length)
-
+	
 	  return (this[offset]) |
 	    (this[offset + 1] << 8) |
 	    (this[offset + 2] << 16) |
 	    (this[offset + 3] << 24)
 	}
-
+	
 	Buffer.prototype.readInt32BE = function readInt32BE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 4, this.length)
-
+	
 	  return (this[offset] << 24) |
 	    (this[offset + 1] << 16) |
 	    (this[offset + 2] << 8) |
 	    (this[offset + 3])
 	}
-
+	
 	Buffer.prototype.readFloatLE = function readFloatLE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 4, this.length)
 	  return ieee754.read(this, offset, true, 23, 4)
 	}
-
+	
 	Buffer.prototype.readFloatBE = function readFloatBE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 4, this.length)
 	  return ieee754.read(this, offset, false, 23, 4)
 	}
-
+	
 	Buffer.prototype.readDoubleLE = function readDoubleLE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 8, this.length)
 	  return ieee754.read(this, offset, true, 52, 8)
 	}
-
+	
 	Buffer.prototype.readDoubleBE = function readDoubleBE (offset, noAssert) {
 	  if (!noAssert) checkOffset(offset, 8, this.length)
 	  return ieee754.read(this, offset, false, 52, 8)
 	}
-
+	
 	function checkInt (buf, value, offset, ext, max, min) {
 	  if (!Buffer.isBuffer(buf)) throw new TypeError('"buffer" argument must be a Buffer instance')
 	  if (value > max || value < min) throw new RangeError('"value" argument is out of bounds')
 	  if (offset + ext > buf.length) throw new RangeError('Index out of range')
 	}
-
+	
 	Buffer.prototype.writeUIntLE = function writeUIntLE (value, offset, byteLength, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10419,17 +10419,17 @@
 	    var maxBytes = Math.pow(2, 8 * byteLength) - 1
 	    checkInt(this, value, offset, byteLength, maxBytes, 0)
 	  }
-
+	
 	  var mul = 1
 	  var i = 0
 	  this[offset] = value & 0xFF
 	  while (++i < byteLength && (mul *= 0x100)) {
 	    this[offset + i] = (value / mul) & 0xFF
 	  }
-
+	
 	  return offset + byteLength
 	}
-
+	
 	Buffer.prototype.writeUIntBE = function writeUIntBE (value, offset, byteLength, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10438,17 +10438,17 @@
 	    var maxBytes = Math.pow(2, 8 * byteLength) - 1
 	    checkInt(this, value, offset, byteLength, maxBytes, 0)
 	  }
-
+	
 	  var i = byteLength - 1
 	  var mul = 1
 	  this[offset + i] = value & 0xFF
 	  while (--i >= 0 && (mul *= 0x100)) {
 	    this[offset + i] = (value / mul) & 0xFF
 	  }
-
+	
 	  return offset + byteLength
 	}
-
+	
 	Buffer.prototype.writeUInt8 = function writeUInt8 (value, offset, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10457,7 +10457,7 @@
 	  this[offset] = (value & 0xff)
 	  return offset + 1
 	}
-
+	
 	function objectWriteUInt16 (buf, value, offset, littleEndian) {
 	  if (value < 0) value = 0xffff + value + 1
 	  for (var i = 0, j = Math.min(buf.length - offset, 2); i < j; ++i) {
@@ -10465,7 +10465,7 @@
 	      (littleEndian ? i : 1 - i) * 8
 	  }
 	}
-
+	
 	Buffer.prototype.writeUInt16LE = function writeUInt16LE (value, offset, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10478,7 +10478,7 @@
 	  }
 	  return offset + 2
 	}
-
+	
 	Buffer.prototype.writeUInt16BE = function writeUInt16BE (value, offset, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10491,14 +10491,14 @@
 	  }
 	  return offset + 2
 	}
-
+	
 	function objectWriteUInt32 (buf, value, offset, littleEndian) {
 	  if (value < 0) value = 0xffffffff + value + 1
 	  for (var i = 0, j = Math.min(buf.length - offset, 4); i < j; ++i) {
 	    buf[offset + i] = (value >>> (littleEndian ? i : 3 - i) * 8) & 0xff
 	  }
 	}
-
+	
 	Buffer.prototype.writeUInt32LE = function writeUInt32LE (value, offset, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10513,7 +10513,7 @@
 	  }
 	  return offset + 4
 	}
-
+	
 	Buffer.prototype.writeUInt32BE = function writeUInt32BE (value, offset, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10528,16 +10528,16 @@
 	  }
 	  return offset + 4
 	}
-
+	
 	Buffer.prototype.writeIntLE = function writeIntLE (value, offset, byteLength, noAssert) {
 	  value = +value
 	  offset = offset | 0
 	  if (!noAssert) {
 	    var limit = Math.pow(2, 8 * byteLength - 1)
-
+	
 	    checkInt(this, value, offset, byteLength, limit - 1, -limit)
 	  }
-
+	
 	  var i = 0
 	  var mul = 1
 	  var sub = 0
@@ -10548,19 +10548,19 @@
 	    }
 	    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
 	  }
-
+	
 	  return offset + byteLength
 	}
-
+	
 	Buffer.prototype.writeIntBE = function writeIntBE (value, offset, byteLength, noAssert) {
 	  value = +value
 	  offset = offset | 0
 	  if (!noAssert) {
 	    var limit = Math.pow(2, 8 * byteLength - 1)
-
+	
 	    checkInt(this, value, offset, byteLength, limit - 1, -limit)
 	  }
-
+	
 	  var i = byteLength - 1
 	  var mul = 1
 	  var sub = 0
@@ -10571,10 +10571,10 @@
 	    }
 	    this[offset + i] = ((value / mul) >> 0) - sub & 0xFF
 	  }
-
+	
 	  return offset + byteLength
 	}
-
+	
 	Buffer.prototype.writeInt8 = function writeInt8 (value, offset, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10584,7 +10584,7 @@
 	  this[offset] = (value & 0xff)
 	  return offset + 1
 	}
-
+	
 	Buffer.prototype.writeInt16LE = function writeInt16LE (value, offset, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10597,7 +10597,7 @@
 	  }
 	  return offset + 2
 	}
-
+	
 	Buffer.prototype.writeInt16BE = function writeInt16BE (value, offset, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10610,7 +10610,7 @@
 	  }
 	  return offset + 2
 	}
-
+	
 	Buffer.prototype.writeInt32LE = function writeInt32LE (value, offset, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10625,7 +10625,7 @@
 	  }
 	  return offset + 4
 	}
-
+	
 	Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) {
 	  value = +value
 	  offset = offset | 0
@@ -10641,12 +10641,12 @@
 	  }
 	  return offset + 4
 	}
-
+	
 	function checkIEEE754 (buf, value, offset, ext, max, min) {
 	  if (offset + ext > buf.length) throw new RangeError('Index out of range')
 	  if (offset < 0) throw new RangeError('Index out of range')
 	}
-
+	
 	function writeFloat (buf, value, offset, littleEndian, noAssert) {
 	  if (!noAssert) {
 	    checkIEEE754(buf, value, offset, 4, 3.4028234663852886e+38, -3.4028234663852886e+38)
@@ -10654,15 +10654,15 @@
 	  ieee754.write(buf, value, offset, littleEndian, 23, 4)
 	  return offset + 4
 	}
-
+	
 	Buffer.prototype.writeFloatLE = function writeFloatLE (value, offset, noAssert) {
 	  return writeFloat(this, value, offset, true, noAssert)
 	}
-
+	
 	Buffer.prototype.writeFloatBE = function writeFloatBE (value, offset, noAssert) {
 	  return writeFloat(this, value, offset, false, noAssert)
 	}
-
+	
 	function writeDouble (buf, value, offset, littleEndian, noAssert) {
 	  if (!noAssert) {
 	    checkIEEE754(buf, value, offset, 8, 1.7976931348623157E+308, -1.7976931348623157E+308)
@@ -10670,15 +10670,15 @@
 	  ieee754.write(buf, value, offset, littleEndian, 52, 8)
 	  return offset + 8
 	}
-
+	
 	Buffer.prototype.writeDoubleLE = function writeDoubleLE (value, offset, noAssert) {
 	  return writeDouble(this, value, offset, true, noAssert)
 	}
-
+	
 	Buffer.prototype.writeDoubleBE = function writeDoubleBE (value, offset, noAssert) {
 	  return writeDouble(this, value, offset, false, noAssert)
 	}
-
+	
 	// copy(targetBuffer, targetStart=0, sourceStart=0, sourceEnd=buffer.length)
 	Buffer.prototype.copy = function copy (target, targetStart, start, end) {
 	  if (!start) start = 0
@@ -10686,27 +10686,27 @@
 	  if (targetStart >= target.length) targetStart = target.length
 	  if (!targetStart) targetStart = 0
 	  if (end > 0 && end < start) end = start
-
+	
 	  // Copy 0 bytes; we're done
 	  if (end === start) return 0
 	  if (target.length === 0 || this.length === 0) return 0
-
+	
 	  // Fatal error conditions
 	  if (targetStart < 0) {
 	    throw new RangeError('targetStart out of bounds')
 	  }
 	  if (start < 0 || start >= this.length) throw new RangeError('sourceStart out of bounds')
 	  if (end < 0) throw new RangeError('sourceEnd out of bounds')
-
+	
 	  // Are we oob?
 	  if (end > this.length) end = this.length
 	  if (target.length - targetStart < end - start) {
 	    end = target.length - targetStart + start
 	  }
-
+	
 	  var len = end - start
 	  var i
-
+	
 	  if (this === target && start < targetStart && targetStart < end) {
 	    // descending copy from end
 	    for (i = len - 1; i >= 0; --i) {
@@ -10724,10 +10724,10 @@
 	      targetStart
 	    )
 	  }
-
+	
 	  return len
 	}
-
+	
 	// Usage:
 	//    buffer.fill(number[, offset[, end]])
 	//    buffer.fill(buffer[, offset[, end]])
@@ -10758,21 +10758,21 @@
 	  } else if (typeof val === 'number') {
 	    val = val & 255
 	  }
-
+	
 	  // Invalid ranges are not set to a default, so can range check early.
 	  if (start < 0 || this.length < start || this.length < end) {
 	    throw new RangeError('Out of range index')
 	  }
-
+	
 	  if (end <= start) {
 	    return this
 	  }
-
+	
 	  start = start >>> 0
 	  end = end === undefined ? this.length : end >>> 0
-
+	
 	  if (!val) val = 0
-
+	
 	  var i
 	  if (typeof val === 'number') {
 	    for (i = start; i < end; ++i) {
@@ -10787,15 +10787,15 @@
 	      this[i + start] = bytes[i % len]
 	    }
 	  }
-
+	
 	  return this
 	}
-
+	
 	// HELPER FUNCTIONS
 	// ================
-
+	
 	var INVALID_BASE64_RE = /[^+\/0-9A-Za-z-_]/g
-
+	
 	function base64clean (str) {
 	  // Node strips out invalid characters like \n and \t from the string, base64-js does not
 	  str = stringtrim(str).replace(INVALID_BASE64_RE, '')
@@ -10807,27 +10807,27 @@
 	  }
 	  return str
 	}
-
+	
 	function stringtrim (str) {
 	  if (str.trim) return str.trim()
 	  return str.replace(/^\s+|\s+$/g, '')
 	}
-
+	
 	function toHex (n) {
 	  if (n < 16) return '0' + n.toString(16)
 	  return n.toString(16)
 	}
-
+	
 	function utf8ToBytes (string, units) {
 	  units = units || Infinity
 	  var codePoint
 	  var length = string.length
 	  var leadSurrogate = null
 	  var bytes = []
-
+	
 	  for (var i = 0; i < length; ++i) {
 	    codePoint = string.charCodeAt(i)
-
+	
 	    // is surrogate component
 	    if (codePoint > 0xD7FF && codePoint < 0xE000) {
 	      // last char was a lead
@@ -10842,29 +10842,29 @@
 	          if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
 	          continue
 	        }
-
+	
 	        // valid lead
 	        leadSurrogate = codePoint
-
+	
 	        continue
 	      }
-
+	
 	      // 2 leads in a row
 	      if (codePoint < 0xDC00) {
 	        if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
 	        leadSurrogate = codePoint
 	        continue
 	      }
-
+	
 	      // valid surrogate pair
 	      codePoint = (leadSurrogate - 0xD800 << 10 | codePoint - 0xDC00) + 0x10000
 	    } else if (leadSurrogate) {
 	      // valid bmp char, but last char was a lead
 	      if ((units -= 3) > -1) bytes.push(0xEF, 0xBF, 0xBD)
 	    }
-
+	
 	    leadSurrogate = null
-
+	
 	    // encode utf8
 	    if (codePoint < 0x80) {
 	      if ((units -= 1) < 0) break
@@ -10894,10 +10894,10 @@
 	      throw new Error('Invalid code point')
 	    }
 	  }
-
+	
 	  return bytes
 	}
-
+	
 	function asciiToBytes (str) {
 	  var byteArray = []
 	  for (var i = 0; i < str.length; ++i) {
@@ -10906,27 +10906,27 @@
 	  }
 	  return byteArray
 	}
-
+	
 	function utf16leToBytes (str, units) {
 	  var c, hi, lo
 	  var byteArray = []
 	  for (var i = 0; i < str.length; ++i) {
 	    if ((units -= 2) < 0) break
-
+	
 	    c = str.charCodeAt(i)
 	    hi = c >> 8
 	    lo = c % 256
 	    byteArray.push(lo)
 	    byteArray.push(hi)
 	  }
-
+	
 	  return byteArray
 	}
-
+	
 	function base64ToBytes (str) {
 	  return base64.toByteArray(base64clean(str))
 	}
-
+	
 	function blitBuffer (src, dst, offset, length) {
 	  for (var i = 0; i < length; ++i) {
 	    if ((i + offset >= dst.length) || (i >= src.length)) break
@@ -10934,11 +10934,11 @@
 	  }
 	  return i
 	}
-
+	
 	function isnan (val) {
 	  return val !== val // eslint-disable-line no-self-compare
 	}
-
+	
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(300).Buffer, (function() { return this; }())))
 
 /***/ },
@@ -10946,30 +10946,30 @@
 /***/ function(module, exports) {
 
 	'use strict'
-
+	
 	exports.byteLength = byteLength
 	exports.toByteArray = toByteArray
 	exports.fromByteArray = fromByteArray
-
+	
 	var lookup = []
 	var revLookup = []
 	var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
-
+	
 	var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 	for (var i = 0, len = code.length; i < len; ++i) {
 	  lookup[i] = code[i]
 	  revLookup[code.charCodeAt(i)] = i
 	}
-
+	
 	revLookup['-'.charCodeAt(0)] = 62
 	revLookup['_'.charCodeAt(0)] = 63
-
+	
 	function placeHoldersCount (b64) {
 	  var len = b64.length
 	  if (len % 4 > 0) {
 	    throw new Error('Invalid string. Length must be a multiple of 4')
 	  }
-
+	
 	  // the number of equal signs (place holders)
 	  // if there are two placeholders, than the two characters before it
 	  // represent one byte
@@ -10977,31 +10977,31 @@
 	  // this is just a cheap hack to not do indexOf twice
 	  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
 	}
-
+	
 	function byteLength (b64) {
 	  // base64 is 4/3 + up to two characters of the original data
 	  return b64.length * 3 / 4 - placeHoldersCount(b64)
 	}
-
+	
 	function toByteArray (b64) {
 	  var i, j, l, tmp, placeHolders, arr
 	  var len = b64.length
 	  placeHolders = placeHoldersCount(b64)
-
+	
 	  arr = new Arr(len * 3 / 4 - placeHolders)
-
+	
 	  // if there are placeholders, only get up to the last complete 4 chars
 	  l = placeHolders > 0 ? len - 4 : len
-
+	
 	  var L = 0
-
+	
 	  for (i = 0, j = 0; i < l; i += 4, j += 3) {
 	    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
 	    arr[L++] = (tmp >> 16) & 0xFF
 	    arr[L++] = (tmp >> 8) & 0xFF
 	    arr[L++] = tmp & 0xFF
 	  }
-
+	
 	  if (placeHolders === 2) {
 	    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
 	    arr[L++] = tmp & 0xFF
@@ -11010,14 +11010,14 @@
 	    arr[L++] = (tmp >> 8) & 0xFF
 	    arr[L++] = tmp & 0xFF
 	  }
-
+	
 	  return arr
 	}
-
+	
 	function tripletToBase64 (num) {
 	  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
 	}
-
+	
 	function encodeChunk (uint8, start, end) {
 	  var tmp
 	  var output = []
@@ -11027,7 +11027,7 @@
 	  }
 	  return output.join('')
 	}
-
+	
 	function fromByteArray (uint8) {
 	  var tmp
 	  var len = uint8.length
@@ -11035,12 +11035,12 @@
 	  var output = ''
 	  var parts = []
 	  var maxChunkLength = 16383 // must be multiple of 3
-
+	
 	  // go through the array every three bytes, we'll deal with trailing stuff later
 	  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
 	    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
 	  }
-
+	
 	  // pad the end with zeros, but make sure to not forget the extra bytes
 	  if (extraBytes === 1) {
 	    tmp = uint8[len - 1]
@@ -11054,9 +11054,9 @@
 	    output += lookup[(tmp << 2) & 0x3F]
 	    output += '='
 	  }
-
+	
 	  parts.push(output)
-
+	
 	  return parts.join('')
 	}
 
@@ -11074,19 +11074,19 @@
 	  var i = isLE ? (nBytes - 1) : 0
 	  var d = isLE ? -1 : 1
 	  var s = buffer[offset + i]
-
+	
 	  i += d
-
+	
 	  e = s & ((1 << (-nBits)) - 1)
 	  s >>= (-nBits)
 	  nBits += eLen
 	  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
+	
 	  m = e & ((1 << (-nBits)) - 1)
 	  e >>= (-nBits)
 	  nBits += mLen
 	  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
-
+	
 	  if (e === 0) {
 	    e = 1 - eBias
 	  } else if (e === eMax) {
@@ -11097,7 +11097,7 @@
 	  }
 	  return (s ? -1 : 1) * m * Math.pow(2, e - mLen)
 	}
-
+	
 	exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 	  var e, m, c
 	  var eLen = nBytes * 8 - mLen - 1
@@ -11107,9 +11107,9 @@
 	  var i = isLE ? 0 : (nBytes - 1)
 	  var d = isLE ? 1 : -1
 	  var s = value < 0 || (value === 0 && 1 / value < 0) ? 1 : 0
-
+	
 	  value = Math.abs(value)
-
+	
 	  if (isNaN(value) || value === Infinity) {
 	    m = isNaN(value) ? 1 : 0
 	    e = eMax
@@ -11128,7 +11128,7 @@
 	      e++
 	      c /= 2
 	    }
-
+	
 	    if (e + eBias >= eMax) {
 	      m = 0
 	      e = eMax
@@ -11140,13 +11140,13 @@
 	      e = 0
 	    }
 	  }
-
+	
 	  for (; mLen >= 8; buffer[offset + i] = m & 0xff, i += d, m /= 256, mLen -= 8) {}
-
+	
 	  e = (e << mLen) | m
 	  eLen += mLen
 	  for (; eLen > 0; buffer[offset + i] = e & 0xff, i += d, e /= 256, eLen -= 8) {}
-
+	
 	  buffer[offset + i - d] |= s * 128
 	}
 
@@ -11156,7 +11156,7 @@
 /***/ function(module, exports) {
 
 	var toString = {}.toString;
-
+	
 	module.exports = Array.isArray || function (arr) {
 	  return toString.call(arr) == '[object Array]';
 	};
@@ -11171,21 +11171,21 @@
 	 Hull.js, a JavaScript library for concave hull generation by set of points.
 	 https://github.com/AndriiHeonia/hull
 	*/
-
+	
 	'use strict';
-
+	
 	var intersect = __webpack_require__(305);
 	var grid = __webpack_require__(306);
 	var formatUtil = __webpack_require__(307);
 	var convexHull = __webpack_require__(308);
-
+	
 	function _filterDuplicates(pointset) {
 	    return pointset.filter(function(el, idx, arr) {
 	        var prevEl = arr[idx - 1];
 	        return idx === 0 || !(prevEl[0] === el[0] && prevEl[1] === el[1]);
 	    });
 	}
-
+	
 	function _sortByX(pointset) {
 	    return pointset.sort(function(a, b) {
 	        if (a[0] == b[0]) {
@@ -11195,21 +11195,21 @@
 	        }
 	    });
 	}
-
+	
 	function _sqLength(a, b) {
 	    return Math.pow(b[0] - a[0], 2) + Math.pow(b[1] - a[1], 2);
 	}
-
+	
 	function _cos(o, a, b) {
 	    var aShifted = [a[0] - o[0], a[1] - o[1]],
 	        bShifted = [b[0] - o[0], b[1] - o[1]],
 	        sqALen = _sqLength(o, a),
 	        sqBLen = _sqLength(o, b),
 	        dot = aShifted[0] * bShifted[0] + aShifted[1] * bShifted[1];
-
+	
 	    return dot / Math.sqrt(sqALen * sqBLen);
 	}
-
+	
 	function _intersect(segment, pointset) {
 	    for (var i = 0; i < pointset.length - 1; i++) {
 	        var seg = [pointset[i], pointset[i + 1]];
@@ -11223,13 +11223,13 @@
 	    }
 	    return false;
 	}
-
+	
 	function _occupiedArea(pointset) {
 	    var minX = Infinity,
 	        minY = Infinity,
 	        maxX = -Infinity,
 	        maxY = -Infinity;
-
+	
 	    for (var i = pointset.length - 1; i >= 0; i--) {
 	        if (pointset[i][0] < minX) {
 	            minX = pointset[i][0];
@@ -11244,13 +11244,13 @@
 	            maxY = pointset[i][1];
 	        }
 	    }
-
+	
 	    return [
 	        maxX - minX, // width
 	        maxY - minY  // height
 	    ];
 	}
-
+	
 	function _bBoxAround(edge) {
 	    return [
 	        Math.min(edge[0][0], edge[1][0]), // left
@@ -11259,30 +11259,30 @@
 	        Math.max(edge[0][1], edge[1][1])  // bottom
 	    ];
 	}
-
+	
 	function _midPoint(edge, innerPoints, convex) {
 	    var point = null,
 	        angle1Cos = MAX_CONCAVE_ANGLE_COS,
 	        angle2Cos = MAX_CONCAVE_ANGLE_COS,
 	        a1Cos, a2Cos;
-
+	
 	    for (var i = 0; i < innerPoints.length; i++) {
 	        a1Cos = _cos(edge[0], edge[1], innerPoints[i]);
 	        a2Cos = _cos(edge[1], edge[0], innerPoints[i]);
-
+	
 	        if (a1Cos > angle1Cos && a2Cos > angle2Cos &&
 	            !_intersect([edge[0], innerPoints[i]], convex) &&
 	            !_intersect([edge[1], innerPoints[i]], convex)) {
-
+	
 	            angle1Cos = a1Cos;
 	            angle2Cos = a2Cos;
 	            point = innerPoints[i];
 	        }
 	    }
-
+	
 	    return point;
 	}
-
+	
 	function _concave(convex, maxSqEdgeLen, maxSearchArea, grid, edgeSkipList) {
 	    var edge,
 	        keyInSkipList,
@@ -11292,43 +11292,43 @@
 	        bBoxWidth,
 	        bBoxHeight,
 	        midPointInserted = false;
-
+	
 	    for (var i = 0; i < convex.length - 1; i++) {
 	        edge = [convex[i], convex[i + 1]];
 	        keyInSkipList = edge[0].join() + ',' + edge[1].join();
-
+	
 	        if (_sqLength(edge[0], edge[1]) < maxSqEdgeLen ||
 	            edgeSkipList[keyInSkipList] === true) { continue; }
-
+	
 	        scaleFactor = 0;
 	        bBoxAround = _bBoxAround(edge);
 	        do {
 	            bBoxAround = grid.extendBbox(bBoxAround, scaleFactor);
 	            bBoxWidth = bBoxAround[2] - bBoxAround[0];
 	            bBoxHeight = bBoxAround[3] - bBoxAround[1];
-
+	
 	            midPoint = _midPoint(edge, grid.rangePoints(bBoxAround), convex);            
 	            scaleFactor++;
 	        }  while (midPoint === null && (maxSearchArea[0] > bBoxWidth || maxSearchArea[1] > bBoxHeight));
-
+	
 	        if (bBoxWidth >= maxSearchArea[0] && bBoxHeight >= maxSearchArea[1]) {
 	            edgeSkipList[keyInSkipList] = true;
 	        }
-
+	
 	        if (midPoint !== null) {
 	            convex.splice(i + 1, 0, midPoint);
 	            grid.removePoint(midPoint);
 	            midPointInserted = true;
 	        }
 	    }
-
+	
 	    if (midPointInserted) {
 	        return _concave(convex, maxSqEdgeLen, maxSearchArea, grid, edgeSkipList);
 	    }
-
+	
 	    return convex;
 	}
-
+	
 	function hull(pointset, concavity, format) {
 	    var convex,
 	        concave,
@@ -11338,36 +11338,36 @@
 	        cellSize,
 	        points,
 	        maxEdgeLen = concavity || 20;
-
+	
 	    if (pointset.length < 4) {
 	        return pointset.slice();
 	    }
-
+	
 	    points = _filterDuplicates(_sortByX(formatUtil.toXy(pointset, format)));
-
+	
 	    occupiedArea = _occupiedArea(points);
 	    maxSearchArea = [
 	        occupiedArea[0] * MAX_SEARCH_BBOX_SIZE_PERCENT,
 	        occupiedArea[1] * MAX_SEARCH_BBOX_SIZE_PERCENT
 	    ];
-
+	
 	    convex = convexHull(points);
 	    innerPoints = points.filter(function(pt) {
 	        return convex.indexOf(pt) < 0;
 	    });
-
+	
 	    cellSize = Math.ceil(1 / (points.length / (occupiedArea[0] * occupiedArea[1])));
-
+	
 	    concave = _concave(
 	        convex, Math.pow(maxEdgeLen, 2),
 	        maxSearchArea, grid(innerPoints, cellSize), {});
 	 
 	    return formatUtil.fromXy(concave, format);
 	}
-
+	
 	var MAX_CONCAVE_ANGLE_COS = Math.cos(90 / (180 / Math.PI)); // angle = 90 deg
 	var MAX_SEARCH_BBOX_SIZE_PERCENT = 0.6;
-
+	
 	module.exports = hull;
 
 /***/ },
@@ -11378,16 +11378,16 @@
 	    var cw = ((y3 - y1) * (x2 - x1)) - ((y2 - y1) * (x3 - x1));
 	    return cw > 0 ? true : cw < 0 ? false : true; // colinear
 	}
-
+	
 	function intersect(seg1, seg2) {
 	  var x1 = seg1[0][0], y1 = seg1[0][1],
 	      x2 = seg1[1][0], y2 = seg1[1][1],
 	      x3 = seg2[0][0], y3 = seg2[0][1],
 	      x4 = seg2[1][0], y4 = seg2[1][1];
-
+	
 	    return ccw(x1, y1, x3, y3, x4, y4) !== ccw(x2, y2, x3, y3, x4, y4) && ccw(x1, y1, x2, y2, x3, y3) !== ccw(x1, y1, x2, y2, x4, y4);
 	}
-
+	
 	module.exports = intersect;
 
 /***/ },
@@ -11397,7 +11397,7 @@
 	function Grid(points, cellSize) {
 	    this._cells = [];
 	    this._cellSize = cellSize;
-
+	
 	    points.forEach(function(point) {
 	        var cellXY = this.point2CellXY(point),
 	            x = cellXY[0],
@@ -11411,26 +11411,26 @@
 	        this._cells[x][y].push(point);
 	    }, this);
 	}
-
+	
 	Grid.prototype = {
 	    cellPoints: function(x, y) { // (Number, Number) -> Array
 	        return (this._cells[x] !== undefined && this._cells[x][y] !== undefined) ? this._cells[x][y] : [];
 	    },
-
+	
 	    rangePoints: function(bbox) { // (Array) -> Array
 	        var tlCellXY = this.point2CellXY([bbox[0], bbox[1]]),
 	            brCellXY = this.point2CellXY([bbox[2], bbox[3]]),
 	            points = [];
-
+	
 	        for (var x = tlCellXY[0]; x <= brCellXY[0]; x++) {
 	            for (var y = tlCellXY[1]; y <= brCellXY[1]; y++) {
 	                points = points.concat(this.cellPoints(x, y));
 	            }
 	        }
-
+	
 	        return points;
 	    },
-
+	
 	    removePoint: function(point) { // (Array) -> Array
 	        var cellXY = this.point2CellXY(point),
 	            cell = this._cells[cellXY[0]][cellXY[1]],
@@ -11442,18 +11442,18 @@
 	                break;
 	            }
 	        }
-
+	
 	        cell.splice(pointIdxInCell, 1);
-
+	
 	        return cell;
 	    },
-
+	
 	    point2CellXY: function(point) { // (Array) -> Array
 	        var x = parseInt(point[0] / this._cellSize),
 	            y = parseInt(point[1] / this._cellSize);
 	        return [x, y];
 	    },
-
+	
 	    extendBbox: function(bbox, scaleFactor) { // (Array, Number) -> Array
 	        return [
 	            bbox[0] - (scaleFactor * this._cellSize),
@@ -11463,11 +11463,11 @@
 	        ];
 	    }
 	};
-
+	
 	function grid(points, cellSize) {
 	    return new Grid(points, cellSize);
 	}
-
+	
 	module.exports = grid;
 
 /***/ },
@@ -11475,7 +11475,7 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-
+	
 	    toXy: function(pointset, format) {
 	        if (format === undefined) {
 	            return pointset.slice();
@@ -11486,7 +11486,7 @@
 	            return _getXY(pt);
 	        });
 	    },
-
+	
 	    fromXy: function(pointset, format) {
 	        if (format === undefined) {
 	            return pointset.slice();
@@ -11497,7 +11497,7 @@
 	            return _getObj(pt);
 	        });
 	    }
-
+	
 	}
 
 /***/ },
@@ -11507,7 +11507,7 @@
 	function _cross(o, a, b) {
 	    return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
 	}
-
+	
 	function _upperTangent(pointset) {
 	    var lower = [];
 	    for (var l = 0; l < pointset.length; l++) {
@@ -11519,7 +11519,7 @@
 	    lower.pop();
 	    return lower;
 	}
-
+	
 	function _lowerTangent(pointset) {
 	    var reversed = pointset.reverse(),
 	        upper = [];
@@ -11532,7 +11532,7 @@
 	    upper.pop();
 	    return upper;
 	}
-
+	
 	// pointset has to be sorted by X
 	function convex(pointset) {
 	    var convex,
@@ -11542,7 +11542,7 @@
 	    convex.push(pointset[0]);  
 	    return convex;  
 	}
-
+	
 	module.exports = convex;
 
 
@@ -11569,7 +11569,7 @@
 	        root.twgl = factory();
 	    }
 	}(this, function () {
-
+	
 	/**
 	 * @license almond 0.3.1 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
 	 * Available via the MIT or new BSD license.
@@ -11579,7 +11579,7 @@
 	//be followed.
 	/*jslint sloppy: true */
 	/*global setTimeout: false */
-
+	
 	var notrequirebecasebrowserifymessesupjs, notrequirebecasebrowserifymessesup, define;
 	(function (undef) {
 	    var main, req, makeMap, handlers,
@@ -11590,11 +11590,11 @@
 	        hasOwn = Object.prototype.hasOwnProperty,
 	        aps = [].slice,
 	        jsSuffixRegExp = /\.js$/;
-
+	
 	    function hasProp(obj, prop) {
 	        return hasOwn.call(obj, prop);
 	    }
-
+	
 	    /**
 	     * Given a relative module name, like ./something, normalize it to
 	     * a real name that can be mapped to a path.
@@ -11609,7 +11609,7 @@
 	            baseParts = baseName && baseName.split("/"),
 	            map = config.map,
 	            starMap = (map && map['*']) || {};
-
+	
 	        //Adjust any relative paths.
 	        if (name && name.charAt(0) === ".") {
 	            //If have a base name, try to normalize against it,
@@ -11618,18 +11618,18 @@
 	            if (baseName) {
 	                name = name.split('/');
 	                lastIndex = name.length - 1;
-
+	
 	                // Node .js allowance:
 	                if (config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex])) {
 	                    name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, '');
 	                }
-
+	
 	                //Lop off the last part of baseParts, so that . matches the
 	                //"directory" and not name of the baseName's module. For instance,
 	                //baseName of "one/two/three", maps to "one/two/three.js", but we
 	                //want the directory, "one/two" for this normalization.
 	                name = baseParts.slice(0, baseParts.length - 1).concat(name);
-
+	
 	                //start trimDots
 	                for (i = 0; i < name.length; i += 1) {
 	                    part = name[i];
@@ -11652,7 +11652,7 @@
 	                    }
 	                }
 	                //end trimDots
-
+	
 	                name = name.join("/");
 	            } else if (name.indexOf('./') === 0) {
 	                // No baseName, so this is ID is resolved relative
@@ -11660,20 +11660,20 @@
 	                name = name.substring(2);
 	            }
 	        }
-
+	
 	        //Apply map config if available.
 	        if ((baseParts || starMap) && map) {
 	            nameParts = name.split('/');
-
+	
 	            for (i = nameParts.length; i > 0; i -= 1) {
 	                nameSegment = nameParts.slice(0, i).join("/");
-
+	
 	                if (baseParts) {
 	                    //Find the longest baseName segment match in the config.
 	                    //So, do joins on the biggest to smallest lengths of baseParts.
 	                    for (j = baseParts.length; j > 0; j -= 1) {
 	                        mapValue = map[baseParts.slice(0, j).join('/')];
-
+	
 	                        //baseName segment has  config, find if it has one for
 	                        //this name.
 	                        if (mapValue) {
@@ -11687,11 +11687,11 @@
 	                        }
 	                    }
 	                }
-
+	
 	                if (foundMap) {
 	                    break;
 	                }
-
+	
 	                //Check for a star map match, but just hold on to it,
 	                //if there is a shorter segment match later in a matching
 	                //config, then favor over this star map.
@@ -11700,28 +11700,28 @@
 	                    starI = i;
 	                }
 	            }
-
+	
 	            if (!foundMap && foundStarMap) {
 	                foundMap = foundStarMap;
 	                foundI = starI;
 	            }
-
+	
 	            if (foundMap) {
 	                nameParts.splice(0, foundI, foundMap);
 	                name = nameParts.join('/');
 	            }
 	        }
-
+	
 	        return name;
 	    }
-
+	
 	    function makeRequire(relName, forceSync) {
 	        return function () {
 	            //A version of a notrequirebecasebrowserifymessesup function that passes a moduleName
 	            //value for items that may need to
 	            //look up paths relative to the moduleName
 	            var args = aps.call(arguments, 0);
-
+	
 	            //If first arg is not notrequirebecasebrowserifymessesup('string'), and there is only
 	            //one arg, it is the array form without a callback. Insert
 	            //a null so that the following concat is correct.
@@ -11731,19 +11731,19 @@
 	            return req.apply(undef, args.concat([relName, forceSync]));
 	        };
 	    }
-
+	
 	    function makeNormalize(relName) {
 	        return function (name) {
 	            return normalize(name, relName);
 	        };
 	    }
-
+	
 	    function makeLoad(depName) {
 	        return function (value) {
 	            defined[depName] = value;
 	        };
 	    }
-
+	
 	    function callDep(name) {
 	        if (hasProp(waiting, name)) {
 	            var args = waiting[name];
@@ -11751,13 +11751,13 @@
 	            defining[name] = true;
 	            main.apply(undef, args);
 	        }
-
+	
 	        if (!hasProp(defined, name) && !hasProp(defining, name)) {
 	            throw new Error('No ' + name);
 	        }
 	        return defined[name];
 	    }
-
+	
 	    //Turns a plugin!resource to [plugin, resource]
 	    //with the plugin being undefined if the name
 	    //did not have a plugin prefix.
@@ -11770,7 +11770,7 @@
 	        }
 	        return [prefix, name];
 	    }
-
+	
 	    /**
 	     * Makes a name map, normalizing the name, and using a plugin
 	     * for normalization if necessary. Grabs a ref to plugin
@@ -11780,14 +11780,14 @@
 	        var plugin,
 	            parts = splitPrefix(name),
 	            prefix = parts[0];
-
+	
 	        name = parts[1];
-
+	
 	        if (prefix) {
 	            prefix = normalize(prefix, relName);
 	            plugin = callDep(prefix);
 	        }
-
+	
 	        //Normalize according
 	        if (prefix) {
 	            if (plugin && plugin.normalize) {
@@ -11804,7 +11804,7 @@
 	                plugin = callDep(prefix);
 	            }
 	        }
-
+	
 	        //Using ridiculous property names for space reasons
 	        return {
 	            f: prefix ? prefix + '!' + name : name, //fullName
@@ -11813,13 +11813,13 @@
 	            p: plugin
 	        };
 	    };
-
+	
 	    function makeConfig(name) {
 	        return function () {
 	            return (config && config.config && config.config[name]) || {};
 	        };
 	    }
-
+	
 	    handlers = {
 	        notrequirebecasebrowserifymessesup: function (name) {
 	            return makeRequire(name);
@@ -11841,16 +11841,16 @@
 	            };
 	        }
 	    };
-
+	
 	    main = function (name, deps, callback, relName) {
 	        var cjsModule, depName, ret, map, i,
 	            args = [],
 	            callbackType = typeof callback,
 	            usingExports;
-
+	
 	        //Use name if no relName
 	        relName = relName || name;
-
+	
 	        //Call the callback to define the module, if necessary.
 	        if (callbackType === 'undefined' || callbackType === 'function') {
 	            //Pull out the defined dependencies and pass the ordered
@@ -11860,7 +11860,7 @@
 	            for (i = 0; i < deps.length; i += 1) {
 	                map = makeMap(deps[i], relName);
 	                depName = map.f;
-
+	
 	                //Fast path CommonJS standard dependencies.
 	                if (depName === "notrequirebecasebrowserifymessesup") {
 	                    args[i] = handlers.notrequirebecasebrowserifymessesup(name);
@@ -11882,9 +11882,9 @@
 	                    throw new Error(name + ' missing ' + depName);
 	                }
 	            }
-
+	
 	            ret = callback ? callback.apply(defined[name], args) : undefined;
-
+	
 	            if (name) {
 	                //If setting exports via "module" is in play,
 	                //favor that over return value and exports. After that,
@@ -11903,7 +11903,7 @@
 	            defined[name] = callback;
 	        }
 	    };
-
+	
 	    notrequirebecasebrowserifymessesupjs = notrequirebecasebrowserifymessesup = req = function (deps, callback, relName, forceSync, alt) {
 	        if (typeof deps === "string") {
 	            if (handlers[deps]) {
@@ -11924,7 +11924,7 @@
 	            if (!callback) {
 	                return;
 	            }
-
+	
 	            if (callback.splice) {
 	                //callback is an array, which means it is a dependency list.
 	                //Adjust args if there are dependencies
@@ -11935,17 +11935,17 @@
 	                deps = undef;
 	            }
 	        }
-
+	
 	        //Support notrequirebecasebrowserifymessesup(['a'])
 	        callback = callback || function () {};
-
+	
 	        //If relName is a function, it is an errback handler,
 	        //so remove it.
 	        if (typeof relName === 'function') {
 	            relName = forceSync;
 	            forceSync = alt;
 	        }
-
+	
 	        //Simulate async callback;
 	        if (forceSync) {
 	            main(undef, deps, callback, relName);
@@ -11960,10 +11960,10 @@
 	                main(undef, deps, callback, relName);
 	            }, 4);
 	        }
-
+	
 	        return req;
 	    };
-
+	
 	    /**
 	     * Just drops the config on the floor, but returns req in case
 	     * the config return value is used.
@@ -11971,17 +11971,17 @@
 	    req.config = function (cfg) {
 	        return req(cfg);
 	    };
-
+	
 	    /**
 	     * Expose module registry for debugging and tooling
 	     */
 	    notrequirebecasebrowserifymessesupjs._defined = defined;
-
+	
 	    define = function (name, deps, callback) {
 	        if (typeof name !== 'string') {
 	            throw new Error('See almond README: incorrect module build, no module name');
 	        }
-
+	
 	        //This module may not have dependencies
 	        if (!deps.splice) {
 	            //deps is not an array, so probably means
@@ -11990,19 +11990,19 @@
 	            callback = deps;
 	            deps = [];
 	        }
-
+	
 	        if (!hasProp(defined, name) && !hasProp(waiting, name)) {
 	            waiting[name] = [name, deps, callback];
 	        }
 	    };
-
+	
 	    define.amd = {
 	        jQuery: true
 	    };
 	}());
-
+	
 	define("node_modules/almond/almond.js", function(){});
-
+	
 	/*
 	 * Copyright 2015, Gregg Tavares.
 	 * All rights reserved.
@@ -12035,7 +12035,7 @@
 	 */
 	define('twgl/typedarrays',[], function() {
 	  
-
+	
 	  /**
 	   * Low level shader typed array related functions
 	   *
@@ -12050,11 +12050,11 @@
 	   *
 	   * @module twgl/typedArray
 	   */
-
-
+	
+	
 	  // make sure we don't see a global gl
 	  var gl = undefined;  // eslint-disable-line
-
+	
 	  /* DataType */
 	  var BYTE                           = 0x1400;
 	  var UNSIGNED_BYTE                  = 0x1401;
@@ -12063,7 +12063,7 @@
 	  var INT                            = 0x1404;
 	  var UNSIGNED_INT                   = 0x1405;
 	  var FLOAT                          = 0x1406;
-
+	
 	  /**
 	   * Get the GL type for a typedArray
 	   * @param {ArrayBuffer|ArrayBufferView} typedArray a typedArray
@@ -12082,7 +12082,7 @@
 	    if (typedArray instanceof Float32Array)      { return FLOAT; }          // eslint-disable-line
 	    throw "unsupported typed array type";
 	  }
-
+	
 	  /**
 	   * Get the typed array constructor for a given GL type
 	   * @param {number} type the GL type. (eg: `gl.UNSIGNED_INT`)
@@ -12102,11 +12102,11 @@
 	        throw "unknown gl type";
 	    }
 	  }
-
+	
 	  function isArrayBuffer(a) {
 	    return a && a.buffer && a.buffer instanceof ArrayBuffer;
 	  }
-
+	
 	  // Using quotes prevents Uglify from changing the names.
 	  return {
 	    "getGLTypeForTypedArray": getGLTypeForTypedArray,
@@ -12114,8 +12114,8 @@
 	    "isArrayBuffer": isArrayBuffer,
 	  };
 	});
-
-
+	
+	
 	/*
 	 * Copyright 2015, Gregg Tavares.
 	 * All rights reserved.
@@ -12146,10 +12146,10 @@
 	 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 */
-
+	
 	define('twgl/utils',[], function() {
 	  
-
+	
 	  /**
 	   * Copy an object 1 level deep
 	   * @param {object} src object to copy
@@ -12162,7 +12162,7 @@
 	    });
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Copy named properties
 	   *
@@ -12178,7 +12178,7 @@
 	      }
 	    });
 	  }
-
+	
 	  /**
 	   * Copies properties from source to dest only if a matching key is in dest
 	   *
@@ -12192,7 +12192,7 @@
 	      }
 	    });
 	  }
-
+	
 	  /**
 	   * Check if context is WebGL 2.0
 	   * @return {bool} true if it's WebGL 2.0
@@ -12201,7 +12201,7 @@
 	  function isWebGL2(gl) {
 	    return gl.getParameter(gl.VERSION).indexOf("WebGL 2.0") === 0;
 	  }
-
+	
 	  /**
 	   * Check if context is WebGL 1.0
 	   * @return {bool} true if it's WebGL 1.0
@@ -12210,7 +12210,7 @@
 	  function isWebGL1(gl) {
 	    return gl.getParameter(gl.VERSION).indexOf("WebGL 1.0") === 0;
 	  }
-
+	
 	  var error =
 	      (    window.console
 	        && window.console.error
@@ -12218,7 +12218,7 @@
 	      )
 	      ? window.console.error.bind(window.console)
 	      : function() { };
-
+	
 	  var warn =
 	      (    window.console
 	        && window.console.warn
@@ -12226,7 +12226,7 @@
 	      )
 	      ? window.console.warn.bind(window.console)
 	      : function() { };
-
+	
 	  return {
 	    copyExistingProperties: copyExistingProperties,
 	    copyNamedProperties: copyNamedProperties,
@@ -12237,8 +12237,8 @@
 	    warn: warn,
 	  };
 	});
-
-
+	
+	
 	/*
 	 * Copyright 2015, Gregg Tavares.
 	 * All rights reserved.
@@ -12269,7 +12269,7 @@
 	 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 */
-
+	
 	define('twgl/attributes',[
 	    './typedarrays',
 	    './utils',
@@ -12277,7 +12277,7 @@
 	    typedArrays,
 	    utils) {
 	  
-
+	
 	  /**
 	   * Low level attribute and buffer related functions
 	   *
@@ -12292,13 +12292,13 @@
 	   *
 	   * @module twgl/attributes
 	   */
-
+	
 	  // make sure we don't see a global gl
 	  var gl = undefined;  // eslint-disable-line
 	  var defaults = {
 	    attribPrefix: "",
 	  };
-
+	
 	  /**
 	   * Sets the default attrib prefix
 	   *
@@ -12322,16 +12322,16 @@
 	  function setAttributePrefix(prefix) {
 	    defaults.attribPrefix = prefix;
 	  }
-
+	
 	  function setDefaults(newDefaults) {
 	    utils.copyExistingProperties(newDefaults, defaults);
 	  }
-
+	
 	  function setBufferFromTypedArray(gl, type, buffer, array, drawType) {
 	    gl.bindBuffer(type, buffer);
 	    gl.bufferData(type, array, drawType || gl.STATIC_DRAW);
 	  }
-
+	
 	  /**
 	   * Given typed array creates a WebGLBuffer and copies the typed array
 	   * into it.
@@ -12352,11 +12352,11 @@
 	    setBufferFromTypedArray(gl, type, buffer, typedArray, drawType);
 	    return buffer;
 	  }
-
+	
 	  function isIndices(name) {
 	    return name === "indices";
 	  }
-
+	
 	  // This is really just a guess. Though I can't really imagine using
 	  // anything else? Maybe for some compression?
 	  function getNormalizationForTypedArray(typedArray) {
@@ -12364,11 +12364,11 @@
 	    if (typedArray instanceof Uint8Array)   { return true; }  // eslint-disable-line
 	    return false;
 	  }
-
+	
 	  function getArray(array) {
 	    return array.length ? array : array.data;
 	  }
-
+	
 	  function guessNumComponentsFromName(name, length) {
 	    var numComponents;
 	    if (name.indexOf("coord") >= 0) {
@@ -12378,33 +12378,33 @@
 	    } else {
 	      numComponents = 3;  // position, normals, indices ...
 	    }
-
+	
 	    if (length % numComponents > 0) {
 	      throw "can not guess numComponents. You should specify it.";
 	    }
-
+	
 	    return numComponents;
 	  }
-
+	
 	  function getNumComponents(array, arrayName) {
 	    return array.numComponents || array.size || guessNumComponentsFromName(arrayName, getArray(array).length);
 	  }
-
+	
 	  function makeTypedArray(array, name) {
 	    if (typedArrays.isArrayBuffer(array)) {
 	      return array;
 	    }
-
+	
 	    if (typedArrays.isArrayBuffer(array.data)) {
 	      return array.data;
 	    }
-
+	
 	    if (Array.isArray(array)) {
 	      array = {
 	        data: array,
 	      };
 	    }
-
+	
 	    var Type = array.type;
 	    if (!Type) {
 	      if (name === "indices") {
@@ -12415,7 +12415,7 @@
 	    }
 	    return new Type(array.data);
 	  }
-
+	
 	  /**
 	   * The info for an attribute. This is effectively just the arguments to `gl.vertexAttribPointer` plus the WebGLBuffer
 	   * for the attribute.
@@ -12431,7 +12431,7 @@
 	   * @property {number} [drawType] the draw type passed to gl.bufferData. Default = gl.STATIC_DRAW
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * Use this type of array spec when TWGL can't guess the type or number of compoments of an array
 	   * @typedef {Object} FullArraySpec
@@ -12451,7 +12451,7 @@
 	   * @property {string} [attribName] synonym for `attrib`.
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * An individual array in {@link module:twgl.Arrays}
 	   *
@@ -12462,7 +12462,7 @@
 	   * @typedef {(number[]|ArrayBuffer|module:twgl.FullArraySpec)} ArraySpec
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * This is a JavaScript object of arrays by name. The names should match your shader's attributes. If your
 	   * attributes have a common prefix you can specify it by calling {@link module:twgl.setAttributePrefix}.
@@ -12503,8 +12503,8 @@
 	   * @typedef {Object.<string, module:twgl.ArraySpec>} Arrays
 	   * @memberOf module:twgl
 	   */
-
-
+	
+	
 	  /**
 	   * Creates a set of attribute data and WebGLBuffers from set of arrays
 	   *
@@ -12580,7 +12580,7 @@
 	    });
 	    return attribs;
 	  }
-
+	
 	  /**
 	   * Sets the contents of a buffer attached to an attribInfo
 	   *
@@ -12626,14 +12626,14 @@
 	      setBufferFromTypedArray(gl, gl.ARRAY_BUFFER, attribInfo.buffer, array, attribInfo.drawType);
 	    }
 	  }
-
+	
 	  /**
 	   * tries to get the number of elements from a set of arrays.
 	   */
-
+	
 	  var getNumElementsFromNonIndexedArrays = (function() {
 	    var positionKeys = ['position', 'positions', 'a_position'];
-
+	
 	    return function getNumElementsFromNonIndexedArrays(arrays) {
 	      var key;
 	      for (var ii = 0; ii < positionKeys.length; ++ii) {
@@ -12655,7 +12655,7 @@
 	      return numElements;
 	    };
 	  }());
-
+	
 	  /**
 	   * @typedef {Object} BufferInfo
 	   * @property {number} numElements The number of elements to pass to `gl.drawArrays` or `gl.drawElements`.
@@ -12664,7 +12664,7 @@
 	   * @property {Object.<string, module:twgl.AttribInfo>} [attribs] The attribs approriate to call `setAttributes`
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * @typedef {Object} VertexArrayInfo
 	   * @property {number} numElements The number of elements to pass to `gl.drawArrays` or `gl.drawElements`.
@@ -12672,7 +12672,7 @@
 	   * @property {WebGLVertexArrayObject> [vertexArrayObject] a vertex array object
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * Creates a BufferInfo from an object of arrays.
 	   *
@@ -12777,10 +12777,10 @@
 	    } else {
 	      bufferInfo.numElements = getNumElementsFromNonIndexedArrays(arrays);
 	    }
-
+	
 	    return bufferInfo;
 	  }
-
+	
 	  /**
 	   * Creates a buffer from an array, typed array, or array spec
 	   *
@@ -12812,7 +12812,7 @@
 	    var typedArray = makeTypedArray(array, arrayName);
 	    return createBufferFromTypedArray(gl, typedArray, type);
 	  }
-
+	
 	  /**
 	   * Creates buffers from arrays or typed arrays
 	   *
@@ -12842,10 +12842,10 @@
 	    Object.keys(arrays).forEach(function(key) {
 	      buffers[key] = createBufferFromArray(gl, arrays[key], key);
 	    });
-
+	
 	    return buffers;
 	  }
-
+	
 	  /**
 	   * Creates a BufferInfo from an object of arrays.
 	   *
@@ -12897,7 +12897,7 @@
 	      vertexArrayObject: vao,
 	    };
 	  }
-
+	
 	  // Using quotes prevents Uglify from changing the names.
 	  // No speed diff AFAICT.
 	  return {
@@ -12907,19 +12907,19 @@
 	    "createBufferFromTypedArray": createBufferFromTypedArray,
 	    "createBufferInfoFromArrays": createBufferInfoFromArrays,
 	    "setAttribInfoBufferFromArray": setAttribInfoBufferFromArray,
-
+	
 	    "createVertexArrayInfo": createVertexArrayInfo,
-
+	
 	    "setAttributePrefix": setAttributePrefix,
-
+	
 	    "setDefaults_": setDefaults,
 	    "getNumComponents_": getNumComponents,
 	    "getArray_": getArray,
 	  };
-
+	
 	});
-
-
+	
+	
 	/*
 	 * Copyright 2015, Gregg Tavares.
 	 * All rights reserved.
@@ -12950,13 +12950,13 @@
 	 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 */
-
+	
 	define('twgl/programs',[
 	    './utils',
 	  ], function(
 	    utils) {
 	  
-
+	
 	  /**
 	   * Low level shader program related functions
 	   *
@@ -12971,10 +12971,10 @@
 	   *
 	   * @module twgl/programs
 	   */
-
+	
 	  var error = utils.error;
 	  var warn = utils.warn;
-
+	
 	  var FLOAT                         = 0x1406;
 	  var FLOAT_VEC2                    = 0x8B50;
 	  var FLOAT_VEC3                    = 0x8B51;
@@ -13015,168 +13015,168 @@
 	  var UNSIGNED_INT_SAMPLER_3D       = 0x8DD3;
 	  var UNSIGNED_INT_SAMPLER_CUBE     = 0x8DD4;
 	  var UNSIGNED_INT_SAMPLER_2D_ARRAY = 0x8DD7;
-
+	
 	  var TEXTURE_2D                    = 0x0DE1;
 	  var TEXTURE_CUBE_MAP              = 0x8513;
 	  var TEXTURE_3D                    = 0x806F;
 	  var TEXTURE_2D_ARRAY              = 0x8C1A;
-
+	
 	  var typeMap = {};
-
+	
 	  /**
 	   * Returns the corresponding bind point for a given sampler type
 	   */
 	  function getBindPointForSamplerType(gl, type) {
 	    return typeMap[type].bindPoint;
 	  }
-
+	
 	  // This kind of sucks! If you could compose functions as in `var fn = gl[name];`
 	  // this code could be a lot smaller but that is sadly really slow (T_T)
-
+	
 	  function floatSetter(gl, location) {
 	    return function(v) {
 	      gl.uniform1f(location, v);
 	    };
 	  }
-
+	
 	  function floatArraySetter(gl, location) {
 	    return function(v) {
 	      gl.uniform1fv(location, v);
 	    };
 	  }
-
+	
 	  function floatVec2Setter(gl, location) {
 	    return function(v) {
 	      gl.uniform2fv(location, v);
 	    };
 	  }
-
+	
 	  function floatVec3Setter(gl, location) {
 	    return function(v) {
 	      gl.uniform3fv(location, v);
 	    };
 	  }
-
+	
 	  function floatVec4Setter(gl, location) {
 	    return function(v) {
 	      gl.uniform4fv(location, v);
 	    };
 	  }
-
+	
 	  function intSetter(gl, location) {
 	    return function(v) {
 	      gl.uniform1i(location, v);
 	    };
 	  }
-
+	
 	  function intArraySetter(gl, location) {
 	    return function(v) {
 	      gl.uniform1iv(location, v);
 	    };
 	  }
-
+	
 	  function intVec2Setter(gl, location) {
 	    return function(v) {
 	      gl.uniform2iv(location, v);
 	    };
 	  }
-
+	
 	  function intVec3Setter(gl, location) {
 	    return function(v) {
 	      gl.uniform3iv(location, v);
 	    };
 	  }
-
+	
 	  function intVec4Setter(gl, location) {
 	    return function(v) {
 	      gl.uniform4iv(location, v);
 	    };
 	  }
-
+	
 	  function uintSetter(gl, location) {
 	    return function(v) {
 	      gl.uniform1ui(location, v);
 	    };
 	  }
-
+	
 	  function uintArraySetter(gl, location) {
 	    return function(v) {
 	      gl.uniform1uiv(location, v);
 	    };
 	  }
-
+	
 	  function uintVec2Setter(gl, location) {
 	    return function(v) {
 	      gl.uniform2uiv(location, v);
 	    };
 	  }
-
+	
 	  function uintVec3Setter(gl, location) {
 	    return function(v) {
 	      gl.uniform3uiv(location, v);
 	    };
 	  }
-
+	
 	  function uintVec4Setter(gl, location) {
 	    return function(v) {
 	      gl.uniform4uiv(location, v);
 	    };
 	  }
-
+	
 	  function floatMat2Setter(gl, location) {
 	    return function(v) {
 	      gl.uniformMatrix2fv(location, false, v);
 	    };
 	  }
-
+	
 	  function floatMat3Setter(gl, location) {
 	    return function(v) {
 	      gl.uniformMatrix3fv(location, false, v);
 	    };
 	  }
-
+	
 	  function floatMat4Setter(gl, location) {
 	    return function(v) {
 	      gl.uniformMatrix4fv(location, false, v);
 	    };
 	  }
-
+	
 	  function floatMat23Setter(gl, location) {
 	    return function(v) {
 	      gl.uniformMatrix2x3fv(location, false, v);
 	    };
 	  }
-
+	
 	  function floatMat32Setter(gl, location) {
 	    return function(v) {
 	      gl.uniformMatrix3x2fv(location, false, v);
 	    };
 	  }
-
+	
 	  function floatMat24Setter(gl, location) {
 	    return function(v) {
 	      gl.uniformMatrix2x4fv(location, false, v);
 	    };
 	  }
-
+	
 	  function floatMat42Setter(gl, location) {
 	    return function(v) {
 	      gl.uniformMatrix4x2fv(location, false, v);
 	    };
 	  }
-
+	
 	  function floatMat34Setter(gl, location) {
 	    return function(v) {
 	      gl.uniformMatrix3x4fv(location, false, v);
 	    };
 	  }
-
+	
 	  function floatMat43Setter(gl, location) {
 	    return function(v) {
 	      gl.uniformMatrix4x3fv(location, false, v);
 	    };
 	  }
-
+	
 	  function samplerSetter(gl, type, unit, location) {
 	    var bindPoint = getBindPointForSamplerType(gl, type);
 	    return function(texture) {
@@ -13185,14 +13185,14 @@
 	      gl.bindTexture(bindPoint, texture);
 	    };
 	  }
-
+	
 	  function samplerArraySetter(gl, type, unit, location, size) {
 	    var bindPoint = getBindPointForSamplerType(gl, type);
 	    var units = new Int32Array(size);
 	    for (var ii = 0; ii < size; ++ii) {
 	      units[ii] = unit + ii;
 	    }
-
+	
 	    return function(textures) {
 	      gl.uniform1iv(location, units);
 	      textures.forEach(function(texture, index) {
@@ -13201,7 +13201,7 @@
 	      });
 	    };
 	  }
-
+	
 	  typeMap[FLOAT]                         = { Type: Float32Array, size:  4, setter: floatSetter,      arraySetter: floatArraySetter, };
 	  typeMap[FLOAT_VEC2]                    = { Type: Float32Array, size:  8, setter: floatVec2Setter,  };
 	  typeMap[FLOAT_VEC3]                    = { Type: Float32Array, size: 12, setter: floatVec3Setter,  };
@@ -13242,10 +13242,10 @@
 	  typeMap[UNSIGNED_INT_SAMPLER_3D]       = { Type: null,         size:  0, setter: samplerSetter,    arraySetter: samplerArraySetter, bindPoint: TEXTURE_3D,       };
 	  typeMap[UNSIGNED_INT_SAMPLER_CUBE]     = { Type: null,         size:  0, setter: samplerSetter,    arraySetter: samplerArraySetter, bindPoint: TEXTURE_CUBE_MAP, };
 	  typeMap[UNSIGNED_INT_SAMPLER_2D_ARRAY] = { Type: null,         size:  0, setter: samplerSetter,    arraySetter: samplerArraySetter, bindPoint: TEXTURE_2D_ARRAY, };
-
+	
 	  // make sure we don't see a global gl
 	  var gl = undefined;  // eslint-disable-line
-
+	
 	  /**
 	   * Error Callback
 	   * @callback ErrorCallback
@@ -13253,18 +13253,18 @@
 	   * @param {number} [lineOffset] amount to add to line number
 	   * @memberOf module:twgl
 	   */
-
+	
 	  function addLineNumbers(src, lineOffset) {
 	    lineOffset = lineOffset || 0;
 	    ++lineOffset;
-
+	
 	    return src.split("\n").map(function(line, ndx) {
 	      return (ndx + lineOffset) + ": " + line;
 	    }).join("\n");
 	  }
-
+	
 	  var spaceRE = /^[ \t]*\n/;
-
+	
 	  /**
 	   * Loads a shader.
 	   * @param {WebGLRenderingContext} gl The WebGLRenderingContext to use.
@@ -13277,7 +13277,7 @@
 	    var errFn = opt_errorCallback || error;
 	    // Create the shader object
 	    var shader = gl.createShader(shaderType);
-
+	
 	    // Remove the first end of line because WebGL 2.0 notrequirebecasebrowserifymessesups
 	    // #version 300 es
 	    // as the first line. No whitespace allowed before that line
@@ -13294,13 +13294,13 @@
 	      lineOffset = 1;
 	      shaderSource = shaderSource.replace(spaceRE, '');
 	    }
-
+	
 	    // Load the shader source
 	    gl.shaderSource(shader, shaderSource);
-
+	
 	    // Compile the shader
 	    gl.compileShader(shader);
-
+	
 	    // Check the compile status
 	    var compiled = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
 	    if (!compiled) {
@@ -13310,10 +13310,10 @@
 	      gl.deleteShader(shader);
 	      return null;
 	    }
-
+	
 	    return shader;
 	  }
-
+	
 	  /**
 	   * Creates a program, attaches shaders, binds attrib locations, links the
 	   * program and calls useProgram.
@@ -13341,20 +13341,20 @@
 	      });
 	    }
 	    gl.linkProgram(program);
-
+	
 	    // Check the link status
 	    var linked = gl.getProgramParameter(program, gl.LINK_STATUS);
 	    if (!linked) {
 	        // something went wrong with the link
 	        var lastError = gl.getProgramInfoLog(program);
 	        errFn("Error in program linking:" + lastError);
-
+	
 	        gl.deleteProgram(program);
 	        return null;
 	    }
 	    return program;
 	  }
-
+	
 	  /**
 	   * Loads a shader from a script tag.
 	   * @param {WebGLRenderingContext} gl The WebGLRenderingContext to use.
@@ -13373,7 +13373,7 @@
 	      throw "*** Error: unknown script element" + scriptId;
 	    }
 	    shaderSource = shaderScript.text;
-
+	
 	    if (!opt_shaderType) {
 	      if (shaderScript.type === "x-shader/x-vertex") {
 	        shaderType = gl.VERTEX_SHADER;
@@ -13383,17 +13383,17 @@
 	        throw "*** Error: unknown shader type";
 	      }
 	    }
-
+	
 	    return loadShader(
 	        gl, shaderSource, opt_shaderType ? opt_shaderType : shaderType,
 	        opt_errorCallback);
 	  }
-
+	
 	  var defaultShaderType = [
 	    "VERTEX_SHADER",
 	    "FRAGMENT_SHADER",
 	  ];
-
+	
 	  /**
 	   * Creates a program from 2 script tags.
 	   *
@@ -13422,7 +13422,7 @@
 	    }
 	    return createProgram(gl, shaders, opt_attribs, opt_locations, opt_errorCallback);
 	  }
-
+	
 	  /**
 	   * Creates a program from 2 sources.
 	   *
@@ -13451,7 +13451,7 @@
 	    }
 	    return createProgram(gl, shaders, opt_attribs, opt_locations, opt_errorCallback);
 	  }
-
+	
 	  /**
 	   * Creates setter functions for all uniforms of a shader
 	   * program.
@@ -13464,7 +13464,7 @@
 	   */
 	  function createUniformSetters(gl, program) {
 	    var textureUnit = 0;
-
+	
 	    /**
 	     * Creates a setter for a uniform of the given program with it's
 	     * location embedded in the setter.
@@ -13484,7 +13484,7 @@
 	        // it's a sampler
 	        var unit = textureUnit;
 	        textureUnit += uniformInfo.size;
-
+	
 	        if (isArray) {
 	          return typeInfo.arraySetter(gl, type, unit, location, uniformInfo.size);
 	        } else {
@@ -13498,10 +13498,10 @@
 	        }
 	      }
 	    }
-
+	
 	    var uniformSetters = { };
 	    var numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
-
+	
 	    for (var ii = 0; ii < numUniforms; ++ii) {
 	      var uniformInfo = gl.getActiveUniform(program, ii);
 	      if (!uniformInfo) {
@@ -13517,7 +13517,7 @@
 	    }
 	    return uniformSetters;
 	  }
-
+	
 	  /**
 	   * @typedef {Object} UniformData
 	   * @property {number} type The WebGL type enum for this uniform
@@ -13526,7 +13526,7 @@
 	   * @property {number} offset The byte offset in the block for this uniform's value
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * The specification for one UniformBlockObject
 	   *
@@ -13540,7 +13540,7 @@
 	   * @property {bool} used Self explanitory
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * A `UniformBlockSpec` represents the data needed to create and bind
 	   * UniformBlockObjects for a given program
@@ -13550,7 +13550,7 @@
 	   * @property {UniformData[]} uniformData An array of data for each uniform by uniform index.
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * Creates a UniformBlockSpec for the given program.
 	   *
@@ -13566,7 +13566,7 @@
 	    var numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS);
 	    var uniformData = [];
 	    var uniformIndices = [];
-
+	
 	    for (var ii = 0; ii < numUniforms; ++ii) {
 	      uniformIndices.push(ii);
 	      uniformData.push({});
@@ -13577,7 +13577,7 @@
 	      // REMOVE [0]?
 	      uniformData[ii].name = uniformInfo.name;
 	    }
-
+	
 	    [
 	      [ "UNIFORM_TYPE", "type" ],
 	      [ "UNIFORM_SIZE", "size" ],  // num elements
@@ -13590,9 +13590,9 @@
 	        uniformData[ndx][key] = value;
 	      });
 	    });
-
+	
 	    var blockSpecs = {};
-
+	
 	    var numUniformBlocks = gl.getProgramParameter(program, gl.ACTIVE_UNIFORM_BLOCKS);
 	    for (ii = 0; ii < numUniformBlocks; ++ii) {
 	      var name = gl.getActiveUniformBlockName(program, ii);
@@ -13606,15 +13606,15 @@
 	      blockSpec.used = blockSpec.usedByVertexSahder || blockSpec.usedByFragmentShader;
 	      blockSpecs[name] = blockSpec;
 	    }
-
+	
 	    return {
 	      blockSpecs: blockSpecs,
 	      uniformData: uniformData,
 	    };
 	  }
-
+	
 	  var arraySuffixRE = /\[\d+\]\.$/;  // better way to check?
-
+	
 	  /**
 	   * Represents a UniformBlockObject including an ArrayBuffer with all the uniform values
 	   * and a corresponding WebGLBuffer to hold those values on the GPU
@@ -13632,7 +13632,7 @@
 	   *   `Int32Array` view, etc.
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * Creates a `UniformBlockInfo` for the specified block
 	   *
@@ -13666,7 +13666,7 @@
 	    var uniformBufferIndex = blockSpec.index;
 	    gl.bindBuffer(gl.UNIFORM_BUFFER, buffer);
 	    gl.uniformBlockBinding(program, blockSpec.index, uniformBufferIndex);
-
+	
 	    var prefix = blockName + ".";
 	    if (arraySuffixRE.test(prefix)) {
 	      prefix = prefix.replace(arraySuffixRE, ".");
@@ -13691,7 +13691,7 @@
 	      uniforms: uniforms,
 	    };
 	  }
-
+	
 	  /**
 	   * Creates a `UniformBlockInfo` for the specified block
 	   *
@@ -13711,7 +13711,7 @@
 	  function createUniformBlockInfo(gl, programInfo, blockName) {
 	    return createUniformBlockInfoFromProgram(gl, programInfo.program, programInfo.uniformBlockSpec, blockName);
 	  }
-
+	
 	  /**
 	   * Binds a unform block to the matching uniform block point.
 	   * Matches by blocks by name so blocks must have the same name not just the same
@@ -13740,7 +13740,7 @@
 	    }
 	    return false;
 	  }
-
+	
 	  /**
 	   * Uploads the current uniform values to the corresponding WebGLBuffer
 	   * and binds that buffer to the program's corresponding bind point for the uniform block object.
@@ -13761,7 +13761,7 @@
 	      gl.bufferData(gl.UNIFORM_BUFFER, uniformBlockInfo.array, gl.DYNAMIC_DRAW);
 	    }
 	  }
-
+	
 	  /**
 	   * Sets values of a uniform block object
 	   *
@@ -13804,7 +13804,7 @@
 	      }
 	    }
 	  }
-
+	
 	  /**
 	   * Set uniforms and binds related textures.
 	   *
@@ -13927,7 +13927,7 @@
 	      }
 	    }
 	  }
-
+	
 	  /**
 	   * Creates setter functions for all attributes of a shader
 	   * program. You can pass this to {@link module:twgl.setBuffersAndAttributes} to set all your buffers and attributes.
@@ -13940,7 +13940,7 @@
 	  function createAttributeSetters(gl, program) {
 	    var attribSetters = {
 	    };
-
+	
 	    function createAttribSetter(index) {
 	      return function(b) {
 	          gl.bindBuffer(gl.ARRAY_BUFFER, b.buffer);
@@ -13949,7 +13949,7 @@
 	              index, b.numComponents || b.size, b.type || gl.FLOAT, b.normalize || false, b.stride || 0, b.offset || 0);
 	        };
 	    }
-
+	
 	    var numAttribs = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES);
 	    for (var ii = 0; ii < numAttribs; ++ii) {
 	      var attribInfo = gl.getActiveAttrib(program, ii);
@@ -13959,10 +13959,10 @@
 	      var index = gl.getAttribLocation(program, attribInfo.name);
 	      attribSetters[attribInfo.name] = createAttribSetter(index);
 	    }
-
+	
 	    return attribSetters;
 	  }
-
+	
 	  /**
 	   * Sets attributes and binds buffers (deprecated... use {@link module:twgl.setBuffersAndAttributes})
 	   *
@@ -14024,7 +14024,7 @@
 	      }
 	    }
 	  }
-
+	
 	  /**
 	   * Sets attributes and buffers including the `ELEMENT_ARRAY_BUFFER` if appropriate
 	   *
@@ -14072,7 +14072,7 @@
 	      }
 	    }
 	  }
-
+	
 	  /**
 	   * @typedef {Object} ProgramInfo
 	   * @property {WebGLProgram} program A shader program
@@ -14080,7 +14080,7 @@
 	   * @property {Object<string, function>} attribSetters object of setters as returned from createAttribSetters,
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * Creates a ProgramInfo from an existing program.
 	   *
@@ -14106,14 +14106,14 @@
 	      uniformSetters: uniformSetters,
 	      attribSetters: attribSetters,
 	    };
-
+	
 	    if (utils.isWebGL2(gl)) {
 	      programInfo.uniformBlockSpec = createUniformBlockSpecFromProgram(gl, program);
 	    }
-
+	
 	    return programInfo;
 	  }
-
+	
 	  /**
 	   * Creates a ProgramInfo from 2 sources.
 	   *
@@ -14149,12 +14149,12 @@
 	    }
 	    return createProgramInfoFromProgram(gl, program);
 	  }
-
+	
 	  // Using quotes prevents Uglify from changing the names.
 	  // No speed diff AFAICT.
 	  return {
 	    "createAttributeSetters": createAttributeSetters,
-
+	
 	    "createProgram": createProgram,
 	    "createProgramFromScripts": createProgramFromScripts,
 	    "createProgramFromSources": createProgramFromSources,
@@ -14164,7 +14164,7 @@
 	    "createUniformBlockSpecFromProgram": createUniformBlockSpecFromProgram,
 	    "createUniformBlockInfoFromProgram": createUniformBlockInfoFromProgram,
 	    "createUniformBlockInfo": createUniformBlockInfo,
-
+	
 	    "setAttributes": setAttributes,
 	    "setBuffersAndAttributes": setBuffersAndAttributes,
 	    "setUniforms": setUniforms,
@@ -14172,10 +14172,10 @@
 	    "setBlockUniforms": setBlockUniforms,
 	    "bindUniformBlock": bindUniformBlock,
 	  };
-
+	
 	});
-
-
+	
+	
 	/*
 	 * Copyright 2015, Gregg Tavares.
 	 * All rights reserved.
@@ -14206,13 +14206,13 @@
 	 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 */
-
+	
 	define('twgl/draw',[
 	    './programs',
 	  ], function(
 	    programs) {
 	  
-
+	
 	  /**
 	   * Drawing related functions
 	   *
@@ -14223,7 +14223,7 @@
 	   *
 	   * @module twgl/draw
 	   */
-
+	
 	  /**
 	   * Calls `gl.drawElements` or `gl.drawArrays`, whichever is appropriate
 	   *
@@ -14250,7 +14250,7 @@
 	      gl.drawArrays(type, offset, numElements);
 	    }
 	  }
-
+	
 	  /**
 	   * A DrawObject is useful for putting objects in to an array and passing them to {@link module:twgl.drawObjectList}.
 	   *
@@ -14285,7 +14285,7 @@
 	   * @property {number} [count] the count to pass to `gl.drawArrays` or `gl.drawElemnts`. Defaults to bufferInfo.numElements.
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * Draws a list of objects
 	   * @param {DrawObject[]} objectsToDraw an array of objects to draw.
@@ -14294,27 +14294,27 @@
 	  function drawObjectList(gl, objectsToDraw) {
 	    var lastUsedProgramInfo = null;
 	    var lastUsedBufferInfo = null;
-
+	
 	    objectsToDraw.forEach(function(object) {
 	      if (object.active === false) {
 	        return;
 	      }
-
+	
 	      var programInfo = object.programInfo;
 	      var bufferInfo = object.vertexArrayInfo || object.bufferInfo;
 	      var bindBuffers = false;
-
+	
 	      if (programInfo !== lastUsedProgramInfo) {
 	        lastUsedProgramInfo = programInfo;
 	        gl.useProgram(programInfo.program);
-
+	
 	        // We have to rebind buffers when changing programs because we
 	        // only bind buffers the program uses. So if 2 programs use the same
 	        // bufferInfo but the 1st one uses only positions the when the
 	        // we switch to the 2nd one some of the attributes will not be on.
 	        bindBuffers = true;
 	      }
-
+	
 	      // Setup all the needed attributes.
 	      if (bindBuffers || bufferInfo !== lastUsedBufferInfo) {
 	        if (lastUsedBufferInfo && lastUsedBufferInfo.vertexArrayObject && !bufferInfo.vertexArrayObject) {
@@ -14323,29 +14323,29 @@
 	        lastUsedBufferInfo = bufferInfo;
 	        programs.setBuffersAndAttributes(gl, programInfo, bufferInfo);
 	      }
-
+	
 	      // Set the uniforms.
 	      programs.setUniforms(programInfo, object.uniforms);
-
+	
 	      // Draw
 	      drawBufferInfo(gl, object.type || gl.TRIANGLES, bufferInfo, object.count, object.offset);
 	    });
-
+	
 	    if (lastUsedBufferInfo.vertexArrayObject) {
 	      gl.bindVertexArray(null);
 	    }
 	  }
-
+	
 	  // Using quotes prevents Uglify from changing the names.
 	  // No speed diff AFAICT.
 	  return {
 	    "drawBufferInfo": drawBufferInfo,
 	    "drawObjectList": drawObjectList,
 	  };
-
+	
 	});
-
-
+	
+	
 	/*
 	 * Copyright 2015, Gregg Tavares.
 	 * All rights reserved.
@@ -14376,7 +14376,7 @@
 	 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 */
-
+	
 	define('twgl/textures',[
 	    './typedarrays',
 	    './utils',
@@ -14384,7 +14384,7 @@
 	    typedArrays,
 	    utils) {
 	  
-
+	
 	  /**
 	   * Low level texture related functions
 	   *
@@ -14399,7 +14399,7 @@
 	   *
 	   * @module twgl/textures
 	   */
-
+	
 	  // make sure we don't see a global gl
 	  var gl = undefined;  // eslint-disable-line
 	  var defaults = {
@@ -14408,27 +14408,27 @@
 	    crossOrigin: undefined,
 	  };
 	  var isArrayBuffer = typedArrays.isArrayBuffer;
-
+	
 	  /* PixelFormat */
 	  var ALPHA                          = 0x1906;
 	  var RGB                            = 0x1907;
 	  var RGBA                           = 0x1908;
 	  var LUMINANCE                      = 0x1909;
 	  var LUMINANCE_ALPHA                = 0x190A;
-
+	
 	  /* TextureWrapMode */
 	  var REPEAT                         = 0x2901;  // eslint-disable-line
 	  var MIRRORED_REPEAT                = 0x8370;  // eslint-disable-line
-
+	
 	  /* TextureMagFilter */
 	  var NEAREST                        = 0x2600;  // eslint-disable-line
-
+	
 	  /* TextureMinFilter */
 	  var NEAREST_MIPMAP_NEAREST         = 0x2700;  // eslint-disable-line
 	  var LINEAR_MIPMAP_NEAREST          = 0x2701;  // eslint-disable-line
 	  var NEAREST_MIPMAP_LINEAR          = 0x2702;  // eslint-disable-line
 	  var LINEAR_MIPMAP_LINEAR           = 0x2703;  // eslint-disable-line
-
+	
 	  /**
 	   * Sets the default texture color.
 	   *
@@ -14445,14 +14445,14 @@
 	  function setDefaultTextureColor(color) {
 	    defaults.textureColor = new Uint8Array([color[0] * 255, color[1] * 255, color[2] * 255, color[3] * 255]);
 	  }
-
+	
 	  function setDefaults(newDefaults) {
 	    utils.copyExistingProperties(newDefaults, defaults);
 	    if (newDefaults.textureColor) {
 	      setDefaultTextureColor(newDefaults.textureColor);
 	    }
 	  }
-
+	
 	  /**
 	   * Gets a string for gl enum
 	   *
@@ -14465,7 +14465,7 @@
 	   */
 	  var glEnumToString = (function() {
 	    var enums;
-
+	
 	    function init(gl) {
 	      if (!enums) {
 	        enums = {};
@@ -14476,13 +14476,13 @@
 	        });
 	      }
 	    }
-
+	
 	    return function glEnumToString(gl, value) {
 	      init();
 	      return enums[value] || ("0x" + value.toString(16));
 	    };
 	  }());
-
+	
 	  /**
 	   * A function to generate the source for a texture.
 	   * @callback TextureFunc
@@ -14491,7 +14491,7 @@
 	   * @return {*} Returns any of the things documentented for `src` for {@link module:twgl.TextureOptions}.
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * Texture options passed to most texture functions. Each function will use whatever options
 	   * are appropriate for its needs. This lets you pass the same options to all functions.
@@ -14568,14 +14568,14 @@
 	   *
 	   * @memberOf module:twgl
 	   */
-
+	
 	  // NOTE: While querying GL is considered slow it's not remotely as slow
 	  // as uploading a texture. On top of that you're unlikely to call this in
 	  // a perf critical loop. Even if upload a texture every frame that's unlikely
 	  // to be more than 1 or 2 textures a frame. In other words, the benefits of
 	  // making the API easy to use outweigh any supposed perf benefits
 	  var lastPackState = {};
-
+	
 	  /**
 	   * Saves any packing state that will be set based on the options.
 	   * @param {module:twgl.TextureOptions} options A TextureOptions object with whatever parameters you want set.
@@ -14592,7 +14592,7 @@
 	      lastPackState.flipY = gl.getParameter(gl.UNPACK_FLIP_Y_WEBGL);
 	    }
 	  }
-
+	
 	  /**
 	   * Restores any packing state that was set based on the options.
 	   * @param {module:twgl.TextureOptions} options A TextureOptions object with whatever parameters you want set.
@@ -14609,7 +14609,7 @@
 	      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, lastPackState.flipY);
 	    }
 	  }
-
+	
 	  /**
 	   * Sets the texture parameters of a texture.
 	   * @param {WebGLRenderingContext} gl the WebGLRenderingContext
@@ -14638,7 +14638,7 @@
 	      gl.texParameteri(target, gl.TEXTURE_WRAP_T, options.wrapT);
 	    }
 	  }
-
+	
 	  /**
 	   * Makes a 1x1 pixel
 	   * If no color is passed in uses the default color which can be set by calling `setDefaultTextureColor`.
@@ -14652,7 +14652,7 @@
 	    }
 	    return new Uint8Array([color[0] * 255, color[1] * 255, color[2] * 255, color[3] * 255]);
 	  }
-
+	
 	  /**
 	   * Returns true if value is power of 2
 	   * @param {number} value number to check.
@@ -14661,7 +14661,7 @@
 	  function isPowerOf2(value) {
 	    return (value & (value - 1)) === 0;
 	  }
-
+	
 	  /**
 	   * Sets filtering or generates mips for texture based on width or height
 	   * If width or height is not passed in uses `options.width` and//or `options.height`
@@ -14688,7 +14688,7 @@
 	      gl.generateMipmap(target);
 	    }
 	  }
-
+	
 	  /**
 	   * Gets an array of cubemap face enums
 	   * @param {WebGLRenderingContext} gl the WebGLRenderingContext
@@ -14707,14 +14707,14 @@
 	        gl.TEXTURE_CUBE_MAP_NEGATIVE_Z,
 	      ];
 	  }
-
+	
 	  /**
 	   * @typedef {Object} FaceInfo
 	   * @property {number} face gl enum for texImage2D
 	   * @property {number} ndx face index (0 - 5) into source data
 	   * @ignore
 	   */
-
+	
 	  /**
 	   * Gets an array of FaceInfos
 	   * There's a bug in some NVidia drivers that will crash the driver if
@@ -14738,7 +14738,7 @@
 	    });
 	    return facesWithNdx;
 	  }
-
+	
 	  /**
 	   * Set a texture from the contents of an element. Will also set
 	   * texture filtering or generate mips based on the dimensions of the element
@@ -14811,10 +14811,10 @@
 	      setTextureParameters(gl, tex, options);
 	    };
 	  }();
-
+	
 	  function noop() {
 	  }
-
+	
 	  /**
 	   * Loads an image
 	   * @param {string} url url to image
@@ -14829,31 +14829,31 @@
 	    if (crossOrigin !== undefined) {
 	      img.crossOrigin = crossOrigin;
 	    }
-
+	
 	    function clearEventHandlers() {
 	      img.removeEventListener('error', onError);  // eslint-disable-line
 	      img.removeEventListener('load', onLoad);  // eslint-disable-line
 	      img = null;
 	    }
-
+	
 	    function onError() {
 	      var msg = "couldn't load image: " + url;
 	      utils.error(msg);
 	      callback(msg, img);
 	      clearEventHandlers();
 	    }
-
+	
 	    function onLoad() {
 	      callback(null, img);
 	      clearEventHandlers();
 	    }
-
+	
 	    img.addEventListener('error', onError);
 	    img.addEventListener('load', onLoad);
 	    img.src = url;
 	    return img;
 	  }
-
+	
 	  /**
 	   * Sets a texture to a 1x1 pixel color. If `options.color === false` is nothing happens. If it's not set
 	   * the default texture color is used which can be set by calling `setDefaultTextureColor`.
@@ -14881,7 +14881,7 @@
 	      gl.texImage2D(target, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, color);
 	    }
 	  }
-
+	
 	  /**
 	   * The src image(s) used to create a texture.
 	   *
@@ -14893,7 +14893,7 @@
 	   * @typedef {HTMLImageElement|HTMLImageElement[]} TextureSrc
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * A callback for when an image finished downloading and been uploaded into a texture
 	   * @callback TextureReadyCallback
@@ -14902,7 +14902,7 @@
 	   * @param {module:twgl.TextureSrc} souce image(s) used to as the src for the texture
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * A callback for when all images have finished downloading and been uploaded into their respective textures
 	   * @callback TexturesReadyCallback
@@ -14911,7 +14911,7 @@
 	   * @param {Object.<string, module:twgl.TextureSrc>} sources the image(s) used for the texture by name.
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * A callback for when an image finished downloading and been uploaded into a texture
 	   * @callback CubemapReadyCallback
@@ -14920,7 +14920,7 @@
 	   * @param {HTMLImageElement[]} imgs the images for each face.
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * Loads a texture from an image from a Url as specified in `options.src`
 	   * If `options.color !== false` will set the texture to a 1x1 pixel color so that the texture is
@@ -14950,7 +14950,7 @@
 	    });
 	    return img;
 	  }
-
+	
 	  /**
 	   * Loads a cubemap from 6 urls as specified in `options.src`. Will set the cubemap to a 1x1 pixel color
 	   * so that it is usable immediately unless `option.color === false`.
@@ -14980,7 +14980,7 @@
 	    var errors = [];
 	    var imgs;
 	    var faces = getCubeFaceOrder(gl, options);
-
+	
 	    function uploadImg(faceTarget) {
 	      return function(err, img) {
 	        --numToLoad;
@@ -14992,7 +14992,7 @@
 	          } else {
 	            savePackState(gl, options);
 	            gl.bindTexture(target, tex);
-
+	
 	            // So assuming this is the first image we now have one face that's img sized
 	            // and 5 faces that are 1x1 pixel so size the other faces
 	            if (numToLoad === 5) {
@@ -15004,23 +15004,23 @@
 	            } else {
 	              gl.texImage2D(faceTarget, 0, format, format, type, img);
 	            }
-
+	
 	            restorePackState(gl, options);
 	            gl.generateMipmap(target);
 	          }
 	        }
-
+	
 	        if (numToLoad === 0) {
 	          callback(errors.length ? errors : undefined, imgs, tex);
 	        }
 	      };
 	    }
-
+	
 	    imgs = urls.map(function(url, ndx) {
 	      return loadImage(url, options.crossOrigin, uploadImg(faces[ndx]));
 	    });
 	  }
-
+	
 	  /**
 	   * Gets the number of compontents for a given image format.
 	   * @param {number} format the format.
@@ -15042,7 +15042,7 @@
 	        throw "unknown type: " + format;
 	    }
 	  }
-
+	
 	  /**
 	   * Gets the texture type for a given array type.
 	   * @param {WebGLRenderingContext} gl the WebGLRenderingContext
@@ -15054,7 +15054,7 @@
 	    }
 	    return gl.UNSIGNED_BYTE;
 	  }
-
+	
 	  /**
 	   * Sets a texture from an array or typed array. If the width or height is not provided will attempt to
 	   * guess the size. See {@link module:twgl.TextureOptions}.
@@ -15124,7 +15124,7 @@
 	      height: height,
 	    };
 	  }
-
+	
 	  /**
 	   * Sets a texture with no contents of a certain size. In other words calls `gl.texImage2D` with `null`.
 	   * You must set `options.width` and `options.height`.
@@ -15147,7 +15147,7 @@
 	      gl.texImage2D(target, 0, format, options.width, options.height, 0, format, type, null);
 	    }
 	  }
-
+	
 	  /**
 	   * Creates a texture based on the options passed in.
 	   * @param {WebGLRenderingContext} gl the WebGLRenderingContext
@@ -15204,7 +15204,7 @@
 	    setTextureParameters(gl, tex, options);
 	    return tex;
 	  }
-
+	
 	  /**
 	   * Resizes a texture based on the options passed in.
 	   *
@@ -15244,7 +15244,7 @@
 	      gl.texImage2D(target, 0, format, width, height, 0, format, type, null);
 	    }
 	  }
-
+	
 	  /**
 	   * Check if a src is an async request.
 	   * if src is a string we're going to download an image
@@ -15256,7 +15256,7 @@
 	    return typeof src === 'string' ||
 	           (Array.isArray(src) && typeof src[0] === 'string');
 	  }
-
+	
 	  /**
 	   * Creates a bunch of textures based on the passed in options.
 	   *
@@ -15338,7 +15338,7 @@
 	    var errors = [];
 	    var textures = {};
 	    var images = {};
-
+	
 	    function callCallbackIfReady() {
 	      if (numDownloading === 0) {
 	        setTimeout(function() {
@@ -15346,7 +15346,7 @@
 	        }, 0);
 	      }
 	    }
-
+	
 	    Object.keys(textureOptions).forEach(function(name) {
 	      var options = textureOptions[name];
 	      var onLoadFn;
@@ -15363,21 +15363,21 @@
 	      }
 	      textures[name] = createTexture(gl, options, onLoadFn);
 	    });
-
+	
 	    // queue the callback if there are no images to download.
 	    // We do this because if your code is structured to wait for
 	    // images to download but then you comment out all the async
 	    // images your code would break.
 	    callCallbackIfReady();
-
+	
 	    return textures;
 	  }
-
+	
 	  // Using quotes prevents Uglify from changing the names.
 	  // No speed diff AFAICT.
 	  return {
 	    "setDefaults_": setDefaults,
-
+	
 	    "createTexture": createTexture,
 	    "setEmptyTexture": setEmptyTexture,
 	    "setTextureFromArray": setTextureFromArray,
@@ -15391,9 +15391,9 @@
 	    "getNumComponentsForFormat": getNumComponentsForFormat,
 	  };
 	});
-
-
-
+	
+	
+	
 	/*
 	 * Copyright 2015, Gregg Tavares.
 	 * All rights reserved.
@@ -15424,7 +15424,7 @@
 	 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 */
-
+	
 	define('twgl/framebuffers',[
 	    './textures',
 	    './utils',
@@ -15432,7 +15432,7 @@
 	    textures,
 	    utils) {
 	  
-
+	
 	  /**
 	   * Framebuffer related functions
 	   *
@@ -15443,16 +15443,16 @@
 	   *
 	   * @module twgl/framebuffers
 	   */
-
+	
 	  // make sure we don't see a global gl
 	  var gl = undefined;  // eslint-disable-line
-
+	
 	  var UNSIGNED_BYTE                  = 0x1401;
-
+	
 	  /* PixelFormat */
 	  var DEPTH_COMPONENT                = 0x1902;
 	  var RGBA                           = 0x1908;
-
+	
 	  /* Framebuffer Object. */
 	  var RGBA4                          = 0x8056;
 	  var RGB5_A1                        = 0x8057;
@@ -15465,22 +15465,22 @@
 	  var DEPTH_ATTACHMENT               = 0x8D00;
 	  var STENCIL_ATTACHMENT             = 0x8D20;
 	  var DEPTH_STENCIL_ATTACHMENT       = 0x821A;
-
+	
 	  /* TextureWrapMode */
 	  var REPEAT                         = 0x2901;  // eslint-disable-line
 	  var CLAMP_TO_EDGE                  = 0x812F;
 	  var MIRRORED_REPEAT                = 0x8370;  // eslint-disable-line
-
+	
 	  /* TextureMagFilter */
 	  var NEAREST                        = 0x2600;  // eslint-disable-line
 	  var LINEAR                         = 0x2601;
-
+	
 	  /* TextureMinFilter */
 	  var NEAREST_MIPMAP_NEAREST         = 0x2700;  // eslint-disable-line
 	  var LINEAR_MIPMAP_NEAREST          = 0x2701;  // eslint-disable-line
 	  var NEAREST_MIPMAP_LINEAR          = 0x2702;  // eslint-disable-line
 	  var LINEAR_MIPMAP_LINEAR           = 0x2703;  // eslint-disable-line
-
+	
 	  /**
 	   * The options for a framebuffer attachment.
 	   *
@@ -15507,23 +15507,23 @@
 	   *    attachemnts across framebuffers.
 	   * @memberOf module:twgl
 	   */
-
+	
 	  var defaultAttachments = [
 	    { format: RGBA, type: UNSIGNED_BYTE, min: LINEAR, wrap: CLAMP_TO_EDGE, },
 	    { format: DEPTH_STENCIL, },
 	  ];
-
+	
 	  var attachmentsByFormat = {};
 	  attachmentsByFormat[DEPTH_STENCIL] = DEPTH_STENCIL_ATTACHMENT;
 	  attachmentsByFormat[STENCIL_INDEX] = STENCIL_ATTACHMENT;
 	  attachmentsByFormat[STENCIL_INDEX8] = STENCIL_ATTACHMENT;
 	  attachmentsByFormat[DEPTH_COMPONENT] = DEPTH_ATTACHMENT;
 	  attachmentsByFormat[DEPTH_COMPONENT16] = DEPTH_ATTACHMENT;
-
+	
 	  function getAttachmentPointForFormat(format) {
 	    return attachmentsByFormat[format];
 	  }
-
+	
 	  var renderbufferFormats = {};
 	  renderbufferFormats[RGBA4] = true;
 	  renderbufferFormats[RGB5_A1] = true;
@@ -15532,18 +15532,18 @@
 	  renderbufferFormats[DEPTH_COMPONENT16] = true;
 	  renderbufferFormats[STENCIL_INDEX] = true;
 	  renderbufferFormats[STENCIL_INDEX8] = true;
-
+	
 	  function isRenderbufferFormat(format) {
 	    return renderbufferFormats[format];
 	  }
-
+	
 	  /**
 	   * @typedef {Object} FramebufferInfo
 	   * @property {WebGLFramebuffer} framebuffer The WebGLFramebuffer for this framebufferInfo
 	   * @property {WebGLObject[]} attachments The created attachments in the same order as passed in to {@link module:twgl.createFramebufferInfo}.
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * Creates a framebuffer and attachments.
 	   *
@@ -15630,7 +15630,7 @@
 	    });
 	    return framebufferInfo;
 	  }
-
+	
 	  /**
 	   * Resizes the attachments of a framebuffer.
 	   *
@@ -15693,7 +15693,7 @@
 	      }
 	    });
 	  }
-
+	
 	  /**
 	   * Binds a framebuffer
 	   *
@@ -15713,7 +15713,7 @@
 	   * @param {number} [target] The target. If not passed `gl.FRAMEBUFFER` will be used.
 	   * @memberOf module:twgl/framebuffers
 	   */
-
+	
 	  function bindFramebufferInfo(gl, framebufferInfo, target) {
 	    target = target || gl.FRAMEBUFFER;
 	    if (framebufferInfo) {
@@ -15724,7 +15724,7 @@
 	      gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 	    }
 	  }
-
+	
 	  // Using quotes prevents Uglify from changing the names.
 	  // No speed diff AFAICT.
 	  return {
@@ -15733,8 +15733,8 @@
 	    "resizeFramebufferInfo": resizeFramebufferInfo,
 	  };
 	});
-
-
+	
+	
 	/*
 	 * Copyright 2015, Gregg Tavares.
 	 * All rights reserved.
@@ -15765,7 +15765,7 @@
 	 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 */
-
+	
 	define('twgl/twgl',[
 	    './attributes',
 	    './draw',
@@ -15783,7 +15783,7 @@
 	    typedArrays,
 	    utils) {
 	  
-
+	
 	  /**
 	   * The main TWGL module.
 	   *
@@ -15811,13 +15811,13 @@
 	   * @borrows module:twgl/textures.resizeTexture as resizeTexture
 	   * @borrows module:twgl/textures.createTextures as createTextures
 	   */
-
+	
 	  // make sure we don't see a global gl
 	  var gl = undefined;  // eslint-disable-line
 	  var defaults = {
 	    enableVertexArrayObjects: true,
 	  };
-
+	
 	  /**
 	   * Various default settings for twgl.
 	   *
@@ -15883,7 +15883,7 @@
 	   *
 	   * @memberOf module:twgl
 	   */
-
+	
 	  /**
 	   * Sets various defaults for twgl.
 	   *
@@ -15898,7 +15898,7 @@
 	    attributes.setDefaults_(newDefaults);  // eslint-disable-line
 	    textures.setDefaults_(newDefaults);  // eslint-disable-line
 	  }
-
+	
 	  /**
 	   * Adds Vertex Array Objects to WebGL 1 GL contexts if available
 	   * @param {WebGLRenderingContext} gl A WebGLRenderingContext
@@ -15926,7 +15926,7 @@
 	      }
 	    }
 	  }
-
+	
 	  /**
 	   * Creates a webgl context.
 	   * @param {HTMLCanvasElement} canvas The canvas tag to get
@@ -15947,7 +15947,7 @@
 	    }
 	    return context;
 	  }
-
+	
 	  /**
 	   * Gets a WebGL context.
 	   * @param {HTMLCanvasElement} canvas a canvas element.
@@ -15959,7 +15959,7 @@
 	    addVertexArrayObjectSupport(gl);
 	    return gl;
 	  }
-
+	
 	  /**
 	   * Creates a webgl context.
 	   *
@@ -15987,7 +15987,7 @@
 	    }
 	    return context;
 	  }
-
+	
 	  /**
 	   * Gets a WebGL context.  Will create a WebGL2 context if possible.
 	   *
@@ -16007,7 +16007,7 @@
 	    addVertexArrayObjectSupport(gl);
 	    return gl;
 	  }
-
+	
 	  /**
 	   * Resize a canvas to match the size it's displayed.
 	   * @param {HTMLCanvasElement} canvas The canvas to resize.
@@ -16028,7 +16028,7 @@
 	    }
 	    return false;
 	  }
-
+	
 	  // Using quotes prevents Uglify from changing the names.
 	  // No speed diff AFAICT.
 	  var api = {
@@ -16039,18 +16039,18 @@
 	    "resizeCanvasToDisplaySize": resizeCanvasToDisplaySize,
 	    "setDefaults": setDefaults,
 	  };
-
+	
 	  function notPrivate(name) {
 	    return name[name.length - 1] !== '_';
 	  }
-
+	
 	  function copyPublicProperties(src, dst) {
 	    Object.keys(src).filter(notPrivate).forEach(function(key) {
 	      dst[key] = src[key];
 	    });
 	    return dst;
 	  }
-
+	
 	  var apis = {
 	    attributes: attributes,
 	    draw: draw,
@@ -16064,12 +16064,12 @@
 	    copyPublicProperties(srcApi, api);
 	    api[name] = copyPublicProperties(srcApi, {});
 	  });
-
+	
 	  return api;
-
+	
 	});
-
-
+	
+	
 	/*
 	 * Copyright 2015, Gregg Tavares.
 	 * All rights reserved.
@@ -16100,10 +16100,10 @@
 	 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 */
-
+	
 	define('twgl/v3',[], function() {
 	  
-
+	
 	  /**
 	   *
 	   * Vec3 math math functions.
@@ -16127,9 +16127,9 @@
 	   *
 	   * @module twgl/v3
 	   */
-
+	
 	  var VecType = Float32Array;
-
+	
 	  /**
 	   * A JavaScript array with 3 values or a Float32Array with 3 values.
 	   * When created by the library will create the default type which is `Float32Array`
@@ -16137,7 +16137,7 @@
 	   * @typedef {(number[]|Float32Array)} Vec3
 	   * @memberOf module:twgl/v3
 	   */
-
+	
 	  /**
 	   * Sets the type this library creates for a Vec3
 	   * @param {constructor} ctor the constructor for the type. Either `Float32Array` or `Array`
@@ -16148,7 +16148,7 @@
 	    VecType = ctor;
 	    return oldType;
 	  }
-
+	
 	  /**
 	   * Creates a vec3; may be called with x, y, z to set initial values.
 	   * @return {Vec3} the created vector
@@ -16167,7 +16167,7 @@
 	    }
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Adds two vectors; assumes a and b have the same dimension.
 	   * @param {module:twgl/v3.Vec3} a Operand vector.
@@ -16177,14 +16177,14 @@
 	   */
 	  function add(a, b, dst) {
 	    dst = dst || new VecType(3);
-
+	
 	    dst[0] = a[0] + b[0];
 	    dst[1] = a[1] + b[1];
 	    dst[2] = a[2] + b[2];
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Subtracts two vectors.
 	   * @param {module:twgl/v3.Vec3} a Operand vector.
@@ -16194,14 +16194,14 @@
 	   */
 	  function subtract(a, b, dst) {
 	    dst = dst || new VecType(3);
-
+	
 	    dst[0] = a[0] - b[0];
 	    dst[1] = a[1] - b[1];
 	    dst[2] = a[2] - b[2];
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Performs linear interpolation on two vectors.
 	   * Given vectors a and b and interpolation coefficient t, returns
@@ -16214,14 +16214,14 @@
 	   */
 	  function lerp(a, b, t, dst) {
 	    dst = dst || new VecType(3);
-
+	
 	    dst[0] = (1 - t) * a[0] + t * b[0];
 	    dst[1] = (1 - t) * a[1] + t * b[1];
 	    dst[2] = (1 - t) * a[2] + t * b[2];
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Mutiplies a vector by a scalar.
 	   * @param {module:twgl/v3.Vec3} v The vector.
@@ -16232,14 +16232,14 @@
 	   */
 	  function mulScalar(v, k, dst) {
 	    dst = dst || new VecType(3);
-
+	
 	    dst[0] = v[0] * k;
 	    dst[1] = v[1] * k;
 	    dst[2] = v[2] * k;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Divides a vector by a scalar.
 	   * @param {module:twgl/v3.Vec3} v The vector.
@@ -16250,14 +16250,14 @@
 	   */
 	  function divScalar(v, k, dst) {
 	    dst = dst || new VecType(3);
-
+	
 	    dst[0] = v[0] / k;
 	    dst[1] = v[1] / k;
 	    dst[2] = v[2] / k;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Computes the cross product of two vectors; assumes both vectors have
 	   * three entries.
@@ -16269,14 +16269,14 @@
 	   */
 	  function cross(a, b, dst) {
 	    dst = dst || new VecType(3);
-
+	
 	    dst[0] = a[1] * b[2] - a[2] * b[1];
 	    dst[1] = a[2] * b[0] - a[0] * b[2];
 	    dst[2] = a[0] * b[1] - a[1] * b[0];
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Computes the dot product of two vectors; assumes both vectors have
 	   * three entries.
@@ -16288,7 +16288,7 @@
 	  function dot(a, b) {
 	    return (a[0] * b[0]) + (a[1] * b[1]) + (a[2] * b[2]);
 	  }
-
+	
 	  /**
 	   * Computes the length of vector
 	   * @param {module:twgl/v3.Vec3} v vector.
@@ -16298,7 +16298,7 @@
 	  function length(v) {
 	    return Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
 	  }
-
+	
 	  /**
 	   * Computes the square of the length of vector
 	   * @param {module:twgl/v3.Vec3} v vector.
@@ -16308,7 +16308,7 @@
 	  function lengthSq(v) {
 	    return v[0] * v[0] + v[1] * v[1] + v[2] * v[2];
 	  }
-
+	
 	  /**
 	   * Divides a vector by its Euclidean length and returns the quotient.
 	   * @param {module:twgl/v3.Vec3} a The vector.
@@ -16318,7 +16318,7 @@
 	   */
 	  function normalize(a, dst) {
 	    dst = dst || new VecType(3);
-
+	
 	    var lenSq = a[0] * a[0] + a[1] * a[1] + a[2] * a[2];
 	    var len = Math.sqrt(lenSq);
 	    if (len > 0.00001) {
@@ -16330,10 +16330,10 @@
 	      dst[1] = 0;
 	      dst[2] = 0;
 	    }
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Negates a vector.
 	   * @param {module:twgl/v3.Vec3} v The vector.
@@ -16343,14 +16343,14 @@
 	   */
 	  function negate(v, dst) {
 	    dst = dst || new VecType(3);
-
+	
 	    dst[0] = -v[0];
 	    dst[1] = -v[1];
 	    dst[2] = -v[2];
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Copies a vector.
 	   * @param {module:twgl/v3.Vec3} v The vector.
@@ -16360,14 +16360,14 @@
 	   */
 	  function copy(v, dst) {
 	    dst = dst || new VecType(3);
-
+	
 	    dst[0] = v[0];
 	    dst[1] = v[1];
 	    dst[2] = v[2];
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Multiplies a vector by another vector (component-wise); assumes a and
 	   * b have the same length.
@@ -16380,14 +16380,14 @@
 	   */
 	  function multiply(a, b, dst) {
 	    dst = dst || new VecType(3);
-
+	
 	    dst[0] = a[0] * b[0];
 	    dst[1] = a[1] * b[1];
 	    dst[2] = a[2] * b[2];
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Divides a vector by another vector (component-wise); assumes a and
 	   * b have the same length.
@@ -16400,14 +16400,14 @@
 	   */
 	  function divide(a, b, dst) {
 	    dst = dst || new VecType(3);
-
+	
 	    dst[0] = a[0] / b[0];
 	    dst[1] = a[1] / b[1];
 	    dst[2] = a[2] / b[2];
-
+	
 	    return dst;
 	  }
-
+	
 	  // Using quotes prevents Uglify from changing the names.
 	  // No speed diff AFAICT.
 	  return {
@@ -16428,9 +16428,9 @@
 	    "setDefaultType": setDefaultType,
 	    "subtract": subtract,
 	  };
-
+	
 	});
-
+	
 	/*
 	 * Copyright 2015, Gregg Tavares.
 	 * All rights reserved.
@@ -16461,10 +16461,10 @@
 	 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 */
-
+	
 	define('twgl/m4',['./v3'], function(v3) {
 	  
-
+	
 	  /**
 	   * 4x4 Matrix math math functions.
 	   *
@@ -16490,11 +16490,11 @@
 	   * @module twgl/m4
 	   */
 	  var MatType = Float32Array;
-
+	
 	  var tempV3a = v3.create();
 	  var tempV3b = v3.create();
 	  var tempV3c = v3.create();
-
+	
 	  /**
 	   * A JavaScript array with 16 values or a Float32Array with 16 values.
 	   * When created by the library will create the default type which is `Float32Array`
@@ -16502,7 +16502,7 @@
 	   * @typedef {(number[]|Float32Array)} Mat4
 	   * @memberOf module:twgl/m4
 	   */
-
+	
 	  /**
 	   * Sets the type this library creates for a Mat4
 	   * @param {constructor} ctor the constructor for the type. Either `Float32Array` or `Array`
@@ -16513,7 +16513,7 @@
 	    MatType = ctor;
 	    return oldType;
 	  }
-
+	
 	  /**
 	   * Negates a matrix.
 	   * @param {module:twgl/m4.Mat4} m The matrix.
@@ -16523,7 +16523,7 @@
 	   */
 	  function negate(m, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    dst[ 0] = -m[ 0];
 	    dst[ 1] = -m[ 1];
 	    dst[ 2] = -m[ 2];
@@ -16540,10 +16540,10 @@
 	    dst[13] = -m[13];
 	    dst[14] = -m[14];
 	    dst[15] = -m[15];
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Copies a matrix.
 	   * @param {module:twgl/m4.Mat4} m The matrix.
@@ -16553,7 +16553,7 @@
 	   */
 	  function copy(m, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    dst[ 0] = m[ 0];
 	    dst[ 1] = m[ 1];
 	    dst[ 2] = m[ 2];
@@ -16570,10 +16570,10 @@
 	    dst[13] = m[13];
 	    dst[14] = m[14];
 	    dst[15] = m[15];
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Creates an n-by-n identity matrix.
 	   *
@@ -16583,7 +16583,7 @@
 	   */
 	  function identity(dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    dst[ 0] = 1;
 	    dst[ 1] = 0;
 	    dst[ 2] = 0;
@@ -16600,10 +16600,10 @@
 	    dst[13] = 0;
 	    dst[14] = 0;
 	    dst[15] = 1;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Takes the transpose of a matrix.
 	   * @param {module:twgl/m4.Mat4} m The matrix.
@@ -16615,33 +16615,33 @@
 	    dst = dst || new MatType(16);
 	    if (dst === m) {
 	      var t;
-
+	
 	      t = m[1];
 	      m[1] = m[4];
 	      m[4] = t;
-
+	
 	      t = m[2];
 	      m[2] = m[8];
 	      m[8] = t;
-
+	
 	      t = m[3];
 	      m[3] = m[12];
 	      m[12] = t;
-
+	
 	      t = m[6];
 	      m[6] = m[9];
 	      m[9] = t;
-
+	
 	      t = m[7];
 	      m[7] = m[13];
 	      m[13] = t;
-
+	
 	      t = m[11];
 	      m[11] = m[14];
 	      m[14] = t;
 	      return dst;
 	    }
-
+	
 	    var m00 = m[0 * 4 + 0];
 	    var m01 = m[0 * 4 + 1];
 	    var m02 = m[0 * 4 + 2];
@@ -16658,7 +16658,7 @@
 	    var m31 = m[3 * 4 + 1];
 	    var m32 = m[3 * 4 + 2];
 	    var m33 = m[3 * 4 + 3];
-
+	
 	    dst[ 0] = m00;
 	    dst[ 1] = m10;
 	    dst[ 2] = m20;
@@ -16675,10 +16675,10 @@
 	    dst[13] = m13;
 	    dst[14] = m23;
 	    dst[15] = m33;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Computes the inverse of a 4-by-4 matrix.
 	   * @param {module:twgl/m4.Mat4} m The matrix.
@@ -16688,7 +16688,7 @@
 	   */
 	  function inverse(m, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var m00 = m[0 * 4 + 0];
 	    var m01 = m[0 * 4 + 1];
 	    var m02 = m[0 * 4 + 2];
@@ -16729,7 +16729,7 @@
 	    var tmp_21 = m20 * m01;
 	    var tmp_22 = m00 * m11;
 	    var tmp_23 = m10 * m01;
-
+	
 	    var t0 = (tmp_0 * m11 + tmp_3 * m21 + tmp_4 * m31) -
 	        (tmp_1 * m11 + tmp_2 * m21 + tmp_5 * m31);
 	    var t1 = (tmp_1 * m01 + tmp_6 * m21 + tmp_9 * m31) -
@@ -16738,9 +16738,9 @@
 	        (tmp_3 * m01 + tmp_6 * m11 + tmp_11 * m31);
 	    var t3 = (tmp_5 * m01 + tmp_8 * m11 + tmp_11 * m21) -
 	        (tmp_4 * m01 + tmp_9 * m11 + tmp_10 * m21);
-
+	
 	    var d = 1.0 / (m00 * t0 + m10 * t1 + m20 * t2 + m30 * t3);
-
+	
 	    dst[ 0] = d * t0;
 	    dst[ 1] = d * t1;
 	    dst[ 2] = d * t2;
@@ -16769,10 +16769,10 @@
 	            (tmp_22 * m32 + tmp_14 * m02 + tmp_19 * m12));
 	    dst[15] = d * ((tmp_22 * m22 + tmp_16 * m02 + tmp_21 * m12) -
 	            (tmp_20 * m12 + tmp_23 * m22 + tmp_17 * m02));
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Multiplies two 4-by-4 matrices; assumes that the given matrices are 4-by-4;
 	   * assumes matrix entries are accessed in [row][column] fashion.
@@ -16784,7 +16784,7 @@
 	   */
 	  function multiply(a, b, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var a00 = a[0];
 	    var a01 = a[1];
 	    var a02 = a[2];
@@ -16817,7 +16817,7 @@
 	    var b31 = b[12 + 1];
 	    var b32 = b[12 + 2];
 	    var b33 = b[12 + 3];
-
+	
 	    dst[ 0] = a00 * b00 + a01 * b10 + a02 * b20 + a03 * b30;
 	    dst[ 1] = a00 * b01 + a01 * b11 + a02 * b21 + a03 * b31;
 	    dst[ 2] = a00 * b02 + a01 * b12 + a02 * b22 + a03 * b32;
@@ -16834,10 +16834,10 @@
 	    dst[13] = a30 * b01 + a31 * b11 + a32 * b21 + a33 * b31;
 	    dst[14] = a30 * b02 + a31 * b12 + a32 * b22 + a33 * b32;
 	    dst[15] = a30 * b03 + a31 * b13 + a32 * b23 + a33 * b33;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Sets the translation component of a 4-by-4 matrix to the given
 	   * vector.
@@ -16869,7 +16869,7 @@
 	    dst[15] = 1;
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Returns the translation component of a 4-by-4 matrix as a vector with 3
 	   * entries.
@@ -16885,7 +16885,7 @@
 	    dst[2] = m[14];
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Returns an axis of a 4x4 matrix as a vector with 3 entries
 	   * @param {module:twgl/m4.Mat4} m The matrix.
@@ -16902,7 +16902,7 @@
 	    dst[2] = m[off + 2];
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Sets an axis of a 4x4 matrix as a vector with 3 entries
 	   * @param {Vec3} v the axis vector
@@ -16921,7 +16921,7 @@
 	    dst[off + 2] = v[2];
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Computes a 4-by-4 perspective transformation matrix given the angular height
 	   * of the frustum, the aspect ratio, and the near and far clipping planes.  The
@@ -16945,33 +16945,33 @@
 	   */
 	  function perspective(fieldOfViewYInRadians, aspect, zNear, zFar, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var f = Math.tan(Math.PI * 0.5 - 0.5 * fieldOfViewYInRadians);
 	    var rangeInv = 1.0 / (zNear - zFar);
-
+	
 	    dst[0]  = f / aspect;
 	    dst[1]  = 0;
 	    dst[2]  = 0;
 	    dst[3]  = 0;
-
+	
 	    dst[4]  = 0;
 	    dst[5]  = f;
 	    dst[6]  = 0;
 	    dst[7]  = 0;
-
+	
 	    dst[8]  = 0;
 	    dst[9]  = 0;
 	    dst[10] = (zNear + zFar) * rangeInv;
 	    dst[11] = -1;
-
+	
 	    dst[12] = 0;
 	    dst[13] = 0;
 	    dst[14] = zNear * zFar * rangeInv * 2;
 	    dst[15] = 0;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Computes a 4-by-4 othogonal transformation matrix given the left, right,
 	   * bottom, and top dimensions of the near clipping plane as well as the
@@ -16990,30 +16990,30 @@
 	   */
 	  function ortho(left, right, bottom, top, near, far, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    dst[0]  = 2 / (right - left);
 	    dst[1]  = 0;
 	    dst[2]  = 0;
 	    dst[3]  = 0;
-
+	
 	    dst[4]  = 0;
 	    dst[5]  = 2 / (top - bottom);
 	    dst[6]  = 0;
 	    dst[7]  = 0;
-
+	
 	    dst[8]  = 0;
 	    dst[9]  = 0;
 	    dst[10] = -1 / (far - near);
 	    dst[11] = 0;
-
+	
 	    dst[12] = (right + left) / (left - right);
 	    dst[13] = (top + bottom) / (bottom - top);
 	    dst[14] = -near / (near - far);
 	    dst[15] = 1;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Computes a 4-by-4 perspective transformation matrix given the left, right,
 	   * top, bottom, near and far clipping planes. The arguments define a frustum
@@ -17035,11 +17035,11 @@
 	   */
 	  function frustum(left, right, bottom, top, near, far, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var dx = (right - left);
 	    var dy = (top - bottom);
 	    var dz = (near - far);
-
+	
 	    dst[ 0] = 2 * near / dx;
 	    dst[ 1] = 0;
 	    dst[ 2] = 0;
@@ -17056,10 +17056,10 @@
 	    dst[13] = 0;
 	    dst[14] = near * far / dz;
 	    dst[15] = 0;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Computes a 4-by-4 look-at transformation.
 	   *
@@ -17076,16 +17076,16 @@
 	   */
 	  function lookAt(eye, target, up, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var xAxis = tempV3a;
 	    var yAxis = tempV3b;
 	    var zAxis = tempV3c;
-
+	
 	    v3.normalize(
 	        v3.subtract(eye, target, zAxis), zAxis);
 	    v3.normalize(v3.cross(up, zAxis, xAxis), xAxis);
 	    v3.normalize(v3.cross(zAxis, xAxis, yAxis), yAxis);
-
+	
 	    dst[ 0] = xAxis[0];
 	    dst[ 1] = xAxis[1];
 	    dst[ 2] = xAxis[2];
@@ -17102,10 +17102,10 @@
 	    dst[13] = eye[1];
 	    dst[14] = eye[2];
 	    dst[15] = 1;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Creates a 4-by-4 matrix which translates by the given vector v.
 	   * @param {Vec3} v The vector by
@@ -17116,7 +17116,7 @@
 	   */
 	  function translation(v, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    dst[ 0] = 1;
 	    dst[ 1] = 0;
 	    dst[ 2] = 0;
@@ -17135,7 +17135,7 @@
 	    dst[15] = 1;
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Modifies the given 4-by-4 matrix by translation by the given vector v.
 	   * @param {module:twgl/m4.Mat4} m The matrix.
@@ -17147,7 +17147,7 @@
 	   */
 	  function translate(m, v, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var v0 = v[0];
 	    var v1 = v[1];
 	    var v2 = v[2];
@@ -17167,7 +17167,7 @@
 	    var m31 = m[3 * 4 + 1];
 	    var m32 = m[3 * 4 + 2];
 	    var m33 = m[3 * 4 + 3];
-
+	
 	    if (m !== dst) {
 	      dst[ 0] = m00;
 	      dst[ 1] = m01;
@@ -17182,15 +17182,15 @@
 	      dst[10] = m22;
 	      dst[11] = m23;
 	    }
-
+	
 	    dst[12] = m00 * v0 + m10 * v1 + m20 * v2 + m30;
 	    dst[13] = m01 * v0 + m11 * v1 + m21 * v2 + m31;
 	    dst[14] = m02 * v0 + m12 * v1 + m22 * v2 + m32;
 	    dst[15] = m03 * v0 + m13 * v1 + m23 * v2 + m33;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Creates a 4-by-4 matrix which rotates around the x-axis by the given angle.
 	   * @param {number} angleInRadians The angle by which to rotate (in radians).
@@ -17200,10 +17200,10 @@
 	   */
 	  function rotationX(angleInRadians, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var c = Math.cos(angleInRadians);
 	    var s = Math.sin(angleInRadians);
-
+	
 	    dst[ 0] = 1;
 	    dst[ 1] = 0;
 	    dst[ 2] = 0;
@@ -17220,10 +17220,10 @@
 	    dst[13] = 0;
 	    dst[14] = 0;
 	    dst[15] = 1;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Modifies the given 4-by-4 matrix by a rotation around the x-axis by the given
 	   * angle.
@@ -17235,7 +17235,7 @@
 	   */
 	  function rotateX(m, angleInRadians, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var m10 = m[4];
 	    var m11 = m[5];
 	    var m12 = m[6];
@@ -17246,7 +17246,7 @@
 	    var m23 = m[11];
 	    var c = Math.cos(angleInRadians);
 	    var s = Math.sin(angleInRadians);
-
+	
 	    dst[4]  = c * m10 + s * m20;
 	    dst[5]  = c * m11 + s * m21;
 	    dst[6]  = c * m12 + s * m22;
@@ -17255,7 +17255,7 @@
 	    dst[9]  = c * m21 - s * m11;
 	    dst[10] = c * m22 - s * m12;
 	    dst[11] = c * m23 - s * m13;
-
+	
 	    if (m !== dst) {
 	      dst[ 0] = m[ 0];
 	      dst[ 1] = m[ 1];
@@ -17266,10 +17266,10 @@
 	      dst[14] = m[14];
 	      dst[15] = m[15];
 	    }
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Creates a 4-by-4 matrix which rotates around the y-axis by the given angle.
 	   * @param {number} angleInRadians The angle by which to rotate (in radians).
@@ -17279,10 +17279,10 @@
 	   */
 	  function rotationY(angleInRadians, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var c = Math.cos(angleInRadians);
 	    var s = Math.sin(angleInRadians);
-
+	
 	    dst[ 0] = c;
 	    dst[ 1] = 0;
 	    dst[ 2] = -s;
@@ -17299,10 +17299,10 @@
 	    dst[13] = 0;
 	    dst[14] = 0;
 	    dst[15] = 1;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Modifies the given 4-by-4 matrix by a rotation around the y-axis by the given
 	   * angle.
@@ -17314,7 +17314,7 @@
 	   */
 	  function rotateY(m, angleInRadians, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var m00 = m[0 * 4 + 0];
 	    var m01 = m[0 * 4 + 1];
 	    var m02 = m[0 * 4 + 2];
@@ -17325,7 +17325,7 @@
 	    var m23 = m[2 * 4 + 3];
 	    var c = Math.cos(angleInRadians);
 	    var s = Math.sin(angleInRadians);
-
+	
 	    dst[ 0] = c * m00 - s * m20;
 	    dst[ 1] = c * m01 - s * m21;
 	    dst[ 2] = c * m02 - s * m22;
@@ -17334,7 +17334,7 @@
 	    dst[ 9] = c * m21 + s * m01;
 	    dst[10] = c * m22 + s * m02;
 	    dst[11] = c * m23 + s * m03;
-
+	
 	    if (m !== dst) {
 	      dst[ 4] = m[ 4];
 	      dst[ 5] = m[ 5];
@@ -17345,10 +17345,10 @@
 	      dst[14] = m[14];
 	      dst[15] = m[15];
 	    }
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Creates a 4-by-4 matrix which rotates around the z-axis by the given angle.
 	   * @param {number} angleInRadians The angle by which to rotate (in radians).
@@ -17358,10 +17358,10 @@
 	   */
 	  function rotationZ(angleInRadians, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var c = Math.cos(angleInRadians);
 	    var s = Math.sin(angleInRadians);
-
+	
 	    dst[ 0] = c;
 	    dst[ 1] = s;
 	    dst[ 2] = 0;
@@ -17378,10 +17378,10 @@
 	    dst[13] = 0;
 	    dst[14] = 0;
 	    dst[15] = 1;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Modifies the given 4-by-4 matrix by a rotation around the z-axis by the given
 	   * angle.
@@ -17393,7 +17393,7 @@
 	   */
 	  function rotateZ(m, angleInRadians, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var m00 = m[0 * 4 + 0];
 	    var m01 = m[0 * 4 + 1];
 	    var m02 = m[0 * 4 + 2];
@@ -17404,7 +17404,7 @@
 	    var m13 = m[1 * 4 + 3];
 	    var c = Math.cos(angleInRadians);
 	    var s = Math.sin(angleInRadians);
-
+	
 	    dst[ 0] = c * m00 + s * m10;
 	    dst[ 1] = c * m01 + s * m11;
 	    dst[ 2] = c * m02 + s * m12;
@@ -17413,7 +17413,7 @@
 	    dst[ 5] = c * m11 - s * m01;
 	    dst[ 6] = c * m12 - s * m02;
 	    dst[ 7] = c * m13 - s * m03;
-
+	
 	    if (m !== dst) {
 	      dst[ 8] = m[ 8];
 	      dst[ 9] = m[ 9];
@@ -17424,10 +17424,10 @@
 	      dst[14] = m[14];
 	      dst[15] = m[15];
 	    }
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Creates a 4-by-4 matrix which rotates around the given axis by the given
 	   * angle.
@@ -17441,7 +17441,7 @@
 	   */
 	  function axisRotation(axis, angleInRadians, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var x = axis[0];
 	    var y = axis[1];
 	    var z = axis[2];
@@ -17455,7 +17455,7 @@
 	    var c = Math.cos(angleInRadians);
 	    var s = Math.sin(angleInRadians);
 	    var oneMinusCosine = 1 - c;
-
+	
 	    dst[ 0] = xx + (1 - xx) * c;
 	    dst[ 1] = x * y * oneMinusCosine + z * s;
 	    dst[ 2] = x * z * oneMinusCosine - y * s;
@@ -17472,10 +17472,10 @@
 	    dst[13] = 0;
 	    dst[14] = 0;
 	    dst[15] = 1;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Modifies the given 4-by-4 matrix by rotation around the given axis by the
 	   * given angle.
@@ -17489,7 +17489,7 @@
 	   */
 	  function axisRotate(m, axis, angleInRadians, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var x = axis[0];
 	    var y = axis[1];
 	    var z = axis[2];
@@ -17503,7 +17503,7 @@
 	    var c = Math.cos(angleInRadians);
 	    var s = Math.sin(angleInRadians);
 	    var oneMinusCosine = 1 - c;
-
+	
 	    var r00 = xx + (1 - xx) * c;
 	    var r01 = x * y * oneMinusCosine + z * s;
 	    var r02 = x * z * oneMinusCosine - y * s;
@@ -17513,7 +17513,7 @@
 	    var r20 = x * z * oneMinusCosine + y * s;
 	    var r21 = y * z * oneMinusCosine - x * s;
 	    var r22 = zz + (1 - zz) * c;
-
+	
 	    var m00 = m[0];
 	    var m01 = m[1];
 	    var m02 = m[2];
@@ -17526,7 +17526,7 @@
 	    var m21 = m[9];
 	    var m22 = m[10];
 	    var m23 = m[11];
-
+	
 	    dst[ 0] = r00 * m00 + r01 * m10 + r02 * m20;
 	    dst[ 1] = r00 * m01 + r01 * m11 + r02 * m21;
 	    dst[ 2] = r00 * m02 + r01 * m12 + r02 * m22;
@@ -17539,17 +17539,17 @@
 	    dst[ 9] = r20 * m01 + r21 * m11 + r22 * m21;
 	    dst[10] = r20 * m02 + r21 * m12 + r22 * m22;
 	    dst[11] = r20 * m03 + r21 * m13 + r22 * m23;
-
+	
 	    if (m !== dst) {
 	      dst[12] = m[12];
 	      dst[13] = m[13];
 	      dst[14] = m[14];
 	      dst[15] = m[15];
 	    }
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Creates a 4-by-4 matrix which scales in each dimension by an amount given by
 	   * the corresponding entry in the given vector; assumes the vector has three
@@ -17562,7 +17562,7 @@
 	   */
 	  function scaling(v, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    dst[ 0] = v[0];
 	    dst[ 1] = 0;
 	    dst[ 2] = 0;
@@ -17579,10 +17579,10 @@
 	    dst[13] = 0;
 	    dst[14] = 0;
 	    dst[15] = 1;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Modifies the given 4-by-4 matrix, scaling in each dimension by an amount
 	   * given by the corresponding entry in the given vector; assumes the vector has
@@ -17596,11 +17596,11 @@
 	   */
 	  function scale(m, v, dst) {
 	    dst = dst || new MatType(16);
-
+	
 	    var v0 = v[0];
 	    var v1 = v[1];
 	    var v2 = v[2];
-
+	
 	    dst[ 0] = v0 * m[0 * 4 + 0];
 	    dst[ 1] = v0 * m[0 * 4 + 1];
 	    dst[ 2] = v0 * m[0 * 4 + 2];
@@ -17613,17 +17613,17 @@
 	    dst[ 9] = v2 * m[2 * 4 + 1];
 	    dst[10] = v2 * m[2 * 4 + 2];
 	    dst[11] = v2 * m[2 * 4 + 3];
-
+	
 	    if (m !== dst) {
 	      dst[12] = m[12];
 	      dst[13] = m[13];
 	      dst[14] = m[14];
 	      dst[15] = m[15];
 	    }
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Takes a 4-by-4 matrix and a vector with 3 entries,
 	   * interprets the vector as a point, transforms that point by the matrix, and
@@ -17640,14 +17640,14 @@
 	    var v1 = v[1];
 	    var v2 = v[2];
 	    var d = v0 * m[0 * 4 + 3] + v1 * m[1 * 4 + 3] + v2 * m[2 * 4 + 3] + m[3 * 4 + 3];
-
+	
 	    dst[0] = (v0 * m[0 * 4 + 0] + v1 * m[1 * 4 + 0] + v2 * m[2 * 4 + 0] + m[3 * 4 + 0]) / d;
 	    dst[1] = (v0 * m[0 * 4 + 1] + v1 * m[1 * 4 + 1] + v2 * m[2 * 4 + 1] + m[3 * 4 + 1]) / d;
 	    dst[2] = (v0 * m[0 * 4 + 2] + v1 * m[1 * 4 + 2] + v2 * m[2 * 4 + 2] + m[3 * 4 + 2]) / d;
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Takes a 4-by-4 matrix and a vector with 3 entries, interprets the vector as a
 	   * direction, transforms that direction by the matrix, and returns the result;
@@ -17663,18 +17663,18 @@
 	   */
 	  function transformDirection(m, v, dst) {
 	    dst = dst || v3.create();
-
+	
 	    var v0 = v[0];
 	    var v1 = v[1];
 	    var v2 = v[2];
-
+	
 	    dst[0] = v0 * m[0 * 4 + 0] + v1 * m[1 * 4 + 0] + v2 * m[2 * 4 + 0];
 	    dst[1] = v0 * m[0 * 4 + 1] + v1 * m[1 * 4 + 1] + v2 * m[2 * 4 + 1];
 	    dst[2] = v0 * m[0 * 4 + 2] + v1 * m[1 * 4 + 2] + v2 * m[2 * 4 + 2];
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Takes a 4-by-4 matrix m and a vector v with 3 entries, interprets the vector
 	   * as a normal to a surface, and computes a vector which is normal upon
@@ -17696,14 +17696,14 @@
 	    var v0 = v[0];
 	    var v1 = v[1];
 	    var v2 = v[2];
-
+	
 	    dst[0] = v0 * mi[0 * 4 + 0] + v1 * mi[0 * 4 + 1] + v2 * mi[0 * 4 + 2];
 	    dst[1] = v0 * mi[1 * 4 + 0] + v1 * mi[1 * 4 + 1] + v2 * mi[1 * 4 + 2];
 	    dst[2] = v0 * mi[2 * 4 + 0] + v1 * mi[2 * 4 + 1] + v2 * mi[2 * 4 + 2];
-
+	
 	    return dst;
 	  }
-
+	
 	  // Using quotes prevents Uglify from changing the names.
 	  // No speed diff AFAICT.
 	  return {
@@ -17741,8 +17741,8 @@
 	    "transpose": transpose,
 	  };
 	});
-
-
+	
+	
 	/*
 	 * Copyright 2015, Gregg Tavares.
 	 * All rights reserved.
@@ -17773,7 +17773,7 @@
 	 * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 	 * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 */
-
+	
 	/**
 	 * Various functions to make simple primitives
 	 *
@@ -17820,10 +17820,10 @@
 	    v3
 	  ) {
 	  
-
+	
 	  var getArray = attributes.getArray_;  // eslint-disable-line
 	  var getNumComponents = attributes.getNumComponents_;  // eslint-disable-line
-
+	
 	  /**
 	   * Add `push` to a typed array. It just keeps a 'cursor'
 	   * and allows use to `push` values into the array so we
@@ -17856,7 +17856,7 @@
 	    });
 	    return typedArray;
 	  }
-
+	
 	  /**
 	   * creates a typed array with a `push` function attached
 	   * so that you can easily *push* values.
@@ -17883,11 +17883,11 @@
 	    var Type = opt_type || Float32Array;
 	    return augmentTypedArray(new Type(numComponents * numElements), numComponents);
 	  }
-
+	
 	  function allButIndices(name) {
 	    return name !== "indices";
 	  }
-
+	
 	  /**
 	   * Given indexed vertices creates a new set of vertices unindexed by expanding the indexed vertices.
 	   * @param {Object.<string, TypedArray>} vertices The indexed vertices to deindex
@@ -17898,7 +17898,7 @@
 	    var indices = vertices.indices;
 	    var newVertices = {};
 	    var numElements = indices.length;
-
+	
 	    function expandToUnindexed(channel) {
 	      var srcBuffer = vertices[channel];
 	      var numComponents = srcBuffer.numComponents;
@@ -17912,12 +17912,12 @@
 	      }
 	      newVertices[channel] = dstBuffer;
 	    }
-
+	
 	    Object.keys(vertices).filter(allButIndices).forEach(expandToUnindexed);
-
+	
 	    return newVertices;
 	  }
-
+	
 	  /**
 	   * flattens the normals of deindexed vertices in place.
 	   * @param {Object.<string, TypedArray>} vertices The deindexed vertices who's normals to flatten
@@ -17928,7 +17928,7 @@
 	    if (vertices.indices) {
 	      throw "can't flatten normals of indexed vertices. deindex them first";
 	    }
-
+	
 	    var normals = vertices.normal;
 	    var numNormals = normals.length;
 	    for (var ii = 0; ii < numNormals; ii += 9) {
@@ -17936,44 +17936,44 @@
 	      var nax = normals[ii + 0];
 	      var nay = normals[ii + 1];
 	      var naz = normals[ii + 2];
-
+	
 	      var nbx = normals[ii + 3];
 	      var nby = normals[ii + 4];
 	      var nbz = normals[ii + 5];
-
+	
 	      var ncx = normals[ii + 6];
 	      var ncy = normals[ii + 7];
 	      var ncz = normals[ii + 8];
-
+	
 	      // add them
 	      var nx = nax + nbx + ncx;
 	      var ny = nay + nby + ncy;
 	      var nz = naz + nbz + ncz;
-
+	
 	      // normalize them
 	      var length = Math.sqrt(nx * nx + ny * ny + nz * nz);
-
+	
 	      nx /= length;
 	      ny /= length;
 	      nz /= length;
-
+	
 	      // copy them back in
 	      normals[ii + 0] = nx;
 	      normals[ii + 1] = ny;
 	      normals[ii + 2] = nz;
-
+	
 	      normals[ii + 3] = nx;
 	      normals[ii + 4] = ny;
 	      normals[ii + 5] = nz;
-
+	
 	      normals[ii + 6] = nx;
 	      normals[ii + 7] = ny;
 	      normals[ii + 8] = nz;
 	    }
-
+	
 	    return vertices;
 	  }
-
+	
 	  function applyFuncToV3Array(array, matrix, fn) {
 	    var len = array.length;
 	    var tmp = new Float32Array(3);
@@ -17984,20 +17984,20 @@
 	      array[ii + 2] = tmp[2];
 	    }
 	  }
-
+	
 	  function transformNormal(mi, v, dst) {
 	    dst = dst || v3.create();
 	    var v0 = v[0];
 	    var v1 = v[1];
 	    var v2 = v[2];
-
+	
 	    dst[0] = v0 * mi[0 * 4 + 0] + v1 * mi[0 * 4 + 1] + v2 * mi[0 * 4 + 2];
 	    dst[1] = v0 * mi[1 * 4 + 0] + v1 * mi[1 * 4 + 1] + v2 * mi[1 * 4 + 2];
 	    dst[2] = v0 * mi[2 * 4 + 0] + v1 * mi[2 * 4 + 1] + v2 * mi[2 * 4 + 2];
-
+	
 	    return dst;
 	  }
-
+	
 	  /**
 	   * Reorients directions by the given matrix..
 	   * @param {number[]|TypedArray} array The array. Assumes value floats per element.
@@ -18009,7 +18009,7 @@
 	    applyFuncToV3Array(array, matrix, m4.transformDirection);
 	    return array;
 	  }
-
+	
 	  /**
 	   * Reorients normals by the inverse-transpose of the given
 	   * matrix..
@@ -18022,7 +18022,7 @@
 	    applyFuncToV3Array(array, m4.inverse(matrix), transformNormal);
 	    return array;
 	  }
-
+	
 	  /**
 	   * Reorients positions by the given matrix. In other words, it
 	   * multiplies each vertex by the given matrix.
@@ -18035,7 +18035,7 @@
 	    applyFuncToV3Array(array, matrix, m4.transformPoint);
 	    return array;
 	  }
-
+	
 	  /**
 	   * Reorients arrays by the given matrix. Assumes arrays have
 	   * names that contains 'pos' could be reoriented as positions,
@@ -18059,7 +18059,7 @@
 	    });
 	    return arrays;
 	  }
-
+	
 	  /**
 	   * Creates XY quad BufferInfo
 	   *
@@ -18080,7 +18080,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createXYQuadBufferInfo
 	   */
-
+	
 	  /**
 	   * Creates XY quad Buffers
 	   *
@@ -18101,7 +18101,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createXYQuadBuffers
 	   */
-
+	
 	  /**
 	   * Creates XY quad vertices
 	   *
@@ -18150,7 +18150,7 @@
 	      indices: [ 0, 1, 2, 2, 1, 3 ],
 	    };
 	  }
-
+	
 	  /**
 	   * Creates XZ plane BufferInfo.
 	   *
@@ -18166,7 +18166,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createPlaneBufferInfo
 	   */
-
+	
 	  /**
 	   * Creates XZ plane buffers.
 	   *
@@ -18182,7 +18182,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createPlaneBuffers
 	   */
-
+	
 	  /**
 	   * Creates XZ plane vertices.
 	   *
@@ -18207,12 +18207,12 @@
 	    subdivisionsWidth = subdivisionsWidth || 1;
 	    subdivisionsDepth = subdivisionsDepth || 1;
 	    matrix = matrix || m4.identity();
-
+	
 	    var numVertices = (subdivisionsWidth + 1) * (subdivisionsDepth + 1);
 	    var positions = createAugmentedTypedArray(3, numVertices);
 	    var normals = createAugmentedTypedArray(3, numVertices);
 	    var texcoords = createAugmentedTypedArray(2, numVertices);
-
+	
 	    for (var z = 0; z <= subdivisionsDepth; z++) {
 	      for (var x = 0; x <= subdivisionsWidth; x++) {
 	        var u = x / subdivisionsWidth;
@@ -18225,11 +18225,11 @@
 	        texcoords.push(u, v);
 	      }
 	    }
-
+	
 	    var numVertsAcross = subdivisionsWidth + 1;
 	    var indices = createAugmentedTypedArray(
 	        3, subdivisionsWidth * subdivisionsDepth * 2, Uint16Array);
-
+	
 	    for (var z = 0; z < subdivisionsDepth; z++) {  // eslint-disable-line
 	      for (var x = 0; x < subdivisionsWidth; x++) {  // eslint-disable-line
 	        // Make triangle 1 of quad.
@@ -18237,7 +18237,7 @@
 	            (z + 0) * numVertsAcross + x,
 	            (z + 1) * numVertsAcross + x,
 	            (z + 0) * numVertsAcross + x + 1);
-
+	
 	        // Make triangle 2 of quad.
 	        indices.push(
 	            (z + 1) * numVertsAcross + x,
@@ -18245,7 +18245,7 @@
 	            (z + 0) * numVertsAcross + x + 1);
 	      }
 	    }
-
+	
 	    var arrays = reorientVertices({
 	      position: positions,
 	      normal: normals,
@@ -18254,7 +18254,7 @@
 	    }, matrix);
 	    return arrays;
 	  }
-
+	
 	  /**
 	   * Creates sphere BufferInfo.
 	   *
@@ -18276,7 +18276,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createSphereBufferInfo
 	   */
-
+	
 	  /**
 	   * Creates sphere buffers.
 	   *
@@ -18298,7 +18298,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createSphereBuffers
 	   */
-
+	
 	  /**
 	   * Creates sphere vertices.
 	   *
@@ -18329,15 +18329,15 @@
 	    if (subdivisionsAxis <= 0 || subdivisionsHeight <= 0) {
 	      throw Error('subdivisionAxis and subdivisionHeight must be > 0');
 	    }
-
+	
 	    opt_startLatitudeInRadians = opt_startLatitudeInRadians || 0;
 	    opt_endLatitudeInRadians = opt_endLatitudeInRadians || Math.PI;
 	    opt_startLongitudeInRadians = opt_startLongitudeInRadians || 0;
 	    opt_endLongitudeInRadians = opt_endLongitudeInRadians || (Math.PI * 2);
-
+	
 	    var latRange = opt_endLatitudeInRadians - opt_startLatitudeInRadians;
 	    var longRange = opt_endLongitudeInRadians - opt_startLongitudeInRadians;
-
+	
 	    // We are going to generate our sphere by iterating through its
 	    // spherical coordinates and generating 2 triangles for each quad on a
 	    // ring of the sphere.
@@ -18345,7 +18345,7 @@
 	    var positions = createAugmentedTypedArray(3, numVertices);
 	    var normals   = createAugmentedTypedArray(3, numVertices);
 	    var texcoords = createAugmentedTypedArray(2 , numVertices);
-
+	
 	    // Generate the individual vertices in our vertex buffer.
 	    for (var y = 0; y <= subdivisionsHeight; y++) {
 	      for (var x = 0; x <= subdivisionsAxis; x++) {
@@ -18366,7 +18366,7 @@
 	        texcoords.push(1 - u, v);
 	      }
 	    }
-
+	
 	    var numVertsAround = subdivisionsAxis + 1;
 	    var indices = createAugmentedTypedArray(3, subdivisionsAxis * subdivisionsHeight * 2, Uint16Array);
 	    for (var x = 0; x < subdivisionsAxis; x++) {  // eslint-disable-line
@@ -18376,7 +18376,7 @@
 	            (y + 0) * numVertsAround + x,
 	            (y + 0) * numVertsAround + x + 1,
 	            (y + 1) * numVertsAround + x);
-
+	
 	        // Make triangle 2 of quad.
 	        indices.push(
 	            (y + 1) * numVertsAround + x,
@@ -18384,7 +18384,7 @@
 	            (y + 1) * numVertsAround + x + 1);
 	      }
 	    }
-
+	
 	    return {
 	      position: positions,
 	      normal: normals,
@@ -18392,7 +18392,7 @@
 	      indices: indices,
 	    };
 	  }
-
+	
 	  /**
 	   * Array of the indices of corners of each face of a cube.
 	   * @type {Array.<number[]>}
@@ -18405,7 +18405,7 @@
 	    [7, 6, 4, 5],  // front
 	    [2, 3, 1, 0],  // back
 	  ];
-
+	
 	  /**
 	   * Creates a BufferInfo for a cube.
 	   *
@@ -18417,7 +18417,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createCubeBufferInfo
 	   */
-
+	
 	  /**
 	   * Creates the buffers and indices for a cube.
 	   *
@@ -18429,7 +18429,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createCubeBuffers
 	   */
-
+	
 	  /**
 	   * Creates the vertices and indices for a cube.
 	   *
@@ -18442,7 +18442,7 @@
 	  function createCubeVertices(size) {
 	    size = size || 1;
 	    var k = size / 2;
-
+	
 	    var cornerVertices = [
 	      [-k, -k, -k],
 	      [+k, -k, -k],
@@ -18453,7 +18453,7 @@
 	      [-k, +k, +k],
 	      [+k, +k, +k],
 	    ];
-
+	
 	    var faceNormals = [
 	      [+1, +0, +0],
 	      [-1, +0, +0],
@@ -18462,40 +18462,40 @@
 	      [+0, +0, +1],
 	      [+0, +0, -1],
 	    ];
-
+	
 	    var uvCoords = [
 	      [1, 0],
 	      [0, 0],
 	      [0, 1],
 	      [1, 1],
 	    ];
-
+	
 	    var numVertices = 6 * 4;
 	    var positions = createAugmentedTypedArray(3, numVertices);
 	    var normals   = createAugmentedTypedArray(3, numVertices);
 	    var texcoords = createAugmentedTypedArray(2 , numVertices);
 	    var indices   = createAugmentedTypedArray(3, 6 * 2, Uint16Array);
-
+	
 	    for (var f = 0; f < 6; ++f) {
 	      var faceIndices = CUBE_FACE_INDICES[f];
 	      for (var v = 0; v < 4; ++v) {
 	        var position = cornerVertices[faceIndices[v]];
 	        var normal = faceNormals[f];
 	        var uv = uvCoords[v];
-
+	
 	        // Each face needs all four vertices because the normals and texture
 	        // coordinates are not all the same.
 	        positions.push(position);
 	        normals.push(normal);
 	        texcoords.push(uv);
-
+	
 	      }
 	      // Two triangles make a square face.
 	      var offset = 4 * f;
 	      indices.push(offset + 0, offset + 1, offset + 2);
 	      indices.push(offset + 0, offset + 2, offset + 3);
 	    }
-
+	
 	    return {
 	      position: positions,
 	      normal: normals,
@@ -18503,7 +18503,7 @@
 	      indices: indices,
 	    };
 	  }
-
+	
 	  /**
 	   * Creates a BufferInfo for a truncated cone, which is like a cylinder
 	   * except that it has different top and bottom radii. A truncated cone
@@ -18525,7 +18525,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createTruncatedConeBufferInfo
 	   */
-
+	
 	  /**
 	   * Creates buffers for a truncated cone, which is like a cylinder
 	   * except that it has different top and bottom radii. A truncated cone
@@ -18547,7 +18547,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createTruncatedConeBuffers
 	   */
-
+	
 	  /**
 	   * Creates vertices for a truncated cone, which is like a cylinder
 	   * except that it has different top and bottom radii. A truncated cone
@@ -18578,32 +18578,32 @@
 	    if (radialSubdivisions < 3) {
 	      throw Error('radialSubdivisions must be 3 or greater');
 	    }
-
+	
 	    if (verticalSubdivisions < 1) {
 	      throw Error('verticalSubdivisions must be 1 or greater');
 	    }
-
+	
 	    var topCap = (opt_topCap === undefined) ? true : opt_topCap;
 	    var bottomCap = (opt_bottomCap === undefined) ? true : opt_bottomCap;
-
+	
 	    var extra = (topCap ? 2 : 0) + (bottomCap ? 2 : 0);
-
+	
 	    var numVertices = (radialSubdivisions + 1) * (verticalSubdivisions + 1 + extra);
 	    var positions = createAugmentedTypedArray(3, numVertices);
 	    var normals   = createAugmentedTypedArray(3, numVertices);
 	    var texcoords = createAugmentedTypedArray(2, numVertices);
 	    var indices   = createAugmentedTypedArray(3, radialSubdivisions * (verticalSubdivisions + extra) * 2, Uint16Array);
-
+	
 	    var vertsAroundEdge = radialSubdivisions + 1;
-
+	
 	    // The slant of the cone is constant across its surface
 	    var slant = Math.atan2(bottomRadius - topRadius, height);
 	    var cosSlant = Math.cos(slant);
 	    var sinSlant = Math.sin(slant);
-
+	
 	    var start = topCap ? -2 : 0;
 	    var end = verticalSubdivisions + (bottomCap ? 2 : 0);
-
+	
 	    for (var yy = start; yy <= end; ++yy) {
 	      var v = yy / verticalSubdivisions;
 	      var y = height * v;
@@ -18636,7 +18636,7 @@
 	        texcoords.push((ii / radialSubdivisions), 1 - v);
 	      }
 	    }
-
+	
 	    for (var yy = 0; yy < verticalSubdivisions + extra; ++yy) {  // eslint-disable-line
 	      for (var ii = 0; ii < radialSubdivisions; ++ii) {  // eslint-disable-line
 	        indices.push(vertsAroundEdge * (yy + 0) + 0 + ii,
@@ -18647,7 +18647,7 @@
 	                     vertsAroundEdge * (yy + 1) + 0 + ii);
 	      }
 	    }
-
+	
 	    return {
 	      position: positions,
 	      normal: normals,
@@ -18655,7 +18655,7 @@
 	      indices: indices,
 	    };
 	  }
-
+	
 	  /**
 	   * Expands RLE data
 	   * @param {number[]} rleData data in format of run-length, x, y, z, run-length, x, y, z
@@ -18675,7 +18675,7 @@
 	    }
 	    return data;
 	  }
-
+	
 	  /**
 	   * Creates 3D 'F' BufferInfo.
 	   * An 'F' is useful because you can easily tell which way it is oriented.
@@ -18686,7 +18686,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function create3DFBufferInfo
 	   */
-
+	
 	  /**
 	   * Creates 3D 'F' buffers.
 	   * An 'F' is useful because you can easily tell which way it is oriented.
@@ -18697,7 +18697,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function create3DFBuffers
 	   */
-
+	
 	  /**
 	   * Creates 3D 'F' vertices.
 	   * An 'F' is useful because you can easily tell which way it is oriented.
@@ -18707,7 +18707,7 @@
 	   * @memberOf module:twgl/primitives
 	   */
 	  function create3DFVertices() {
-
+	
 	    var positions = [
 	      // left column front
 	      0,   0,  0,
@@ -18716,7 +18716,7 @@
 	      0, 150,  0,
 	      30, 150,  0,
 	      30,   0,  0,
-
+	
 	      // top rung front
 	      30,   0,  0,
 	      30,  30,  0,
@@ -18724,7 +18724,7 @@
 	      30,  30,  0,
 	      100,  30,  0,
 	      100,   0,  0,
-
+	
 	      // middle rung front
 	      30,  60,  0,
 	      30,  90,  0,
@@ -18732,7 +18732,7 @@
 	      30,  90,  0,
 	      67,  90,  0,
 	      67,  60,  0,
-
+	
 	      // left column back
 	        0,   0,  30,
 	       30,   0,  30,
@@ -18740,7 +18740,7 @@
 	        0, 150,  30,
 	       30,   0,  30,
 	       30, 150,  30,
-
+	
 	      // top rung back
 	       30,   0,  30,
 	      100,   0,  30,
@@ -18748,7 +18748,7 @@
 	       30,  30,  30,
 	      100,   0,  30,
 	      100,  30,  30,
-
+	
 	      // middle rung back
 	       30,  60,  30,
 	       67,  60,  30,
@@ -18756,7 +18756,7 @@
 	       30,  90,  30,
 	       67,  60,  30,
 	       67,  90,  30,
-
+	
 	      // top
 	        0,   0,   0,
 	      100,   0,   0,
@@ -18764,7 +18764,7 @@
 	        0,   0,   0,
 	      100,   0,  30,
 	        0,   0,  30,
-
+	
 	      // top rung front
 	      100,   0,   0,
 	      100,  30,   0,
@@ -18772,7 +18772,7 @@
 	      100,   0,   0,
 	      100,  30,  30,
 	      100,   0,  30,
-
+	
 	      // under top rung
 	      30,   30,   0,
 	      30,   30,  30,
@@ -18780,7 +18780,7 @@
 	      30,   30,   0,
 	      100,  30,  30,
 	      100,  30,   0,
-
+	
 	      // between top rung and middle
 	      30,   30,   0,
 	      30,   60,  30,
@@ -18788,7 +18788,7 @@
 	      30,   30,   0,
 	      30,   60,   0,
 	      30,   60,  30,
-
+	
 	      // top of middle rung
 	      30,   60,   0,
 	      67,   60,  30,
@@ -18796,7 +18796,7 @@
 	      30,   60,   0,
 	      67,   60,   0,
 	      67,   60,  30,
-
+	
 	      // front of middle rung
 	      67,   60,   0,
 	      67,   90,  30,
@@ -18804,7 +18804,7 @@
 	      67,   60,   0,
 	      67,   90,   0,
 	      67,   90,  30,
-
+	
 	      // bottom of middle rung.
 	      30,   90,   0,
 	      30,   90,  30,
@@ -18812,7 +18812,7 @@
 	      30,   90,   0,
 	      67,   90,  30,
 	      67,   90,   0,
-
+	
 	      // front of bottom
 	      30,   90,   0,
 	      30,  150,  30,
@@ -18820,7 +18820,7 @@
 	      30,   90,   0,
 	      30,  150,   0,
 	      30,  150,  30,
-
+	
 	      // bottom
 	      0,   150,   0,
 	      0,   150,  30,
@@ -18828,7 +18828,7 @@
 	      0,   150,   0,
 	      30,  150,  30,
 	      30,  150,   0,
-
+	
 	      // left side
 	      0,   0,   0,
 	      0,   0,  30,
@@ -18837,7 +18837,7 @@
 	      0, 150,  30,
 	      0, 150,   0,
 	    ];
-
+	
 	    var texcoords = [
 	      // left column front
 	      0.22, 0.19,
@@ -18846,7 +18846,7 @@
 	      0.22, 0.79,
 	      0.34, 0.79,
 	      0.34, 0.19,
-
+	
 	      // top rung front
 	      0.34, 0.19,
 	      0.34, 0.31,
@@ -18854,7 +18854,7 @@
 	      0.34, 0.31,
 	      0.62, 0.31,
 	      0.62, 0.19,
-
+	
 	      // middle rung front
 	      0.34, 0.43,
 	      0.34, 0.55,
@@ -18862,7 +18862,7 @@
 	      0.34, 0.55,
 	      0.49, 0.55,
 	      0.49, 0.43,
-
+	
 	      // left column back
 	      0, 0,
 	      1, 0,
@@ -18870,7 +18870,7 @@
 	      0, 1,
 	      1, 0,
 	      1, 1,
-
+	
 	      // top rung back
 	      0, 0,
 	      1, 0,
@@ -18878,7 +18878,7 @@
 	      0, 1,
 	      1, 0,
 	      1, 1,
-
+	
 	      // middle rung back
 	      0, 0,
 	      1, 0,
@@ -18886,7 +18886,7 @@
 	      0, 1,
 	      1, 0,
 	      1, 1,
-
+	
 	      // top
 	      0, 0,
 	      1, 0,
@@ -18894,7 +18894,7 @@
 	      0, 0,
 	      1, 1,
 	      0, 1,
-
+	
 	      // top rung front
 	      0, 0,
 	      1, 0,
@@ -18902,7 +18902,7 @@
 	      0, 0,
 	      1, 1,
 	      0, 1,
-
+	
 	      // under top rung
 	      0, 0,
 	      0, 1,
@@ -18910,7 +18910,7 @@
 	      0, 0,
 	      1, 1,
 	      1, 0,
-
+	
 	      // between top rung and middle
 	      0, 0,
 	      1, 1,
@@ -18918,7 +18918,7 @@
 	      0, 0,
 	      1, 0,
 	      1, 1,
-
+	
 	      // top of middle rung
 	      0, 0,
 	      1, 1,
@@ -18926,7 +18926,7 @@
 	      0, 0,
 	      1, 0,
 	      1, 1,
-
+	
 	      // front of middle rung
 	      0, 0,
 	      1, 1,
@@ -18934,7 +18934,7 @@
 	      0, 0,
 	      1, 0,
 	      1, 1,
-
+	
 	      // bottom of middle rung.
 	      0, 0,
 	      0, 1,
@@ -18942,7 +18942,7 @@
 	      0, 0,
 	      1, 1,
 	      1, 0,
-
+	
 	      // front of bottom
 	      0, 0,
 	      1, 1,
@@ -18950,7 +18950,7 @@
 	      0, 0,
 	      1, 0,
 	      1, 1,
-
+	
 	      // bottom
 	      0, 0,
 	      0, 1,
@@ -18958,7 +18958,7 @@
 	      0, 0,
 	      1, 1,
 	      1, 0,
-
+	
 	      // left side
 	      0, 0,
 	      0, 1,
@@ -18967,93 +18967,93 @@
 	      1, 1,
 	      1, 0,
 	    ];
-
+	
 	    var normals = expandRLEData([
 	      // left column front
 	      // top rung front
 	      // middle rung front
 	      18, 0, 0, 1,
-
+	
 	      // left column back
 	      // top rung back
 	      // middle rung back
 	      18, 0, 0, -1,
-
+	
 	      // top
 	      6, 0, 1, 0,
-
+	
 	      // top rung front
 	      6, 1, 0, 0,
-
+	
 	      // under top rung
 	      6, 0, -1, 0,
-
+	
 	      // between top rung and middle
 	      6, 1, 0, 0,
-
+	
 	      // top of middle rung
 	      6, 0, 1, 0,
-
+	
 	      // front of middle rung
 	      6, 1, 0, 0,
-
+	
 	      // bottom of middle rung.
 	      6, 0, -1, 0,
-
+	
 	      // front of bottom
 	      6, 1, 0, 0,
-
+	
 	      // bottom
 	      6, 0, -1, 0,
-
+	
 	      // left side
 	      6, -1, 0, 0,
 	    ]);
-
+	
 	    var colors = expandRLEData([
 	          // left column front
 	          // top rung front
 	          // middle rung front
 	        18, 200,  70, 120,
-
+	
 	          // left column back
 	          // top rung back
 	          // middle rung back
 	        18, 80, 70, 200,
-
+	
 	          // top
 	        6, 70, 200, 210,
-
+	
 	          // top rung front
 	        6, 200, 200, 70,
-
+	
 	          // under top rung
 	        6, 210, 100, 70,
-
+	
 	          // between top rung and middle
 	        6, 210, 160, 70,
-
+	
 	          // top of middle rung
 	        6, 70, 180, 210,
-
+	
 	          // front of middle rung
 	        6, 100, 70, 210,
-
+	
 	          // bottom of middle rung.
 	        6, 76, 210, 100,
-
+	
 	          // front of bottom
 	        6, 140, 210, 80,
-
+	
 	          // bottom
 	        6, 90, 130, 110,
-
+	
 	          // left side
 	        6, 160, 160, 220,
 	    ], [255]);
-
+	
 	    var numVerts = positions.length / 3;
-
+	
 	    var arrays = {
 	      position: createAugmentedTypedArray(3, numVerts),
 	      texcoord: createAugmentedTypedArray(2,  numVerts),
@@ -19061,19 +19061,19 @@
 	      color: createAugmentedTypedArray(4, numVerts, Uint8Array),
 	      indices: createAugmentedTypedArray(3, numVerts / 3, Uint16Array),
 	    };
-
+	
 	    arrays.position.push(positions);
 	    arrays.texcoord.push(texcoords);
 	    arrays.normal.push(normals);
 	    arrays.color.push(colors);
-
+	
 	    for (var ii = 0; ii < numVerts; ++ii) {
 	      arrays.indices.push(ii);
 	    }
-
+	
 	    return arrays;
 	  }
-
+	
 	  /**
 	   * Creates cresent BufferInfo.
 	   *
@@ -19090,7 +19090,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createCresentBufferInfo
 	   */
-
+	
 	  /**
 	   * Creates cresent buffers.
 	   *
@@ -19107,7 +19107,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createCresentBuffers
 	   */
-
+	
 	  /**
 	   * Creates cresent vertices.
 	   *
@@ -19133,22 +19133,22 @@
 	    if (subdivisionsDown <= 0) {
 	      throw Error('subdivisionDown must be > 0');
 	    }
-
+	
 	    startOffset = startOffset || 0;
 	    endOffset   = endOffset || 1;
-
+	
 	    var subdivisionsThick = 2;
-
+	
 	    var offsetRange = endOffset - startOffset;
 	    var numVertices = (subdivisionsDown + 1) * 2 * (2 + subdivisionsThick);
 	    var positions   = createAugmentedTypedArray(3, numVertices);
 	    var normals     = createAugmentedTypedArray(3, numVertices);
 	    var texcoords   = createAugmentedTypedArray(2, numVertices);
-
+	
 	    function lerp(a, b, s) {
 	      return a + (b - a) * s;
 	    }
-
+	
 	    function createArc(arcRadius, x, normalMult, normalAdd, uMult, uAdd) {
 	      for (var z = 0; z <= subdivisionsDown; z++) {
 	        var uBack = x / (subdivisionsThick - 1);
@@ -19167,7 +19167,7 @@
 	        texcoords.push(uBack * uMult + uAdd, v);
 	      }
 	    }
-
+	
 	    // Generate the individual vertices in our vertex buffer.
 	    for (var x = 0; x < subdivisionsThick; x++) {
 	      var uBack = (x / (subdivisionsThick - 1) - 0.5) * 2;
@@ -19176,10 +19176,10 @@
 	      createArc(innerRadius, x, [1, 1, 1], [0,     0, 0], 1, 0);
 	      createArc(innerRadius, x, [0, 0, 0], [uBack, 0, 0], 0, 1);
 	    }
-
+	
 	    // Do outer surface.
 	    var indices = createAugmentedTypedArray(3, (subdivisionsDown * 2) * (2 + subdivisionsThick), Uint16Array);
-
+	
 	    function createSurface(leftArcOffset, rightArcOffset) {
 	      for (var z = 0; z < subdivisionsDown; ++z) {
 	        // Make triangle 1 of quad.
@@ -19187,7 +19187,7 @@
 	            leftArcOffset + z + 0,
 	            leftArcOffset + z + 1,
 	            rightArcOffset + z + 0);
-
+	
 	        // Make triangle 2 of quad.
 	        indices.push(
 	            leftArcOffset + z + 1,
@@ -19195,7 +19195,7 @@
 	            rightArcOffset + z + 0);
 	      }
 	    }
-
+	
 	    var numVerticesDown = subdivisionsDown + 1;
 	    // front
 	    createSurface(numVerticesDown * 0, numVerticesDown * 4);
@@ -19205,7 +19205,7 @@
 	    createSurface(numVerticesDown * 6, numVerticesDown * 2);
 	    // left
 	    createSurface(numVerticesDown * 3, numVerticesDown * 1);
-
+	
 	    return {
 	      position: positions,
 	      normal:   normals,
@@ -19213,7 +19213,7 @@
 	      indices:  indices,
 	    };
 	  }
-
+	
 	  /**
 	   * Creates cylinder BufferInfo. The cylinder will be created around the origin
 	   * along the y-axis.
@@ -19229,7 +19229,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createCylinderBufferInfo
 	   */
-
+	
 	   /**
 	    * Creates cylinder buffers. The cylinder will be created around the origin
 	    * along the y-axis.
@@ -19245,7 +19245,7 @@
 	    * @memberOf module:twgl/primitives
 	    * @function createCylinderBuffers
 	    */
-
+	
 	   /**
 	    * Creates cylinder vertices. The cylinder will be created around the origin
 	    * along the y-axis.
@@ -19275,7 +19275,7 @@
 	        topCap,
 	        bottomCap);
 	  }
-
+	
 	  /**
 	   * Creates BufferInfo for a torus
 	   *
@@ -19290,7 +19290,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createTorusBufferInfo
 	   */
-
+	
 	  /**
 	   * Creates buffers for a torus
 	   *
@@ -19305,7 +19305,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createTorusBuffers
 	   */
-
+	
 	  /**
 	   * Creates vertices for a torus
 	   *
@@ -19328,15 +19328,15 @@
 	    if (radialSubdivisions < 3) {
 	      throw Error('radialSubdivisions must be 3 or greater');
 	    }
-
+	
 	    if (bodySubdivisions < 3) {
 	      throw Error('verticalSubdivisions must be 3 or greater');
 	    }
-
+	
 	    startAngle = startAngle || 0;
 	    endAngle = endAngle || Math.PI * 2;
 	    range = endAngle - startAngle;
-
+	
 	    var radialParts = radialSubdivisions + 1;
 	    var bodyParts   = bodySubdivisions + 1;
 	    var numVertices = radialParts * bodyParts;
@@ -19344,7 +19344,7 @@
 	    var normals     = createAugmentedTypedArray(3, numVertices);
 	    var texcoords   = createAugmentedTypedArray(2, numVertices);
 	    var indices     = createAugmentedTypedArray(3, (radialSubdivisions) * (bodySubdivisions) * 2, Uint16Array);
-
+	
 	    for (var slice = 0; slice < bodyParts; ++slice) {
 	      var v = slice / bodySubdivisions;
 	      var sliceAngle = v * Math.PI * 2;
@@ -19366,7 +19366,7 @@
 	        texcoords.push(u, 1 - v);
 	      }
 	    }
-
+	
 	    for (var slice = 0; slice < bodySubdivisions; ++slice) {  // eslint-disable-line
 	      for (var ring = 0; ring < radialSubdivisions; ++ring) {  // eslint-disable-line
 	        var nextRingIndex  = 1 + ring;
@@ -19379,7 +19379,7 @@
 	                     radialParts * slice          + nextRingIndex);
 	      }
 	    }
-
+	
 	    return {
 	      position: positions,
 	      normal:   normals,
@@ -19387,8 +19387,8 @@
 	      indices:  indices,
 	    };
 	  }
-
-
+	
+	
 	  /**
 	   * Creates a disc BufferInfo. The disc will be in the xz plane, centered at
 	   * the origin. When creating, at least 3 divisions, or pie
@@ -19416,7 +19416,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createDiscBufferInfo
 	   */
-
+	
 	  /**
 	   * Creates disc buffers. The disc will be in the xz plane, centered at
 	   * the origin. When creating, at least 3 divisions, or pie
@@ -19444,7 +19444,7 @@
 	   * @memberOf module:twgl/primitives
 	   * @function createDiscBuffers
 	   */
-
+	
 	  /**
 	   * Creates disc vertices. The disc will be in the xz plane, centered at
 	   * the origin. When creating, at least 3 divisions, or pie
@@ -19479,33 +19479,33 @@
 	    if (divisions < 3) {
 	      throw Error('divisions must be at least 3');
 	    }
-
+	
 	    stacks = stacks ? stacks : 1;
 	    stackPower = stackPower ? stackPower : 1;
 	    innerRadius = innerRadius ? innerRadius : 0;
-
+	
 	    // Note: We don't share the center vertex because that would
 	    // mess up texture coordinates.
 	    var numVertices = (divisions + 1) * (stacks + 1);
-
+	
 	    var positions = createAugmentedTypedArray(3, numVertices);
 	    var normals   = createAugmentedTypedArray(3, numVertices);
 	    var texcoords = createAugmentedTypedArray(2, numVertices);
 	    var indices   = createAugmentedTypedArray(3, stacks * divisions * 2, Uint16Array);
-
+	
 	    var firstIndex = 0;
 	    var radiusSpan = radius - innerRadius;
 	    var pointsPerStack = divisions + 1;
-
+	
 	    // Build the disk one stack at a time.
 	    for (var stack = 0; stack <= stacks; ++stack) {
 	      var stackRadius = innerRadius + radiusSpan * Math.pow(stack / stacks, stackPower);
-
+	
 	      for (var i = 0; i <= divisions; ++i) {
 	        var theta = 2.0 * Math.PI * i / divisions;
 	        var x = stackRadius * Math.cos(theta);
 	        var z = stackRadius * Math.sin(theta);
-
+	
 	        positions.push(x, 0, z);
 	        normals.push(0, 1, 0);
 	        texcoords.push(1 - (i / divisions), stack / stacks);
@@ -19517,16 +19517,16 @@
 	          var b = firstIndex + i;
 	          var c = firstIndex + i - pointsPerStack;
 	          var d = firstIndex + (i + 1) - pointsPerStack;
-
+	
 	          // Make a quad of the vertices a, b, c, d.
 	          indices.push(a, b, c);
 	          indices.push(a, c, d);
 	        }
 	      }
-
+	
 	      firstIndex += divisions + 1;
 	    }
-
+	
 	    return {
 	      position: positions,
 	      normal: normals,
@@ -19534,7 +19534,7 @@
 	      indices: indices,
 	    };
 	  }
-
+	
 	  /**
 	   * creates a random integer between 0 and range - 1 inclusive.
 	   * @param {number} range
@@ -19543,7 +19543,7 @@
 	  function randInt(range) {
 	    return Math.random() * range | 0;
 	  }
-
+	
 	  /**
 	   * Used to supply random colors
 	   * @callback RandomColorFunc
@@ -19552,14 +19552,14 @@
 	   * @return {number} a number from 0 to 255
 	   * @memberOf module:twgl/primitives
 	   */
-
+	
 	  /**
 	   * @typedef {Object} RandomVerticesOptions
 	   * @property {number} [vertsPerColor] Defaults to 3 for non-indexed vertices
 	   * @property {module:twgl/primitives.RandomColorFunc} [rand] A function to generate random numbers
 	   * @memberOf module:twgl/primitives
 	   */
-
+	
 	  /**
 	   * Creates an augmentedTypedArray of random vertex colors.
 	   * If the vertices are indexed (have an indices array) then will
@@ -19596,7 +19596,7 @@
 	    }
 	    return vertices;
 	  }
-
+	
 	  /**
 	   * creates a function that calls fn to create vertices and then
 	   * creates a buffers for them
@@ -19607,7 +19607,7 @@
 	      return twgl.createBuffersFromArrays(gl, arrays);
 	    };
 	  }
-
+	
 	  /**
 	   * creates a function that calls fn to create vertices and then
 	   * creates a bufferInfo object for them
@@ -19618,7 +19618,7 @@
 	      return twgl.createBufferInfoFromArrays(gl, arrays);
 	    };
 	  }
-
+	
 	  var arraySpecPropertyNames = [
 	    "numComponents",
 	    "size",
@@ -19630,7 +19630,7 @@
 	    "name",
 	    "attribName",
 	  ];
-
+	
 	  /**
 	   * Copy elements from one array to another
 	   *
@@ -19646,7 +19646,7 @@
 	      dst[dstNdx + ii] = src[ii] + offset;
 	    }
 	  }
-
+	
 	  /**
 	   * Creates an array of the same time
 	   *
@@ -19671,7 +19671,7 @@
 	    }
 	    return newArraySpec;
 	  }
-
+	
 	  /**
 	   * Concatinates sets of vertices
 	   *
@@ -19718,7 +19718,7 @@
 	        names[name].push(numElements);
 	      });
 	    }
-
+	
 	    // compute length of combined array
 	    // and return one for reference
 	    function getLengthOfCombinedArrays(name) {
@@ -19738,7 +19738,7 @@
 	        spec: arraySpec,
 	      };
 	    }
-
+	
 	    function copyArraysToNewArray(name, base, newArray) {
 	      var baseIndex = 0;
 	      var offset = 0;
@@ -19755,9 +19755,9 @@
 	        offset += array.length;
 	      }
 	    }
-
+	
 	    var base = names[baseName];
-
+	
 	    var newArrays = {};
 	    Object.keys(names).forEach(function(name) {
 	      var info = getLengthOfCombinedArrays(name);
@@ -19767,7 +19767,7 @@
 	    });
 	    return newArrays;
 	  }
-
+	
 	  /**
 	   * Creates a duplicate set of vertices
 	   *
@@ -19789,7 +19789,7 @@
 	    });
 	    return newArrays;
 	  }
-
+	
 	  // Using quotes prevents Uglify from changing the names.
 	  // No speed diff AFAICT.
 	  return {
@@ -19834,9 +19834,9 @@
 	    "concatVertices": concatVertices,
 	    "duplicateVertices": duplicateVertices,
 	  };
-
+	
 	});
-
+	
 	define('main', [
 	    'twgl/twgl',
 	    'twgl/m4',
@@ -19853,15 +19853,15 @@
 	    twgl.primitives = primitives;
 	    return twgl;
 	})
-
+	
 	notrequirebecasebrowserifymessesup(['main'], function(main) {
 	  return main;
 	}, undefined, true);   // forceSync = true
-
-
+	
+	
 	;
 	define("build/js/twgl-includer-full", function(){});
-
+	
 	    return notrequirebecasebrowserifymessesup('main');
 	}));
 
@@ -19876,11 +19876,11 @@
 	var isFunction = __webpack_require__(313)
 	var parseHeaders = __webpack_require__(314)
 	var xtend = __webpack_require__(317)
-
+	
 	module.exports = createXHR
 	createXHR.XMLHttpRequest = window.XMLHttpRequest || noop
 	createXHR.XDomainRequest = "withCredentials" in (new createXHR.XMLHttpRequest()) ? createXHR.XMLHttpRequest : window.XDomainRequest
-
+	
 	forEachArray(["get", "put", "post", "patch", "head", "delete"], function(method) {
 	    createXHR[method === "delete" ? "del" : method] = function(uri, options, callback) {
 	        options = initParams(uri, options, callback)
@@ -19888,23 +19888,23 @@
 	        return _createXHR(options)
 	    }
 	})
-
+	
 	function forEachArray(array, iterator) {
 	    for (var i = 0; i < array.length; i++) {
 	        iterator(array[i])
 	    }
 	}
-
+	
 	function isEmpty(obj){
 	    for(var i in obj){
 	        if(obj.hasOwnProperty(i)) return false
 	    }
 	    return true
 	}
-
+	
 	function initParams(uri, options, callback) {
 	    var params = uri
-
+	
 	    if (isFunction(options)) {
 	        callback = options
 	        if (typeof uri === "string") {
@@ -19913,48 +19913,48 @@
 	    } else {
 	        params = xtend(options, {uri: uri})
 	    }
-
+	
 	    params.callback = callback
 	    return params
 	}
-
+	
 	function createXHR(uri, options, callback) {
 	    options = initParams(uri, options, callback)
 	    return _createXHR(options)
 	}
-
+	
 	function _createXHR(options) {
 	    var callback = options.callback
 	    if(typeof callback === "undefined"){
 	        throw new Error("callback argument missing")
 	    }
 	    callback = once(callback)
-
+	
 	    function readystatechange() {
 	        if (xhr.readyState === 4) {
 	            loadFunc()
 	        }
 	    }
-
+	
 	    function getBody() {
 	        // Chrome with requestType=blob throws errors arround when even testing access to responseText
 	        var body = undefined
-
+	
 	        if (xhr.response) {
 	            body = xhr.response
 	        } else if (xhr.responseType === "text" || !xhr.responseType) {
 	            body = xhr.responseText || xhr.responseXML
 	        }
-
+	
 	        if (isJson) {
 	            try {
 	                body = JSON.parse(body)
 	            } catch (e) {}
 	        }
-
+	
 	        return body
 	    }
-
+	
 	    var failureResponse = {
 	                body: undefined,
 	                headers: {},
@@ -19963,7 +19963,7 @@
 	                url: uri,
 	                rawRequest: xhr
 	            }
-
+	
 	    function errorFunc(evt) {
 	        clearTimeout(timeoutTimer)
 	        if(!(evt instanceof Error)){
@@ -19972,7 +19972,7 @@
 	        evt.statusCode = 0
 	        callback(evt, failureResponse)
 	    }
-
+	
 	    // will load the data & process the response in a special response object
 	    function loadFunc() {
 	        if (aborted) return
@@ -19986,7 +19986,7 @@
 	        }
 	        var response = failureResponse
 	        var err = null
-
+	
 	        if (status !== 0){
 	            response = {
 	                body: getBody(),
@@ -20003,11 +20003,11 @@
 	            err = new Error("Internal XMLHttpRequest Error")
 	        }
 	        callback(err, response, response.body)
-
+	
 	    }
-
+	
 	    var xhr = options.xhr || null
-
+	
 	    if (!xhr) {
 	        if (options.cors || options.useXDR) {
 	            xhr = new createXHR.XDomainRequest()
@@ -20015,7 +20015,7 @@
 	            xhr = new createXHR.XMLHttpRequest()
 	        }
 	    }
-
+	
 	    var key
 	    var aborted
 	    var uri = xhr.url = options.uri || options.url
@@ -20025,7 +20025,7 @@
 	    var sync = !!options.sync
 	    var isJson = false
 	    var timeoutTimer
-
+	
 	    if ("json" in options) {
 	        isJson = true
 	        headers["accept"] || headers["Accept"] || (headers["Accept"] = "application/json") //Don't override existing accept header declared by user
@@ -20034,7 +20034,7 @@
 	            body = JSON.stringify(options.json)
 	        }
 	    }
-
+	
 	    xhr.onreadystatechange = readystatechange
 	    xhr.onload = loadFunc
 	    xhr.onerror = errorFunc
@@ -20060,7 +20060,7 @@
 	            errorFunc(e)
 	        }, options.timeout )
 	    }
-
+	
 	    if (xhr.setRequestHeader) {
 	        for(key in headers){
 	            if(headers.hasOwnProperty(key)){
@@ -20070,24 +20070,24 @@
 	    } else if (options.headers && !isEmpty(options.headers)) {
 	        throw new Error("Headers cannot be set on an XDomainRequest object")
 	    }
-
+	
 	    if ("responseType" in options) {
 	        xhr.responseType = options.responseType
 	    }
-
+	
 	    if ("beforeSend" in options &&
 	        typeof options.beforeSend === "function"
 	    ) {
 	        options.beforeSend(xhr)
 	    }
-
+	
 	    xhr.send(body)
-
+	
 	    return xhr
-
-
+	
+	
 	}
-
+	
 	function noop() {}
 
 
@@ -20104,7 +20104,7 @@
 	} else {
 	    module.exports = {};
 	}
-
+	
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
@@ -20112,7 +20112,7 @@
 /***/ function(module, exports) {
 
 	module.exports = once
-
+	
 	once.proto = once(function () {
 	  Object.defineProperty(Function.prototype, 'once', {
 	    value: function () {
@@ -20121,7 +20121,7 @@
 	    configurable: true
 	  })
 	})
-
+	
 	function once (fn) {
 	  var called = false
 	  return function () {
@@ -20137,9 +20137,9 @@
 /***/ function(module, exports) {
 
 	module.exports = isFunction
-
+	
 	var toString = Object.prototype.toString
-
+	
 	function isFunction (fn) {
 	  var string = toString.call(fn)
 	  return string === '[object Function]' ||
@@ -20162,20 +20162,20 @@
 	  , isArray = function(arg) {
 	      return Object.prototype.toString.call(arg) === '[object Array]';
 	    }
-
+	
 	module.exports = function (headers) {
 	  if (!headers)
 	    return {}
-
+	
 	  var result = {}
-
+	
 	  forEach(
 	      trim(headers).split('\n')
 	    , function (row) {
 	        var index = row.indexOf(':')
 	          , key = trim(row.slice(0, index)).toLowerCase()
 	          , value = trim(row.slice(index + 1))
-
+	
 	        if (typeof(result[key]) === 'undefined') {
 	          result[key] = value
 	        } else if (isArray(result[key])) {
@@ -20185,7 +20185,7 @@
 	        }
 	      }
 	  )
-
+	
 	  return result
 	}
 
@@ -20195,15 +20195,15 @@
 
 	
 	exports = module.exports = trim;
-
+	
 	function trim(str){
 	  return str.replace(/^\s*|\s*$/g, '');
 	}
-
+	
 	exports.left = function(str){
 	  return str.replace(/^\s*/, '');
 	};
-
+	
 	exports.right = function(str){
 	  return str.replace(/\s*$/, '');
 	};
@@ -20214,17 +20214,17 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var isFunction = __webpack_require__(313)
-
+	
 	module.exports = forEach
-
+	
 	var toString = Object.prototype.toString
 	var hasOwnProperty = Object.prototype.hasOwnProperty
-
+	
 	function forEach(list, iterator, context) {
 	    if (!isFunction(iterator)) {
 	        throw new TypeError('iterator must be a function')
 	    }
-
+	
 	    if (arguments.length < 3) {
 	        context = this
 	    }
@@ -20236,7 +20236,7 @@
 	    else
 	        forEachObject(list, iterator, context)
 	}
-
+	
 	function forEachArray(array, iterator, context) {
 	    for (var i = 0, len = array.length; i < len; i++) {
 	        if (hasOwnProperty.call(array, i)) {
@@ -20244,14 +20244,14 @@
 	        }
 	    }
 	}
-
+	
 	function forEachString(string, iterator, context) {
 	    for (var i = 0, len = string.length; i < len; i++) {
 	        // no such thing as a sparse string.
 	        iterator.call(context, string.charAt(i), i, string)
 	    }
 	}
-
+	
 	function forEachObject(object, iterator, context) {
 	    for (var k in object) {
 	        if (hasOwnProperty.call(object, k)) {
@@ -20266,22 +20266,22 @@
 /***/ function(module, exports) {
 
 	module.exports = extend
-
+	
 	var hasOwnProperty = Object.prototype.hasOwnProperty;
-
+	
 	function extend() {
 	    var target = {}
-
+	
 	    for (var i = 0; i < arguments.length; i++) {
 	        var source = arguments[i]
-
+	
 	        for (var key in source) {
 	            if (hasOwnProperty.call(source, key)) {
 	                target[key] = source[key]
 	            }
 	        }
 	    }
-
+	
 	    return target
 	}
 
@@ -20291,24 +20291,24 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
+	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
+	
 	var twgl = __webpack_require__(309);
-
+	
 	var Skin = __webpack_require__(319);
-
+	
 	var BitmapSkin = function (_Skin) {
 	    _inherits(BitmapSkin, _Skin);
-
+	
 	    /**
 	     * Create a new Bitmap Skin.
 	     * @param {!int} id - The ID for this Skin.
@@ -20316,28 +20316,28 @@
 	     */
 	    function BitmapSkin(id, renderer) {
 	        _classCallCheck(this, BitmapSkin);
-
+	
 	        /** @type {!int} */
 	        var _this = _possibleConstructorReturn(this, (BitmapSkin.__proto__ || Object.getPrototypeOf(BitmapSkin)).call(this, id));
-
+	
 	        _this._costumeResolution = 1;
-
+	
 	        /** @type {!RenderWebGL} */
 	        _this._renderer = renderer;
-
+	
 	        /** @type {WebGLTexture} */
 	        _this._texture = null;
-
+	
 	        /** @type {[int, int]} */
 	        _this._textureSize = [0, 0];
 	        return _this;
 	    }
-
+	
 	    /**
 	     * Dispose of this object. Do not use it after calling this method.
 	     */
-
-
+	
+	
 	    _createClass(BitmapSkin, [{
 	        key: 'dispose',
 	        value: function dispose() {
@@ -20347,15 +20347,15 @@
 	            }
 	            _get(BitmapSkin.prototype.__proto__ || Object.getPrototypeOf(BitmapSkin.prototype), 'dispose', this).call(this);
 	        }
-
+	
 	        /**
 	         * @return {[number,number]} the "native" size, in texels, of this skin.
 	         */
-
+	
 	    }, {
 	        key: 'getTexture',
-
-
+	
+	
 	        /**
 	         * @param {[number,number]} scale - The scaling factors to be used.
 	         * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
@@ -20364,18 +20364,18 @@
 	        value: function getTexture(scale) {
 	            return this._texture;
 	        }
-
+	
 	        /**
 	         * Set the contents of this skin to a snapshot of the provided bitmap data.
 	         * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
 	         * @param {int} [costumeResolution=1] - The resolution to use for this bitmap.
 	         */
-
+	
 	    }, {
 	        key: 'setBitmap',
 	        value: function setBitmap(bitmapData, costumeResolution) {
 	            var gl = this._renderer.gl;
-
+	
 	            if (this._texture) {
 	                gl.bindTexture(gl.TEXTURE_2D, this._texture);
 	                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmapData);
@@ -20387,23 +20387,23 @@
 	                    wrap: gl.CLAMP_TO_EDGE,
 	                    src: bitmapData
 	                };
-
+	
 	                this._texture = twgl.createTexture(gl, textureOptions);
 	            }
-
+	
 	            // Do these last in case any of the above throws an exception
 	            this._costumeResolution = costumeResolution || 1;
 	            this._textureSize = BitmapSkin._getBitmapSize(bitmapData);
-
+	
 	            this.emit(Skin.Events.WasAltered);
 	        }
-
+	
 	        /**
 	         * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - bitmap data to inspect.
 	         * @returns {[int,int]} the width and height of the bitmap data, in pixels.
 	         * @private
 	         */
-
+	
 	    }, {
 	        key: 'size',
 	        get: function get() {
@@ -20415,19 +20415,19 @@
 	            if (bitmapData instanceof HTMLImageElement) {
 	                return [bitmapData.naturalWidth || bitmapData.width, bitmapData.naturalHeight || bitmapData.height];
 	            }
-
+	
 	            if (bitmapData instanceof HTMLVideoElement) {
 	                return [bitmapData.videoWidth || bitmapData.width, bitmapData.videoHeight || bitmapData.height];
 	            }
-
+	
 	            // ImageData or HTMLCanvasElement
 	            return [bitmapData.width, bitmapData.height];
 	        }
 	    }]);
-
+	
 	    return BitmapSkin;
 	}(Skin);
-
+	
 	module.exports = BitmapSkin;
 
 /***/ },
@@ -20435,39 +20435,39 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
+	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
+	
 	var EventEmitter = __webpack_require__(320);
-
+	
 	var twgl = __webpack_require__(309);
-
+	
 	var RenderConstants = __webpack_require__(321);
-
+	
 	var Skin = function (_EventEmitter) {
 	  _inherits(Skin, _EventEmitter);
-
+	
 	  /**
 	   * Create a Skin, which stores and/or generates textures for use in rendering.
 	   * @param {int} id - The unique ID for this Skin.
 	   */
 	  function Skin(id) {
 	    _classCallCheck(this, Skin);
-
+	
 	    /** @type {int} */
 	    var _this = _possibleConstructorReturn(this, (Skin.__proto__ || Object.getPrototypeOf(Skin)).call(this));
-
+	
 	    _this._id = id;
-
+	
 	    /** @type {Vec3} */
 	    _this._rotationCenter = twgl.v3.create(0, 0);
-
+	
 	    /**
 	     * The uniforms to be used by the vertex and pixel shaders.
 	     * Some of these are used by other parts of the renderer as well.
@@ -20480,37 +20480,37 @@
 	       * @type {number[]}
 	       */
 	      u_skinSize: [0, 0],
-
+	
 	      /**
 	       * The actual WebGL texture object for the skin.
 	       * @type {WebGLTexture}
 	       */
 	      u_skin: null
 	    };
-
+	
 	    _this.setMaxListeners(RenderConstants.SKIN_SHARE_SOFT_LIMIT);
 	    return _this;
 	  }
-
+	
 	  /**
 	   * Dispose of this object. Do not use it after calling this method.
 	   */
-
-
+	
+	
 	  _createClass(Skin, [{
 	    key: 'dispose',
 	    value: function dispose() {
 	      this._id = RenderConstants.ID_NONE;
 	    }
-
+	
 	    /**
 	     * @return {int} the unique ID for this Skin.
 	     */
-
+	
 	  }, {
 	    key: 'setRotationCenter',
-
-
+	
+	
 	    /**
 	     * Set the origin, in object space, about which this Skin should rotate.
 	     * @param {number} x - The x coordinate of the new rotation center.
@@ -20523,26 +20523,26 @@
 	        this.emit(Skin.Events.WasAltered);
 	      }
 	    }
-
+	
 	    /**
 	     * @abstract
 	     * @param {[number,number]} scale - The scaling factors to be used.
 	     * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given size.
 	     */
 	    // eslint-disable-next-line no-unused-vars
-
+	
 	  }, {
 	    key: 'getTexture',
 	    value: function getTexture(scale) {
 	      return null;
 	    }
-
+	
 	    /**
 	     * Update and returns the uniforms for this skin.
 	     * @param {[number,number]} scale - The scaling factors to be used.
 	     * @returns {object.<string, *>} the shader uniforms to be used when rendering with this Skin.
 	     */
-
+	
 	  }, {
 	    key: 'getUniforms',
 	    value: function getUniforms(scale) {
@@ -20555,45 +20555,45 @@
 	    get: function get() {
 	      return this._id;
 	    }
-
+	
 	    /**
 	     * @returns {Vec3} the origin, in object space, about which this Skin should rotate.
 	     */
-
+	
 	  }, {
 	    key: 'rotationCenter',
 	    get: function get() {
 	      return this._rotationCenter;
 	    }
-
+	
 	    /**
 	     * @abstract
 	     * @return {[number,number]} the "native" size, in texels, of this skin.
 	     */
-
+	
 	  }, {
 	    key: 'size',
 	    get: function get() {
 	      return [0, 0];
 	    }
 	  }]);
-
+	
 	  return Skin;
 	}(EventEmitter);
-
+	
 	/**
 	 * These are the events which can be emitted by instances of this class.
 	 * @type {object.<string,string>}
 	 */
-
-
+	
+	
 	Skin.Events = {
 	  /**
 	   * Emitted when anything about the Skin has been altered, such as the appearance or rotation center.
 	   */
 	  WasAltered: 'WasAltered'
 	};
-
+	
 	module.exports = Skin;
 
 /***/ },
@@ -20620,23 +20620,23 @@
 	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 	// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+	
 	function EventEmitter() {
 	  this._events = this._events || {};
 	  this._maxListeners = this._maxListeners || undefined;
 	}
 	module.exports = EventEmitter;
-
+	
 	// Backwards-compat with node 0.10.x
 	EventEmitter.EventEmitter = EventEmitter;
-
+	
 	EventEmitter.prototype._events = undefined;
 	EventEmitter.prototype._maxListeners = undefined;
-
+	
 	// By default EventEmitters will print a warning if more than 10 listeners are
 	// added to it. This is a useful default which helps finding memory leaks.
 	EventEmitter.defaultMaxListeners = 10;
-
+	
 	// Obviously not all Emitters should be limited to 10. This function allows
 	// that to be increased. Set to zero for unlimited.
 	EventEmitter.prototype.setMaxListeners = function(n) {
@@ -20645,13 +20645,13 @@
 	  this._maxListeners = n;
 	  return this;
 	};
-
+	
 	EventEmitter.prototype.emit = function(type) {
 	  var er, handler, len, args, i, listeners;
-
+	
 	  if (!this._events)
 	    this._events = {};
-
+	
 	  // If there is no 'error' event listener then throw.
 	  if (type === 'error') {
 	    if (!this._events.error ||
@@ -20667,12 +20667,12 @@
 	      }
 	    }
 	  }
-
+	
 	  handler = this._events[type];
-
+	
 	  if (isUndefined(handler))
 	    return false;
-
+	
 	  if (isFunction(handler)) {
 	    switch (arguments.length) {
 	      // fast cases
@@ -20697,26 +20697,26 @@
 	    for (i = 0; i < len; i++)
 	      listeners[i].apply(this, args);
 	  }
-
+	
 	  return true;
 	};
-
+	
 	EventEmitter.prototype.addListener = function(type, listener) {
 	  var m;
-
+	
 	  if (!isFunction(listener))
 	    throw TypeError('listener must be a function');
-
+	
 	  if (!this._events)
 	    this._events = {};
-
+	
 	  // To avoid recursion in the case that type === "newListener"! Before
 	  // adding it to the listeners, first emit "newListener".
 	  if (this._events.newListener)
 	    this.emit('newListener', type,
 	              isFunction(listener.listener) ?
 	              listener.listener : listener);
-
+	
 	  if (!this._events[type])
 	    // Optimize the case of one listener. Don't need the extra array object.
 	    this._events[type] = listener;
@@ -20726,7 +20726,7 @@
 	  else
 	    // Adding the second element, need to change to array.
 	    this._events[type] = [this._events[type], listener];
-
+	
 	  // Check for listener leak
 	  if (isObject(this._events[type]) && !this._events[type].warned) {
 	    if (!isUndefined(this._maxListeners)) {
@@ -20734,7 +20734,7 @@
 	    } else {
 	      m = EventEmitter.defaultMaxListeners;
 	    }
-
+	
 	    if (m && m > 0 && this._events[type].length > m) {
 	      this._events[type].warned = true;
 	      console.error('(node) warning: possible EventEmitter memory ' +
@@ -20747,53 +20747,53 @@
 	      }
 	    }
 	  }
-
+	
 	  return this;
 	};
-
+	
 	EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
+	
 	EventEmitter.prototype.once = function(type, listener) {
 	  if (!isFunction(listener))
 	    throw TypeError('listener must be a function');
-
+	
 	  var fired = false;
-
+	
 	  function g() {
 	    this.removeListener(type, g);
-
+	
 	    if (!fired) {
 	      fired = true;
 	      listener.apply(this, arguments);
 	    }
 	  }
-
+	
 	  g.listener = listener;
 	  this.on(type, g);
-
+	
 	  return this;
 	};
-
+	
 	// emits a 'removeListener' event iff the listener was removed
 	EventEmitter.prototype.removeListener = function(type, listener) {
 	  var list, position, length, i;
-
+	
 	  if (!isFunction(listener))
 	    throw TypeError('listener must be a function');
-
+	
 	  if (!this._events || !this._events[type])
 	    return this;
-
+	
 	  list = this._events[type];
 	  length = list.length;
 	  position = -1;
-
+	
 	  if (list === listener ||
 	      (isFunction(list.listener) && list.listener === listener)) {
 	    delete this._events[type];
 	    if (this._events.removeListener)
 	      this.emit('removeListener', type, listener);
-
+	
 	  } else if (isObject(list)) {
 	    for (i = length; i-- > 0;) {
 	      if (list[i] === listener ||
@@ -20802,30 +20802,30 @@
 	        break;
 	      }
 	    }
-
+	
 	    if (position < 0)
 	      return this;
-
+	
 	    if (list.length === 1) {
 	      list.length = 0;
 	      delete this._events[type];
 	    } else {
 	      list.splice(position, 1);
 	    }
-
+	
 	    if (this._events.removeListener)
 	      this.emit('removeListener', type, listener);
 	  }
-
+	
 	  return this;
 	};
-
+	
 	EventEmitter.prototype.removeAllListeners = function(type) {
 	  var key, listeners;
-
+	
 	  if (!this._events)
 	    return this;
-
+	
 	  // not listening for removeListener, no need to emit
 	  if (!this._events.removeListener) {
 	    if (arguments.length === 0)
@@ -20834,7 +20834,7 @@
 	      delete this._events[type];
 	    return this;
 	  }
-
+	
 	  // emit removeListener for all listeners on all events
 	  if (arguments.length === 0) {
 	    for (key in this._events) {
@@ -20845,9 +20845,9 @@
 	    this._events = {};
 	    return this;
 	  }
-
+	
 	  listeners = this._events[type];
-
+	
 	  if (isFunction(listeners)) {
 	    this.removeListener(type, listeners);
 	  } else if (listeners) {
@@ -20856,10 +20856,10 @@
 	      this.removeListener(type, listeners[listeners.length - 1]);
 	  }
 	  delete this._events[type];
-
+	
 	  return this;
 	};
-
+	
 	EventEmitter.prototype.listeners = function(type) {
 	  var ret;
 	  if (!this._events || !this._events[type])
@@ -20870,11 +20870,11 @@
 	    ret = this._events[type].slice();
 	  return ret;
 	};
-
+	
 	EventEmitter.prototype.listenerCount = function(type) {
 	  if (this._events) {
 	    var evlistener = this._events[type];
-
+	
 	    if (isFunction(evlistener))
 	      return 1;
 	    else if (evlistener)
@@ -20882,23 +20882,23 @@
 	  }
 	  return 0;
 	};
-
+	
 	EventEmitter.listenerCount = function(emitter, type) {
 	  return emitter.listenerCount(type);
 	};
-
+	
 	function isFunction(arg) {
 	  return typeof arg === 'function';
 	}
-
+	
 	function isNumber(arg) {
 	  return typeof arg === 'number';
 	}
-
+	
 	function isObject(arg) {
 	  return typeof arg === 'object' && arg !== null;
 	}
-
+	
 	function isUndefined(arg) {
 	  return arg === void 0;
 	}
@@ -20909,14 +20909,14 @@
 /***/ function(module, exports) {
 
 	'use strict';
-
+	
 	var DEFAULT_SKIN = {
 	  squirrel: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/7e24c99c1b853e52f8e7f9004416fa34.png/get/',
 	  bus: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/66895930177178ea01d9e610917f8acf.png/get/',
 	  scratch_cat: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/09dc888b0b7df19f70d81588ae73420e.svg/get/',
 	  gradient: 'https://cdn.assets.scratch.mit.edu/internalapi/asset/a49ff276b9b8f997a1ae163992c2c145.png/get/'
 	}.squirrel;
-
+	
 	/**
 	 * Various constants meant for use throughout the renderer.
 	 * @type {object}
@@ -20927,14 +20927,14 @@
 	   * @type {int}
 	   */
 	  ID_NONE: -1,
-
+	
 	  /**
 	   * The URL to use as the default skin for a Drawable.
 	   * TODO: Remove this in favor of falling back on a built-in skin.
 	   * @type {string}
 	   */
 	  DEFAULT_SKIN: DEFAULT_SKIN,
-
+	
 	  /**
 	   * Optimize for fewer than this number of Drawables sharing the same Skin.
 	   * Going above this may cause middleware warnings or a performance penalty but should otherwise behave correctly.
@@ -20947,24 +20947,24 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var twgl = __webpack_require__(309);
-
+	
 	var Rectangle = __webpack_require__(323);
 	var RenderConstants = __webpack_require__(321);
 	var ShaderManager = __webpack_require__(324);
 	var Skin = __webpack_require__(319);
-
+	
 	/**
 	 * @callback Drawable~idFilterFunc
 	 * @param {int} drawableID The ID to filter.
 	 * @return {bool} True if the ID passes the filter, otherwise false.
 	 */
-
+	
 	var Drawable = function () {
 	    /**
 	     * An object which can be drawn by the renderer.
@@ -20974,10 +20974,10 @@
 	     */
 	    function Drawable(id) {
 	        _classCallCheck(this, Drawable);
-
+	
 	        /** @type {!int} */
 	        this._id = id;
-
+	
 	        /**
 	         * The uniforms to be used by the vertex and pixel shaders.
 	         * Some of these are used by other parts of the renderer as well.
@@ -20990,14 +20990,14 @@
 	             * @type {module:twgl/m4.Mat4}
 	             */
 	            u_modelMatrix: twgl.m4.identity(),
-
+	
 	            /**
 	             * The color to use in the silhouette draw mode.
 	             * @type {number[]}
 	             */
 	            u_silhouetteColor: Drawable.color4fFromID(this._id)
 	        };
-
+	
 	        // Effect values are uniforms too
 	        var numEffects = ShaderManager.EFFECTS.length;
 	        for (var index = 0; index < numEffects; ++index) {
@@ -21005,63 +21005,63 @@
 	            var converter = ShaderManager.EFFECT_INFO[effectName].converter;
 	            this._uniforms['u_' + effectName] = converter(0);
 	        }
-
+	
 	        this._position = twgl.v3.create(0, 0);
 	        this._scale = twgl.v3.create(100, 100);
 	        this._direction = 90;
 	        this._transformDirty = true;
 	        this._visible = true;
 	        this._effectBits = 0;
-
+	
 	        // TODO: move convex hull functionality, maybe bounds functionality overall, to Skin classes
 	        this._convexHullPoints = null;
 	        this._convexHullDirty = true;
-
+	
 	        this._skinWasAltered = this._skinWasAltered.bind(this);
 	    }
-
+	
 	    /**
 	     * Dispose of this Drawable. Do not use it after calling this method.
 	     */
-
-
+	
+	
 	    _createClass(Drawable, [{
 	        key: 'dispose',
 	        value: function dispose() {
 	            // Use the setter: disconnect events
 	            this.skin = null;
 	        }
-
+	
 	        /**
 	         * Mark this Drawable's transform as dirty.
 	         * It will be recalculated next time it's needed.
 	         */
-
+	
 	    }, {
 	        key: 'setTransformDirty',
 	        value: function setTransformDirty() {
 	            this._transformDirty = true;
 	        }
-
+	
 	        /**
 	         * @returns {number} The ID for this Drawable.
 	         */
-
+	
 	    }, {
 	        key: 'getEnabledEffects',
-
-
+	
+	
 	        /**
 	         * @returns {int} A bitmask identifying which effects are currently in use.
 	         */
 	        value: function getEnabledEffects() {
 	            return this._effectBits;
 	        }
-
+	
 	        /**
 	         * @returns {object.<string, *>} the shader uniforms to be used when rendering this Drawable.
 	         */
-
+	
 	    }, {
 	        key: 'getUniforms',
 	        value: function getUniforms() {
@@ -21070,22 +21070,22 @@
 	            }
 	            return this._uniforms;
 	        }
-
+	
 	        /**
 	         * @returns {boolean} whether this Drawable is visible.
 	         */
-
+	
 	    }, {
 	        key: 'getVisible',
 	        value: function getVisible() {
 	            return this._visible;
 	        }
-
+	
 	        /**
 	         * Update the position, direction, scale, or effect properties of this Drawable.
 	         * @param {object.<string,*>} properties The new property values to set.
 	         */
-
+	
 	    }, {
 	        key: 'updateProperties',
 	        value: function updateProperties(properties) {
@@ -21130,71 +21130,71 @@
 	                }
 	            }
 	        }
-
+	
 	        /**
 	         * Calculate the transform to use when rendering this Drawable.
 	         * @private
 	         */
-
+	
 	    }, {
 	        key: '_calculateTransform',
 	        value: function _calculateTransform() {
 	            var modelMatrix = this._uniforms.u_modelMatrix;
-
+	
 	            twgl.m4.identity(modelMatrix);
 	            twgl.m4.translate(modelMatrix, this._position, modelMatrix);
-
+	
 	            var rotation = (270 - this._direction) * Math.PI / 180;
 	            twgl.m4.rotateZ(modelMatrix, rotation, modelMatrix);
-
+	
 	            // Adjust rotation center relative to the skin.
 	            var rotationAdjusted = twgl.v3.subtract(this.skin.rotationCenter, twgl.v3.divScalar(this.skin.size, 2));
 	            rotationAdjusted[1] *= -1; // Y flipped to Scratch coordinate.
 	            rotationAdjusted[2] = 0; // Z coordinate is 0.
-
+	
 	            twgl.m4.translate(modelMatrix, rotationAdjusted, modelMatrix);
-
+	
 	            var scaledSize = twgl.v3.divScalar(twgl.v3.multiply(this.skin.size, this._scale), 100);
 	            scaledSize[2] = 0; // was NaN because the vectors have only 2 components.
 	            twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
-
+	
 	            this._transformDirty = false;
 	        }
-
+	
 	        /**
 	         * Whether the Drawable needs convex hull points provided by the renderer.
 	         * @return {boolean} True when no convex hull known, or it's dirty.
 	         */
-
+	
 	    }, {
 	        key: 'needsConvexHullPoints',
 	        value: function needsConvexHullPoints() {
 	            return !this._convexHullPoints || this._convexHullDirty;
 	        }
-
+	
 	        /**
 	         * Set the convex hull to be dirty.
 	         * Do this whenever the Drawable's shape has possibly changed.
 	         */
-
+	
 	    }, {
 	        key: 'setConvexHullDirty',
 	        value: function setConvexHullDirty() {
 	            this._convexHullDirty = true;
 	        }
-
+	
 	        /**
 	         * Set the convex hull points for the Drawable.
 	         * @param {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
 	         */
-
+	
 	    }, {
 	        key: 'setConvexHullPoints',
 	        value: function setConvexHullPoints(points) {
 	            this._convexHullPoints = points;
 	            this._convexHullDirty = false;
 	        }
-
+	
 	        /**
 	         * Get the precise bounds for a Drawable.
 	         * This function applies the transform matrix to the known convex hull,
@@ -21202,7 +21202,7 @@
 	         * Before calling this, ensure the renderer has updated convex hull points.
 	         * @return {!Rectangle} Bounds for a tight box around the Drawable.
 	         */
-
+	
 	    }, {
 	        key: 'getBounds',
 	        value: function getBounds() {
@@ -21230,7 +21230,7 @@
 	            bounds.initFromPointsAABB(transformedHullPoints);
 	            return bounds;
 	        }
-
+	
 	        /**
 	         * Get the rough axis-aligned bounding box for the Drawable.
 	         * Calculated by transforming the skin's bounds.
@@ -21240,7 +21240,7 @@
 	         * faster to calculate so may be desired for quick checks/optimizations.
 	         * @return {!Rectangle} Rough axis-aligned bounding box for Drawable.
 	         */
-
+	
 	    }, {
 	        key: 'getAABB',
 	        value: function getAABB() {
@@ -21252,14 +21252,14 @@
 	            bounds.initFromPointsAABB([twgl.m4.transformPoint(tm, [-0.5, -0.5, 0]), twgl.m4.transformPoint(tm, [0.5, -0.5, 0]), twgl.m4.transformPoint(tm, [-0.5, 0.5, 0]), twgl.m4.transformPoint(tm, [0.5, 0.5, 0])]);
 	            return bounds;
 	        }
-
+	
 	        /**
 	         * Return the best Drawable bounds possible without performing graphics queries.
 	         * I.e., returns the tight bounding box when the convex hull points are already
 	         * known, but otherwise return the rough AABB of the Drawable.
 	         * @return {!Rectangle} Bounds for the Drawable.
 	         */
-
+	
 	    }, {
 	        key: 'getFastBounds',
 	        value: function getFastBounds() {
@@ -21268,42 +21268,42 @@
 	            }
 	            return this.getAABB();
 	        }
-
+	
 	        /**
 	         * Respond to an internal change in the current Skin.
 	         * @private
 	         */
-
+	
 	    }, {
 	        key: '_skinWasAltered',
 	        value: function _skinWasAltered() {
 	            this.setConvexHullDirty();
 	            this.setTransformDirty();
 	        }
-
+	
 	        /**
 	         * Calculate a color to represent the given ID number. At least one component of
 	         * the resulting color will be non-zero if the ID is not RenderConstants.ID_NONE.
 	         * @param {int} id The ID to convert.
 	         * @returns {number[]} An array of [r,g,b,a], each component in the range [0,1].
 	         */
-
+	
 	    }, {
 	        key: 'id',
 	        get: function get() {
 	            return this._id;
 	        }
-
+	
 	        /**
 	         * @returns {Skin} the current skin for this Drawable.
 	         */
-
+	
 	    }, {
 	        key: 'skin',
 	        get: function get() {
 	            return this._skin;
 	        }
-
+	
 	        /**
 	         * @param {Skin} newSkin - A new Skin for this Drawable.
 	         */
@@ -21320,11 +21320,11 @@
 	                this._skinWasAltered();
 	            }
 	        }
-
+	
 	        /**
 	         * @returns {[number,number]} the current scaling percentages applied to this Drawable. [100,100] is normal size.
 	         */
-
+	
 	    }, {
 	        key: 'scale',
 	        get: function get() {
@@ -21339,7 +21339,7 @@
 	            var b = (id >> 16 & 255) / 255.0;
 	            return [r, g, b, 1.0];
 	        }
-
+	
 	        /**
 	         * Calculate the ID number represented by the given color. If all components of
 	         * the color are zero, the result will be RenderConstants.ID_NONE; otherwise the result
@@ -21349,7 +21349,7 @@
 	         * @param {int} b The blue value of the color, in the range [0,255].
 	         * @returns {int} The ID represented by that color.
 	         */
-
+	
 	    }, {
 	        key: 'color3bToID',
 	        value: function color3bToID(r, g, b) {
@@ -21360,10 +21360,10 @@
 	            return id + RenderConstants.ID_NONE;
 	        }
 	    }]);
-
+	
 	    return Drawable;
 	}();
-
+	
 	module.exports = Drawable;
 
 /***/ },
@@ -21371,16 +21371,16 @@
 /***/ function(module, exports) {
 
 	"use strict";
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	/**
 	 * @fileoverview
 	 * A utility for creating and comparing axis-aligned rectangles.
 	 */
-
+	
 	var Rectangle = function () {
 	    /**
 	     * Rectangles are always initialized to the "largest possible rectangle";
@@ -21389,13 +21389,13 @@
 	     */
 	    function Rectangle() {
 	        _classCallCheck(this, Rectangle);
-
+	
 	        this.left = -Infinity;
 	        this.right = Infinity;
 	        this.bottom = -Infinity;
 	        this.top = Infinity;
 	    }
-
+	
 	    /**
 	     * Initialize a Rectangle from given Scratch-coordinate bounds.
 	     * @param {number} left Left bound of the rectangle.
@@ -21403,8 +21403,8 @@
 	     * @param {number} bottom Bottom bound of the rectangle.
 	     * @param {number} top Top bound of the rectangle.
 	     */
-
-
+	
+	
 	    _createClass(Rectangle, [{
 	        key: "initFromBounds",
 	        value: function initFromBounds(left, right, bottom, top) {
@@ -21413,12 +21413,12 @@
 	            this.bottom = bottom;
 	            this.top = top;
 	        }
-
+	
 	        /**
 	         * Initialize a Rectangle to the minimum AABB around a set of points.
 	         * @param {Array.<Array.<number>>} points Array of [x, y] points.
 	         */
-
+	
 	    }, {
 	        key: "initFromPointsAABB",
 	        value: function initFromPointsAABB(points) {
@@ -21443,7 +21443,7 @@
 	                }
 	            }
 	        }
-
+	
 	        /**
 	         * Determine if this Rectangle intersects some other.
 	         * Note that this is a comparison assuming the Rectangle was
@@ -21451,13 +21451,13 @@
 	         * @param {!Rectangle} other Rectangle to check if intersecting.
 	         * @return {boolean} True if this Rectangle intersects other.
 	         */
-
+	
 	    }, {
 	        key: "intersects",
 	        value: function intersects(other) {
 	            return this.left <= other.right && other.left <= this.right && this.top >= other.bottom && other.top >= this.bottom;
 	        }
-
+	
 	        /**
 	         * Determine if this Rectangle fully contains some other.
 	         * Note that this is a comparison assuming the Rectangle was
@@ -21465,13 +21465,13 @@
 	         * @param {!Rectangle} other Rectangle to check if fully contained.
 	         * @return {boolean} True if this Rectangle fully contains other.
 	         */
-
+	
 	    }, {
 	        key: "contains",
 	        value: function contains(other) {
 	            return other.left > this.left && other.right < this.right && other.top < this.top && other.bottom > this.bottom;
 	        }
-
+	
 	        /**
 	         * Clamp a Rectangle to bounds.
 	         * @param {number} left Left clamp.
@@ -21479,7 +21479,7 @@
 	         * @param {number} bottom Bottom clamp.
 	         * @param {number} top Top clamp.
 	         */
-
+	
 	    }, {
 	        key: "clamp",
 	        value: function clamp(left, right, bottom, top) {
@@ -21493,11 +21493,11 @@
 	            this.bottom = Math.min(this.bottom, this.top);
 	            this.top = Math.max(this.top, this.bottom);
 	        }
-
+	
 	        /**
 	         * Push out the Rectangle to integer bounds.
 	         */
-
+	
 	    }, {
 	        key: "snapToInt",
 	        value: function snapToInt() {
@@ -21506,33 +21506,33 @@
 	            this.bottom = Math.floor(this.bottom);
 	            this.top = Math.ceil(this.top);
 	        }
-
+	
 	        /**
 	         * Width of the Rectangle.
 	         * @return {number} Width of rectangle.
 	         */
-
+	
 	    }, {
 	        key: "width",
 	        get: function get() {
 	            return Math.abs(this.left - this.right);
 	        }
-
+	
 	        /**
 	         * Height of the Rectangle.
 	         * @return {number} Height of rectangle.
 	         */
-
+	
 	    }, {
 	        key: "height",
 	        get: function get() {
 	            return Math.abs(this.top - this.bottom);
 	        }
 	    }]);
-
+	
 	    return Rectangle;
 	}();
-
+	
 	module.exports = Rectangle;
 
 /***/ },
@@ -21540,22 +21540,22 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var twgl = __webpack_require__(309);
-
+	
 	var vertexShaderText = __webpack_require__(325);
 	var fragmentShaderText = __webpack_require__(326);
-
+	
 	var ShaderManager = function () {
 	    function ShaderManager(gl) {
 	        _classCallCheck(this, ShaderManager);
-
+	
 	        this._gl = gl;
-
+	
 	        /**
 	         * The cache of all shaders compiled so far, filled on demand.
 	         * @type {Object.<ShaderManager.DRAW_MODE, Array.<ProgramInfo>>}
@@ -21568,7 +21568,7 @@
 	            }
 	        }
 	    }
-
+	
 	    /**
 	     * Fetch the shader for a particular set of active effects.
 	     * Build the shader if necessary.
@@ -21576,8 +21576,8 @@
 	     * @param {int} effectBits Bitmask representing the enabled effects.
 	     * @returns {ProgramInfo} The shader's program info.
 	     */
-
-
+	
+	
 	    _createClass(ShaderManager, [{
 	        key: 'getShader',
 	        value: function getShader(drawMode, effectBits) {
@@ -21592,7 +21592,7 @@
 	            }
 	            return shader;
 	        }
-
+	
 	        /**
 	         * Build the shader for a particular set of active effects.
 	         * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
@@ -21600,30 +21600,30 @@
 	         * @returns {ProgramInfo} The new shader's program info.
 	         * @private
 	         */
-
+	
 	    }, {
 	        key: '_buildShader',
 	        value: function _buildShader(drawMode, effectBits) {
 	            var numEffects = ShaderManager.EFFECTS.length;
-
+	
 	            var defines = ['#define DRAW_MODE_' + drawMode];
 	            for (var index = 0; index < numEffects; ++index) {
 	                if ((effectBits & 1 << index) !== 0) {
 	                    defines.push('#define ENABLE_' + ShaderManager.EFFECTS[index]);
 	                }
 	            }
-
+	
 	            var definesText = defines.join('\n') + '\n';
 	            var vsFullText = definesText + vertexShaderText;
 	            var fsFullText = definesText + fragmentShaderText;
-
+	
 	            return twgl.createProgramInfo(this._gl, [vsFullText, fsFullText]);
 	        }
 	    }]);
-
+	
 	    return ShaderManager;
 	}();
-
+	
 	/**
 	 * Mapping of each effect name to info about that effect.
 	 * The info includes:
@@ -21634,8 +21634,8 @@
 	 * - `shapeChanges`, whether the effect could change the drawn shape.
 	 * @type {Object.<string,Object.<string,*>>}
 	 */
-
-
+	
+	
 	ShaderManager.EFFECT_INFO = {
 	    color: {
 	        mask: 1 << 0,
@@ -21689,13 +21689,13 @@
 	        shapeChanges: false
 	    }
 	};
-
+	
 	/**
 	 * The name of each supported effect.
 	 * @type {Array}
 	 */
 	ShaderManager.EFFECTS = Object.keys(ShaderManager.EFFECT_INFO);
-
+	
 	/**
 	 * The available draw modes.
 	 * @readonly
@@ -21706,18 +21706,18 @@
 	     * Draw normally.
 	     */
 	    default: 'default',
-
+	
 	    /**
 	     * Draw a silhouette using a solid color.
 	     */
 	    silhouette: 'silhouette',
-
+	
 	    /**
 	     * Draw only the parts of the drawable which match a particular color.
 	     */
 	    colorMask: 'colorMask'
 	};
-
+	
 	module.exports = ShaderManager;
 
 /***/ },
@@ -21737,25 +21737,25 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
+	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
+	
 	var twgl = __webpack_require__(309);
-
+	
 	var Skin = __webpack_require__(319);
 	var SvgRenderer = __webpack_require__(328);
-
+	
 	var SVGSkin = function (_Skin) {
 	    _inherits(SVGSkin, _Skin);
-
+	
 	    /**
 	     * Create a new SVG skin.
 	     * @param {!int} id - The ID for this Skin.
@@ -21763,25 +21763,25 @@
 	     */
 	    function SVGSkin(id, renderer) {
 	        _classCallCheck(this, SVGSkin);
-
+	
 	        /** @type {RenderWebGL} */
 	        var _this = _possibleConstructorReturn(this, (SVGSkin.__proto__ || Object.getPrototypeOf(SVGSkin)).call(this, id));
-
+	
 	        _this._renderer = renderer;
-
+	
 	        /** @type {SvgRenderer} */
 	        _this._svgRenderer = new SvgRenderer();
-
+	
 	        /** @type {WebGLTexture} */
 	        _this._texture = null;
 	        return _this;
 	    }
-
+	
 	    /**
 	     * Dispose of this object. Do not use it after calling this method.
 	     */
-
-
+	
+	
 	    _createClass(SVGSkin, [{
 	        key: 'dispose',
 	        value: function dispose() {
@@ -21791,15 +21791,15 @@
 	            }
 	            _get(SVGSkin.prototype.__proto__ || Object.getPrototypeOf(SVGSkin.prototype), 'dispose', this).call(this);
 	        }
-
+	
 	        /**
 	         * @return {[number,number]} the "native" size, in texels, of this skin.
 	         */
-
+	
 	    }, {
 	        key: 'getTexture',
-
-
+	
+	
 	        /**
 	         * @param {[number,number]} scale - The scaling factors to be used.
 	         * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
@@ -21809,17 +21809,17 @@
 	            // TODO: re-render a scaled version if the requested scale is significantly larger than the current render
 	            return this._texture;
 	        }
-
+	
 	        /**
 	         * Set the contents of this skin to a snapshot of the provided SVG data.
 	         * @param {string} svgData - new SVG to use.
 	         */
-
+	
 	    }, {
 	        key: 'setSVG',
 	        value: function setSVG(svgData) {
 	            var _this2 = this;
-
+	
 	            this._svgRenderer.fromString(svgData, function () {
 	                var gl = _this2._renderer.gl;
 	                if (_this2._texture) {
@@ -21833,7 +21833,7 @@
 	                        wrap: gl.CLAMP_TO_EDGE,
 	                        src: _this2._svgRenderer.canvas
 	                    };
-
+	
 	                    _this2._texture = twgl.createTexture(gl, textureOptions);
 	                }
 	                _this2.emit(Skin.Events.WasAltered);
@@ -21845,10 +21845,10 @@
 	            return [this._svgRenderer.canvas.width, this._svgRenderer.canvas.height];
 	        }
 	    }]);
-
+	
 	    return SVGSkin;
 	}(Skin);
-
+	
 	module.exports = SVGSkin;
 
 /***/ },
@@ -21856,11 +21856,11 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	// Synchronously load TTF fonts.
 	// First, have Webpack load their data as Base 64 strings.
 	/* eslint-disable global-require */
@@ -21872,7 +21872,7 @@
 	    Scratch: __webpack_require__(333)
 	};
 	/* eslint-enable global-require */
-
+	
 	// For each Base 64 string,
 	// 1. Replace each with a usable @font-face tag that points to a Data URI.
 	// 2. Inject the font into a style on `document.body`, so measurements
@@ -21885,11 +21885,11 @@
 	    documentStyleTag.textContent += FONTS[fontName];
 	}
 	document.body.insertBefore(documentStyleTag, document.body.firstChild);
-
+	
 	/**
 	 * Main quirks-mode SVG rendering code.
 	 */
-
+	
 	var SvgRenderer = function () {
 	    /**
 	     * Create a quirks-mode SVG renderer for a particular canvas.
@@ -21899,20 +21899,20 @@
 	     */
 	    function SvgRenderer(canvas) {
 	        _classCallCheck(this, SvgRenderer);
-
+	
 	        this._canvas = canvas || document.createElement('canvas');
 	        this._context = this._canvas.getContext('2d');
 	    }
-
+	
 	    /**
 	     * @returns {!HTMLCanvasElement} this renderer's target canvas.
 	     */
-
-
+	
+	
 	    _createClass(SvgRenderer, [{
 	        key: 'fromString',
-
-
+	
+	
 	        /**
 	         * Load an SVG from a string and draw it.
 	         * This will be parsed and transformed, and finally drawn.
@@ -21937,7 +21937,7 @@
 	            // Draw to a canvas.
 	            this._draw();
 	        }
-
+	
 	        /**
 	         * Transforms an SVG's text elements for Scratch 2.0 quirks.
 	         * These quirks include:
@@ -21946,7 +21946,7 @@
 	         * 3. Line-breaks are converted to explicit <tspan> elements.
 	         * 4. Any required fonts are injected.
 	         */
-
+	
 	    }, {
 	        key: '_transformText',
 	        value: function _transformText() {
@@ -21966,11 +21966,11 @@
 	            var _iteratorNormalCompletion = true;
 	            var _didIteratorError = false;
 	            var _iteratorError = undefined;
-
+	
 	            try {
 	                for (var _iterator = textElements[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 	                    var textElement = _step.value;
-
+	
 	                    // Remove x and y attributes - they are not used in Scratch.
 	                    textElement.removeAttribute('x');
 	                    textElement.removeAttribute('y');
@@ -21997,11 +21997,11 @@
 	                        var _iteratorNormalCompletion3 = true;
 	                        var _didIteratorError3 = false;
 	                        var _iteratorError3 = undefined;
-
+	
 	                        try {
 	                            for (var _iterator3 = lines[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
 	                                var line = _step3.value;
-
+	
 	                                var tspanNode = this._createSVGElement('tspan');
 	                                tspanNode.setAttribute('x', '0');
 	                                tspanNode.setAttribute('dy', '1em');
@@ -22046,18 +22046,18 @@
 	                    }
 	                }
 	            }
-
+	
 	            var newDefs = this._createSVGElement('defs');
 	            var newStyle = this._createSVGElement('style');
 	            var allFonts = Object.keys(fontsNeeded);
 	            var _iteratorNormalCompletion2 = true;
 	            var _didIteratorError2 = false;
 	            var _iteratorError2 = undefined;
-
+	
 	            try {
 	                for (var _iterator2 = allFonts[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
 	                    var _font = _step2.value;
-
+	
 	                    if (FONTS.hasOwnProperty(_font)) {
 	                        newStyle.textContent += FONTS[_font];
 	                    }
@@ -22076,11 +22076,11 @@
 	                    }
 	                }
 	            }
-
+	
 	            newDefs.appendChild(newStyle);
 	            this._svgTag.insertBefore(newDefs, this._svgTag.children[0]);
 	        }
-
+	
 	        /**
 	         * Transform the measurements of the SVG.
 	         * In Scratch 2.0, SVGs are drawn without respect to the width,
@@ -22095,13 +22095,13 @@
 	         * or inflating them and then measuring a canvas. But this seems to be
 	         * a natural and performant way.
 	         */
-
+	
 	    }, {
 	        key: '_transformMeasurements',
 	        value: function _transformMeasurements() {
 	            // Save `svgText` for later re-parsing.
 	            var svgText = this._toString();
-
+	
 	            // Append the SVG dom to the document.
 	            // This allows us to use `getBBox` on the page,
 	            // which returns the full bounding-box of all drawn SVG
@@ -22117,38 +22117,38 @@
 	                // Always destroy the element, even if, for example, getBBox throws.
 	                document.body.removeChild(svgSpot);
 	            }
-
+	
 	            // Re-parse the SVG from `svgText`. The above DOM becomes
 	            // unusable/undrawable in browsers once it's appended to the page,
 	            // perhaps for security reasons?
 	            var parser = new DOMParser();
 	            this._svgDom = parser.parseFromString(svgText, 'text/xml');
 	            this._svgTag = this._svgDom.children[0];
-
+	
 	            // Set the correct measurements on the SVG tag, and save them.
 	            this._svgTag.setAttribute('width', bbox.width);
 	            this._svgTag.setAttribute('height', bbox.height);
 	            this._svgTag.setAttribute('viewBox', bbox.x + ' ' + bbox.y + ' ' + bbox.width + ' ' + bbox.height);
 	            this._measurements = bbox;
 	        }
-
+	
 	        /**
 	         * Serialize the active SVG DOM to a string.
 	         * @returns {string} String representing current SVG data.
 	         */
-
+	
 	    }, {
 	        key: '_toString',
 	        value: function _toString() {
 	            var serializer = new XMLSerializer();
 	            return serializer.serializeToString(this._svgDom);
 	        }
-
+	
 	        /**
 	         * Get the drawing ratio, adjusted for HiDPI screens.
 	         * @return {number} Scale ratio to draw to canvases with.
 	         */
-
+	
 	    }, {
 	        key: 'getDrawRatio',
 	        value: function getDrawRatio() {
@@ -22156,25 +22156,25 @@
 	            var backingStoreRatio = this._context.webkitBackingStorePixelRatio || this._context.mozBackingStorePixelRatio || this._context.msBackingStorePixelRatio || this._context.oBackingStorePixelRatio || this._context.backingStorePixelRatio || 1;
 	            return devicePixelRatio / backingStoreRatio;
 	        }
-
+	
 	        /**
 	         * Draw the SVG to a canvas.
 	         */
-
+	
 	    }, {
 	        key: '_draw',
 	        value: function _draw() {
 	            var _this = this;
-
+	
 	            var ratio = this.getDrawRatio();
 	            var bbox = this._measurements;
-
+	
 	            // Set up the canvas for drawing.
 	            this._canvas.width = bbox.width * ratio;
 	            this._canvas.height = bbox.height * ratio;
 	            this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
 	            this._context.scale(ratio, ratio);
-
+	
 	            // Convert the SVG text to an Image, and then draw it to the canvas.
 	            var img = new Image();
 	            img.onload = function () {
@@ -22192,13 +22192,13 @@
 	            var svgText = this._toString();
 	            img.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(svgText);
 	        }
-
+	
 	        /**
 	         * Helper to create an SVG element with the correct NS.
 	         * @param {string} tagName Tag name for the element.
 	         * @return {!DOMElement} Element created.
 	         */
-
+	
 	    }, {
 	        key: '_createSVGElement',
 	        value: function _createSVGElement(tagName) {
@@ -22210,10 +22210,10 @@
 	            return this._canvas;
 	        }
 	    }]);
-
+	
 	    return SvgRenderer;
 	}();
-
+	
 	module.exports = SvgRenderer;
 
 /***/ },
@@ -22248,3 +22248,4 @@
 
 /***/ }
 /******/ ]);
+//# sourceMappingURL=scratch-render.js.map
