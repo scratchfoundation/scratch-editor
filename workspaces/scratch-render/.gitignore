@@ -15,3 +15,4 @@ npm-*
 # Build
 /dist
 /playground/scratch-render.js
+/playground/scratch-render.js.map
