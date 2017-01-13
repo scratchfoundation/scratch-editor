@@ -84,6 +84,14 @@ class Skin extends EventEmitter {
     }
 
     /**
+     * Get the center of the current bounding box
+     * @return {[number,number]} the center of the current bounding box
+     */
+    calculateRotationCenter () {
+        return [this.size[0] / 2, this.size[1] / 2];
+    }
+
+    /**
      * @abstract
      * @param {[number,number]} scale - The scaling factors to be used.
      * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given size.

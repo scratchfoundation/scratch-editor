@@ -140,10 +140,11 @@ class RenderWebGL {
      * Use `createBitmapSkin` or `createSVGSkin` instead.
      * @param {!string} skinUrl The URL of the skin.
      * @param {!int} [costumeResolution] Optional: resolution for the skin. Ignored unless creating a new Bitmap skin.
+     * @param {!boolean} [calculateRotationCenter] Optional: set the rotation center of the skin to the box center
      * @returns {!int} The ID of the Skin.
      * @deprecated
      */
-    createSkinFromURL (skinUrl, costumeResolution) {
+    createSkinFromURL (skinUrl, costumeResolution, calculateRotationCenter) {
         if (this._skinUrlMap.hasOwnProperty(skinUrl)) {
             const existingId = this._skinUrlMap[skinUrl];
 
@@ -179,7 +180,7 @@ class RenderWebGL {
                 url: skinUrl
             }, (err, response, body) => {
                 if (!err) {
-                    newSkin.setSVG(body);
+                    newSkin.setSVG(body, calculateRotationCenter);
                 }
             });
         } else {
@@ -187,7 +188,7 @@ class RenderWebGL {
             const img = new Image();
             img.crossOrigin = 'anonymous';
             img.onload = () => {
-                newSkin.setBitmap(img, costumeResolution);
+                newSkin.setBitmap(img, costumeResolution, calculateRotationCenter);
             };
             img.src = skinUrl;
         }
@@ -679,7 +680,12 @@ class RenderWebGL {
         // TODO: remove this after fully deprecating URL-based skin paths
         if ('skin' in properties) {
             const {skin, costumeResolution} = properties;
-            const skinId = this.createSkinFromURL(skin, costumeResolution);
+            const skinId = this.createSkinFromURL(
+                skin,
+                costumeResolution,
+                // If no rotationCenter, calculate one
+                !('rotationCenter' in properties)
+            );
             drawable.skin = this._allSkins[skinId];
         }
         if ('skinId' in properties) {

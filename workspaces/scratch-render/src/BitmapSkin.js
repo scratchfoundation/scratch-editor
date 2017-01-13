@@ -55,8 +55,9 @@ class BitmapSkin extends Skin {
      * Set the contents of this skin to a snapshot of the provided bitmap data.
      * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
      * @param {int} [costumeResolution=1] - The resolution to use for this bitmap.
+     * @param {bool} [calculateRotationCenter=false] - Set the rotation center to the bitmap center
      */
-    setBitmap (bitmapData, costumeResolution) {
+    setBitmap (bitmapData, costumeResolution, calculateRotationCenter) {
         const gl = this._renderer.gl;
 
         if (this._texture) {
@@ -77,6 +78,8 @@ class BitmapSkin extends Skin {
         // Do these last in case any of the above throws an exception
         this._costumeResolution = costumeResolution || 1;
         this._textureSize = BitmapSkin._getBitmapSize(bitmapData);
+
+        if (calculateRotationCenter) this.setRotationCenter.apply(this, this.calculateRotationCenter());
 
         this.emit(Skin.Events.WasAltered);
     }
