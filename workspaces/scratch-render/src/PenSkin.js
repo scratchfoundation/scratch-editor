@@ -84,39 +84,51 @@ class PenSkin extends Skin {
     }
 
     /**
-     * Draw a point on the pen layer.
-     * @param {[number, number]} location - where the point should be drawn.
-     * @param {PenAttributes} penAttributes - how the point should be drawn.
+     * Clear the pen layer.
      */
-    drawPoint (location, penAttributes) {
-        // Canvas renders a zero-length line as two end-caps back-to-back, which is what we want.
-        this.drawLine(location, location, penAttributes);
+    clear () {
+        const ctx = this._canvas.getContext('2d');
+        ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
     }
 
     /**
      * Draw a point on the pen layer.
-     * @param {[number, number]} location0 - where the line should start.
-     * @param {[number, number]} location1 - where the line should end.
-     * @param {PenAttributes} penAttributes - how the line should be drawn.
+     * @param {PenAttributes} penAttributes - how the point should be drawn.
+     * @param {number} x - the X coordinate of the point to draw.
+     * @param {number} y - the Y coordinate of the point to draw.
      */
-    drawLine (location0, location1, penAttributes) {
+    drawPoint (penAttributes, x, y) {
+        // Canvas renders a zero-length line as two end-caps back-to-back, which is what we want.
+        this.drawLine(penAttributes, x, y, x, y);
+    }
+
+    /**
+     * Draw a point on the pen layer.
+     * @param {PenAttributes} penAttributes - how the line should be drawn.
+     * @param {number} x0 - the X coordinate of the beginning of the line.
+     * @param {number} y0 - the Y coordinate of the beginning of the line.
+     * @param {number} x1 - the X coordinate of the end of the line.
+     * @param {number} y1 - the Y coordinate of the end of the line.
+     */
+    drawLine (penAttributes, x0, y0, x1, y1) {
         const ctx = this._canvas.getContext('2d');
         this._setAttributes(ctx, penAttributes);
-        ctx.moveTo(location0[0] + this._rotationCenter[0], location0[1] + this._rotationCenter[1]);
         ctx.beginPath();
-        ctx.lineTo(location1[0] + this._rotationCenter[0], location1[1] + this._rotationCenter[1]);
+        ctx.moveTo(this._rotationCenter[0] + x0, this._rotationCenter[1] - y0);
+        ctx.lineTo(this._rotationCenter[0] + x1, this._rotationCenter[1] - y1);
         ctx.stroke();
         this._canvasDirty = true;
     }
 
     /**
      * Stamp an image onto the pen layer.
-     * @param {[number, number]} location - where the stamp should be drawn.
      * @param {HTMLCanvasElement|HTMLImageElement|HTMLVideoElement} stampElement - the element to use as the stamp.
+     * @param {number} x - the X coordinate of the stamp to draw.
+     * @param {number} y - the Y coordinate of the stamp to draw.
      */
-    drawStamp (location, stampElement) {
+    drawStamp (stampElement, x, y) {
         const ctx = this._canvas.getContext('2d');
-        ctx.drawImage(stampElement, location[0] + this._rotationCenter[0], location[1] + this._rotationCenter[1]);
+        ctx.drawImage(stampElement, this._rotationCenter[0] + x, this._rotationCenter[1] - y);
         this._canvasDirty = true;
     }
 
@@ -152,27 +164,6 @@ class PenSkin extends Skin {
             }
         );
         this._canvasDirty = true;
-
-        const ctx = this._canvas.getContext('2d');
-        ctx.strokeStyle = 'red';
-        ctx.beginPath();
-        ctx.moveTo(-2, 0);
-        ctx.lineTo(width - 2, height);
-        ctx.stroke();
-        ctx.strokeStyle = 'green';
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(width + 0, height);
-        ctx.stroke();
-        ctx.strokeStyle = 'blue';
-        ctx.beginPath();
-        ctx.moveTo(2, 0);
-        ctx.lineTo(width + 2, height);
-        ctx.stroke();
-        ctx.strokeStyle = 'purple';
-        ctx.moveTo(2, height / 10);
-        ctx.lineTo(width / 10, height / 5);
-        ctx.stroke();
     }
 
     _setAttributes (context, penAttributes) {
@@ -185,7 +176,7 @@ class PenSkin extends Skin {
         const b = Math.round(color4f[2] * 255);
         const a = Math.round(color4f[3] * 255);
 
-        context.fillStyle = `rgba(${r},${g},${b},${a})`;
+        context.strokeStyle = `rgba(${r},${g},${b},${a})`;
         context.lineCap = 'round';
         context.lineWidth = diameter;
     }

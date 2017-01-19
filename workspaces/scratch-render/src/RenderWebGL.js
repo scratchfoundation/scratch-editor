@@ -733,35 +733,51 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Clear a pen layer.
+     * @param {int} penSkinID - the unique ID of a Pen Skin.
+     */
+    penClear (penSkinID) {
+        const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
+        skin.clear();
+    }
+
+    /**
      * Draw a point on a pen layer.
      * @param {int} penSkinID - the unique ID of a Pen Skin.
-     * @param {[number, number]} location - where the point should be drawn.
      * @param {PenAttributes} penAttributes - how the point should be drawn.
+     * @param {number} x - the X coordinate of the point to draw.
+     * @param {number} y - the Y coordinate of the point to draw.
      */
-    penPoint (penSkinID, location, penAttributes) {
+    penPoint (penSkinID, penAttributes, x, y) {
         const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
-        skin.drawPoint(location, penAttributes);
+        skin.drawPoint(penAttributes, x, y);
     }
 
     /**
      * Draw a line on a pen layer.
      * @param {int} penSkinID - the unique ID of a Pen Skin.
-     * @param {[number, number]} location0 - where the line should start.
-     * @param {[number, number]} location1 - where the line should end.
      * @param {PenAttributes} penAttributes - how the line should be drawn.
+     * @param {number} x0 - the X coordinate of the beginning of the line.
+     * @param {number} y0 - the Y coordinate of the beginning of the line.
+     * @param {number} x1 - the X coordinate of the end of the line.
+     * @param {number} y1 - the Y coordinate of the end of the line.
      */
-    penLine (penSkinID, location0, location1, penAttributes) {
+    penLine (penSkinID, penAttributes, x0, y0, x1, y1) {
         const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
-        skin.drawLine(location0, location1, penAttributes);
+        skin.drawLine(penAttributes, x0, y0, x1, y1);
     }
 
     /**
-     * Draw a point on a pen layer.
+     * Stamp a Drawable onto a pen layer.
      * @param {int} penSkinID - the unique ID of a Pen Skin.
-     * @param {[number, number]} location - where the point should be drawn.
      * @param {int} stampID - the unique ID of the Drawable to use as the stamp.
      */
-    penStamp (penSkinID, location, stampID) {
+    penStamp (penSkinID, stampID) {
+        const stampDrawable = this._allDrawables[stampID];
+        if (!stampDrawable) {
+            return;
+        }
+
         const bounds = this._touchingBounds(stampID);
         if (!bounds) {
             return;
@@ -798,7 +814,7 @@ class RenderWebGL extends EventEmitter {
         stampImageData.data.set(stampPixels);
         stampContext.putImageData(stampImageData, 0, 0);
 
-        skin.drawStamp(location, stampCanvas);
+        skin.drawStamp(stampCanvas, bounds.left, bounds.top);
     }
 
     /* ******
