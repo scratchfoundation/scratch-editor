@@ -5,12 +5,6 @@ const RenderConstants = require('./RenderConstants');
 const ShaderManager = require('./ShaderManager');
 const Skin = require('./Skin');
 
-/**
- * @callback Drawable~idFilterFunc
- * @param {int} drawableID The ID to filter.
- * @return {bool} True if the ID passes the filter, otherwise false.
- */
-
 
 class Drawable {
     /**

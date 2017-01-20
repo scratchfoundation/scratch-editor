@@ -1,12 +1,21 @@
+const EventEmitter = require('events');
+
 const hull = require('hull.js');
 const twgl = require('twgl.js');
 const xhr = require('xhr');
 
 const BitmapSkin = require('./BitmapSkin');
 const Drawable = require('./Drawable');
+const PenSkin = require('./PenSkin');
 const RenderConstants = require('./RenderConstants');
 const ShaderManager = require('./ShaderManager');
 const SVGSkin = require('./SVGSkin');
+
+/**
+ * @callback idFilterFunc
+ * @param {int} drawableID The ID to filter.
+ * @return {bool} True if the ID passes the filter, otherwise false.
+ */
 
 /**
  * Maximum touch size for a picking check.
@@ -24,7 +33,7 @@ const MAX_TOUCH_SIZE = [3, 3];
 const TOLERANCE_TOUCHING_COLOR = 2;
 
 
-class RenderWebGL {
+class RenderWebGL extends EventEmitter {
     /**
      * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
      * Coordinates will default to Scratch 2.0 values if unspecified.
@@ -41,6 +50,8 @@ class RenderWebGL {
      * @constructor
      */
     constructor (canvas, xLeft, xRight, yBottom, yTop) {
+        super();
+
         /** @type {Drawable[]} */
         this._allDrawables = [];
 
@@ -51,7 +62,7 @@ class RenderWebGL {
         this._drawList = [];
 
         /** @type {WebGLRenderingContext} */
-        this._gl = twgl.getWebGLContext(canvas, {alpha: false, stencil: true});
+        const gl = this._gl = twgl.getWebGLContext(canvas, {alpha: false, stencil: true});
 
         /** @type {int} */
         this._nextDrawableId = RenderConstants.ID_NONE + 1;
@@ -65,18 +76,22 @@ class RenderWebGL {
         /** @type {Object.<string,int>} */
         this._skinUrlMap = {};
 
+        this._shaderManager = new ShaderManager(gl);
+
+        /** @type {HTMLCanvasElement} */
+        this._tempCanvas = document.createElement('canvas');
+
         this._createGeometry();
+
+        this.on(RenderConstants.Events.NativeSizeChanged, this.onNativeSizeChanged);
 
         this.setBackgroundColor(1, 1, 1);
         this.setStageSize(xLeft || -240, xRight || 240, yBottom || -180, yTop || 180);
         this.resize(this._nativeSize[0], this._nativeSize[1]);
-        this._createQueryBuffers();
 
-        const gl = this._gl;
         gl.disable(gl.DEPTH_TEST);
         gl.enable(gl.BLEND); // TODO: disable when no partial transparency?
         gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
-        this._shaderManager = new ShaderManager(gl);
     }
 
     /**
@@ -130,8 +145,29 @@ class RenderWebGL {
         this._xRight = xRight;
         this._yBottom = yBottom;
         this._yTop = yTop;
-        this._nativeSize = [Math.abs(xRight - xLeft), Math.abs(yBottom - yTop)];
+
+        // swap yBottom & yTop to fit Scratch convention of +y=up
         this._projection = twgl.m4.ortho(xLeft, xRight, yBottom, yTop, -1, 1);
+
+        this._setNativeSize(Math.abs(xRight - xLeft), Math.abs(yBottom - yTop));
+    }
+
+    /**
+     * @return {[int,int]} the "native" size of the stage, which is used for pen, query renders, etc.
+     */
+    getNativeSize () {
+        return [this._nativeSize[0], this._nativeSize[1]];
+    }
+
+    /**
+     * Set the "native" size of the stage, which is used for pen, query renders, etc.
+     * @param {int} width - the new width to set.
+     * @param {int} height - the new height to set.
+     * @private
+     */
+    _setNativeSize (width, height) {
+        this._nativeSize = [width, height];
+        this.emit(RenderConstants.Events.NativeSizeChanged, {newSize: this._nativeSize});
     }
 
     /**
@@ -219,6 +255,17 @@ class RenderWebGL {
         const skinId = this._nextSkinId++;
         const newSkin = new SVGSkin(skinId, this);
         newSkin.setSVG(svgData);
+        this._allSkins[skinId] = newSkin;
+        return skinId;
+    }
+
+    /**
+     * Create a new PenSkin - a skin which implements a Scratch pen layer.
+     * @returns {!int} the ID for the new skin.
+     */
+    createPenSkin () {
+        const skinId = this._nextSkinId++;
+        const newSkin = new PenSkin(skinId, this);
         this._allSkins[skinId] = newSkin;
         return skinId;
     }
@@ -374,11 +421,10 @@ class RenderWebGL {
             return;
         }
 
-
         // Limit size of viewport to the bounds around the target Drawable,
         // and create the projection matrix for the draw.
         gl.viewport(0, 0, bounds.width, bounds.height);
-        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
+        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
 
         gl.clearColor.apply(gl, this._backgroundColor);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
@@ -417,7 +463,7 @@ class RenderWebGL {
             gl.disable(gl.STENCIL_TEST);
         }
 
-        const pixels = new Buffer(bounds.width * bounds.height * 4);
+        const pixels = new Uint8Array(bounds.width * bounds.height * 4);
         gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         if (this._debugCanvas) {
@@ -425,9 +471,7 @@ class RenderWebGL {
             this._debugCanvas.height = bounds.height;
             const context = this._debugCanvas.getContext('2d');
             const imageData = context.getImageData(0, 0, bounds.width, bounds.height);
-            for (let i = 0, bytes = pixels.length; i < bytes; ++i) {
-                imageData.data[i] = pixels[i];
-            }
+            imageData.data.set(pixels);
             context.putImageData(imageData, 0, 0);
         }
 
@@ -471,7 +515,7 @@ class RenderWebGL {
         // Limit size of viewport to the bounds around the target Drawable,
         // and create the projection matrix for the draw.
         gl.viewport(0, 0, bounds.width, bounds.height);
-        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.bottom, bounds.top, -1, 1);
+        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
 
         const noneColor = Drawable.color4fFromID(RenderConstants.ID_NONE);
         gl.clearColor.apply(gl, noneColor);
@@ -496,7 +540,7 @@ class RenderWebGL {
             gl.disable(gl.STENCIL_TEST);
         }
 
-        const pixels = new Buffer(bounds.width * bounds.height * 4);
+        const pixels = new Uint8Array(bounds.width * bounds.height * 4);
         gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         if (this._debugCanvas) {
@@ -504,9 +548,7 @@ class RenderWebGL {
             this._debugCanvas.height = bounds.height;
             const context = this._debugCanvas.getContext('2d');
             const imageData = context.getImageData(0, 0, bounds.width, bounds.height);
-            for (let i = 0, bytes = pixels.length; i < bytes; ++i) {
-                imageData.data[i] = pixels[i];
-            }
+            imageData.data.set(pixels);
             context.putImageData(imageData, 0, 0);
         }
 
@@ -575,7 +617,7 @@ class RenderWebGL {
 
         this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection);
 
-        const pixels = new Buffer(touchWidth * touchHeight * 4);
+        const pixels = new Uint8Array(touchWidth * touchHeight * 4);
         gl.readPixels(0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         if (this._debugCanvas) {
@@ -583,9 +625,7 @@ class RenderWebGL {
             this._debugCanvas.height = touchHeight;
             const context = this._debugCanvas.getContext('2d');
             const imageData = context.getImageData(0, 0, touchWidth, touchHeight);
-            for (let i = 0, bytes = pixels.length; i < bytes; ++i) {
-                imageData.data[i] = pixels[i];
-            }
+            imageData.data.set(pixels);
             context.putImageData(imageData, 0, 0);
         }
 
@@ -692,6 +732,91 @@ class RenderWebGL {
         drawable.updateProperties(properties);
     }
 
+    /**
+     * Clear a pen layer.
+     * @param {int} penSkinID - the unique ID of a Pen Skin.
+     */
+    penClear (penSkinID) {
+        const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
+        skin.clear();
+    }
+
+    /**
+     * Draw a point on a pen layer.
+     * @param {int} penSkinID - the unique ID of a Pen Skin.
+     * @param {PenAttributes} penAttributes - how the point should be drawn.
+     * @param {number} x - the X coordinate of the point to draw.
+     * @param {number} y - the Y coordinate of the point to draw.
+     */
+    penPoint (penSkinID, penAttributes, x, y) {
+        const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
+        skin.drawPoint(penAttributes, x, y);
+    }
+
+    /**
+     * Draw a line on a pen layer.
+     * @param {int} penSkinID - the unique ID of a Pen Skin.
+     * @param {PenAttributes} penAttributes - how the line should be drawn.
+     * @param {number} x0 - the X coordinate of the beginning of the line.
+     * @param {number} y0 - the Y coordinate of the beginning of the line.
+     * @param {number} x1 - the X coordinate of the end of the line.
+     * @param {number} y1 - the Y coordinate of the end of the line.
+     */
+    penLine (penSkinID, penAttributes, x0, y0, x1, y1) {
+        const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
+        skin.drawLine(penAttributes, x0, y0, x1, y1);
+    }
+
+    /**
+     * Stamp a Drawable onto a pen layer.
+     * @param {int} penSkinID - the unique ID of a Pen Skin.
+     * @param {int} stampID - the unique ID of the Drawable to use as the stamp.
+     */
+    penStamp (penSkinID, stampID) {
+        const stampDrawable = this._allDrawables[stampID];
+        if (!stampDrawable) {
+            return;
+        }
+
+        const bounds = this._touchingBounds(stampID);
+        if (!bounds) {
+            return;
+        }
+
+        const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
+
+        const gl = this._gl;
+        twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+
+        // Limit size of viewport to the bounds around the stamp Drawable and create the projection matrix for the draw.
+        gl.viewport(0, 0, bounds.width, bounds.height);
+        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
+
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+
+        try {
+            gl.disable(gl.BLEND);
+            this._drawThese([stampID], ShaderManager.DRAW_MODE.default, projection);
+        } finally {
+            gl.enable(gl.BLEND);
+        }
+
+        const stampPixels = new Uint8Array(bounds.width * bounds.height * 4);
+        gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, stampPixels);
+
+        const stampCanvas = this._tempCanvas;
+        stampCanvas.width = bounds.width;
+        stampCanvas.height = bounds.height;
+
+        const stampContext = stampCanvas.getContext('2d');
+        const stampImageData = stampContext.createImageData(bounds.width, bounds.height);
+        stampImageData.data.set(stampPixels);
+        stampContext.putImageData(stampImageData, 0, 0);
+
+        skin.drawStamp(stampCanvas, bounds.left, bounds.top);
+    }
+
     /* ******
      * Truly internal functions: these support the functions above.
      ********/
@@ -729,24 +854,32 @@ class RenderWebGL {
     }
 
     /**
-     * Create the frame buffers used for queries such as picking and color-touching.
-     * These buffers are fixed in size regardless of the size of the main render
-     * target. The fixed size allows (more) consistent behavior across devices and
-     * presentation modes.
+     * Respond to a change in the "native" rendering size. The native size is used by buffers which are fixed in size
+     * regardless of the size of the main render target. This includes the buffers used for queries such as picking and
+     * color-touching. The fixed size allows (more) consistent behavior across devices and presentation modes.
+     * @param {object} event - The change event.
      * @private
      */
-    _createQueryBuffers () {
+    onNativeSizeChanged (event) {
+        const [width, height] = event.newSize;
+
         const gl = this._gl;
         const attachments = [
             {format: gl.RGBA},
             {format: gl.DEPTH_STENCIL}
         ];
 
-        this._pickBufferInfo = twgl.createFramebufferInfo(gl, attachments, MAX_TOUCH_SIZE[0], MAX_TOUCH_SIZE[1]);
+        if (!this._pickBufferInfo) {
+            this._pickBufferInfo = twgl.createFramebufferInfo(gl, attachments, MAX_TOUCH_SIZE[0], MAX_TOUCH_SIZE[1]);
+        }
 
         // TODO: should we create this on demand to save memory?
         // A 480x360 32-bpp buffer is 675 KiB.
-        this._queryBufferInfo = twgl.createFramebufferInfo(gl, attachments, this._nativeSize[0], this._nativeSize[1]);
+        if (this._queryBufferInfo) {
+            twgl.resizeFramebufferInfo(gl, this._queryBufferInfo, attachments, width, height);
+        } else {
+            this._queryBufferInfo = twgl.createFramebufferInfo(gl, attachments, width, height);
+        }
     }
 
     /**
@@ -754,7 +887,7 @@ class RenderWebGL {
      * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawList.
      * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
      * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
-     * @param {Drawable~idFilterFunc} [filter] An optional filter function.
+     * @param {idFilterFunc} [filter] An optional filter function.
      * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
      * @private
      */
@@ -812,7 +945,7 @@ class RenderWebGL {
      */
     _getConvexHullPointsForDrawable (drawableID) {
         const drawable = this._allDrawables[drawableID];
-        const [width, height] = drawable._uniforms.u_skinSize;
+        const [width, height] = drawable.skin.size;
         // No points in the hull if invisible or size is 0.
         if (!drawable.getVisible() || width === 0 || height === 0) {
             return [];
@@ -842,7 +975,7 @@ class RenderWebGL {
             {u_modelMatrix: modelMatrix}
         );
 
-        const pixels = new Buffer(width * height * 4);
+        const pixels = new Uint8Array(width * height * 4);
         gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         // Known boundary points on left/right edges of pixels.

@@ -27,5 +27,9 @@ module.exports = {
      * Optimize for fewer than this number of Drawables sharing the same Skin.
      * Going above this may cause middleware warnings or a performance penalty but should otherwise behave correctly.
      */
-    SKIN_SHARE_SOFT_LIMIT: 300
+    SKIN_SHARE_SOFT_LIMIT: 300,
+
+    Events: {
+        NativeSizeChanged: 'NativeSizeChanged'
+    }
 };
