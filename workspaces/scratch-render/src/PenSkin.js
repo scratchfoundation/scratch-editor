@@ -166,6 +166,12 @@ class PenSkin extends Skin {
         this._canvasDirty = true;
     }
 
+    /**
+     * Set context state to match provided pen attributes.
+     * @param {CanvasRenderingContext2D} context - the canvas rendering context to be modified.
+     * @param {PenAttributes} penAttributes - the pen attributes to be used.
+     * @private
+     */
     _setAttributes (context, penAttributes) {
         penAttributes = penAttributes || DefaultPenAttributes;
         const color4f = penAttributes.color4f || DefaultPenAttributes.color4f;
