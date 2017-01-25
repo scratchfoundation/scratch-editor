@@ -53,9 +53,10 @@ class SVGSkin extends Skin {
     /**
      * Set the contents of this skin to a snapshot of the provided SVG data.
      * @param {string} svgData - new SVG to use.
-     * @param {bool} [calculateRotationCenter=false] set the rotation center to the SVG center
+     * @param {number[]=} rotationCenter - Optional rotation center for the SVG. If not supplied, it will be
+     * calculated from the bounding box
      */
-    setSVG (svgData, calculateRotationCenter) {
+    setSVG (svgData, rotationCenter) {
         this._svgRenderer.fromString(svgData, () => {
             const gl = this._renderer.gl;
             if (this._texture) {
@@ -72,7 +73,8 @@ class SVGSkin extends Skin {
 
                 this._texture = twgl.createTexture(gl, textureOptions);
             }
-            if (calculateRotationCenter) this.setRotationCenter.apply(this, this.calculateRotationCenter());
+            if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
+            this.setRotationCenter.apply(this, rotationCenter);
             this.emit(Skin.Events.WasAltered);
         });
     }

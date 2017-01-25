@@ -140,11 +140,12 @@ class RenderWebGL {
      * Use `createBitmapSkin` or `createSVGSkin` instead.
      * @param {!string} skinUrl The URL of the skin.
      * @param {!int} [costumeResolution] Optional: resolution for the skin. Ignored unless creating a new Bitmap skin.
-     * @param {!boolean} [calculateRotationCenter] Optional: set the rotation center of the skin to the box center
+     * @param {number[]=} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the skin
+     * will be used.
      * @returns {!int} The ID of the Skin.
      * @deprecated
      */
-    createSkinFromURL (skinUrl, costumeResolution, calculateRotationCenter) {
+    createSkinFromURL (skinUrl, costumeResolution, rotationCenter) {
         if (this._skinUrlMap.hasOwnProperty(skinUrl)) {
             const existingId = this._skinUrlMap[skinUrl];
 
@@ -180,7 +181,7 @@ class RenderWebGL {
                 url: skinUrl
             }, (err, response, body) => {
                 if (!err) {
-                    newSkin.setSVG(body, calculateRotationCenter);
+                    newSkin.setSVG(body, rotationCenter);
                 }
             });
         } else {
@@ -188,7 +189,7 @@ class RenderWebGL {
             const img = new Image();
             img.crossOrigin = 'anonymous';
             img.onload = () => {
-                newSkin.setBitmap(img, costumeResolution, calculateRotationCenter);
+                newSkin.setBitmap(img, costumeResolution, rotationCenter);
             };
             img.src = skinUrl;
         }
@@ -679,13 +680,8 @@ class RenderWebGL {
         }
         // TODO: remove this after fully deprecating URL-based skin paths
         if ('skin' in properties) {
-            const {skin, costumeResolution} = properties;
-            const skinId = this.createSkinFromURL(
-                skin,
-                costumeResolution,
-                // If no rotationCenter, calculate one
-                !('rotationCenter' in properties)
-            );
+            const {skin, costumeResolution, rotationCenter} = properties;
+            const skinId = this.createSkinFromURL(skin, costumeResolution, rotationCenter);
             drawable.skin = this._allSkins[skinId];
         }
         if ('skinId' in properties) {
