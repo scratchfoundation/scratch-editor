@@ -176,10 +176,12 @@ class RenderWebGL extends EventEmitter {
      * Use `createBitmapSkin` or `createSVGSkin` instead.
      * @param {!string} skinUrl The URL of the skin.
      * @param {!int} [costumeResolution] Optional: resolution for the skin. Ignored unless creating a new Bitmap skin.
+     * @param {number[]=} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the skin
+     * will be used.
      * @returns {!int} The ID of the Skin.
      * @deprecated
      */
-    createSkinFromURL (skinUrl, costumeResolution) {
+    createSkinFromURL (skinUrl, costumeResolution, rotationCenter) {
         if (this._skinUrlMap.hasOwnProperty(skinUrl)) {
             const existingId = this._skinUrlMap[skinUrl];
 
@@ -215,7 +217,7 @@ class RenderWebGL extends EventEmitter {
                 url: skinUrl
             }, (err, response, body) => {
                 if (!err) {
-                    newSkin.setSVG(body);
+                    newSkin.setSVG(body, rotationCenter);
                 }
             });
         } else {
@@ -223,7 +225,7 @@ class RenderWebGL extends EventEmitter {
             const img = new Image();
             img.crossOrigin = 'anonymous';
             img.onload = () => {
-                newSkin.setBitmap(img, costumeResolution);
+                newSkin.setBitmap(img, costumeResolution, rotationCenter);
             };
             img.src = skinUrl;
         }
@@ -236,12 +238,13 @@ class RenderWebGL extends EventEmitter {
      * Create a new bitmap skin from a snapshot of the provided bitmap data.
      * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
      * @param {!int} [costumeResolution=1] - The resolution to use for this bitmap.
+     * @param {number[]=} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the skin
      * @returns {!int} the ID for the new skin.
      */
-    createBitmapSkin (bitmapData, costumeResolution) {
+    createBitmapSkin (bitmapData, costumeResolution, rotationCenter) {
         const skinId = this._nextSkinId++;
         const newSkin = new BitmapSkin(skinId, this);
-        newSkin.setBitmap(bitmapData, costumeResolution);
+        newSkin.setBitmap(bitmapData, costumeResolution, rotationCenter);
         this._allSkins[skinId] = newSkin;
         return skinId;
     }
@@ -249,12 +252,13 @@ class RenderWebGL extends EventEmitter {
     /**
      * Create a new SVG skin.
      * @param {!string} svgData - new SVG to use.
+     * @param {number[]=} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the skin
      * @returns {!int} the ID for the new skin.
      */
-    createSVGSkin (svgData) {
+    createSVGSkin (svgData, rotationCenter) {
         const skinId = this._nextSkinId++;
         const newSkin = new SVGSkin(skinId, this);
-        newSkin.setSVG(svgData);
+        newSkin.setSVG(svgData, rotationCenter);
         this._allSkins[skinId] = newSkin;
         return skinId;
     }
@@ -718,8 +722,8 @@ class RenderWebGL extends EventEmitter {
         }
         // TODO: remove this after fully deprecating URL-based skin paths
         if ('skin' in properties) {
-            const {skin, costumeResolution} = properties;
-            const skinId = this.createSkinFromURL(skin, costumeResolution);
+            const {skin, costumeResolution, rotationCenter} = properties;
+            const skinId = this.createSkinFromURL(skin, costumeResolution, rotationCenter);
             drawable.skin = this._allSkins[skinId];
         }
         if ('skinId' in properties) {
