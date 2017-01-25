@@ -202,12 +202,13 @@ class RenderWebGL {
      * Create a new bitmap skin from a snapshot of the provided bitmap data.
      * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
      * @param {!int} [costumeResolution=1] - The resolution to use for this bitmap.
+     * @param {number[]=} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the skin
      * @returns {!int} the ID for the new skin.
      */
-    createBitmapSkin (bitmapData, costumeResolution) {
+    createBitmapSkin (bitmapData, costumeResolution, rotationCenter) {
         const skinId = this._nextSkinId++;
         const newSkin = new BitmapSkin(skinId, this);
-        newSkin.setBitmap(bitmapData, costumeResolution);
+        newSkin.setBitmap(bitmapData, costumeResolution, rotationCenter);
         this._allSkins[skinId] = newSkin;
         return skinId;
     }
@@ -215,12 +216,13 @@ class RenderWebGL {
     /**
      * Create a new SVG skin.
      * @param {!string} svgData - new SVG to use.
+     * @param {number[]=} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the skin
      * @returns {!int} the ID for the new skin.
      */
-    createSVGSkin (svgData) {
+    createSVGSkin (svgData, rotationCenter) {
         const skinId = this._nextSkinId++;
         const newSkin = new SVGSkin(skinId, this);
-        newSkin.setSVG(svgData);
+        newSkin.setSVG(svgData, rotationCenter);
         this._allSkins[skinId] = newSkin;
         return skinId;
     }
