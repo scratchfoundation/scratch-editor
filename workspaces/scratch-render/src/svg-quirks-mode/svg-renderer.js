@@ -2,11 +2,11 @@
 // First, have Webpack load their data as Base 64 strings.
 /* eslint-disable global-require */
 const FONTS = {
-    Donegal: require('base64!scratch-render-fonts/DonegalOne-Regular.ttf'),
-    Gloria: require('base64!scratch-render-fonts/GloriaHallelujah.ttf'),
-    Mystery: require('base64!scratch-render-fonts/MysteryQuest-Regular.ttf'),
-    Marker: require('base64!scratch-render-fonts/PermanentMarker.ttf'),
-    Scratch: require('base64!scratch-render-fonts/Scratch.ttf')
+    Donegal: require('base64-loader!scratch-render-fonts/DonegalOne-Regular.ttf'),
+    Gloria: require('base64-loader!scratch-render-fonts/GloriaHallelujah.ttf'),
+    Mystery: require('base64-loader!scratch-render-fonts/MysteryQuest-Regular.ttf'),
+    Marker: require('base64-loader!scratch-render-fonts/PermanentMarker.ttf'),
+    Scratch: require('base64-loader!scratch-render-fonts/Scratch.ttf')
 };
 /* eslint-enable global-require */
 
