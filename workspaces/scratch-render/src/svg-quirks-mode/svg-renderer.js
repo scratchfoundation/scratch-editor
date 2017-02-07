@@ -73,6 +73,13 @@ class SvgRenderer {
     }
 
     /**
+     * @return {[number,number]} the natural size, in Scratch units, of this SVG.
+     */
+    get size () {
+        return [this._measurements.width, this._measurements.height];
+    }
+
+    /**
      * Transforms an SVG's text elements for Scratch 2.0 quirks.
      * These quirks include:
      * 1. `x` and `y` properties are removed/ignored.
