@@ -739,7 +739,8 @@ class RenderWebGL extends EventEmitter {
     /**
      * Update the position object's x & y members to keep the drawable fenced in view.
      * @param {int} drawableID - The ID of the Drawable to update.
-     * @param {object} position - An object with x & y members to be fenced - These values are updated in the object to become fenced
+     * @param {object} position - An object with x & y members to be fenced
+     *                          - These values are updated in the object to become fenced
      */
     getFencedPositionOfDrawable (drawableID, position) {
         const drawable = this._allDrawables[drawableID];
@@ -753,7 +754,8 @@ class RenderWebGL extends EventEmitter {
 
         const aabb = drawable.getFastBounds();
 
-        // This is my best guess at the fencing in Scratch 2, but I suspect it may need further work to be precisely the same?
+        // This is my best guess at the fencing in Scratch 2,
+        // but I suspect it may need further work to be precisely the same?
         const sx = this._xRight - Math.min(15, Math.floor((aabb.right - aabb.left) / 2));
         if (aabb.right + dx < -sx) {
             position.x = drawable._position[0] - (sx + aabb.right);
