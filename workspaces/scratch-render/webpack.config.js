@@ -15,20 +15,16 @@ const base = {
     },
     devtool: 'source-map',
     module: {
-        loaders: [
+        rules: [
             {
                 include: [
                     path.resolve(__dirname, 'src')
                 ],
                 test: /\.js$/,
                 loader: 'babel-loader',
-                query: {
+                options: {
                     presets: ['es2015']
                 }
-            },
-            {
-                test: /\.json$/,
-                loader: 'json-loader'
             },
             {
                 test: /\.(glsl|vs|fs|frag|vert)$/,
@@ -40,9 +36,7 @@ const base = {
         new webpack.optimize.UglifyJsPlugin({
             include: /\.min\.js$/,
             minimize: true,
-            compress: {
-                warnings: false
-            }
+            sourceMap: true
         })
     ]
 };
