@@ -14913,6 +14913,7 @@ var SvgRenderer = function () {
 
         this._canvas = canvas || document.createElement('canvas');
         this._context = this._canvas.getContext('2d');
+        this._measurements = { x: 0, y: 0, width: 0, height: 0 };
     }
 
     /**
