@@ -742,6 +742,7 @@ class RenderWebGL extends EventEmitter {
      * @param {object} position - An object with x & y members to be fenced
      *                          - These values are updated in the object to become fenced
      */
+    fencePositionOfDrawable (drawableID, position) {
         const drawable = this._allDrawables[drawableID];
         if (!drawable) {
             // TODO: fix whatever's wrong in the VM which causes this, then add a warning or throw here.
