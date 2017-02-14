@@ -2,8 +2,7 @@
 #### WebGL-based rendering engine for Scratch 3.0
 
 [![Build Status](https://travis-ci.org/LLK/scratch-render.svg?branch=develop)](https://travis-ci.org/LLK/scratch-render)
-[![Dependency Status](https://david-dm.org/LLK/scratch-render.svg)](https://david-dm.org/LLK/scratch-render)
-[![devDependency Status](https://david-dm.org/LLK/scratch-render/dev-status.svg)](https://david-dm.org/LLK/scratch-render#info=devDependencies)
+[![Greenkeeper badge](https://badges.greenkeeper.io/LLK/scratch-render.svg)](https://greenkeeper.io/)
 
 ## Installation
 ```bash
