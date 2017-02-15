@@ -34,10 +34,10 @@ class SVGSkin extends Skin {
     }
 
     /**
-     * @return {[number,number]} the "native" size, in texels, of this skin.
+     * @return {[number,number]} the natural size, in Scratch units, of this skin.
      */
     get size () {
-        return [this._svgRenderer.canvas.width, this._svgRenderer.canvas.height];
+        return this._svgRenderer.size;
     }
 
     /**

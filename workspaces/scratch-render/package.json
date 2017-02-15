@@ -21,26 +21,26 @@
     "watch": "./node_modules/.bin/webpack --progress --colors --watch --watch-poll"
   },
   "devDependencies": {
-    "babel-core": "6.9.1",
+    "babel-core": "6.22.1",
     "babel-eslint": "7.1.1",
-    "babel-loader": "6.2.4",
-    "babel-polyfill": "6.9.1",
-    "babel-preset-es2015": "6.9.0",
+    "babel-loader": "6.3.0",
+    "babel-polyfill": "6.22.0",
+    "babel-preset-es2015": "6.22.0",
     "base64-loader": "1.0.0",
-    "eslint": "3.12.0",
+    "eslint": "3.14.1",
     "eslint-config-scratch": "3.1.0",
-    "gh-pages": "0.11.0",
+    "gh-pages": "0.12.0",
     "hull.js": "0.2.10",
     "json": "9.0.4",
     "json-loader": "0.5.4",
     "lodash.defaultsdeep": "4.6.0",
     "raw-loader": "0.5.1",
     "scratch-render-fonts": "git+https://github.com/LLK/scratch-render-fonts.git",
-    "tap": "5.7.1",
+    "tap": "10.1.1",
     "travis-after-all": "1.4.4",
-    "twgl.js": "1.5.2",
-    "webpack": "1.13.0",
-    "webpack-dev-server": "1.14.1",
-    "xhr": "2.2.0"
+    "twgl.js": "2.8.2",
+    "webpack": "2.2.1",
+    "webpack-dev-server": "1.16.3",
+    "xhr": "2.3.3"
   }
 }
