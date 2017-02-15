@@ -737,6 +737,46 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Update the position object's x & y members to keep the drawable fenced in view.
+     * @param {int} drawableID - The ID of the Drawable to update.
+     * @param {Array.<number, number>} position to be fenced - An array of type [x, y]
+     * @return {Array.<number, number>} The fenced position as an array [x, y]
+     */
+    getFencedPositionOfDrawable (drawableID, position) {
+
+        let x = position[0];
+        let y = position[1];
+
+        const drawable = this._allDrawables[drawableID];
+        if (!drawable) {
+            // TODO: fix whatever's wrong in the VM which causes this, then add a warning or throw here.
+            // Right now this happens so much on some projects that a warning or exception here can hang the browser.
+            return [x, y];
+        }
+
+        const dx = x - drawable._position[0];
+        const dy = y - drawable._position[1];
+
+        const aabb = drawable.getFastBounds();
+
+        // This is my best guess at the fencing in Scratch 2,
+        // but I suspect it may need further work to be precisely the same?
+        const sx = this._xRight - Math.min(15, Math.floor((aabb.right - aabb.left) / 2));
+        if (aabb.right + dx < -sx) {
+            x = drawable._position[0] - (sx + aabb.right);
+        } else if (aabb.left + dx > sx) {
+            x = drawable._position[0] + (sx - aabb.left);
+        }
+        const sy = this._yTop - Math.min(15, Math.floor((aabb.top - aabb.bottom) / 2));
+        if (aabb.top + dy < -sy) {
+            y = drawable._position[1] - (sy + aabb.top);
+        } else if (aabb.bottom + dy > sy) {
+            y = drawable._position[1] + (sy - aabb.bottom);
+        }
+        return [x, y];
+    }
+
+    /**
      * Clear a pen layer.
      * @param {int} penSkinID - the unique ID of a Pen Skin.
      */
