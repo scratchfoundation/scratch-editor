@@ -452,15 +452,14 @@ class RenderWebGL extends EventEmitter {
                     ShaderManager.DRAW_MODE.colorMask :
                     ShaderManager.DRAW_MODE.silhouette,
                 projection,
-                null,
-                extraUniforms);
+                {extraUniforms});
 
             gl.stencilFunc(gl.EQUAL, 1, 1);
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
             gl.colorMask(true, true, true, true);
 
             this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.default, projection,
-                testID => testID !== drawableID
+                {idFilterFunc: testID => testID !== drawableID}
             );
         } finally {
             gl.colorMask(true, true, true, true);
@@ -537,7 +536,7 @@ class RenderWebGL extends EventEmitter {
             gl.colorMask(true, true, true, true);
 
             this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection,
-                testID => testID !== drawableID
+                {idFilterFunc: testID => testID !== drawableID}
             );
         } finally {
             gl.colorMask(true, true, true, true);
@@ -963,11 +962,12 @@ class RenderWebGL extends EventEmitter {
      * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawList.
      * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
      * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
-     * @param {idFilterFunc} [filter] An optional filter function.
-     * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
+     * @param {object} [opts] Options for drawing
+     * @param {idFilterFunc} opts.filter An optional filter function.
+     * @param {object.<string,*>} opts.extraUniforms Extra uniforms for the shaders.
      * @private
      */
-    _drawThese (drawables, drawMode, projection, filter, extraUniforms) {
+    _drawThese (drawables, drawMode, projection, opts = {}) {
         const gl = this._gl;
         let currentShader = null;
 
@@ -976,7 +976,7 @@ class RenderWebGL extends EventEmitter {
             const drawableID = drawables[drawableIndex];
 
             // If we have a filter, check whether the ID fails
-            if (filter && !filter(drawableID)) continue;
+            if (opts.filter && !opts.filter(drawableID)) continue;
 
             const drawable = this._allDrawables[drawableID];
             // TODO: check if drawable is inside the viewport before anything else
@@ -1003,8 +1003,8 @@ class RenderWebGL extends EventEmitter {
             twgl.setUniforms(currentShader, drawable.getUniforms());
 
             // Apply extra uniforms after the Drawable's, to allow overwriting.
-            if (extraUniforms) {
-                twgl.setUniforms(currentShader, extraUniforms);
+            if (opts.extraUniforms) {
+                twgl.setUniforms(currentShader, opts.extraUniforms);
             }
 
             twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
@@ -1047,8 +1047,7 @@ class RenderWebGL extends EventEmitter {
         this._drawThese([drawableID],
             ShaderManager.DRAW_MODE.silhouette,
             projection,
-            null,
-            {u_modelMatrix: modelMatrix}
+            {extraUniforms: {u_modelMatrix: modelMatrix}}
         );
 
         const pixels = new Uint8Array(width * height * 4);
