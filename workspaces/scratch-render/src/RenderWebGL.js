@@ -693,7 +693,8 @@ class RenderWebGL extends EventEmitter {
         gl.clear(gl.COLOR_BUFFER_BIT);
         try {
             gl.disable(gl.BLEND);
-            this._drawThese([drawableID], ShaderManager.DRAW_MODE.default, projection);
+            this._drawThese([drawableID], ShaderManager.DRAW_MODE.default, projection,
+                {effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask});
         } finally {
             gl.enable(gl.BLEND);
         }
@@ -965,6 +966,7 @@ class RenderWebGL extends EventEmitter {
      * @param {object} [opts] Options for drawing
      * @param {idFilterFunc} opts.filter An optional filter function.
      * @param {object.<string,*>} opts.extraUniforms Extra uniforms for the shaders.
+     * @param {int} opts.effectMask Bitmask for effects to allow
      * @private
      */
     _drawThese (drawables, drawMode, projection, opts = {}) {
@@ -989,7 +991,8 @@ class RenderWebGL extends EventEmitter {
             // If the texture isn't ready yet, skip it.
             if (!drawable.skin.getTexture(drawableScale)) continue;
 
-            const effectBits = drawable.getEnabledEffects();
+            let effectBits = drawable.getEnabledEffects();
+            effectBits &= opts.hasOwnProperty('effectMask') ? opts.effectMask : effectBits;
             const newShader = this._shaderManager.getShader(drawMode, effectBits);
             if (currentShader !== newShader) {
                 currentShader = newShader;
