@@ -677,8 +677,8 @@ class RenderWebGL extends EventEmitter {
         const gl = this._gl;
         twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
-        const bounds = this._touchingBounds(drawableID);
-        if (!bounds) return;
+        const bounds = drawable.getFastBounds();
+        bounds.snapToInt();
 
         // Translate input x and y to coordinates relative to the drawable
         const pickX = x - ((this._nativeSize[0] / 2) + bounds.left);
