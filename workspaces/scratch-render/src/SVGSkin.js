@@ -41,6 +41,16 @@ class SVGSkin extends Skin {
     }
 
     /**
+     * Set the origin, in object space, about which this Skin should rotate.
+     * @param {number} x - The x coordinate of the new rotation center.
+     * @param {number} y - The y coordinate of the new rotation center.
+     */
+    setRotationCenter (x, y) {
+        const viewOffset = this._svgRenderer.viewOffset;
+        super.setRotationCenter(x - viewOffset[0], y - viewOffset[1]);
+    }
+
+    /**
      * @param {[number,number]} scale - The scaling factors to be used.
      * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
      */

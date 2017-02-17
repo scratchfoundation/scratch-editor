@@ -81,6 +81,13 @@ class SvgRenderer {
     }
 
     /**
+     * @return {[number,number]} the offset (upper left corner) of the SVG's view box.
+     */
+    get viewOffset () {
+        return [this._measurements.x, this._measurements.y];
+    }
+
+    /**
      * Transforms an SVG's text elements for Scratch 2.0 quirks.
      * These quirks include:
      * 1. `x` and `y` properties are removed/ignored.
