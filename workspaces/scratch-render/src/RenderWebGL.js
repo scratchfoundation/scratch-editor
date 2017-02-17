@@ -656,6 +656,78 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * @typedef DrawableExtraction
+     * @property {Uint8Array} data Raw pixel data for the drawable
+     * @property {int} width Drawable bounding box width
+     * @property {int} height Drawable bounding box height
+     * @property {int} x The x coordinate relative to drawable bounding box
+     * @property {int} y The y coordinate relative to drawable bounding box
+     */
+
+    /**
+     * Return drawable pixel data and picking coordinates relative to the drawable bounds
+     * @param {int} drawableID The ID of the drawable to get pixel data for
+     * @param {int} x The client x coordinate of the picking location.
+     * @param {int} y The client y coordinate of the picking location.
+     * @return {?DrawableExtraction} Data about the picked drawable
+     */
+    extractDrawable (drawableID, x, y) {
+        const drawable = this._allDrawables[drawableID];
+        if (!drawable) return;
+
+        const gl = this._gl;
+        twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+
+        const bounds = this._touchingBounds(drawableID);
+        if (!bounds) return;
+
+        // Translate input x and y to coordinates relative to the drawable
+        const pickX = x - ((this._nativeSize[0] / 2) + bounds.left);
+        const pickY = y - ((this._nativeSize[1] / 2) - bounds.top);
+
+        // Limit size of viewport to the bounds around the target Drawable,
+        // and create the projection matrix for the draw.
+        gl.viewport(0, 0, bounds.width, bounds.height);
+        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
+
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        try {
+            gl.disable(gl.BLEND);
+            this._drawThese([drawableID], ShaderManager.DRAW_MODE.default, projection);
+        } finally {
+            gl.enable(gl.BLEND);
+        }
+
+        const data = new Uint8Array(bounds.width * bounds.height * 4);
+        gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+
+        if (this._debugCanvas) {
+            this._debugCanvas.width = bounds.width;
+            this._debugCanvas.height = bounds.height;
+            const ctx = this._debugCanvas.getContext('2d');
+            const imageData = ctx.createImageData(bounds.width, bounds.height);
+            imageData.data.set(data);
+            ctx.putImageData(imageData, 0, 0);
+            ctx.beginPath();
+            ctx.arc(pickX, pickY, 3, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+        }
+
+        return {
+            data: data,
+            width: bounds.width,
+            height: bounds.height,
+            x: pickX,
+            y: pickY
+        };
+    }
+
+    /**
      * Get the candidate bounding box for a touching query.
      * @param {int} drawableID ID for drawable of query.
      * @return {?Rectangle} Rectangle bounds for touching query, or null.
@@ -1018,5 +1090,8 @@ class RenderWebGL extends EventEmitter {
         return hull(boundaryPoints, Infinity);
     }
 }
+
+// :3
+RenderWebGL.prototype.canHazPixels = RenderWebGL.prototype.extractDrawable;
 
 module.exports = RenderWebGL;
