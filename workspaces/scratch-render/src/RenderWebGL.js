@@ -672,7 +672,7 @@ class RenderWebGL extends EventEmitter {
      */
     extractDrawable (drawableID, x, y) {
         const drawable = this._allDrawables[drawableID];
-        if (!drawable) return;
+        if (!drawable) return null;
 
         const gl = this._gl;
         twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
