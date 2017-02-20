@@ -52,7 +52,7 @@ class SvgRenderer {
      * This will be parsed and transformed, and finally drawn.
      * When drawing is finished, the `onFinish` callback is called.
      * @param {string} svgString String of SVG data to draw in quirks-mode.
-     * @param {Function=} onFinish Optional callback for when drawing finished.
+     * @param {Function} [onFinish] Optional callback for when drawing finished.
      */
     fromString (svgString, onFinish) {
         // Store the callback for later.
@@ -74,14 +74,14 @@ class SvgRenderer {
     }
 
     /**
-     * @return {[number,number]} the natural size, in Scratch units, of this SVG.
+     * @return {Array<number>} the natural size, in Scratch units, of this SVG.
      */
     get size () {
         return [this._measurements.width, this._measurements.height];
     }
 
     /**
-     * @return {[number,number]} the offset (upper left corner) of the SVG's view box.
+     * @return {Array<number>} the offset (upper left corner) of the SVG's view box.
      */
     get viewOffset () {
         return [this._measurements.x, this._measurements.y];

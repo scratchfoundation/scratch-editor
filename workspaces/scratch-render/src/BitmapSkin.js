@@ -5,6 +5,7 @@ const Skin = require('./Skin');
 class BitmapSkin extends Skin {
     /**
      * Create a new Bitmap Skin.
+     * @extends Skin
      * @param {!int} id - The ID for this Skin.
      * @param {!RenderWebGL} renderer - The renderer which will use this skin.
      */
@@ -20,7 +21,7 @@ class BitmapSkin extends Skin {
         /** @type {WebGLTexture} */
         this._texture = null;
 
-        /** @type {[int, int]} */
+        /** @type {Array<int>} */
         this._textureSize = [0, 0];
     }
 
@@ -36,14 +37,14 @@ class BitmapSkin extends Skin {
     }
 
     /**
-     * @return {[number,number]} the "native" size, in texels, of this skin.
+     * @return {Array<number>} the "native" size, in texels, of this skin.
      */
     get size () {
         return [this._textureSize[0] / this._costumeResolution, this._textureSize[1] / this._costumeResolution];
     }
 
     /**
-     * @param {[number,number]} scale - The scaling factors to be used.
+     * @param {Array<number>} scale - The scaling factors to be used.
      * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
      */
     // eslint-disable-next-line no-unused-vars
@@ -55,8 +56,9 @@ class BitmapSkin extends Skin {
      * Set the contents of this skin to a snapshot of the provided bitmap data.
      * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
      * @param {int} [costumeResolution=1] - The resolution to use for this bitmap.
-     * @param {number[]=} rotationCenter - Optional rotation center for the bitmap. If not supplied, it will be
+     * @param {Array<number>} [rotationCenter] - Optional rotation center for the bitmap. If not supplied, it will be
      * calculated from the bounding box
+     * @fires Skin.event:WasAltered
      */
     setBitmap (bitmapData, costumeResolution, rotationCenter) {
         const gl = this._renderer.gl;
@@ -68,7 +70,8 @@ class BitmapSkin extends Skin {
             const textureOptions = {
                 auto: true,
                 mag: gl.NEAREST,
-                min: gl.NEAREST, // TODO: mipmaps, linear (except pixelate)
+                /** @todo mipmaps, linear (except pixelate) */
+                min: gl.NEAREST,
                 wrap: gl.CLAMP_TO_EDGE,
                 src: bitmapData
             };
@@ -88,7 +91,7 @@ class BitmapSkin extends Skin {
 
     /**
      * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - bitmap data to inspect.
-     * @returns {[int,int]} the width and height of the bitmap data, in pixels.
+     * @returns {Array<int>} the width and height of the bitmap data, in pixels.
      * @private
      */
     static _getBitmapSize (bitmapData) {

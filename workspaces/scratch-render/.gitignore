@@ -16,3 +16,4 @@ npm-*
 /dist
 /playground/scratch-render.js
 /playground/scratch-render.js.map
+/playground/docs
