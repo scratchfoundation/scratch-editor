@@ -61,10 +61,10 @@ class SvgRenderer {
         const parser = new DOMParser();
         this._svgDom = parser.parseFromString(svgString, 'text/xml');
         if (this._svgDom.childNodes.length < 1 ||
-            this._svgDom.childNodes[0].localName !== 'svg') {
+            this._svgDom.documentElement.localName !== 'svg') {
             throw new Error('Document does not appear to be SVG.');
         }
-        this._svgTag = this._svgDom.childNodes[0];
+        this._svgTag = this._svgDom.documentElement;
         // Transform all text elements.
         this._transformText();
         // Transform measurements.
@@ -201,7 +201,7 @@ class SvgRenderer {
         // perhaps for security reasons?
         const parser = new DOMParser();
         this._svgDom = parser.parseFromString(svgText, 'text/xml');
-        this._svgTag = this._svgDom.childNodes[0];
+        this._svgTag = this._svgDom.documentElement;
 
         // Set the correct measurements on the SVG tag, and save them.
         this._svgTag.setAttribute('width', bbox.width);
