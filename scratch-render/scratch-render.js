@@ -14143,15 +14143,15 @@ var RenderWebGL = function (_EventEmitter) {
                 gl.stencilFunc(gl.ALWAYS, 1, 1);
                 gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
                 gl.colorMask(false, false, false, false);
-                this._drawThese([drawableID], mask3b ? ShaderManager.DRAW_MODE.colorMask : ShaderManager.DRAW_MODE.silhouette, projection, null, extraUniforms);
+                this._drawThese([drawableID], mask3b ? ShaderManager.DRAW_MODE.colorMask : ShaderManager.DRAW_MODE.silhouette, projection, { extraUniforms: extraUniforms });
 
                 gl.stencilFunc(gl.EQUAL, 1, 1);
                 gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
                 gl.colorMask(true, true, true, true);
 
-                this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.default, projection, function (testID) {
-                    return testID !== drawableID;
-                });
+                this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.default, projection, { idFilterFunc: function idFilterFunc(testID) {
+                        return testID !== drawableID;
+                    } });
             } finally {
                 gl.colorMask(true, true, true, true);
                 gl.disable(gl.STENCIL_TEST);
@@ -14227,9 +14227,9 @@ var RenderWebGL = function (_EventEmitter) {
                 gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
                 gl.colorMask(true, true, true, true);
 
-                this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection, function (testID) {
-                    return testID !== drawableID;
-                });
+                this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection, { idFilterFunc: function idFilterFunc(testID) {
+                        return testID !== drawableID;
+                    } });
             } finally {
                 gl.colorMask(true, true, true, true);
                 gl.disable(gl.STENCIL_TEST);
@@ -14341,6 +14341,81 @@ var RenderWebGL = function (_EventEmitter) {
             }
 
             return hit | 0;
+        }
+
+        /**
+         * @typedef DrawableExtraction
+         * @property {Uint8Array} data Raw pixel data for the drawable
+         * @property {int} width Drawable bounding box width
+         * @property {int} height Drawable bounding box height
+         * @property {int} x The x coordinate relative to drawable bounding box
+         * @property {int} y The y coordinate relative to drawable bounding box
+         */
+
+        /**
+         * Return drawable pixel data and picking coordinates relative to the drawable bounds
+         * @param {int} drawableID The ID of the drawable to get pixel data for
+         * @param {int} x The client x coordinate of the picking location.
+         * @param {int} y The client y coordinate of the picking location.
+         * @return {?DrawableExtraction} Data about the picked drawable
+         */
+
+    }, {
+        key: 'extractDrawable',
+        value: function extractDrawable(drawableID, x, y) {
+            var drawable = this._allDrawables[drawableID];
+            if (!drawable) return null;
+
+            var gl = this._gl;
+            twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+
+            var bounds = drawable.getFastBounds();
+            bounds.snapToInt();
+
+            // Translate input x and y to coordinates relative to the drawable
+            var pickX = x - (this._nativeSize[0] / 2 + bounds.left);
+            var pickY = y - (this._nativeSize[1] / 2 - bounds.top);
+
+            // Limit size of viewport to the bounds around the target Drawable,
+            // and create the projection matrix for the draw.
+            gl.viewport(0, 0, bounds.width, bounds.height);
+            var projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
+
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            try {
+                gl.disable(gl.BLEND);
+                this._drawThese([drawableID], ShaderManager.DRAW_MODE.default, projection, { effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask });
+            } finally {
+                gl.enable(gl.BLEND);
+            }
+
+            var data = new Uint8Array(bounds.width * bounds.height * 4);
+            gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+
+            if (this._debugCanvas) {
+                this._debugCanvas.width = bounds.width;
+                this._debugCanvas.height = bounds.height;
+                var ctx = this._debugCanvas.getContext('2d');
+                var imageData = ctx.createImageData(bounds.width, bounds.height);
+                imageData.data.set(data);
+                ctx.putImageData(imageData, 0, 0);
+                ctx.beginPath();
+                ctx.arc(pickX, pickY, 3, 0, 2 * Math.PI, false);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'black';
+                ctx.stroke();
+            }
+
+            return {
+                data: data,
+                width: bounds.width,
+                height: bounds.height,
+                x: pickX,
+                y: pickY
+            };
         }
 
         /**
@@ -14596,14 +14671,18 @@ var RenderWebGL = function (_EventEmitter) {
          * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawList.
          * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
          * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
-         * @param {idFilterFunc} [filter] An optional filter function.
-         * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
+         * @param {object} [opts] Options for drawing
+         * @param {idFilterFunc} opts.filter An optional filter function.
+         * @param {object.<string,*>} opts.extraUniforms Extra uniforms for the shaders.
+         * @param {int} opts.effectMask Bitmask for effects to allow
          * @private
          */
 
     }, {
         key: '_drawThese',
-        value: function _drawThese(drawables, drawMode, projection, filter, extraUniforms) {
+        value: function _drawThese(drawables, drawMode, projection) {
+            var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+
             var gl = this._gl;
             var currentShader = null;
 
@@ -14612,7 +14691,7 @@ var RenderWebGL = function (_EventEmitter) {
                 var drawableID = drawables[drawableIndex];
 
                 // If we have a filter, check whether the ID fails
-                if (filter && !filter(drawableID)) continue;
+                if (opts.filter && !opts.filter(drawableID)) continue;
 
                 var drawable = this._allDrawables[drawableID];
                 // TODO: check if drawable is inside the viewport before anything else
@@ -14626,6 +14705,7 @@ var RenderWebGL = function (_EventEmitter) {
                 if (!drawable.skin.getTexture(drawableScale)) continue;
 
                 var effectBits = drawable.getEnabledEffects();
+                effectBits &= opts.hasOwnProperty('effectMask') ? opts.effectMask : effectBits;
                 var newShader = this._shaderManager.getShader(drawMode, effectBits);
                 if (currentShader !== newShader) {
                     currentShader = newShader;
@@ -14639,8 +14719,8 @@ var RenderWebGL = function (_EventEmitter) {
                 twgl.setUniforms(currentShader, drawable.getUniforms());
 
                 // Apply extra uniforms after the Drawable's, to allow overwriting.
-                if (extraUniforms) {
-                    twgl.setUniforms(currentShader, extraUniforms);
+                if (opts.extraUniforms) {
+                    twgl.setUniforms(currentShader, opts.extraUniforms);
                 }
 
                 twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
@@ -14688,7 +14768,7 @@ var RenderWebGL = function (_EventEmitter) {
 
             var projection = twgl.m4.ortho(-0.5 * width, 0.5 * width, -0.5 * height, 0.5 * height, -1, 1);
 
-            this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, projection, null, { u_modelMatrix: modelMatrix });
+            this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, projection, { extraUniforms: { u_modelMatrix: modelMatrix } });
 
             var pixels = new Uint8Array(width * height * 4);
             gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
@@ -14715,9 +14795,9 @@ var RenderWebGL = function (_EventEmitter) {
                     }
                 }
                 // Scan from right.
-                for (var _x = width - 1; _x >= 0; _x--) {
-                    if (_getPixel(_x, y) > RenderConstants.ID_NONE) {
-                        boundaryPoints.push([_x, y]);
+                for (var _x2 = width - 1; _x2 >= 0; _x2--) {
+                    if (_getPixel(_x2, y) > RenderConstants.ID_NONE) {
+                        boundaryPoints.push([_x2, y]);
                         break;
                     }
                 }
@@ -14734,6 +14814,11 @@ var RenderWebGL = function (_EventEmitter) {
 
     return RenderWebGL;
 }(EventEmitter);
+
+// :3
+
+
+RenderWebGL.prototype.canHazPixels = RenderWebGL.prototype.extractDrawable;
 
 module.exports = RenderWebGL;
 
@@ -20732,7 +20817,7 @@ function _createXHR(options) {
 
     function readystatechange() {
         if (xhr.readyState === 4) {
-            loadFunc()
+            setTimeout(loadFunc, 0)
         }
     }
 
@@ -20897,7 +20982,7 @@ function getXml(xhr) {
     if (xhr.responseType === "document") {
         return xhr.responseXML
     }
-    var firefoxBugTakenEffect = xhr.status === 204 && xhr.responseXML && xhr.responseXML.documentElement.nodeName === "parsererror"
+    var firefoxBugTakenEffect = xhr.responseXML && xhr.responseXML.documentElement.nodeName === "parsererror"
     if (xhr.responseType === "" && !firefoxBugTakenEffect) {
         return xhr.responseXML
     }
