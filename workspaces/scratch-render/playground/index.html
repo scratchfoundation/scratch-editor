@@ -8,8 +8,8 @@
     </style>
 </head>
 <body style="background: lightsteelblue">
-<canvas id="debug-canvas" width="10" height="10" style="border:3px dashed red"></canvas>
 <canvas id="scratch-stage" width="10" height="10" style="border:3px dashed black"></canvas>
+<canvas id="debug-canvas" width="10" height="10" style="border:3px dashed red"></canvas>
 <p>
     <select id="fudgeproperty" onchange="onFudgePropertyChanged(this.value)">
         <option value="posx">Position X</option>
@@ -124,12 +124,15 @@
         var mousePos = getMousePos(event, canvas);
         var pickID = renderer.pick(mousePos.x, mousePos.y);
         console.log('You clicked on ' + (pickID < 0 ? 'nothing' : 'ID# ' + pickID));
+        if (pickID >= 0) {
+            console.dir(renderer.extractDrawable(pickID, mousePos.x, mousePos.y));
+        }
     };
 
     function drawStep() {
         renderer.draw();
-        //renderer.getBounds(drawableID2);
-        renderer.isTouchingColor(drawableID2, [255,255,255]);
+        // renderer.getBounds(drawableID2);
+        // renderer.isTouchingColor(drawableID2, [255,255,255]);
         requestAnimationFrame(drawStep);
     }
     drawStep();

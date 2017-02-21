@@ -452,15 +452,14 @@ class RenderWebGL extends EventEmitter {
                     ShaderManager.DRAW_MODE.colorMask :
                     ShaderManager.DRAW_MODE.silhouette,
                 projection,
-                null,
-                extraUniforms);
+                {extraUniforms});
 
             gl.stencilFunc(gl.EQUAL, 1, 1);
             gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
             gl.colorMask(true, true, true, true);
 
             this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.default, projection,
-                testID => testID !== drawableID
+                {idFilterFunc: testID => testID !== drawableID}
             );
         } finally {
             gl.colorMask(true, true, true, true);
@@ -537,7 +536,7 @@ class RenderWebGL extends EventEmitter {
             gl.colorMask(true, true, true, true);
 
             this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection,
-                testID => testID !== drawableID
+                {idFilterFunc: testID => testID !== drawableID}
             );
         } finally {
             gl.colorMask(true, true, true, true);
@@ -653,6 +652,79 @@ class RenderWebGL extends EventEmitter {
         }
 
         return hit | 0;
+    }
+
+    /**
+     * @typedef DrawableExtraction
+     * @property {Uint8Array} data Raw pixel data for the drawable
+     * @property {int} width Drawable bounding box width
+     * @property {int} height Drawable bounding box height
+     * @property {int} x The x coordinate relative to drawable bounding box
+     * @property {int} y The y coordinate relative to drawable bounding box
+     */
+
+    /**
+     * Return drawable pixel data and picking coordinates relative to the drawable bounds
+     * @param {int} drawableID The ID of the drawable to get pixel data for
+     * @param {int} x The client x coordinate of the picking location.
+     * @param {int} y The client y coordinate of the picking location.
+     * @return {?DrawableExtraction} Data about the picked drawable
+     */
+    extractDrawable (drawableID, x, y) {
+        const drawable = this._allDrawables[drawableID];
+        if (!drawable) return null;
+
+        const gl = this._gl;
+        twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+
+        const bounds = drawable.getFastBounds();
+        bounds.snapToInt();
+
+        // Translate input x and y to coordinates relative to the drawable
+        const pickX = x - ((this._nativeSize[0] / 2) + bounds.left);
+        const pickY = y - ((this._nativeSize[1] / 2) - bounds.top);
+
+        // Limit size of viewport to the bounds around the target Drawable,
+        // and create the projection matrix for the draw.
+        gl.viewport(0, 0, bounds.width, bounds.height);
+        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
+
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        try {
+            gl.disable(gl.BLEND);
+            this._drawThese([drawableID], ShaderManager.DRAW_MODE.default, projection,
+                {effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask});
+        } finally {
+            gl.enable(gl.BLEND);
+        }
+
+        const data = new Uint8Array(bounds.width * bounds.height * 4);
+        gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+
+        if (this._debugCanvas) {
+            this._debugCanvas.width = bounds.width;
+            this._debugCanvas.height = bounds.height;
+            const ctx = this._debugCanvas.getContext('2d');
+            const imageData = ctx.createImageData(bounds.width, bounds.height);
+            imageData.data.set(data);
+            ctx.putImageData(imageData, 0, 0);
+            ctx.beginPath();
+            ctx.arc(pickX, pickY, 3, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'white';
+            ctx.fill();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = 'black';
+            ctx.stroke();
+        }
+
+        return {
+            data: data,
+            width: bounds.width,
+            height: bounds.height,
+            x: pickX,
+            y: pickY
+        };
     }
 
     /**
@@ -891,11 +963,13 @@ class RenderWebGL extends EventEmitter {
      * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawList.
      * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
      * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
-     * @param {idFilterFunc} [filter] An optional filter function.
-     * @param {Object.<string,*>} [extraUniforms] Extra uniforms for the shaders.
+     * @param {object} [opts] Options for drawing
+     * @param {idFilterFunc} opts.filter An optional filter function.
+     * @param {object.<string,*>} opts.extraUniforms Extra uniforms for the shaders.
+     * @param {int} opts.effectMask Bitmask for effects to allow
      * @private
      */
-    _drawThese (drawables, drawMode, projection, filter, extraUniforms) {
+    _drawThese (drawables, drawMode, projection, opts = {}) {
         const gl = this._gl;
         let currentShader = null;
 
@@ -904,7 +978,7 @@ class RenderWebGL extends EventEmitter {
             const drawableID = drawables[drawableIndex];
 
             // If we have a filter, check whether the ID fails
-            if (filter && !filter(drawableID)) continue;
+            if (opts.filter && !opts.filter(drawableID)) continue;
 
             const drawable = this._allDrawables[drawableID];
             // TODO: check if drawable is inside the viewport before anything else
@@ -917,7 +991,8 @@ class RenderWebGL extends EventEmitter {
             // If the texture isn't ready yet, skip it.
             if (!drawable.skin.getTexture(drawableScale)) continue;
 
-            const effectBits = drawable.getEnabledEffects();
+            let effectBits = drawable.getEnabledEffects();
+            effectBits &= opts.hasOwnProperty('effectMask') ? opts.effectMask : effectBits;
             const newShader = this._shaderManager.getShader(drawMode, effectBits);
             if (currentShader !== newShader) {
                 currentShader = newShader;
@@ -931,8 +1006,8 @@ class RenderWebGL extends EventEmitter {
             twgl.setUniforms(currentShader, drawable.getUniforms());
 
             // Apply extra uniforms after the Drawable's, to allow overwriting.
-            if (extraUniforms) {
-                twgl.setUniforms(currentShader, extraUniforms);
+            if (opts.extraUniforms) {
+                twgl.setUniforms(currentShader, opts.extraUniforms);
             }
 
             twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
@@ -975,8 +1050,7 @@ class RenderWebGL extends EventEmitter {
         this._drawThese([drawableID],
             ShaderManager.DRAW_MODE.silhouette,
             projection,
-            null,
-            {u_modelMatrix: modelMatrix}
+            {extraUniforms: {u_modelMatrix: modelMatrix}}
         );
 
         const pixels = new Uint8Array(width * height * 4);
@@ -1018,5 +1092,8 @@ class RenderWebGL extends EventEmitter {
         return hull(boundaryPoints, Infinity);
     }
 }
+
+// :3
+RenderWebGL.prototype.canHazPixels = RenderWebGL.prototype.extractDrawable;
 
 module.exports = RenderWebGL;
