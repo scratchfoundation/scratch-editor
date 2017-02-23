@@ -32,6 +32,13 @@ const MAX_TOUCH_SIZE = [3, 3];
  */
 const TOLERANCE_TOUCHING_COLOR = 2;
 
+/**
+ * Sprite Fencing - The number of pixels a sprite is required to leave remaining
+ * onscreen around the edge of the staging area.
+ * @type {number}
+ */
+const FENCE_WIDTH = 15;
+
 
 class RenderWebGL extends EventEmitter {
     /**
@@ -759,15 +766,13 @@ class RenderWebGL extends EventEmitter {
 
         const aabb = drawable.getFastBounds();
 
-        // This is my best guess at the fencing in Scratch 2,
-        // but I suspect it may need further work to be precisely the same?
-        const sx = this._xRight - Math.min(15, Math.floor((aabb.right - aabb.left) / 2));
+        const sx = this._xRight - Math.min(FENCE_WIDTH, Math.floor((aabb.right - aabb.left) / 2));
         if (aabb.right + dx < -sx) {
             x = drawable._position[0] - (sx + aabb.right);
         } else if (aabb.left + dx > sx) {
             x = drawable._position[0] + (sx - aabb.left);
         }
-        const sy = this._yTop - Math.min(15, Math.floor((aabb.top - aabb.bottom) / 2));
+        const sy = this._yTop - Math.min(FENCE_WIDTH, Math.floor((aabb.top - aabb.bottom) / 2));
         if (aabb.top + dy < -sy) {
             y = drawable._position[1] - (sy + aabb.top);
         } else if (aabb.bottom + dy > sy) {
