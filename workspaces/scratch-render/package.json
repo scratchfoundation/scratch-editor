@@ -39,7 +39,7 @@
     "lodash.defaultsdeep": "4.6.0",
     "raw-loader": "0.5.1",
     "scratch-render-fonts": "git+https://github.com/LLK/scratch-render-fonts.git",
-    "tap": "10.1.2",
+    "tap": "10.2.1",
     "travis-after-all": "1.4.4",
     "twgl.js": "3.0.2",
     "webpack": "2.2.1",
