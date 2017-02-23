@@ -35,6 +35,13 @@ const MAX_TOUCH_SIZE = [3, 3];
  */
 const TOLERANCE_TOUCHING_COLOR = 2;
 
+/**
+ * Sprite Fencing - The number of pixels a sprite is required to leave remaining
+ * onscreen around the edge of the staging area.
+ * @type {number}
+ */
+const FENCE_WIDTH = 15;
+
 
 class RenderWebGL extends EventEmitter {
     /**
@@ -817,6 +824,44 @@ class RenderWebGL extends EventEmitter {
             drawable.skin.setRotationCenter(newRotationCenter[0], newRotationCenter[1]);
         }
         drawable.updateProperties(properties);
+    }
+
+    /**
+     * Update the position object's x & y members to keep the drawable fenced in view.
+     * @param {int} drawableID - The ID of the Drawable to update.
+     * @param {Array.<number, number>} position to be fenced - An array of type [x, y]
+     * @return {Array.<number, number>} The fenced position as an array [x, y]
+     */
+    getFencedPositionOfDrawable (drawableID, position) {
+
+        let x = position[0];
+        let y = position[1];
+
+        const drawable = this._allDrawables[drawableID];
+        if (!drawable) {
+            // TODO: fix whatever's wrong in the VM which causes this, then add a warning or throw here.
+            // Right now this happens so much on some projects that a warning or exception here can hang the browser.
+            return [x, y];
+        }
+
+        const dx = x - drawable._position[0];
+        const dy = y - drawable._position[1];
+
+        const aabb = drawable.getFastBounds();
+
+        const sx = this._xRight - Math.min(FENCE_WIDTH, Math.floor((aabb.right - aabb.left) / 2));
+        if (aabb.right + dx < -sx) {
+            x = drawable._position[0] - (sx + aabb.right);
+        } else if (aabb.left + dx > sx) {
+            x = drawable._position[0] + (sx - aabb.left);
+        }
+        const sy = this._yTop - Math.min(FENCE_WIDTH, Math.floor((aabb.top - aabb.bottom) / 2));
+        if (aabb.top + dy < -sy) {
+            y = drawable._position[1] - (sy + aabb.top);
+        } else if (aabb.bottom + dy > sy) {
+            y = drawable._position[1] + (sy - aabb.bottom);
+        }
+        return [x, y];
     }
 
     /**
