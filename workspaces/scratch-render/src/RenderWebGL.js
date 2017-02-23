@@ -1010,7 +1010,7 @@ class RenderWebGL extends EventEmitter {
                 twgl.setUniforms(currentShader, opts.extraUniforms);
             }
 
-            twgl.drawBufferInfo(gl, gl.TRIANGLES, this._bufferInfo);
+            twgl.drawBufferInfo(gl, this._bufferInfo, gl.TRIANGLES);
         }
     }
 
