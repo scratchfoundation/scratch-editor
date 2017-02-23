@@ -1,10 +1,6 @@
-/**
- * @fileoverview
- * A utility for creating and comparing axis-aligned rectangles.
- */
-
 class Rectangle {
     /**
+     * A utility for creating and comparing axis-aligned rectangles.
      * Rectangles are always initialized to the "largest possible rectangle";
      * use one of the init* methods below to set up a particular rectangle.
      * @constructor
@@ -32,7 +28,7 @@ class Rectangle {
 
     /**
      * Initialize a Rectangle to the minimum AABB around a set of points.
-     * @param {Array.<Array.<number>>} points Array of [x, y] points.
+     * @param {Array<Array<number>>} points Array of [x, y] points.
      */
     initFromPointsAABB (points) {
         this.left = Infinity;

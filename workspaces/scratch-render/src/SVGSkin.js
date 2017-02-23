@@ -8,6 +8,8 @@ class SVGSkin extends Skin {
      * Create a new SVG skin.
      * @param {!int} id - The ID for this Skin.
      * @param {!RenderWebGL} renderer - The renderer which will use this skin.
+     * @constructor
+     * @extends Skin
      */
     constructor (id, renderer) {
         super(id);
@@ -34,7 +36,7 @@ class SVGSkin extends Skin {
     }
 
     /**
-     * @return {[number,number]} the natural size, in Scratch units, of this skin.
+     * @return {Array<number>} the natural size, in Scratch units, of this skin.
      */
     get size () {
         return this._svgRenderer.size;
@@ -51,20 +53,21 @@ class SVGSkin extends Skin {
     }
 
     /**
-     * @param {[number,number]} scale - The scaling factors to be used.
+     * @param {Array<number>} scale - The scaling factors to be used.
      * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
      */
     // eslint-disable-next-line no-unused-vars
     getTexture (scale) {
-        // TODO: re-render a scaled version if the requested scale is significantly larger than the current render
+        /** @todo re-render a scaled version if the requested scale is significantly larger than the current render */
         return this._texture;
     }
 
     /**
      * Set the contents of this skin to a snapshot of the provided SVG data.
      * @param {string} svgData - new SVG to use.
-     * @param {number[]=} rotationCenter - Optional rotation center for the SVG. If not supplied, it will be
+     * @param {Array<number>} [rotationCenter] - Optional rotation center for the SVG. If not supplied, it will be
      * calculated from the bounding box
+     * @fires Skin.event:WasAltered
      */
     setSVG (svgData, rotationCenter) {
         this._svgRenderer.fromString(svgData, () => {
@@ -76,7 +79,7 @@ class SVGSkin extends Skin {
                 const textureOptions = {
                     auto: true,
                     mag: gl.NEAREST,
-                    min: gl.NEAREST, // TODO: mipmaps, linear (except pixelate)
+                    min: gl.NEAREST, /** @todo mipmaps, linear (except pixelate) */
                     wrap: gl.CLAMP_TO_EDGE,
                     src: this._svgRenderer.canvas
                 };

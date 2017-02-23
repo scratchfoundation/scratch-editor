@@ -12,15 +12,16 @@ const ShaderManager = require('./ShaderManager');
 const SVGSkin = require('./SVGSkin');
 
 /**
- * @callback idFilterFunc
+ * @callback RenderWebGL#idFilterFunc
  * @param {int} drawableID The ID to filter.
  * @return {bool} True if the ID passes the filter, otherwise false.
  */
 
 /**
  * Maximum touch size for a picking check.
- * TODO: Figure out a reasonable max size. Maybe this should be configurable?
- * @type {int[]}
+ * @todo Figure out a reasonable max size. Maybe this should be configurable?
+ * @type {Array<int>}
+ * @memberof RenderWebGL
  */
 const MAX_TOUCH_SIZE = [3, 3];
 
@@ -28,7 +29,9 @@ const MAX_TOUCH_SIZE = [3, 3];
  * "touching {color}?" or "{color} touching {color}?" tests will be true if the
  * target is touching a color whose components are each within this tolerance of
  * the corresponding component of the query color.
- * @type {int} between 0 (exact matches only) and 255 (match anything).
+ * between 0 (exact matches only) and 255 (match anything).
+ * @type {int}
+ * @memberof RenderWebGL
  */
 const TOLERANCE_TOUCHING_COLOR = 2;
 
@@ -40,14 +43,15 @@ class RenderWebGL extends EventEmitter {
      * The stage's "native" size will be calculated from the these coordinates.
      * For example, the defaults result in a native size of 480x360.
      * Queries such as "touching color?" will always execute at the native size.
-     * @see setStageSize
-     * @see resize
+     * @see RenderWebGL#setStageSize
+     * @see RenderWebGL#resize
      * @param {canvas} canvas The canvas to draw onto.
      * @param {int} [xLeft=-240] The x-coordinate of the left edge.
      * @param {int} [xRight=240] The x-coordinate of the right edge.
      * @param {int} [yBottom=-180] The y-coordinate of the bottom edge.
      * @param {int} [yTop=180] The y-coordinate of the top edge.
      * @constructor
+     * @listens RenderWebGL#event:NativeSizeChanged
      */
     constructor (canvas, xLeft, xRight, yBottom, yTop) {
         super();
@@ -58,7 +62,7 @@ class RenderWebGL extends EventEmitter {
         /** @type {Skin[]} */
         this._allSkins = [];
 
-        /** @type {int[]} */
+        /** @type {Array<int>} */
         this._drawList = [];
 
         /** @type {WebGLRenderingContext} */
@@ -76,6 +80,7 @@ class RenderWebGL extends EventEmitter {
         /** @type {Object.<string,int>} */
         this._skinUrlMap = {};
 
+        /** @type {ShaderManager} */
         this._shaderManager = new ShaderManager(gl);
 
         /** @type {HTMLCanvasElement} */
@@ -90,7 +95,8 @@ class RenderWebGL extends EventEmitter {
         this.resize(this._nativeSize[0], this._nativeSize[1]);
 
         gl.disable(gl.DEPTH_TEST);
-        gl.enable(gl.BLEND); // TODO: disable when no partial transparency?
+        /** @todo disable when no partial transparency? */
+        gl.enable(gl.BLEND);
         gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
     }
 
@@ -153,7 +159,7 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
-     * @return {[int,int]} the "native" size of the stage, which is used for pen, query renders, etc.
+     * @return {Array<int>} the "native" size of the stage, which is used for pen, query renders, etc.
      */
     getNativeSize () {
         return [this._nativeSize[0], this._nativeSize[1]];
@@ -164,6 +170,7 @@ class RenderWebGL extends EventEmitter {
      * @param {int} width - the new width to set.
      * @param {int} height - the new height to set.
      * @private
+     * @fires RenderWebGL#event:NativeSizeChanged
      */
     _setNativeSize (width, height) {
         this._nativeSize = [width, height];
@@ -176,8 +183,8 @@ class RenderWebGL extends EventEmitter {
      * Use `createBitmapSkin` or `createSVGSkin` instead.
      * @param {!string} skinUrl The URL of the skin.
      * @param {!int} [costumeResolution] Optional: resolution for the skin. Ignored unless creating a new Bitmap skin.
-     * @param {number[]=} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the skin
-     * will be used.
+     * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
+     * skin will be used.
      * @returns {!int} The ID of the Skin.
      * @deprecated
      */
@@ -238,7 +245,8 @@ class RenderWebGL extends EventEmitter {
      * Create a new bitmap skin from a snapshot of the provided bitmap data.
      * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
      * @param {!int} [costumeResolution=1] - The resolution to use for this bitmap.
-     * @param {number[]=} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the skin
+     * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
+     * skin will be used
      * @returns {!int} the ID for the new skin.
      */
     createBitmapSkin (bitmapData, costumeResolution, rotationCenter) {
@@ -252,7 +260,8 @@ class RenderWebGL extends EventEmitter {
     /**
      * Create a new SVG skin.
      * @param {!string} svgData - new SVG to use.
-     * @param {number[]=} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the skin
+     * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
+     * skin will be used
      * @returns {!int} the ID for the new skin.
      */
     createSVGSkin (svgData, rotationCenter) {
@@ -398,7 +407,7 @@ class RenderWebGL extends EventEmitter {
     /**
      * Get the current skin (costume) size of a Drawable.
      * @param {int} drawableID The ID of the Drawable to measure.
-     * @return {Array.<number>} Skin size, width and height.
+     * @return {Array<number>} Skin size, width and height.
      */
     getSkinSize (drawableID) {
         const drawable = this._allDrawables[drawableID];
@@ -408,8 +417,8 @@ class RenderWebGL extends EventEmitter {
     /**
      * Check if a particular Drawable is touching a particular color.
      * @param {int} drawableID The ID of the Drawable to check.
-     * @param {int[]} color3b Test if the Drawable is touching this color.
-     * @param {int[]} [mask3b] Optionally mask the check to this part of Drawable.
+     * @param {Array<int>} color3b Test if the Drawable is touching this color.
+     * @param {Array<int>} [mask3b] Optionally mask the check to this part of Drawable.
      * @returns {boolean} True iff the Drawable is touching the color.
      */
     isTouchingColor (drawableID, color3b, mask3b) {
@@ -496,7 +505,7 @@ class RenderWebGL extends EventEmitter {
     /**
      * Check if a particular Drawable is touching any in a set of Drawables.
      * @param {int} drawableID The ID of the Drawable to check.
-     * @param {int[]} candidateIDs The Drawable IDs to check, otherwise all.
+     * @param {Array<int>} candidateIDs The Drawable IDs to check, otherwise all.
      * @returns {boolean} True iff the Drawable is touching one of candidateIDs.
      */
     isTouchingDrawables (drawableID, candidateIDs) {
@@ -574,7 +583,7 @@ class RenderWebGL extends EventEmitter {
      * @param {int} centerY The client y coordinate of the picking location.
      * @param {int} touchWidth The client width of the touch event (optional).
      * @param {int} touchHeight The client height of the touch event (optional).
-     * @param {int[]} candidateIDs The Drawable IDs to pick from, otherwise all.
+     * @param {Array<int>} candidateIDs The Drawable IDs to pick from, otherwise all.
      * @returns {int} The ID of the topmost Drawable under the picking location, or
      * RenderConstants.ID_NONE if there is no Drawable at that location.
      */
@@ -735,7 +744,7 @@ class RenderWebGL extends EventEmitter {
     _touchingBounds (drawableID) {
         const drawable = this._allDrawables[drawableID];
 
-        // TODO: remove this once URL-based skin setting is removed.
+        /** @todo remove this once URL-based skin setting is removed. */
         if (!drawable.skin || !drawable.skin.getTexture([100, 100])) return null;
 
         const bounds = drawable.getFastBounds();
@@ -758,9 +767,9 @@ class RenderWebGL extends EventEmitter {
      * Filter a list of candidates for a touching query into only those that
      * could possibly intersect the given bounds.
      * @param {int} drawableID - ID for drawable of query.
-     * @param {Array.<int>} candidateIDs - Candidates for touching query.
+     * @param {Array<int>} candidateIDs - Candidates for touching query.
      * @param {Rectangle} bounds - Bounds to limit candidates to.
-     * @return {?Array.<int>} Filtered candidateIDs, or null if none.
+     * @return {?Array<int>} Filtered candidateIDs, or null if none.
      */
     _filterCandidatesTouching (drawableID, candidateIDs, bounds) {
         // Filter candidates by rough bounding box intersection.
@@ -788,11 +797,13 @@ class RenderWebGL extends EventEmitter {
     updateDrawableProperties (drawableID, properties) {
         const drawable = this._allDrawables[drawableID];
         if (!drawable) {
-            // TODO: fix whatever's wrong in the VM which causes this, then add a warning or throw here.
-            // Right now this happens so much on some projects that a warning or exception here can hang the browser.
+            /**
+             * @todo fix whatever's wrong in the VM which causes this, then add a warning or throw here.
+             * Right now this happens so much on some projects that a warning or exception here can hang the browser.
+             */
             return;
         }
-        // TODO: remove this after fully deprecating URL-based skin paths
+        /** @todo remove this after fully deprecating URL-based skin paths */
         if ('skin' in properties) {
             const {skin, costumeResolution, rotationCenter} = properties;
             const skinId = this.createSkinFromURL(skin, costumeResolution, rotationCenter);
@@ -949,7 +960,7 @@ class RenderWebGL extends EventEmitter {
             this._pickBufferInfo = twgl.createFramebufferInfo(gl, attachments, MAX_TOUCH_SIZE[0], MAX_TOUCH_SIZE[1]);
         }
 
-        // TODO: should we create this on demand to save memory?
+        /** @todo should we create this on demand to save memory? */
         // A 480x360 32-bpp buffer is 675 KiB.
         if (this._queryBufferInfo) {
             twgl.resizeFramebufferInfo(gl, this._queryBufferInfo, attachments, width, height);
@@ -959,8 +970,8 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
-     * Draw all Drawables, with the possible exception of
-     * @param {int[]} drawables The Drawable IDs to draw, possibly this._drawList.
+     * Draw a set of Drawables, by drawable ID
+     * @param {Array<int>} drawables The Drawable IDs to draw, possibly this._drawList.
      * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
      * @param {module:twgl/m4.Mat4} projection The projection matrix to use.
      * @param {object} [opts] Options for drawing
@@ -981,7 +992,7 @@ class RenderWebGL extends EventEmitter {
             if (opts.filter && !opts.filter(drawableID)) continue;
 
             const drawable = this._allDrawables[drawableID];
-            // TODO: check if drawable is inside the viewport before anything else
+            /** @todo check if drawable is inside the viewport before anything else */
 
             // Hidden drawables (e.g., by a "hide" block) are never drawn.
             if (!drawable.getVisible()) continue;
@@ -1020,7 +1031,7 @@ class RenderWebGL extends EventEmitter {
      * Read back the pixels and find all boundary points.
      * Finally, apply a convex hull algorithm to simplify the set.
      * @param {int} drawableID The Drawable IDs calculate convex hull for.
-     * @return {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
+     * @return {Array<Array<number>>} points Convex hull points, as [[x, y], ...]
      */
     _getConvexHullPointsForDrawable (drawableID) {
         const drawable = this._allDrawables[drawableID];
