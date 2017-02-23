@@ -1,0 +1,1951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>BitmapSkin - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BitmapSkin.html">BitmapSkin</a><ul class='methods'><li data-type='method'><a href="BitmapSkin.html#._getBitmapSize">_getBitmapSize</a></li><li data-type='method'><a href="BitmapSkin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="BitmapSkin.html#dispose">dispose</a></li><li data-type='method'><a href="BitmapSkin.html#getTexture">getTexture</a></li><li data-type='method'><a href="BitmapSkin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="BitmapSkin.html#setBitmap">setBitmap</a></li><li data-type='method'><a href="BitmapSkin.html#setRotationCenter">setRotationCenter</a></li></ul></li><li><a href="Drawable.html">Drawable</a><ul class='methods'><li data-type='method'><a href="Drawable.html#.color3bToID">color3bToID</a></li><li data-type='method'><a href="Drawable.html#.color4fFromID">color4fFromID</a></li><li data-type='method'><a href="Drawable.html#_calculateTransform">_calculateTransform</a></li><li data-type='method'><a href="Drawable.html#_skinWasAltered">_skinWasAltered</a></li><li data-type='method'><a href="Drawable.html#dispose">dispose</a></li><li data-type='method'><a href="Drawable.html#getAABB">getAABB</a></li><li data-type='method'><a href="Drawable.html#getBounds">getBounds</a></li><li data-type='method'><a href="Drawable.html#getEnabledEffects">getEnabledEffects</a></li><li data-type='method'><a href="Drawable.html#getFastBounds">getFastBounds</a></li><li data-type='method'><a href="Drawable.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="Drawable.html#getVisible">getVisible</a></li><li data-type='method'><a href="Drawable.html#needsConvexHullPoints">needsConvexHullPoints</a></li><li data-type='method'><a href="Drawable.html#setConvexHullDirty">setConvexHullDirty</a></li><li data-type='method'><a href="Drawable.html#setConvexHullPoints">setConvexHullPoints</a></li><li data-type='method'><a href="Drawable.html#setTransformDirty">setTransformDirty</a></li><li data-type='method'><a href="Drawable.html#updateProperties">updateProperties</a></li></ul></li><li><a href="PenSkin.html">PenSkin</a><ul class='methods'><li data-type='method'><a href="PenSkin.html#_setAttributes">_setAttributes</a></li><li data-type='method'><a href="PenSkin.html#_setCanvasSize">_setCanvasSize</a></li><li data-type='method'><a href="PenSkin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="PenSkin.html#clear">clear</a></li><li data-type='method'><a href="PenSkin.html#dispose">dispose</a></li><li data-type='method'><a href="PenSkin.html#drawLine">drawLine</a></li><li data-type='method'><a href="PenSkin.html#drawPoint">drawPoint</a></li><li data-type='method'><a href="PenSkin.html#drawStamp">drawStamp</a></li><li data-type='method'><a href="PenSkin.html#getTexture">getTexture</a></li><li data-type='method'><a href="PenSkin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="PenSkin.html#onNativeSizeChanged">onNativeSizeChanged</a></li><li data-type='method'><a href="PenSkin.html#setRotationCenter">setRotationCenter</a></li></ul></li><li><a href="Rectangle.html">Rectangle</a><ul class='methods'><li data-type='method'><a href="Rectangle.html#clamp">clamp</a></li><li data-type='method'><a href="Rectangle.html#contains">contains</a></li><li data-type='method'><a href="Rectangle.html#initFromBounds">initFromBounds</a></li><li data-type='method'><a href="Rectangle.html#initFromPointsAABB">initFromPointsAABB</a></li><li data-type='method'><a href="Rectangle.html#intersects">intersects</a></li><li data-type='method'><a href="Rectangle.html#snapToInt">snapToInt</a></li></ul></li><li><a href="RenderWebGL.html">RenderWebGL</a><ul class='methods'><li data-type='method'><a href="RenderWebGL.html#_createGeometry">_createGeometry</a></li><li data-type='method'><a href="RenderWebGL.html#_drawThese">_drawThese</a></li><li data-type='method'><a href="RenderWebGL.html#_filterCandidatesTouching">_filterCandidatesTouching</a></li><li data-type='method'><a href="RenderWebGL.html#_getConvexHullPointsForDrawable">_getConvexHullPointsForDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#_setNativeSize">_setNativeSize</a></li><li data-type='method'><a href="RenderWebGL.html#_touchingBounds">_touchingBounds</a></li><li data-type='method'><a href="RenderWebGL.html#createBitmapSkin">createBitmapSkin</a></li><li data-type='method'><a href="RenderWebGL.html#createDrawable">createDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#createPenSkin">createPenSkin</a></li><li data-type='method'><a href="RenderWebGL.html#createSkinFromURL">createSkinFromURL</a></li><li data-type='method'><a href="RenderWebGL.html#createSVGSkin">createSVGSkin</a></li><li data-type='method'><a href="RenderWebGL.html#destroyDrawable">destroyDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#destroySkin">destroySkin</a></li><li data-type='method'><a href="RenderWebGL.html#draw">draw</a></li><li data-type='method'><a href="RenderWebGL.html#extractDrawable">extractDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#getBounds">getBounds</a></li><li data-type='method'><a href="RenderWebGL.html#getNativeSize">getNativeSize</a></li><li data-type='method'><a href="RenderWebGL.html#getSkinSize">getSkinSize</a></li><li data-type='method'><a href="RenderWebGL.html#isTouchingColor">isTouchingColor</a></li><li data-type='method'><a href="RenderWebGL.html#isTouchingDrawables">isTouchingDrawables</a></li><li data-type='method'><a href="RenderWebGL.html#onNativeSizeChanged">onNativeSizeChanged</a></li><li data-type='method'><a href="RenderWebGL.html#penClear">penClear</a></li><li data-type='method'><a href="RenderWebGL.html#penLine">penLine</a></li><li data-type='method'><a href="RenderWebGL.html#penPoint">penPoint</a></li><li data-type='method'><a href="RenderWebGL.html#penStamp">penStamp</a></li><li data-type='method'><a href="RenderWebGL.html#pick">pick</a></li><li data-type='method'><a href="RenderWebGL.html#resize">resize</a></li><li data-type='method'><a href="RenderWebGL.html#setBackgroundColor">setBackgroundColor</a></li><li data-type='method'><a href="RenderWebGL.html#setDebugCanvas">setDebugCanvas</a></li><li data-type='method'><a href="RenderWebGL.html#setDrawableOrder">setDrawableOrder</a></li><li data-type='method'><a href="RenderWebGL.html#setStageSize">setStageSize</a></li><li data-type='method'><a href="RenderWebGL.html#updateDrawableProperties">updateDrawableProperties</a></li></ul></li><li><a href="ShaderManager.html">ShaderManager</a><ul class='methods'><li data-type='method'><a href="ShaderManager.html#_buildShader">_buildShader</a></li><li data-type='method'><a href="ShaderManager.html#getShader">getShader</a></li></ul></li><li><a href="Skin.html">Skin</a><ul class='methods'><li data-type='method'><a href="Skin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="Skin.html#dispose">dispose</a></li><li data-type='method'><a href="Skin.html#getTexture">getTexture</a></li><li data-type='method'><a href="Skin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="Skin.html#setRotationCenter">setRotationCenter</a></li></ul></li><li><a href="SvgRenderer.html">SvgRenderer</a><ul class='methods'><li data-type='method'><a href="SvgRenderer.html#_createSVGElement">_createSVGElement</a></li><li data-type='method'><a href="SvgRenderer.html#_draw">_draw</a></li><li data-type='method'><a href="SvgRenderer.html#_toString">_toString</a></li><li data-type='method'><a href="SvgRenderer.html#_transformMeasurements">_transformMeasurements</a></li><li data-type='method'><a href="SvgRenderer.html#_transformText">_transformText</a></li><li data-type='method'><a href="SvgRenderer.html#fromString">fromString</a></li><li data-type='method'><a href="SvgRenderer.html#getDrawRatio">getDrawRatio</a></li></ul></li><li><a href="SVGSkin.html">SVGSkin</a><ul class='methods'><li data-type='method'><a href="SVGSkin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="SVGSkin.html#dispose">dispose</a></li><li data-type='method'><a href="SVGSkin.html#getTexture">getTexture</a></li><li data-type='method'><a href="SVGSkin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="SVGSkin.html#setRotationCenter">setRotationCenter</a></li><li data-type='method'><a href="SVGSkin.html#setSVG">setSVG</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-RenderConstants.html">RenderConstants</a></li></ul><h3>Events</h3><ul><li><a href="RenderWebGL.html#event:event:NativeSizeChanged">event:NativeSizeChanged</a></li><li><a href="Skin.html#.event:event:WasAltered">event:WasAltered</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">BitmapSkin</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        BitmapSkin
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    <h4 class="name" id="BitmapSkin"><span class="type-signature"></span>new BitmapSkin<span class="signature">(id<span class="signature-attributes">non-null</span>, renderer<span class="signature-attributes">non-null</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Create a new Bitmap Skin.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The ID for this Skin.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>renderer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="RenderWebGL.html">RenderWebGL</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The renderer which will use this skin.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="Skin.html">Skin</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="_costumeResolution"><span class="type-signature">(non-null) </span>_costumeResolution<span class="type-signature"> :int</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">int</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="_id"><span class="type-signature"></span>_id<span class="type-signature"> :int</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Skin.html#_id">Skin#_id</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">int</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="_renderer"><span class="type-signature">(non-null) </span>_renderer<span class="type-signature"> :<a href="RenderWebGL.html">RenderWebGL</a></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="RenderWebGL.html">RenderWebGL</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="_rotationCenter"><span class="type-signature"></span>_rotationCenter<span class="type-signature"> :Vec3</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Skin.html#_rotationCenter">Skin#_rotationCenter</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Vec3</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="_texture"><span class="type-signature"></span>_texture<span class="type-signature"> :WebGLTexture</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">WebGLTexture</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="_textureSize"><span class="type-signature"></span>_textureSize<span class="type-signature"> :Array.&lt;int></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Array.&lt;int></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="_uniforms"><span class="type-signature">(private) </span>_uniforms<span class="type-signature"> :Object.&lt;string, *></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Skin.html#_uniforms">Skin#_uniforms</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>The uniforms to be used by the vertex and pixel shaders.
+Some of these are used by other parts of the renderer as well.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object.&lt;string, *></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="id"><span class="type-signature"></span>id<span class="type-signature"></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Skin.html#id">Skin#id</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="rotationCenter"><span class="type-signature"></span>rotationCenter<span class="type-signature"></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Skin.html#rotationCenter">Skin#rotationCenter</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="size"><span class="type-signature"></span>size<span class="type-signature"></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Skin.html#size">Skin#size</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="._getBitmapSize"><span class="type-signature">(private, static) </span>_getBitmapSize<span class="signature">(bitmapData)</span><span class="type-signature"> &rarr; {Array.&lt;int>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>bitmapData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">ImageData</span>
+|
+
+<span class="param-type">HTMLImageElement</span>
+|
+
+<span class="param-type">HTMLCanvasElement</span>
+|
+
+<span class="param-type">HTMLVideoElement</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>bitmap data to inspect.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>the width and height of the bitmap data, in pixels.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;int></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="calculateRotationCenter"><span class="type-signature"></span>calculateRotationCenter<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;number>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Skin.html#calculateRotationCenter">Skin#calculateRotationCenter</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Get the center of the current bounding box</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>the center of the current bounding box</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;number></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="dispose"><span class="type-signature"></span>dispose<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Skin.html#dispose">Skin#dispose</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Dispose of this object. Do not use it after calling this method.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getTexture"><span class="type-signature"></span>getTexture<span class="signature">(scale)</span><span class="type-signature"> &rarr; {WebGLTexture}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Skin.html#getTexture">Skin#getTexture</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>scale</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;number></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The scaling factors to be used.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The GL texture representation of this skin when drawing at the given scale.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">WebGLTexture</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getUniforms"><span class="type-signature"></span>getUniforms<span class="signature">(scale)</span><span class="type-signature"> &rarr; {object.&lt;string, *>}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Skin.html#getUniforms">Skin#getUniforms</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Update and returns the uniforms for this skin.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>scale</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;number></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The scaling factors to be used.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>the shader uniforms to be used when rendering with this Skin.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">object.&lt;string, *></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setBitmap"><span class="type-signature"></span>setBitmap<span class="signature">(bitmapData, costumeResolution<span class="signature-attributes">opt</span>, rotationCenter<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Set the contents of this skin to a snapshot of the provided bitmap data.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>bitmapData</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">ImageData</span>
+|
+
+<span class="param-type">HTMLImageElement</span>
+|
+
+<span class="param-type">HTMLCanvasElement</span>
+|
+
+<span class="param-type">HTMLVideoElement</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>new contents for this skin.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>costumeResolution</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    <code>1</code>
+                
+                </td>
+            
+
+            <td class="description last"><p>The resolution to use for this bitmap.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>rotationCenter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;number></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Optional rotation center for the bitmap. If not supplied, it will be
+calculated from the bounding box</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Skin.html#.event:event:WasAltered">Skin.event:WasAltered</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setRotationCenter"><span class="type-signature"></span>setRotationCenter<span class="signature">(x, y)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Skin.html#setRotationCenter">Skin#setRotationCenter</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Set the origin, in object space, about which this Skin should rotate.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>x</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The x coordinate of the new rotation center.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>y</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The y coordinate of the new rotation center.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Skin.html#.event:event:WasAltered">Skin.event:WasAltered</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

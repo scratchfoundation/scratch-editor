@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ShaderManager - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BitmapSkin.html">BitmapSkin</a><ul class='methods'><li data-type='method'><a href="BitmapSkin.html#._getBitmapSize">_getBitmapSize</a></li><li data-type='method'><a href="BitmapSkin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="BitmapSkin.html#dispose">dispose</a></li><li data-type='method'><a href="BitmapSkin.html#getTexture">getTexture</a></li><li data-type='method'><a href="BitmapSkin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="BitmapSkin.html#setBitmap">setBitmap</a></li><li data-type='method'><a href="BitmapSkin.html#setRotationCenter">setRotationCenter</a></li></ul></li><li><a href="Drawable.html">Drawable</a><ul class='methods'><li data-type='method'><a href="Drawable.html#.color3bToID">color3bToID</a></li><li data-type='method'><a href="Drawable.html#.color4fFromID">color4fFromID</a></li><li data-type='method'><a href="Drawable.html#_calculateTransform">_calculateTransform</a></li><li data-type='method'><a href="Drawable.html#_skinWasAltered">_skinWasAltered</a></li><li data-type='method'><a href="Drawable.html#dispose">dispose</a></li><li data-type='method'><a href="Drawable.html#getAABB">getAABB</a></li><li data-type='method'><a href="Drawable.html#getBounds">getBounds</a></li><li data-type='method'><a href="Drawable.html#getEnabledEffects">getEnabledEffects</a></li><li data-type='method'><a href="Drawable.html#getFastBounds">getFastBounds</a></li><li data-type='method'><a href="Drawable.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="Drawable.html#getVisible">getVisible</a></li><li data-type='method'><a href="Drawable.html#needsConvexHullPoints">needsConvexHullPoints</a></li><li data-type='method'><a href="Drawable.html#setConvexHullDirty">setConvexHullDirty</a></li><li data-type='method'><a href="Drawable.html#setConvexHullPoints">setConvexHullPoints</a></li><li data-type='method'><a href="Drawable.html#setTransformDirty">setTransformDirty</a></li><li data-type='method'><a href="Drawable.html#updateProperties">updateProperties</a></li></ul></li><li><a href="PenSkin.html">PenSkin</a><ul class='methods'><li data-type='method'><a href="PenSkin.html#_setAttributes">_setAttributes</a></li><li data-type='method'><a href="PenSkin.html#_setCanvasSize">_setCanvasSize</a></li><li data-type='method'><a href="PenSkin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="PenSkin.html#clear">clear</a></li><li data-type='method'><a href="PenSkin.html#dispose">dispose</a></li><li data-type='method'><a href="PenSkin.html#drawLine">drawLine</a></li><li data-type='method'><a href="PenSkin.html#drawPoint">drawPoint</a></li><li data-type='method'><a href="PenSkin.html#drawStamp">drawStamp</a></li><li data-type='method'><a href="PenSkin.html#getTexture">getTexture</a></li><li data-type='method'><a href="PenSkin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="PenSkin.html#onNativeSizeChanged">onNativeSizeChanged</a></li><li data-type='method'><a href="PenSkin.html#setRotationCenter">setRotationCenter</a></li></ul></li><li><a href="Rectangle.html">Rectangle</a><ul class='methods'><li data-type='method'><a href="Rectangle.html#clamp">clamp</a></li><li data-type='method'><a href="Rectangle.html#contains">contains</a></li><li data-type='method'><a href="Rectangle.html#initFromBounds">initFromBounds</a></li><li data-type='method'><a href="Rectangle.html#initFromPointsAABB">initFromPointsAABB</a></li><li data-type='method'><a href="Rectangle.html#intersects">intersects</a></li><li data-type='method'><a href="Rectangle.html#snapToInt">snapToInt</a></li></ul></li><li><a href="RenderWebGL.html">RenderWebGL</a><ul class='methods'><li data-type='method'><a href="RenderWebGL.html#_createGeometry">_createGeometry</a></li><li data-type='method'><a href="RenderWebGL.html#_drawThese">_drawThese</a></li><li data-type='method'><a href="RenderWebGL.html#_filterCandidatesTouching">_filterCandidatesTouching</a></li><li data-type='method'><a href="RenderWebGL.html#_getConvexHullPointsForDrawable">_getConvexHullPointsForDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#_setNativeSize">_setNativeSize</a></li><li data-type='method'><a href="RenderWebGL.html#_touchingBounds">_touchingBounds</a></li><li data-type='method'><a href="RenderWebGL.html#createBitmapSkin">createBitmapSkin</a></li><li data-type='method'><a href="RenderWebGL.html#createDrawable">createDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#createPenSkin">createPenSkin</a></li><li data-type='method'><a href="RenderWebGL.html#createSkinFromURL">createSkinFromURL</a></li><li data-type='method'><a href="RenderWebGL.html#createSVGSkin">createSVGSkin</a></li><li data-type='method'><a href="RenderWebGL.html#destroyDrawable">destroyDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#destroySkin">destroySkin</a></li><li data-type='method'><a href="RenderWebGL.html#draw">draw</a></li><li data-type='method'><a href="RenderWebGL.html#extractDrawable">extractDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#getBounds">getBounds</a></li><li data-type='method'><a href="RenderWebGL.html#getNativeSize">getNativeSize</a></li><li data-type='method'><a href="RenderWebGL.html#getSkinSize">getSkinSize</a></li><li data-type='method'><a href="RenderWebGL.html#isTouchingColor">isTouchingColor</a></li><li data-type='method'><a href="RenderWebGL.html#isTouchingDrawables">isTouchingDrawables</a></li><li data-type='method'><a href="RenderWebGL.html#onNativeSizeChanged">onNativeSizeChanged</a></li><li data-type='method'><a href="RenderWebGL.html#penClear">penClear</a></li><li data-type='method'><a href="RenderWebGL.html#penLine">penLine</a></li><li data-type='method'><a href="RenderWebGL.html#penPoint">penPoint</a></li><li data-type='method'><a href="RenderWebGL.html#penStamp">penStamp</a></li><li data-type='method'><a href="RenderWebGL.html#pick">pick</a></li><li data-type='method'><a href="RenderWebGL.html#resize">resize</a></li><li data-type='method'><a href="RenderWebGL.html#setBackgroundColor">setBackgroundColor</a></li><li data-type='method'><a href="RenderWebGL.html#setDebugCanvas">setDebugCanvas</a></li><li data-type='method'><a href="RenderWebGL.html#setDrawableOrder">setDrawableOrder</a></li><li data-type='method'><a href="RenderWebGL.html#setStageSize">setStageSize</a></li><li data-type='method'><a href="RenderWebGL.html#updateDrawableProperties">updateDrawableProperties</a></li></ul></li><li><a href="ShaderManager.html">ShaderManager</a><ul class='methods'><li data-type='method'><a href="ShaderManager.html#_buildShader">_buildShader</a></li><li data-type='method'><a href="ShaderManager.html#getShader">getShader</a></li></ul></li><li><a href="Skin.html">Skin</a><ul class='methods'><li data-type='method'><a href="Skin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="Skin.html#dispose">dispose</a></li><li data-type='method'><a href="Skin.html#getTexture">getTexture</a></li><li data-type='method'><a href="Skin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="Skin.html#setRotationCenter">setRotationCenter</a></li></ul></li><li><a href="SvgRenderer.html">SvgRenderer</a><ul class='methods'><li data-type='method'><a href="SvgRenderer.html#_createSVGElement">_createSVGElement</a></li><li data-type='method'><a href="SvgRenderer.html#_draw">_draw</a></li><li data-type='method'><a href="SvgRenderer.html#_toString">_toString</a></li><li data-type='method'><a href="SvgRenderer.html#_transformMeasurements">_transformMeasurements</a></li><li data-type='method'><a href="SvgRenderer.html#_transformText">_transformText</a></li><li data-type='method'><a href="SvgRenderer.html#fromString">fromString</a></li><li data-type='method'><a href="SvgRenderer.html#getDrawRatio">getDrawRatio</a></li></ul></li><li><a href="SVGSkin.html">SVGSkin</a><ul class='methods'><li data-type='method'><a href="SVGSkin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="SVGSkin.html#dispose">dispose</a></li><li data-type='method'><a href="SVGSkin.html#getTexture">getTexture</a></li><li data-type='method'><a href="SVGSkin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="SVGSkin.html#setRotationCenter">setRotationCenter</a></li><li data-type='method'><a href="SVGSkin.html#setSVG">setSVG</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-RenderConstants.html">RenderConstants</a></li></ul><h3>Events</h3><ul><li><a href="RenderWebGL.html#event:event:NativeSizeChanged">event:NativeSizeChanged</a></li><li><a href="Skin.html#.event:event:WasAltered">event:WasAltered</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ShaderManager</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        ShaderManager
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    <h4 class="name" id="ShaderManager"><span class="type-signature"></span>new ShaderManager<span class="signature">(gl)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>gl</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">WebGLRenderingContext</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>WebGL rendering context to create shaders for</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id=".DRAW_MODE"><span class="type-signature">(static, readonly) </span>DRAW_MODE<span class="type-signature"> :string</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>default</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Draw normally.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>silhouette</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Draw a silhouette using a solid color.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>colorMask</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Draw only the parts of the drawable which match a particular color.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>The available draw modes.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">string</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".EFFECT_INFO"><span class="type-signature">(static) </span>EFFECT_INFO<span class="type-signature"> :<a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>color</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Color effect</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fisheye</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Fisheye effect</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>whirl</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Whirl effect</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pixelate</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Pixelate effect</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mosaic</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Mosaic effect</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>brightness</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Brightness effect</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ghost</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Ghost effect</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<div class="description">
+    <p>Mapping of each effect name to info about that effect.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id=".EFFECTS"><span class="type-signature">(static) </span>EFFECTS<span class="type-signature"> :Array</span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>The name of each supported effect.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Array</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="_shaderCache"><span class="type-signature">(private) </span>_shaderCache<span class="type-signature"> :Object.&lt;<a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a>, Array.&lt;ProgramInfo>></span></h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>The cache of all shaders compiled so far, filled on demand.</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object.&lt;<a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a>, Array.&lt;ProgramInfo>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="_buildShader"><span class="type-signature">(private) </span>_buildShader<span class="signature">(drawMode, effectBits)</span><span class="type-signature"> &rarr; {ProgramInfo}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Build the shader for a particular set of active effects.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>drawMode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Draw normally, silhouette, etc.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>effectBits</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Bitmask representing the enabled effects.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The new shader's program info.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">ProgramInfo</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getShader"><span class="type-signature"></span>getShader<span class="signature">(drawMode, effectBits)</span><span class="type-signature"> &rarr; {ProgramInfo}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Fetch the shader for a particular set of active effects.
+Build the shader if necessary.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>drawMode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Draw normally, silhouette, etc.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>effectBits</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Bitmask representing the enabled effects.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The shader's program info.</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">ProgramInfo</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id=".Effect">Effect</h4>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mask</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The bit in 'effectBits' representing the effect.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>converter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>A conversion function which takes a Scratch value (generally in the range
+  0..100 or -100..100) and maps it to a value useful to the shader. This
+  mapping may not be reversible.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>shapeChanges</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Whether the effect could change the drawn shape.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+            
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
