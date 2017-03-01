@@ -8,6 +8,7 @@ class Skin extends EventEmitter {
     /**
      * Create a Skin, which stores and/or generates textures for use in rendering.
      * @param {int} id - The unique ID for this Skin.
+     * @constructor
      */
     constructor (id) {
         super();
@@ -27,7 +28,7 @@ class Skin extends EventEmitter {
         this._uniforms = {
             /**
              * The nominal (not necessarily current) size of the current skin.
-             * @type {number[]}
+             * @type {Array<number>}
              */
             u_skinSize: [0, 0],
 
@@ -64,7 +65,7 @@ class Skin extends EventEmitter {
 
     /**
      * @abstract
-     * @return {[number,number]} the "native" size, in texels, of this skin.
+     * @return {Array<number>} the "native" size, in texels, of this skin.
      */
     get size () {
         return [0, 0];
@@ -74,6 +75,7 @@ class Skin extends EventEmitter {
      * Set the origin, in object space, about which this Skin should rotate.
      * @param {number} x - The x coordinate of the new rotation center.
      * @param {number} y - The y coordinate of the new rotation center.
+     * @fires Skin.event:WasAltered
      */
     setRotationCenter (x, y) {
         if (x !== this._rotationCenter[0] || y !== this._rotationCenter[1]) {
@@ -85,7 +87,7 @@ class Skin extends EventEmitter {
 
     /**
      * Get the center of the current bounding box
-     * @return {[number,number]} the center of the current bounding box
+     * @return {Array<number>} the center of the current bounding box
      */
     calculateRotationCenter () {
         return [this.size[0] / 2, this.size[1] / 2];
@@ -93,7 +95,7 @@ class Skin extends EventEmitter {
 
     /**
      * @abstract
-     * @param {[number,number]} scale - The scaling factors to be used.
+     * @param {Array<number>} scale - The scaling factors to be used.
      * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given size.
      */
     // eslint-disable-next-line no-unused-vars
@@ -103,7 +105,7 @@ class Skin extends EventEmitter {
 
     /**
      * Update and returns the uniforms for this skin.
-     * @param {[number,number]} scale - The scaling factors to be used.
+     * @param {Array<number>} scale - The scaling factors to be used.
      * @returns {object.<string, *>} the shader uniforms to be used when rendering with this Skin.
      */
     getUniforms (scale) {
@@ -115,11 +117,12 @@ class Skin extends EventEmitter {
 
 /**
  * These are the events which can be emitted by instances of this class.
- * @type {object.<string,string>}
+ * @enum {string}
  */
 Skin.Events = {
     /**
      * Emitted when anything about the Skin has been altered, such as the appearance or rotation center.
+     * @event Skin.event:WasAltered
      */
     WasAltered: 'WasAltered'
 };

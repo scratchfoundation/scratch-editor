@@ -9,7 +9,7 @@ const Skin = require('./Skin');
 class Drawable {
     /**
      * An object which can be drawn by the renderer.
-     * TODO: double-buffer all rendering state (position, skin, effects, etc.)
+     * @todo double-buffer all rendering state (position, skin, effects, etc.)
      * @param {!int} id - This Drawable's unique ID.
      * @constructor
      */
@@ -32,7 +32,7 @@ class Drawable {
 
             /**
              * The color to use in the silhouette draw mode.
-             * @type {number[]}
+             * @type {Array<number>}
              */
             u_silhouetteColor: Drawable.color4fFromID(this._id)
         };
@@ -52,7 +52,7 @@ class Drawable {
         this._visible = true;
         this._effectBits = 0;
 
-        // TODO: move convex hull functionality, maybe bounds functionality overall, to Skin classes
+        /** @todo move convex hull functionality, maybe bounds functionality overall, to Skin classes */
         this._convexHullPoints = null;
         this._convexHullDirty = true;
 
@@ -106,7 +106,7 @@ class Drawable {
     }
 
     /**
-     * @returns {[number,number]} the current scaling percentages applied to this Drawable. [100,100] is normal size.
+     * @returns {Array<number>} the current scaling percentages applied to this Drawable. [100,100] is normal size.
      */
     get scale () {
         return [this._scale[0], this._scale[1]];
@@ -232,7 +232,7 @@ class Drawable {
 
     /**
      * Set the convex hull points for the Drawable.
-     * @param {Array.<Array.<number>>} points Convex hull points, as [[x, y], ...]
+     * @param {Array<Array<number>>} points Convex hull points, as [[x, y], ...]
      */
     setConvexHullPoints (points) {
         this._convexHullPoints = points;
@@ -326,7 +326,7 @@ class Drawable {
      * Calculate a color to represent the given ID number. At least one component of
      * the resulting color will be non-zero if the ID is not RenderConstants.ID_NONE.
      * @param {int} id The ID to convert.
-     * @returns {number[]} An array of [r,g,b,a], each component in the range [0,1].
+     * @returns {Array<number>} An array of [r,g,b,a], each component in the range [0,1].
      */
     static color4fFromID (id) {
         id -= RenderConstants.ID_NONE;

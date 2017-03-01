@@ -6,14 +6,17 @@ const Skin = require('./Skin');
 
 /**
  * Attributes to use when drawing with the pen
- * @typedef {object} PenAttributes
+ * @typedef {object} PenSkin#PenAttributes
  * @property {number} [diameter] - The size (diameter) of the pen.
- * @property {number[]} [color4f] - The pen color as an array of [r,g,b,a], each component in the range [0,1].
+ * @property {Array<number>} [color4f] - The pen color as an array of [r,g,b,a], each component in the range [0,1].
  */
 
 /**
  * The pen attributes to use when unspecified.
- * @type {PenAttributes}
+ * @type {PenSkin#PenAttributes}
+ * @memberof PenSkin
+ * @private
+ * @const
  */
 const DefaultPenAttributes = {
     color4f: [0, 0, 1, 1],
@@ -26,11 +29,16 @@ class PenSkin extends Skin {
      * Create a Skin which implements a Scratch pen layer.
      * @param {int} id - The unique ID for this Skin.
      * @param {RenderWebGL} renderer - The renderer which will use this Skin.
+     * @extends Skin
+     * @listens RenderWebGL#event:NativeSizeChanged
      */
     constructor (id, renderer) {
         super(id);
 
-        /** @type {RenderWebGL} */
+        /**
+         * @private
+         * @type {RenderWebGL}
+         */
         this._renderer = renderer;
 
         /** @type {HTMLCanvasElement} */
@@ -59,7 +67,7 @@ class PenSkin extends Skin {
     }
 
     /**
-     * @return {[number,number]} the "native" size, in texels, of this skin.
+     * @return {Array<number>} the "native" size, in texels, of this skin. [width, height]
      */
     get size () {
         return [this._canvas.width, this._canvas.height];
@@ -143,7 +151,7 @@ class PenSkin extends Skin {
 
     /**
      * Set the size of the pen canvas.
-     * @param {[int,int]} canvasSize - the new width and height for the canvas.
+     * @param {Array<int>} canvasSize - the new width and height for the canvas.
      * @private
      */
     _setCanvasSize (canvasSize) {
