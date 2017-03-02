@@ -1122,7 +1122,7 @@ class RenderWebGL extends EventEmitter {
          * @return {int} Known ID at that pixel, or RenderConstants.ID_NONE.
          */
         const _getPixel = (x, y) => {
-            const pixelBase = ((width * y) + x) * 4;
+            const pixelBase = Math.round(((width * y) + x) * 4); // Sometimes SVGs don't have int width and height
             return Drawable.color3bToID(
                 pixels[pixelBase],
                 pixels[pixelBase + 1],
