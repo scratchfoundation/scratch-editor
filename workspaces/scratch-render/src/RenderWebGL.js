@@ -391,7 +391,7 @@ class RenderWebGL extends EventEmitter {
             const points = this._getConvexHullPointsForDrawable(drawableID);
             drawable.setConvexHullPoints(points);
         }
-        const bounds = drawable.getBounds();
+        const bounds = drawable.getFastBounds();
         // In debug mode, draw the bounds.
         if (this._debugCanvas) {
             const gl = this._gl;

@@ -219,7 +219,7 @@ class Drawable {
      * @return {boolean} True when no convex hull known, or it's dirty.
      */
     needsConvexHullPoints () {
-        return !this._convexHullPoints || this._convexHullDirty;
+        return !this._convexHullPoints || this._convexHullDirty || this._convexHullPoints.length === 0;
     }
 
     /**
