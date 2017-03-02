@@ -13019,7 +13019,7 @@ var Drawable = function () {
     }, {
         key: 'needsConvexHullPoints',
         value: function needsConvexHullPoints() {
-            return !this._convexHullPoints || this._convexHullDirty;
+            return !this._convexHullPoints || this._convexHullDirty || this._convexHullPoints.length === 0;
         }
 
         /**
@@ -14103,7 +14103,7 @@ var RenderWebGL = function (_EventEmitter) {
                 var points = this._getConvexHullPointsForDrawable(drawableID);
                 drawable.setConvexHullPoints(points);
             }
-            var bounds = drawable.getBounds();
+            var bounds = drawable.getFastBounds();
             // In debug mode, draw the bounds.
             if (this._debugCanvas) {
                 var gl = this._gl;
