@@ -14380,6 +14380,8 @@ var RenderWebGL = function (_EventEmitter) {
          * @property {Uint8Array} data Raw pixel data for the drawable
          * @property {int} width Drawable bounding box width
          * @property {int} height Drawable bounding box height
+         * @property {Array<number>} scratchOffset [x, y] offset in Scratch coordinates
+         * from the drawable position to the client x, y coordinate
          * @property {int} x The x coordinate relative to drawable bounding box
          * @property {int} y The y coordinate relative to drawable bounding box
          */
@@ -14445,6 +14447,7 @@ var RenderWebGL = function (_EventEmitter) {
                 data: data,
                 width: bounds.width,
                 height: bounds.height,
+                scratchOffset: [this._nativeSize[0] / 2 - x + drawable._position[0], this._nativeSize[1] / 2 - y - drawable._position[1]],
                 x: pickX,
                 y: pickY
             };
