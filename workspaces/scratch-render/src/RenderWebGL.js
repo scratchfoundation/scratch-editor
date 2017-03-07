@@ -1029,6 +1029,7 @@ class RenderWebGL extends EventEmitter {
      * @param {idFilterFunc} opts.filter An optional filter function.
      * @param {object.<string,*>} opts.extraUniforms Extra uniforms for the shaders.
      * @param {int} opts.effectMask Bitmask for effects to allow
+     * @param {boolean} opts.isStamping Stamp mode ignores sprite visibility, always drawing.
      * @private
      */
     _drawThese (drawables, drawMode, projection, opts = {}) {
