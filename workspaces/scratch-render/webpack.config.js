@@ -25,10 +25,6 @@ const base = {
                 options: {
                     presets: ['es2015']
                 }
-            },
-            {
-                test: /\.(glsl|vs|fs|frag|vert)$/,
-                loader: 'raw-loader'
             }
         ]
     },

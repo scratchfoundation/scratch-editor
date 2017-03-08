@@ -1,7 +1,7 @@
 const twgl = require('twgl.js');
 
-const vertexShaderText = require('./shaders/sprite.vert');
-const fragmentShaderText = require('./shaders/sprite.frag');
+const vertexShaderText = require('raw-loader!./shaders/sprite.vert');
+const fragmentShaderText = require('raw-loader!./shaders/sprite.frag');
 
 
 class ShaderManager {
