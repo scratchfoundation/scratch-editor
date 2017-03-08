@@ -391,7 +391,7 @@ class RenderWebGL extends EventEmitter {
             const points = this._getConvexHullPointsForDrawable(drawableID);
             drawable.setConvexHullPoints(points);
         }
-        const bounds = drawable.getBounds();
+        const bounds = drawable.getFastBounds();
         // In debug mode, draw the bounds.
         if (this._debugCanvas) {
             const gl = this._gl;
@@ -675,6 +675,8 @@ class RenderWebGL extends EventEmitter {
      * @property {Uint8Array} data Raw pixel data for the drawable
      * @property {int} width Drawable bounding box width
      * @property {int} height Drawable bounding box height
+     * @property {Array<number>} scratchOffset [x, y] offset in Scratch coordinates
+     * from the drawable position to the client x, y coordinate
      * @property {int} x The x coordinate relative to drawable bounding box
      * @property {int} y The y coordinate relative to drawable bounding box
      */
@@ -738,6 +740,10 @@ class RenderWebGL extends EventEmitter {
             data: data,
             width: bounds.width,
             height: bounds.height,
+            scratchOffset: [
+                (this._nativeSize[0] / 2) - x + drawable._position[0],
+                (this._nativeSize[1] / 2) - y - drawable._position[1]
+            ],
             x: pickX,
             y: pickY
         };
@@ -929,7 +935,7 @@ class RenderWebGL extends EventEmitter {
 
         try {
             gl.disable(gl.BLEND);
-            this._drawThese([stampID], ShaderManager.DRAW_MODE.default, projection);
+            this._drawThese([stampID], ShaderManager.DRAW_MODE.default, projection, {isStamping: true});
         } finally {
             gl.enable(gl.BLEND);
         }
@@ -1023,6 +1029,7 @@ class RenderWebGL extends EventEmitter {
      * @param {idFilterFunc} opts.filter An optional filter function.
      * @param {object.<string,*>} opts.extraUniforms Extra uniforms for the shaders.
      * @param {int} opts.effectMask Bitmask for effects to allow
+     * @param {boolean} opts.isStamping Stamp mode ignores sprite visibility, always drawing.
      * @private
      */
     _drawThese (drawables, drawMode, projection, opts = {}) {
@@ -1039,8 +1046,8 @@ class RenderWebGL extends EventEmitter {
             const drawable = this._allDrawables[drawableID];
             /** @todo check if drawable is inside the viewport before anything else */
 
-            // Hidden drawables (e.g., by a "hide" block) are never drawn.
-            if (!drawable.getVisible()) continue;
+            // Hidden drawables (e.g., by a "hide" block) are not drawn unless stamping
+            if (!drawable.getVisible() && !opts.isStamping) continue;
 
             const drawableScale = drawable.scale;
 
@@ -1122,7 +1129,7 @@ class RenderWebGL extends EventEmitter {
          * @return {int} Known ID at that pixel, or RenderConstants.ID_NONE.
          */
         const _getPixel = (x, y) => {
-            const pixelBase = ((width * y) + x) * 4;
+            const pixelBase = Math.round(((width * y) + x) * 4); // Sometimes SVGs don't have int width and height
             return Drawable.color3bToID(
                 pixels[pixelBase],
                 pixels[pixelBase + 1],
