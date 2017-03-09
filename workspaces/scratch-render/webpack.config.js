@@ -1,17 +1,12 @@
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 
 const base = {
     devServer: {
-        contentBase: path.resolve(__dirname, 'playground'),
+        contentBase: false,
         host: '0.0.0.0',
-        watchOptions: {
-            aggregateTimeout: 300,
-            poll: 1000
-        },
-        stats: {
-            colors: true
-        }
+        port: process.env.PORT || 8361
     },
     devtool: 'source-map',
     module: {
@@ -25,10 +20,6 @@ const base = {
                 options: {
                     presets: ['es2015']
                 }
-            },
-            {
-                test: /\.(glsl|vs|fs|frag|vert)$/,
-                loader: 'raw-loader'
             }
         ]
     },
@@ -51,7 +42,14 @@ module.exports = [
         output: {
             path: path.resolve(__dirname, 'playground'),
             filename: '[name].js'
-        }
+        },
+        plugins: base.plugins.concat([
+            new CopyWebpackPlugin([
+                {
+                    from: 'src/playground'
+                }
+            ])
+        ])
     }),
     // Web-compatible
     Object.assign({}, base, {
