@@ -16,7 +16,7 @@ class WebHelper extends Helper {
         /**
          * @type {Array.<SourceRecord>}
          * @typedef {object} SourceRecord
-         * @property {Array.<AssetType>} types - The types of asset provided by this source.
+         * @property {Array.<string>} types - The types of asset provided by this source, from AssetType's name field.
          * @property {UrlFunction} urlFunction - A function which computes a URL from an Asset.
          */
         this.sources = [];
@@ -29,7 +29,7 @@ class WebHelper extends Helper {
      */
     addSource (types, urlFunction) {
         this.sources.push({
-            types: types.slice(),
+            types: types.map(assetType => assetType.name),
             urlFunction: urlFunction
         });
     }
@@ -58,7 +58,7 @@ class WebHelper extends Helper {
                 while (sourceIndex < sources.length) {
                     const source = sources[sourceIndex];
                     ++sourceIndex;
-                    if (source.types.indexOf(assetType) >= 0) {
+                    if (source.types.indexOf(assetType.name) >= 0) {
                         urlFunction = source.urlFunction;
                         break;
                     }
