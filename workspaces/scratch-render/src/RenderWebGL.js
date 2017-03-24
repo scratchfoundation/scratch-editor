@@ -2,7 +2,6 @@ const EventEmitter = require('events');
 
 const hull = require('hull.js');
 const twgl = require('twgl.js');
-const xhr = require('xhr');
 
 const BitmapSkin = require('./BitmapSkin');
 const Drawable = require('./Drawable');
@@ -83,9 +82,6 @@ class RenderWebGL extends EventEmitter {
 
         /** @type {module:twgl/m4.Mat4} */
         this._projection = twgl.m4.identity();
-
-        /** @type {Object.<string,int>} */
-        this._skinUrlMap = {};
 
         /** @type {ShaderManager} */
         this._shaderManager = new ShaderManager(gl);
@@ -185,70 +181,6 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
-     * Create a skin by loading a bitmap or vector image from a URL, or reuse an existing skin created this way.
-     * WARNING: This method is deprecated and will be removed in the near future.
-     * Use `createBitmapSkin` or `createSVGSkin` instead.
-     * @param {!string} skinUrl The URL of the skin.
-     * @param {!int} [costumeResolution] Optional: resolution for the skin. Ignored unless creating a new Bitmap skin.
-     * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
-     * skin will be used.
-     * @returns {!int} The ID of the Skin.
-     * @deprecated
-     */
-    createSkinFromURL (skinUrl, costumeResolution, rotationCenter) {
-        if (this._skinUrlMap.hasOwnProperty(skinUrl)) {
-            const existingId = this._skinUrlMap[skinUrl];
-
-            // Make sure the "existing" skin hasn't been destroyed
-            if (this._allSkins[existingId]) {
-                return existingId;
-            }
-        }
-
-        const skinId = this._nextSkinId++;
-        this._skinUrlMap[skinUrl] = skinId;
-
-        let newSkin;
-        let isVector;
-
-        const ext = skinUrl.substring(skinUrl.lastIndexOf('.') + 1);
-        switch (ext) {
-        case 'svg':
-        case 'svg/get/':
-        case 'svgz':
-        case 'svgz/get/':
-            isVector = true;
-            break;
-        default:
-            isVector = false;
-            break;
-        }
-
-        if (isVector) {
-            newSkin = new SVGSkin(skinId, this);
-            xhr.get({
-                useXDR: true,
-                url: skinUrl
-            }, (err, response, body) => {
-                if (!err) {
-                    newSkin.setSVG(body, rotationCenter);
-                }
-            });
-        } else {
-            newSkin = new BitmapSkin(skinId, this);
-            const img = new Image();
-            img.crossOrigin = 'anonymous';
-            img.onload = () => {
-                newSkin.setBitmap(img, costumeResolution, rotationCenter);
-            };
-            img.src = skinUrl;
-        }
-
-        this._allSkins[skinId] = newSkin;
-        return skinId;
-    }
-
-    /**
      * Create a new bitmap skin from a snapshot of the provided bitmap data.
      * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
      * @param {!int} [costumeResolution=1] - The resolution to use for this bitmap.
@@ -306,12 +238,11 @@ class RenderWebGL extends EventEmitter {
      */
     createDrawable () {
         const drawableID = this._nextDrawableId++;
-        const drawable = new Drawable(drawableID, this);
+        const drawable = new Drawable(drawableID);
         this._allDrawables[drawableID] = drawable;
         this._drawList.push(drawableID);
 
-        const defaultSkinId = this.createSkinFromURL(RenderConstants.DEFAULT_SKIN);
-        drawable.skin = this._allSkins[defaultSkinId];
+        drawable.skin = null;
 
         return drawableID;
     }
@@ -816,12 +747,6 @@ class RenderWebGL extends EventEmitter {
              */
             return;
         }
-        /** @todo remove this after fully deprecating URL-based skin paths */
-        if ('skin' in properties) {
-            const {skin, costumeResolution, rotationCenter} = properties;
-            const skinId = this.createSkinFromURL(skin, costumeResolution, rotationCenter);
-            drawable.skin = this._allSkins[skinId];
-        }
         if ('skinId' in properties) {
             drawable.skin = this._allSkins[properties.skinId];
         }
@@ -1051,8 +976,8 @@ class RenderWebGL extends EventEmitter {
 
             const drawableScale = drawable.scale;
 
-            // If the texture isn't ready yet, skip it.
-            if (!drawable.skin.getTexture(drawableScale)) continue;
+            // If the skin or texture isn't ready yet, skip it.
+            if (!drawable.skin || !drawable.skin.getTexture(drawableScale)) continue;
 
             let effectBits = drawable.getEnabledEffects();
             effectBits &= opts.hasOwnProperty('effectMask') ? opts.effectMask : effectBits;
