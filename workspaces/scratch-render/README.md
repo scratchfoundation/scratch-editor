@@ -27,13 +27,13 @@ npm install https://github.com/LLK/scratch-render.git
 
 ```js
 var canvas = document.getElementById('myStage');
-var debug = document.getElementById('myDebugElement');
+var debug = document.getElementById('myDebug');
 
 // Instantiate the renderer
 var renderer = new require('scratch-render')(canvas);
 
 // Connect to debug canvas
-renderer.setDebugCanvas(document.getElementById('debug-canvas'));
+renderer.setDebugCanvas(debug);
 
 // Start drawing
 function drawStep() {
