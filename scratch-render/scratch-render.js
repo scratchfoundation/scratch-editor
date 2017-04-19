@@ -14315,7 +14315,7 @@ var RenderWebGL = function (_EventEmitter) {
                 gl.disable(gl.STENCIL_TEST);
             }
 
-            var pixels = new Uint8Array(bounds.width * bounds.height * 4);
+            var pixels = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
             gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
             if (this._debugCanvas) {
@@ -14393,7 +14393,7 @@ var RenderWebGL = function (_EventEmitter) {
                 gl.disable(gl.STENCIL_TEST);
             }
 
-            var pixels = new Uint8Array(bounds.width * bounds.height * 4);
+            var pixels = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
             gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
             if (this._debugCanvas) {
@@ -14470,7 +14470,7 @@ var RenderWebGL = function (_EventEmitter) {
 
             this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection);
 
-            var pixels = new Uint8Array(touchWidth * touchHeight * 4);
+            var pixels = new Uint8Array(Math.floor(touchWidth * touchHeight * 4));
             gl.readPixels(0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
             if (this._debugCanvas) {
@@ -14550,7 +14550,7 @@ var RenderWebGL = function (_EventEmitter) {
                 gl.enable(gl.BLEND);
             }
 
-            var data = new Uint8Array(bounds.width * bounds.height * 4);
+            var data = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
             gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
 
             if (this._debugCanvas) {
@@ -14790,7 +14790,7 @@ var RenderWebGL = function (_EventEmitter) {
                 gl.enable(gl.BLEND);
             }
 
-            var stampPixels = new Uint8Array(bounds.width * bounds.height * 4);
+            var stampPixels = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
             gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, stampPixels);
 
             var stampCanvas = this._tempCanvas;
@@ -14966,7 +14966,7 @@ var RenderWebGL = function (_EventEmitter) {
 
             this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, projection, { extraUniforms: { u_modelMatrix: modelMatrix } });
 
-            var pixels = new Uint8Array(width * height * 4);
+            var pixels = new Uint8Array(Math.floor(width * height * 4));
             gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
             // Known boundary points on left/right edges of pixels.
