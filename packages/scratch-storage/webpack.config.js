@@ -2,6 +2,7 @@ const path = require('path');
 const webpack = require('webpack');
 
 const base = {
+    devtool: 'cheap-module-source-map',
     module: {
         rules: [
             {
