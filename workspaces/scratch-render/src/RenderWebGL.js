@@ -413,7 +413,7 @@ class RenderWebGL extends EventEmitter {
             gl.disable(gl.STENCIL_TEST);
         }
 
-        const pixels = new Uint8Array(bounds.width * bounds.height * 4);
+        const pixels = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
         gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         if (this._debugCanvas) {
@@ -490,7 +490,7 @@ class RenderWebGL extends EventEmitter {
             gl.disable(gl.STENCIL_TEST);
         }
 
-        const pixels = new Uint8Array(bounds.width * bounds.height * 4);
+        const pixels = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
         gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         if (this._debugCanvas) {
@@ -567,7 +567,7 @@ class RenderWebGL extends EventEmitter {
 
         this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection);
 
-        const pixels = new Uint8Array(touchWidth * touchHeight * 4);
+        const pixels = new Uint8Array(Math.floor(touchWidth * touchHeight * 4));
         gl.readPixels(0, 0, touchWidth, touchHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         if (this._debugCanvas) {
@@ -648,7 +648,7 @@ class RenderWebGL extends EventEmitter {
             gl.enable(gl.BLEND);
         }
 
-        const data = new Uint8Array(bounds.width * bounds.height * 4);
+        const data = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
         gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
 
         if (this._debugCanvas) {
@@ -865,7 +865,7 @@ class RenderWebGL extends EventEmitter {
             gl.enable(gl.BLEND);
         }
 
-        const stampPixels = new Uint8Array(bounds.width * bounds.height * 4);
+        const stampPixels = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
         gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, stampPixels);
 
         const stampCanvas = this._tempCanvas;
@@ -1041,7 +1041,7 @@ class RenderWebGL extends EventEmitter {
             {extraUniforms: {u_modelMatrix: modelMatrix}}
         );
 
-        const pixels = new Uint8Array(width * height * 4);
+        const pixels = new Uint8Array(Math.floor(width * height * 4));
         gl.readPixels(0, 0, width, height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         // Known boundary points on left/right edges of pixels.
