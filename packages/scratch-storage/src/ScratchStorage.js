@@ -1,3 +1,5 @@
+const Asset = require('./Asset');
+const AssetType = require('./AssetType');
 const BuiltinHelper = require('./BuiltinHelper');
 const LocalHelper = require('./LocalHelper');
 const WebHelper = require('./WebHelper');
@@ -11,6 +13,40 @@ class ScratchStorage {
         this.localHelper = new LocalHelper(this);
 
         this.builtinHelper.registerDefaultAssets(this);
+    }
+
+    /**
+     * @return {Asset} - the `Asset` class constructor.
+     * @constructor
+     */
+    get Asset () {
+        return Asset;
+    }
+
+    /**
+     * @return {AssetType} - the list of supported asset types.
+     * @constructor
+     */
+    get AssetType () {
+        return AssetType;
+    }
+
+    /**
+     * @deprecated Please use the `Asset` member of a storage instance instead.
+     * @return {Asset} - the `Asset` class constructor.
+     * @constructor
+     */
+    static get Asset () {
+        return Asset;
+    }
+
+    /**
+     * @deprecated Please use the `AssetType` member of a storage instance instead.
+     * @return {AssetType} - the list of supported asset types.
+     * @constructor
+     */
+    static get AssetType () {
+        return AssetType;
     }
 
     /**
