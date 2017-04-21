@@ -67,6 +67,18 @@ test('addWebSource', t => {
 
 test('load', t => {
     const promises = [];
+    const checkAsset = (assetInfo, asset) => {
+        t.type(asset, storage.Asset);
+        t.strictEqual(asset.assetId, assetInfo.id);
+        t.strictEqual(asset.assetType, assetInfo.type);
+        t.ok(asset.data.length);
+
+        if (assetInfo.md5) {
+            const hash = crypto.createHash('md5');
+            hash.update(asset.data);
+            t.strictEqual(hash.digest('hex'), assetInfo.md5);
+        }
+    };
     for (var i = 0; i < testAssets.length; ++i) {
         const assetInfo = testAssets[i];
 
@@ -75,18 +87,7 @@ test('load', t => {
 
         promises.push(promise);
 
-        promise.then(asset => {
-            t.type(asset, storage.Asset);
-            t.strictEqual(asset.assetId, assetInfo.id);
-            t.strictEqual(asset.assetType, assetInfo.type);
-            t.ok(asset.data.length);
-
-            if (assetInfo.md5) {
-                const hash = crypto.createHash('md5');
-                hash.update(asset.data);
-                t.strictEqual(hash.digest('hex'), assetInfo.md5);
-            }
-        });
+        promise.then(asset => checkAsset(assetInfo, asset));
     }
 
     return Promise.all(promises);
