@@ -16,6 +16,40 @@ class ScratchStorage {
     }
 
     /**
+     * @return {Asset} - the `Asset` class constructor.
+     * @constructor
+     */
+    get Asset () {
+        return Asset;
+    }
+
+    /**
+     * @return {AssetType} - the list of supported asset types.
+     * @constructor
+     */
+    get AssetType () {
+        return AssetType;
+    }
+
+    /**
+     * @deprecated Please use the `Asset` member of a storage instance instead.
+     * @return {Asset} - the `Asset` class constructor.
+     * @constructor
+     */
+    static get Asset () {
+        return Asset;
+    }
+
+    /**
+     * @deprecated Please use the `AssetType` member of a storage instance instead.
+     * @return {AssetType} - the list of supported asset types.
+     * @constructor
+     */
+    static get AssetType () {
+        return AssetType;
+    }
+
+    /**
      * Register a web-based source for assets. Sources will be checked in order of registration.
      * @param {Array.<AssetType>} types - The types of asset provided by this source.
      * @param {UrlFunction} urlFunction - A function which computes a URL from an Asset.
@@ -96,10 +130,5 @@ class ScratchStorage {
         });
     }
 }
-
-Object.assign(ScratchStorage.prototype, {
-    Asset,
-    AssetType
-});
 
 module.exports = ScratchStorage;
