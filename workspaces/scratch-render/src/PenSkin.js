@@ -112,7 +112,7 @@ class PenSkin extends Skin {
     }
 
     /**
-     * Draw a point on the pen layer.
+     * Draw a line on the pen layer.
      * @param {PenAttributes} penAttributes - how the line should be drawn.
      * @param {number} x0 - the X coordinate of the beginning of the line.
      * @param {number} y0 - the Y coordinate of the beginning of the line.
