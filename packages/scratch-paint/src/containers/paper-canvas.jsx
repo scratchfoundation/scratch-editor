@@ -33,12 +33,13 @@ class PaperCanvas extends React.Component {
     }
     render () {
         return (
-            <canvas id="paper-canvas" />
+            <canvas id={this.props.canvasId} />
         );
     }
 }
 
 PaperCanvas.propTypes = {
+    canvasId: PropTypes.string.isRequired,
     tool: PropTypes.shape({
         name: PropTypes.string.isRequired
     })

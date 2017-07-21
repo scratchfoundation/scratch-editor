@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import PaintEditorComponent from '../components/paint-editor.jsx';
-import tools from '../reducers/tools';
+import ToolsReducer from '../reducers/tools';
 import ToolTypes from '../tools/tool-types.js';
 import {connect} from 'react-redux';
 
@@ -16,6 +16,7 @@ class PaintEditor extends React.Component {
     render () {
         return (
             <PaintEditorComponent
+                canvasId="paper-canvas"
                 tool={this.props.tool}
             />
         );
@@ -35,9 +36,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     onKeyPress: e => {
         if (e.key === 'e') {
-            dispatch(tools.changeTool(ToolTypes.ERASER));
+            dispatch(ToolsReducer.changeTool(ToolTypes.ERASER));
         } else if (e.key === 'b') {
-            dispatch(tools.changeTool(ToolTypes.BRUSH));
+            dispatch(ToolsReducer.changeTool(ToolTypes.BRUSH));
         }
     }
 });
