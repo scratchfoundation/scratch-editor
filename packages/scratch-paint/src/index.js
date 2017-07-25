@@ -1,3 +1,3 @@
 import PaintEditor from './containers/paint-editor.jsx';
 
-export default PaintEditorComponent;
+export default PaintEditor;

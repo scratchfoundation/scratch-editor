@@ -4,12 +4,12 @@ import {connect} from 'react-redux';
 import bindAll from 'lodash.bindall';
 import ToolTypes from '../../tools/tool-types.js';
 import BlobTool from '../../tools/blob.js';
-import BrushToolReducer from '../../reducers/brush-tool';
+import EraserToolReducer from '../../reducers/eraser-tool';
 import paper from 'paper';
 
-class BrushTool extends React.Component {
+class EraserTool extends React.Component {
     static get TOOL_TYPE () {
-        return ToolTypes.BRUSH;
+        return ToolTypes.ERASER;
     }
     constructor (props) {
         super(props);
@@ -21,17 +21,17 @@ class BrushTool extends React.Component {
         this.blob = new BlobTool();
     }
     componentDidMount () {
-        if (this.props.tool === BrushTool.TOOL_TYPE) {
+        if (this.props.tool === EraserTool.TOOL_TYPE) {
             this.activateTool();
         }
     }
     componentWillReceiveProps (nextProps) {
-        if (nextProps.tool === BrushTool.TOOL_TYPE && this.props.tool !== BrushTool.TOOL_TYPE) {
+        if (nextProps.tool === EraserTool.TOOL_TYPE && this.props.tool !== EraserTool.TOOL_TYPE) {
             this.activateTool();
-        } else if (nextProps.tool !== BrushTool.TOOL_TYPE && this.props.tool === BrushTool.TOOL_TYPE) {
+        } else if (nextProps.tool !== EraserTool.TOOL_TYPE && this.props.tool === EraserTool.TOOL_TYPE) {
             this.deactivateTool();
-        } else if (nextProps.tool === BrushTool.TOOL_TYPE && this.props.tool === BrushTool.TOOL_TYPE) {
-            this.blob.setOptions(nextProps.brushToolState);
+        } else if (nextProps.tool === EraserTool.TOOL_TYPE && this.props.tool === EraserTool.TOOL_TYPE) {
+            this.blob.setOptions(nextProps.eraserToolState);
         }
     }
     shouldComponentUpdate () {
@@ -42,7 +42,7 @@ class BrushTool extends React.Component {
             .addEventListener('mousewheel', this.onScroll);
 
         this.tool = new paper.Tool();
-        this.blob.activateTool(false /* isEraser */, this.tool, this.props.brushToolState);
+        this.blob.activateTool(true /* isEraser */, this.tool, this.props.eraserToolState);
 
         // // Make sure a fill color is set on the brush
         // if(!pg.stylebar.getFillColor()) {
@@ -52,6 +52,7 @@ class BrushTool extends React.Component {
 
         // // setup floating tool options panel in the editor
         // pg.toolOptionPanel.setup(options, components, function() {});
+        // get options from local storage if presentz
         
         this.tool.activate();
     }
@@ -59,12 +60,13 @@ class BrushTool extends React.Component {
         document.getElementById(this.props.canvasId)
             .removeEventListener('mousewheel', this.onScroll);
         this.blob.deactivateTool();
+        this.tool.remove();
     }
     onScroll (event) {
         if (event.deltaY < 0) {
-            this.props.changeBrushSize(this.props.brushToolState.brushSize + 1);
-        } else if (event.deltaY > 0 && this.props.brushToolState.brushSize > 1) {
-            this.props.changeBrushSize(this.props.brushToolState.brushSize - 1);
+            this.props.changeBrushSize(this.props.eraserToolState.brushSize + 1);
+        } else if (event.deltaY > 0 && this.props.eraserToolState.brushSize > 1) {
+            this.props.changeBrushSize(this.props.eraserToolState.brushSize - 1);
         }
         return false;
     }
@@ -75,28 +77,28 @@ class BrushTool extends React.Component {
     }
 }
 
-BrushTool.propTypes = {
-    brushToolState: PropTypes.shape({
-        brushSize: PropTypes.number.isRequired
-    }),
+EraserTool.propTypes = {
     canvasId: PropTypes.string.isRequired,
     changeBrushSize: PropTypes.func.isRequired,
+    eraserToolState: PropTypes.shape({
+        brushSize: PropTypes.number.isRequired
+    }),
     tool: PropTypes.shape({
         name: PropTypes.string.isRequired
     })
 };
 
 const mapStateToProps = state => ({
-    brushToolState: state.brushTool,
+    eraserToolState: state.brushTool,
     tool: state.tool
 });
 const mapDispatchToProps = dispatch => ({
     changeBrushSize: brushSize => {
-        dispatch(BrushToolReducer.changeBrushSize(brushSize));
+        dispatch(EraserToolReducer.changeBrushSize(brushSize));
     }
 });
 
 module.exports = connect(
     mapStateToProps,
     mapDispatchToProps
-)(BrushTool);
+)(EraserTool);

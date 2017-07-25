@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import PaperCanvas from '../containers/paper-canvas.jsx';
 import BrushTool from '../containers/tools/brush-tool.jsx';
+import EraserTool from '../containers/tools/eraser-tool.jsx';
 
 const PaintEditorComponent = props => (
     <div>
@@ -10,6 +11,7 @@ const PaintEditorComponent = props => (
             tool={props.tool}
         />
         <BrushTool canvasId={props.canvasId} />
+        <EraserTool canvasId={props.canvasId} />
     </div>
 );
 
