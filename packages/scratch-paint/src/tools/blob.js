@@ -1,7 +1,13 @@
 import paper from 'paper';
 import log from '../log/log';
 import broadBrushHelper from './broad-brush-helper';
+import segmentBrushHelper from './segment-brush-helper';
 
+/**
+ * Shared code for the brush and eraser tool. Adds functions on the paper tool object
+ * to handle mouse events, which are delegated to broad-brush-helper and segment-brush-helper
+ * based on the brushSize in the state.
+ */
 class BlobTool {
 
     static get BROAD () {
@@ -15,7 +21,7 @@ class BlobTool {
     // Segment brush has performance issues at low threshold, but broad brush has weird corners
     // which get more obvious the bigger it is
     static get THRESHOLD () {
-        return 100000;
+        return 9;
     }
     
     setOptions (options) {
@@ -62,10 +68,8 @@ class BlobTool {
                     path.strokeWidth = 1;
                 }
             } else {
-                // TODO keep a separate active toolbar style for brush vs pen?
-                //path = pg.stylebar.applyActiveToolbarStyle(path);
-
-                //TODO FIX
+                // TODO: Add back brush styling. Keep a separate active toolbar style for brush vs pen.
+                // path = pg.stylebar.applyActiveToolbarStyle(path);
 
                 path.fillColor = 'black';
                 if (path === this.cursorPreview) {
@@ -80,8 +84,7 @@ class BlobTool {
         tool.fixedDistance = 1;
 
         broadBrushHelper(tool);
-        // TODO add
-        //pg.segmentbrushhelper(tool, options);
+        segmentBrushHelper(tool);
 
         tool.onMouseMove = function (event) {
             tool.resizeCursorIfNeeded(event.point);
@@ -111,10 +114,10 @@ class BlobTool {
             if (event.event.button > 0) return;  // only first mouse button
             if (this.brush === BlobTool.BROAD) {
                 this.onBroadMouseDrag(event);
-            } else if (this.brush === Blob.SEGMENT) {
+            } else if (this.brush === BlobTool.SEGMENT) {
                 this.onSegmentMouseDrag(event);
             } else {
-                log.warning(`Brush type does not exist: ${this.brush}`);
+                log.warn(`Brush type does not exist: ${this.brush}`);
             }
 
             this.cursorPreview.bringToFront();
@@ -132,7 +135,7 @@ class BlobTool {
             } else if (this.brush === BlobTool.SEGMENT) {
                 lastPath = this.onSegmentMouseUp(event);
             } else {
-                log.warning(`Brush type does not exist: ${this.brush}`);
+                log.warn(`Brush type does not exist: ${this.brush}`);
             }
 
             if (isEraser) {
@@ -195,8 +198,8 @@ class BlobTool {
                     paths.splice(i, 1);
                 }
             }
-            // TODO FIX
-            //pg.undo.snapshot('broadbrush');
+            // TODO: Add back undo
+            // pg.undo.snapshot('broadbrush');
         };
 
         tool.mergeEraser = function (lastPath) {
@@ -210,8 +213,8 @@ class BlobTool {
             // Eraser didn't hit anything selected, so assume they meant to erase from all instead of from subset
             // and deselect the selection
             if (items.length === 0) {
-                // TODO FIX
-                //pg.selection.clearSelection();
+                // TODO: Add back selection handling
+                // pg.selection.clearSelection();
                 items = paper.project.getItems({
                     match: function (item) {
                         return tool.isMergeable(lastPath, item) && tool.touches(lastPath, item);
@@ -225,7 +228,7 @@ class BlobTool {
 
                 // Gather path segments
                 const subpaths = [];
-                // TODO handle compound path
+                // TODO: Handle compound path
                 if (items[i] instanceof paper.Path && !items[i].closed) {
                     const firstSeg = items[i].clone();
                     const intersections = firstSeg.getIntersections(lastPath);
@@ -290,8 +293,8 @@ class BlobTool {
                 items[i].remove();
             }
             lastPath.remove();
-            // TODO FIX
-            //pg.undo.snapshot('eraser');
+            // TODO: Add back undo handling
+            // pg.undo.snapshot('eraser');
         };
 
         tool.colorMatch = function (existingPath, addedPath) {
@@ -318,7 +321,7 @@ class BlobTool {
                     path1.hitTest(path2.firstSegment.point)) {
                 return true;
             }
-            // TODO clean up these no point paths
+            // TODO: clean up these no point paths
             return false;
         };
 
@@ -338,4 +341,4 @@ class BlobTool {
     }
 }
 
-module.exports = BlobTool;
+export default BlobTool;

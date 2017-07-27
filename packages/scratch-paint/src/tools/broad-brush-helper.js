@@ -1,8 +1,14 @@
 // Broadbrush based on http://paperjs.org/tutorials/interaction/working-with-mouse-vectors/
-const paper = require('paper');
+import paper from 'paper';
 
 /**
- * Applies segment brush functions to the tool.
+ * Applies broad brush functions to the tool. Call them when the corresponding mouse event happens
+ * to get the broad brush behavior.
+ *
+ * Broad brush draws strokes by drawing points equidistant from the mouse event, perpendicular to the
+ * direction of motion. Shortcomings are that this path can cross itself, and 180 degree turns result
+ * in a flat edge.
+ *
  * @param {!Tool} tool paper.js mouse object
  */
 const broadBrushHelper = function (tool) {
@@ -102,4 +108,4 @@ const broadBrushHelper = function (tool) {
     };
 };
 
-module.exports = broadBrushHelper;
+export default broadBrushHelper;
