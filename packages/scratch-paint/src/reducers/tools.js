@@ -1,5 +1,5 @@
-const ToolTypes = require('../tools/tool-types');
-const log = require('../log/log');
+import ToolTypes from '../tools/tool-types';
+import log from '../log/log';
 
 const CHANGE_TOOL = 'scratch-paint/tools/CHANGE_TOOL';
 const initialState = ToolTypes.BRUSH;
@@ -29,4 +29,4 @@ reducer.changeTool = function (tool) {
     };
 };
 
-module.exports = reducer;
+export default reducer;

@@ -1,5 +1,6 @@
 import {combineReducers} from 'redux';
+import toolReducer from './tools';
 
-module.exports = combineReducers({
-    tool: require('./tools')
+export default combineReducers({
+    tool: toolReducer
 });

@@ -9,4 +9,4 @@ class ToolTypes {
 ToolTypes.BRUSH = new ToolTypes('BRUSH');
 ToolTypes.ERASER = new ToolTypes('ERASER');
 
-module.exports = ToolTypes;
+export default ToolTypes;

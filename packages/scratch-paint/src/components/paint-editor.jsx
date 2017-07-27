@@ -14,5 +14,4 @@ PaintEditorComponent.propTypes = {
     })
 };
 
-
-module.exports = PaintEditorComponent;
+export default PaintEditorComponent;

@@ -44,4 +44,4 @@ PaperCanvas.propTypes = {
     })
 };
 
-module.exports = PaperCanvas;
+export default PaperCanvas;
