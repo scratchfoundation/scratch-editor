@@ -20,7 +20,7 @@ const segmentBrushHelper = function (tool) {
     tool.onSegmentMouseDown = function (event) {
         if (event.event.button > 0) return;  // only first mouse button
 
-        tool.minDistance = this.options.brushSize / 4;
+        tool.minDistance = 1;
         tool.maxDistance = this.options.brushSize;
         
         finalPath = new paper.Path.Circle({
@@ -60,7 +60,7 @@ const segmentBrushHelper = function (tool) {
         path.closed = true;
         // The unite function on curved paths does not always work (sometimes deletes half the path)
         // so we have to flatten.
-        path.flatten(this.options.brushSize / 5);
+        path.flatten(Math.min(5, this.options.brushSize / 5));
         
         lastPoint = event.point;
         const newPath = finalPath.unite(path);
