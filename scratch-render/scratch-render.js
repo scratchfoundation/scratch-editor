@@ -14571,15 +14571,19 @@ var RenderWebGL = function (_EventEmitter) {
             var drawable = this._allDrawables[drawableID];
             if (!drawable) return null;
 
+            // Convert client coordinates into absolute scratch units
+            var scratchX = this._nativeSize[0] * (x / this._gl.canvas.clientWidth - 0.5);
+            var scratchY = this._nativeSize[1] * (y / this._gl.canvas.clientHeight - 0.5);
+
             var gl = this._gl;
             twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
             var bounds = drawable.getFastBounds();
             bounds.snapToInt();
 
-            // Translate input x and y to coordinates relative to the drawable
-            var pickX = x - (this._nativeSize[0] / 2 + bounds.left);
-            var pickY = y - (this._nativeSize[1] / 2 - bounds.top);
+            // Translate to scratch units relative to the drawable
+            var pickX = scratchX - bounds.left;
+            var pickY = scratchY + bounds.top;
 
             // Limit size of viewport to the bounds around the target Drawable,
             // and create the projection matrix for the draw.
@@ -14618,7 +14622,7 @@ var RenderWebGL = function (_EventEmitter) {
                 data: data,
                 width: bounds.width,
                 height: bounds.height,
-                scratchOffset: [this._nativeSize[0] / 2 - x + drawable._position[0], this._nativeSize[1] / 2 - y - drawable._position[1]],
+                scratchOffset: [-scratchX + drawable._position[0], -scratchY - drawable._position[1]],
                 x: pickX,
                 y: pickY
             };
