@@ -1,7 +1,8 @@
 import paper from 'paper';
+import {stylePath} from './style-path';
 
 /**
- * Applies segment brush functions to the tool. Call them when the corresponding mouse event happens
+ * Segment brush functions to add as listeners on the mouse. Call them when the corresponding mouse event happens
  * to get the broad brush behavior.
  *
  * Segment brush draws by creating a rounded rectangle for each mouse move event and merging all of
@@ -13,30 +14,32 @@ import paper from 'paper';
  *
  * @param {!Tool} tool paper.js mouse object
  */
-const segmentBrushHelper = function (tool) {
-    let lastPoint;
-    let finalPath;
+class SegmentBrushHelper {
+    constructor () {
+        this.lastPoint = null;
+        this.finalPath = null;
+    }
 
-    tool.onSegmentMouseDown = function (event) {
+    onSegmentMouseDown (event, tool, options) {
         if (event.event.button > 0) return;  // only first mouse button
 
         tool.minDistance = 1;
-        tool.maxDistance = this.options.brushSize;
+        tool.maxDistance = options.brushSize;
         
-        finalPath = new paper.Path.Circle({
+        this.finalPath = new paper.Path.Circle({
             center: event.point,
-            radius: this.options.brushSize / 2
+            radius: options.brushSize / 2
         });
-        tool.stylePath(finalPath);
-        lastPoint = event.point;
-    };
+        stylePath(this.finalPath);
+        this.lastPoint = event.point;
+    }
     
-    tool.onSegmentMouseDrag = function (event) {
+    onSegmentMouseDrag (event, options) {
         if (event.event.button > 0) return;  // only first mouse button
 
-        const step = (event.delta).normalize(this.options.brushSize / 2);
+        const step = (event.delta).normalize(options.brushSize / 2);
         const handleVec = step.clone();
-        handleVec.length = this.options.brushSize / 2;
+        handleVec.length = options.brushSize / 2;
         handleVec.angle += 90;
 
         const path = new paper.Path();
@@ -46,7 +49,7 @@ const segmentBrushHelper = function (tool) {
         path.fillColor = 'black';
 
         // Add handles to round the end caps
-        path.add(new paper.Segment(lastPoint.subtract(step), handleVec.multiply(-1), handleVec));
+        path.add(new paper.Segment(this.lastPoint.subtract(step), handleVec.multiply(-1), handleVec));
         step.angle += 90;
 
         path.add(event.lastPoint.add(step));
@@ -60,25 +63,25 @@ const segmentBrushHelper = function (tool) {
         path.closed = true;
         // The unite function on curved paths does not always work (sometimes deletes half the path)
         // so we have to flatten.
-        path.flatten(Math.min(5, this.options.brushSize / 5));
+        path.flatten(Math.min(5, options.brushSize / 5));
         
-        lastPoint = event.point;
-        const newPath = finalPath.unite(path);
+        this.lastPoint = event.point;
+        const newPath = this.finalPath.unite(path);
         path.remove();
-        finalPath.remove();
-        finalPath = newPath;
-    };
+        this.finalPath.remove();
+        this.finalPath = newPath;
+    }
 
-    tool.onSegmentMouseUp = function (event) {
+    onSegmentMouseUp (event) {
         if (event.event.button > 0) return;  // only first mouse button
 
         // TODO: This smoothing tends to cut off large portions of the path! Would like to eventually
         // add back smoothing, maybe a custom implementation that only applies to a subset of the line?
 
         // Smooth the path.
-        finalPath.simplify(2);
-        return finalPath;
-    };
-};
+        this.finalPath.simplify(2);
+        return this.finalPath;
+    }
+}
 
-export default segmentBrushHelper;
+export default SegmentBrushHelper;

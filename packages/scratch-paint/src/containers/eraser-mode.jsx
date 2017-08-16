@@ -5,7 +5,6 @@ import bindAll from 'lodash.bindall';
 import Modes from '../modes/modes';
 import Blobbiness from '../modes/blob';
 import EraserModeReducer from '../reducers/eraser-mode';
-import paper from 'paper';
 
 class EraserMode extends React.Component {
     static get MODE () {

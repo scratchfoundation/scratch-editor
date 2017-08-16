@@ -4,9 +4,7 @@ import {connect} from 'react-redux';
 import bindAll from 'lodash.bindall';
 import Modes from '../modes/modes';
 import Blobbiness from '../modes/blob';
-import BrushModeReducer from '../reducers/brush-mode';
 import {changeBrushSize} from '../reducers/brush-mode';
-import paper from 'paper';
 
 class BrushMode extends React.Component {
     static get MODE () {
