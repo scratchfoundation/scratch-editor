@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import bindAll from 'lodash.bindall';
 import Modes from '../modes/modes';
 import Blobbiness from '../modes/blob';
-import EraserModeReducer from '../reducers/eraser-mode';
+import {changeBrushSize} from '../reducers/eraser-mode';
 
 class EraserMode extends React.Component {
     static get MODE () {
@@ -30,7 +30,7 @@ class EraserMode extends React.Component {
         } else if (!nextProps.isEraserModeActive && this.props.isEraserModeActive) {
             this.deactivateTool();
         } else if (nextProps.isEraserModeActive && this.props.isEraserModeActive) {
-            this.blob.setOptions(nextProps.eraserModeState);
+            this.blob.setOptions({isEraser: true, ...nextProps.eraserModeState});
         }
     }
     shouldComponentUpdate () {
@@ -39,7 +39,7 @@ class EraserMode extends React.Component {
     activateTool () {
         this.props.canvas.addEventListener('mousewheel', this.onScroll);
 
-        this.blob.activateTool(true /* isEraser */, this.props.eraserModeState);
+        this.blob.activateTool({isEraser: true, ...this.props.eraserModeState});
     }
     deactivateTool () {
         this.props.canvas.removeEventListener('mousewheel', this.onScroll);
@@ -75,7 +75,7 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => ({
     changeBrushSize: brushSize => {
-        dispatch(EraserModeReducer.changeBrushSize(brushSize));
+        dispatch(changeBrushSize(brushSize));
     }
 });
 

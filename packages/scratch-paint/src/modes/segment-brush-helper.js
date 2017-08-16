@@ -30,7 +30,7 @@ class SegmentBrushHelper {
             center: event.point,
             radius: options.brushSize / 2
         });
-        stylePath(this.finalPath);
+        stylePath(this.finalPath, options.isEraser);
         this.lastPoint = event.point;
     }
     

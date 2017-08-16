@@ -30,7 +30,7 @@ class BrushMode extends React.Component {
         } else if (!nextProps.isBrushModeActive && this.props.isBrushModeActive) {
             this.deactivateTool();
         } else if (nextProps.isBrushModeActive && this.props.isBrushModeActive) {
-            this.blob.setOptions(nextProps.brushModeState);
+            this.blob.setOptions({isEraser: false, ...nextProps.brushModeState});
         }
     }
     shouldComponentUpdate () {
@@ -39,7 +39,7 @@ class BrushMode extends React.Component {
     activateTool () {
         // TODO: This is temporary until a component that provides the brush size is hooked up
         this.props.canvas.addEventListener('mousewheel', this.onScroll);
-        this.blob.activateTool(false /* isEraser */, this.props.brushModeState);
+        this.blob.activateTool({isEraser: false, ...this.props.brushModeState});
 
         // TODO Make sure a fill color is set on the brush
         // if(!pg.stylebar.getFillColor()) {

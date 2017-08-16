@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import PaintEditorComponent from '../components/paint-editor.jsx';
-import ModesReducer from '../reducers/modes';
+import {changeMode} from '../reducers/modes';
 import Modes from '../modes/modes';
 import {connect} from 'react-redux';
 
@@ -26,9 +26,9 @@ PaintEditor.propTypes = {
 const mapDispatchToProps = dispatch => ({
     onKeyPress: event => {
         if (event.key === 'e') {
-            dispatch(ToolsReducer.changeMode(Modes.ERASER));
+            dispatch(changeMode(Modes.ERASER));
         } else if (event.key === 'b') {
-            dispatch(ToolsReducer.changeMode(Modes.BRUSH));
+            dispatch(changeMode(Modes.BRUSH));
         }
     }
 });

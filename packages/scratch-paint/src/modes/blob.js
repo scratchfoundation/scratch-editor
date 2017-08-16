@@ -29,23 +29,35 @@ class Blobbiness {
         this.segmentBrushHelper = new SegmentBrushHelper();
     }
     
+    /**
+     * Set configuration options for a blob
+     * @param {!object} options Configuration
+     * @param {!number} options.brushSize Width of blob marking made by mouse
+     * @param {!boolean} options.isEraser Whether the stroke should be treated as an erase path. If false,
+     *     the stroke is an additive path.
+     */
     setOptions (options) {
         this.options = options;
         this.resizeCursorIfNeeded();
     }
 
-    activateTool (isEraser, options) {
+    /**
+     * Adds handlers on the mouse tool to draw blobs. Initialize with configuration options for a blob.
+     * @param {!object} options Configuration
+     * @param {!number} options.brushSize Width of blob marking made by mouse
+     * @param {!boolean} options.isEraser Whether the stroke should be treated as an erase path. If false,
+     *     the stroke is an additive path.
+     */
+    activateTool (options) {
         this.tool = new paper.Tool();
-        this.isEraser = isEraser;
         this.cursorPreviewLastPoint = new paper.Point(-10000, -10000);
         this.setOptions(options);
-        styleCursorPreview(this.cursorPreview);
         this.tool.fixedDistance = 1;
 
         const blob = this;
         this.tool.onMouseMove = function (event) {
             blob.resizeCursorIfNeeded(event.point);
-            styleCursorPreview(blob.cursorPreview);
+            styleCursorPreview(blob.cursorPreview, blob.options.isEraser);
             blob.cursorPreview.bringToFront();
             blob.cursorPreview.position = event.point;
         };
@@ -95,7 +107,7 @@ class Blobbiness {
                 log.warn(`Brush type does not exist: ${blob.brush}`);
             }
 
-            if (isEraser) {
+            if (blob.options.isEraser) {
                 blob.mergeEraser(lastPath);
             } else {
                 blob.mergeBrush(lastPath);
@@ -108,6 +120,7 @@ class Blobbiness {
             blob.brush = null;
             this.fixedDistance = 1;
         };
+        this.tool.activate();
     }
 
     resizeCursorIfNeeded (point) {
@@ -121,7 +134,7 @@ class Blobbiness {
             this.cursorPreviewLastPoint = point;
         }
 
-        if (this.brushSize === this.options.brushSize) {
+        if (this.cursorPreview && this.brushSize === this.options.brushSize) {
             return;
         }
         const newPreview = new paper.Path.Circle({
@@ -133,6 +146,7 @@ class Blobbiness {
             newPreview.remove();
         } else {
             this.cursorPreview = newPreview;
+            styleCursorPreview(this.cursorPreview, this.options.isEraser);
         }
         this.brushSize = this.options.brushSize;
     }
@@ -323,7 +337,9 @@ class Blobbiness {
 
     deactivateTool () {
         this.cursorPreview.remove();
-        this.remove();
+        this.cursorPreview = null;
+        this.tool.remove();
+        this.tool = null;
     }
 }
 
