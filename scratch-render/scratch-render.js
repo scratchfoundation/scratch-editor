@@ -10340,7 +10340,9 @@ var Skin = function (_EventEmitter) {
      * @fires Skin.event:WasAltered
      */
     value: function setRotationCenter(x, y) {
-      if (x !== this._rotationCenter[0] || y !== this._rotationCenter[1]) {
+      var emptySkin = this.size[0] === 0 && this.size[1] === 0;
+      var changed = x !== this._rotationCenter[0] || y !== this._rotationCenter[1];
+      if (!emptySkin && changed) {
         this._rotationCenter[0] = x;
         this._rotationCenter[1] = y;
         this.emit(Skin.Events.WasAltered);
