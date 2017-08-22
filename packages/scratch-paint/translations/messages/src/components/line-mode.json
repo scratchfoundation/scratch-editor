@@ -1,0 +1,7 @@
+[
+  {
+    "id": "paint.lineMode.line",
+    "description": "Label for the line tool, which draws straight line segments",
+    "defaultMessage": "Line"
+  }
+]

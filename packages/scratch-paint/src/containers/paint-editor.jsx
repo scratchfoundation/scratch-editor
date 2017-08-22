@@ -29,6 +29,8 @@ const mapDispatchToProps = dispatch => ({
             dispatch(changeMode(Modes.ERASER));
         } else if (event.key === 'b') {
             dispatch(changeMode(Modes.BRUSH));
+        } else if (event.key === 'l') {
+            dispatch(changeMode(Modes.LINE));
         }
     }
 });

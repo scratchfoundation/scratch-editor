@@ -3,6 +3,7 @@ import React from 'react';
 import PaperCanvas from '../containers/paper-canvas.jsx';
 import BrushMode from '../containers/brush-mode.jsx';
 import EraserMode from '../containers/eraser-mode.jsx';
+import LineMode from '../containers/line-mode.jsx';
 
 class PaintEditorComponent extends React.Component {
     constructor (props) {
@@ -23,6 +24,7 @@ class PaintEditorComponent extends React.Component {
                     <PaperCanvas canvasRef={this.setCanvas} />
                     <BrushMode canvas={this.state.canvas} />
                     <EraserMode canvas={this.state.canvas} />
+                    <LineMode />
                 </div>
             );
         }
