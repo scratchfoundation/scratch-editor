@@ -74,8 +74,8 @@ BrushMode.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    brushModeState: state.brushMode,
-    isBrushModeActive: state.mode === Modes.BRUSH
+    brushModeState: state.scratchPaint.brushMode,
+    isBrushModeActive: state.scratchPaint.mode === Modes.BRUSH
 });
 const mapDispatchToProps = dispatch => ({
     changeBrushSize: brushSize => {

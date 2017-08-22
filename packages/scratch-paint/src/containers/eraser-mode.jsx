@@ -70,8 +70,8 @@ EraserMode.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    eraserModeState: state.eraserMode,
-    isEraserModeActive: state.mode === Modes.ERASER
+    eraserModeState: state.scratchPaint.eraserMode,
+    isEraserModeActive: state.scratchPaint.mode === Modes.ERASER
 });
 const mapDispatchToProps = dispatch => ({
     changeBrushSize: brushSize => {
