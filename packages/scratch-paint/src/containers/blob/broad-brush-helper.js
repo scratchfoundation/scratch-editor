@@ -30,7 +30,7 @@ class BroadBrushHelper {
         this.lastPoint = this.secondLastPoint = event.point;
     }
     
-    onBroadMouseDrag (event, options) {
+    onBroadMouseDrag (event, tool, options) {
         const step = (event.delta).normalize(options.brushSize / 2);
 
         // Move the first point out away from the drag so that the end of the path is rounded

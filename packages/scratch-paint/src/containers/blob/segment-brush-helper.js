@@ -36,7 +36,7 @@ class SegmentBrushHelper {
         this.lastPoint = event.point;
     }
     
-    onSegmentMouseDrag (event, options) {
+    onSegmentMouseDrag (event, tool, options) {
         if (event.event.button > 0) return;  // only first mouse button
 
         const step = (event.delta).normalize(options.brushSize / 2);
