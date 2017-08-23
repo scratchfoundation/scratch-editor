@@ -33,7 +33,7 @@ class BrushMode extends React.Component {
         }
     }
     shouldComponentUpdate () {
-        return false; // Logic only component
+        return false; // Static component, for now
     }
     activateTool () {
         // TODO: Instead of clearing selection, consider a kind of "draw inside"
