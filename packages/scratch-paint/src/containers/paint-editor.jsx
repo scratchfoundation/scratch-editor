@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import PaintEditorComponent from '../components/paint-editor.jsx';
-import tools from '../reducers/tools';
-import ToolTypes from '../tools/tool-types.js';
+import {changeMode} from '../reducers/modes';
+import Modes from '../modes/modes';
 import {connect} from 'react-redux';
 
 class PaintEditor extends React.Component {
@@ -13,35 +13,27 @@ class PaintEditor extends React.Component {
         document.removeEventListener('keydown', this.props.onKeyPress);
     }
     render () {
-        const {
-            onKeyPress, // eslint-disable-line no-unused-vars
-            ...props
-        } = this.props;
         return (
-            <PaintEditorComponent {...props} />
+            <PaintEditorComponent />
         );
     }
 }
 
 PaintEditor.propTypes = {
-    onKeyPress: PropTypes.func.isRequired,
-    tool: PropTypes.oneOf(Object.keys(ToolTypes)).isRequired
+    onKeyPress: PropTypes.func.isRequired
 };
 
-const mapStateToProps = state => ({
-    tool: state.tool
-});
 const mapDispatchToProps = dispatch => ({
-    onKeyPress: e => {
-        if (e.key === 'e') {
-            dispatch(tools.changeTool(ToolTypes.ERASER));
-        } else if (e.key === 'b') {
-            dispatch(tools.changeTool(ToolTypes.BRUSH));
+    onKeyPress: event => {
+        if (event.key === 'e') {
+            dispatch(changeMode(Modes.ERASER));
+        } else if (event.key === 'b') {
+            dispatch(changeMode(Modes.BRUSH));
         }
     }
 });
 
 export default connect(
-    mapStateToProps,
+    null,
     mapDispatchToProps
 )(PaintEditor);

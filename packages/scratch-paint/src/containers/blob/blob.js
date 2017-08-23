@@ -1,0 +1,374 @@
+import paper from 'paper';
+import log from '../../log/log';
+import BroadBrushHelper from './broad-brush-helper';
+import SegmentBrushHelper from './segment-brush-helper';
+import {styleCursorPreview} from './style-path';
+
+/**
+ * Shared code for the brush and eraser mode. Adds functions on the paper tool object
+ * to handle mouse events, which are delegated to broad-brush-helper and segment-brush-helper
+ * based on the brushSize in the state.
+ */
+class Blobbiness {
+    static get BROAD () {
+        return 'broadbrush';
+    }
+    static get SEGMENT () {
+        return 'segmentbrush';
+    }
+
+    // If brush size >= threshold use segment brush, else use broadbrush
+    // Segment brush has performance issues at low threshold, but broad brush has weird corners
+    // which get more obvious the bigger it is
+    static get THRESHOLD () {
+        return 9;
+    }
+
+    constructor () {
+        this.broadBrushHelper = new BroadBrushHelper();
+        this.segmentBrushHelper = new SegmentBrushHelper();
+    }
+    
+    /**
+     * Set configuration options for a blob
+     * @param {!object} options Configuration
+     * @param {!number} options.brushSize Width of blob marking made by mouse
+     * @param {!boolean} options.isEraser Whether the stroke should be treated as an erase path. If false,
+     *     the stroke is an additive path.
+     */
+    setOptions (options) {
+        this.options = options;
+        this.resizeCursorIfNeeded();
+    }
+
+    /**
+     * Adds handlers on the mouse tool to draw blobs. Initialize with configuration options for a blob.
+     * @param {!object} options Configuration
+     * @param {!number} options.brushSize Width of blob marking made by mouse
+     * @param {!boolean} options.isEraser Whether the stroke should be treated as an erase path. If false,
+     *     the stroke is an additive path.
+     */
+    activateTool (options) {
+        this.tool = new paper.Tool();
+        this.cursorPreviewLastPoint = new paper.Point(-10000, -10000);
+        this.setOptions(options);
+        this.tool.fixedDistance = 1;
+
+        const blob = this;
+        this.tool.onMouseMove = function (event) {
+            blob.resizeCursorIfNeeded(event.point);
+            styleCursorPreview(blob.cursorPreview, blob.options.isEraser);
+            blob.cursorPreview.bringToFront();
+            blob.cursorPreview.position = event.point;
+        };
+        
+        this.tool.onMouseDown = function (event) {
+            blob.resizeCursorIfNeeded(event.point);
+            if (event.event.button > 0) return;  // only first mouse button
+
+            if (blob.options.brushSize < Blobbiness.THRESHOLD) {
+                blob.brush = Blobbiness.BROAD;
+                blob.broadBrushHelper.onBroadMouseDown(event, blob.tool, blob.options);
+            } else {
+                blob.brush = Blobbiness.SEGMENT;
+                blob.segmentBrushHelper.onSegmentMouseDown(event, blob.tool, blob.options);
+            }
+            blob.cursorPreview.bringToFront();
+            blob.cursorPreview.position = event.point;
+            paper.view.draw();
+        };
+
+        this.tool.onMouseDrag = function (event) {
+            blob.resizeCursorIfNeeded(event.point);
+            if (event.event.button > 0) return;  // only first mouse button
+            if (blob.brush === Blobbiness.BROAD) {
+                blob.broadBrushHelper.onBroadMouseDrag(event, blob.tool, blob.options);
+            } else if (blob.brush === Blobbiness.SEGMENT) {
+                blob.segmentBrushHelper.onSegmentMouseDrag(event, blob.tool, blob.options);
+            } else {
+                log.warn(`Brush type does not exist: ${blob.brush}`);
+            }
+
+            blob.cursorPreview.bringToFront();
+            blob.cursorPreview.position = event.point;
+            paper.view.draw();
+        };
+
+        this.tool.onMouseUp = function (event) {
+            blob.resizeCursorIfNeeded(event.point);
+            if (event.event.button > 0) return;  // only first mouse button
+            
+            let lastPath;
+            if (blob.brush === Blobbiness.BROAD) {
+                lastPath = blob.broadBrushHelper.onBroadMouseUp(event, blob.tool, blob.options);
+            } else if (blob.brush === Blobbiness.SEGMENT) {
+                lastPath = blob.segmentBrushHelper.onSegmentMouseUp(event, blob.tool, blob.options);
+            } else {
+                log.warn(`Brush type does not exist: ${blob.brush}`);
+            }
+
+            if (blob.options.isEraser) {
+                blob.mergeEraser(lastPath);
+            } else {
+                blob.mergeBrush(lastPath);
+            }
+
+            blob.cursorPreview.bringToFront();
+            blob.cursorPreview.position = event.point;
+
+            // Reset
+            blob.brush = null;
+            this.fixedDistance = 1;
+        };
+        this.tool.activate();
+    }
+
+    resizeCursorIfNeeded (point) {
+        if (!this.options) {
+            return;
+        }
+
+        if (typeof point === 'undefined') {
+            point = this.cursorPreviewLastPoint;
+        } else {
+            this.cursorPreviewLastPoint = point;
+        }
+
+        if (this.cursorPreview && this.brushSize === this.options.brushSize) {
+            return;
+        }
+        const newPreview = new paper.Path.Circle({
+            center: point,
+            radius: this.options.brushSize / 2
+        });
+        if (this.cursorPreview) {
+            this.cursorPreview.segments = newPreview.segments;
+            newPreview.remove();
+        } else {
+            this.cursorPreview = newPreview;
+            styleCursorPreview(this.cursorPreview, this.options.isEraser);
+        }
+        this.brushSize = this.options.brushSize;
+    }
+
+    mergeBrush (lastPath) {
+        const blob = this;
+
+        // Get all path items to merge with
+        const paths = paper.project.getItems({
+            match: function (item) {
+                return blob.isMergeable(lastPath, item);
+            }
+        });
+
+        let mergedPath = lastPath;
+        let i;
+        // Move down z order to first overlapping item
+        for (i = paths.length - 1; i >= 0 && !this.touches(paths[i], lastPath); i--) {
+            continue;
+        }
+        let mergedPathIndex = i;
+        for (; i >= 0; i--) {
+            if (!this.touches(paths[i], lastPath)) {
+                continue;
+            }
+            if (!paths[i].getFillColor()) {
+                // Ignore for merge. Paths without fill need to be in paths though,
+                // since they can visibly change if z order changes
+            } else if (this.colorMatch(paths[i], lastPath)) {
+                // Make sure the new shape isn't overlapped by anything that would
+                // visibly change if we change its z order
+                for (let j = mergedPathIndex; j > i; j--) {
+                    if (this.touches(paths[j], paths[i])) {
+                        continue;
+                    }
+                }
+                // Merge same fill color
+                const tempPath = mergedPath.unite(paths[i]);
+                tempPath.strokeColor = paths[i].strokeColor;
+                tempPath.strokeWidth = paths[i].strokeWidth;
+                if (mergedPath === lastPath) {
+                    tempPath.insertAbove(paths[i]); // First intersected path determines z position of the new path
+                } else {
+                    tempPath.insertAbove(mergedPath); // Rest of merges join z index of merged path
+                    mergedPathIndex--; // Removed an item, so the merged path index decreases
+                }
+                mergedPath.remove();
+                mergedPath = tempPath;
+                paths[i].remove();
+                paths.splice(i, 1);
+            }
+        }
+        // TODO: Add back undo
+        // pg.undo.snapshot('broadbrush');
+    }
+
+    mergeEraser (lastPath) {
+        const blob = this;
+
+        // Get all path items to merge with
+        // If there are selected items, try to erase from amongst those.
+        let items = paper.project.getItems({
+            match: function (item) {
+                return item.selected && blob.isMergeable(lastPath, item) && blob.touches(lastPath, item);
+            }
+        });
+        // Eraser didn't hit anything selected, so assume they meant to erase from all instead of from subset
+        // and deselect the selection
+        if (items.length === 0) {
+            // TODO: Add back selection handling
+            // pg.selection.clearSelection();
+            items = paper.project.getItems({
+                match: function (item) {
+                    return blob.isMergeable(lastPath, item) && blob.touches(lastPath, item);
+                }
+            });
+        }
+        
+        for (let i = items.length - 1; i >= 0; i--) {
+            // TODO handle compound paths
+            if (items[i] instanceof paper.Path && (!items[i].fillColor || items[i].fillColor._alpha === 0)) {
+                // Gather path segments
+                const subpaths = [];
+                const firstSeg = items[i];
+                const intersections = firstSeg.getIntersections(lastPath);
+                for (let j = intersections.length - 1; j >= 0; j--) {
+                    const split = firstSeg.splitAt(intersections[j]);
+                    if (split) {
+                        split.insertAbove(firstSeg);
+                        subpaths.push(split);
+                    }
+                }
+                subpaths.push(firstSeg);
+
+                // Remove the ones that are within the eraser stroke boundary
+                for (let k = subpaths.length - 1; k >= 0; k--) {
+                    const segMidpoint = subpaths[k].getLocationAt(subpaths[k].length / 2).point;
+                    if (lastPath.contains(segMidpoint)) {
+                        subpaths[k].remove();
+                        subpaths.splice(k, 1);
+                    }
+                }
+                lastPath.remove();
+                // TODO add back undo
+                // pg.undo.snapshot('eraser');
+                continue;
+            }
+            // Erase
+            const newPath = items[i].subtract(lastPath);
+            newPath.insertBelow(items[i]);
+
+            // Gather path segments
+            const subpaths = [];
+            // TODO: Handle compound path
+            if (items[i] instanceof paper.Path && !items[i].closed) {
+                const firstSeg = items[i].clone();
+                const intersections = firstSeg.getIntersections(lastPath);
+                // keep first and last segments
+                for (let j = intersections.length - 1; j >= 0; j--) {
+                    const split = firstSeg.splitAt(intersections[j]);
+                    split.insertAbove(firstSeg);
+                    subpaths.push(split);
+                }
+                subpaths.push(firstSeg);
+            }
+
+            // Remove the ones that are within the eraser stroke boundary, or are already part of new path.
+            // This way subpaths only remain if they didn't get turned into a shape by subtract.
+            for (let k = subpaths.length - 1; k >= 0; k--) {
+                const segMidpoint = subpaths[k].getLocationAt(subpaths[k].length / 2).point;
+                if (lastPath.contains(segMidpoint) || newPath.contains(segMidpoint)) {
+                    subpaths[k].remove();
+                    subpaths.splice(k, 1);
+                }
+            }
+
+            // Divide topologically separate shapes into their own compound paths, instead of
+            // everything being stuck together.
+            // Assume that result of erase operation returns clockwise paths for positive shapes
+            const clockwiseChildren = [];
+            const ccwChildren = [];
+            if (newPath.children) {
+                for (let j = newPath.children.length - 1; j >= 0; j--) {
+                    const child = newPath.children[j];
+                    if (child.isClockwise()) {
+                        clockwiseChildren.push(child);
+                    } else {
+                        ccwChildren.push(child);
+                    }
+                }
+                for (let j = 0; j < clockwiseChildren.length; j++) {
+                    const cw = clockwiseChildren[j];
+                    cw.copyAttributes(newPath);
+                    cw.fillColor = newPath.fillColor;
+                    cw.strokeColor = newPath.strokeColor;
+                    cw.strokeWidth = newPath.strokeWidth;
+                    cw.insertAbove(items[i]);
+                    
+                    // Go backward since we are deleting elements
+                    let newCw = cw;
+                    for (let k = ccwChildren.length - 1; k >= 0; k--) {
+                        const ccw = ccwChildren[k];
+                        if (this.firstEnclosesSecond(ccw, cw) || this.firstEnclosesSecond(cw, ccw)) {
+                            const temp = newCw.subtract(ccw);
+                            temp.insertAbove(newCw);
+                            newCw.remove();
+                            newCw = temp;
+                            ccw.remove();
+                            ccwChildren.splice(k, 1);
+                        }
+                    }
+                }
+                newPath.remove();
+            }
+            items[i].remove();
+        }
+        lastPath.remove();
+        // TODO: Add back undo handling
+        // pg.undo.snapshot('eraser');
+    }
+
+    colorMatch (existingPath, addedPath) {
+        // Note: transparent fill colors do notdetect as touching
+        return existingPath.getFillColor().equals(addedPath.getFillColor()) &&
+                (addedPath.getStrokeColor() === existingPath.getStrokeColor() || // both null
+                    (addedPath.getStrokeColor() &&
+                        addedPath.getStrokeColor().equals(existingPath.getStrokeColor()))) &&
+                addedPath.getStrokeWidth() === existingPath.getStrokeWidth() &&
+                this.touches(existingPath, addedPath);
+    }
+
+    touches (path1, path2) {
+        // Two shapes are touching if their paths intersect
+        if (path1 && path2 && path1.intersects(path2)) {
+            return true;
+        }
+        return this.firstEnclosesSecond(path1, path2) || this.firstEnclosesSecond(path2, path1);
+    }
+
+    firstEnclosesSecond (path1, path2) {
+        // Two shapes are also touching if one is completely inside the other
+        if (path1 && path2 && path2.firstSegment && path2.firstSegment.point &&
+                path1.hitTest(path2.firstSegment.point)) {
+            return true;
+        }
+        // TODO: clean up these no point paths
+        return false;
+    }
+
+    isMergeable (newPath, existingPath) {
+        return existingPath instanceof paper.PathItem && // path or compound path
+            existingPath !== this.cursorPreview && // don't merge with the mouse preview
+            existingPath !== newPath && // don't merge with self
+            existingPath.parent instanceof paper.Layer; // don't merge with nested in group
+    }
+
+    deactivateTool () {
+        this.cursorPreview.remove();
+        this.cursorPreview = null;
+        this.tool.remove();
+        this.tool = null;
+    }
+}
+
+export default Blobbiness;

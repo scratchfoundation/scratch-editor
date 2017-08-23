@@ -1,8 +1,8 @@
 import keyMirror from 'keymirror';
 
-const ToolTypes = keyMirror({
+const Modes = keyMirror({
     BRUSH: null,
     ERASER: null
 });
 
-export default ToolTypes;
+export default Modes;
