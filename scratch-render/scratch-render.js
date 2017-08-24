@@ -13248,6 +13248,8 @@ var Drawable = function () {
 
             // Adjust rotation center relative to the skin.
             var rotationAdjusted = twgl.v3.subtract(this.skin.rotationCenter, twgl.v3.divScalar(this.skin.size, 2));
+            rotationAdjusted = twgl.v3.multiply(rotationAdjusted, this.scale);
+            rotationAdjusted = twgl.v3.divScalar(rotationAdjusted, 100);
             rotationAdjusted[1] *= -1; // Y flipped to Scratch coordinate.
             rotationAdjusted[2] = 0; // Z coordinate is 0.
 
