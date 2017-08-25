@@ -33,7 +33,7 @@ class EraserMode extends React.Component {
         }
     }
     shouldComponentUpdate () {
-        return false; // Logic only component
+        return false; // Static component, for now
     }
     activateTool () {
         this.props.canvas.addEventListener('mousewheel', this.onScroll);

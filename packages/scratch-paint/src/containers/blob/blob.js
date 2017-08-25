@@ -82,9 +82,9 @@ class Blobbiness {
             blob.resizeCursorIfNeeded(event.point);
             if (event.event.button > 0) return;  // only first mouse button
             if (blob.brush === Blobbiness.BROAD) {
-                blob.broadBrushHelper.onBroadMouseDrag(event, blob.options);
+                blob.broadBrushHelper.onBroadMouseDrag(event, blob.tool, blob.options);
             } else if (blob.brush === Blobbiness.SEGMENT) {
-                blob.segmentBrushHelper.onSegmentMouseDrag(event, blob.options);
+                blob.segmentBrushHelper.onSegmentMouseDrag(event, blob.tool, blob.options);
             } else {
                 log.warn(`Brush type does not exist: ${blob.brush}`);
             }
@@ -102,7 +102,7 @@ class Blobbiness {
             if (blob.brush === Blobbiness.BROAD) {
                 lastPath = blob.broadBrushHelper.onBroadMouseUp(event, blob.tool, blob.options);
             } else if (blob.brush === Blobbiness.SEGMENT) {
-                lastPath = blob.segmentBrushHelper.onSegmentMouseUp(event);
+                lastPath = blob.segmentBrushHelper.onSegmentMouseUp(event, blob.tool, blob.options);
             } else {
                 log.warn(`Brush type does not exist: ${blob.brush}`);
             }
