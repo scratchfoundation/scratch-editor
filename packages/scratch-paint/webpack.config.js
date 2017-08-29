@@ -12,10 +12,6 @@ const postcssImport = require('postcss-import');
 
 const base = {
     devtool: 'cheap-module-source-map',
-    externals: {
-        React: 'react',
-        ReactDOM: 'react-dom'
-    },
     module: {
         rules: [{
             test: /\.jsx?$/,
@@ -55,17 +51,13 @@ const base = {
             }]
         }]
     },
-    plugins: [
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'lib',
-            filename: 'lib.min.js'
-        })
-    ].concat(process.env.NODE_ENV === 'production' ? [
-        new webpack.optimize.UglifyJsPlugin({
-            include: /\.min\.js$/,
-            minimize: true
-        })
-    ] : [])
+    plugins: []
+        .concat(process.env.NODE_ENV === 'production' ? [
+            new webpack.optimize.UglifyJsPlugin({
+                include: /\.min\.js$/,
+                minimize: true
+            })
+        ] : [])
 };
 
 module.exports = [
@@ -77,7 +69,6 @@ module.exports = [
             port: process.env.PORT || 8078
         },
         entry: {
-            lib: ['react', 'react-dom'],
             playground: './src/playground/playground.jsx'
         },
         output: {
@@ -93,13 +84,18 @@ module.exports = [
     }),
     // For use as a library
     defaultsDeep({}, base, {
+        externals: {
+            'react': 'react',
+            'react-dom': 'react-dom',
+            'minilog': 'minilog'
+        },
         entry: {
-            'lib': ['react', 'react-dom'],
             'scratch-paint': './src/index.js'
         },
         output: {
             path: path.resolve(__dirname, 'dist'),
-            filename: '[name].js'
+            filename: '[name].js',
+            libraryTarget: 'commonjs2'
         }
     })
 ];

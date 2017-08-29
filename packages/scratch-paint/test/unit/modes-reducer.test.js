@@ -19,6 +19,6 @@ test('changeMode', () => {
 
 test('invalidChangeMode', () => {
     expect(reducer(Modes.BRUSH /* state */, changeMode('non-existant mode') /* action */))
-    .toBe(Modes.BRUSH);
+        .toBe(Modes.BRUSH);
     expect(reducer(Modes.BRUSH /* state */, changeMode() /* action */)).toBe(Modes.BRUSH);
 });

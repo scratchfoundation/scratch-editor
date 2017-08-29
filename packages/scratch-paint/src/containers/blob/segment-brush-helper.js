@@ -22,7 +22,7 @@ class SegmentBrushHelper {
     }
 
     onSegmentMouseDown (event, tool, options) {
-        if (event.event.button > 0) return;  // only first mouse button
+        if (event.event.button > 0) return; // only first mouse button
 
         tool.minDistance = 1;
         tool.maxDistance = options.brushSize;
@@ -37,7 +37,7 @@ class SegmentBrushHelper {
     }
     
     onSegmentMouseDrag (event, tool, options) {
-        if (event.event.button > 0) return;  // only first mouse button
+        if (event.event.button > 0) return; // only first mouse button
 
         const step = (event.delta).normalize(options.brushSize / 2);
         const handleVec = step.clone();
@@ -75,7 +75,7 @@ class SegmentBrushHelper {
     }
 
     onSegmentMouseUp (event) {
-        if (event.event.button > 0) return;  // only first mouse button
+        if (event.event.button > 0) return; // only first mouse button
 
         // TODO: This smoothing tends to cut off large portions of the path! Would like to eventually
         // add back smoothing, maybe a custom implementation that only applies to a subset of the line?

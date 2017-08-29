@@ -22,7 +22,7 @@ class BroadBrushHelper {
     onBroadMouseDown (event, tool, options) {
         tool.minDistance = options.brushSize / 2;
         tool.maxDistance = options.brushSize;
-        if (event.event.button > 0) return;  // only first mouse button
+        if (event.event.button > 0) return; // only first mouse button
         
         this.finalPath = new paper.Path();
         stylePath(this.finalPath, options.isEraser);
