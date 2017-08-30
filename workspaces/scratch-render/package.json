@@ -17,7 +17,8 @@
     "prepublish": "npm run build",
     "prepublish-watch": "npm run watch",
     "start": "webpack-dev-server",
-    "test": "npm run lint && npm run docs",
+    "tap": "./node_modules/.bin/tap ./test/unit/*.js",
+    "test": "npm run lint && npm run docs && npm run tap",
     "version": "json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\"",
     "watch": "webpack --progress --colors --watch --watch-poll"
   },
