@@ -16,7 +16,7 @@ class BrushMode extends React.Component {
             'deactivateTool',
             'onScroll'
         ]);
-        this.blob = new Blobbiness();
+        this.blob = new Blobbiness(this.props.onUpdateSvg);
     }
     componentDidMount () {
         if (this.props.isBrushModeActive) {
@@ -70,7 +70,8 @@ BrushMode.propTypes = {
     canvas: PropTypes.instanceOf(Element).isRequired,
     changeBrushSize: PropTypes.func.isRequired,
     handleMouseDown: PropTypes.func.isRequired,
-    isBrushModeActive: PropTypes.bool.isRequired
+    isBrushModeActive: PropTypes.bool.isRequired,
+    onUpdateSvg: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({

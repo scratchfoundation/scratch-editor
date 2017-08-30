@@ -20,10 +20,16 @@ const svgString =
         '<polyline points="50,150 50,200 200,200 200,100" stroke="red" stroke-width="4" fill="none" />' +
         '<line x1="50" y1="50" x2="200" y2="200" stroke="blue" stroke-width="4" />' +
     '</svg>';
+const onUpdateSvg = function () {
+    return;
+};
 ReactDOM.render((
     <Provider store={store}>
         <IntlProvider>
-            <PaintEditor svg={svgString} />
+            <PaintEditor
+                svg={svgString}
+                onUpdateSvg={onUpdateSvg}
+            />
         </IntlProvider>
     </Provider>
 ), appTarget);

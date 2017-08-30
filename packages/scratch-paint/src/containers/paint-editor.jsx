@@ -5,44 +5,42 @@ import {changeMode} from '../reducers/modes';
 import Modes from '../modes/modes';
 import {connect} from 'react-redux';
 import bindAll from 'lodash.bindall';
+import paper from 'paper';
 
 class PaintEditor extends React.Component {
     constructor (props) {
         super(props);
         bindAll(this, [
-            'updateSvg'
+            'handleUpdateSvg'
         ]);
     }
     componentDidMount () {
         document.addEventListener('keydown', this.props.onKeyPress);
     }
-    shouldComponentUpdate (newProps) {
-        return newProps.assetId !== this.props.assetId;
-    }
     componentWillUnmount () {
         document.removeEventListener('keydown', this.props.onKeyPress);
     }
-    updateSvg (svg) {
-        if (!this.props.onUpdate) {
+    handleUpdateSvg () {
+        if (!this.props.onUpdateSvg) {
             return;
         }
-        this.props.onUpdate(
-            this.props.assetIndex,
-            svg
+        this.props.onUpdateSvg(
+            paper.project.exportSVG({asString: true}) // TODO can this be made independent of paper
         );
     }
     render () {
         return (
-            <PaintEditorComponent svg={this.props.svg} />
+            <PaintEditorComponent
+                svg={this.props.svg}
+                onUpdateSvg={this.handleUpdateSvg}
+            />
         );
     }
 }
 
 PaintEditor.propTypes = {
-    assetId: PropTypes.string,
-    assetIndex: PropTypes.number,
     onKeyPress: PropTypes.func.isRequired,
-    onUpdate: PropTypes.func,
+    onUpdateSvg: PropTypes.func.isRequired,
     svg: PropTypes.string
 };
 

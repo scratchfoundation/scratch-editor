@@ -26,9 +26,18 @@ class PaintEditorComponent extends React.Component {
                         canvasRef={this.setCanvas}
                         svg={this.props.svg}
                     />
-                    <BrushMode canvas={this.state.canvas} />
-                    <EraserMode canvas={this.state.canvas} />
-                    <LineMode canvas={this.state.canvas} />
+                    <BrushMode
+                        canvas={this.state.canvas}
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
+                    <EraserMode
+                        canvas={this.state.canvas}
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
+                    <LineMode
+                        canvas={this.state.canvas}
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
                 </div>
             );
         }
@@ -41,6 +50,7 @@ class PaintEditorComponent extends React.Component {
 }
 
 PaintEditorComponent.propTypes = {
+    onUpdateSvg: PropTypes.func.isRequired,
     svg: PropTypes.string
 };
 

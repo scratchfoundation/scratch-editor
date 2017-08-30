@@ -16,7 +16,7 @@ class EraserMode extends React.Component {
             'deactivateTool',
             'onScroll'
         ]);
-        this.blob = new Blobbiness();
+        this.blob = new Blobbiness(this.props.onUpdateSvg);
     }
     componentDidMount () {
         if (this.props.isEraserModeActive) {
@@ -66,7 +66,8 @@ EraserMode.propTypes = {
         brushSize: PropTypes.number.isRequired
     }),
     handleMouseDown: PropTypes.func.isRequired,
-    isEraserModeActive: PropTypes.bool.isRequired
+    isEraserModeActive: PropTypes.bool.isRequired,
+    onUpdateSvg: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
