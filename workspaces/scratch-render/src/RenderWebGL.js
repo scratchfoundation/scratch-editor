@@ -223,6 +223,17 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Update an existing SVG skin
+     * @param {!int} skinId the ID for the skin to change.
+     * @param {!string} svgData - new SVG to use.
+     * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
+     * skin will be used
+     */
+    updateSVGSkin (skinId, svgData, rotationCenter) {
+        this._allSkins[skinId].setSVG(svgData, rotationCenter);
+    }
+
+    /**
      * Destroy an existing skin. Do not use the skin or its ID after calling this.
      * @param {!int} skinId - The ID of the skin to destroy.
      */
