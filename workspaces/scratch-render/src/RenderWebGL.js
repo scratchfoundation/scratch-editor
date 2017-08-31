@@ -239,6 +239,13 @@ class RenderWebGL extends EventEmitter {
         newSkin.setSVG(svgData, rotationCenter);
         const oldSkin = this._allSkins[skinId];
         this._allSkins[skinId] = newSkin;
+
+        // Tell drawables to update
+        for (const drawable of this._allDrawables) {
+            if (drawable && drawable.skin === oldSkin) {
+                drawable.skin = newSkin;
+            }
+        }
         oldSkin.dispose();
     }
 
