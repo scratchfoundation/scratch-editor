@@ -29,10 +29,15 @@ const MAX_TOUCH_SIZE = [3, 3];
  * target is touching a color whose components are each within this tolerance of
  * the corresponding component of the query color.
  * between 0 (exact matches only) and 255 (match anything).
- * @type {int}
+ * @type {object.<string,int>}
  * @memberof RenderWebGL
  */
-const TOLERANCE_TOUCHING_COLOR = 2;
+const TOLERANCE_TOUCHING_COLOR = {
+    R: 7,
+    G: 7,
+    B: 15,
+    Mask: 2
+};
 
 /**
  * Sprite Fencing - The number of pixels a sprite is required to leave remaining
@@ -384,7 +389,7 @@ class RenderWebGL extends EventEmitter {
         if (mask3b) {
             extraUniforms = {
                 u_colorMask: [mask3b[0] / 255, mask3b[1] / 255, mask3b[2] / 255],
-                u_colorMaskTolerance: TOLERANCE_TOUCHING_COLOR / 255
+                u_colorMaskTolerance: TOLERANCE_TOUCHING_COLOR.Mask / 255
             };
         }
 
@@ -430,9 +435,9 @@ class RenderWebGL extends EventEmitter {
             const pixelDistanceG = Math.abs(pixels[pixelBase + 1] - color3b[1]);
             const pixelDistanceB = Math.abs(pixels[pixelBase + 2] - color3b[2]);
 
-            if (pixelDistanceR <= TOLERANCE_TOUCHING_COLOR &&
-                pixelDistanceG <= TOLERANCE_TOUCHING_COLOR &&
-                pixelDistanceB <= TOLERANCE_TOUCHING_COLOR) {
+            if (pixelDistanceR <= TOLERANCE_TOUCHING_COLOR.R &&
+                pixelDistanceG <= TOLERANCE_TOUCHING_COLOR.G &&
+                pixelDistanceB <= TOLERANCE_TOUCHING_COLOR.B) {
                 return true;
             }
         }
