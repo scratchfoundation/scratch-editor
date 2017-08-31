@@ -100,3 +100,43 @@ test('rotate by non-right-angles', t => {
 
     t.end();
 });
+
+test('scale', t => {
+    const expected = new Rectangle();
+    const drawable = new Drawable();
+    drawable.skin = new MockSkin();
+    drawable.skin.size = [200, 50];
+
+    drawable.updateProperties({scale: [100, 50]});
+    expected.initFromBounds(0, 200, -25, 0);
+    t.same(snapToNearest(drawable.getAABB()), expected);
+
+    drawable.skin.setRotationCenter(0, 25);
+    expected.initFromBounds(0, 200, -12.5, 12.5);
+    t.same(snapToNearest(drawable.getAABB()), expected);
+
+    drawable.skin.setRotationCenter(150, 50);
+    drawable.updateProperties({scale: [50, 50]});
+    expected.initFromBounds(-75, 25, 0, 25);
+    t.same(snapToNearest(drawable.getAABB()), expected);
+
+    t.end();
+});
+
+test('rotate and scale', t => {
+    const expected = new Rectangle();
+    const drawable = new Drawable();
+    drawable.skin = new MockSkin();
+    drawable.skin.size = [100, 1000];
+
+    drawable.skin.setRotationCenter(50, 50);
+    expected.initFromBounds(-50, 50, -950, 50);
+    t.same(snapToNearest(drawable.getAABB()), expected);
+
+    drawable.updateProperties({scale: [40, 60]});
+    drawable.skin.setRotationCenter(50, 50);
+    expected.initFromBounds(-20, 20, -570, 30);
+    t.same(snapToNearest(drawable.getAABB()), expected);
+
+    t.end();
+});
