@@ -14547,6 +14547,29 @@ var RenderWebGL = function (_EventEmitter) {
         }
 
         /**
+         * Update an existing SVG skin, or create an SVG skin if the previous skin was not SVG.
+         * @param {!int} skinId the ID for the skin to change.
+         * @param {!string} svgData - new SVG to use.
+         * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
+         * skin will be used
+         */
+
+    }, {
+        key: 'updateSVGSkin',
+        value: function updateSVGSkin(skinId, svgData, rotationCenter) {
+            if (this._allSkins[skinId] instanceof SVGSkin) {
+                this._allSkins[skinId].setSVG(svgData, rotationCenter);
+                return;
+            }
+
+            var newSkin = new SVGSkin(skinId, this);
+            newSkin.setSVG(svgData, rotationCenter);
+            var oldSkin = this._allSkins[skinId];
+            this._allSkins[skinId] = newSkin;
+            oldSkin.dispose();
+        }
+
+        /**
          * Destroy an existing skin. Do not use the skin or its ID after calling this.
          * @param {!int} skinId - The ID of the skin to destroy.
          */
