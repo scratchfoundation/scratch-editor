@@ -701,7 +701,6 @@ class RenderWebGL extends EventEmitter {
      * @return {?ColorExtraction} Data about the picked color
      */
     extractColor (x, y, radius) {
-        // @todo this doesn't seem to work for retina screens
         const scratchX = Math.round(this._nativeSize[0] * ((x / this._gl.canvas.clientWidth) - 0.5));
         const scratchY = Math.round(-this._nativeSize[1] * ((y / this._gl.canvas.clientHeight) - 0.5));
 
@@ -719,12 +718,7 @@ class RenderWebGL extends EventEmitter {
 
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
-        try {
-            gl.disable(gl.BLEND);
-            this._drawThese(this._drawList, ShaderManager.DRAW_MODE.default, projection);
-        } finally {
-            gl.enable(gl.BLEND);
-        }
+        this._drawThese(this._drawList, ShaderManager.DRAW_MODE.default, projection);
 
         const data = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
         gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
