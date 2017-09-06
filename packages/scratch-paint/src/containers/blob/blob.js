@@ -24,9 +24,13 @@ class Blobbiness {
         return 9;
     }
 
-    constructor () {
+    /**
+     * @param {function} updateCallback call when the drawing has changed to let listeners know
+     */
+    constructor (updateCallback) {
         this.broadBrushHelper = new BroadBrushHelper();
         this.segmentBrushHelper = new SegmentBrushHelper();
+        this.updateCallback = updateCallback;
     }
     
     /**
@@ -113,6 +117,9 @@ class Blobbiness {
                 blob.mergeBrush(lastPath);
             }
 
+            blob.cursorPreview.visible = false;
+            blob.updateCallback();
+            blob.cursorPreview.visible = true;
             blob.cursorPreview.bringToFront();
             blob.cursorPreview.position = event.point;
 

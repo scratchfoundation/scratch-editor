@@ -3,6 +3,7 @@ import React from 'react';
 import PaperCanvas from '../containers/paper-canvas.jsx';
 import BrushMode from '../containers/brush-mode.jsx';
 import EraserMode from '../containers/eraser-mode.jsx';
+import PropTypes from 'prop-types';
 import LineMode from '../containers/line-mode.jsx';
 
 class PaintEditorComponent extends React.Component {
@@ -21,10 +22,24 @@ class PaintEditorComponent extends React.Component {
         if (this.state.canvas) {
             return (
                 <div>
-                    <PaperCanvas canvasRef={this.setCanvas} />
-                    <BrushMode canvas={this.state.canvas} />
-                    <EraserMode canvas={this.state.canvas} />
-                    <LineMode canvas={this.state.canvas} />
+                    <PaperCanvas
+                        canvasRef={this.setCanvas}
+                        rotationCenterX={this.props.rotationCenterX}
+                        rotationCenterY={this.props.rotationCenterY}
+                        svg={this.props.svg}
+                    />
+                    <BrushMode
+                        canvas={this.state.canvas}
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
+                    <EraserMode
+                        canvas={this.state.canvas}
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
+                    <LineMode
+                        canvas={this.state.canvas}
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
                 </div>
             );
         }
@@ -35,5 +50,12 @@ class PaintEditorComponent extends React.Component {
         );
     }
 }
+
+PaintEditorComponent.propTypes = {
+    onUpdateSvg: PropTypes.func.isRequired,
+    rotationCenterX: PropTypes.number,
+    rotationCenterY: PropTypes.number,
+    svg: PropTypes.string
+};
 
 export default PaintEditorComponent;

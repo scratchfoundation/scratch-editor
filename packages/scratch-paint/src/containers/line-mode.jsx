@@ -209,6 +209,7 @@ class LineMode extends React.Component {
             }
             this.hitResult = null;
         }
+        this.props.onUpdateSvg();
 
         // TODO add back undo
         // if (this.path) {
@@ -280,7 +281,8 @@ LineMode.propTypes = {
     isLineModeActive: PropTypes.bool.isRequired,
     lineModeState: PropTypes.shape({
         lineWidth: PropTypes.number.isRequired
-    })
+    }),
+    onUpdateSvg: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
