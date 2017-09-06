@@ -1,35 +1,5 @@
-$ui-pane-border: #D9D9D9;
-$ui-pane-gray: #F9F9F9;
-$ui-background-blue: #e8edf1;
-
-$text-primary: #575e75;
-
-$motion-primary: #4C97FF;
-$motion-tertiary: #3373CC;
-$motion-transparent: hsla(215, 100%, 65%, 0.20);
-
-$red-primary: #FF661A;
-$red-tertiary: #E64D00;
-
-$sound-primary: #CF63CF;
-$sound-tertiary: #A63FA6;
-
-$control-primary: #FFAB19;
-
-$form-border: #E9EEF2;
-
-$space: 0.5rem;
-
-$sprites-per-row: 5;
-
-$menu-bar-height: 3rem;
-$sprite-info-height: 6rem;
-$stage-menu-height: 2.75rem;
-
-$library-header-height: 4.375rem;
-
-$form-radius: calc($space / 2);
-
+@import "../css/colors.css";
+@import "../css/units.css";
 
 .editor-container {
     display: flex;
@@ -41,6 +11,12 @@ $form-radius: calc($space / 2);
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.top-align-row {
+    padding-top:20px;
+    display: flex;
+    flex-direction: row;
 }
 
 .row + .row {
@@ -142,4 +118,19 @@ $border-radius: 0.25rem;
 
 .button:disabled > img {
     opacity: 0.25;
+}
+
+.canvas-container {
+    width: 503px;
+    height: 403px;
+    background-color: #e8edf1;
+    border: 1px solid #e8edf1;
+    border-radius: 2px;
+    position: relative;
+    overflow: visible;
+}
+
+.mode-selector {
+    display: flex;
+    flex-direction: column;
 }

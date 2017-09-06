@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import paper from 'paper';
 
+import styles from './paper-canvas.css';
+
 class PaperCanvas extends React.Component {
     constructor (props) {
         super(props);
@@ -60,7 +62,10 @@ class PaperCanvas extends React.Component {
     render () {
         return (
             <canvas
+                className={styles.paperCanvas}
+                height="400px"
                 ref={this.setCanvas}
+                width="500px"
             />
         );
     }

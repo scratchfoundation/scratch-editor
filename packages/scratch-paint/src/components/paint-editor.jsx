@@ -6,7 +6,31 @@ import EraserMode from '../containers/eraser-mode.jsx';
 import PropTypes from 'prop-types';
 import LineMode from '../containers/line-mode.jsx';
 
+import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import BufferedInputHOC from './forms/buffered-input-hoc.jsx';
+import Label from './forms/label.jsx';
+import Input from './forms/input.jsx';
+
 import styles from './paint-editor.css';
+
+const BufferedInput = BufferedInputHOC(Input);
+const messages = defineMessages({
+    costume: {
+        id: 'paint.paintEditor.costume',
+        description: 'Label for the name of a sound',
+        defaultMessage: 'Costume'
+    },
+    fill: {
+        id: 'paint.paintEditor.fill',
+        description: 'Label for the color picker for the fill color',
+        defaultMessage: 'Fill'
+    },
+    outline: {
+        id: 'paint.paintEditor.outline',
+        description: 'Label for the color picker for the outline color',
+        defaultMessage: 'Outline'
+    }
+});
 
 class PaintEditorComponent extends React.Component {
     constructor (props) {
@@ -26,10 +50,13 @@ class PaintEditorComponent extends React.Component {
                 <div className={styles.row}>
                     {/* Name field */}
                     <div className={styles.inputGroup}>
-                        {/* Todo use Label and BufferedInput from Gui */}
-                        <label>Costume
-                            <input value="meow" />
-                        </label>
+                        <Label text={this.props.intl.formatMessage(messages.costume)}>
+                            <BufferedInput
+                                tabIndex="1"
+                                type="text"
+                                value="meow"
+                            />
+                        </Label>
                     </div>
 
                     {/* Undo/Redo */}
@@ -81,19 +108,23 @@ class PaintEditorComponent extends React.Component {
                 <div className={styles.row}>
                     {/* To be fill */}
                     <div className={styles.inputGroup}>
-                        <button
-                            className={styles.button}
-                        >
-                            Fill
-                        </button>
+                        <Label text={this.props.intl.formatMessage(messages.fill)}>
+                            <BufferedInput
+                                tabIndex="1"
+                                type="text"
+                                value="meow"
+                            />
+                        </Label>
                     </div>
                     {/* To be stroke */}
                     <div className={styles.inputGroup}>
-                        <button
-                            className={styles.button}
-                        >
-                            Stroke
-                        </button>
+                        <Label text={this.props.intl.formatMessage(messages.outline)}>
+                            <BufferedInput
+                                tabIndex="1"
+                                type="text"
+                                value="meow"
+                            />
+                        </Label>
                     </div>
 
                     <div className={styles.inputGroup}>
@@ -101,7 +132,7 @@ class PaintEditorComponent extends React.Component {
                     </div>
                 </div>
 
-                <div className={styles.row}>
+                <div className={styles.topAlignRow}>
                     {/* Modes */}
                     {this.state.canvas ? (
                         <div className={styles.modeSelector}>
@@ -136,10 +167,11 @@ class PaintEditorComponent extends React.Component {
 }
 
 PaintEditorComponent.propTypes = {
+    intl: intlShape,
     onUpdateSvg: PropTypes.func.isRequired,
     rotationCenterX: PropTypes.number,
     rotationCenterY: PropTypes.number,
     svg: PropTypes.string
 };
 
-export default PaintEditorComponent;
+export default injectIntl(PaintEditorComponent);

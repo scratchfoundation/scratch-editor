@@ -1,0 +1,7 @@
+.paper-canvas {
+    width: 500px;
+    height: 400px;
+    margin: auto;  
+    position: relative;
+    background-color: #fff;
+}
