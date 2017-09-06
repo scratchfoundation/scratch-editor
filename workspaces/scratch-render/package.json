@@ -33,7 +33,7 @@
     "docdash": "^0.4.0",
     "eslint": "^4.6.1",
     "eslint-config-scratch": "^4.0.0",
-    "gh-pages": "^0.12.0",
+    "gh-pages": "^1.0.0",
     "hull.js": "0.2.10",
     "jsdoc": "^3.5.3",
     "json": "^9.0.4",
