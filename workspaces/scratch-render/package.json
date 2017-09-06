@@ -42,7 +42,7 @@
     "tap": "^10.3.0",
     "travis-after-all": "^1.4.4",
     "twgl.js": "3.3.0",
-    "webpack": "^2.2.1",
+    "webpack": "^3.5.6",
     "webpack-dev-server": "^2.4.1"
   }
 }
