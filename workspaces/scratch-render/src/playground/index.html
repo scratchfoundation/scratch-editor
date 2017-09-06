@@ -126,6 +126,11 @@
         };
     }
 
+    canvas.onmousemove = function(event) {
+        var mousePos = getMousePos(event, canvas);
+        renderer.extractColor(mousePos.x, mousePos.y, 30);
+    };
+
     canvas.onclick = function(event) {
         var mousePos = getMousePos(event, canvas);
         var pickID = renderer.pick(mousePos.x, mousePos.y);
