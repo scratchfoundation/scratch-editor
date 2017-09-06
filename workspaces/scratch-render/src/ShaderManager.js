@@ -1,8 +1,5 @@
 const twgl = require('twgl.js');
 
-const vertexShaderText = require('raw-loader!./shaders/sprite.vert');
-const fragmentShaderText = require('raw-loader!./shaders/sprite.frag');
-
 
 class ShaderManager {
     /**
@@ -65,8 +62,11 @@ class ShaderManager {
         }
 
         const definesText = `${defines.join('\n')}\n`;
-        const vsFullText = definesText + vertexShaderText;
-        const fsFullText = definesText + fragmentShaderText;
+
+        /* eslint-disable global-require */
+        const vsFullText = definesText + require('raw-loader!./shaders/sprite.vert');
+        const fsFullText = definesText + require('raw-loader!./shaders/sprite.frag');
+        /* eslint-enable global-require */
 
         return twgl.createProgramInfo(this._gl, [vsFullText, fsFullText]);
     }
