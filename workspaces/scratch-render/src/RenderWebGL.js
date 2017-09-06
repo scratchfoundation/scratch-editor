@@ -750,11 +750,12 @@ class RenderWebGL extends EventEmitter {
         const data = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
         gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
 
+        const pixelBase = Math.floor(4 * ((pickY * bounds.width) + pickX));
         const color = {
-            r: data[Math.floor(4 * (pickY * bounds.width + pickX))],
-            g: data[Math.floor(4 * (pickY * bounds.width + pickX)) + 1],
-            b: data[Math.floor(4 * (pickY * bounds.width + pickX)) + 2],
-            a: data[Math.floor(4 * (pickY * bounds.width + pickX)) + 3]
+            r: data[pixelBase],
+            g: data[pixelBase + 1],
+            b: data[pixelBase + 2],
+            a: data[pixelBase + 3]
         };
 
         if (this._debugCanvas) {
