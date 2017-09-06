@@ -22,7 +22,7 @@ module.exports = {
      * @enum {string}
      */
     Events: {
-         /**
+        /**
          * NativeSizeChanged event
          *
          * @event RenderWebGL#event:NativeSizeChanged

@@ -112,7 +112,7 @@ class PenSkin extends Skin {
     }
 
     /**
-     * Draw a point on the pen layer.
+     * Draw a line on the pen layer.
      * @param {PenAttributes} penAttributes - how the line should be drawn.
      * @param {number} x0 - the X coordinate of the beginning of the line.
      * @param {number} y0 - the Y coordinate of the beginning of the line.
@@ -189,7 +189,7 @@ class PenSkin extends Skin {
         const r = Math.round(color4f[0] * 255);
         const g = Math.round(color4f[1] * 255);
         const b = Math.round(color4f[2] * 255);
-        const a = color4f[3];   // Alpha is 0 to 1 (not 0 to 255 like r,g,b)
+        const a = color4f[3]; // Alpha is 0 to 1 (not 0 to 255 like r,g,b)
 
         context.strokeStyle = `rgba(${r},${g},${b},${a})`;
         context.lineCap = 'round';

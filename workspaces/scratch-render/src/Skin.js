@@ -78,7 +78,9 @@ class Skin extends EventEmitter {
      * @fires Skin.event:WasAltered
      */
     setRotationCenter (x, y) {
-        if (x !== this._rotationCenter[0] || y !== this._rotationCenter[1]) {
+        const emptySkin = this.size[0] === 0 && this.size[1] === 0;
+        const changed = x !== this._rotationCenter[0] || y !== this._rotationCenter[1];
+        if (!emptySkin && changed) {
             this._rotationCenter[0] = x;
             this._rotationCenter[1] = y;
             this.emit(Skin.Events.WasAltered);
