@@ -192,7 +192,7 @@ module.exports = !__webpack_require__(3)(function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(1);
-var IE8_DOM_DEFINE = __webpack_require__(103);
+var IE8_DOM_DEFINE = __webpack_require__(104);
 var toPrimitive = __webpack_require__(26);
 var dP = Object.defineProperty;
 
@@ -349,7 +349,7 @@ var createDesc = __webpack_require__(37);
 var toIObject = __webpack_require__(15);
 var toPrimitive = __webpack_require__(26);
 var has = __webpack_require__(11);
-var IE8_DOM_DEFINE = __webpack_require__(103);
+var IE8_DOM_DEFINE = __webpack_require__(104);
 var gOPD = Object.getOwnPropertyDescriptor;
 
 exports.f = __webpack_require__(6) ? gOPD : function getOwnPropertyDescriptor(O, P) {
@@ -553,10 +553,10 @@ module.exports = function (it, S) {
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Map = __webpack_require__(123);
+var Map = __webpack_require__(124);
 var $export = __webpack_require__(0);
 var shared = __webpack_require__(64)('metadata');
-var store = shared.store || (shared.store = new (__webpack_require__(126))());
+var store = shared.store || (shared.store = new (__webpack_require__(127))());
 
 var getOrCreateMetadataMap = function (target, targetKey, create) {
   var targetMetadata = store.get(target);
@@ -626,7 +626,7 @@ if (__webpack_require__(6)) {
   var redefineAll = __webpack_require__(38);
   var toInteger = __webpack_require__(25);
   var toLength = __webpack_require__(8);
-  var toIndex = __webpack_require__(121);
+  var toIndex = __webpack_require__(122);
   var toAbsoluteIndex = __webpack_require__(40);
   var toPrimitive = __webpack_require__(26);
   var has = __webpack_require__(11);
@@ -648,7 +648,7 @@ if (__webpack_require__(6)) {
   var $iterDetect = __webpack_require__(59);
   var setSpecies = __webpack_require__(39);
   var arrayFill = __webpack_require__(67);
-  var arrayCopyWithin = __webpack_require__(95);
+  var arrayCopyWithin = __webpack_require__(96);
   var $DP = __webpack_require__(7);
   var $GOPD = __webpack_require__(16);
   var dP = $DP.f;
@@ -1170,7 +1170,7 @@ var meta = module.exports = {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 / 15.2.3.14 Object.keys(O)
-var $keys = __webpack_require__(113);
+var $keys = __webpack_require__(114);
 var enumBugKeys = __webpack_require__(71);
 
 module.exports = Object.keys || function keys(O) {
@@ -1194,7 +1194,7 @@ module.exports = function (it, Constructor, name, forbiddenField) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var ctx = __webpack_require__(19);
-var call = __webpack_require__(105);
+var call = __webpack_require__(106);
 var isArrayIter = __webpack_require__(75);
 var anObject = __webpack_require__(1);
 var toLength = __webpack_require__(8);
@@ -1233,7 +1233,7 @@ module.exports = false;
 
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
 var anObject = __webpack_require__(1);
-var dPs = __webpack_require__(111);
+var dPs = __webpack_require__(112);
 var enumBugKeys = __webpack_require__(71);
 var IE_PROTO = __webpack_require__(83)('IE_PROTO');
 var Empty = function () { /* empty */ };
@@ -1279,7 +1279,7 @@ module.exports = Object.create || function create(O, Properties) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
-var $keys = __webpack_require__(113);
+var $keys = __webpack_require__(114);
 var hiddenKeys = __webpack_require__(71).concat('length', 'prototype');
 
 exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
@@ -10329,7 +10329,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var EventEmitter = __webpack_require__(127);
+var EventEmitter = __webpack_require__(128);
 
 var twgl = __webpack_require__(42);
 
@@ -11448,7 +11448,7 @@ var fails = __webpack_require__(3);
 var anInstance = __webpack_require__(32);
 var toInteger = __webpack_require__(25);
 var toLength = __webpack_require__(8);
-var toIndex = __webpack_require__(121);
+var toIndex = __webpack_require__(122);
 var gOPN = __webpack_require__(36).f;
 var dP = __webpack_require__(7).f;
 var arrayFill = __webpack_require__(67);
@@ -11722,7 +11722,7 @@ exports[DATA_VIEW] = $DataView;
 var global = __webpack_require__(2);
 var core = __webpack_require__(22);
 var LIBRARY = __webpack_require__(34);
-var wksExt = __webpack_require__(122);
+var wksExt = __webpack_require__(123);
 var defineProperty = __webpack_require__(7).f;
 module.exports = function (name) {
   var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
@@ -11751,7 +11751,7 @@ module.exports = __webpack_require__(22).getIteratorMethod = function (it) {
 "use strict";
 
 var addToUnscopables = __webpack_require__(29);
-var step = __webpack_require__(106);
+var step = __webpack_require__(107);
 var Iterators = __webpack_require__(43);
 var toIObject = __webpack_require__(15);
 
@@ -11787,6 +11787,172 @@ addToUnscopables('entries');
 
 /***/ }),
 /* 93 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Rectangle = function () {
+    /**
+     * A utility for creating and comparing axis-aligned rectangles.
+     * Rectangles are always initialized to the "largest possible rectangle";
+     * use one of the init* methods below to set up a particular rectangle.
+     * @constructor
+     */
+    function Rectangle() {
+        _classCallCheck(this, Rectangle);
+
+        this.left = -Infinity;
+        this.right = Infinity;
+        this.bottom = -Infinity;
+        this.top = Infinity;
+    }
+
+    /**
+     * Initialize a Rectangle from given Scratch-coordinate bounds.
+     * @param {number} left Left bound of the rectangle.
+     * @param {number} right Right bound of the rectangle.
+     * @param {number} bottom Bottom bound of the rectangle.
+     * @param {number} top Top bound of the rectangle.
+     */
+
+
+    _createClass(Rectangle, [{
+        key: "initFromBounds",
+        value: function initFromBounds(left, right, bottom, top) {
+            this.left = left;
+            this.right = right;
+            this.bottom = bottom;
+            this.top = top;
+        }
+
+        /**
+         * Initialize a Rectangle to the minimum AABB around a set of points.
+         * @param {Array<Array<number>>} points Array of [x, y] points.
+         */
+
+    }, {
+        key: "initFromPointsAABB",
+        value: function initFromPointsAABB(points) {
+            this.left = Infinity;
+            this.right = -Infinity;
+            this.top = -Infinity;
+            this.bottom = Infinity;
+            for (var i = 0; i < points.length; i++) {
+                var x = points[i][0];
+                var y = points[i][1];
+                if (x < this.left) {
+                    this.left = x;
+                }
+                if (x > this.right) {
+                    this.right = x;
+                }
+                if (y > this.top) {
+                    this.top = y;
+                }
+                if (y < this.bottom) {
+                    this.bottom = y;
+                }
+            }
+        }
+
+        /**
+         * Determine if this Rectangle intersects some other.
+         * Note that this is a comparison assuming the Rectangle was
+         * initialized with Scratch-space bounds or points.
+         * @param {!Rectangle} other Rectangle to check if intersecting.
+         * @return {boolean} True if this Rectangle intersects other.
+         */
+
+    }, {
+        key: "intersects",
+        value: function intersects(other) {
+            return this.left <= other.right && other.left <= this.right && this.top >= other.bottom && other.top >= this.bottom;
+        }
+
+        /**
+         * Determine if this Rectangle fully contains some other.
+         * Note that this is a comparison assuming the Rectangle was
+         * initialized with Scratch-space bounds or points.
+         * @param {!Rectangle} other Rectangle to check if fully contained.
+         * @return {boolean} True if this Rectangle fully contains other.
+         */
+
+    }, {
+        key: "contains",
+        value: function contains(other) {
+            return other.left > this.left && other.right < this.right && other.top < this.top && other.bottom > this.bottom;
+        }
+
+        /**
+         * Clamp a Rectangle to bounds.
+         * @param {number} left Left clamp.
+         * @param {number} right Right clamp.
+         * @param {number} bottom Bottom clamp.
+         * @param {number} top Top clamp.
+         */
+
+    }, {
+        key: "clamp",
+        value: function clamp(left, right, bottom, top) {
+            this.left = Math.max(this.left, left);
+            this.right = Math.min(this.right, right);
+            this.bottom = Math.max(this.bottom, bottom);
+            this.top = Math.min(this.top, top);
+            // Ensure rectangle coordinates in order.
+            this.left = Math.min(this.left, this.right);
+            this.right = Math.max(this.right, this.left);
+            this.bottom = Math.min(this.bottom, this.top);
+            this.top = Math.max(this.top, this.bottom);
+        }
+
+        /**
+         * Push out the Rectangle to integer bounds.
+         */
+
+    }, {
+        key: "snapToInt",
+        value: function snapToInt() {
+            this.left = Math.floor(this.left);
+            this.right = Math.ceil(this.right);
+            this.bottom = Math.floor(this.bottom);
+            this.top = Math.ceil(this.top);
+        }
+
+        /**
+         * Width of the Rectangle.
+         * @return {number} Width of rectangle.
+         */
+
+    }, {
+        key: "width",
+        get: function get() {
+            return Math.abs(this.left - this.right);
+        }
+
+        /**
+         * Height of the Rectangle.
+         * @return {number} Height of rectangle.
+         */
+
+    }, {
+        key: "height",
+        get: function get() {
+            return Math.abs(this.top - this.bottom);
+        }
+    }]);
+
+    return Rectangle;
+}();
+
+module.exports = Rectangle;
+
+/***/ }),
+/* 94 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11986,7 +12152,7 @@ ShaderManager.DRAW_MODE = {
 module.exports = ShaderManager;
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var cof = __webpack_require__(18);
@@ -11997,7 +12163,7 @@ module.exports = function (it, msg) {
 
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12030,7 +12196,7 @@ module.exports = [].copyWithin || function copyWithin(target /* = 0 */, start /*
 
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var forOf = __webpack_require__(33);
@@ -12043,7 +12209,7 @@ module.exports = function (iter, ITERATOR) {
 
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var aFunction = __webpack_require__(10);
@@ -12077,7 +12243,7 @@ module.exports = function (that, callbackfn, aLen, memo, isRight) {
 
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12109,7 +12275,7 @@ module.exports = Function.bind || function bind(that /* , ...args */) {
 
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12121,7 +12287,7 @@ var ctx = __webpack_require__(19);
 var anInstance = __webpack_require__(32);
 var forOf = __webpack_require__(33);
 var $iterDefine = __webpack_require__(77);
-var step = __webpack_require__(106);
+var step = __webpack_require__(107);
 var setSpecies = __webpack_require__(39);
 var DESCRIPTORS = __webpack_require__(6);
 var fastKey = __webpack_require__(30).fastKey;
@@ -12260,12 +12426,12 @@ module.exports = {
 
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var classof = __webpack_require__(47);
-var from = __webpack_require__(96);
+var from = __webpack_require__(97);
 module.exports = function (NAME) {
   return function toJSON() {
     if (classof(this) != NAME) throw TypeError(NAME + "#toJSON isn't generic");
@@ -12275,7 +12441,7 @@ module.exports = function (NAME) {
 
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12367,7 +12533,7 @@ module.exports = {
 
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12413,7 +12579,7 @@ module.exports = flattenIntoArray;
 
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = !__webpack_require__(6) && !__webpack_require__(3)(function () {
@@ -12422,7 +12588,7 @@ module.exports = !__webpack_require__(6) && !__webpack_require__(3)(function () 
 
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.1.2.3 Number.isInteger(number)
@@ -12434,7 +12600,7 @@ module.exports = function isInteger(it) {
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // call something on iterator step with safe closing on error
@@ -12452,7 +12618,7 @@ module.exports = function (iterator, fn, value, entries) {
 
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports) {
 
 module.exports = function (done, value) {
@@ -12461,7 +12627,7 @@ module.exports = function (done, value) {
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 20.2.2.16 Math.fround(x)
@@ -12490,7 +12656,7 @@ module.exports = Math.fround || function fround(x) {
 
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, exports) {
 
 // 20.2.2.20 Math.log1p(x)
@@ -12500,7 +12666,7 @@ module.exports = Math.log1p || function log1p(x) {
 
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports) {
 
 // https://rwaldron.github.io/proposal-math-extensions/
@@ -12524,7 +12690,7 @@ module.exports = Math.scale || function scale(x, inLow, inHigh, outLow, outHigh)
 
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12565,7 +12731,7 @@ module.exports = !$assign || __webpack_require__(3)(function () {
 
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var dP = __webpack_require__(7);
@@ -12584,7 +12750,7 @@ module.exports = __webpack_require__(6) ? Object.defineProperties : function def
 
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
@@ -12609,7 +12775,7 @@ module.exports.f = function getOwnPropertyNames(it) {
 
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var has = __webpack_require__(11);
@@ -12632,7 +12798,7 @@ module.exports = function (object, names) {
 
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getKeys = __webpack_require__(31);
@@ -12654,7 +12820,7 @@ module.exports = function (isEntries) {
 
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // all object keys, includes non-enumerable and symbols
@@ -12670,7 +12836,7 @@ module.exports = Reflect && Reflect.ownKeys || function ownKeys(it) {
 
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $parseFloat = __webpack_require__(2).parseFloat;
@@ -12684,7 +12850,7 @@ module.exports = 1 / $parseFloat(__webpack_require__(87) + '-0') !== -Infinity ?
 
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var $parseInt = __webpack_require__(2).parseInt;
@@ -12699,7 +12865,7 @@ module.exports = $parseInt(ws + '08') !== 8 || $parseInt(ws + '0x16') !== 22 ? f
 
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(module, exports) {
 
 module.exports = function (exec) {
@@ -12712,7 +12878,7 @@ module.exports = function (exec) {
 
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var newPromiseCapability = __webpack_require__(81);
@@ -12726,7 +12892,7 @@ module.exports = function (C, x) {
 
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://github.com/tc39/proposal-string-pad-start-end
@@ -12748,7 +12914,7 @@ module.exports = function (that, maxLength, fillString, left) {
 
 
 /***/ }),
-/* 121 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // https://tc39.github.io/ecma262/#sec-toindex
@@ -12764,19 +12930,19 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 122 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 exports.f = __webpack_require__(5);
 
 
 /***/ }),
-/* 123 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var strong = __webpack_require__(99);
+var strong = __webpack_require__(100);
 var validate = __webpack_require__(46);
 var MAP = 'Map';
 
@@ -12797,7 +12963,7 @@ module.exports = __webpack_require__(53)(MAP, function (get) {
 
 
 /***/ }),
-/* 124 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 21.2.5.3 get RegExp.prototype.flags()
@@ -12808,12 +12974,12 @@ if (__webpack_require__(6) && /./g.flags != 'g') __webpack_require__(7).f(RegExp
 
 
 /***/ }),
-/* 125 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-var strong = __webpack_require__(99);
+var strong = __webpack_require__(100);
 var validate = __webpack_require__(46);
 var SET = 'Set';
 
@@ -12829,7 +12995,7 @@ module.exports = __webpack_require__(53)(SET, function (get) {
 
 
 /***/ }),
-/* 126 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12837,8 +13003,8 @@ module.exports = __webpack_require__(53)(SET, function (get) {
 var each = __webpack_require__(21)(0);
 var redefine = __webpack_require__(13);
 var meta = __webpack_require__(30);
-var assign = __webpack_require__(110);
-var weak = __webpack_require__(101);
+var assign = __webpack_require__(111);
+var weak = __webpack_require__(102);
 var isObject = __webpack_require__(4);
 var fails = __webpack_require__(3);
 var validate = __webpack_require__(46);
@@ -12895,7 +13061,7 @@ if (fails(function () { return new $WeakMap().set((Object.freeze || Object)(tmp)
 
 
 /***/ }),
-/* 127 */
+/* 128 */
 /***/ (function(module, exports) {
 
 // Copyright Joyent, Inc. and other Node contributors.
@@ -13203,7 +13369,7 @@ function isUndefined(arg) {
 
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(module, exports) {
 
 var g;
@@ -13230,7 +13396,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13245,7 +13411,7 @@ var RenderWebGL = __webpack_require__(135);
 module.exports = RenderWebGL;
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13277,10 +13443,10 @@ define(String.prototype, "padRight", "".padEnd);
 "pop,reverse,shift,keys,values,entries,indexOf,every,some,forEach,map,filter,find,findIndex,includes,join,slice,concat,push,splice,unshift,sort,lastIndexOf,reduce,reduceRight,copyWithin,fill".split(",").forEach(function (key) {
   [][key] && define(Array, key, Function.call.bind([][key]));
 });
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(128)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129)))
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13433,7 +13599,7 @@ var BitmapSkin = function (_Skin) {
 module.exports = BitmapSkin;
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13445,9 +13611,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var twgl = __webpack_require__(42);
 
-var Rectangle = __webpack_require__(134);
+var Rectangle = __webpack_require__(93);
 var RenderConstants = __webpack_require__(50);
-var ShaderManager = __webpack_require__(93);
+var ShaderManager = __webpack_require__(94);
 var Skin = __webpack_require__(51);
 
 var Drawable = function () {
@@ -13854,7 +14020,7 @@ var Drawable = function () {
 module.exports = Drawable;
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14110,172 +14276,6 @@ var PenSkin = function (_Skin) {
 module.exports = PenSkin;
 
 /***/ }),
-/* 134 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Rectangle = function () {
-    /**
-     * A utility for creating and comparing axis-aligned rectangles.
-     * Rectangles are always initialized to the "largest possible rectangle";
-     * use one of the init* methods below to set up a particular rectangle.
-     * @constructor
-     */
-    function Rectangle() {
-        _classCallCheck(this, Rectangle);
-
-        this.left = -Infinity;
-        this.right = Infinity;
-        this.bottom = -Infinity;
-        this.top = Infinity;
-    }
-
-    /**
-     * Initialize a Rectangle from given Scratch-coordinate bounds.
-     * @param {number} left Left bound of the rectangle.
-     * @param {number} right Right bound of the rectangle.
-     * @param {number} bottom Bottom bound of the rectangle.
-     * @param {number} top Top bound of the rectangle.
-     */
-
-
-    _createClass(Rectangle, [{
-        key: "initFromBounds",
-        value: function initFromBounds(left, right, bottom, top) {
-            this.left = left;
-            this.right = right;
-            this.bottom = bottom;
-            this.top = top;
-        }
-
-        /**
-         * Initialize a Rectangle to the minimum AABB around a set of points.
-         * @param {Array<Array<number>>} points Array of [x, y] points.
-         */
-
-    }, {
-        key: "initFromPointsAABB",
-        value: function initFromPointsAABB(points) {
-            this.left = Infinity;
-            this.right = -Infinity;
-            this.top = -Infinity;
-            this.bottom = Infinity;
-            for (var i = 0; i < points.length; i++) {
-                var x = points[i][0];
-                var y = points[i][1];
-                if (x < this.left) {
-                    this.left = x;
-                }
-                if (x > this.right) {
-                    this.right = x;
-                }
-                if (y > this.top) {
-                    this.top = y;
-                }
-                if (y < this.bottom) {
-                    this.bottom = y;
-                }
-            }
-        }
-
-        /**
-         * Determine if this Rectangle intersects some other.
-         * Note that this is a comparison assuming the Rectangle was
-         * initialized with Scratch-space bounds or points.
-         * @param {!Rectangle} other Rectangle to check if intersecting.
-         * @return {boolean} True if this Rectangle intersects other.
-         */
-
-    }, {
-        key: "intersects",
-        value: function intersects(other) {
-            return this.left <= other.right && other.left <= this.right && this.top >= other.bottom && other.top >= this.bottom;
-        }
-
-        /**
-         * Determine if this Rectangle fully contains some other.
-         * Note that this is a comparison assuming the Rectangle was
-         * initialized with Scratch-space bounds or points.
-         * @param {!Rectangle} other Rectangle to check if fully contained.
-         * @return {boolean} True if this Rectangle fully contains other.
-         */
-
-    }, {
-        key: "contains",
-        value: function contains(other) {
-            return other.left > this.left && other.right < this.right && other.top < this.top && other.bottom > this.bottom;
-        }
-
-        /**
-         * Clamp a Rectangle to bounds.
-         * @param {number} left Left clamp.
-         * @param {number} right Right clamp.
-         * @param {number} bottom Bottom clamp.
-         * @param {number} top Top clamp.
-         */
-
-    }, {
-        key: "clamp",
-        value: function clamp(left, right, bottom, top) {
-            this.left = Math.max(this.left, left);
-            this.right = Math.min(this.right, right);
-            this.bottom = Math.max(this.bottom, bottom);
-            this.top = Math.min(this.top, top);
-            // Ensure rectangle coordinates in order.
-            this.left = Math.min(this.left, this.right);
-            this.right = Math.max(this.right, this.left);
-            this.bottom = Math.min(this.bottom, this.top);
-            this.top = Math.max(this.top, this.bottom);
-        }
-
-        /**
-         * Push out the Rectangle to integer bounds.
-         */
-
-    }, {
-        key: "snapToInt",
-        value: function snapToInt() {
-            this.left = Math.floor(this.left);
-            this.right = Math.ceil(this.right);
-            this.bottom = Math.floor(this.bottom);
-            this.top = Math.ceil(this.top);
-        }
-
-        /**
-         * Width of the Rectangle.
-         * @return {number} Width of rectangle.
-         */
-
-    }, {
-        key: "width",
-        get: function get() {
-            return Math.abs(this.left - this.right);
-        }
-
-        /**
-         * Height of the Rectangle.
-         * @return {number} Height of rectangle.
-         */
-
-    }, {
-        key: "height",
-        get: function get() {
-            return Math.abs(this.top - this.bottom);
-        }
-    }]);
-
-    return Rectangle;
-}();
-
-module.exports = Rectangle;
-
-/***/ }),
 /* 135 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14292,16 +14292,17 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var EventEmitter = __webpack_require__(127);
+var EventEmitter = __webpack_require__(128);
 
 var hull = __webpack_require__(351);
 var twgl = __webpack_require__(42);
 
-var BitmapSkin = __webpack_require__(131);
-var Drawable = __webpack_require__(132);
-var PenSkin = __webpack_require__(133);
+var BitmapSkin = __webpack_require__(132);
+var Drawable = __webpack_require__(133);
+var Rectangle = __webpack_require__(93);
+var PenSkin = __webpack_require__(134);
 var RenderConstants = __webpack_require__(50);
-var ShaderManager = __webpack_require__(93);
+var ShaderManager = __webpack_require__(94);
 var SVGSkin = __webpack_require__(136);
 
 /**
@@ -15071,6 +15072,76 @@ var RenderWebGL = function (_EventEmitter) {
         }
 
         /**
+         * @typedef ColorExtraction
+         * @property {Uint8Array} data Raw pixel data for the drawable
+         * @property {int} width Drawable bounding box width
+         * @property {int} height Drawable bounding box height
+         * @property {object} color Color object with RGBA properties at picked location
+         */
+
+        /**
+         * Return drawable pixel data and color at a given position
+         * @param {int} x The client x coordinate of the picking location.
+         * @param {int} y The client y coordinate of the picking location.
+         * @param {int} radius The client radius to extract pixels with.
+         * @return {?ColorExtraction} Data about the picked color
+         */
+
+    }, {
+        key: 'extractColor',
+        value: function extractColor(x, y, radius) {
+            var scratchX = Math.round(this._nativeSize[0] * (x / this._gl.canvas.clientWidth - 0.5));
+            var scratchY = Math.round(-this._nativeSize[1] * (y / this._gl.canvas.clientHeight - 0.5));
+
+            var gl = this._gl;
+            twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+
+            var bounds = new Rectangle();
+            bounds.initFromBounds(scratchX - radius, scratchX + radius, scratchY - radius, scratchY + radius);
+
+            var pickX = scratchX - bounds.left;
+            var pickY = bounds.top - scratchY;
+
+            gl.viewport(0, 0, bounds.width, bounds.height);
+            var projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
+
+            gl.clearColor.apply(gl, this._backgroundColor);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            this._drawThese(this._drawList, ShaderManager.DRAW_MODE.default, projection);
+
+            var data = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
+            gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+
+            var color = {
+                r: data[Math.floor(4 * (pickY * bounds.width + pickX))],
+                g: data[Math.floor(4 * (pickY * bounds.width + pickX)) + 1],
+                b: data[Math.floor(4 * (pickY * bounds.width + pickX)) + 2],
+                a: data[Math.floor(4 * (pickY * bounds.width + pickX)) + 3]
+            };
+
+            if (this._debugCanvas) {
+                this._debugCanvas.width = bounds.width;
+                this._debugCanvas.height = bounds.height;
+                var ctx = this._debugCanvas.getContext('2d');
+                var imageData = ctx.createImageData(bounds.width, bounds.height);
+                imageData.data.set(data);
+                ctx.putImageData(imageData, 0, 0);
+                ctx.strokeStyle = 'black';
+                ctx.fillStyle = 'rgba(' + color.r + ', ' + color.g + ', ' + color.b + ', ' + color.a + ')';
+                ctx.rect(pickX - 4, pickY - 4, 8, 8);
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            return {
+                data: data,
+                width: bounds.width,
+                height: bounds.height,
+                color: color
+            };
+        }
+
+        /**
          * Get the candidate bounding box for a touching query.
          * @param {int} drawableID ID for drawable of query.
          * @return {?Rectangle} Rectangle bounds for touching query, or null.
@@ -15657,13 +15728,13 @@ module.exports = SVGSkin;
 
 
 /* eslint-env browser */
-__webpack_require__(130);
+__webpack_require__(131);
 
 /**
  * Export for use in a web page.
  * @type {RenderWebGL}
  */
-window.RenderWebGL = __webpack_require__(129);
+window.RenderWebGL = __webpack_require__(130);
 
 /***/ }),
 /* 138 */
@@ -16793,7 +16864,7 @@ module.exports = SvgRenderer;
   typeof self === "object" ? self : this
 );
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(128)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(129)))
 
 /***/ }),
 /* 140 */
@@ -17023,7 +17094,7 @@ $export($export.S, 'RegExp', { escape: function escape(it) { return $re(it); } }
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 var $export = __webpack_require__(0);
 
-$export($export.P, 'Array', { copyWithin: __webpack_require__(95) });
+$export($export.P, 'Array', { copyWithin: __webpack_require__(96) });
 
 __webpack_require__(29)('copyWithin');
 
@@ -17143,7 +17214,7 @@ $export($export.P + $export.F * !STRICT, 'Array', {
 var ctx = __webpack_require__(19);
 var $export = __webpack_require__(0);
 var toObject = __webpack_require__(9);
-var call = __webpack_require__(105);
+var call = __webpack_require__(106);
 var isArrayIter = __webpack_require__(75);
 var toLength = __webpack_require__(8);
 var createProperty = __webpack_require__(69);
@@ -17308,7 +17379,7 @@ $export($export.S + $export.F * __webpack_require__(3)(function () {
 "use strict";
 
 var $export = __webpack_require__(0);
-var $reduce = __webpack_require__(97);
+var $reduce = __webpack_require__(98);
 
 $export($export.P + $export.F * !__webpack_require__(20)([].reduceRight, true), 'Array', {
   // 22.1.3.19 / 15.4.4.22 Array.prototype.reduceRight(callbackfn [, initialValue])
@@ -17325,7 +17396,7 @@ $export($export.P + $export.F * !__webpack_require__(20)([].reduceRight, true), 
 "use strict";
 
 var $export = __webpack_require__(0);
-var $reduce = __webpack_require__(97);
+var $reduce = __webpack_require__(98);
 
 $export($export.P + $export.F * !__webpack_require__(20)([].reduce, true), 'Array', {
   // 22.1.3.18 / 15.4.4.21 Array.prototype.reduce(callbackfn [, initialValue])
@@ -17506,7 +17577,7 @@ if (new Date(NaN) + '' != INVALID_DATE) {
 // 19.2.3.2 / 15.3.4.5 Function.prototype.bind(thisArg, args...)
 var $export = __webpack_require__(0);
 
-$export($export.P, 'Function', { bind: __webpack_require__(98) });
+$export($export.P, 'Function', { bind: __webpack_require__(99) });
 
 
 /***/ }),
@@ -17557,7 +17628,7 @@ NAME in FProto || __webpack_require__(6) && dP(FProto, NAME, {
 
 // 20.2.2.3 Math.acosh(x)
 var $export = __webpack_require__(0);
-var log1p = __webpack_require__(108);
+var log1p = __webpack_require__(109);
 var sqrt = Math.sqrt;
 var $acosh = Math.acosh;
 
@@ -17669,7 +17740,7 @@ $export($export.S + $export.F * ($expm1 != Math.expm1), 'Math', { expm1: $expm1 
 // 20.2.2.16 Math.fround(x)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Math', { fround: __webpack_require__(107) });
+$export($export.S, 'Math', { fround: __webpack_require__(108) });
 
 
 /***/ }),
@@ -17747,7 +17818,7 @@ $export($export.S, 'Math', {
 // 20.2.2.20 Math.log1p(x)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Math', { log1p: __webpack_require__(108) });
+$export($export.S, 'Math', { log1p: __webpack_require__(109) });
 
 
 /***/ }),
@@ -17935,7 +18006,7 @@ $export($export.S, 'Number', {
 // 20.1.2.3 Number.isInteger(number)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Number', { isInteger: __webpack_require__(104) });
+$export($export.S, 'Number', { isInteger: __webpack_require__(105) });
 
 
 /***/ }),
@@ -17959,7 +18030,7 @@ $export($export.S, 'Number', {
 
 // 20.1.2.5 Number.isSafeInteger(number)
 var $export = __webpack_require__(0);
-var isInteger = __webpack_require__(104);
+var isInteger = __webpack_require__(105);
 var abs = Math.abs;
 
 $export($export.S, 'Number', {
@@ -17994,7 +18065,7 @@ $export($export.S, 'Number', { MIN_SAFE_INTEGER: -0x1fffffffffffff });
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-var $parseFloat = __webpack_require__(116);
+var $parseFloat = __webpack_require__(117);
 // 20.1.2.12 Number.parseFloat(string)
 $export($export.S + $export.F * (Number.parseFloat != $parseFloat), 'Number', { parseFloat: $parseFloat });
 
@@ -18004,7 +18075,7 @@ $export($export.S + $export.F * (Number.parseFloat != $parseFloat), 'Number', { 
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-var $parseInt = __webpack_require__(117);
+var $parseInt = __webpack_require__(118);
 // 20.1.2.13 Number.parseInt(string, radix)
 $export($export.S + $export.F * (Number.parseInt != $parseInt), 'Number', { parseInt: $parseInt });
 
@@ -18017,7 +18088,7 @@ $export($export.S + $export.F * (Number.parseInt != $parseInt), 'Number', { pars
 
 var $export = __webpack_require__(0);
 var toInteger = __webpack_require__(25);
-var aNumberValue = __webpack_require__(94);
+var aNumberValue = __webpack_require__(95);
 var repeat = __webpack_require__(86);
 var $toFixed = 1.0.toFixed;
 var floor = Math.floor;
@@ -18138,7 +18209,7 @@ $export($export.P + $export.F * (!!$toFixed && (
 
 var $export = __webpack_require__(0);
 var $fails = __webpack_require__(3);
-var aNumberValue = __webpack_require__(94);
+var aNumberValue = __webpack_require__(95);
 var $toPrecision = 1.0.toPrecision;
 
 $export($export.P + $export.F * ($fails(function () {
@@ -18162,7 +18233,7 @@ $export($export.P + $export.F * ($fails(function () {
 // 19.1.3.1 Object.assign(target, source)
 var $export = __webpack_require__(0);
 
-$export($export.S + $export.F, 'Object', { assign: __webpack_require__(110) });
+$export($export.S + $export.F, 'Object', { assign: __webpack_require__(111) });
 
 
 /***/ }),
@@ -18180,7 +18251,7 @@ $export($export.S, 'Object', { create: __webpack_require__(35) });
 
 var $export = __webpack_require__(0);
 // 19.1.2.3 / 15.2.3.7 Object.defineProperties(O, Properties)
-$export($export.S + $export.F * !__webpack_require__(6), 'Object', { defineProperties: __webpack_require__(111) });
+$export($export.S + $export.F * !__webpack_require__(6), 'Object', { defineProperties: __webpack_require__(112) });
 
 
 /***/ }),
@@ -18228,7 +18299,7 @@ __webpack_require__(24)('getOwnPropertyDescriptor', function () {
 
 // 19.1.2.7 Object.getOwnPropertyNames(O)
 __webpack_require__(24)('getOwnPropertyNames', function () {
-  return __webpack_require__(112).f;
+  return __webpack_require__(113).f;
 });
 
 
@@ -18374,7 +18445,7 @@ if (test + '' != '[object z]') {
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-var $parseFloat = __webpack_require__(116);
+var $parseFloat = __webpack_require__(117);
 // 18.2.4 parseFloat(string)
 $export($export.G + $export.F * (parseFloat != $parseFloat), { parseFloat: $parseFloat });
 
@@ -18384,7 +18455,7 @@ $export($export.G + $export.F * (parseFloat != $parseFloat), { parseFloat: $pars
 /***/ (function(module, exports, __webpack_require__) {
 
 var $export = __webpack_require__(0);
-var $parseInt = __webpack_require__(117);
+var $parseInt = __webpack_require__(118);
 // 18.2.5 parseInt(string, radix)
 $export($export.G + $export.F * (parseInt != $parseInt), { parseInt: $parseInt });
 
@@ -18408,8 +18479,8 @@ var speciesConstructor = __webpack_require__(65);
 var task = __webpack_require__(88).set;
 var microtask = __webpack_require__(80)();
 var newPromiseCapabilityModule = __webpack_require__(81);
-var perform = __webpack_require__(118);
-var promiseResolve = __webpack_require__(119);
+var perform = __webpack_require__(119);
+var promiseResolve = __webpack_require__(120);
 var PROMISE = 'Promise';
 var TypeError = global.TypeError;
 var process = global.process;
@@ -18717,7 +18788,7 @@ var aFunction = __webpack_require__(10);
 var anObject = __webpack_require__(1);
 var isObject = __webpack_require__(4);
 var fails = __webpack_require__(3);
-var bind = __webpack_require__(98);
+var bind = __webpack_require__(99);
 var rConstruct = (__webpack_require__(2).Reflect || {}).construct;
 
 // MS Edge supports only 2 arguments and argumentsList argument is optional
@@ -18935,7 +19006,7 @@ $export($export.S, 'Reflect', {
 // 26.1.11 Reflect.ownKeys(target)
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Reflect', { ownKeys: __webpack_require__(115) });
+$export($export.S, 'Reflect', { ownKeys: __webpack_require__(116) });
 
 
 /***/ }),
@@ -19200,7 +19271,7 @@ __webpack_require__(54)('split', 2, function (defined, SPLIT, $split) {
 
 "use strict";
 
-__webpack_require__(124);
+__webpack_require__(125);
 var anObject = __webpack_require__(1);
 var $flags = __webpack_require__(55);
 var DESCRIPTORS = __webpack_require__(6);
@@ -19616,7 +19687,7 @@ var shared = __webpack_require__(64);
 var setToStringTag = __webpack_require__(44);
 var uid = __webpack_require__(41);
 var wks = __webpack_require__(5);
-var wksExt = __webpack_require__(122);
+var wksExt = __webpack_require__(123);
 var wksDefine = __webpack_require__(90);
 var keyOf = __webpack_require__(150);
 var enumKeys = __webpack_require__(149);
@@ -19626,7 +19697,7 @@ var toIObject = __webpack_require__(15);
 var toPrimitive = __webpack_require__(26);
 var createDesc = __webpack_require__(37);
 var _create = __webpack_require__(35);
-var gOPNExt = __webpack_require__(112);
+var gOPNExt = __webpack_require__(113);
 var $GOPD = __webpack_require__(16);
 var $DP = __webpack_require__(7);
 var $keys = __webpack_require__(31);
@@ -20008,7 +20079,7 @@ __webpack_require__(28)('Uint8', 1, function (init) {
 
 "use strict";
 
-var weak = __webpack_require__(101);
+var weak = __webpack_require__(102);
 var validate = __webpack_require__(46);
 var WEAK_SET = 'WeakSet';
 
@@ -20031,7 +20102,7 @@ __webpack_require__(53)(WEAK_SET, function (get) {
 
 // https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatMap
 var $export = __webpack_require__(0);
-var flattenIntoArray = __webpack_require__(102);
+var flattenIntoArray = __webpack_require__(103);
 var toObject = __webpack_require__(9);
 var toLength = __webpack_require__(8);
 var aFunction = __webpack_require__(10);
@@ -20060,7 +20131,7 @@ __webpack_require__(29)('flatMap');
 
 // https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatten
 var $export = __webpack_require__(0);
-var flattenIntoArray = __webpack_require__(102);
+var flattenIntoArray = __webpack_require__(103);
 var toObject = __webpack_require__(9);
 var toLength = __webpack_require__(8);
 var toInteger = __webpack_require__(25);
@@ -20165,7 +20236,7 @@ __webpack_require__(63)('Map');
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export = __webpack_require__(0);
 
-$export($export.P + $export.R, 'Map', { toJSON: __webpack_require__(100)('Map') });
+$export($export.P + $export.R, 'Map', { toJSON: __webpack_require__(101)('Map') });
 
 
 /***/ }),
@@ -20213,8 +20284,8 @@ $export($export.S, 'Math', {
 
 // https://rwaldron.github.io/proposal-math-extensions/
 var $export = __webpack_require__(0);
-var scale = __webpack_require__(109);
-var fround = __webpack_require__(107);
+var scale = __webpack_require__(110);
+var fround = __webpack_require__(108);
 
 $export($export.S, 'Math', {
   fscale: function fscale(x, inLow, inHigh, outLow, outHigh) {
@@ -20311,7 +20382,7 @@ $export($export.S, 'Math', {
 // https://rwaldron.github.io/proposal-math-extensions/
 var $export = __webpack_require__(0);
 
-$export($export.S, 'Math', { scale: __webpack_require__(109) });
+$export($export.S, 'Math', { scale: __webpack_require__(110) });
 
 
 /***/ }),
@@ -20393,7 +20464,7 @@ __webpack_require__(6) && $export($export.P + __webpack_require__(60), 'Object',
 
 // https://github.com/tc39/proposal-object-values-entries
 var $export = __webpack_require__(0);
-var $entries = __webpack_require__(114)(true);
+var $entries = __webpack_require__(115)(true);
 
 $export($export.S, 'Object', {
   entries: function entries(it) {
@@ -20408,7 +20479,7 @@ $export($export.S, 'Object', {
 
 // https://github.com/tc39/proposal-object-getownpropertydescriptors
 var $export = __webpack_require__(0);
-var ownKeys = __webpack_require__(115);
+var ownKeys = __webpack_require__(116);
 var toIObject = __webpack_require__(15);
 var gOPD = __webpack_require__(16);
 var createProperty = __webpack_require__(69);
@@ -20486,7 +20557,7 @@ __webpack_require__(6) && $export($export.P + __webpack_require__(60), 'Object',
 
 // https://github.com/tc39/proposal-object-values-entries
 var $export = __webpack_require__(0);
-var $values = __webpack_require__(114)(false);
+var $values = __webpack_require__(115)(false);
 
 $export($export.S, 'Object', {
   values: function values(it) {
@@ -20712,7 +20783,7 @@ var $export = __webpack_require__(0);
 var core = __webpack_require__(22);
 var global = __webpack_require__(2);
 var speciesConstructor = __webpack_require__(65);
-var promiseResolve = __webpack_require__(119);
+var promiseResolve = __webpack_require__(120);
 
 $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
   var C = speciesConstructor(this, core.Promise || global.Promise);
@@ -20737,7 +20808,7 @@ $export($export.P + $export.R, 'Promise', { 'finally': function (onFinally) {
 // https://github.com/tc39/proposal-promise-try
 var $export = __webpack_require__(0);
 var newPromiseCapability = __webpack_require__(81);
-var perform = __webpack_require__(118);
+var perform = __webpack_require__(119);
 
 $export($export.S, 'Promise', { 'try': function (callbackfn) {
   var promiseCapability = newPromiseCapability.f(this);
@@ -20786,8 +20857,8 @@ metadata.exp({ deleteMetadata: function deleteMetadata(metadataKey, target /* , 
 /* 321 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Set = __webpack_require__(125);
-var from = __webpack_require__(96);
+var Set = __webpack_require__(126);
+var from = __webpack_require__(97);
 var metadata = __webpack_require__(27);
 var anObject = __webpack_require__(1);
 var getPrototypeOf = __webpack_require__(17);
@@ -20940,7 +21011,7 @@ __webpack_require__(63)('Set');
 // https://github.com/DavidBruant/Map-Set.prototype.toJSON
 var $export = __webpack_require__(0);
 
-$export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(100)('Set') });
+$export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(101)('Set') });
 
 
 /***/ }),
@@ -21005,7 +21076,7 @@ $export($export.P, 'String', {
 
 // https://github.com/tc39/proposal-string-pad-start-end
 var $export = __webpack_require__(0);
-var $pad = __webpack_require__(120);
+var $pad = __webpack_require__(121);
 
 $export($export.P, 'String', {
   padEnd: function padEnd(maxLength /* , fillString = ' ' */) {
@@ -21022,7 +21093,7 @@ $export($export.P, 'String', {
 
 // https://github.com/tc39/proposal-string-pad-start-end
 var $export = __webpack_require__(0);
-var $pad = __webpack_require__(120);
+var $pad = __webpack_require__(121);
 
 $export($export.P, 'String', {
   padStart: function padStart(maxLength /* , fillString = ' ' */) {
@@ -21324,15 +21395,15 @@ __webpack_require__(175);
 __webpack_require__(92);
 __webpack_require__(247);
 __webpack_require__(252);
-__webpack_require__(124);
+__webpack_require__(125);
 __webpack_require__(248);
 __webpack_require__(249);
 __webpack_require__(250);
 __webpack_require__(251);
 __webpack_require__(232);
-__webpack_require__(123);
-__webpack_require__(125);
+__webpack_require__(124);
 __webpack_require__(126);
+__webpack_require__(127);
 __webpack_require__(287);
 __webpack_require__(276);
 __webpack_require__(277);
