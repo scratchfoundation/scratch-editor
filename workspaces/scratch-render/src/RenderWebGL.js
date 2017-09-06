@@ -5,6 +5,7 @@ const twgl = require('twgl.js');
 
 const BitmapSkin = require('./BitmapSkin');
 const Drawable = require('./Drawable');
+const Rectangle = require('./Rectangle');
 const PenSkin = require('./PenSkin');
 const RenderConstants = require('./RenderConstants');
 const ShaderManager = require('./ShaderManager');
@@ -220,6 +221,33 @@ class RenderWebGL extends EventEmitter {
         const newSkin = new PenSkin(skinId, this);
         this._allSkins[skinId] = newSkin;
         return skinId;
+    }
+
+    /**
+     * Update an existing SVG skin, or create an SVG skin if the previous skin was not SVG.
+     * @param {!int} skinId the ID for the skin to change.
+     * @param {!string} svgData - new SVG to use.
+     * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
+     * skin will be used
+     */
+    updateSVGSkin (skinId, svgData, rotationCenter) {
+        if (this._allSkins[skinId] instanceof SVGSkin) {
+            this._allSkins[skinId].setSVG(svgData, rotationCenter);
+            return;
+        }
+
+        const newSkin = new SVGSkin(skinId, this);
+        newSkin.setSVG(svgData, rotationCenter);
+        const oldSkin = this._allSkins[skinId];
+        this._allSkins[skinId] = newSkin;
+
+        // Tell drawables to update
+        for (const drawable of this._allDrawables) {
+            if (drawable && drawable.skin === oldSkin) {
+                drawable.skin = newSkin;
+            }
+        }
+        oldSkin.dispose();
     }
 
     /**
@@ -681,6 +709,74 @@ class RenderWebGL extends EventEmitter {
             ],
             x: pickX,
             y: pickY
+        };
+    }
+
+    /**
+     * @typedef ColorExtraction
+     * @property {Uint8Array} data Raw pixel data for the drawable
+     * @property {int} width Drawable bounding box width
+     * @property {int} height Drawable bounding box height
+     * @property {object} color Color object with RGBA properties at picked location
+     */
+
+    /**
+     * Return drawable pixel data and color at a given position
+     * @param {int} x The client x coordinate of the picking location.
+     * @param {int} y The client y coordinate of the picking location.
+     * @param {int} radius The client radius to extract pixels with.
+     * @return {?ColorExtraction} Data about the picked color
+     */
+    extractColor (x, y, radius) {
+        const scratchX = Math.round(this._nativeSize[0] * ((x / this._gl.canvas.clientWidth) - 0.5));
+        const scratchY = Math.round(-this._nativeSize[1] * ((y / this._gl.canvas.clientHeight) - 0.5));
+
+        const gl = this._gl;
+        twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+
+        const bounds = new Rectangle();
+        bounds.initFromBounds(scratchX - radius, scratchX + radius, scratchY - radius, scratchY + radius);
+
+        const pickX = scratchX - bounds.left;
+        const pickY = bounds.top - scratchY;
+
+        gl.viewport(0, 0, bounds.width, bounds.height);
+        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
+
+        gl.clearColor.apply(gl, this._backgroundColor);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        this._drawThese(this._drawList, ShaderManager.DRAW_MODE.default, projection);
+
+        const data = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
+        gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+
+        const pixelBase = Math.floor(4 * ((pickY * bounds.width) + pickX));
+        const color = {
+            r: data[pixelBase],
+            g: data[pixelBase + 1],
+            b: data[pixelBase + 2],
+            a: data[pixelBase + 3]
+        };
+
+        if (this._debugCanvas) {
+            this._debugCanvas.width = bounds.width;
+            this._debugCanvas.height = bounds.height;
+            const ctx = this._debugCanvas.getContext('2d');
+            const imageData = ctx.createImageData(bounds.width, bounds.height);
+            imageData.data.set(data);
+            ctx.putImageData(imageData, 0, 0);
+            ctx.strokeStyle = 'black';
+            ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`;
+            ctx.rect(pickX - 4, pickY - 4, 8, 8);
+            ctx.fill();
+            ctx.stroke();
+        }
+
+        return {
+            data: data,
+            width: bounds.width,
+            height: bounds.height,
+            color: color
         };
     }
 

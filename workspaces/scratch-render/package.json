@@ -17,22 +17,23 @@
     "prepublish": "npm run build",
     "prepublish-watch": "npm run watch",
     "start": "webpack-dev-server",
-    "test": "npm run lint && npm run docs",
+    "tap": "./node_modules/.bin/tap ./test/unit/*.js",
+    "test": "npm run lint && npm run docs && npm run tap",
     "version": "json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\"",
     "watch": "webpack --progress --colors --watch --watch-poll"
   },
   "devDependencies": {
     "babel-core": "^6.23.1",
     "babel-eslint": "^7.1.1",
-    "babel-loader": "^6.3.2",
+    "babel-loader": "^7.1.2",
     "babel-polyfill": "^6.22.0",
     "babel-preset-es2015": "^6.22.0",
     "base64-loader": "^1.0.0",
     "copy-webpack-plugin": "^4.0.1",
     "docdash": "^0.4.0",
-    "eslint": "^3.16.1",
-    "eslint-config-scratch": "^3.1.0",
-    "gh-pages": "^0.12.0",
+    "eslint": "^4.6.1",
+    "eslint-config-scratch": "^4.0.0",
+    "gh-pages": "^1.0.0",
     "hull.js": "0.2.10",
     "jsdoc": "^3.5.3",
     "json": "^9.0.4",
@@ -41,7 +42,7 @@
     "tap": "^10.3.0",
     "travis-after-all": "^1.4.4",
     "twgl.js": "3.5.0",
-    "webpack": "^2.2.1",
+    "webpack": "^3.5.6",
     "webpack-dev-server": "^2.4.1"
   }
 }
