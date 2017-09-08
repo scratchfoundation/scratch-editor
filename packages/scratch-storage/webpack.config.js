@@ -27,7 +27,7 @@ const base = {
 };
 
 module.exports = [
-    // Web-compatible
+    // Web + UMD
     Object.assign({}, base, {
         target: 'web',
         entry: {
@@ -36,11 +36,25 @@ module.exports = [
         },
         output: {
             path: __dirname,
-            filename: 'dist/web/[name].js'
+            filename: 'dist/web_umd/[name].js'
         }
     }),
 
-    // Node-compatible
+    // Web + commonjs2
+    Object.assign({}, base, {
+        target: 'web',
+        entry: {
+            'scratch-storage': './src/index.js'
+        },
+        output: {
+            library: 'ScratchStorage',
+            libraryTarget: 'commonjs2',
+            path: __dirname,
+            filename: 'dist/web_commonjs2/[name].js'
+        }
+    }),
+
+    // Node + commonjs2
     Object.assign({}, base, {
         target: 'node',
         entry: {
@@ -50,7 +64,7 @@ module.exports = [
             library: 'ScratchStorage',
             libraryTarget: 'commonjs2',
             path: __dirname,
-            filename: 'dist/node/[name].js'
+            filename: 'dist/node_commonjs2/[name].js'
         }
     })
 ];

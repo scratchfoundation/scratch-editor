@@ -8,7 +8,7 @@
     "type": "git",
     "url": "https://github.com/LLK/scratch-storage.git"
   },
-  "main": "./dist/node/scratch-storage.js",
+  "main": "./dist/web_commonjs2/scratch-storage.js",
   "scripts": {
     "build": "./node_modules/.bin/webpack --progress --colors --bail",
     "coverage": "./node_modules/.bin/tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
@@ -38,6 +38,7 @@
     "json": "^9.0.4",
     "json-loader": "0.5.4",
     "localforage": "1.5.0",
+    "nets": "^3.2.0",
     "semantic-release": "^6.3.2",
     "tap": "8.0.1",
     "text-encoding": "0.6.4",

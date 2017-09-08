@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const test = require('tap').test;
 
-const ScratchStorage = require('../../dist/node/scratch-storage');
+const ScratchStorage = require('../../dist/node_commonjs2/scratch-storage');
 
 var storage;
 test('constructor', t => {

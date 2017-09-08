@@ -1,4 +1,4 @@
-const got = require('got');
+const nets = require('nets');
 
 const Asset = require('./Asset');
 const Helper = require('./Helper');
@@ -66,26 +66,17 @@ class WebHelper extends Helper {
                 }
 
                 if (urlFunction) {
-                    const options = {
-                        encoding: null // return body as Buffer
-                    };
                     const url = urlFunction(asset);
-                    got(url, options).then(
-                        response => {
-                            if (response.status < 200 || response.status >= 300) {
-                                if (response.status !== 404) {
-                                    errors.push({url: url, result: response});
-                                }
-                                tryNextSource();
-                            } else {
-                                asset.setData(response.body, dataFormat);
-                                fulfill(asset);
-                            }
-                        },
-                        error => {
-                            errors.push({url: url, result: error});
+
+                    nets({ url: url }, function(err, resp, body) {
+                        // body is a Buffer
+                        if (err) {
                             tryNextSource();
-                        });
+                        } else {
+                            asset.setData(body, dataFormat);
+                            fulfill(asset);
+                        }
+                    });
                 } else if (errors.length > 0) {
                     reject(errors);
                 } else {
