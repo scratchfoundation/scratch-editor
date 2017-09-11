@@ -20,7 +20,6 @@ const StrokeColorIndicatorComponent = props => (
     <div className={styles.inputGroup}>
         <Label text={props.intl.formatMessage(messages.stroke)}>
             <BufferedInput
-                tabIndex="1"
                 type="text"
                 value={props.strokeColor}
                 onSubmit={props.onChangeStrokeColor}

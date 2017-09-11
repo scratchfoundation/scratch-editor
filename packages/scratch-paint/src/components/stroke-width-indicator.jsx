@@ -14,7 +14,6 @@ const StrokeWidthIndicatorComponent = props => (
             small
             max={MAX_STROKE_WIDTH}
             min="0"
-            tabIndex="1"
             type="number"
             value={props.strokeWidth}
             onSubmit={props.onChangeStrokeWidth}

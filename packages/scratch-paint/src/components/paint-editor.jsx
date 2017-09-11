@@ -45,7 +45,6 @@ class PaintEditorComponent extends React.Component {
                     <div className={styles.inputGroup}>
                         <Label text={this.props.intl.formatMessage(messages.costume)}>
                             <BufferedInput
-                                tabIndex="1"
                                 type="text"
                                 value="meow"
                             />

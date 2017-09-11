@@ -20,7 +20,6 @@ const FillColorIndicatorComponent = props => (
     <div className={styles.inputGroup}>
         <Label text={props.intl.formatMessage(messages.fill)}>
             <BufferedInput
-                tabIndex="1"
                 type="text"
                 value={props.fillColor}
                 onSubmit={props.onChangeFillColor}
