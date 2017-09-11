@@ -1,3 +1,7 @@
+/* DO NOT EDIT
+@todo This file is copied from GUI and should be pulled out into a shared library.
+See https://github.com/LLK/scratch-paint/issues/13 */
+
 $ui-pane-border: #D9D9D9;
 $ui-pane-gray: #F9F9F9;
 $ui-background-blue: #e8edf1;
