@@ -24,12 +24,7 @@ class SelectMode extends React.Component {
         bindAll(this, [
             'activateTool',
             'deactivateTool',
-            'getHitOptions',
-            'preProcessSelection',
-            'onMouseDown',
-            'onMouseMove',
-            'onMouseDrag',
-            'onMouseUp'
+            'getHitOptions'
         ]);
         this._hitOptions = {
             segments: true,
@@ -71,48 +66,66 @@ class SelectMode extends React.Component {
         selectRootItem();
         this.tool = new paper.Tool();
 
-
+        const selectMode = this;
         this.tool.onMouseDown = function (event) {
             if (event.event.button > 0) return;  // only first mouse button
-            this.props.clearHoveredItem();
-            if (!this.boundingBoxTool.onMouseDown(
-                    event, event.modifiers.alt, event.modifiers.shift, true /* preselectedOnly */)) {
-                this.selectionBoxMode = true;
+
+            selectMode.props.clearHoveredItem();
+            if (!selectMode.boundingBoxTool.onMouseDown(
+                    event,
+                    event.modifiers.alt,
+                    event.modifiers.shift,
+                    selectMode.getHitOptions(false /* preseelectedOnly */))) {
+                selectMode.selectionBoxMode = true;
             }
         };
 
         this.tool.onMouseMove = function (event) {
-            this.props.setHoveredItem(getHoveredItem(event, this.getHitOptions()));
+            const hoveredItem = getHoveredItem(event, selectMode.getHitOptions());
+            const oldHoveredItem = selectMode.props.hoveredItem;
+            if ((!hoveredItem && oldHoveredItem) || // There is no longer a hovered item
+                    (hoveredItem && !oldHoveredItem) || // There is now a hovered item
+                    (hoveredItem && oldHoveredItem && hoveredItem.id !== oldHoveredItem.id)) { // hovered item changed
+                if (oldHoveredItem) {
+                    oldHoveredItem.remove();
+                }
+                selectMode.props.setHoveredItem(hoveredItem);
+            }
         };
 
         
         this.tool.onMouseDrag = function (event) {
             if (event.event.button > 0) return;  // only first mouse button
-            if (this.selectionBoxMode) {
-                this.selectionRect = rectSelect(event);
+
+            if (selectMode.selectionBoxMode) {
+                selectMode.selectionRect = rectSelect(event);
                 // Remove this rect on the next drag and up event
-                this.selectionRect.removeOnDrag();
+                selectMode.selectionRect.removeOnDrag();
             } else {
-                this.boundingBoxTool.onMouseDrag(event);
+                selectMode.boundingBoxTool.onMouseDrag(event);
             }
         };
 
         this.tool.onMouseUp = function (event) {
             if (event.event.button > 0) return;  // only first mouse button
-            if (this.selectionBoxMode) {
-                processRectangularSelection(event, this.selectionRect);
-                this.selectionRect.remove();
+
+            if (selectMode.selectionBoxMode) {
+                if (selectMode.selectionRect) {
+                    processRectangularSelection(event, selectMode.selectionRect);
+                    selectMode.selectionRect.remove();
+                }
+                selectMode.boundingBoxTool.setSelectionBounds();
             } else {
-                this.boundingBoxTool.onMouseUp(event);
-                this.props.onUpdateSvg();
+                selectMode.boundingBoxTool.onMouseUp(event);
+                selectMode.props.onUpdateSvg();
             }
-            this.selectionBoxMode = false;
-            this.selectionRect = null;
+            selectMode.selectionBoxMode = false;
+            selectMode.selectionRect = null;
         };
         this.tool.activate();
     }
     deactivateTool () {
-        this.props.setHoveredItem();
+        this.props.clearHoveredItem();
         this.tool.remove();
         this.tool = null;
         this.hitResult = null;
@@ -127,13 +140,15 @@ class SelectMode extends React.Component {
 SelectMode.propTypes = {
     clearHoveredItem: PropTypes.func.isRequired,
     handleMouseDown: PropTypes.func.isRequired,
+    hoveredItem: PropTypes.instanceOf(paper.Item),
     isSelectModeActive: PropTypes.bool.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
     setHoveredItem: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    isSelectModeActive: state.scratchPaint.mode === Modes.SELECT
+    isSelectModeActive: state.scratchPaint.mode === Modes.SELECT,
+    hoveredItem: state.scratchPaint.hoveredItem
 });
 const mapDispatchToProps = dispatch => ({
     setHoveredItem: hoveredItem => {

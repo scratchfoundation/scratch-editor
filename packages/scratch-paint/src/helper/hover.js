@@ -16,7 +16,7 @@ const getHoveredItem = function (event, hitOptions) {
 
     let hitResult;
     for (const result of hitResults) {
-        if (!(result.item.data && result.item.data.noHover) && !hitResult.item.selected) {
+        if (!(result.item.data && result.item.data.noHover) && !result.item.selected) {
             hitResult = result;
             break;
         }

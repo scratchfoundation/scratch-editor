@@ -15,4 +15,4 @@ const getGuideLayer = function () {
     return guideLayer;
 };
 
-export default getGuideLayer;
+export {getGuideLayer};

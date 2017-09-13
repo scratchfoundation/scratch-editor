@@ -40,17 +40,18 @@ class BoundingBoxTool {
      * @param {!MouseEvent} event The mouse event
      * @param {boolean} clone Whether to clone on mouse down (e.g. alt key held)
      * @param {boolean} multiselect Whether to multiselect on mouse down (e.g. shift key held)
-     * @param {boolean} preselectedOnly If true, only get hit results on items that are already selected
+     * @param {paper.hitOptions} hitOptions The options with which to detect whether mouse down has hit
+     *     anything editable
      * @return {boolean} True if there was a hit, false otherwise
      */
-    onMouseDown (event, clone, multiselect, preselectedOnly) {
-        const hitResults = paper.project.hitTestAll(event.point, this.getHitOptions(preselectedOnly));
+    onMouseDown (event, clone, multiselect, hitOptions) {
+        const hitResults = paper.project.hitTestAll(event.point, hitOptions);
         if (!hitResults || hitResults.length === 0) {
             if (!multiselect) {
                 this.removeBoundsPath();
                 clearSelection();
             }
-            return null;
+            return false;
         }
 
         // Prefer scale to trigger over rotate, and scale and rotate to trigger over other hits
@@ -65,14 +66,17 @@ class BoundingBoxTool {
                 hitResult = hitResults[i];
                 this.mode = Modes.ROTATE;
                 this._modeMap[this.mode].onMouseDown(hitResult, this.boundsPath, getSelectedItems());
-            } else {
-                this.mode = Modes.MOVE;
-                this._modeMap[this.mode].onMouseDown(hitResult, clone, multiselect);
             }
+        }
+
+        if (!this.mode) {
+            this.mode = Modes.MOVE;
+            this._modeMap[this.mode].onMouseDown(hitResult, clone, multiselect);
         }
 
         // while transforming object, never show the bounds stuff
         this.removeBoundsPath();
+        return true;
     }
     onMouseDrag (event) {
         if (event.event.button > 0) return; // only first mouse button
@@ -83,12 +87,7 @@ class BoundingBoxTool {
         this._modeMap[this.mode].onMouseUp(event);
 
         this.mode = null;
-        
-        if (getSelectedItems().length <= 0) {
-            this.removeBoundsPath();
-        } else {
-            this.setSelectionBounds();
-        }
+        this.setSelectionBounds();
     }
     setSelectionBounds () {
         this.removeBoundsPath();

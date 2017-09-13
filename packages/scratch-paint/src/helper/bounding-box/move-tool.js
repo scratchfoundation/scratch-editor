@@ -1,7 +1,7 @@
 import {isGroup} from '../group';
 import {isCompoundPathItem, getRootItem} from '../item';
 import {snapDeltaToAngle} from '../math';
-import {clearSelection, cloneSelection, getSelectedItems, setItemSelection, setGroupSelection} from '../selection';
+import {clearSelection, cloneSelection, getSelectedItems, setItemSelection} from '../selection';
 
 class MoveTool {
     constructor () {
@@ -14,31 +14,22 @@ class MoveTool {
      * @param {boolean} multiselect Whether to multiselect on mouse down (e.g. shift key held)
      */
     onMouseDown (hitResult, clone, multiselect) {
-        // deselect all by default if multiselect isn't on
-        if (!multiselect) {
-            clearSelection();
-        }
-        // also needs some special love for compound paths and groups,
-        // as their children are not marked as "selected"
-        // deselect a currently selected item if multiselect is on
         const root = getRootItem(hitResult.item);
-        if (isCompoundPathItem(root) || isGroup(root)) {
-            if (!root.selected) {
-                setGroupSelection(root, true);
-            } else if (multiselect) {
-                setGroupSelection(root, false);
+        const item = isCompoundPathItem(root) || isGroup(root) ? root : hitResult.item;
+        if (!item.selected) {
+            // deselect all by default if multiselect isn't on
+            if (!multiselect) {
+                clearSelection();
             }
-        } else if (multiselect && hitResult.item.selected) {
-            setItemSelection(hitResult.item, false);
-        } else {
-            setItemSelection(hitResult.item, true);
+            setItemSelection(item, true);
+        } else if (multiselect) {
+            setItemSelection(item, false);
         }
         if (clone) cloneSelection();
         this.selectedItems = getSelectedItems();
     }
     onMouseDrag (event) {
-        const dragVector = (event.point - event.downPoint);
-
+        const dragVector = event.point.subtract(event.downPoint);
         for (const item of this.selectedItems) {
             // add the position of the item before the drag started
             // for later use in the snap calculation
@@ -47,10 +38,9 @@ class MoveTool {
             }
 
             if (event.modifiers.shift) {
-                item.position = item.data.origPos +
-                snapDeltaToAngle(dragVector, Math.PI / 4);
+                item.position = item.data.origPos.add(snapDeltaToAngle(dragVector, Math.PI / 4));
             } else {
-                item.position += event.delta;
+                item.position = item.data.origPos.add(dragVector);
             }
         }
     }
