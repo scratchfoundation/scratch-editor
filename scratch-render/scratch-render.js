@@ -1358,7 +1358,7 @@ module.exports = function (target, src, safe) {
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
- * @license twgl.js 3.5.0 Copyright (c) 2015, Gregg Tavares All Rights Reserved.
+ * @license twgl.js 3.7.0 Copyright (c) 2015, Gregg Tavares All Rights Reserved.
  * Available via the MIT license.
  * see: http://github.com/greggman/twgl.js for details
  */
@@ -1502,7 +1502,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  var gl = undefined; // eslint-disable-line
 	  var defaults = {
-	    enableVertexArrayObjects: true
+	    addExtensionsToContext: true
 	  };
 
 	  /**
@@ -1555,19 +1555,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	   *
 	   *   Also see {@link module:twgl.TextureOptions}.
 	   *
-	   * @property {bool} enableVertexArrayObjects
+	   * @property {bool} addExtensionsToContext
 	   *
-	   *   If true then in WebGL 1.0 will attempt to get the `OES_vertex_array_object` extension.
-	   *   If successful it will copy create/bind/delete/isVertexArrayOES from the extension to
-	   *   the WebGLRenderingContext removing the OES at the end which is the standard entry point
-	   *   for WebGL 2.
-	   *
-	   *   Note: According to webglstats.com 90% of devices support `OES_vertex_array_object`.
-	   *   In fact AFAICT all devices support them it's just Microsoft Edge does not.
-	   *   If you just want to count on support I suggest using [this polyfill](https://github.com/KhronosGroup/WebGL/blob/master/sdk/demos/google/resources/OESVertexArrayObject.js)
-	   *   or ignoring devices that don't support them.
-	   *
-	   *   Default: `true`
+	   *   If true, then, when twgl will try to add any supported WebGL extensions
+	   *   directly to the context under their normal GL names. For example
+	   *   if ANGLE_instances_arrays exists then twgl would enable it,
+	   *   add the functions `vertexAttribDivisor`, `drawArraysInstanced`,
+	   *   `drawElementsInstanced`, and the constant `VERTEX_ATTRIB_ARRAY_DIVISOR`
+	   *   to the `WebGLRenderingContext`.
 	   *
 	   * @memberOf module:twgl
 	   */
@@ -1587,31 +1582,92 @@ return /******/ (function(modules) { // webpackBootstrap
 	    textures.setDefaults_(newDefaults); // eslint-disable-line
 	  }
 
-	  /**
-	   * Adds Vertex Array Objects to WebGL 1 GL contexts if available
-	   * @param {WebGLRenderingContext} gl A WebGLRenderingContext
-	   */
-	  function addVertexArrayObjectSupport(gl) {
-	    if (!gl || !defaults.enableVertexArrayObjects) {
-	      return;
-	    }
-	    if (utils.isWebGL1(gl)) {
-	      var ext = gl.getExtension("OES_vertex_array_object");
-	      if (ext) {
-	        gl.createVertexArray = function () {
-	          return ext.createVertexArrayOES();
-	        };
-	        gl.deleteVertexArray = function (v) {
-	          ext.deleteVertexArrayOES(v);
-	        };
-	        gl.isVertexArray = function (v) {
-	          return ext.isVertexArrayOES(v);
-	        };
-	        gl.bindVertexArray = function (v) {
-	          ext.bindVertexArrayOES(v);
-	        };
-	        gl.VERTEX_ARRAY_BINDING = ext.VERTEX_ARRAY_BINDING_OES;
+	  var prefixRE = /^(.*?)_/;
+	  function addExtensionToContext(gl, extensionName) {
+	    var ext = gl.getExtension(extensionName);
+	    if (ext) {
+	      var fnSuffix = prefixRE.exec(extensionName)[1];
+	      var enumSuffix = '_' + fnSuffix;
+	      for (var key in ext) {
+	        var value = ext[key];
+	        var isFunc = typeof value === 'function';
+	        var suffix = isFunc ? fnSuffix : enumSuffix;
+	        var name = key;
+	        // examples of where this is not true are WEBGL_compressed_texture_s3tc
+	        // and WEBGL_compressed_texture_pvrtc
+	        if (key.endsWith(suffix)) {
+	          name = key.substring(0, key.length - suffix.length);
+	        }
+	        if (gl[name] !== undefined) {
+	          if (!isFunc && gl[name] !== value) {
+	            console.warn(name, gl[name], value, key); // eslint-disable-line
+	          }
+	        } else {
+	          if (isFunc) {
+	            gl[name] = function (origFn) {
+	              return function () {
+	                return origFn.apply(ext, arguments);
+	              };
+	            }(value);
+	          } else {
+	            gl[name] = value;
+	          }
+	        }
 	      }
+	    }
+	    return ext;
+	  }
+
+	  var supportedExtensions = ['ANGLE_instanced_arrays', 'EXT_blend_minmax', 'EXT_color_buffer_half_float', 'EXT_disjoint_timer_query', 'EXT_frag_depth', 'EXT_sRGB', 'EXT_shader_texture_lod', 'EXT_texture_filter_anisotropic', 'OES_element_index_uint', 'OES_standard_derivatives', 'OES_texture_float', 'OES_texture_float_linear', 'OES_texture_half_float', 'OES_texture_half_float_linear', 'OES_vertex_array_object', 'WEBGL_color_buffer_float', 'WEBGL_compressed_texture_atc', 'WEBGL_compressed_texture_etc1', 'WEBGL_compressed_texture_pvrtc', 'WEBGL_compressed_texture_s3tc', 'WEBGL_depth_texture', 'WEBGL_draw_buffers'];
+
+	  /**
+	   * Attempts to enable all of the following extensions
+	   * and add their functions and constants to the
+	   * `WebGLRenderingContext` using their normal non-extension like names.
+	   *
+	   *      ANGLE_instanced_arrays
+	   *      EXT_blend_minmax
+	   *      EXT_color_buffer_half_float
+	   *      EXT_disjoint_timer_query
+	   *      EXT_frag_depth
+	   *      EXT_sRGB
+	   *      EXT_shader_texture_lod
+	   *      EXT_texture_filter_anisotropic
+	   *      OES_element_index_uint
+	   *      OES_standard_derivatives
+	   *      OES_texture_float
+	   *      OES_texture_float_linear
+	   *      OES_texture_half_float
+	   *      OES_texture_half_float_linear
+	   *      OES_vertex_array_object
+	   *      WEBGL_color_buffer_float
+	   *      WEBGL_compressed_texture_atc
+	   *      WEBGL_compressed_texture_etc1
+	   *      WEBGL_compressed_texture_pvrtc
+	   *      WEBGL_compressed_texture_s3tc
+	   *      WEBGL_depth_texture
+	   *      WEBGL_draw_buffers
+	   *
+	   * For example if `ANGLE_instanced_arrays` exists then the functions
+	   * `drawArraysInstanced`, `drawElementsInstanced`, `vertexAttribDivisor`
+	   * and the constant `VERTEX_ATTRIB_ARRAY_DIVISOR` are added to the
+	   * `WebGLRenderingContext`.
+	   *
+	   * Note that if you want to know if the extension exists you should
+	   * probably call `gl.getExtension` for each extension. Alternatively
+	   * you can check for the existance of the functions or constants that
+	   * are expected to be added. For example
+	   *
+	   *    if (gl.drawBuffers) {
+	   *      // Either WEBGL_draw_buffers was enabled OR you're running in WebGL2
+	   *      ....
+	   *
+	   * @param {WebGLRenderingContext} gl A WebGLRenderingContext
+	   * @memberOf module:twgl
+	   */
+	  function addExtensionsToContext(gl) {
+	    for (var ii = 0; ii < supportedExtensions.length; ++ii) {
+	      addExtensionToContext(gl, supportedExtensions[ii]);
 	    }
 	  }
 
@@ -1628,6 +1684,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    for (var ii = 0; ii < names.length; ++ii) {
 	      context = canvas.getContext(names[ii], opt_attribs);
 	      if (context) {
+	        if (defaults.addExtensionsToContext) {
+	          addExtensionsToContext(context);
+	        }
 	        break;
 	      }
 	    }
@@ -1647,7 +1706,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 	  function getWebGLContext(canvas, opt_attribs) {
 	    var gl = create3DContext(canvas, opt_attribs);
-	    addVertexArrayObjectSupport(gl);
 	    return gl;
 	  }
 
@@ -1671,6 +1729,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    for (var ii = 0; ii < names.length; ++ii) {
 	      context = canvas.getContext(names[ii], opt_attribs);
 	      if (context) {
+	        if (defaults.addExtensionsToContext) {
+	          addExtensionsToContext(context);
+	        }
 	        break;
 	      }
 	    }
@@ -1697,23 +1758,21 @@ return /******/ (function(modules) { // webpackBootstrap
 	   */
 	  function getContext(canvas, opt_attribs) {
 	    var gl = createContext(canvas, opt_attribs);
-	    addVertexArrayObjectSupport(gl);
 	    return gl;
 	  }
 
 	  /**
 	   * Resize a canvas to match the size it's displayed.
 	   * @param {HTMLCanvasElement} canvas The canvas to resize.
-	   * @param {number} [multiplier] So you can pass in `window.devicePixelRatio` if you want to.
+	   * @param {number} [multiplier] So you can pass in `window.devicePixelRatio` or other scale value if you want to.
 	   * @return {boolean} true if the canvas was resized.
 	   * @memberOf module:twgl
 	   */
 	  function resizeCanvasToDisplaySize(canvas, multiplier) {
 	    multiplier = multiplier || 1;
-	    multiplier = Math.max(1, multiplier);
-	    var bounds = canvas.getBoundingClientRect();
-	    var width = Math.round(bounds.width * multiplier);
-	    var height = Math.round(bounds.height * multiplier);
+	    multiplier = Math.max(0, multiplier);
+	    var width = canvas.clientWidth * multiplier | 0;
+	    var height = canvas.clientHeight * multiplier | 0;
 	    if (canvas.width !== width || canvas.height !== height) {
 	      canvas.width = width;
 	      canvas.height = height;
@@ -1725,6 +1784,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // Using quotes prevents Uglify from changing the names.
 	  // No speed diff AFAICT.
 	  var api = {
+	    "addExtensionsToContext": addExtensionsToContext,
 	    "getContext": getContext,
 	    "getWebGLContext": getWebGLContext,
 	    "isWebGL1": utils.isWebGL1,
@@ -1971,6 +2031,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @property {boolean} [normalize] whether or not to normalize the data. Default = false
 	   * @property {number} [offset] offset into buffer in bytes. Default = 0
 	   * @property {number} [stride] the stride in bytes per element. Default = 0
+	   * @property {number} [divisor] the divisor in instances. Default = undefined. Note: undefined = don't call gl.vertexAttribDivisor
+	   *    where as anything else = do call it with this value
 	   * @property {WebGLBuffer} buffer the buffer that contains the data for this attribute
 	   * @property {number} [drawType] the draw type passed to gl.bufferData. Default = gl.STATIC_DRAW
 	   * @memberOf module:twgl
@@ -1990,6 +2052,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @property {boolean} [normalize] normalize for `vertexAttribPointer`. Default is true if type is `Int8Array` or `Uint8Array` otherwise false.
 	   * @property {number} [stride] stride for `vertexAttribPointer`. Default = 0
 	   * @property {number} [offset] offset for `vertexAttribPointer`. Default = 0
+	   * @property {number} [divisor] divisor for `vertexAttribDivisor`. Default = undefined. Note: undefined = don't call gl.vertexAttribDivisor
+	   *    where as anything else = do call it with this value
 	   * @property {string} [attrib] name of attribute this array maps to. Defaults to same name as array prefixed by the default attribPrefix.
 	   * @property {string} [name] synonym for `attrib`.
 	   * @property {string} [attribName] synonym for `attrib`.
@@ -2139,6 +2203,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          normalize: normalization,
 	          stride: array.stride || 0,
 	          offset: array.offset || 0,
+	          divisor: array.divisor === undefined ? undefined : array.divisor,
 	          drawType: array.drawType
 	        };
 	      }
@@ -2863,19 +2928,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * @param {enum} [type] eg (gl.TRIANGLES, gl.LINES, gl.POINTS, gl.TRIANGLE_STRIP, ...). Defaults to `gl.TRIANGLES`
 	   * @param {number} [count] An optional count. Defaults to bufferInfo.numElements
 	   * @param {number} [offset] An optional offset. Defaults to 0.
+	   * @param {number} [instanceCount] An optional instanceCount. if set then `drawArraysInstanced` or `drawElementsInstanced` will be called
 	   * @memberOf module:twgl/draw
 	   */
 
-	  function drawBufferInfo(gl, bufferInfo, type, count, offset) {
+	  function drawBufferInfo(gl, bufferInfo, type, count, offset, instanceCount) {
 	    type = type === undefined ? gl.TRIANGLES : type;
 	    var indices = bufferInfo.indices;
 	    var elementType = bufferInfo.elementType;
 	    var numElements = count === undefined ? bufferInfo.numElements : count;
 	    offset = offset === undefined ? 0 : offset;
 	    if (elementType || indices) {
-	      gl.drawElements(type, numElements, elementType === undefined ? gl.UNSIGNED_SHORT : bufferInfo.elementType, offset);
+	      if (instanceCount !== undefined) {
+	        gl.drawElementsInstanced(type, numElements, elementType === undefined ? gl.UNSIGNED_SHORT : bufferInfo.elementType, offset, instanceCount);
+	      } else {
+	        gl.drawElements(type, numElements, elementType === undefined ? gl.UNSIGNED_SHORT : bufferInfo.elementType, offset);
+	      }
 	    } else {
-	      gl.drawArrays(type, offset, numElements);
+	      if (instanceCount !== undefined) {
+	        gl.drawArraysInstanced(type, offset, numElements, instanceCount);
+	      } else {
+	        gl.drawArrays(type, offset, numElements);
+	      }
 	    }
 	  }
 
@@ -2911,6 +2985,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   *
 	   * @property {number} [offset] the offset to pass to `gl.drawArrays` or `gl.drawElements`. Defaults to 0.
 	   * @property {number} [count] the count to pass to `gl.drawArrays` or `gl.drawElemnts`. Defaults to bufferInfo.numElements.
+	   * @property {number} [instanceCount] the number of instances. Defaults to undefined.
 	   * @memberOf module:twgl
 	   */
 
@@ -2957,7 +3032,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      programs.setUniforms(programInfo, object.uniforms);
 
 	      // Draw
-	      drawBufferInfo(gl, bufferInfo, type, object.count, object.offset);
+	      drawBufferInfo(gl, bufferInfo, type, object.count, object.offset, object.instanceCount);
 	    });
 
 	    if (lastUsedBufferInfo.vertexArrayObject) {
@@ -3334,6 +3409,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      gl.bindBuffer(gl.ARRAY_BUFFER, b.buffer);
 	      gl.enableVertexAttribArray(index);
 	      gl.vertexAttribPointer(index, b.numComponents || b.size, b.type || gl.FLOAT, b.normalize || false, b.stride || 0, b.offset || 0);
+	      if (b.divisor !== undefined) {
+	        gl.vertexAttribDivisor(index, b.divisor);
+	      }
 	    };
 	  }
 
@@ -3342,6 +3420,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      gl.bindBuffer(gl.ARRAY_BUFFER, b.buffer);
 	      gl.enableVertexAttribArray(index);
 	      gl.vertexAttribIPointer(index, b.numComponents || b.size, b.type || gl.INT, b.stride || 0, b.offset || 0);
+	      if (b.divisor !== undefined) {
+	        gl.vertexAttribDivisor(index, b.divisor);
+	      }
 	    };
 	  }
 
@@ -3362,6 +3443,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      for (var i = 0; i < count; ++i) {
 	        gl.enableVertexAttribArray(index + i);
 	        gl.vertexAttribPointer(index + i, size, type, normalize, stride, offset + rowOffset * i);
+	        if (b.divisor !== undefined) {
+	          gl.vertexAttribDivisor(index + i, b.divisor);
+	        }
 	      }
 	    };
 	  }
@@ -4362,6 +4446,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	   * *   normalize: whether or not to normalize the data. Default = false
 	   * *   stride: the stride. Default = 0
 	   * *   offset: offset into the buffer. Default = 0
+	   * *   divisor: the divisor for instances. Default = undefined
 	   *
 	   * For example if you had 3 value float positions, 2 value
 	   * float texcoord and 4 value uint8 colors you'd setup your
