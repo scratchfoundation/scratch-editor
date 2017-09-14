@@ -1,3 +1,4 @@
+import paper from 'paper';
 import log from '../log/log';
 
 const CHANGE_HOVERED = 'scratch-paint/hover/CHANGE_HOVERED';
@@ -7,7 +8,8 @@ const reducer = function (state, action) {
     if (typeof state === 'undefined') state = initialState;
     switch (action.type) {
     case CHANGE_HOVERED:
-        if (typeof action.hoveredItem === 'undefined') {
+        if (typeof action.hoveredItem === 'undefined' ||
+                (action.hoveredItem !== null && !(action.hoveredItem instanceof paper.Item))) {
             log.warn(`Hovered item should not be set to undefined. Use null.`);
             return state;
         }
