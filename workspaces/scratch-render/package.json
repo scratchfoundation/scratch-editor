@@ -43,6 +43,6 @@
     "travis-after-all": "^1.4.4",
     "twgl.js": "3.7.0",
     "webpack": "^3.5.6",
-    "webpack-dev-server": "^2.4.1"
+    "webpack-dev-server": "^2.8.2"
   }
 }
