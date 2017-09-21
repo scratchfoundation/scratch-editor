@@ -28,17 +28,19 @@ const Modes = keyMirror({
  * On mouse down, the type of function (move, scale, rotate) is determined based on what is clicked
  * (scale handle, rotate handle, the object itself). This determines the mode of the tool, which then
  * delegates actions to the MoveTool, RotateTool or ScaleTool accordingly.
+ * @param {!function} onUpdateSvg A callback to call when the image visibly changes
  */
 class BoundingBoxTool {
-    constructor () {
+    constructor (onUpdateSvg) {
+        this.onUpdateSvg = onUpdateSvg;
         this.mode = null;
         this.boundsPath = null;
         this.boundsScaleHandles = [];
         this.boundsRotHandles = [];
         this._modeMap = {};
-        this._modeMap[Modes.SCALE] = new ScaleTool();
-        this._modeMap[Modes.ROTATE] = new RotateTool();
-        this._modeMap[Modes.MOVE] = new MoveTool();
+        this._modeMap[Modes.SCALE] = new ScaleTool(onUpdateSvg);
+        this._modeMap[Modes.ROTATE] = new RotateTool(onUpdateSvg);
+        this._modeMap[Modes.MOVE] = new MoveTool(onUpdateSvg);
     }
 
     /**
@@ -75,8 +77,13 @@ class BoundingBoxTool {
             this.mode = Modes.MOVE;
         }
 
+        const hitProperties = {
+            hitResult: hitResult,
+            clone: event.modifiers.alt,
+            multiselect: event.modifiers.shift
+        };
         if (this.mode === Modes.MOVE) {
-            this._modeMap[this.mode].onMouseDown(hitResult, clone, multiselect);
+            this._modeMap[this.mode].onMouseDown(hitProperties);
         } else if (this.mode === Modes.SCALE) {
             this._modeMap[this.mode].onMouseDown(
                 hitResult, this.boundsPath, this.boundsScaleHandles, this.boundsRotHandles, getSelectedItems());
@@ -100,10 +107,9 @@ class BoundingBoxTool {
         this.setSelectionBounds();
     }
     setSelectionBounds () {
-        debugger;
         this.removeBoundsPath();
         
-        const items = getSelectedItems();
+        const items = getSelectedItems(true /* recursive */);
         if (items.length <= 0) return;
         
         let rect = null;
@@ -181,7 +187,6 @@ class BoundingBoxTool {
         }
     }
     removeBoundsPath () {
-        debugger;
         removeHelperItems();
         this.boundsPath = null;
         this.boundsScaleHandles.length = 0;

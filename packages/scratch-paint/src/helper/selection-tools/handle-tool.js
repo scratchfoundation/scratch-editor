@@ -1,8 +1,12 @@
 import {clearSelection, getSelectedItems} from '../selection';
 
 class HandleTool {
-    constructor () {
+    /**
+     * @param {!function} onUpdateSvg A callback to call when the image visibly changes
+     */
+    constructor (onUpdateSvg) {
         this.hitType = null;
+        this.onUpdateSvg = onUpdateSvg;
     }
     /**
      * @param {!object} hitProperties Describes the mouse event
@@ -58,6 +62,7 @@ class HandleTool {
     }
     onMouseUp () {
         // @todo add back undo
+        this.onUpdateSvg();
     }
 }
 

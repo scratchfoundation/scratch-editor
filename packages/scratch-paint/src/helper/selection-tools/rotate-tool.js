@@ -1,10 +1,14 @@
 import paper from 'paper';
 
 class RotateTool {
-    constructor () {
+    /**
+     * @param {!function} onUpdateSvg A callback to call when the image visibly changes
+     */
+    constructor (onUpdateSvg) {
         this.rotItems = [];
         this.rotGroupPivot = null;
         this.prevRot = [];
+        this.onUpdateSvg = onUpdateSvg;
     }
 
     /**
@@ -57,7 +61,7 @@ class RotateTool {
         this.prevRot = [];
 
         // @todo add back undo
-        // pg.undo.snapshot('rotateSelection');
+        this.onUpdateSvg();
     }
 }
 

@@ -4,7 +4,10 @@ import {clearSelection, getSelectedItems} from '../selection';
 
 /** Subtool of ReshapeTool for moving control points. */
 class PointTool {
-    constructor () {
+    /**
+     * @param {!function} onUpdateSvg A callback to call when the image visibly changes
+     */
+    constructor (onUpdateSvg) {
         /**
          * Deselection often does not happen until mouse up. If the mouse is dragged before
          * mouse up, deselection is cancelled. This variable keeps track of which paper.Item to deselect.
@@ -21,6 +24,7 @@ class PointTool {
          */
         this.invertDeselect = false;
         this.selectedItems = null;
+        this.onUpdateSvg = onUpdateSvg;
     }
 
     /**
@@ -185,9 +189,8 @@ class PointTool {
         }
         this.selectedItems = null;
         // @todo add back undo
+        this.onUpdateSvg();
     }
 }
 
 export default PointTool;
-
-// - bounding box when switching between select and reshape

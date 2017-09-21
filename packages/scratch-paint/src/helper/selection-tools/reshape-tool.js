@@ -26,10 +26,11 @@ class ReshapeTool extends paper.Tool {
     static get DOUBLE_CLICK_MILLIS () {
         return 250;
     }
-    constructor (setHoveredItem, clearHoveredItem) {
+    constructor (setHoveredItem, clearHoveredItem, onUpdateSvg) {
         super();
         this.setHoveredItem = setHoveredItem;
         this.clearHoveredItem = clearHoveredItem;
+        this.onUpdateSvg = onUpdateSvg;
         this.prevHoveredItem = null;
         this._hitOptionsSelected = {
             match: function (item) {
@@ -72,10 +73,10 @@ class ReshapeTool extends paper.Tool {
         this.mode = ReshapeModes.SELECTION_BOX;
         this.selectionRect = null;
         this._modeMap = {};
-        this._modeMap[ReshapeModes.FILL] = new MoveTool();
-        this._modeMap[ReshapeModes.POINT] = new PointTool();
-        this._modeMap[ReshapeModes.HANDLE] = new HandleTool();
-        this._modeMap[ReshapeModes.SELECTION_BOX] = new SelectionBoxTool();
+        this._modeMap[ReshapeModes.FILL] = new MoveTool(onUpdateSvg);
+        this._modeMap[ReshapeModes.POINT] = new PointTool(onUpdateSvg);
+        this._modeMap[ReshapeModes.HANDLE] = new HandleTool(onUpdateSvg);
+        this._modeMap[ReshapeModes.SELECTION_BOX] = new SelectionBoxTool(Modes.RESHAPE);
 
         // We have to set these functions instead of just declaring them because
         // paper.js tools hook up the listeners in the setter functions.
@@ -84,6 +85,8 @@ class ReshapeTool extends paper.Tool {
         this.onMouseDrag = this.handleMouseDrag;
         this.onMouseUp = this.handleMouseUp;
         this.onKeyUp = this.handleKeyUp;
+
+        paper.settings.handleSize = 8;
     }
     getHitOptions (preselectedOnly) {
         this._hitOptions.tolerance = ReshapeTool.TOLERANCE / paper.view.zoom;
@@ -193,7 +196,12 @@ class ReshapeTool extends paper.Tool {
         // Backspace, delete
         if (event.key === 'delete' || event.key === 'backspace') {
             deleteSelection(Modes.RESHAPE);
+            this.onUpdateSvg();
         }
+    }
+    deactivateTool() {
+        paper.settings.handleSize = 0;
+        this.clearHoveredItem();
     }
 }
 

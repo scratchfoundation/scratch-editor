@@ -7,7 +7,6 @@ import Modes from '../modes/modes';
 import {changeMode} from '../reducers/modes';
 import {setHoveredItem, clearHoveredItem} from '../reducers/hover';
 
-import {selectSubItems} from '../helper/selection';
 import ReshapeTool from '../helper/selection-tools/reshape-tool';
 import ReshapeModeComponent from '../components/reshape-mode.jsx';
 import paper from 'paper';
@@ -41,15 +40,12 @@ class ReshapeMode extends React.Component {
         return false; // Static component, for now
     }
     activateTool () {
-        selectSubItems();
-        this.tool = new ReshapeTool(this.props.setHoveredItem, this.props.clearHoveredItem);
+        this.tool = new ReshapeTool(this.props.setHoveredItem, this.props.clearHoveredItem, this.props.onUpdateSvg);
         this.tool.setPrevHoveredItem(this.props.hoveredItem);
         this.tool.activate();
-        paper.settings.handleSize = 8;
     }
     deactivateTool () {
-        paper.settings.handleSize = 0;
-        this.props.clearHoveredItem();
+        this.tool.deactivateTool();
         this.tool.remove();
         this.tool = null;
         this.hitResult = null;
@@ -64,10 +60,10 @@ class ReshapeMode extends React.Component {
 ReshapeMode.propTypes = {
     clearHoveredItem: PropTypes.func.isRequired,
     handleMouseDown: PropTypes.func.isRequired,
-    hoveredItem: PropTypes.instanceOf(paper.Item), // eslint-disable-line react/no-unused-prop-types
+    hoveredItem: PropTypes.instanceOf(paper.Item),
     isReshapeModeActive: PropTypes.bool.isRequired,
-    onUpdateSvg: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
-    setHoveredItem: PropTypes.func.isRequired // eslint-disable-line react/no-unused-prop-types
+    onUpdateSvg: PropTypes.func.isRequired,
+    setHoveredItem: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({

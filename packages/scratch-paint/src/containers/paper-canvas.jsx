@@ -35,7 +35,15 @@ class PaperCanvas extends React.Component {
                 onLoad: function (item) {
                     // Remove viewbox
                     if (item.clipped) {
+                        let mask;
+                        for (const child of item.children) {
+                            if (child.isClipMask()) {
+                                mask = child;
+                                break;
+                            }
+                        }
                         item.clipped = false;
+                        mask.remove();
                         // Consider removing clip mask here?
                     }
                     while (item.reduce() !== item) {

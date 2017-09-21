@@ -1,11 +1,11 @@
 import Modes from '../../modes/modes';
 import {rectSelect} from '../guides';
 import {clearSelection, processRectangularSelection} from '../selection';
-import {getHoveredItem} from '../hover';
 
 class SelectionBoxTool {
-    constructor () {
+    constructor (mode) {
         this.selectionRect = null;
+        this.mode = mode;
     }
     /**
      * @param {boolean} multiselect Whether to multiselect on mouse down (e.g. shift key held)

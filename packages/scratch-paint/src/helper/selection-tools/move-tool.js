@@ -4,8 +4,12 @@ import {snapDeltaToAngle} from '../math';
 import {clearSelection, cloneSelection, getSelectedItems, setItemSelection} from '../selection';
 
 class MoveTool {
-    constructor () {
+    /**
+     * @param {!function} onUpdateSvg A callback to call when the image visibly changes
+     */
+    constructor (onUpdateSvg) {
         this.selectedItems = null;
+        this.onUpdateSvg = onUpdateSvg;
     }
 
     /**
@@ -41,7 +45,7 @@ class MoveTool {
             this._select(item, true, hitProperties.subselect);
         }
         if (hitProperties.clone) cloneSelection(hitProperties.subselect);
-        this.selectedItems = getSelectedItems(hitProperties.subselect);
+        this.selectedItems = getSelectedItems(true /* subselect */);
     }
     /**
      * Sets the selection state of an item.
@@ -90,6 +94,7 @@ class MoveTool {
 
         // @todo add back undo
         // pg.undo.snapshot('moveSelection');
+        this.onUpdateSvg();
     }
 }
 

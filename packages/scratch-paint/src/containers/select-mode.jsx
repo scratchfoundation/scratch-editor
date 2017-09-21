@@ -7,36 +7,17 @@ import Modes from '../modes/modes';
 import {changeMode} from '../reducers/modes';
 import {setHoveredItem, clearHoveredItem} from '../reducers/hover';
 
-import {getHoveredItem} from '../helper/hover';
-import {rectSelect} from '../helper/guides';
-import {selectRootItem, processRectangularSelection} from '../helper/selection';
-
+import SelectTool from '../helper/selection-tools/select-tool';
 import SelectModeComponent from '../components/select-mode.jsx';
-import BoundingBoxTool from '../helper/selection-tools/bounding-box-tool';
-import SelectionBoxTool from '../helper/selection-tools/selection-box-tool';
 import paper from 'paper';
 
 class SelectMode extends React.Component {
-    static get TOLERANCE () {
-        return 6;
-    }
     constructor (props) {
         super(props);
         bindAll(this, [
             'activateTool',
-            'deactivateTool',
-            'getHitOptions'
+            'deactivateTool'
         ]);
-        this._hitOptions = {
-            segments: true,
-            stroke: true,
-            curves: true,
-            fill: true,
-            guide: false
-        };
-        this.boundingBoxTool = new BoundingBoxTool();
-        this.selectionBoxTool = new SelectionBoxTool();
-        this.selectionBoxMode = false;
     }
     componentDidMount () {
         if (this.props.isSelectModeActive) {
@@ -44,6 +25,10 @@ class SelectMode extends React.Component {
         }
     }
     componentWillReceiveProps (nextProps) {
+        if (this.tool && nextProps.hoveredItem !== this.props.hoveredItem) {
+            this.tool.setPrevHoveredItem(nextProps.hoveredItem);
+        }
+
         if (nextProps.isSelectModeActive && !this.props.isSelectModeActive) {
             this.activateTool();
         } else if (!nextProps.isSelectModeActive && this.props.isSelectModeActive) {
@@ -53,87 +38,14 @@ class SelectMode extends React.Component {
     shouldComponentUpdate () {
         return false; // Static component, for now
     }
-    getHitOptions (preselectedOnly) {
-        this._hitOptions.tolerance = SelectMode.TOLERANCE / paper.view.zoom;
-        if (preselectedOnly) {
-            this._hitOptions.selected = true;
-        } else {
-            delete this._hitOptions.selected;
-        }
-        return this._hitOptions;
-    }
     activateTool () {
-        debugger;
-        selectRootItem();
-        this.boundingBoxTool.setSelectionBounds();
-        this.tool = new paper.Tool();
-
-        // Define these to sate linter
-        const selectMode = this;
-
-        this.tool.onMouseDown = event => {
-            if (event.event.button > 0) return; // only first mouse button
-
-            this.props.clearHoveredItem();
-            if (!this.boundingBoxTool
-                .onMouseDown(
-                    event,
-                    event.modifiers.alt,
-                    event.modifiers.shift,
-                    this.getHitOptions(false /* preseelectedOnly */))) {
-                this.selectionBoxMode = true;
-                this.selectionBoxTool.onMouseDown(event.modifiers.shift);
-            }
-        };
-
-        this.tool.onMouseMove = function (event) {
-            const hoveredItem = getHoveredItem(event, selectMode.getHitOptions());
-            const oldHoveredItem = selectMode.props.hoveredItem;
-            if ((!hoveredItem && oldHoveredItem) || // There is no longer a hovered item
-                    (hoveredItem && !oldHoveredItem) || // There is now a hovered item
-                    (hoveredItem && oldHoveredItem && hoveredItem.id !== oldHoveredItem.id)) { // hovered item changed
-                selectMode.props.setHoveredItem(hoveredItem);
-            }
-        };
-
-        
-        this.tool.onMouseDrag = function (event) {
-            if (event.event.button > 0) return; // only first mouse button
-
-            if (selectMode.selectionBoxMode) {
-                selectMode.selectionRect = rectSelect(event);
-                // Remove this rect on the next drag and up event
-                selectMode.selectionRect.removeOnDrag();
-            } else {
-                selectMode.boundingBoxTool.onMouseDrag(event);
-            }
-        };
-
-        this.tool.onMouseUp = function (event) {
-            if (event.event.button > 0) return; // only first mouse button
-
-            if (selectMode.selectionBoxMode) {
-                if (selectMode.selectionRect) {
-                    processRectangularSelection(event, selectMode.selectionRect, Modes.SELECT);
-                    selectMode.selectionRect.remove();
-                }
-                selectMode.boundingBoxTool.setSelectionBounds();
-            } else {
-                selectMode.boundingBoxTool.onMouseUp(event);
-                selectMode.props.onUpdateSvg();
-            }
-            selectMode.selectionBoxMode = false;
-            selectMode.selectionRect = null;
-        };
+        this.tool = new SelectTool(this.props.setHoveredItem, this.props.clearHoveredItem, this.props.onUpdateSvg);
         this.tool.activate();
     }
     deactivateTool () {
-        debugger;
-        this.props.clearHoveredItem();
-        this.boundingBoxTool.removeBoundsPath();
+        this.tool.deactivateTool();
         this.tool.remove();
         this.tool = null;
-        this.hitResult = null;
     }
     render () {
         return (
@@ -145,10 +57,10 @@ class SelectMode extends React.Component {
 SelectMode.propTypes = {
     clearHoveredItem: PropTypes.func.isRequired,
     handleMouseDown: PropTypes.func.isRequired,
-    hoveredItem: PropTypes.instanceOf(paper.Item), // eslint-disable-line react/no-unused-prop-types
+    hoveredItem: PropTypes.instanceOf(paper.Item),
     isSelectModeActive: PropTypes.bool.isRequired,
-    onUpdateSvg: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
-    setHoveredItem: PropTypes.func.isRequired // eslint-disable-line react/no-unused-prop-types
+    onUpdateSvg: PropTypes.func.isRequired,
+    setHoveredItem: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({

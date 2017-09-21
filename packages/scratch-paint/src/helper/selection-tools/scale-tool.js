@@ -1,7 +1,10 @@
 import paper from 'paper';
 
 class ScaleTool {
-    constructor () {
+    /**
+     * @param {!function} onUpdateSvg A callback to call when the image visibly changes
+     */
+    constructor (onUpdateSvg) {
         this.pivot = null;
         this.origPivot = null;
         this.corner = null;
@@ -14,6 +17,7 @@ class ScaleTool {
         this.scaleItems = [];
         this.boundsScaleHandles = [];
         this.boundsRotHandles = [];
+        this.onUpdateSvg = onUpdateSvg;
     }
 
     /**
@@ -113,7 +117,7 @@ class ScaleTool {
             }
         }
     }
-    onMouseUp (event) {
+    onMouseUp () {
         this.pivot = null;
         this.origPivot = null;
         this.corner = null;
@@ -150,7 +154,7 @@ class ScaleTool {
         this.itemGroup.remove();
         
         // @todo add back undo
-        // pg.undo.snapshot('scaleSelection');
+        this.onUpdateSvg();
     }
     getRectCornerNameByIndex (index) {
         switch (index) {
