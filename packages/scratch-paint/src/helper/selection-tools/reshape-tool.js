@@ -19,13 +19,30 @@ const ReshapeModes = keyMirror({
     SELECTION_BOX: null
 });
 
+/**
+ * paper.Tool to handle reshape mode, which allows manipulation of control points and
+ * handles of path items. Can be used to select items within groups and points within items.
+ * Reshape is made up of 4 tools:
+ * - Selection box tool, which is activated by clicking an empty area. Draws a box and selects
+ *   points and curves inside it
+ * - Move tool, which translates items
+ * - Point tool, which translates, adds and removes points
+ * - Handle tool, which translates handles, changing the shape of curves
+ */
 class ReshapeTool extends paper.Tool {
+    /** Distance within which mouse is considered to be hitting an item */
     static get TOLERANCE () {
         return 8;
     }
+    /** Clicks registered within this amount of time are registered as double clicks */
     static get DOUBLE_CLICK_MILLIS () {
         return 250;
     }
+    /**
+     * @param {function} setHoveredItem Callback to set the hovered item
+     * @param {function} clearHoveredItem Callback to clear the hovered item
+     * @param {!function} onUpdateSvg A callback to call when the image visibly changes
+     */
     constructor (setHoveredItem, clearHoveredItem, onUpdateSvg) {
         super();
         this.setHoveredItem = setHoveredItem;
@@ -50,6 +67,12 @@ class ReshapeTool extends paper.Tool {
 
         paper.settings.handleSize = 8;
     }
+    /**
+     * Returns the hit options to use when conducting hit tests.
+     * @param {boolean} preselectedOnly True if we should only return results that are already
+     *     selected.
+     * @return {object} See paper.Item.hitTest for definition of options
+     */
     getHitOptions (preselectedOnly) {
         const hitOptions = {
             segments: true,
@@ -86,6 +109,13 @@ class ReshapeTool extends paper.Tool {
         }
         return hitOptions;
     }
+    /**
+     * To be called when the hovered item changes. When the select tool hovers over a
+     * new item, it compares against this to see if a hover item change event needs to
+     * be fired.
+     * @param {paper.Item} prevHoveredItemId ID of the highlight item that indicates the mouse is
+     *     over a given item currently
+     */
     setPrevHoveredItemId (prevHoveredItemId) {
         this.prevHoveredItemId = prevHoveredItemId;
     }
@@ -104,7 +134,7 @@ class ReshapeTool extends paper.Tool {
         }
         this.lastEvent = event;
 
-        // Choose hit result ===========================================================
+        // Choose hit result to use ===========================================================
         // Prefer hits on already selected items
         let hitResults =
             paper.project.hitTestAll(event.point, this.getHitOptions(true /* preselectedOnly */));

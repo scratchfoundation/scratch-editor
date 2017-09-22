@@ -1,5 +1,6 @@
 import {clearSelection, getSelectedItems} from '../selection';
 
+/** Sub tool of the Reshape tool for moving handles, which adjust bezier curves. */
 class HandleTool {
     /**
      * @param {!function} onUpdateSvg A callback to call when the image visibly changes
