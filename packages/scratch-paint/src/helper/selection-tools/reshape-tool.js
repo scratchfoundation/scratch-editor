@@ -57,7 +57,8 @@ class ReshapeTool extends paper.Tool {
             curves: true,
             handles: true,
             fill: true,
-            guide: false
+            guide: false,
+            tolerance: ReshapeTool.TOLERANCE / paper.view.zoom
         };
         if (preselectedOnly) {
             hitOptions.match = item => {
