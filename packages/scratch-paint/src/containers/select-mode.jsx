@@ -9,7 +9,6 @@ import {setHoveredItem, clearHoveredItem} from '../reducers/hover';
 
 import SelectTool from '../helper/selection-tools/select-tool';
 import SelectModeComponent from '../components/select-mode.jsx';
-import paper from 'paper';
 
 class SelectMode extends React.Component {
     constructor (props) {
@@ -25,8 +24,8 @@ class SelectMode extends React.Component {
         }
     }
     componentWillReceiveProps (nextProps) {
-        if (this.tool && nextProps.hoveredItem !== this.props.hoveredItem) {
-            this.tool.setPrevHoveredItem(nextProps.hoveredItem);
+        if (this.tool && nextProps.hoveredItemId !== this.props.hoveredItemId) {
+            this.tool.setPrevHoveredItemId(nextProps.hoveredItemId);
         }
 
         if (nextProps.isSelectModeActive && !this.props.isSelectModeActive) {
@@ -57,7 +56,7 @@ class SelectMode extends React.Component {
 SelectMode.propTypes = {
     clearHoveredItem: PropTypes.func.isRequired,
     handleMouseDown: PropTypes.func.isRequired,
-    hoveredItem: PropTypes.instanceOf(paper.Item),
+    hoveredItemId: PropTypes.number,
     isSelectModeActive: PropTypes.bool.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
     setHoveredItem: PropTypes.func.isRequired
@@ -65,11 +64,11 @@ SelectMode.propTypes = {
 
 const mapStateToProps = state => ({
     isSelectModeActive: state.scratchPaint.mode === Modes.SELECT,
-    hoveredItem: state.scratchPaint.hoveredItem
+    hoveredItemId: state.scratchPaint.hoveredItemId
 });
 const mapDispatchToProps = dispatch => ({
-    setHoveredItem: hoveredItem => {
-        dispatch(setHoveredItem(hoveredItem));
+    setHoveredItem: hoveredItemId => {
+        dispatch(setHoveredItem(hoveredItemId));
     },
     clearHoveredItem: () => {
         dispatch(clearHoveredItem());

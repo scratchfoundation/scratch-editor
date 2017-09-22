@@ -1,4 +1,3 @@
-import paper from 'paper';
 import log from '../log/log';
 
 const CHANGE_HOVERED = 'scratch-paint/hover/CHANGE_HOVERED';
@@ -8,29 +7,36 @@ const reducer = function (state, action) {
     if (typeof state === 'undefined') state = initialState;
     switch (action.type) {
     case CHANGE_HOVERED:
-        if (typeof action.hoveredItem === 'undefined' ||
-                (action.hoveredItem !== null && !(action.hoveredItem instanceof paper.Item))) {
+        if (typeof action.hoveredItemId === 'undefined') {
             log.warn(`Hovered item should not be set to undefined. Use null.`);
             return state;
+        } else if (typeof action.hoveredItemId === 'undefined' || isNaN(action.hoveredItemId)) {
+            log.warn(`Hovered item should be an item ID number. Got: ${action.hoveredItemId}`);
+            return state;
         }
-        return action.hoveredItem;
+        return action.hoveredItemId;
     default:
         return state;
     }
 };
 
 // Action creators ==================================
-const setHoveredItem = function (hoveredItem) {
+/**
+ * Set the hovered item state to the given item ID
+ * @param {number} hoveredItemId The paper.Item ID of the hover indicator item.
+ * @return {object} Redux action to change the hovered item.
+ */
+const setHoveredItem = function (hoveredItemId) {
     return {
         type: CHANGE_HOVERED,
-        hoveredItem: hoveredItem
+        hoveredItemId: hoveredItemId
     };
 };
 
 const clearHoveredItem = function () {
     return {
         type: CHANGE_HOVERED,
-        hoveredItem: null
+        hoveredItemId: null
     };
 };
 

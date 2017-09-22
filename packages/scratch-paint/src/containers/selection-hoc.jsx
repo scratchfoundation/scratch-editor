@@ -1,29 +1,43 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
+import bindAll from 'lodash.bindall';
 import paper from 'paper';
 
 const SelectionHOC = function (WrappedComponent) {
     class SelectionComponent extends React.Component {
+        constructor (props) {
+            super(props);
+            bindAll(this, [
+                'removeItemById'
+            ]);
+        }
         componentDidMount () {
-            if (this.props.hoveredItem) {
+            if (this.props.hoveredItemId) {
                 paper.view.update();
             }
         }
         componentDidUpdate (prevProps) {
-            if (this.props.hoveredItem && this.props.hoveredItem !== prevProps.hoveredItem) {
-                // A hover item has been added. Update the view
-                if (prevProps.hoveredItem) {
-                    prevProps.hoveredItem.remove();
+            // Hovered item has changed
+            if ((this.props.hoveredItemId && this.props.hoveredItemId !== prevProps.hoveredItemId) ||
+                    (!this.props.hoveredItemId && prevProps.hoveredItemId)) {
+                // Remove the old hover item if any
+                this.removeItemById(prevProps.hoveredItemId);
+            }
+        }
+        removeItemById (itemId) {
+            if (itemId) {
+                const match = paper.project.getItem({
+                    match: item => (item.id === itemId)
+                });
+                if (match) {
+                    match.remove();
                 }
-            } else if (!this.props.hoveredItem && prevProps.hoveredItem) {
-                // Remove the hover item
-                prevProps.hoveredItem.remove();
             }
         }
         render () {
             const {
-                hoveredItem, // eslint-disable-line no-unused-vars
+                hoveredItemId, // eslint-disable-line no-unused-vars
                 ...props
             } = this.props;
             return (
@@ -32,11 +46,11 @@ const SelectionHOC = function (WrappedComponent) {
         }
     }
     SelectionComponent.propTypes = {
-        hoveredItem: PropTypes.instanceOf(paper.Item)
+        hoveredItemId: PropTypes.number
     };
 
     const mapStateToProps = state => ({
-        hoveredItem: state.scratchPaint.hoveredItem
+        hoveredItemId: state.scratchPaint.hoveredItemId
     });
     return connect(
         mapStateToProps

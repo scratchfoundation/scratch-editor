@@ -47,11 +47,11 @@ class SelectTool extends paper.Tool {
      * To be called when the hovered item changes. When the select tool hovers over a
      * new item, it compares against this to see if a hover item change event needs to
      * be fired.
-     * @param {paper.Item} prevHoveredItem The highlight that indicates the mouse is over
-     *     a given item currently
+     * @param {paper.Item} prevHoveredItemId ID of the highlight item that indicates the mouse is
+     *     over a given item currently
      */
-    setPrevHoveredItem (prevHoveredItem) {
-        this.prevHoveredItem = prevHoveredItem;
+    setPrevHoveredItemId (prevHoveredItemId) {
+        this.prevHoveredItemId = prevHoveredItemId;
     }
     /**
      * Returns the hit options to use when conducting hit tests.
@@ -92,11 +92,11 @@ class SelectTool extends paper.Tool {
     }
     handleMouseMove (event) {
         const hoveredItem = getHoveredItem(event, this.getHitOptions());
-        if ((!hoveredItem && this.prevHoveredItem) || // There is no longer a hovered item
-                (hoveredItem && !this.prevHoveredItem) || // There is now a hovered item
-                (hoveredItem && this.prevHoveredItem &&
-                    hoveredItem.id !== this.prevHoveredItem.id)) { // hovered item changed
-            this.setHoveredItem(hoveredItem);
+        if ((!hoveredItem && this.prevHoveredItemId) || // There is no longer a hovered item
+                (hoveredItem && !this.prevHoveredItemId) || // There is now a hovered item
+                (hoveredItem && this.prevHoveredItemId &&
+                    hoveredItem.id !== this.prevHoveredItemId)) { // hovered item changed
+            this.setHoveredItem(hoveredItem ? hoveredItem.id : null);
         }
     }
     handleMouseDrag (event) {

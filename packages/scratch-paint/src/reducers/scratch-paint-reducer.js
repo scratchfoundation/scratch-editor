@@ -10,5 +10,5 @@ export default combineReducers({
     brushMode: brushModeReducer,
     eraserMode: eraserModeReducer,
     color: colorReducer,
-    hoveredItem: hoverReducer
+    hoveredItemId: hoverReducer
 });
