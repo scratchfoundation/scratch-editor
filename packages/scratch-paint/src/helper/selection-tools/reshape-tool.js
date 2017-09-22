@@ -32,43 +32,6 @@ class ReshapeTool extends paper.Tool {
         this.clearHoveredItem = clearHoveredItem;
         this.onUpdateSvg = onUpdateSvg;
         this.prevHoveredItem = null;
-        this._hitOptionsSelected = {
-            match: function (item) {
-                if (!item.item || !item.item.selected) return;
-                if (item.type === 'handle-out' || item.type === 'handle-in') {
-                    // Only hit test against handles that are visible, that is,
-                    // their segment is selected
-                    if (!item.segment.selected) {
-                        return false;
-                    }
-                }
-                return true;
-            },
-            segments: true,
-            stroke: true,
-            curves: true,
-            handles: true,
-            fill: true,
-            guide: false
-        };
-        this._hitOptions = {
-            match: function (item) {
-                if (item.type === 'handle-out' || item.type === 'handle-in') {
-                    // Only hit test against handles that are visible, that is,
-                    // their segment is selected
-                    if (!item.segment.selected) {
-                        return false;
-                    }
-                }
-                return true;
-            },
-            segments: true,
-            stroke: true,
-            curves: true,
-            handles: true,
-            fill: true,
-            guide: false
-        };
         this.lastEvent = null;
         this.mode = ReshapeModes.SELECTION_BOX;
         this.selectionRect = null;
@@ -89,9 +52,39 @@ class ReshapeTool extends paper.Tool {
         paper.settings.handleSize = 8;
     }
     getHitOptions (preselectedOnly) {
-        this._hitOptions.tolerance = ReshapeTool.TOLERANCE / paper.view.zoom;
-        this._hitOptionsSelected.tolerance = ReshapeTool.TOLERANCE / paper.view.zoom;
-        return preselectedOnly ? this._hitOptionsSelected : this._hitOptions;
+        const hitOptions = {
+            segments: true,
+            stroke: true,
+            curves: true,
+            handles: true,
+            fill: true,
+            guide: false
+        };
+        if (preselectedOnly) {
+            hitOptions.match = item => {
+                if (!item.item || !item.item.selected) return;
+                if (item.type === 'handle-out' || item.type === 'handle-in') {
+                    // Only hit test against handles that are visible, that is,
+                    // their segment is selected
+                    if (!item.segment.selected) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+        } else {
+            hitOptions.match = item => {
+                if (item.type === 'handle-out' || item.type === 'handle-in') {
+                    // Only hit test against handles that are visible, that is,
+                    // their segment is selected
+                    if (!item.segment.selected) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+        }
+        return hitOptions;
     }
     setPrevHoveredItem (prevHoveredItem) {
         this.prevHoveredItem = prevHoveredItem;
