@@ -50,9 +50,12 @@ class Blobbiness {
      * @param {?number} options.strokeWidth Width of the brush outline.
      */
     setOptions (options) {
-        const oldFillColor = this.options ? this.options.fillColor : null;
+        const oldFillColor = this.options ? this.options.fillColor : 'black';
         const oldStrokeColor = this.options ? this.options.strokeColor : null;
         const oldStrokeWidth = this.options ? this.options.strokeWidth : null;
+        // If values are mixed, it means the color was set by a selection contained multiple values.
+        // In this case keep drawing with the previous values if any. (For stroke width, null indicates)
+        // mixed, because stroke width is required to be a number)
         this.options = {
             ...options,
             fillColor: options.fillColor === MIXED ? oldFillColor : options.fillColor,
@@ -163,8 +166,8 @@ class Blobbiness {
 
         if (this.cursorPreview &&
                 this.brushSize === this.options.brushSize &&
-                (this.options.fillColor === MIXED || this.fillColor === this.options.fillColor) &&
-                (this.options.strokeColor === MIXED || this.strokeColor === this.options.strokeColor)) {
+                this.fillColor === this.options.fillColor &&
+                this.strokeColor === this.options.strokeColor) {
             return;
         }
         const newPreview = new paper.Path.Circle({
@@ -175,12 +178,8 @@ class Blobbiness {
             this.cursorPreview.remove();
         }
         this.brushSize = this.options.brushSize;
-        if (this.options.fillColor !== MIXED) {
-            this.fillColor = this.options.fillColor;
-        }
-        if (this.options.strokeColor !== MIXED) {
-            this.strokeColor = this.options.strokeColor;
-        }
+        this.fillColor = this.options.fillColor;
+        this.strokeColor = this.options.strokeColor;
         this.cursorPreview = newPreview;
         styleCursorPreview(this.cursorPreview, this.options);
     }
