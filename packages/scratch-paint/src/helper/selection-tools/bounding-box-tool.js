@@ -1,7 +1,7 @@
 import paper from 'paper';
 import keyMirror from 'keymirror';
 
-import {clearSelection, getSelectedItems} from '../selection';
+import {getSelectedItems} from '../selection';
 import {getGuideColor, removeHelperItems} from '../guides';
 import {getGuideLayer} from '../layer';
 
@@ -37,8 +37,6 @@ class BoundingBoxTool {
      * @param {!function} onUpdateSvg A callback to call when the image visibly changes
      */
     constructor (setSelectedItems, clearSelectedItems, onUpdateSvg) {
-        this.setSelectedItems = setSelectedItems;
-        this.clearSelectedItems = clearSelectedItems;
         this.onUpdateSvg = onUpdateSvg;
         this.mode = null;
         this.boundsPath = null;

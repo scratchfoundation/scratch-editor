@@ -57,7 +57,8 @@ class ReshapeTool extends paper.Tool {
         this._modeMap[ReshapeModes.FILL] = new MoveTool(setSelectedItems, clearSelectedItems, onUpdateSvg);
         this._modeMap[ReshapeModes.POINT] = new PointTool(setSelectedItems, clearSelectedItems, onUpdateSvg);
         this._modeMap[ReshapeModes.HANDLE] = new HandleTool(setSelectedItems, clearSelectedItems, onUpdateSvg);
-        this._modeMap[ReshapeModes.SELECTION_BOX] = new SelectionBoxTool(Modes.RESHAPE, setSelectedItems, clearSelectedItems);
+        this._modeMap[ReshapeModes.SELECTION_BOX] =
+            new SelectionBoxTool(Modes.RESHAPE, setSelectedItems, clearSelectedItems);
 
         // We have to set these functions instead of just declaring them because
         // paper.js tools hook up the listeners in the setter functions.

@@ -23,7 +23,8 @@ const FillColorIndicatorComponent = props => (
         <Label text={props.intl.formatMessage(messages.fill)}>
             <BufferedInput
                 type="text"
-                value={props.fillColor === MIXED ? 'mixed' : props.fillColor === null ? 'transparent' : props.fillColor} // @todo Don't use text to indicate mixed
+                value={props.fillColor === MIXED ? 'mixed' :
+                    props.fillColor === null ? 'transparent' : props.fillColor} // @todo Don't use text
                 onSubmit={props.onChangeFillColor}
             />
         </Label>

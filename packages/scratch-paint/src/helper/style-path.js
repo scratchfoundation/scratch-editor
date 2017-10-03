@@ -160,7 +160,7 @@ const getColorsFromSelection = function () {
     return {
         fillColor: selectionFillColorString ? selectionFillColorString : null,
         strokeColor: selectionStrokeColorString ? selectionStrokeColorString : null,
-        strokeWidth: selectionStrokeWidth || (selectionStrokeWidth === null) ? selectionStrokeWidth : 0 //todo why is this 0 for arrow
+        strokeWidth: selectionStrokeWidth || (selectionStrokeWidth === null) ? selectionStrokeWidth : 0
     };
 };
 

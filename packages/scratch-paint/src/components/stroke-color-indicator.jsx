@@ -23,8 +23,9 @@ const StrokeColorIndicatorComponent = props => (
         <Label text={props.intl.formatMessage(messages.stroke)}>
             <BufferedInput
                 type="text"
-                // @todo Don't use text to indicate mixed
-                value={props.strokeColor === MIXED ? 'mixed' : props.strokeColor === null ? 'transparent' : props.strokeColor}
+                // @todo Don't use text
+                value={props.strokeColor === MIXED ? 'mixed' :
+                    props.strokeColor === null ? 'transparent' : props.strokeColor}
                 onSubmit={props.onChangeStrokeColor}
             />
         </Label>
