@@ -10,6 +10,7 @@ const PenSkin = require('./PenSkin');
 const RenderConstants = require('./RenderConstants');
 const ShaderManager = require('./ShaderManager');
 const SVGSkin = require('./SVGSkin');
+const SVGTextBubble = require('./util/svg-text-bubble');
 
 /**
  * @callback RenderWebGL#idFilterFunc
@@ -94,6 +95,8 @@ class RenderWebGL extends EventEmitter {
 
         /** @type {HTMLCanvasElement} */
         this._tempCanvas = document.createElement('canvas');
+
+        this._svgTextBubble = new SVGTextBubble();
 
         this._createGeometry();
 
@@ -229,6 +232,19 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Create a new SVG skin using the text bubble svg creator. The rotation center
+     * is always placed at the top left.
+     * @param {!string} type - either "say" or "think".
+     * @param {!string} text - the text for the bubble.
+     * @param {!boolean} pointsLeft - which side the bubble is pointing.
+     * @returns {!int} the ID for the new skin.
+     */
+    createTextSkin (type, text, pointsLeft) {
+        const bubbleSvg = this._svgTextBubble.toString(type, text, pointsLeft);
+        return this.createSVGSkin(bubbleSvg, [0, 0]);
+    }
+
+    /**
      * Update an existing SVG skin, or create an SVG skin if the previous skin was not SVG.
      * @param {!int} skinId the ID for the skin to change.
      * @param {!string} svgData - new SVG to use.
@@ -254,6 +270,19 @@ class RenderWebGL extends EventEmitter {
         }
         oldSkin.dispose();
     }
+
+    /**
+     * Update a skin using the text bubble svg creator.
+     * @param {!int} skinId the ID for the skin to change.
+     * @param {!string} type - either "say" or "think".
+     * @param {!string} text - the text for the bubble.
+     * @param {!boolean} pointsLeft - which side the bubble is pointing.
+     */
+    updateTextSkin (skinId, type, text, pointsLeft) {
+        const bubbleSvg = this._svgTextBubble.toString(type, text, pointsLeft);
+        this.updateSVGSkin(skinId, bubbleSvg, [0, 0]);
+    }
+
 
     /**
      * Destroy an existing skin. Do not use the skin or its ID after calling this.
