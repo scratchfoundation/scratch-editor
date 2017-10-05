@@ -4,7 +4,6 @@ import Modes from '../modes/modes';
 import {getItemsGroup, isGroup} from './group';
 import {getRootItem, isCompoundPathItem, isBoundsItem, isPathItem, isPGTextItem} from './item';
 import {getItemsCompoundPath, isCompoundPath, isCompoundPathChild} from './compound-path';
-import {performSnapshot} from './undo';
 
 /**
  * @param {boolean} includeGuides True if guide layer items like the bounding box should
@@ -166,7 +165,7 @@ const getSelectedLeafItems = function () {
     return items;
 };
 
-const _deleteItemSelection = function (items, undoSnapshot) {
+const _deleteItemSelection = function (items, onUpdateSvg) {
     for (let i = 0; i < items.length; i++) {
         items[i].remove();
     }
@@ -174,11 +173,11 @@ const _deleteItemSelection = function (items, undoSnapshot) {
     // @todo: Update toolbar state on change
     if (items.lenth > 0) {
         paper.project.view.update();
-        performSnapshot(undoSnapshot);
+        onUpdateSvg();
     }
 };
 
-const _removeSelectedSegments = function (items, undoSnapshot) {
+const _removeSelectedSegments = function (items, onUpdateSvg) {
     performSnapshot(undoSnapshot);
     const segmentsToRemove = [];
     
@@ -200,32 +199,32 @@ const _removeSelectedSegments = function (items, undoSnapshot) {
     }
     if (removedSegments) {
         paper.project.view.update();
-        performSnapshot(undoSnapshot);
+        onUpdateSvg();
     }
     return removedSegments;
 };
 
-const deleteSelection = function (mode, undoSnapshot) {
+const deleteSelection = function (mode, onUpdateSvg) {
     if (mode === Modes.RESHAPE) {
         const selectedItems = getSelectedLeafItems();
         // If there are points selected remove them. If not delete the item selected.
-        if (!_removeSelectedSegments(selectedItems, undoSnapshot)) {
-            _deleteItemSelection(selectedItems, undoSnapshot);
+        if (!_removeSelectedSegments(selectedItems, onUpdateSvg)) {
+            _deleteItemSelection(selectedItems, onUpdateSvg);
         }
     } else {
         const selectedItems = getSelectedRootItems();
-        _deleteItemSelection(selectedItems, undoSnapshot);
+        _deleteItemSelection(selectedItems, onUpdateSvg);
     }
 };
 
-const cloneSelection = function (recursive, undoSnapshot) {
+const cloneSelection = function (recursive, onUpdateSvg) {
     const selectedItems = recursive ? getSelectedLeafItems() : getSelectedRootItems();
     for (let i = 0; i < selectedItems.length; i++) {
         const item = selectedItems[i];
         item.clone();
         item.selected = false;
     }
-    performSnapshot(undoSnapshot);
+    onUpdateSvg();
 };
 
 const _checkBoundsItem = function (selectionRect, item, event) {

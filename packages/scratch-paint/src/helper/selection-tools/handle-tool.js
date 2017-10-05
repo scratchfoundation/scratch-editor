@@ -1,5 +1,4 @@
 import {clearSelection, getSelectedLeafItems} from '../selection';
-import {performSnapshot} from '../undo';
 
 /** Sub tool of the Reshape tool for moving handles, which adjust bezier curves. */
 class HandleTool {
@@ -8,12 +7,11 @@ class HandleTool {
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      * @param {!function} onUpdateSvg A callback to call when the image visibly changes
      */
-    constructor (setSelectedItems, clearSelectedItems, onUpdateSvg, undoSnapshot) {
+    constructor (setSelectedItems, clearSelectedItems, onUpdateSvg) {
         this.hitType = null;
         this.setSelectedItems = setSelectedItems;
         this.clearSelectedItems = clearSelectedItems;
         this.onUpdateSvg = onUpdateSvg;
-        this.undoSnapshot = undoSnapshot;
         this.selectedItems = [];
     }
     /**
@@ -83,7 +81,6 @@ class HandleTool {
             }
         }
         if (moved) {
-            performSnapshot(this.undoSnapshot);
             this.onUpdateSvg();
         }
         this.selectedItems = [];

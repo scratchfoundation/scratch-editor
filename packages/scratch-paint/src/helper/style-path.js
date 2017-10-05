@@ -1,46 +1,63 @@
+import paper from 'paper';
 import {getSelectedLeafItems} from './selection';
 import {isPGTextItem, isPointTextItem} from './item';
 import {isGroup} from './group';
-import {performSnapshot} from './undo';
 
 const MIXED = 'scratch-paint/style-path/mixed';
 
 /**
  * Called when setting fill color
  * @param {string} colorString New color, css format
+ * @param {!function} onUpdateSvg A callback to call when the image visibly changes
  */
-const applyFillColorToSelection = function (colorString, undoSnapshot) {
+const applyFillColorToSelection = function (colorString, onUpdateSvg) {
     const items = getSelectedLeafItems();
+    let changed = false;
     for (const item of items) {
         if (isPGTextItem(item)) {
             for (const child of item.children) {
                 if (child.children) {
                     for (const path of child.children) {
                         if (!path.data.isPGGlyphRect) {
-                            path.fillColor = colorString;
+                            if ((path.fillColor === null && colorString) ||
+                                    path.fillColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+                                changed = true;
+                                path.fillColor = colorString;
+                            }
                         }
                     }
                 } else if (!child.data.isPGGlyphRect) {
-                    child.fillColor = colorString;
+                    if ((child.fillColor === null && colorString) ||
+                            child.fillColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+                        changed = true;
+                        child.fillColor = colorString;
+                    }
                 }
             }
         } else {
             if (isPointTextItem(item) && !colorString) {
                 colorString = 'rgba(0,0,0,0)';
             }
-            item.fillColor = colorString;
+            if ((item.fillColor === null && colorString) ||
+                    item.fillColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+                changed = true;
+                item.fillColor = colorString;
+            }
         }
     }
-    performSnapshot(undoSnapshot);
+    if (changed) {
+        onUpdateSvg();
+    }
 };
 
 /**
  * Called when setting stroke color
  * @param {string} colorString New color, css format
+ * @param {!function} onUpdateSvg A callback to call when the image visibly changes
  */
-const applyStrokeColorToSelection = function (colorString, undoSnapshot) {
+const applyStrokeColorToSelection = function (colorString, onUpdateSvg) {
     const items = getSelectedLeafItems();
-
+    let changed = false;
     for (const item of items) {
         if (isPGTextItem(item)) {
             if (item.children) {
@@ -48,37 +65,53 @@ const applyStrokeColorToSelection = function (colorString, undoSnapshot) {
                     if (child.children) {
                         for (const path of child.children) {
                             if (!path.data.isPGGlyphRect) {
-                                path.strokeColor = colorString;
+                                if ((path.strokeColor === null && colorString) ||
+                                        path.strokeColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+                                    changed = true;
+                                    path.strokeColor = colorString;
+                                }
                             }
                         }
                     } else if (!child.data.isPGGlyphRect) {
-                        child.strokeColor = colorString;
+                        if (child.strokeColor !== colorString) {
+                            changed = true;
+                            child.strokeColor = colorString;
+                        }
                     }
                 }
             } else if (!item.data.isPGGlyphRect) {
-                item.strokeColor = colorString;
+                if ((item.strokeColor === null && colorString) ||
+                        item.strokeColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+                    changed = true;
+                    item.strokeColor = colorString;
+                }
             }
-        } else {
+        } else if ((item.strokeColor === null && colorString) ||
+                    item.strokeColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+            changed = true;
             item.strokeColor = colorString;
         }
     }
-    performSnapshot(undoSnapshot);
+    if (changed) {
+        onUpdateSvg();
+    }
 };
 
 /**
  * Called when setting stroke width
  * @param {number} value New stroke width
+ * @param {!function} onUpdateSvg A callback to call when the image visibly changes
  */
-const applyStrokeWidthToSelection = function (value, undoSnapshot) {
+const applyStrokeWidthToSelection = function (value, onUpdateSvg) {
     const items = getSelectedLeafItems();
     for (const item of items) {
         if (isGroup(item)) {
             continue;
-        } else {
+        } else if (item.strokeWidth !== value) {
             item.strokeWidth = value;
+            onUpdateSvg();
         }
     }
-    performSnapshot(undoSnapshot);
 };
 
 /**
@@ -168,13 +201,11 @@ const getColorsFromSelection = function (selectedItems) {
 const stylePath = function (path, options) {
     if (options.isEraser) {
         path.fillColor = 'white';
+    } else if (options.fillColor) {
+        path.fillColor = options.fillColor;
     } else {
-        if (options.fillColor) {
-            path.fillColor = options.fillColor;
-        } else {
-            // Make sure something visible is drawn
-            path.fillColor = 'black';
-        }   
+        // Make sure something visible is drawn
+        path.fillColor = 'black';
     }
 };
 
@@ -183,13 +214,11 @@ const styleCursorPreview = function (path, options) {
         path.fillColor = 'white';
         path.strokeColor = 'cornflowerblue';
         path.strokeWidth = 1;
+    } else if (options.fillColor) {
+        path.fillColor = options.fillColor;
     } else {
-        if (options.fillColor) {
-            path.fillColor = options.fillColor;
-        } else {
-            // Make sure something visible is drawn
-            path.fillColor = 'black';
-        }
+        // Make sure something visible is drawn
+        path.fillColor = 'black';
     }
 };
 

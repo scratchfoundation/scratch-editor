@@ -36,16 +36,16 @@ class BoundingBoxTool {
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      * @param {!function} onUpdateSvg A callback to call when the image visibly changes
      */
-    constructor (setSelectedItems, clearSelectedItems, onUpdateSvg, undoSnapshot) {
+    constructor (setSelectedItems, clearSelectedItems, onUpdateSvg) {
         this.onUpdateSvg = onUpdateSvg;
         this.mode = null;
         this.boundsPath = null;
         this.boundsScaleHandles = [];
         this.boundsRotHandles = [];
         this._modeMap = {};
-        this._modeMap[Modes.SCALE] = new ScaleTool(onUpdateSvg, undoSnapshot);
-        this._modeMap[Modes.ROTATE] = new RotateTool(onUpdateSvg, undoSnapshot);
-        this._modeMap[Modes.MOVE] = new MoveTool(setSelectedItems, clearSelectedItems, onUpdateSvg, undoSnapshot);
+        this._modeMap[Modes.SCALE] = new ScaleTool(onUpdateSvg);
+        this._modeMap[Modes.ROTATE] = new RotateTool(onUpdateSvg);
+        this._modeMap[Modes.MOVE] = new MoveTool(setSelectedItems, clearSelectedItems, onUpdateSvg);
     }
 
     /**

@@ -10,8 +10,6 @@ import {MIXED} from '../helper/style-path';
 import {changeMode} from '../reducers/modes';
 import {changeStrokeWidth} from '../reducers/stroke-width';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
-import {performSnapshot} from '../helper/undo';
-import {undoSnapshot} from '../reducers/undo';
 
 import LineModeComponent from '../components/line-mode.jsx';
 
@@ -210,11 +208,10 @@ class LineMode extends React.Component {
             }
             this.hitResult = null;
         }
-        this.props.onUpdateSvg();
+        
         this.props.setSelectedItems();
-
         if (this.path) {
-            performSnapshot(this.props.undoSnapshot);
+            this.props.onUpdateSvg();
         }
     }
     toleranceSquared () {
@@ -287,8 +284,7 @@ LineMode.propTypes = {
     handleMouseDown: PropTypes.func.isRequired,
     isLineModeActive: PropTypes.bool.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
-    setSelectedItems: PropTypes.func.isRequired,
-    undoSnapshot: PropTypes.func.isRequired
+    setSelectedItems: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -307,9 +303,6 @@ const mapDispatchToProps = dispatch => ({
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.LINE));
-    },
-    undoSnapshot: snapshot => {
-        dispatch(undoSnapshot(snapshot));
     }
 });
 

@@ -8,7 +8,6 @@ import {changeMode} from '../reducers/modes';
 import {clearHoveredItem, setHoveredItem} from '../reducers/hover';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 import {getSelectedLeafItems} from '../helper/selection';
-import {undoSnapshot} from '../reducers/undo';
 
 import ReshapeTool from '../helper/selection-tools/reshape-tool';
 import ReshapeModeComponent from '../components/reshape-mode.jsx';
@@ -46,8 +45,7 @@ class ReshapeMode extends React.Component {
             this.props.clearHoveredItem,
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
-            this.props.onUpdateSvg,
-            this.props.undoSnapshot
+            this.props.onUpdateSvg
         );
         this.tool.setPrevHoveredItemId(this.props.hoveredItemId);
         this.tool.activate();
@@ -73,8 +71,7 @@ ReshapeMode.propTypes = {
     isReshapeModeActive: PropTypes.bool.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
     setHoveredItem: PropTypes.func.isRequired,
-    setSelectedItems: PropTypes.func.isRequired,
-    undoSnapshot: PropTypes.func.isRequired
+    setSelectedItems: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -96,9 +93,6 @@ const mapDispatchToProps = dispatch => ({
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.RESHAPE));
-    },
-    undoSnapshot: snapshot => {
-        dispatch(undoSnapshot(snapshot));
     }
 });
 

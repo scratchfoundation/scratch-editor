@@ -1,5 +1,4 @@
 import paper from 'paper';
-import {performSnapshot} from '../undo';
 
 /**
  * Tool to handle scaling items by pulling on the handles around the edges of the bounding
@@ -9,7 +8,7 @@ class ScaleTool {
     /**
      * @param {!function} onUpdateSvg A callback to call when the image visibly changes
      */
-    constructor (onUpdateSvg, undoSnapshot) {
+    constructor (onUpdateSvg) {
         this.pivot = null;
         this.origPivot = null;
         this.corner = null;
@@ -23,7 +22,6 @@ class ScaleTool {
         this.boundsScaleHandles = [];
         this.boundsRotHandles = [];
         this.onUpdateSvg = onUpdateSvg;
-        this.undoSnapshot = undoSnapshot;
     }
 
     /**
@@ -159,7 +157,6 @@ class ScaleTool {
         }
         this.itemGroup.remove();
         
-        performSnapshot(this.undoSnapshot);
         this.onUpdateSvg();
     }
     _getRectCornerNameByIndex (index) {

@@ -3,10 +3,10 @@ import React from 'react';
 import PaintEditorComponent from '../components/paint-editor.jsx';
 
 import {changeMode} from '../reducers/modes';
-import {undo, redo} from '../reducers/undo';
+import {undo, redo, undoSnapshot} from '../reducers/undo';
 
 import {getGuideLayer} from '../helper/layer';
-import {performUndo, performRedo} from '../helper/undo';
+import {performUndo, performRedo, performSnapshot} from '../helper/undo';
 
 import Modes from '../modes/modes';
 import {connect} from 'react-redux';
@@ -39,6 +39,7 @@ class PaintEditor extends React.Component {
             }),
             paper.project.view.center.x - bounds.x,
             paper.project.view.center.y - bounds.y);
+        performSnapshot(this.props.undoSnapshot);
         getGuideLayer().visible = true;
     }
     handleUndo () {
@@ -69,6 +70,7 @@ PaintEditor.propTypes = {
     rotationCenterX: PropTypes.number,
     rotationCenterY: PropTypes.number,
     svg: PropTypes.string,
+    undoSnapshot: PropTypes.func.isRequired,
     undoState: PropTypes.shape({
         stack: PropTypes.arrayOf(PropTypes.object).isRequired,
         pointer: PropTypes.number.isRequired
@@ -95,6 +97,9 @@ const mapDispatchToProps = dispatch => ({
     },
     onRedo: () => {
         dispatch(redo());
+    },
+    undoSnapshot: snapshot => {
+        dispatch(undoSnapshot(snapshot));
     }
 });
 

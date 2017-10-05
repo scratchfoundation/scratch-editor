@@ -7,7 +7,6 @@ import Modes from '../modes/modes';
 import {changeMode} from '../reducers/modes';
 import {clearHoveredItem, setHoveredItem} from '../reducers/hover';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
-import {undoSnapshot} from '../reducers/undo';
 
 import {getSelectedLeafItems} from '../helper/selection';
 import SelectTool from '../helper/selection-tools/select-tool';
@@ -46,8 +45,7 @@ class SelectMode extends React.Component {
             this.props.clearHoveredItem,
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
-            this.props.onUpdateSvg,
-            this.props.undoSnapshot
+            this.props.onUpdateSvg
         );
         this.tool.activate();
     }
@@ -71,8 +69,7 @@ SelectMode.propTypes = {
     isSelectModeActive: PropTypes.bool.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
     setHoveredItem: PropTypes.func.isRequired,
-    setSelectedItems: PropTypes.func.isRequired,
-    undoSnapshot: PropTypes.func.isRequired
+    setSelectedItems: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -94,9 +91,6 @@ const mapDispatchToProps = dispatch => ({
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.SELECT));
-    },
-    undoSnapshot: snapshot => {
-        dispatch(undoSnapshot(snapshot));
     }
 });
 

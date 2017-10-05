@@ -103,11 +103,17 @@ class PaintEditorComponent extends React.Component {
                 {/* Second Row */}
                 <div className={styles.row}>
                     {/* fill */}
-                    <FillColorIndicatorComponent />
+                    <FillColorIndicatorComponent
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
                     {/* stroke */}
-                    <StrokeColorIndicatorComponent />
+                    <StrokeColorIndicatorComponent
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
                     {/* stroke width */}
-                    <StrokeWidthIndicatorComponent />
+                    <StrokeWidthIndicatorComponent
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
 
                     <div className={styles.inputGroup}>
                         Mode tools

@@ -6,7 +6,6 @@ import Modes from '../modes/modes';
 import Blobbiness from './blob/blob';
 import {changeBrushSize} from '../reducers/eraser-mode';
 import {clearSelectedItems} from '../reducers/selected-items';
-import {undoSnapshot} from '../reducers/undo';
 import EraserModeComponent from '../components/eraser-mode.jsx';
 import {changeMode} from '../reducers/modes';
 
@@ -19,7 +18,7 @@ class EraserMode extends React.Component {
             'onScroll'
         ]);
         this.blob = new Blobbiness(
-            this.props.onUpdateSvg, this.props.clearSelectedItems, this.props.undoSnapshot);
+            this.props.onUpdateSvg, this.props.clearSelectedItems);
     }
     componentDidMount () {
         if (this.props.isEraserModeActive) {
@@ -74,8 +73,7 @@ EraserMode.propTypes = {
     }),
     handleMouseDown: PropTypes.func.isRequired,
     isEraserModeActive: PropTypes.bool.isRequired,
-    onUpdateSvg: PropTypes.func.isRequired,
-    undoSnapshot: PropTypes.func.isRequired
+    onUpdateSvg: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -91,9 +89,6 @@ const mapDispatchToProps = dispatch => ({
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.ERASER));
-    },
-    undoSnapshot: snapshot => {
-        dispatch(undoSnapshot(snapshot));
     }
 });
 

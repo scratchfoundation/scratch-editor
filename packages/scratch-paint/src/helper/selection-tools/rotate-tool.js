@@ -1,5 +1,4 @@
 import paper from 'paper';
-import {performSnapshot} from '../undo';
 
 /**
  * Tool to handle rotation when dragging the rotation handle in the bounding box tool.
@@ -8,12 +7,11 @@ class RotateTool {
     /**
      * @param {!function} onUpdateSvg A callback to call when the image visibly changes
      */
-    constructor (onUpdateSvg, undoSnapshot) {
+    constructor (onUpdateSvg) {
         this.rotItems = [];
         this.rotGroupPivot = null;
         this.prevRot = [];
         this.onUpdateSvg = onUpdateSvg;
-        this.undoSnapshot = undoSnapshot;
     }
 
     /**
@@ -65,7 +63,6 @@ class RotateTool {
         this.rotGroupPivot = null;
         this.prevRot = [];
 
-        performSnapshot(this.undoSnapshot);
         this.onUpdateSvg();
     }
 }

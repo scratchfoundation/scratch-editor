@@ -4,7 +4,6 @@ import BroadBrushHelper from './broad-brush-helper';
 import SegmentBrushHelper from './segment-brush-helper';
 import {MIXED, styleCursorPreview} from '../../helper/style-path';
 import {clearSelection} from '../../helper/selection';
-import {performSnapshot} from '../../helper/undo';
 
 /**
  * Shared code for the brush and eraser mode. Adds functions on the paper tool object
@@ -27,15 +26,14 @@ class Blobbiness {
     }
 
     /**
-     * @param {function} updateCallback call when the drawing has changed to let listeners know
+     * @param {function} onUpdateSvg call when the drawing has changed to let listeners know
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      */
-    constructor (updateCallback, clearSelectedItems, undoSnapshot) {
+    constructor (onUpdateSvg, clearSelectedItems) {
         this.broadBrushHelper = new BroadBrushHelper();
         this.segmentBrushHelper = new SegmentBrushHelper();
-        this.updateCallback = updateCallback;
+        this.onUpdateSvg = onUpdateSvg;
         this.clearSelectedItems = clearSelectedItems;
-        this.undoSnapshot = undoSnapshot;
 
         // The following are stored to check whether these have changed and the cursor preview needs to be redrawn.
         this.strokeColor = null;
@@ -145,8 +143,7 @@ class Blobbiness {
             }
 
             blob.cursorPreview.visible = false;
-            blob.updateCallback();
-            performSnapshot(blob.undoSnapshot);
+            blob.onUpdateSvg();
             blob.cursorPreview.visible = true;
             blob.cursorPreview.bringToFront();
             blob.cursorPreview.position = event.point;
