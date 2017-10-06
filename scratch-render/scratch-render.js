@@ -21852,6 +21852,37 @@ var SvgRenderer = function () {
         }
 
         /**
+         * Find the largest stroke width in the svg. If a shape has no
+         * `stroke` property, it has a stroke-width of 0. If it has a `stroke`,
+         * it is by default a stroke-width of 1.
+         * This is used to enlarge the computed bounding box, which doesn't take
+         * stroke width into account.
+         * @param {SVGSVGElement} rootNode The root SVG node to traverse.
+         * @return {number} The largest stroke width in the SVG.
+         */
+
+    }, {
+        key: '_findLargestStrokeWidth',
+        value: function _findLargestStrokeWidth(rootNode) {
+            var largestStrokeWidth = 0;
+            var collectStrokeWidths = function collectStrokeWidths(domElement) {
+                if (domElement.getAttribute) {
+                    if (domElement.getAttribute('stroke')) {
+                        largestStrokeWidth = Math.max(largestStrokeWidth, 1);
+                    }
+                    if (domElement.getAttribute('stroke-width')) {
+                        largestStrokeWidth = Math.max(largestStrokeWidth, Number(domElement.getAttribute('stroke-width')));
+                    }
+                }
+                for (var i = 0; i < domElement.childNodes.length; i++) {
+                    collectStrokeWidths(domElement.childNodes[i]);
+                }
+            };
+            collectStrokeWidths(rootNode);
+            return largestStrokeWidth;
+        }
+
+        /**
          * Transform the measurements of the SVG.
          * In Scratch 2.0, SVGs are drawn without respect to the width,
          * height, and viewBox attribute on the tag. The exporter
@@ -21894,6 +21925,15 @@ var SvgRenderer = function () {
             var parser = new DOMParser();
             this._svgDom = parser.parseFromString(svgText, 'text/xml');
             this._svgTag = this._svgDom.documentElement;
+
+            // Enlarge the bbox from the largest found stroke width
+            // This may have false-positives, but at least the bbox will always
+            // contain the full graphic including strokes.
+            var halfStrokeWidth = this._findLargestStrokeWidth(this._svgTag) / 2;
+            bbox.width += halfStrokeWidth * 2;
+            bbox.height += halfStrokeWidth * 2;
+            bbox.x -= halfStrokeWidth;
+            bbox.y -= halfStrokeWidth;
 
             // Set the correct measurements on the SVG tag, and save them.
             this._svgTag.setAttribute('width', bbox.width);
