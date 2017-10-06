@@ -6,6 +6,7 @@ import Modes from '../modes/modes';
 import Blobbiness from './blob/blob';
 import {changeBrushSize} from '../reducers/brush-mode';
 import {changeMode} from '../reducers/modes';
+import {clearSelection} from '../helper/selection';
 import BrushModeComponent from '../components/brush-mode.jsx';
 
 class BrushMode extends React.Component {
@@ -42,7 +43,7 @@ class BrushMode extends React.Component {
     activateTool () {
         // TODO: Instead of clearing selection, consider a kind of "draw inside"
         // analogous to how selection works with eraser
-        // pg.selection.clearSelection();
+        clearSelection();
 
         // TODO: This is temporary until a component that provides the brush size is hooked up
         this.props.canvas.addEventListener('mousewheel', this.onScroll);

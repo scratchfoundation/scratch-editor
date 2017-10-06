@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import bindAll from 'lodash.bindall';
 import Modes from '../modes/modes';
 import {changeStrokeWidth} from '../reducers/stroke-width';
+import {clearSelection} from '../helper/selection';
 import LineModeComponent from '../components/line-mode.jsx';
 import {changeMode} from '../reducers/modes';
 import paper from 'paper';
@@ -42,8 +43,7 @@ class LineMode extends React.Component {
         return false; // Static component, for now
     }
     activateTool () {
-        // TODO add back selection
-        // pg.selection.clearSelection();
+        clearSelection();
         this.props.canvas.addEventListener('mousewheel', this.onScroll);
         this.tool = new paper.Tool();
         

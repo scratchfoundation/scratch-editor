@@ -3,6 +3,7 @@ import React from 'react';
 import PaperCanvas from '../containers/paper-canvas.jsx';
 import BrushMode from '../containers/brush-mode.jsx';
 import EraserMode from '../containers/eraser-mode.jsx';
+import SelectMode from '../containers/select-mode.jsx';
 import PropTypes from 'prop-types';
 import LineMode from '../containers/line-mode.jsx';
 import FillColorIndicatorComponent from '../containers/fill-color-indicator.jsx';
@@ -124,6 +125,9 @@ class PaintEditorComponent extends React.Component {
                             />
                             <LineMode
                                 canvas={this.state.canvas}
+                                onUpdateSvg={this.props.onUpdateSvg}
+                            />
+                            <SelectMode
                                 onUpdateSvg={this.props.onUpdateSvg}
                             />
                         </div>

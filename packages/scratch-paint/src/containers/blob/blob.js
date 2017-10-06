@@ -3,6 +3,7 @@ import log from '../../log/log';
 import BroadBrushHelper from './broad-brush-helper';
 import SegmentBrushHelper from './segment-brush-helper';
 import {styleCursorPreview} from './style-path';
+import {clearSelection} from '../../helper/selection';
 
 /**
  * Shared code for the brush and eraser mode. Adds functions on the paper tool object
@@ -232,8 +233,7 @@ class Blobbiness {
         // Eraser didn't hit anything selected, so assume they meant to erase from all instead of from subset
         // and deselect the selection
         if (items.length === 0) {
-            // TODO: Add back selection handling
-            // pg.selection.clearSelection();
+            clearSelection();
             items = paper.project.getItems({
                 match: function (item) {
                     return blob.isMergeable(lastPath, item) && blob.touches(lastPath, item);
