@@ -10,6 +10,8 @@ env:
   global:
   - NODE_ENV=production
 install:
+- apt-get update && apt-get install -y libcairo2-dev libpango1.0-dev libssl-dev libjpeg62-dev libgif-dev pkg-config
+- npm install canvas
 - npm --production=false install
 - npm --production=false update
 before_deploy:
