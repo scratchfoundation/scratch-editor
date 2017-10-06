@@ -1,0 +1,86 @@
+import PropTypes from 'prop-types';
+import React from 'react';
+import {connect} from 'react-redux';
+import bindAll from 'lodash.bindall';
+import Modes from '../modes/modes';
+
+import {changeMode} from '../reducers/modes';
+import {setHoveredItem, clearHoveredItem} from '../reducers/hover';
+
+import ReshapeTool from '../helper/selection-tools/reshape-tool';
+import ReshapeModeComponent from '../components/reshape-mode.jsx';
+
+class ReshapeMode extends React.Component {
+    constructor (props) {
+        super(props);
+        bindAll(this, [
+            'activateTool',
+            'deactivateTool'
+        ]);
+    }
+    componentDidMount () {
+        if (this.props.isReshapeModeActive) {
+            this.activateTool(this.props);
+        }
+    }
+    componentWillReceiveProps (nextProps) {
+        if (this.tool && nextProps.hoveredItemId !== this.props.hoveredItemId) {
+            this.tool.setPrevHoveredItemId(nextProps.hoveredItemId);
+        }
+
+        if (nextProps.isReshapeModeActive && !this.props.isReshapeModeActive) {
+            this.activateTool();
+        } else if (!nextProps.isReshapeModeActive && this.props.isReshapeModeActive) {
+            this.deactivateTool();
+        }
+    }
+    shouldComponentUpdate () {
+        return false; // Static component, for now
+    }
+    activateTool () {
+        this.tool = new ReshapeTool(this.props.setHoveredItem, this.props.clearHoveredItem, this.props.onUpdateSvg);
+        this.tool.setPrevHoveredItemId(this.props.hoveredItemId);
+        this.tool.activate();
+    }
+    deactivateTool () {
+        this.tool.deactivateTool();
+        this.tool.remove();
+        this.tool = null;
+        this.hitResult = null;
+    }
+    render () {
+        return (
+            <ReshapeModeComponent onMouseDown={this.props.handleMouseDown} />
+        );
+    }
+}
+
+ReshapeMode.propTypes = {
+    clearHoveredItem: PropTypes.func.isRequired,
+    handleMouseDown: PropTypes.func.isRequired,
+    hoveredItemId: PropTypes.number,
+    isReshapeModeActive: PropTypes.bool.isRequired,
+    onUpdateSvg: PropTypes.func.isRequired,
+    setHoveredItem: PropTypes.func.isRequired
+};
+
+const mapStateToProps = state => ({
+    isReshapeModeActive: state.scratchPaint.mode === Modes.RESHAPE,
+    hoveredItemId: state.scratchPaint.hoveredItemId
+});
+const mapDispatchToProps = dispatch => ({
+    setHoveredItem: hoveredItemId => {
+        dispatch(setHoveredItem(hoveredItemId));
+    },
+    clearHoveredItem: () => {
+        dispatch(clearHoveredItem());
+    },
+    handleMouseDown: () => {
+        dispatch(changeMode(Modes.RESHAPE));
+    }
+});
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(ReshapeMode);

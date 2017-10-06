@@ -2,7 +2,7 @@ import paper from 'paper';
 import Modes from '../modes/modes';
 
 import {getItemsGroup, isGroup} from './group';
-import {getRootItem, isBoundsItem, isCompoundPathItem, isPathItem, isPGTextItem} from './item';
+import {getRootItem, isCompoundPathItem, isBoundsItem, isPathItem, isPGTextItem} from './item';
 import {getItemsCompoundPath, isCompoundPath, isCompoundPathChild} from './compound-path';
 
 /**
@@ -80,7 +80,7 @@ const setItemSelection = function (item, state, fullySelected) {
     const parentGroup = getItemsGroup(item);
     const itemsCompoundPath = getItemsCompoundPath(item);
     
-    // if selection is in a group, select group not individual items
+    // if selection is in a group, select group
     if (parentGroup) {
         // do it recursive
         setItemSelection(parentGroup, state, fullySelected);
@@ -148,8 +148,8 @@ const getSelectedItems = function (recursive) {
     return itemsAndGroups;
 };
 
-const deleteItemSelection = function () {
-    const items = getSelectedItems();
+const deleteItemSelection = function (recursive) {
+    const items = getSelectedItems(recursive);
     for (let i = 0; i < items.length; i++) {
         items[i].remove();
     }
@@ -160,11 +160,11 @@ const deleteItemSelection = function () {
     // pg.undo.snapshot('deleteItemSelection');
 };
 
-const removeSelectedSegments = function () {
+const removeSelectedSegments = function (recursive) {
     // @todo add back undo
     // pg.undo.snapshot('removeSelectedSegments');
     
-    const items = getSelectedItems();
+    const items = getSelectedItems(recursive);
     const segmentsToRemove = [];
     
     for (let i = 0; i < items.length; i++) {
@@ -189,8 +189,8 @@ const removeSelectedSegments = function () {
 const deleteSelection = function (mode) {
     if (mode === Modes.RESHAPE) {
         // If there are points selected remove them. If not delete the item selected.
-        if (!removeSelectedSegments()) {
-            deleteItemSelection();
+        if (!removeSelectedSegments(true /* recursive */)) {
+            deleteItemSelection(true /* recursive */);
         }
     } else {
         deleteItemSelection();
@@ -312,8 +312,8 @@ const deleteSegmentSelection = function () {
     // pg.undo.snapshot('deleteSegmentSelection');
 };
 
-const cloneSelection = function () {
-    const selectedItems = getSelectedItems();
+const cloneSelection = function (recursive) {
+    const selectedItems = getSelectedItems(recursive);
     for (let i = 0; i < selectedItems.length; i++) {
         const item = selectedItems[i];
         item.clone();
@@ -478,7 +478,7 @@ const processRectangularSelection = function (event, rect, mode) {
  * instead. (otherwise the compound path breaks because of scale-grouping)
  */
 const selectRootItem = function () {
-    const items = getSelectedItems();
+    const items = getSelectedItems(true /* recursive */);
     for (const item of items) {
         if (isCompoundPathChild(item)) {
             const cp = getItemsCompoundPath(item);

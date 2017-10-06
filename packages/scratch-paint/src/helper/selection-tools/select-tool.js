@@ -31,6 +31,7 @@ class SelectTool extends paper.Tool {
         this.boundingBoxTool = new BoundingBoxTool(onUpdateSvg);
         this.selectionBoxTool = new SelectionBoxTool(Modes.SELECT);
         this.selectionBoxMode = false;
+        this.prevHoveredItemId = null;
         
         // We have to set these functions instead of just declaring them because
         // paper.js tools hook up the listeners in the setter functions.
@@ -123,6 +124,7 @@ class SelectTool extends paper.Tool {
         // Backspace, delete
         if (event.key === 'delete' || event.key === 'backspace') {
             deleteSelection(Modes.SELECT);
+            this.clearHoveredItem();
             this.boundingBoxTool.removeBoundsPath();
             this.onUpdateSvg();
         }
@@ -130,6 +132,11 @@ class SelectTool extends paper.Tool {
     deactivateTool () {
         this.clearHoveredItem();
         this.boundingBoxTool.removeBoundsPath();
+        this.setHoveredItem = null;
+        this.clearHoveredItem = null;
+        this.onUpdateSvg = null;
+        this.boundingBoxTool = null;
+        this.selectionBoxTool = null;
     }
 }
 

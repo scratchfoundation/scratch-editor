@@ -15,6 +15,8 @@ class PaperCanvas extends React.Component {
     }
     componentDidMount () {
         paper.setup(this.canvas);
+        // Don't show handles by default
+        paper.settings.handleSize = 0;
         if (this.props.svg) {
             this.importSvg(this.props.svg, this.props.rotationCenterX, this.props.rotationCenterY);
         }
