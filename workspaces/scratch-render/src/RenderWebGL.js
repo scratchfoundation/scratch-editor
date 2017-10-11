@@ -240,7 +240,7 @@ class RenderWebGL extends EventEmitter {
      * @returns {!int} the ID for the new skin.
      */
     createTextSkin (type, text, pointsLeft) {
-        const bubbleSvg = this._svgTextBubble.toString(type, text, pointsLeft);
+        const bubbleSvg = this._svgTextBubble.buildString(type, text, pointsLeft);
         return this.createSVGSkin(bubbleSvg, [0, 0]);
     }
 
@@ -279,7 +279,7 @@ class RenderWebGL extends EventEmitter {
      * @param {!boolean} pointsLeft - which side the bubble is pointing.
      */
     updateTextSkin (skinId, type, text, pointsLeft) {
-        const bubbleSvg = this._svgTextBubble.toString(type, text, pointsLeft);
+        const bubbleSvg = this._svgTextBubble.buildString(type, text, pointsLeft);
         this.updateSVGSkin(skinId, bubbleSvg, [0, 0]);
     }
 

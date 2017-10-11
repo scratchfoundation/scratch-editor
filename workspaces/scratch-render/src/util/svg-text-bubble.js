@@ -151,7 +151,7 @@ class SVGTextBubble {
         return `<text fill="#575E75">${this.lines.join('\n')}</text>`;
     }
 
-    toString (type, text, pointsLeft) {
+    buildString (type, text, pointsLeft) {
         this.type = type;
         this.pointsLeft = pointsLeft;
         this.lines = this.svgTextWrapper.wrapText(MAX_LINE_LENGTH, text);
