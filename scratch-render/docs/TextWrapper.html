@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>ShaderManager - Documentation</title>
+    <title>TextWrapper - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">ShaderManager</h1>
+    <h1 class="page-title">TextWrapper</h1>
     
 
     
@@ -40,8 +40,17 @@
 <header>
     
         <h2>
-        ShaderManager
+        TextWrapper
         </h2>
+        
+            <div class="class-description"><p>Utility to wrap text across several lines, respecting Unicode grapheme clusters and, when possible, Unicode line
+break opportunities.
+Reference material:</p>
+<ul>
+<li>Unicode Standard Annex #14: http://unicode.org/reports/tr14/</li>
+<li>Unicode Standard Annex #39: http://unicode.org/reports/tr29/</li>
+<li>&quot;JavaScript has a Unicode problem&quot; by Mathias Bynens: https://mathiasbynens.be/notes/javascript-unicode</li>
+</ul></div>
         
     
 </header>
@@ -52,8 +61,10 @@
         
 
     
+    <h2>Constructor</h2>
+    
 
-    <h4 class="name" id="ShaderManager"><span class="type-signature"></span>new ShaderManager<span class="signature">(gl)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="TextWrapper"><span class="type-signature"></span>new TextWrapper<span class="signature">(measurementProvider)</span><span class="type-signature"></span></h4>
 
     
 
@@ -99,6 +110,10 @@
 
 
 
+<div class="description">
+    <p>Construct a text wrapper which will measure text using the specified measurement provider.</p>
+</div>
+
 
 
 
@@ -134,13 +149,13 @@
 
         <tr>
             
-                <td class="name"><code>gl</code></td>
+                <td class="name"><code>measurementProvider</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">WebGLRenderingContext</span>
+<span class="param-type"><a href="global.html#MeasurementProvider">MeasurementProvider</a></span>
 
 
             
@@ -150,7 +165,7 @@
 
             
 
-            <td class="description last"><p>WebGL rendering context to create shaders for</p></td>
+            <td class="description last"><p>a helper object to provide text measurement services.</p></td>
         </tr>
 
     
@@ -186,570 +201,6 @@
     
 
     
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<h4 class="name" id=".DRAW_MODE"><span class="type-signature">(static, readonly) </span>DRAW_MODE<span class="type-signature"> :string</span></h4>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>default</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Draw normally.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>silhouette</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Draw a silhouette using a solid color.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>colorMask</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Draw only the parts of the drawable which match a particular color.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<div class="description">
-    <p>The available draw modes.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">string</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".EFFECT_INFO"><span class="type-signature">(static) </span>EFFECT_INFO<span class="type-signature"> :<a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span></h4>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>color</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Color effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>fisheye</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Fisheye effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>whirl</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Whirl effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>pixelate</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Pixelate effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>mosaic</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Mosaic effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>brightness</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Brightness effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>ghost</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Ghost effect</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<div class="description">
-    <p>Mapping of each effect name to info about that effect.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".EFFECTS"><span class="type-signature">(static) </span>EFFECTS<span class="type-signature"> :Array</span></h4>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>The name of each supported effect.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Array</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="_shaderCache"><span class="type-signature">(private) </span>_shaderCache<span class="type-signature"> :Object.&lt;<a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a>, Array.&lt;ProgramInfo>></span></h4>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>The cache of all shaders compiled so far, filled on demand.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Object.&lt;<a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a>, Array.&lt;ProgramInfo>></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-        
-    
 
     
         <h3 class="subsection-title">Methods</h3>
@@ -759,7 +210,7 @@
 
     
 
-    <h4 class="name" id="_buildShader"><span class="type-signature">(private) </span>_buildShader<span class="signature">(drawMode, effectBits)</span><span class="type-signature"> &rarr; {ProgramInfo}</span></h4>
+    <h4 class="name" id="wrapText"><span class="type-signature"></span>wrapText<span class="signature">(maxWidth, text)</span><span class="type-signature"> &rarr; {Array.&lt;string>}</span></h4>
 
     
 
@@ -806,7 +257,7 @@
 
 
 <div class="description">
-    <p>Build the shader for a particular set of active effects.</p>
+    <p>Wrap the provided text into lines restricted to a maximum width. See Unicode Standard Annex (UAX) #14.</p>
 </div>
 
 
@@ -844,13 +295,13 @@
 
         <tr>
             
-                <td class="name"><code>drawMode</code></td>
+                <td class="name"><code>maxWidth</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type"><a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a></span>
+<span class="param-type">number</span>
 
 
             
@@ -860,20 +311,20 @@
 
             
 
-            <td class="description last"><p>Draw normally, silhouette, etc.</p></td>
+            <td class="description last"><p>the maximum allowed width of a line.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>effectBits</code></td>
+                <td class="name"><code>text</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">int</span>
+<span class="param-type">string</span>
 
 
             
@@ -883,7 +334,7 @@
 
             
 
-            <td class="description last"><p>Bitmask representing the enabled effects.</p></td>
+            <td class="description last"><p>the text to be wrapped. Will be split on whitespace.</p></td>
         </tr>
 
     
@@ -907,7 +358,7 @@
 
         
 <div class="param-desc">
-    <p>The new shader's program info.</p>
+    <p>an array containing the wrapped lines of text.</p>
 </div>
 
 
@@ -918,181 +369,7 @@
     </dt>
     <dd>
         
-<span class="param-type">ProgramInfo</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="getShader"><span class="type-signature"></span>getShader<span class="signature">(drawMode, effectBits)</span><span class="type-signature"> &rarr; {ProgramInfo}</span></h4>
-
-    
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>Fetch the shader for a particular set of active effects.
-Build the shader if necessary.</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>drawMode</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Draw normally, silhouette, etc.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>effectBits</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">int</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Bitmask representing the enabled effects.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>The shader's program info.</p>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">ProgramInfo</span>
+<span class="param-type">Array.&lt;string></span>
 
 
     </dd>
@@ -1104,174 +381,6 @@ Build the shader if necessary.</p>
         
     
 
-    
-        <h3 class="subsection-title">Type Definitions</h3>
-
-        
-                
-<h4 class="name" id=".Effect">Effect</h4>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>mask</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">int</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>The bit in 'effectBits' representing the effect.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>converter</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A conversion function which takes a Scratch value (generally in the range
-  0..100 or -100..100) and maps it to a value useful to the shader. This
-  mapping may not be reversible.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>shapeChanges</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Whether the effect could change the drawn shape.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">object</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-            
     
 
     

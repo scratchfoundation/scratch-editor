@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>ShaderManager - Documentation</title>
+    <title>SVGMeasurementProvider - Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -27,7 +27,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">ShaderManager</h1>
+    <h1 class="page-title">SVGMeasurementProvider</h1>
     
 
     
@@ -40,8 +40,11 @@
 <header>
     
         <h2>
-        ShaderManager
+        SVGMeasurementProvider
         </h2>
+        
+            <div class="class-description"><p>Measure text by using a hidden SVG attached to the DOM.
+For use with TextWrapper.</p></div>
         
     
 </header>
@@ -52,8 +55,10 @@
         
 
     
+    <h2>Constructor</h2>
+    
 
-    <h4 class="name" id="ShaderManager"><span class="type-signature"></span>new ShaderManager<span class="signature">(gl)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="SVGMeasurementProvider"><span class="type-signature"></span>new SVGMeasurementProvider<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -107,55 +112,6 @@
 
 
 
-
-
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>gl</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">WebGLRenderingContext</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>WebGL rendering context to create shaders for</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -190,7 +146,7 @@
 
         
             
-<h4 class="name" id=".DRAW_MODE"><span class="type-signature">(static, readonly) </span>DRAW_MODE<span class="type-signature"> :string</span></h4>
+<h4 class="name" id="_svgRoot"><span class="type-signature">(private) </span>_svgRoot<span class="type-signature"> :SVGSVGElement</span></h4>
 
 
 
@@ -233,108 +189,10 @@
 
 
 
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>default</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Draw normally.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>silhouette</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Draw a silhouette using a solid color.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>colorMask</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Draw only the parts of the drawable which match a particular color.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
 
 
 <div class="description">
-    <p>The available draw modes.</p>
+    <p>The root SVG element.</p>
 </div>
 
 
@@ -343,7 +201,7 @@
     <ul>
         <li>
             
-<span class="param-type">string</span>
+<span class="param-type">SVGSVGElement</span>
 
 
         </li>
@@ -356,265 +214,7 @@
 
         
             
-<h4 class="name" id=".EFFECT_INFO"><span class="type-signature">(static) </span>EFFECT_INFO<span class="type-signature"> :<a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span></h4>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>color</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Color effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>fisheye</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Fisheye effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>whirl</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Whirl effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>pixelate</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Pixelate effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>mosaic</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Mosaic effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>brightness</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Brightness effect</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>ghost</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Ghost effect</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-
-
-<div class="description">
-    <p>Mapping of each effect name to info about that effect.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type"><a href="ShaderManager.html#.Effect">ShaderManager.Effect</a></span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id=".EFFECTS"><span class="type-signature">(static) </span>EFFECTS<span class="type-signature"> :Array</span></h4>
+<h4 class="name" id="_svgText"><span class="type-signature">(private) </span>_svgText<span class="type-signature"> :SVGTextElement</span></h4>
 
 
 
@@ -660,7 +260,7 @@
 
 
 <div class="description">
-    <p>The name of each supported effect.</p>
+    <p>The leaf SVG element used for text measurement.</p>
 </div>
 
 
@@ -669,75 +269,7 @@
     <ul>
         <li>
             
-<span class="param-type">Array</span>
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="_shaderCache"><span class="type-signature">(private) </span>_shaderCache<span class="type-signature"> :Object.&lt;<a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a>, Array.&lt;ProgramInfo>></span></h4>
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-<div class="description">
-    <p>The cache of all shaders compiled so far, filled on demand.</p>
-</div>
-
-
-
-    <h5>Type:</h5>
-    <ul>
-        <li>
-            
-<span class="param-type">Object.&lt;<a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a>, Array.&lt;ProgramInfo>></span>
+<span class="param-type">SVGTextElement</span>
 
 
         </li>
@@ -759,7 +291,7 @@
 
     
 
-    <h4 class="name" id="_buildShader"><span class="type-signature">(private) </span>_buildShader<span class="signature">(drawMode, effectBits)</span><span class="type-signature"> &rarr; {ProgramInfo}</span></h4>
+    <h4 class="name" id="_init"><span class="type-signature">(private) </span>_init<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -806,7 +338,8 @@
 
 
 <div class="description">
-    <p>Build the shader for a particular set of active effects.</p>
+    <p>Create a simple SVG containing a text node, hide it, and attach it to the DOM. The text node will be used to
+collect text measurements. The SVG must be attached to the DOM: otherwise measurements will generally be zero.</p>
 </div>
 
 
@@ -819,76 +352,6 @@
 
 
 
-    <h5>Parameters:</h5>
-    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>drawMode</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Draw normally, silhouette, etc.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>effectBits</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">int</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Bitmask representing the enabled effects.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
 
 
 
@@ -901,30 +364,6 @@
 
 
 
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>The new shader's program info.</p>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">ProgramInfo</span>
-
-
-    </dd>
-</dl>
-
-    
 
 
         
@@ -932,7 +371,7 @@
 
     
 
-    <h4 class="name" id="getShader"><span class="type-signature"></span>getShader<span class="signature">(drawMode, effectBits)</span><span class="type-signature"> &rarr; {ProgramInfo}</span></h4>
+    <h4 class="name" id="beginMeasurementSession"><span class="type-signature"></span>beginMeasurementSession<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
 
@@ -979,8 +418,7 @@
 
 
 <div class="description">
-    <p>Fetch the shader for a particular set of active effects.
-Build the shader if necessary.</p>
+    <p>Called by the TextWrapper before a batch of zero or more calls to measureText().</p>
 </div>
 
 
@@ -993,124 +431,28 @@ Build the shader if necessary.</p>
 
 
 
-    <h5>Parameters:</h5>
-    
 
-<table class="params">
-    <thead>
-    <tr>
+
+
+
+
+
+
+
+
+
+
+
+
+
         
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
             
-                <td class="name"><code>drawMode</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><a href="ShaderManager.html#.DRAW_MODE">ShaderManager.DRAW_MODE</a></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Draw normally, silhouette, etc.</p></td>
-        </tr>
 
     
 
-        <tr>
-            
-                <td class="name"><code>effectBits</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">int</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Bitmask representing the enabled effects.</p></td>
-        </tr>
+    <h4 class="name" id="dispose"><span class="type-signature"></span>dispose<span class="signature">()</span><span class="type-signature"></span></h4>
 
     
-    </tbody>
-</table>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>The shader's program info.</p>
-</div>
-
-
-
-<dl class="param-type">
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">ProgramInfo</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-        
-    
-
-    
-        <h3 class="subsection-title">Type Definitions</h3>
-
-        
-                
-<h4 class="name" id=".Effect">Effect</h4>
-
 
 
 
@@ -1152,11 +494,184 @@ Build the shader if necessary.</p>
 
 
 
-    <h5 class="subsection-title">Properties:</h5>
+
+
+<div class="description">
+    <p>Detach the hidden SVG element from the DOM and forget all references to it and its children.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
 
     
 
-<table class="props">
+    <h4 class="name" id="endMeasurementSession"><span class="type-signature"></span>endMeasurementSession<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Called by the TextWrapper after a batch of zero or more calls to measureText().</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="measureText"><span class="type-signature"></span>measureText<span class="signature">(text)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<div class="description">
+    <p>Measure a whole string as one unit.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
     <thead>
     <tr>
         
@@ -1178,13 +693,13 @@ Build the shader if necessary.</p>
 
         <tr>
             
-                <td class="name"><code>mask</code></td>
+                <td class="name"><code>text</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">int</span>
+<span class="param-type">string</span>
 
 
             
@@ -1194,55 +709,7 @@ Build the shader if necessary.</p>
 
             
 
-            <td class="description last"><p>The bit in 'effectBits' representing the effect.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>converter</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A conversion function which takes a Scratch value (generally in the range
-  0..100 or -100..100) and maps it to a value useful to the shader. This
-  mapping may not be reversible.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>shapeChanges</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">boolean</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>Whether the effect could change the drawn shape.</p></td>
+            <td class="description last"><p>the text to measure.</p></td>
         </tr>
 
     
@@ -1256,22 +723,41 @@ Build the shader if necessary.</p>
 
 
 
-    <h5>Type:</h5>
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
     <ul>
-        <li>
-            
-<span class="param-type">object</span>
-
-
-        </li>
-    </ul>
+<li>the length of the string.</li>
+</ul>
+</div>
 
 
 
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">number</span>
 
 
+    </dd>
+</dl>
 
-            
+    
+
+
+        
+    
+
     
 
     
