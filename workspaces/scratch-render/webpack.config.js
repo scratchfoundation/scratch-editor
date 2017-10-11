@@ -20,6 +20,10 @@ const base = {
                 options: {
                     presets: ['es2015']
                 }
+            },
+            {
+                test: /node_modules\/(linebreak|grapheme-breaker)\/.*\.js$/,
+                loader: 'ify-loader'
             }
         ]
     },
