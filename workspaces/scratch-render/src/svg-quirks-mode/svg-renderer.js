@@ -57,20 +57,19 @@ class SvgRenderer {
     fromString (svgString, onFinish) {
         // Store the callback for later.
         this._onFinish = onFinish;
-        // Parse string into SVG XML.
-        const parser = new DOMParser();
-        this._svgDom = parser.parseFromString(svgString, 'text/xml');
-        if (this._svgDom.childNodes.length < 1 ||
-            this._svgDom.documentElement.localName !== 'svg') {
-            throw new Error('Document does not appear to be SVG.');
-        }
-        this._svgTag = this._svgDom.documentElement;
-        // Transform all text elements.
-        this._transformText();
-        // Transform measurements.
-        this._transformMeasurements();
+        this._loadString(svgString);
         // Draw to a canvas.
         this._draw();
+    }
+
+    /**
+     * Load an SVG from a string and measure it.
+     * @param {string} svgString String of SVG data to draw in quirks-mode.
+     * @return {object} the natural size, in Scratch units, of this SVG.
+     */
+    measure (svgString) {
+        this._loadString(svgString);
+        return this._measurements;
     }
 
     /**
@@ -85,6 +84,25 @@ class SvgRenderer {
      */
     get viewOffset () {
         return [this._measurements.x, this._measurements.y];
+    }
+
+    /**
+     * Load an SVG string and normalize it. All the steps before drawing/measuring.
+     * @param {string} svgString String of SVG data to draw in quirks-mode.
+     */
+    _loadString (svgString) {
+        // Parse string into SVG XML.
+        const parser = new DOMParser();
+        this._svgDom = parser.parseFromString(svgString, 'text/xml');
+        if (this._svgDom.childNodes.length < 1 ||
+            this._svgDom.documentElement.localName !== 'svg') {
+            throw new Error('Document does not appear to be SVG.');
+        }
+        this._svgTag = this._svgDom.documentElement;
+        // Transform all text elements.
+        this._transformText();
+        // Transform measurements.
+        this._transformMeasurements();
     }
 
     /**
@@ -118,7 +136,7 @@ class SvgRenderer {
             textElement.setAttribute('alignment-baseline', 'text-before-edge');
             // If there's no font size provided, provide one.
             if (!textElement.getAttribute('font-size')) {
-                textElement.setAttribute('font-size', '18');
+                textElement.setAttribute('font-size', '14');
             }
             // If there's no font-family provided, provide one.
             if (!textElement.getAttribute('font-family')) {
@@ -136,7 +154,7 @@ class SvgRenderer {
                 for (const line of lines) {
                     const tspanNode = this._createSVGElement('tspan');
                     tspanNode.setAttribute('x', '0');
-                    tspanNode.setAttribute('dy', '1em');
+                    tspanNode.setAttribute('dy', '1.2em');
                     tspanNode.textContent = line;
                     textElement.appendChild(tspanNode);
                 }
