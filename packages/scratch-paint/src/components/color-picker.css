@@ -1,0 +1,50 @@
+/* Popover styles */
+/* @TODO need to fix tip border issue */
+:global(.Popover-body) {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 4px;
+    border-radius: 4px;
+    padding: 4px;
+    box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, .3);
+}
+:global(.Popover-tipShape) {
+    fill: white;
+    stroke: #ddd;
+}
+
+.row-header {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 0.65rem;
+    color: #575E75;
+    margin: 8px;
+}
+
+.label-readout {
+    margin-left: 10px;
+}
+
+.label-name {
+    font-weight: bold;
+}
+
+.divider {
+    border-top: 1px solid #ddd;
+    margin: 8px;
+}
+
+.swatches {
+    margin: 8px;
+}
+
+.swatch {
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.active-swatch {
+    border: 1px solid #4C97FF;
+    box-shadow: 0px 0px 0px 3px hsla(215, 100%, 65%, 0.2);
+}

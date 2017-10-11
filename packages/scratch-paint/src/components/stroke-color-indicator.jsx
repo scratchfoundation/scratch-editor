@@ -1,16 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Popover from 'react-popover';
 
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
-import BufferedInputHOC from './forms/buffered-input-hoc.jsx';
 import Label from './forms/label.jsx';
-import Input from './forms/input.jsx';
-
-import {MIXED} from '../helper/style-path';
+import ColorPicker from './color-picker.jsx';
+import ColorButton from './color-button.jsx';
 
 import styles from './paint-editor.css';
 
-const BufferedInput = BufferedInputHOC(Input);
 const messages = defineMessages({
     stroke: {
         id: 'paint.paintEditor.stroke',
@@ -18,24 +16,37 @@ const messages = defineMessages({
         defaultMessage: 'Outline'
     }
 });
+
 const StrokeColorIndicatorComponent = props => (
     <div className={styles.inputGroup}>
-        <Label text={props.intl.formatMessage(messages.stroke)}>
-            <BufferedInput
-                type="text"
-                // @todo Don't use text
-                value={props.strokeColor === MIXED ? 'mixed' :
-                    props.strokeColor === null ? 'transparent' : props.strokeColor}
-                onSubmit={props.onChangeStrokeColor}
-            />
-        </Label>
+        <Popover
+            body={
+                <ColorPicker
+                    color={props.strokeColor}
+                    onChangeColor={props.onChangeStrokeColor}
+                />
+            }
+            isOpen={props.strokeColorModalVisible}
+            preferPlace="below"
+            onOuterAction={props.onCloseStrokeColor}
+        >
+            <Label text={props.intl.formatMessage(messages.stroke)}>
+                <ColorButton
+                    color={props.strokeColor}
+                    onClick={props.onOpenStrokeColor}
+                />
+            </Label>
+        </Popover>
     </div>
 );
 
 StrokeColorIndicatorComponent.propTypes = {
     intl: intlShape,
     onChangeStrokeColor: PropTypes.func.isRequired,
-    strokeColor: PropTypes.string
+    onCloseStrokeColor: PropTypes.func.isRequired,
+    onOpenStrokeColor: PropTypes.func.isRequired,
+    strokeColor: PropTypes.string,
+    strokeColorModalVisible: PropTypes.bool.isRequired
 };
 
 export default injectIntl(StrokeColorIndicatorComponent);

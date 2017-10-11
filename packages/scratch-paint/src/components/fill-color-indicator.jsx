@@ -1,16 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Popover from 'react-popover';
 
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
-import BufferedInputHOC from './forms/buffered-input-hoc.jsx';
 import Label from './forms/label.jsx';
-import Input from './forms/input.jsx';
-
-import {MIXED} from '../helper/style-path';
+import ColorPicker from './color-picker.jsx';
+import ColorButton from './color-button.jsx';
 
 import styles from './paint-editor.css';
 
-const BufferedInput = BufferedInputHOC(Input);
 const messages = defineMessages({
     fill: {
         id: 'paint.paintEditor.fill',
@@ -18,23 +16,37 @@ const messages = defineMessages({
         defaultMessage: 'Fill'
     }
 });
+
 const FillColorIndicatorComponent = props => (
     <div className={styles.inputGroup}>
-        <Label text={props.intl.formatMessage(messages.fill)}>
-            <BufferedInput
-                type="text"
-                value={props.fillColor === MIXED ? 'mixed' :
-                    props.fillColor === null ? 'transparent' : props.fillColor} // @todo Don't use text
-                onSubmit={props.onChangeFillColor}
-            />
-        </Label>
+        <Popover
+            body={
+                <ColorPicker
+                    color={props.fillColor}
+                    onChangeColor={props.onChangeFillColor}
+                />
+            }
+            isOpen={props.fillColorModalVisible}
+            preferPlace="below"
+            onOuterAction={props.onCloseFillColor}
+        >
+            <Label text={props.intl.formatMessage(messages.fill)}>
+                <ColorButton
+                    color={props.fillColor}
+                    onClick={props.onOpenFillColor}
+                />
+            </Label>
+        </Popover>
     </div>
 );
 
 FillColorIndicatorComponent.propTypes = {
     fillColor: PropTypes.string,
+    fillColorModalVisible: PropTypes.bool.isRequired,
     intl: intlShape,
-    onChangeFillColor: PropTypes.func.isRequired
+    onChangeFillColor: PropTypes.func.isRequired,
+    onCloseFillColor: PropTypes.func.isRequired,
+    onOpenFillColor: PropTypes.func.isRequired
 };
 
 export default injectIntl(FillColorIndicatorComponent);

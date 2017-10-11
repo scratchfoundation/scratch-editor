@@ -11,7 +11,7 @@ const reducer = function (state, action) {
     if (typeof state === 'undefined') state = initialState;
     switch (action.type) {
     case CHANGE_STROKE_COLOR:
-        if (!regExp.test(action.strokeColor)) {
+        if (!regExp.test(action.strokeColor) && action.strokeColor !== null) {
             log.warn(`Invalid hex color code: ${action.fillColor}`);
             return state;
         }
