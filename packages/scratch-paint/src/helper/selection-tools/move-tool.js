@@ -1,18 +1,22 @@
+import Modes from '../../modes/modes';
 import {isGroup} from '../group';
 import {isCompoundPathItem, getRootItem} from '../item';
 import {snapDeltaToAngle} from '../math';
-import {clearSelection, cloneSelection, getSelectedLeafItems, setItemSelection} from '../selection';
+import {clearSelection, cloneSelection, getSelectedLeafItems, getSelectedRootItems, setItemSelection}
+    from '../selection';
 
 /**
  * Tool to handle dragging an item to reposition it in a selection mode.
  */
 class MoveTool {
     /**
+     * @param {Modes} mode Paint editor mode
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      * @param {!function} onUpdateSvg A callback to call when the image visibly changes
      */
-    constructor (setSelectedItems, clearSelectedItems, onUpdateSvg) {
+    constructor (mode, setSelectedItems, clearSelectedItems, onUpdateSvg) {
+        this.mode = mode;
         this.setSelectedItems = setSelectedItems;
         this.clearSelectedItems = clearSelectedItems;
         this.selectedItems = null;
@@ -52,7 +56,7 @@ class MoveTool {
             this._select(item, true, hitProperties.subselect);
         }
         if (hitProperties.clone) cloneSelection(hitProperties.subselect, this.onUpdateSvg);
-        this.selectedItems = getSelectedLeafItems();
+        this.selectedItems = this.mode === Modes.RESHAPE ? getSelectedLeafItems() : getSelectedRootItems();
     }
     /**
      * Sets the selection state of an item.

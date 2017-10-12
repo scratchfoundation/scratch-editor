@@ -17,7 +17,7 @@ const ARROW_PATH = 'M19.28,1.09C19.28.28,19,0,18.2,0c-1.67,0-3.34,0-5,0-.34,0-.8
     '0,0,0,7.34,2,9.45,9.45,0,0,0,4.82-2.05l.73-.62a14.38,14.38,0,0,0,1.29,1.51,1.22,1.22,' +
     '0,0,0,1,.31,1.23,1.23,0,0,0,.49-1C19.31,4.43,19.29,2.76,19.28,1.09Z';
 /** Modes of the bounding box tool, which can do many things depending on how it's used. */
-const Modes = keyMirror({
+const BoundingBoxModes = keyMirror({
     SCALE: null,
     ROTATE: null,
     MOVE: null
@@ -32,20 +32,21 @@ const Modes = keyMirror({
  */
 class BoundingBoxTool {
     /**
+     * @param {Modes} mode Paint editor mode
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      * @param {!function} onUpdateSvg A callback to call when the image visibly changes
      */
-    constructor (setSelectedItems, clearSelectedItems, onUpdateSvg) {
+    constructor (mode, setSelectedItems, clearSelectedItems, onUpdateSvg) {
         this.onUpdateSvg = onUpdateSvg;
         this.mode = null;
         this.boundsPath = null;
         this.boundsScaleHandles = [];
         this.boundsRotHandles = [];
         this._modeMap = {};
-        this._modeMap[Modes.SCALE] = new ScaleTool(onUpdateSvg);
-        this._modeMap[Modes.ROTATE] = new RotateTool(onUpdateSvg);
-        this._modeMap[Modes.MOVE] = new MoveTool(setSelectedItems, clearSelectedItems, onUpdateSvg);
+        this._modeMap[BoundingBoxModes.SCALE] = new ScaleTool(onUpdateSvg);
+        this._modeMap[BoundingBoxModes.ROTATE] = new RotateTool(onUpdateSvg);
+        this._modeMap[BoundingBoxModes.MOVE] = new MoveTool(mode, setSelectedItems, clearSelectedItems, onUpdateSvg);
     }
 
     /**
@@ -70,15 +71,15 @@ class BoundingBoxTool {
         for (let i = 0; i < hitResults.length; i++) {
             if (hitResults[i].item.data && hitResults[i].item.data.isScaleHandle) {
                 hitResult = hitResults[i];
-                this.mode = Modes.SCALE;
+                this.mode = BoundingBoxModes.SCALE;
                 break;
             } else if (hitResults[i].item.data && hitResults[i].item.data.isRotHandle) {
                 hitResult = hitResults[i];
-                this.mode = Modes.ROTATE;
+                this.mode = BoundingBoxModes.ROTATE;
             }
         }
         if (!this.mode) {
-            this.mode = Modes.MOVE;
+            this.mode = BoundingBoxModes.MOVE;
         }
 
         const hitProperties = {
@@ -86,12 +87,12 @@ class BoundingBoxTool {
             clone: event.modifiers.alt,
             multiselect: event.modifiers.shift
         };
-        if (this.mode === Modes.MOVE) {
+        if (this.mode === BoundingBoxModes.MOVE) {
             this._modeMap[this.mode].onMouseDown(hitProperties);
-        } else if (this.mode === Modes.SCALE) {
+        } else if (this.mode === BoundingBoxModes.SCALE) {
             this._modeMap[this.mode].onMouseDown(
                 hitResult, this.boundsPath, this.boundsScaleHandles, this.boundsRotHandles, getSelectedRootItems());
-        } else if (this.mode === Modes.ROTATE) {
+        } else if (this.mode === BoundingBoxModes.ROTATE) {
             this._modeMap[this.mode].onMouseDown(hitResult, this.boundsPath, getSelectedRootItems());
         }
 

@@ -20,6 +20,7 @@ const hoverItem = function (hitResult) {
         clone.closed = true;
     }
     clone.parent = getGuideLayer();
+    clone.position = hitResult.item.position;
     clone.strokeColor = GUIDE_BLUE;
     clone.fillColor = null;
     clone.data.isHelperItem = true;

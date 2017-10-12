@@ -30,7 +30,7 @@ class SelectTool extends paper.Tool {
         this.setHoveredItem = setHoveredItem;
         this.clearHoveredItem = clearHoveredItem;
         this.onUpdateSvg = onUpdateSvg;
-        this.boundingBoxTool = new BoundingBoxTool(setSelectedItems, clearSelectedItems, onUpdateSvg);
+        this.boundingBoxTool = new BoundingBoxTool(Modes.SELECT, setSelectedItems, clearSelectedItems, onUpdateSvg);
         this.selectionBoxTool = new SelectionBoxTool(Modes.SELECT, setSelectedItems, clearSelectedItems);
         this.selectionBoxMode = false;
         this.prevHoveredItemId = null;
