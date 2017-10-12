@@ -13812,7 +13812,7 @@ var SvgRenderer = function () {
                         largestStrokeWidth = Math.max(largestStrokeWidth, 1);
                     }
                     if (domElement.getAttribute('stroke-width')) {
-                        largestStrokeWidth = Math.max(largestStrokeWidth, Number(domElement.getAttribute('stroke-width')));
+                        largestStrokeWidth = Math.max(largestStrokeWidth, Number(domElement.getAttribute('stroke-width')) || 0);
                     }
                 }
                 for (var i = 0; i < domElement.childNodes.length; i++) {
