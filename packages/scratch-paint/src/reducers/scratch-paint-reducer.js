@@ -5,6 +5,7 @@ import eraserModeReducer from './eraser-mode';
 import colorReducer from './color';
 import hoverReducer from './hover';
 import selectedItemReducer from './selected-items';
+import undoReducer from './undo';
 
 export default combineReducers({
     mode: modeReducer,
@@ -12,5 +13,6 @@ export default combineReducers({
     eraserMode: eraserModeReducer,
     color: colorReducer,
     hoveredItemId: hoverReducer,
-    selectedItems: selectedItemReducer
+    selectedItems: selectedItemReducer,
+    undo: undoReducer
 });

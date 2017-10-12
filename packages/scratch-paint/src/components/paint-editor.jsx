@@ -58,11 +58,13 @@ class PaintEditorComponent extends React.Component {
                         <div className={styles.buttonGroup}>
                             <button
                                 className={styles.button}
+                                onClick={this.props.onUndo}
                             >
                                 Undo
                             </button>
                             <button
                                 className={styles.button}
+                                onClick={this.props.onRedo}
                             >
                                 Redo
                             </button>
@@ -101,11 +103,17 @@ class PaintEditorComponent extends React.Component {
                 {/* Second Row */}
                 <div className={styles.row}>
                     {/* fill */}
-                    <FillColorIndicatorComponent />
+                    <FillColorIndicatorComponent
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
                     {/* stroke */}
-                    <StrokeColorIndicatorComponent />
+                    <StrokeColorIndicatorComponent
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
                     {/* stroke width */}
-                    <StrokeWidthIndicatorComponent />
+                    <StrokeWidthIndicatorComponent
+                        onUpdateSvg={this.props.onUpdateSvg}
+                    />
 
                     <div className={styles.inputGroup}>
                         Mode tools
@@ -154,6 +162,8 @@ class PaintEditorComponent extends React.Component {
 
 PaintEditorComponent.propTypes = {
     intl: intlShape,
+    onRedo: PropTypes.func.isRequired,
+    onUndo: PropTypes.func.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
     rotationCenterX: PropTypes.number,
     rotationCenterY: PropTypes.number,

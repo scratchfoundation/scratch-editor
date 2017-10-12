@@ -17,7 +17,8 @@ class EraserMode extends React.Component {
             'deactivateTool',
             'onScroll'
         ]);
-        this.blob = new Blobbiness(this.props.onUpdateSvg, this.props.clearSelectedItems);
+        this.blob = new Blobbiness(
+            this.props.onUpdateSvg, this.props.clearSelectedItems);
     }
     componentDidMount () {
         if (this.props.isEraserModeActive) {

@@ -221,8 +221,7 @@ class ReshapeTool extends paper.Tool {
     handleKeyUp (event) {
         // Backspace, delete
         if (event.key === 'delete' || event.key === 'backspace') {
-            deleteSelection(Modes.RESHAPE);
-            this.onUpdateSvg();
+            deleteSelection(Modes.RESHAPE, this.onUpdateSvg);
         }
     }
     deactivateTool () {

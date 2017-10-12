@@ -126,10 +126,9 @@ class SelectTool extends paper.Tool {
     handleKeyUp (event) {
         // Backspace, delete
         if (event.key === 'delete' || event.key === 'backspace') {
-            deleteSelection(Modes.SELECT);
+            deleteSelection(Modes.SELECT, this.onUpdateSvg);
             this.clearHoveredItem();
             this.boundingBoxTool.removeBoundsPath();
-            this.onUpdateSvg();
         }
     }
     deactivateTool () {

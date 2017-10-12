@@ -4,6 +4,7 @@ import BroadBrushHelper from './broad-brush-helper';
 import SegmentBrushHelper from './segment-brush-helper';
 import {MIXED, styleCursorPreview} from '../../helper/style-path';
 import {clearSelection} from '../../helper/selection';
+import {getGuideLayer} from '../../helper/layer';
 
 /**
  * Shared code for the brush and eraser mode. Adds functions on the paper tool object
@@ -26,13 +27,13 @@ class Blobbiness {
     }
 
     /**
-     * @param {function} updateCallback call when the drawing has changed to let listeners know
+     * @param {function} onUpdateSvg call when the drawing has changed to let listeners know
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      */
-    constructor (updateCallback, clearSelectedItems) {
+    constructor (onUpdateSvg, clearSelectedItems) {
         this.broadBrushHelper = new BroadBrushHelper();
         this.segmentBrushHelper = new SegmentBrushHelper();
-        this.updateCallback = updateCallback;
+        this.onUpdateSvg = onUpdateSvg;
         this.clearSelectedItems = clearSelectedItems;
 
         // The following are stored to check whether these have changed and the cursor preview needs to be redrawn.
@@ -143,7 +144,7 @@ class Blobbiness {
             }
 
             blob.cursorPreview.visible = false;
-            blob.updateCallback();
+            blob.onUpdateSvg();
             blob.cursorPreview.visible = true;
             blob.cursorPreview.bringToFront();
             blob.cursorPreview.position = event.point;
@@ -166,7 +167,7 @@ class Blobbiness {
             this.cursorPreviewLastPoint = point;
         }
 
-        if (this.cursorPreview &&
+        if (this.cursorPreview && this.cursorPreview.parent &&
                 this.brushSize === this.options.brushSize &&
                 this.fillColor === this.options.fillColor &&
                 this.strokeColor === this.options.strokeColor) {
@@ -176,6 +177,8 @@ class Blobbiness {
             center: point,
             radius: this.options.brushSize / 2
         });
+        newPreview.parent = getGuideLayer();
+        newPreview.data.isHelperItem = true;
         if (this.cursorPreview) {
             this.cursorPreview.remove();
         }
@@ -234,8 +237,6 @@ class Blobbiness {
                 paths.splice(i, 1);
             }
         }
-        // TODO: Add back undo
-        // pg.undo.snapshot('broadbrush');
     }
 
     mergeEraser (lastPath) {
@@ -284,8 +285,6 @@ class Blobbiness {
                     }
                 }
                 lastPath.remove();
-                // TODO add back undo
-                // pg.undo.snapshot('eraser');
                 continue;
             }
             // Erase
@@ -358,8 +357,6 @@ class Blobbiness {
             items[i].remove();
         }
         lastPath.remove();
-        // TODO: Add back undo handling
-        // pg.undo.snapshot('eraser');
     }
 
     colorMatch (existingPath, addedPath) {

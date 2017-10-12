@@ -157,7 +157,6 @@ class ScaleTool {
         }
         this.itemGroup.remove();
         
-        // @todo add back undo
         this.onUpdateSvg();
     }
     _getRectCornerNameByIndex (index) {

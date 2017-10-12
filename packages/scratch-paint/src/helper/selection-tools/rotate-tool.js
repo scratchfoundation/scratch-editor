@@ -63,7 +63,6 @@ class RotateTool {
         this.rotGroupPivot = null;
         this.prevRot = [];
 
-        // @todo add back undo
         this.onUpdateSvg();
     }
 }

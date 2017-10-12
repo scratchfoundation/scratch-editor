@@ -57,7 +57,7 @@ const selectItemSegments = function (item, state) {
     }
 };
 
-const setGroupSelection = function (root, selected, fullySelected) {
+const _setGroupSelection = function (root, selected, fullySelected) {
     root.fullySelected = fullySelected;
     root.selected = selected;
     // select children of compound-path or group
@@ -66,7 +66,7 @@ const setGroupSelection = function (root, selected, fullySelected) {
         if (children) {
             for (const child of children) {
                 if (isGroup(child)) {
-                    setGroupSelection(child, selected, fullySelected);
+                    _setGroupSelection(child, selected, fullySelected);
                 } else {
                     child.fullySelected = fullySelected;
                     child.selected = selected;
@@ -85,12 +85,12 @@ const setItemSelection = function (item, state, fullySelected) {
         // do it recursive
         setItemSelection(parentGroup, state, fullySelected);
     } else if (itemsCompoundPath) {
-        setGroupSelection(itemsCompoundPath, state, fullySelected);
+        _setGroupSelection(itemsCompoundPath, state, fullySelected);
     } else {
         if (item.data && item.data.noSelect) {
             return;
         }
-        setGroupSelection(item, state, fullySelected);
+        _setGroupSelection(item, state, fullySelected);
     }
     // @todo: Update toolbar state on change
     
@@ -165,21 +165,19 @@ const getSelectedLeafItems = function () {
     return items;
 };
 
-const deleteItemSelection = function (items) {
+const _deleteItemSelection = function (items, onUpdateSvg) {
     for (let i = 0; i < items.length; i++) {
         items[i].remove();
     }
     
     // @todo: Update toolbar state on change
-    paper.project.view.update();
-    // @todo add back undo
-    // pg.undo.snapshot('deleteItemSelection');
+    if (items.length > 0) {
+        paper.project.view.update();
+        onUpdateSvg();
+    }
 };
 
-const removeSelectedSegments = function (items) {
-    // @todo add back undo
-    // pg.undo.snapshot('removeSelectedSegments');
-    
+const _removeSelectedSegments = function (items, onUpdateSvg) {
     const segmentsToRemove = [];
     
     for (let i = 0; i < items.length; i++) {
@@ -198,161 +196,37 @@ const removeSelectedSegments = function (items) {
         seg.remove();
         removedSegments = true;
     }
+    if (removedSegments) {
+        paper.project.view.update();
+        onUpdateSvg();
+    }
     return removedSegments;
 };
 
-const deleteSelection = function (mode) {
+const deleteSelection = function (mode, onUpdateSvg) {
     if (mode === Modes.RESHAPE) {
         const selectedItems = getSelectedLeafItems();
         // If there are points selected remove them. If not delete the item selected.
-        if (!removeSelectedSegments(selectedItems)) {
-            deleteItemSelection(selectedItems);
+        if (!_removeSelectedSegments(selectedItems, onUpdateSvg)) {
+            _deleteItemSelection(selectedItems, onUpdateSvg);
         }
     } else {
         const selectedItems = getSelectedRootItems();
-        deleteItemSelection(selectedItems);
+        _deleteItemSelection(selectedItems, onUpdateSvg);
     }
 };
 
-const splitPathRetainSelection = function (path, index, deselectSplitSegments) {
-    const selectedPoints = [];
-    
-    // collect points of selected segments, so we can reselect them
-    // once the path is split.
-    for (let i = 0; i < path.segments.length; i++) {
-        const seg = path.segments[i];
-        if (seg.selected) {
-            if (deselectSplitSegments && i === index) {
-                continue;
-            }
-            selectedPoints.push(seg.point);
-        }
-    }
-    
-    const newPath = path.split(index, 0);
-    if (!newPath) return;
-    
-    // reselect all of the newPaths segments that are in the exact same location
-    // as the ones that are stored in selectedPoints
-    for (let i = 0; i < newPath.segments.length; i++) {
-        const seg = newPath.segments[i];
-        for (let j = 0; j < selectedPoints.length; j++) {
-            const point = selectedPoints[j];
-            if (point.x === seg.point.x && point.y === seg.point.y) {
-                seg.selected = true;
-            }
-        }
-    }
-    
-    // only do this if path and newPath are different
-    // (split at more than one point)
-    if (path !== newPath) {
-        for (let i = 0; i < path.segments.length; i++) {
-            const seg = path.segments[i];
-            for (let j = 0; j < selectedPoints.length; j++) {
-                const point = selectedPoints[j];
-                if (point.x === seg.point.x && point.y === seg.point.y) {
-                    seg.selected = true;
-                }
-            }
-        }
-    }
-};
-
-const splitPathAtSelectedSegments = function () {
-    const items = getSelectedRootItems();
-    for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        const segments = item.segments;
-        for (let j = 0; j < segments.length; j++) {
-            const segment = segments[j];
-            if (segment.selected) {
-                if (item.closed ||
-                    (segment.next &&
-                    !segment.next.selected &&
-                    segment.previous &&
-                    !segment.previous.selected)) {
-                    splitPathRetainSelection(item, j, true);
-                    splitPathAtSelectedSegments();
-                    return;
-                }
-            }
-        }
-    }
-};
-
-const deleteSegments = function (item) {
-    if (item.children) {
-        for (let i = 0; i < item.children.length; i++) {
-            const child = item.children[i];
-            deleteSegments(child);
-        }
-    } else {
-        const segments = item.segments;
-        for (let j = 0; j < segments.length; j++) {
-            const segment = segments[j];
-            if (segment.selected) {
-                if (item.closed ||
-                    (segment.next &&
-                    !segment.next.selected &&
-                    segment.previous &&
-                    !segment.previous.selected)) {
-
-                    splitPathRetainSelection(item, j);
-                    deleteSelection();
-                    return;
-
-                } else if (!item.closed) {
-                    segment.remove();
-                    j--; // decrease counter if we removed one from the loop
-                }
-
-            }
-        }
-    }
-    // remove items with no segments left
-    if (item.segments.length <= 0) {
-        item.remove();
-    }
-};
-
-const deleteSegmentSelection = function (items) {
-    for (let i = 0; i < items.length; i++) {
-        deleteSegments(items[i]);
-    }
-
-    // @todo: Update toolbar state on change
-    paper.project.view.update();
-    // @todo add back undo
-    // pg.undo.snapshot('deleteSegmentSelection');
-};
-
-const cloneSelection = function (recursive) {
+const cloneSelection = function (recursive, onUpdateSvg) {
     const selectedItems = recursive ? getSelectedLeafItems() : getSelectedRootItems();
     for (let i = 0; i < selectedItems.length; i++) {
         const item = selectedItems[i];
         item.clone();
         item.selected = false;
     }
-    // @todo add back undo
-    // pg.undo.snapshot('cloneSelection');
+    onUpdateSvg();
 };
 
-// Only returns paths, no compound paths, groups or any other stuff
-const getSelectedPaths = function () {
-    const allPaths = getSelectedRootItems();
-    const paths = [];
-
-    for (let i = 0; i < allPaths.length; i++) {
-        const path = allPaths[i];
-        if (path.className === 'Path') {
-            paths.push(path);
-        }
-    }
-    return paths;
-};
-
-const checkBoundsItem = function (selectionRect, item, event) {
+const _checkBoundsItem = function (selectionRect, item, event) {
     const itemBounds = new paper.Path([
         item.localToGlobal(item.internalBounds.topLeft),
         item.localToGlobal(item.internalBounds.topRight),
@@ -441,7 +315,7 @@ const _handleRectangularSelectionItems = function (item, event, rect, mode, root
         // @todo: Update toolbar state on change
 
     } else if (isBoundsItem(item)) {
-        if (checkBoundsItem(rect, item, event)) {
+        if (_checkBoundsItem(rect, item, event)) {
             return false;
         }
     }
@@ -524,16 +398,10 @@ export {
     selectAllSegments,
     clearSelection,
     deleteSelection,
-    deleteItemSelection,
-    deleteSegmentSelection,
-    splitPathAtSelectedSegments,
     cloneSelection,
     setItemSelection,
-    setGroupSelection,
     getSelectedLeafItems,
-    getSelectedPaths,
     getSelectedRootItems,
-    removeSelectedSegments,
     processRectangularSelection,
     selectRootItem,
     shouldShowIfSelection,

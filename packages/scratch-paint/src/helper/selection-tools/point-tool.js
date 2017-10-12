@@ -166,11 +166,15 @@ class PointTool {
     }
     onMouseUp () {
         // resetting the items and segments origin points for the next usage
+        let moved = false;
         for (const item of this.selectedItems) {
             if (!item.segments) {
                 return;
             }
             for (const seg of item.segments) {
+                if (seg.origPoint && !seg.equals(seg.origPoint)) {
+                    moved = true;
+                }
                 seg.origPoint = null;
             }
         }
@@ -193,8 +197,9 @@ class PointTool {
         }
         this.selectedItems = null;
         this.setSelectedItems();
-        // @todo add back undo
-        this.onUpdateSvg();
+        if (moved) {
+            this.onUpdateSvg();
+        }
     }
 }
 

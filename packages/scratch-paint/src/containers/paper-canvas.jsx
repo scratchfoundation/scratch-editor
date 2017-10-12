@@ -1,7 +1,11 @@
 import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {connect} from 'react-redux';
 import paper from 'paper';
+
+import {performSnapshot} from '../helper/undo';
+import {undoSnapshot} from '../reducers/undo';
 
 import styles from './paper-canvas.css';
 
@@ -20,6 +24,7 @@ class PaperCanvas extends React.Component {
         if (this.props.svg) {
             this.importSvg(this.props.svg, this.props.rotationCenterX, this.props.rotationCenterY);
         }
+        performSnapshot(this.props.undoSnapshot);
     }
     componentWillReceiveProps (newProps) {
         paper.project.activeLayer.removeChildren();
@@ -85,7 +90,16 @@ PaperCanvas.propTypes = {
     canvasRef: PropTypes.func,
     rotationCenterX: PropTypes.number,
     rotationCenterY: PropTypes.number,
-    svg: PropTypes.string
+    svg: PropTypes.string,
+    undoSnapshot: PropTypes.func.isRequired
 };
+const mapDispatchToProps = dispatch => ({
+    undoSnapshot: snapshot => {
+        dispatch(undoSnapshot(snapshot));
+    }
+});
 
-export default PaperCanvas;
+export default connect(
+    null,
+    mapDispatchToProps
+)(PaperCanvas);

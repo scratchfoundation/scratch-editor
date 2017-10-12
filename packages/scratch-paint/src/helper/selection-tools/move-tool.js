@@ -51,7 +51,7 @@ class MoveTool {
             }
             this._select(item, true, hitProperties.subselect);
         }
-        if (hitProperties.clone) cloneSelection(hitProperties.subselect);
+        if (hitProperties.clone) cloneSelection(hitProperties.subselect, this.onUpdateSvg);
         this.selectedItems = getSelectedLeafItems();
     }
     /**
@@ -94,15 +94,19 @@ class MoveTool {
         }
     }
     onMouseUp () {
+        let moved = false;
         // resetting the items origin point for the next usage
         for (const item of this.selectedItems) {
+            if (item.data.origPos && !item.position.equals(item.data.origPos)) {
+                moved = true;
+            }
             item.data.origPos = null;
         }
         this.selectedItems = null;
 
-        // @todo add back undo
-        // pg.undo.snapshot('moveSelection');
-        this.onUpdateSvg();
+        if (moved) {
+            this.onUpdateSvg();
+        }
     }
 }
 
