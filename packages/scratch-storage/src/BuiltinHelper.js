@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const md5 = require('js-md5');
 
 const Asset = require('./Asset');
 const AssetType = require('./AssetType');
@@ -99,9 +99,7 @@ class BuiltinHelper extends Helper {
         if (id) {
             if (this.assets.hasOwnProperty(id) && assetType.immutable) return id;
         } else if (assetType.immutable) {
-            const hash = crypto.createHash('md5');
-            hash.update(data);
-            id = hash.digest('hex');
+            id = md5(data);
         }
         this.assets[id] = {
             type: assetType,

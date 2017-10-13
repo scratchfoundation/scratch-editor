@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const md5 = require('js-md5');
 const test = require('tap').test;
 
 const ScratchStorage = require('../../dist/node/scratch-storage');
@@ -30,10 +30,7 @@ test('load', t => {
         t.strictEqual(asset.assetId, id);
         t.strictEqual(asset.assetType, assetType);
         t.ok(asset.data.length);
-
-        const hash = crypto.createHash('md5');
-        hash.update(asset.data);
-        t.strictEqual(hash.digest('hex'), id);
+        t.strictEqual(md5(asset.data), id);
     };
     for (var i = 0; i < defaultAssetTypes.length; ++i) {
         const assetType = defaultAssetTypes[i];
