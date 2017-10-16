@@ -5,7 +5,11 @@ const Modes = keyMirror({
     ERASER: null,
     LINE: null,
     SELECT: null,
-    RESHAPE: null
+    RESHAPE: null,
+    PEN: null,
+    OVAL: null,
+    RECT: null,
+    ROUNDED_RECT: null
 });
 
 export default Modes;
