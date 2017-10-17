@@ -5,7 +5,8 @@ import {connect} from 'react-redux';
 import paper from '@scratch/paper';
 
 import {performSnapshot} from '../helper/undo';
-import {undoSnapshot} from '../reducers/undo';
+import {undoSnapshot, clearUndoState} from '../reducers/undo';
+import {isGroup, ungroupItems} from '../helper/group';
 
 import styles from './paper-canvas.css';
 
@@ -23,17 +24,24 @@ class PaperCanvas extends React.Component {
         paper.settings.handleSize = 0;
         if (this.props.svg) {
             this.importSvg(this.props.svg, this.props.rotationCenterX, this.props.rotationCenterY);
+        } else {
+            performSnapshot(this.props.undoSnapshot);
         }
-        performSnapshot(this.props.undoSnapshot);
     }
     componentWillReceiveProps (newProps) {
-        paper.project.activeLayer.removeChildren();
-        this.importSvg(newProps.svg, newProps.rotationCenterX, newProps.rotationCenterY);
+        for (const layer of paper.project.layers) {
+            layer.removeChildren();
+        }
+        this.props.clearUndo();
+        if (newProps.svg) {
+            this.importSvg(newProps.svg, newProps.rotationCenterX, newProps.rotationCenterY);
+        }
     }
     componentWillUnmount () {
         paper.remove();
     }
     importSvg (svg, rotationCenterX, rotationCenterY) {
+        const paperCanvas = this;
         paper.project.importSVG(svg, {
             expandShapes: true,
             onLoad: function (item) {
@@ -67,7 +75,11 @@ class PaperCanvas extends React.Component {
                     // Center
                     item.position = paper.project.view.center;
                 }
+                if (isGroup(item)) {
+                    ungroupItems([item]);
+                }
 
+                performSnapshot(paperCanvas.props.undoSnapshot);
                 paper.project.view.update();
             }
         });
@@ -92,6 +104,7 @@ class PaperCanvas extends React.Component {
 
 PaperCanvas.propTypes = {
     canvasRef: PropTypes.func,
+    clearUndo: PropTypes.func.isRequired,
     rotationCenterX: PropTypes.number,
     rotationCenterY: PropTypes.number,
     svg: PropTypes.string,
@@ -100,6 +113,9 @@ PaperCanvas.propTypes = {
 const mapDispatchToProps = dispatch => ({
     undoSnapshot: snapshot => {
         dispatch(undoSnapshot(snapshot));
+    },
+    clearUndo: () => {
+        dispatch(clearUndoState());
     }
 });
 

@@ -29,8 +29,9 @@ class PaintEditor extends React.Component {
         document.removeEventListener('keydown', this.props.onKeyPress);
     }
     handleUpdateSvg (skipSnapshot) {
-        // Hide bounding box
-        getGuideLayer().visible = false;
+        // Hide guide layer
+        const guideLayer = getGuideLayer();
+        guideLayer.remove();
         const bounds = paper.project.activeLayer.bounds;
         this.props.onUpdateSvg(
             paper.project.exportSVG({
@@ -42,7 +43,7 @@ class PaintEditor extends React.Component {
         if (!skipSnapshot) {
             performSnapshot(this.props.undoSnapshot);
         }
-        getGuideLayer().visible = true;
+        paper.project.addLayer(guideLayer);
     }
     handleUndo () {
         performUndo(this.props.undoState, this.props.onUndo, this.handleUpdateSvg);

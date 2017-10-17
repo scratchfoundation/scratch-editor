@@ -23,37 +23,41 @@ const groupSelection = function (clearSelectedItems) {
     return false;
 };
 
-const ungroupLoop = function (group, recursive) {
-    // don't ungroup items that are not groups
+const ungroupLoop = function (group, recursive, selectUngroupedItems) {
+    // Can't ungroup items that are not groups
     if (!group || !group.children || !isGroup(group)) return;
             
     group.applyMatrix = true;
     // iterate over group children recursively
     for (let i = 0; i < group.children.length; i++) {
-        const groupChild = group.children[i];
+        let groupChild = group.children[i];
         if (groupChild.hasChildren()) {
             // recursion (groups can contain groups, ie. from SVG import)
             if (recursive) {
-                ungroupLoop(groupChild, true /* recursive */);
+                ungroupLoop(groupChild, recursive, selectUngroupedItems);
                 continue;
+            }
+            if (groupChild.children.length === 1) {
+                groupChild = groupChild.reduce();
             }
         }
         groupChild.applyMatrix = true;
         // move items from the group to the activeLayer (ungrouping)
         groupChild.insertBelow(group);
-        groupChild.selected = true;
+        if (selectUngroupedItems) {
+            groupChild.selected = true;
+        }
         i--;
     }
 };
 
 // ungroup items (only top hierarchy)
-const ungroupItems = function (items, clearSelectedItems) {
-    clearSelection(clearSelectedItems);
+const ungroupItems = function (items, selectUngroupedItems) {
     const emptyGroups = [];
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
         if (isGroup(item) && !item.data.isPGTextItem) {
-            ungroupLoop(item, false /* recursive */);
+            ungroupLoop(item, false /* recursive */, selectUngroupedItems /* selectUngroupedItems */);
 
             if (!item.hasChildren()) {
                 emptyGroups.push(item);
@@ -70,9 +74,10 @@ const ungroupItems = function (items, clearSelectedItems) {
     // pg.undo.snapshot('ungroupItems');
 };
 
-const ungroupSelection = function () {
+const ungroupSelection = function (clearSelectedItems) {
     const items = getSelectedRootItems();
-    ungroupItems(items);
+    clearSelection(clearSelectedItems);
+    ungroupItems(items, true /* selectUngroupedItems */);
 };
 
 
