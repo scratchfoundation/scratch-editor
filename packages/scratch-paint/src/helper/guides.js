@@ -58,12 +58,8 @@ const rectSelect = function (event, color) {
     return rect;
 };
 
-const getGuideColor = function (colorName) {
-    if (colorName === 'blue') {
-        return GUIDE_BLUE;
-    } else if (colorName === 'grey') {
-        return GUIDE_GREY;
-    }
+const getGuideColor = function () {
+    return GUIDE_BLUE;
 };
 
 const _removePaperItemsByDataTags = function (tags) {
@@ -96,12 +92,30 @@ const removeAllGuides = function () {
     _removePaperItemsByTags(['guide']);
 };
 
+const removeHitPoint = function () {
+    _removePaperItemsByDataTags(['isHitPoint']);
+};
+
+const drawHitPoint = function (point) {
+    removeHitPoint();
+    if (point) {
+        const hitPoint = paper.Path.Circle(point, 4 /* radius */);
+        hitPoint.strokeColor = GUIDE_BLUE;
+        hitPoint.fillColor = new paper.Color(1, 1, 1, 0.5);
+        hitPoint.parent = getGuideLayer();
+        hitPoint.data.isHitPoint = true;
+        hitPoint.data.isHelperItem = true;
+    }
+};
+
 export {
     hoverItem,
     hoverBounds,
     rectSelect,
     removeAllGuides,
     removeHelperItems,
+    drawHitPoint,
+    removeHitPoint,
     getGuideColor,
     setDefaultGuideStyle
 };

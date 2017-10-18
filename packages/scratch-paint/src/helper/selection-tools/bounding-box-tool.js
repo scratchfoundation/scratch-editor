@@ -170,7 +170,7 @@ class BoundingBoxTool {
                     noSelect: true,
                     noHover: true
                 };
-                rotHandle.fillColor = getGuideColor('blue');
+                rotHandle.fillColor = getGuideColor();
                 rotHandle.parent = getGuideLayer();
                 this.boundsRotHandles[index] = rotHandle;
             }
@@ -186,7 +186,7 @@ class BoundingBoxTool {
                         noHover: true
                     },
                     size: [size / paper.view.zoom, size / paper.view.zoom],
-                    fillColor: getGuideColor('blue'),
+                    fillColor: getGuideColor(),
                     parent: getGuideLayer()
                 });
         }
