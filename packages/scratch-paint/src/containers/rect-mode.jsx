@@ -10,7 +10,7 @@ import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
 import {getSelectedLeafItems} from '../helper/selection';
 import RectTool from '../helper/tools/rect-tool';
-import RectModeComponent from '../components/rect-mode.jsx';
+import RectModeComponent from '../components/rect-mode/rect-mode.jsx';
 
 class RectMode extends React.Component {
     constructor (props) {
@@ -36,8 +36,8 @@ class RectMode extends React.Component {
             this.deactivateTool();
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isRectModeActive !== this.props.isRectModeActive;
     }
     activateTool () {
         this.tool = new RectTool(
@@ -56,7 +56,10 @@ class RectMode extends React.Component {
     }
     render () {
         return (
-            <RectModeComponent onMouseDown={this.props.handleMouseDown} />
+            <RectModeComponent
+                isSelected={this.props.isRectModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }

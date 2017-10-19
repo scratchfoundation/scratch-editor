@@ -10,7 +10,7 @@ import {changeMode} from '../reducers/modes';
 import {clearSelectedItems} from '../reducers/selected-items';
 import {clearSelection} from '../helper/selection';
 
-import BrushModeComponent from '../components/brush-mode.jsx';
+import BrushModeComponent from '../components/brush-mode/brush-mode.jsx';
 
 class BrushMode extends React.Component {
     constructor (props) {
@@ -41,8 +41,8 @@ class BrushMode extends React.Component {
             });
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isBrushModeActive !== this.props.isBrushModeActive;
     }
     activateTool () {
         // TODO: Instead of clearing selection, consider a kind of "draw inside"
@@ -71,7 +71,10 @@ class BrushMode extends React.Component {
     }
     render () {
         return (
-            <BrushModeComponent onMouseDown={this.props.handleMouseDown} />
+            <BrushModeComponent
+                isSelected={this.props.isBrushModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }

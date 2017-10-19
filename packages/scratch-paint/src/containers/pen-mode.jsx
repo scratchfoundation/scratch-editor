@@ -10,7 +10,7 @@ import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
 import {getSelectedLeafItems} from '../helper/selection';
 import PenTool from '../helper/tools/pen-tool';
-import PenModeComponent from '../components/pen-mode.jsx';
+import PenModeComponent from '../components/pen-mode/pen-mode.jsx';
 
 class PenMode extends React.Component {
     constructor (props) {
@@ -36,8 +36,8 @@ class PenMode extends React.Component {
             this.deactivateTool();
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isPenModeActive !== this.props.isPenModeActive;
     }
     activateTool () {
         this.tool = new PenTool(
@@ -56,7 +56,10 @@ class PenMode extends React.Component {
     }
     render () {
         return (
-            <PenModeComponent onMouseDown={this.props.handleMouseDown} />
+            <PenModeComponent
+                isSelected={this.props.isPenModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }

@@ -10,7 +10,7 @@ import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
 import {getSelectedLeafItems} from '../helper/selection';
 import SelectTool from '../helper/selection-tools/select-tool';
-import SelectModeComponent from '../components/select-mode.jsx';
+import SelectModeComponent from '../components/select-mode/select-mode.jsx';
 
 class SelectMode extends React.Component {
     constructor (props) {
@@ -36,8 +36,8 @@ class SelectMode extends React.Component {
             this.deactivateTool();
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isSelectModeActive !== this.props.isSelectModeActive;
     }
     activateTool () {
         this.tool = new SelectTool(
@@ -56,7 +56,10 @@ class SelectMode extends React.Component {
     }
     render () {
         return (
-            <SelectModeComponent onMouseDown={this.props.handleMouseDown} />
+            <SelectModeComponent
+                isSelected={this.props.isSelectModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }

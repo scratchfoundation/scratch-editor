@@ -1,0 +1,19 @@
+@import '../../css/colors.css';
+
+.tool-select {
+    background: none;
+    border: none;
+}
+
+.tool-select.is-selected {
+    background-color: $ui-background-blue;
+}
+
+.tool-select:focus {
+    outline: none;
+}
+
+img.tool-select-icon {
+    width: 2rem;
+    height: 2rem;
+}

@@ -1,0 +1,22 @@
+$border-radius: .25rem;
+
+.button {
+    padding: 0.25rem;
+    outline: none;
+    background: white;
+    border-radius: $border-radius;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: 0.2s;
+}
+
+.button > img {
+    flex-grow: 1;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.button:disabled > img {
+    opacity: 0.25;
+}

@@ -10,7 +10,7 @@ import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
 import {getSelectedLeafItems} from '../helper/selection';
 import OvalTool from '../helper/tools/oval-tool';
-import OvalModeComponent from '../components/oval-mode.jsx';
+import OvalModeComponent from '../components/oval-mode/oval-mode.jsx';
 
 class OvalMode extends React.Component {
     constructor (props) {
@@ -36,8 +36,8 @@ class OvalMode extends React.Component {
             this.deactivateTool();
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isOvalModeActive !== this.props.isOvalModeActive;
     }
     activateTool () {
         this.tool = new OvalTool(
@@ -56,7 +56,10 @@ class OvalMode extends React.Component {
     }
     render () {
         return (
-            <OvalModeComponent onMouseDown={this.props.handleMouseDown} />
+            <OvalModeComponent
+                isSelected={this.props.isOvalModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }

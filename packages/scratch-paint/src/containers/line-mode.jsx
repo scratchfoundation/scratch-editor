@@ -10,7 +10,7 @@ import {changeMode} from '../reducers/modes';
 import {changeStrokeWidth} from '../reducers/stroke-width';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
-import LineModeComponent from '../components/line-mode.jsx';
+import LineModeComponent from '../components/line-mode/line-mode.jsx';
 
 class LineMode extends React.Component {
     static get SNAP_TOLERANCE () {
@@ -42,8 +42,8 @@ class LineMode extends React.Component {
             this.deactivateTool();
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isLineModeActive !== this.props.isLineModeActive;
     }
     activateTool () {
         clearSelection(this.props.clearSelectedItems);
@@ -266,7 +266,10 @@ class LineMode extends React.Component {
     }
     render () {
         return (
-            <LineModeComponent onMouseDown={this.props.handleMouseDown} />
+            <LineModeComponent
+                isSelected={this.props.isLineModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }

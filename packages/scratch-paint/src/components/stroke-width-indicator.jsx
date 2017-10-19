@@ -6,7 +6,7 @@ import Input from './forms/input.jsx';
 
 import {MAX_STROKE_WIDTH} from '../reducers/stroke-width';
 
-import styles from './paint-editor.css';
+import styles from './paint-editor/paint-editor.css';
 
 const BufferedInput = BufferedInputHOC(Input);
 const StrokeWidthIndicatorComponent = props => (

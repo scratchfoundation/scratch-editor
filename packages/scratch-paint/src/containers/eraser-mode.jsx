@@ -6,7 +6,7 @@ import Modes from '../modes/modes';
 import Blobbiness from '../helper/blob-tools/blob';
 import {changeBrushSize} from '../reducers/eraser-mode';
 import {clearSelectedItems} from '../reducers/selected-items';
-import EraserModeComponent from '../components/eraser-mode.jsx';
+import EraserModeComponent from '../components/eraser-mode/eraser-mode.jsx';
 import {changeMode} from '../reducers/modes';
 
 class EraserMode extends React.Component {
@@ -37,8 +37,8 @@ class EraserMode extends React.Component {
             });
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isEraserModeActive !== this.props.isEraserModeActive;
     }
     activateTool () {
         this.props.canvas.addEventListener('mousewheel', this.onScroll);
@@ -59,7 +59,10 @@ class EraserMode extends React.Component {
     }
     render () {
         return (
-            <EraserModeComponent onMouseDown={this.props.handleMouseDown} />
+            <EraserModeComponent
+                isSelected={this.props.isEraserModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }

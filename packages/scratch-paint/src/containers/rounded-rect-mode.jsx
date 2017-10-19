@@ -10,7 +10,7 @@ import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
 import {getSelectedLeafItems} from '../helper/selection';
 import RoundedRectTool from '../helper/tools/rounded-rect-tool';
-import RoundedRectModeComponent from '../components/rounded-rect-mode.jsx';
+import RoundedRectModeComponent from '../components/rounded-rect-mode/rounded-rect-mode.jsx';
 
 class RoundedRectMode extends React.Component {
     constructor (props) {
@@ -36,8 +36,8 @@ class RoundedRectMode extends React.Component {
             this.deactivateTool();
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isRoundedRectModeActive !== this.props.isRoundedRectModeActive;
     }
     activateTool () {
         this.tool = new RoundedRectTool(
@@ -56,7 +56,10 @@ class RoundedRectMode extends React.Component {
     }
     render () {
         return (
-            <RoundedRectModeComponent onMouseDown={this.props.handleMouseDown} />
+            <RoundedRectModeComponent
+                isSelected={this.props.isRoundedRectModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }

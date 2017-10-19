@@ -49,6 +49,10 @@ const base = {
                     }
                 }
             }]
+        },
+        {
+            test: /\.svg$/,
+            loader: 'svg-url-loader?noquotes'
         }]
     },
     plugins: []

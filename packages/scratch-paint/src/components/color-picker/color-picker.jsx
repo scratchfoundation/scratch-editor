@@ -5,9 +5,9 @@ import classNames from 'classnames';
 import parseColor from 'parse-color';
 import bindAll from 'lodash.bindall';
 
-import {MIXED} from '../helper/style-path';
+import {MIXED} from '../../helper/style-path';
 
-import Slider from './forms/slider.jsx';
+import Slider from '../forms/slider.jsx';
 import styles from './color-picker.css';
 
 const colorStringToHsv = hexString => {

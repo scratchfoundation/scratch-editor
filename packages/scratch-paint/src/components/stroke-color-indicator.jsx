@@ -4,10 +4,10 @@ import Popover from 'react-popover';
 
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
 import Label from './forms/label.jsx';
-import ColorPicker from './color-picker.jsx';
-import ColorButton from './color-button.jsx';
+import ColorPicker from './color-picker/color-picker.jsx';
+import ColorButton from './color-button/color-button.jsx';
 
-import styles from './paint-editor.css';
+import styles from './paint-editor/paint-editor.css';
 
 const messages = defineMessages({
     stroke: {

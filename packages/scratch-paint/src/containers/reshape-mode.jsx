@@ -10,7 +10,7 @@ import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 import {getSelectedLeafItems} from '../helper/selection';
 
 import ReshapeTool from '../helper/selection-tools/reshape-tool';
-import ReshapeModeComponent from '../components/reshape-mode.jsx';
+import ReshapeModeComponent from '../components/reshape-mode/reshape-mode.jsx';
 
 class ReshapeMode extends React.Component {
     constructor (props) {
@@ -36,8 +36,8 @@ class ReshapeMode extends React.Component {
             this.deactivateTool();
         }
     }
-    shouldComponentUpdate () {
-        return false; // Static component, for now
+    shouldComponentUpdate (nextProps) {
+        return nextProps.isReshapeModeActive !== this.props.isReshapeModeActive;
     }
     activateTool () {
         this.tool = new ReshapeTool(
@@ -58,7 +58,10 @@ class ReshapeMode extends React.Component {
     }
     render () {
         return (
-            <ReshapeModeComponent onMouseDown={this.props.handleMouseDown} />
+            <ReshapeModeComponent
+                isSelected={this.props.isReshapeModeActive}
+                onMouseDown={this.props.handleMouseDown}
+            />
         );
     }
 }
