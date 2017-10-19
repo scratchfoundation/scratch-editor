@@ -5,7 +5,6 @@ import bindAll from 'lodash.bindall';
 import Modes from '../modes/modes';
 
 import {changeMode} from '../reducers/modes';
-import {clearHoveredItem, setHoveredItem} from '../reducers/hover';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
 import {getSelectedLeafItems} from '../helper/selection';
@@ -26,10 +25,6 @@ class RectMode extends React.Component {
         }
     }
     componentWillReceiveProps (nextProps) {
-        if (this.tool && nextProps.hoveredItemId !== this.props.hoveredItemId) {
-            this.tool.setPrevHoveredItemId(nextProps.hoveredItemId);
-        }
-
         if (nextProps.isRectModeActive && !this.props.isRectModeActive) {
             this.activateTool();
         } else if (!nextProps.isRectModeActive && this.props.isRectModeActive) {
@@ -41,8 +36,6 @@ class RectMode extends React.Component {
     }
     activateTool () {
         this.tool = new RectTool(
-            this.props.setHoveredItem,
-            this.props.clearHoveredItem,
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
             this.props.onUpdateSvg
@@ -65,27 +58,17 @@ class RectMode extends React.Component {
 }
 
 RectMode.propTypes = {
-    clearHoveredItem: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
     handleMouseDown: PropTypes.func.isRequired,
-    hoveredItemId: PropTypes.number,
     isRectModeActive: PropTypes.bool.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
-    setHoveredItem: PropTypes.func.isRequired,
     setSelectedItems: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    isRectModeActive: state.scratchPaint.mode === Modes.RECT,
-    hoveredItemId: state.scratchPaint.hoveredItemId
+    isRectModeActive: state.scratchPaint.mode === Modes.RECT
 });
 const mapDispatchToProps = dispatch => ({
-    setHoveredItem: hoveredItemId => {
-        dispatch(setHoveredItem(hoveredItemId));
-    },
-    clearHoveredItem: () => {
-        dispatch(clearHoveredItem());
-    },
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
     },

@@ -6,16 +6,12 @@ import log from '../../log/log';
  */
 class RectTool extends paper.Tool {
     /**
-     * @param {function} setHoveredItem Callback to set the hovered item
-     * @param {function} clearHoveredItem Callback to clear the hovered item
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      * @param {!function} onUpdateSvg A callback to call when the image visibly changes
      */
-    constructor (setHoveredItem, clearHoveredItem, setSelectedItems, clearSelectedItems, onUpdateSvg) {
+    constructor (setSelectedItems, clearSelectedItems, onUpdateSvg) {
         super();
-        this.setHoveredItem = setHoveredItem;
-        this.clearHoveredItem = clearHoveredItem;
         this.setSelectedItems = setSelectedItems;
         this.clearSelectedItems = clearSelectedItems;
         this.onUpdateSvg = onUpdateSvg;
@@ -27,16 +23,6 @@ class RectTool extends paper.Tool {
         this.onMouseMove = this.handleMouseMove;
         this.onMouseDrag = this.handleMouseDrag;
         this.onMouseUp = this.handleMouseUp;
-    }
-    /**
-     * To be called when the hovered item changes. When the select tool hovers over a
-     * new item, it compares against this to see if a hover item change event needs to
-     * be fired.
-     * @param {paper.Item} prevHoveredItemId ID of the highlight item that indicates the mouse is
-     *     over a given item currently
-     */
-    setPrevHoveredItemId (prevHoveredItemId) {
-        this.prevHoveredItemId = prevHoveredItemId;
     }
     handleMouseDown () {
         log.warn('Rectangle tool not yet implemented');
