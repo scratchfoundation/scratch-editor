@@ -230,6 +230,12 @@ const styleCursorPreview = function (path, options) {
     }
 };
 
+const styleShape = function (path, options) {
+    path.fillColor = options.fillColor;
+    path.strokeColor = options.strokeColor;
+    path.strokeWidth = options.strokeWidth;
+};
+
 export {
     applyFillColorToSelection,
     applyStrokeColorToSelection,
@@ -237,6 +243,7 @@ export {
     getColorsFromSelection,
     MIXED,
     styleBlob,
+    styleShape,
     stylePath,
     styleCursorPreview
 };

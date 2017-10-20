@@ -5,10 +5,9 @@ import bindAll from 'lodash.bindall';
 import Modes from '../modes/modes';
 
 import {changeMode} from '../reducers/modes';
-import {clearHoveredItem, setHoveredItem} from '../reducers/hover';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
-import {getSelectedLeafItems} from '../helper/selection';
+import {clearSelection, getSelectedLeafItems} from '../helper/selection';
 import RectTool from '../helper/tools/rect-tool';
 import RectModeComponent from '../components/rect-mode/rect-mode.jsx';
 
@@ -26,8 +25,8 @@ class RectMode extends React.Component {
         }
     }
     componentWillReceiveProps (nextProps) {
-        if (this.tool && nextProps.hoveredItemId !== this.props.hoveredItemId) {
-            this.tool.setPrevHoveredItemId(nextProps.hoveredItemId);
+        if (this.tool && nextProps.colorState !== this.props.colorState) {
+            this.tool.setColorState(nextProps.colorState);
         }
 
         if (nextProps.isRectModeActive && !this.props.isRectModeActive) {
@@ -40,13 +39,13 @@ class RectMode extends React.Component {
         return nextProps.isRectModeActive !== this.props.isRectModeActive;
     }
     activateTool () {
+        clearSelection(this.props.clearSelectedItems);
         this.tool = new RectTool(
-            this.props.setHoveredItem,
-            this.props.clearHoveredItem,
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
             this.props.onUpdateSvg
         );
+        this.tool.setColorState(this.props.colorState);
         this.tool.activate();
     }
     deactivateTool () {
@@ -65,27 +64,23 @@ class RectMode extends React.Component {
 }
 
 RectMode.propTypes = {
-    clearHoveredItem: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
+    colorState: PropTypes.shape({
+        fillColor: PropTypes.string,
+        strokeColor: PropTypes.string,
+        strokeWidth: PropTypes.number
+    }).isRequired,
     handleMouseDown: PropTypes.func.isRequired,
-    hoveredItemId: PropTypes.number,
     isRectModeActive: PropTypes.bool.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
-    setHoveredItem: PropTypes.func.isRequired,
     setSelectedItems: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    isRectModeActive: state.scratchPaint.mode === Modes.RECT,
-    hoveredItemId: state.scratchPaint.hoveredItemId
+    colorState: state.scratchPaint.color,
+    isRectModeActive: state.scratchPaint.mode === Modes.RECT
 });
 const mapDispatchToProps = dispatch => ({
-    setHoveredItem: hoveredItemId => {
-        dispatch(setHoveredItem(hoveredItemId));
-    },
-    clearHoveredItem: () => {
-        dispatch(clearHoveredItem());
-    },
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
     },

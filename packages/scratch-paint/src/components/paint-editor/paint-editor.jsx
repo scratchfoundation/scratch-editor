@@ -11,7 +11,6 @@ import SelectMode from '../../containers/select-mode.jsx';
 import LineMode from '../../containers/line-mode.jsx';
 import PenMode from '../../containers/pen-mode.jsx';
 import RectMode from '../../containers/rect-mode.jsx';
-import RoundedRectMode from '../../containers/rounded-rect-mode.jsx';
 import OvalMode from '../../containers/oval-mode.jsx';
 
 import FillColorIndicatorComponent from '../../containers/fill-color-indicator.jsx';
@@ -157,9 +156,6 @@ class PaintEditorComponent extends React.Component {
                                 onUpdateSvg={this.props.onUpdateSvg}
                             />
                             <RectMode
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                            <RoundedRectMode
                                 onUpdateSvg={this.props.onUpdateSvg}
                             />
                         </div>

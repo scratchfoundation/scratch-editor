@@ -126,22 +126,18 @@ const clearSelection = function (dispatchClearSelect) {
  * @return {Array<paper.Item>} in increasing Z order.
  */
 const getSelectedRootItems = function () {
-    const allItems = paper.project.selectedItems;
-    const itemsAndGroups = [];
+    const allItems = getAllSelectableRootItems();
+    const items = [];
 
-    for (let i = 0; i < allItems.length; i++) {
-        const item = allItems[i];
-        if ((isGroup(item) && !isGroup(item.parent)) ||
-                !isGroup(item.parent)) {
-            if (item.data && !item.data.isSelectionBound) {
-                itemsAndGroups.push(item);
-            }
+    for (const item of allItems) {
+        if (item.selected) {
+            items.push(item);
         }
     }
 
     // sort items by index (0 at bottom)
-    itemsAndGroups.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
-    return itemsAndGroups;
+    items.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
+    return items;
 };
 
 /**
@@ -155,7 +151,7 @@ const getSelectedLeafItems = function () {
 
     for (let i = 0; i < allItems.length; i++) {
         const item = allItems[i];
-        if (!isGroup(item) && item.data && !item.data.isSelectionBound) {
+        if (!(item instanceof paper.Layer) && !isGroup(item) && item.data && !item.data.isSelectionBound) {
             items.push(item);
         }
     }

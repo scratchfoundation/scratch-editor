@@ -84,8 +84,8 @@ class BoundingBoxTool {
 
         const hitProperties = {
             hitResult: hitResult,
-            clone: event.modifiers.alt,
-            multiselect: event.modifiers.shift
+            clone: clone,
+            multiselect: multiselect
         };
         if (this.mode === BoundingBoxModes.MOVE) {
             this._modeMap[this.mode].onMouseDown(hitProperties);
