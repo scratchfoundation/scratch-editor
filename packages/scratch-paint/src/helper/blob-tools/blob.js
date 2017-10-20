@@ -195,7 +195,8 @@ class Blobbiness {
         // Get all path items to merge with
         const paths = paper.project.getItems({
             match: function (item) {
-                return blob.isMergeable(lastPath, item);
+                return blob.isMergeable(lastPath, item) &&
+                    item.parent instanceof paper.Layer; // don't merge with nested in group
             }
         });
 
@@ -390,8 +391,7 @@ class Blobbiness {
     isMergeable (newPath, existingPath) {
         return existingPath instanceof paper.PathItem && // path or compound path
             existingPath !== this.cursorPreview && // don't merge with the mouse preview
-            existingPath !== newPath && // don't merge with self
-            existingPath.parent instanceof paper.Layer; // don't merge with nested in group
+            existingPath !== newPath; // don't merge with self
     }
 
     deactivateTool () {
