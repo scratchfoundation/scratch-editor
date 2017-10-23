@@ -134,7 +134,7 @@ class PaintEditorComponent extends React.Component {
                         </InputGroup>
 
                         {/* To be Front/back */}
-                        <InputGroup className={styles.modDashedBorder}>
+                        <InputGroup>
                             <EditFieldButton
                                 imgAlt="Send to Front Icon"
                                 imgSrc={sendFrontIcon}
@@ -150,14 +150,14 @@ class PaintEditorComponent extends React.Component {
                         </InputGroup>
 
                         {/* To be rotation point */}
-                        <InputGroup>
+                        {/* <InputGroup>
                             <EditFieldButton
                                 imgAlt="Rotation Point Icon"
                                 imgSrc={rotationPointIcon}
                                 title="Rotation Point"
                                 onClick={function () {}}
                             />
-                        </InputGroup>
+                        </InputGroup> */}
                     </div>
 
                     {/* Second Row */}
