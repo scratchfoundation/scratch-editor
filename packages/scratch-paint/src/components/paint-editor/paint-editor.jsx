@@ -31,7 +31,6 @@ import styles from './paint-editor.css';
 
 import groupIcon from './group.svg';
 import redoIcon from './redo.svg';
-import rotationPointIcon from './rotation-point.svg';
 import sendBackIcon from './send-back.svg';
 import sendBackwardIcon from './send-backward.svg';
 import sendForwardIcon from './send-forward.svg';
