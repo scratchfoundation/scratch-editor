@@ -1,7 +1,7 @@
 import paper from '@scratch/paper';
 import Modes from '../../modes/modes';
 import {styleShape} from '../style-path';
-import {clearSelection} from '../selection';
+import {clearSelection, deleteSelection} from '../selection';
 import BoundingBoxTool from '../selection-tools/bounding-box-tool';
 
 /**
@@ -28,8 +28,8 @@ class RectTool extends paper.Tool {
         this.onMouseDown = this.handleMouseDown;
         this.onMouseDrag = this.handleMouseDrag;
         this.onMouseUp = this.handleMouseUp;
+        this.onKeyUp = this.handleKeyUp;
 
-        this.downPoint = null;
         this.rect = null;
         this.colorState = null;
         this.isBoundingBoxMode = null;
@@ -102,6 +102,13 @@ class RectTool extends paper.Tool {
                 this.onUpdateSvg();
                 this.rect = null;
             }
+        }
+    }
+    handleKeyUp (event) {
+        // Backspace, delete
+        if (event.key === 'delete' || event.key === 'backspace') {
+            deleteSelection(Modes.RESHAPE, this.onUpdateSvg);
+            this.boundingBoxTool.removeBoundsPath();
         }
     }
     deactivateTool () {
