@@ -2,7 +2,7 @@
 
 $border-radius: .25rem;
 
-.tool-select {
+.mod-tool-select {
     display: inline-block;
     border: none;
     border-radius: $border-radius;
@@ -13,11 +13,11 @@ $border-radius: .25rem;
     transition: 0.2s;
 }
 
-.tool-select.is-selected {
+.mod-tool-select.is-selected {
     background-color: $ui-background-blue;
 }
 
-.tool-select:focus {
+.mod-tool-select:focus {
     outline: none;
 }
 

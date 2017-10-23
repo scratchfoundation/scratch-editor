@@ -10,7 +10,7 @@ import styles from './tool-select-base.css';
 const ToolSelectComponent = props => (
     <Button
         className={
-            classNames(props.className, styles.toolSelect, {
+            classNames(props.className, styles.modToolSelect, {
                 [styles.isSelected]: props.isSelected
             })
         }

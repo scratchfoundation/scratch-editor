@@ -1,0 +1,31 @@
+@import "../../../css/colors.css";
+@import "../../../css/units.css";
+
+$border-radius: 0.25rem;
+
+.mod-edit-field {
+    background: none;
+    border: none;
+    display: inline-block;
+    padding: 0.25rem;
+    outline: none;
+    border-radius: $border-radius;
+    min-width: 2.5rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.mod-edit-field:active {
+    background-color: $ui-background-blue; 
+}
+
+.edit-field-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-grow: 1;
+    vertical-align: middle;
+}
+
+.edit-field-title {
+    display: block;
+}

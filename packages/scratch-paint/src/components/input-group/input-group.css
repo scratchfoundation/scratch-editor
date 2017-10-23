@@ -1,0 +1,5 @@
+@import '../../css/units.css';
+
+.input-group + .input-group {
+    margin-left: calc(2 * $space);
+}
