@@ -5,10 +5,9 @@ import bindAll from 'lodash.bindall';
 import Modes from '../modes/modes';
 
 import {changeMode} from '../reducers/modes';
-import {clearHoveredItem, setHoveredItem} from '../reducers/hover';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
-import {getSelectedLeafItems} from '../helper/selection';
+import {clearSelection, getSelectedLeafItems} from '../helper/selection';
 import OvalTool from '../helper/tools/oval-tool';
 import OvalModeComponent from '../components/oval-mode/oval-mode.jsx';
 
@@ -26,8 +25,8 @@ class OvalMode extends React.Component {
         }
     }
     componentWillReceiveProps (nextProps) {
-        if (this.tool && nextProps.hoveredItemId !== this.props.hoveredItemId) {
-            this.tool.setPrevHoveredItemId(nextProps.hoveredItemId);
+        if (this.tool && nextProps.colorState !== this.props.colorState) {
+            this.tool.setColorState(nextProps.colorState);
         }
 
         if (nextProps.isOvalModeActive && !this.props.isOvalModeActive) {
@@ -40,13 +39,13 @@ class OvalMode extends React.Component {
         return nextProps.isOvalModeActive !== this.props.isOvalModeActive;
     }
     activateTool () {
+        clearSelection(this.props.clearSelectedItems);
         this.tool = new OvalTool(
-            this.props.setHoveredItem,
-            this.props.clearHoveredItem,
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
             this.props.onUpdateSvg
         );
+        this.tool.setColorState(this.props.colorState);
         this.tool.activate();
     }
     deactivateTool () {
@@ -65,27 +64,23 @@ class OvalMode extends React.Component {
 }
 
 OvalMode.propTypes = {
-    clearHoveredItem: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
+    colorState: PropTypes.shape({
+        fillColor: PropTypes.string,
+        strokeColor: PropTypes.string,
+        strokeWidth: PropTypes.number
+    }).isRequired,
     handleMouseDown: PropTypes.func.isRequired,
-    hoveredItemId: PropTypes.number,
     isOvalModeActive: PropTypes.bool.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
-    setHoveredItem: PropTypes.func.isRequired,
     setSelectedItems: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    isOvalModeActive: state.scratchPaint.mode === Modes.OVAL,
-    hoveredItemId: state.scratchPaint.hoveredItemId
+    colorState: state.scratchPaint.color,
+    isOvalModeActive: state.scratchPaint.mode === Modes.OVAL
 });
 const mapDispatchToProps = dispatch => ({
-    setHoveredItem: hoveredItemId => {
-        dispatch(setHoveredItem(hoveredItemId));
-    },
-    clearHoveredItem: () => {
-        dispatch(clearHoveredItem());
-    },
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
     },
