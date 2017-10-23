@@ -1,17 +1,22 @@
 import bindAll from 'lodash.bindall';
+import classNames from 'classnames';
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import PaperCanvas from '../../containers/paper-canvas.jsx';
 
+import Button from '../button/button.jsx';
+import ButtonGroup from '../button-group/button-group.jsx';
 import BrushMode from '../../containers/brush-mode.jsx';
+import EditFieldButton from './edit-field-button/edit-field-button.jsx';
 import EraserMode from '../../containers/eraser-mode.jsx';
-import ReshapeMode from '../../containers/reshape-mode.jsx';
-import SelectMode from '../../containers/select-mode.jsx';
+import InputGroup from '../input-group/input-group.jsx';
 import LineMode from '../../containers/line-mode.jsx';
+import OvalMode from '../../containers/oval-mode.jsx';
 import PenMode from '../../containers/pen-mode.jsx';
 import RectMode from '../../containers/rect-mode.jsx';
-import OvalMode from '../../containers/oval-mode.jsx';
+import ReshapeMode from '../../containers/reshape-mode.jsx';
+import SelectMode from '../../containers/select-mode.jsx';
 
 import FillColorIndicatorComponent from '../../containers/fill-color-indicator.jsx';
 import StrokeColorIndicatorComponent from '../../containers/stroke-color-indicator.jsx';
@@ -23,6 +28,16 @@ import Label from '../forms/label.jsx';
 import Input from '../forms/input.jsx';
 
 import styles from './paint-editor.css';
+
+import groupIcon from './group.svg';
+import redoIcon from './redo.svg';
+import rotationPointIcon from './rotation-point.svg';
+import sendBackIcon from './send-back.svg';
+import sendBackwardIcon from './send-backward.svg';
+import sendForwardIcon from './send-forward.svg';
+import sendFrontIcon from './send-front.svg';
+import undoIcon from './undo.svg';
+import ungroupIcon from './ungroup.svg';
 
 const BufferedInput = BufferedInputHOC(Input);
 const messages = defineMessages({
@@ -47,82 +62,123 @@ class PaintEditorComponent extends React.Component {
     render () {
         return (
             <div className={styles.editorContainer}>
-                {/* First row */}
-                <div className={styles.row}>
-                    {/* Name field */}
-                    <div className={styles.inputGroup}>
-                        <Label text={this.props.intl.formatMessage(messages.costume)}>
-                            <BufferedInput
-                                type="text"
-                                value="meow"
+                <div className={styles.editorContainerTop}>
+                    {/* First row */}
+                    <div className={styles.row}>
+                        {/* Name field */}
+                        <InputGroup>
+                            <Label text={this.props.intl.formatMessage(messages.costume)}>
+                                <BufferedInput
+                                    type="text"
+                                    value="meow"
+                                />
+                            </Label>
+                        </InputGroup>
+
+                        {/* Undo/Redo */}
+                        <InputGroup>
+                            <ButtonGroup>
+                                <Button
+                                    className={styles.buttonGroupButton}
+                                    onClick={this.props.onUndo}
+                                >
+                                    <img
+                                        alt="Undo Icon"
+                                        className={styles.buttonGroupButtonIcon}
+                                        src={undoIcon}
+                                    />
+                                </Button>
+                                <Button
+                                    className={styles.buttonGroupButton}
+                                    onClick={this.props.onRedo}
+                                >
+                                    <img
+                                        alt="Redo Icon"
+                                        className={styles.buttonGroupButtonIcon}
+                                        src={redoIcon}
+                                    />
+                                </Button>
+                            </ButtonGroup>
+                        </InputGroup>
+
+                        {/* To be Group/Ungroup */}
+                        <InputGroup className={styles.modDashedBorder}>
+                            <EditFieldButton
+                                imgAlt="Group Icon"
+                                imgSrc={groupIcon}
+                                title="Group"
+                                onClick={function () {}}
                             />
-                        </Label>
+                            <EditFieldButton
+                                imgAlt="Ungroup Icon"
+                                imgSrc={ungroupIcon}
+                                title="Ungroup"
+                                onClick={function () {}}
+                            />
+                        </InputGroup>
+
+                        {/* To be Forward/Backward */}
+                        <InputGroup className={styles.modDashedBorder}>
+                            <EditFieldButton
+                                imgAlt="Send Forward Icon"
+                                imgSrc={sendForwardIcon}
+                                title="Forward"
+                                onClick={function () {}}
+                            />
+                            <EditFieldButton
+                                imgAlt="Send Backward Icon"
+                                imgSrc={sendBackwardIcon}
+                                title="Backward"
+                                onClick={function () {}}
+                            />
+                        </InputGroup>
+
+                        {/* To be Front/back */}
+                        <InputGroup className={styles.modDashedBorder}>
+                            <EditFieldButton
+                                imgAlt="Send to Front Icon"
+                                imgSrc={sendFrontIcon}
+                                title="Front"
+                                onClick={function () {}}
+                            />
+                            <EditFieldButton
+                                imgAlt="Send to Back Icon"
+                                imgSrc={sendBackIcon}
+                                title="Back"
+                                onClick={function () {}}
+                            />
+                        </InputGroup>
+
+                        {/* To be rotation point */}
+                        <InputGroup>
+                            <EditFieldButton
+                                imgAlt="Rotation Point Icon"
+                                imgSrc={rotationPointIcon}
+                                title="Rotation Point"
+                                onClick={function () {}}
+                            />
+                        </InputGroup>
                     </div>
 
-                    {/* Undo/Redo */}
-                    <div className={styles.inputGroup}>
-                        <div className={styles.buttonGroup}>
-                            <button
-                                className={styles.button}
-                                onClick={this.props.onUndo}
-                            >
-                                Undo
-                            </button>
-                            <button
-                                className={styles.button}
-                                onClick={this.props.onRedo}
-                            >
-                                Redo
-                            </button>
+                    {/* Second Row */}
+                    <div className={styles.row}>
+                        <div className={classNames(styles.row, styles.modDashedBorder)}>
+                            {/* fill */}
+                            <FillColorIndicatorComponent
+                                onUpdateSvg={this.props.onUpdateSvg}
+                            />
+                            {/* stroke */}
+                            <StrokeColorIndicatorComponent
+                                onUpdateSvg={this.props.onUpdateSvg}
+                            />
+                            {/* stroke width */}
+                            <StrokeWidthIndicatorComponent
+                                onUpdateSvg={this.props.onUpdateSvg}
+                            />
                         </div>
-                    </div>
-
-                    {/* To be Front/back */}
-                    <div className={styles.inputGroup}>
-                        <button
-                            className={styles.button}
-                        >
-                            Front
-                        </button>
-                        <button
-                            className={styles.button}
-                        >
-                            Back
-                        </button>
-                    </div>
-
-                    {/* To be Group/Ungroup */}
-                    <div className={styles.inputGroup}>
-                        <button
-                            className={styles.button}
-                        >
-                            Group
-                        </button>
-                        <button
-                            className={styles.button}
-                        >
-                            Ungroup
-                        </button>
-                    </div>
-                </div>
-
-                {/* Second Row */}
-                <div className={styles.row}>
-                    {/* fill */}
-                    <FillColorIndicatorComponent
-                        onUpdateSvg={this.props.onUpdateSvg}
-                    />
-                    {/* stroke */}
-                    <StrokeColorIndicatorComponent
-                        onUpdateSvg={this.props.onUpdateSvg}
-                    />
-                    {/* stroke width */}
-                    <StrokeWidthIndicatorComponent
-                        onUpdateSvg={this.props.onUpdateSvg}
-                    />
-
-                    <div className={styles.inputGroup}>
-                        Mode tools
+                        <InputGroup className={styles.modModeTools}>
+                            Mode tools
+                        </InputGroup>
                     </div>
                 </div>
 

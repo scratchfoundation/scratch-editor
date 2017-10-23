@@ -13,9 +13,14 @@
     align-items: center;
 }
 
+.editor-container-top {
+    border-bottom: 1px dashed $ui-pane-border;
+    padding-bottom: 1rem;
+}
+
 .top-align-row {
+    display: flex; 
     padding-top:20px;
-    display: flex;
     flex-direction: row;
 }
 
@@ -23,66 +28,62 @@
     margin-top: calc(2 * $space);
 }
 
-.input-group + .input-group {
-    margin-left: calc(2 * $space);
+.mod-dashed-border {
+    border-right: 1px dashed $ui-pane-border; 
+    padding-right: calc(2 * $space);
 }
 
 $border-radius: 0.25rem;
 
-.button {
-    height: 2rem;
-    padding: 0.25rem;
-    outline: none;
-    background: white;
-    border-radius: $border-radius;
-    border: 1px solid #ddd;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: 0.2s;
-}
-
-.button > img {
-    flex-grow: 1;
-    max-width: 100%;
-    max-height: 100%;
-    min-width: 1.5rem;
-}
-
-.button-group {
-    margin: 0 1rem;
-}
-
-.button-group .button {
+.button-group-button {
+    display: inline-block;
+    border: 1px solid $ui-pane-border;
     border-radius: 0;
     border-left: none;
+    padding: 0.5rem;
 }
 
-.button-group .button:last-of-type {
+.button-group-button:active {
+    background-color: $ui-background-blue; 
+}
+
+.button-group-button:last-of-type {
     border-top-right-radius: $border-radius;
     border-bottom-right-radius: $border-radius;
 }
 
-.button-group .button:first-of-type {
+.button-group-button:first-of-type {
     border-left: 1px solid #ddd;
     border-top-left-radius: $border-radius;
     border-bottom-left-radius: $border-radius;
 }
 
-.button:disabled > img {
-    opacity: 0.25;
+.button-group-button-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    vertical-align: middle;
+}
+
+.mod-mode-tools {
+    margin-left: calc(2 * $space);
 }
 
 .canvas-container {
     width: 503px;
     height: 403px;
-    background-color: #e8edf1;
     border: 1px solid #e8edf1;
-    border-radius: 2px;
+    border-radius: .25rem;
     position: relative;
     overflow: visible;
 }
 
 .mode-selector {
     display: flex;
-    flex-direction: column;
+    margin-right: .5rem;
+    max-width: 5.5rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    justify-content: space-between;
 }

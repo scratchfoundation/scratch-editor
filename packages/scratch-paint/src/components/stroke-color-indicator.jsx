@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import Popover from 'react-popover';
 
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
-import Label from './forms/label.jsx';
 import ColorPicker from './color-picker/color-picker.jsx';
 import ColorButton from './color-button/color-button.jsx';
-
-import styles from './paint-editor/paint-editor.css';
+import InputGroup from './input-group/input-group.jsx';
+import Label from './forms/label.jsx';
 
 const messages = defineMessages({
     stroke: {
@@ -18,7 +17,7 @@ const messages = defineMessages({
 });
 
 const StrokeColorIndicatorComponent = props => (
-    <div className={styles.inputGroup}>
+    <InputGroup>
         <Popover
             body={
                 <ColorPicker
@@ -37,7 +36,7 @@ const StrokeColorIndicatorComponent = props => (
                 />
             </Label>
         </Popover>
-    </div>
+    </InputGroup>
 );
 
 StrokeColorIndicatorComponent.propTypes = {
