@@ -186,6 +186,12 @@ class PaintEditorComponent extends React.Component {
                     {/* Modes */}
                     {this.state.canvas ? (
                         <div className={styles.modeSelector}>
+                            <SelectMode
+                                onUpdateSvg={this.props.onUpdateSvg}
+                            />
+                            <ReshapeMode
+                                onUpdateSvg={this.props.onUpdateSvg}
+                            />
                             <BrushMode
                                 canvas={this.state.canvas}
                                 onUpdateSvg={this.props.onUpdateSvg}
@@ -198,14 +204,9 @@ class PaintEditorComponent extends React.Component {
                                 canvas={this.state.canvas}
                                 onUpdateSvg={this.props.onUpdateSvg}
                             />
+                            {/* Text mode will go here */}
                             <LineMode
                                 canvas={this.state.canvas}
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                            <SelectMode
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                            <ReshapeMode
                                 onUpdateSvg={this.props.onUpdateSvg}
                             />
                             <OvalMode

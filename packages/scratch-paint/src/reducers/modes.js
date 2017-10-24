@@ -2,7 +2,7 @@ import Modes from '../modes/modes';
 import log from '../log/log';
 
 const CHANGE_MODE = 'scratch-paint/modes/CHANGE_MODE';
-const initialState = Modes.BRUSH;
+const initialState = Modes.SELECT;
 
 const reducer = function (state, action) {
     if (typeof state === 'undefined') state = initialState;
