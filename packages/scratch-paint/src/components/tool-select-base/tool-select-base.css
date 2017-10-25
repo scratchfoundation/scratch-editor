@@ -14,7 +14,7 @@ $border-radius: .25rem;
 }
 
 .mod-tool-select.is-selected {
-    background-color: $ui-background-blue;
+    background-color: $motion-transparent;
 }
 
 .mod-tool-select:focus {

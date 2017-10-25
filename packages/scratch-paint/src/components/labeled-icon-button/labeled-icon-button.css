@@ -1,5 +1,5 @@
-@import "../../../css/colors.css";
-@import "../../../css/units.css";
+@import "../../css/colors.css";
+@import "../../css/units.css";
 
 $border-radius: 0.25rem;
 
@@ -16,7 +16,7 @@ $border-radius: 0.25rem;
 }
 
 .mod-edit-field:active {
-    background-color: $ui-background-blue; 
+    background-color: $motion-transparent; 
 }
 
 .edit-field-icon {
@@ -28,4 +28,6 @@ $border-radius: 0.25rem;
 
 .edit-field-title {
     display: block;
+    margin-top: .125rem;
+    font-size: .625rem;
 }

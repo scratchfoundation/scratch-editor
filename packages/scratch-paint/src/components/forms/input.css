@@ -10,7 +10,7 @@ See https://github.com/LLK/scratch-paint/issues/13 */
     padding: 0 0.75rem;
 
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 0.625rem;
+    font-size: 0.75rem;
     font-weight: bold;
     color: $text-primary;
 
@@ -36,8 +36,8 @@ See https://github.com/LLK/scratch-paint/issues/13 */
 }
 
 .input-form:focus {
-    border-color: #4c97ff;
-    box-shadow: inset 0 0 0 -2px rgba(0, 0, 0, 0.1);
+    border-color: $motion-primary;
+    box-shadow: 0 0 0 $grid-unit $motion-transparent;
 }
 
 .input-small {

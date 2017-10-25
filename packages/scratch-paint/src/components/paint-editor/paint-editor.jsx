@@ -8,10 +8,11 @@ import PaperCanvas from '../../containers/paper-canvas.jsx';
 import Button from '../button/button.jsx';
 import ButtonGroup from '../button-group/button-group.jsx';
 import BrushMode from '../../containers/brush-mode.jsx';
-import EditFieldButton from './edit-field-button/edit-field-button.jsx';
 import EraserMode from '../../containers/eraser-mode.jsx';
 import InputGroup from '../input-group/input-group.jsx';
+import LabeledIconButton from '../labeled-icon-button/labeled-icon-button.jsx';
 import LineMode from '../../containers/line-mode.jsx';
+import ModeToolsComponent from '../mode-tools/mode-tools.jsx';
 import OvalMode from '../../containers/oval-mode.jsx';
 import PenMode from '../../containers/pen-mode.jsx';
 import RectMode from '../../containers/rect-mode.jsx';
@@ -103,13 +104,13 @@ class PaintEditorComponent extends React.Component {
 
                         {/* Group/Ungroup */}
                         <InputGroup className={styles.modDashedBorder}>
-                            <EditFieldButton
+                            <LabeledIconButton
                                 imgAlt="Group Icon"
                                 imgSrc={groupIcon}
                                 title="Group"
                                 onClick={this.props.onGroup}
                             />
-                            <EditFieldButton
+                            <LabeledIconButton
                                 imgAlt="Ungroup Icon"
                                 imgSrc={ungroupIcon}
                                 title="Ungroup"
@@ -119,13 +120,13 @@ class PaintEditorComponent extends React.Component {
 
                         {/* Forward/Backward */}
                         <InputGroup className={styles.modDashedBorder}>
-                            <EditFieldButton
+                            <LabeledIconButton
                                 imgAlt="Send Forward Icon"
                                 imgSrc={sendForwardIcon}
                                 title="Forward"
                                 onClick={this.props.onSendForward}
                             />
-                            <EditFieldButton
+                            <LabeledIconButton
                                 imgAlt="Send Backward Icon"
                                 imgSrc={sendBackwardIcon}
                                 title="Backward"
@@ -135,13 +136,13 @@ class PaintEditorComponent extends React.Component {
 
                         {/* Front/Back */}
                         <InputGroup>
-                            <EditFieldButton
+                            <LabeledIconButton
                                 imgAlt="Send to Front Icon"
                                 imgSrc={sendFrontIcon}
                                 title="Front"
                                 onClick={this.props.onSendToFront}
                             />
-                            <EditFieldButton
+                            <LabeledIconButton
                                 imgAlt="Send to Back Icon"
                                 imgSrc={sendBackIcon}
                                 title="Back"
@@ -151,7 +152,7 @@ class PaintEditorComponent extends React.Component {
 
                         {/* To be rotation point */}
                         {/* <InputGroup>
-                            <EditFieldButton
+                            <LabeledIconButton
                                 imgAlt="Rotation Point Icon"
                                 imgSrc={rotationPointIcon}
                                 title="Rotation Point"
@@ -177,7 +178,7 @@ class PaintEditorComponent extends React.Component {
                             />
                         </div>
                         <InputGroup className={styles.modModeTools}>
-                            Mode tools
+                            <ModeToolsComponent />
                         </InputGroup>
                     </div>
                 </div>

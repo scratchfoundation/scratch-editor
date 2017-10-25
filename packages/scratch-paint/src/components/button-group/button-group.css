@@ -1,5 +1,5 @@
-$border-radius: .25rem;
+@import "../../css/units";
 
 .button-group {
-    padding: 0 1rem;
+    padding: 0 $grid-unit;
 }

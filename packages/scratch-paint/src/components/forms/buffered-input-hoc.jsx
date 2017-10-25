@@ -39,6 +39,11 @@ export default function (Input) {
             this.setState({value: null});
         }
         handleChange (e) {
+            const isNumeric = typeof this.props.value === 'number';
+            const validatesNumeric = isNumeric ? !isNaN(this.state.value) : true;
+            if (this.state.value !== null && validatesNumeric) {
+                this.props.onSubmit(isNumeric ? Number(this.state.value) : this.state.value);
+            }
             this.setState({value: e.target.value});
         }
         render () {

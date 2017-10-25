@@ -4,7 +4,7 @@
 .editor-container {
     display: flex;
     flex-direction: column;
-    padding: calc(2 * $space);
+    padding: calc(4 * $grid-unit);
 }
 
 .row {
@@ -15,22 +15,22 @@
 
 .editor-container-top {
     border-bottom: 1px dashed $ui-pane-border;
-    padding-bottom: 1rem;
+    padding-bottom: calc(2 * $grid-unit);
 }
 
 .top-align-row {
     display: flex; 
-    padding-top:20px;
+    padding-top: calc(5 * $grid-unit);
     flex-direction: row;
 }
 
 .row + .row {
-    margin-top: calc(2 * $space);
+    margin-top: calc(2 * $grid-unit);
 }
 
 .mod-dashed-border {
     border-right: 1px dashed $ui-pane-border; 
-    padding-right: calc(2 * $space);
+    padding-right: calc(3 * $grid-unit);
 }
 
 $border-radius: 0.25rem;
@@ -40,7 +40,7 @@ $border-radius: 0.25rem;
     border: 1px solid $ui-pane-border;
     border-radius: 0;
     border-left: none;
-    padding: 0.5rem;
+    padding: calc(2 * $grid-unit);
 }
 
 .button-group-button:active {
@@ -59,13 +59,13 @@ $border-radius: 0.25rem;
 }
 
 .button-group-button-icon {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.25rem;
+    height: 1.25rem;
     vertical-align: middle;
 }
 
 .mod-mode-tools {
-    margin-left: calc(2 * $space);
+    margin-left: calc(3 * $grid-unit);
 }
 
 .canvas-container {
@@ -79,7 +79,7 @@ $border-radius: 0.25rem;
 
 .mode-selector {
     display: flex;
-    margin-right: .5rem;
+    margin-right: calc(2 * $grid-unit);
     max-width: 5.5rem;
     flex-direction: row;
     flex-wrap: wrap;

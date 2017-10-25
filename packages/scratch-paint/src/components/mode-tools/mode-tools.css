@@ -1,0 +1,13 @@
+@import "../../css/units.css";
+
+.mode-tools {
+    display: flex;
+    min-height: 3rem;
+    align-items: center;
+}
+
+.mode-tools-icon {
+    margin-right: calc(2 * $grid-unit);
+    width: 2rem;
+    height: 2rem;
+}

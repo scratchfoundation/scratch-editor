@@ -1,5 +1,5 @@
 @import '../../css/units.css';
 
 .input-group + .input-group {
-    margin-left: calc(2 * $space);
+    margin-left: calc(3 * $grid-unit);
 }

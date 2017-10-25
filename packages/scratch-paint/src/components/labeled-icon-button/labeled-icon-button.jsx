@@ -1,14 +1,19 @@
+/* @todo This file should be pulled out into a shared library with scratch-gui,
+consolidating this component with icon-button.jsx in gui.
+See #13 */
+
 import classNames from 'classnames';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Button from '../../button/button.jsx';
+import Button from '../button/button.jsx';
 
-import styles from './edit-field-button.css';
+import styles from './labeled-icon-button.css';
 
-const EditFieldButton = props => (
+const LabeledIconButton = props => (
     <Button
         className={classNames(props.className, styles.modEditField)}
+        disabled={props.disabled}
         onClick={props.onClick}
     >
         <img
@@ -20,12 +25,13 @@ const EditFieldButton = props => (
     </Button>
 );
 
-EditFieldButton.propTypes = {
+LabeledIconButton.propTypes = {
     className: PropTypes.string,
+    disabled: PropTypes.string,
     imgAlt: PropTypes.string.isRequired,
     imgSrc: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired
 };
 
-export default EditFieldButton;
+export default LabeledIconButton;

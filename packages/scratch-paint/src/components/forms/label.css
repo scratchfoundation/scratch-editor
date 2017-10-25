@@ -13,7 +13,7 @@ See https://github.com/LLK/scratch-paint/issues/13 */
 
 .input-label, .input-label-secondary {
     font-size: 0.625rem;
-    margin-right: calc($space / 2);
+    margin-right: calc(2 * $grid-unit);
     user-select: none;
     cursor: default;
 }
