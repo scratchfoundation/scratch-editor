@@ -2,6 +2,10 @@
 @todo This file is copied from GUI and should be pulled out into a shared library.
 See https://github.com/LLK/scratch-paint/issues/13 */
 
+/* ACTUALLY, THIS HAS BEEN EDITED ;)
+handleChange() was adjusted here to actually send a change to `onSubmit()` so that
+brush/eraser sizes change immediately on a numeric input*/
+
 import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -40,9 +44,9 @@ export default function (Input) {
         }
         handleChange (e) {
             const isNumeric = typeof this.props.value === 'number';
-            const validatesNumeric = isNumeric ? !isNaN(this.state.value) : true;
-            if (this.state.value !== null && validatesNumeric) {
-                this.props.onSubmit(isNumeric ? Number(this.state.value) : this.state.value);
+            const validatesNumeric = isNumeric ? !isNaN(e.target.value) : true;
+            if (e.target.value !== null && validatesNumeric) {
+                this.props.onSubmit(isNumeric ? Number(e.target.value) : e.target.value);
             }
             this.setState({value: e.target.value});
         }
