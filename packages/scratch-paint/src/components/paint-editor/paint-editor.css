@@ -69,8 +69,9 @@ $border-radius: 0.25rem;
 }
 
 .canvas-container {
-    width: 503px;
-    height: 403px;
+    width: 500px;
+    height: 400px;
+    box-sizing: content-box;
     border: 1px solid #e8edf1;
     border-radius: .25rem;
     position: relative;
