@@ -225,6 +225,7 @@ class PaintEditorComponent extends React.Component {
                             rotationCenterY={this.props.rotationCenterY}
                             svg={this.props.svg}
                             svgId={this.props.svgId}
+                            onUpdateSvg={this.props.onUpdateSvg}
                         />
                     </div>
                 </div>

@@ -177,17 +177,19 @@ const getSelectedLeafItems = function () {
 };
 
 const _deleteItemSelection = function (items, onUpdateSvg) {
+    // @todo: Update toolbar state on change
+    if (items.length === 0) {
+        return false;
+    }
     for (let i = 0; i < items.length; i++) {
         items[i].remove();
     }
-    
-    // @todo: Update toolbar state on change
-    if (items.length > 0) {
-        paper.project.view.update();
-        onUpdateSvg();
-    }
+    paper.project.view.update();
+    onUpdateSvg();
+    return true;
 };
 
+// Return true if anything was removed
 const _removeSelectedSegments = function (items, onUpdateSvg) {
     const segmentsToRemove = [];
     
@@ -214,17 +216,18 @@ const _removeSelectedSegments = function (items, onUpdateSvg) {
     return removedSegments;
 };
 
+// Return whether anything was deleted
 const deleteSelection = function (mode, onUpdateSvg) {
     if (mode === Modes.RESHAPE) {
         const selectedItems = getSelectedLeafItems();
         // If there are points selected remove them. If not delete the item selected.
-        if (!_removeSelectedSegments(selectedItems, onUpdateSvg)) {
-            _deleteItemSelection(selectedItems, onUpdateSvg);
+        if (_removeSelectedSegments(selectedItems, onUpdateSvg)) {
+            return true;
         }
-    } else {
-        const selectedItems = getSelectedRootItems();
-        _deleteItemSelection(selectedItems, onUpdateSvg);
+        return _deleteItemSelection(selectedItems, onUpdateSvg);
     }
+    const selectedItems = getSelectedRootItems();
+    return _deleteItemSelection(selectedItems, onUpdateSvg);
 };
 
 const cloneSelection = function (recursive, onUpdateSvg) {

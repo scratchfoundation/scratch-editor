@@ -1,7 +1,7 @@
 import paper from '@scratch/paper';
 import Modes from '../../modes/modes';
 import {styleShape} from '../style-path';
-import {clearSelection, deleteSelection} from '../selection';
+import {clearSelection} from '../selection';
 import BoundingBoxTool from '../selection-tools/bounding-box-tool';
 
 /**
@@ -115,13 +115,6 @@ class OvalTool extends paper.Tool {
                 this.boundingBoxTool.setSelectionBounds();
                 this.onUpdateSvg();
             }
-        }
-    }
-    handleKeyUp (event) {
-        // Backspace, delete
-        if (event.key === 'delete' || event.key === 'backspace') {
-            deleteSelection(Modes.RESHAPE, this.onUpdateSvg);
-            this.boundingBoxTool.removeBoundsPath();
         }
     }
     deactivateTool () {

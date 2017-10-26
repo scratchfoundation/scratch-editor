@@ -4,7 +4,6 @@ import keyMirror from 'keymirror';
 
 import Modes from '../../modes/modes';
 import {getHoveredItem} from '../hover';
-import {deleteSelection} from '../selection';
 import {getRootItem, isPGTextItem} from '../item';
 import MoveTool from './move-tool';
 import PointTool from './point-tool';
@@ -67,7 +66,6 @@ class ReshapeTool extends paper.Tool {
         this.onMouseMove = this.handleMouseMove;
         this.onMouseDrag = this.handleMouseDrag;
         this.onMouseUp = this.handleMouseUp;
-        this.onKeyUp = this.handleKeyUp;
 
         paper.settings.handleSize = 8;
     }
@@ -226,12 +224,6 @@ class ReshapeTool extends paper.Tool {
         if (event.event.button > 0) return; // only first mouse button
         this._modeMap[this.mode].onMouseUp(event);
         this.mode = ReshapeModes.SELECTION_BOX;
-    }
-    handleKeyUp (event) {
-        // Backspace, delete
-        if (event.key === 'delete' || event.key === 'backspace') {
-            deleteSelection(Modes.RESHAPE, this.onUpdateSvg);
-        }
     }
     deactivateTool () {
         paper.settings.handleSize = 0;
