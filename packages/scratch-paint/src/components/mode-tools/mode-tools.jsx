@@ -79,39 +79,35 @@ const ModeToolsComponent = props => {
     case Modes.RESHAPE:
         return (
             <div className={classNames(props.className, styles.modeTools)}>
-                <LabeledIconButton
-                    disabled
+                {/* <LabeledIconButton
                     imgAlt="Curved Point Icon"
                     imgSrc={curvedPointIcon}
                     title="Curved"
                     onClick={function () {}}
                 />
                 <LabeledIconButton
-                    disabled
                     imgAlt="Straight Point Icon"
                     imgSrc={straightPointIcon}
                     title="Pointed"
                     onClick={function () {}}
-                />
+                /> */}
             </div>
         );
     case Modes.SELECT:
         return (
             <div className={classNames(props.className, styles.modeTools)}>
-                <LabeledIconButton
-                    disabled
+                {/* <LabeledIconButton
                     imgAlt="Flip Horizontal Icon"
                     imgSrc={flipHorizontalIcon}
                     title="Flip Horizontal"
                     onClick={function () {}}
                 />
                 <LabeledIconButton
-                    disabled
                     imgAlt="Flip Vertical Icon"
                     imgSrc={flipVerticalIcon}
                     title="Flip Vertical"
                     onClick={function () {}}
-                />
+                /> */}
             </div>
         );
     default:

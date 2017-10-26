@@ -1,15 +1,23 @@
 import bindAll from 'lodash.bindall';
 import classNames from 'classnames';
+import {defineMessages, injectIntl, intlShape} from 'react-intl';
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import PaperCanvas from '../../containers/paper-canvas.jsx';
 
+import {shouldShowGroup, shouldShowUngroup} from '../../helper/group';
+import {shouldShowBringForward, shouldShowSendBackward} from '../../helper/order';
+
 import Button from '../button/button.jsx';
 import ButtonGroup from '../button-group/button-group.jsx';
 import BrushMode from '../../containers/brush-mode.jsx';
+import BufferedInputHOC from '../forms/buffered-input-hoc.jsx';
 import EraserMode from '../../containers/eraser-mode.jsx';
+import FillColorIndicatorComponent from '../../containers/fill-color-indicator.jsx';
+import Input from '../forms/input.jsx';
 import InputGroup from '../input-group/input-group.jsx';
+import Label from '../forms/label.jsx';
 import LabeledIconButton from '../labeled-icon-button/labeled-icon-button.jsx';
 import LineMode from '../../containers/line-mode.jsx';
 import ModeToolsComponent from '../mode-tools/mode-tools.jsx';
@@ -18,15 +26,8 @@ import PenMode from '../../containers/pen-mode.jsx';
 import RectMode from '../../containers/rect-mode.jsx';
 import ReshapeMode from '../../containers/reshape-mode.jsx';
 import SelectMode from '../../containers/select-mode.jsx';
-
-import FillColorIndicatorComponent from '../../containers/fill-color-indicator.jsx';
 import StrokeColorIndicatorComponent from '../../containers/stroke-color-indicator.jsx';
 import StrokeWidthIndicatorComponent from '../../containers/stroke-width-indicator.jsx';
-
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
-import BufferedInputHOC from '../forms/buffered-input-hoc.jsx';
-import Label from '../forms/label.jsx';
-import Input from '../forms/input.jsx';
 
 import styles from './paint-editor.css';
 
@@ -60,128 +61,155 @@ class PaintEditorComponent extends React.Component {
         this.setState({canvas: canvas});
     }
     render () {
+        const redoDisabled = !this.props.canRedo();
+        const undoDisabled = !this.props.canUndo();
+
         return (
             <div className={styles.editorContainer}>
-                <div className={styles.editorContainerTop}>
-                    {/* First row */}
-                    <div className={styles.row}>
-                        {/* Name field */}
-                        <InputGroup>
-                            <Label text={this.props.intl.formatMessage(messages.costume)}>
-                                <BufferedInput
-                                    type="text"
-                                    value={this.props.name}
-                                    onSubmit={this.props.onUpdateName}
+                {this.state.canvas ? (
+                    <div className={styles.editorContainerTop}>
+                        {/* First row */}
+                        <div className={styles.row}>
+                            {/* Name field */}
+                            <InputGroup>
+                                <Label text={this.props.intl.formatMessage(messages.costume)}>
+                                    <BufferedInput
+                                        type="text"
+                                        value={this.props.name}
+                                        onSubmit={this.props.onUpdateName}
+                                    />
+                                </Label>
+                            </InputGroup>
+
+                            {/* Undo/Redo */}
+                            <InputGroup>
+                                <ButtonGroup>
+                                    <Button
+                                        className={
+                                            classNames(
+                                                styles.buttonGroupButton,
+                                                {
+                                                    [styles.modNoRightBorder]: !redoDisabled
+                                                }
+                                            )
+                                        }
+                                        disabled={undoDisabled}
+                                        onClick={this.props.onUndo}
+                                    >
+                                        <img
+                                            alt="Undo Icon"
+                                            className={styles.buttonGroupButtonIcon}
+                                            src={undoIcon}
+                                        />
+                                    </Button>
+                                    <Button
+                                        className={
+                                            classNames(
+                                                styles.buttonGroupButton,
+                                                {
+                                                    [styles.modLeftBorder]: !redoDisabled
+                                                }
+                                            )
+                                        }
+                                        disabled={redoDisabled}
+                                        onClick={this.props.onRedo}
+                                    >
+                                        <img
+                                            alt="Redo Icon"
+                                            className={styles.buttonGroupButtonIcon}
+                                            src={redoIcon}
+                                        />
+                                    </Button>
+                                </ButtonGroup>
+                            </InputGroup>
+
+                            {/* Group/Ungroup */}
+                            <InputGroup className={styles.modDashedBorder}>
+                                <LabeledIconButton
+                                    disabled={!shouldShowGroup()}
+                                    imgAlt="Group Icon"
+                                    imgSrc={groupIcon}
+                                    title="Group"
+                                    onClick={this.props.onGroup}
                                 />
-                            </Label>
-                        </InputGroup>
+                                <LabeledIconButton
+                                    disabled={!shouldShowUngroup()}
+                                    imgAlt="Ungroup Icon"
+                                    imgSrc={ungroupIcon}
+                                    title="Ungroup"
+                                    onClick={this.props.onUngroup}
+                                />
+                            </InputGroup>
 
-                        {/* Undo/Redo */}
-                        <InputGroup>
-                            <ButtonGroup>
-                                <Button
-                                    className={styles.buttonGroupButton}
-                                    onClick={this.props.onUndo}
-                                >
-                                    <img
-                                        alt="Undo Icon"
-                                        className={styles.buttonGroupButtonIcon}
-                                        src={undoIcon}
-                                    />
-                                </Button>
-                                <Button
-                                    className={styles.buttonGroupButton}
-                                    onClick={this.props.onRedo}
-                                >
-                                    <img
-                                        alt="Redo Icon"
-                                        className={styles.buttonGroupButtonIcon}
-                                        src={redoIcon}
-                                    />
-                                </Button>
-                            </ButtonGroup>
-                        </InputGroup>
+                            {/* Forward/Backward */}
+                            <InputGroup className={styles.modDashedBorder}>
+                                <LabeledIconButton
+                                    disabled={!shouldShowBringForward()}
+                                    imgAlt="Send Forward Icon"
+                                    imgSrc={sendForwardIcon}
+                                    title="Forward"
+                                    onClick={this.props.onSendForward}
+                                />
+                                <LabeledIconButton
+                                    disabled={!shouldShowSendBackward()}
+                                    imgAlt="Send Backward Icon"
+                                    imgSrc={sendBackwardIcon}
+                                    title="Backward"
+                                    onClick={this.props.onSendBackward}
+                                />
+                            </InputGroup>
 
-                        {/* Group/Ungroup */}
-                        <InputGroup className={styles.modDashedBorder}>
-                            <LabeledIconButton
-                                imgAlt="Group Icon"
-                                imgSrc={groupIcon}
-                                title="Group"
-                                onClick={this.props.onGroup}
-                            />
-                            <LabeledIconButton
-                                imgAlt="Ungroup Icon"
-                                imgSrc={ungroupIcon}
-                                title="Ungroup"
-                                onClick={this.props.onUngroup}
-                            />
-                        </InputGroup>
+                            {/* Front/Back */}
+                            <InputGroup>
+                                <LabeledIconButton
+                                    disabled={!shouldShowBringForward()}
+                                    imgAlt="Send to Front Icon"
+                                    imgSrc={sendFrontIcon}
+                                    title="Front"
+                                    onClick={this.props.onSendToFront}
+                                />
+                                <LabeledIconButton
+                                    disabled={!shouldShowSendBackward()}
+                                    imgAlt="Send to Back Icon"
+                                    imgSrc={sendBackIcon}
+                                    title="Back"
+                                    onClick={this.props.onSendToBack}
+                                />
+                            </InputGroup>
 
-                        {/* Forward/Backward */}
-                        <InputGroup className={styles.modDashedBorder}>
-                            <LabeledIconButton
-                                imgAlt="Send Forward Icon"
-                                imgSrc={sendForwardIcon}
-                                title="Forward"
-                                onClick={this.props.onSendForward}
-                            />
-                            <LabeledIconButton
-                                imgAlt="Send Backward Icon"
-                                imgSrc={sendBackwardIcon}
-                                title="Backward"
-                                onClick={this.props.onSendBackward}
-                            />
-                        </InputGroup>
-
-                        {/* Front/Back */}
-                        <InputGroup>
-                            <LabeledIconButton
-                                imgAlt="Send to Front Icon"
-                                imgSrc={sendFrontIcon}
-                                title="Front"
-                                onClick={this.props.onSendToFront}
-                            />
-                            <LabeledIconButton
-                                imgAlt="Send to Back Icon"
-                                imgSrc={sendBackIcon}
-                                title="Back"
-                                onClick={this.props.onSendToBack}
-                            />
-                        </InputGroup>
-
-                        {/* To be rotation point */}
-                        {/* <InputGroup>
-                            <LabeledIconButton
-                                imgAlt="Rotation Point Icon"
-                                imgSrc={rotationPointIcon}
-                                title="Rotation Point"
-                                onClick={function () {}}
-                            />
-                        </InputGroup> */}
-                    </div>
-
-                    {/* Second Row */}
-                    <div className={styles.row}>
-                        <div className={classNames(styles.row, styles.modDashedBorder)}>
-                            {/* fill */}
-                            <FillColorIndicatorComponent
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                            {/* stroke */}
-                            <StrokeColorIndicatorComponent
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                            {/* stroke width */}
-                            <StrokeWidthIndicatorComponent
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
+                            {/* To be rotation point */}
+                            {/* <InputGroup>
+                                <LabeledIconButton
+                                    imgAlt="Rotation Point Icon"
+                                    imgSrc={rotationPointIcon}
+                                    title="Rotation Point"
+                                    onClick={function () {}}
+                                />
+                            </InputGroup> */}
                         </div>
-                        <InputGroup className={styles.modModeTools}>
-                            <ModeToolsComponent />
-                        </InputGroup>
+
+                        {/* Second Row */}
+                        <div className={styles.row}>
+                            <div className={classNames(styles.row, styles.modDashedBorder)}>
+                                {/* fill */}
+                                <FillColorIndicatorComponent
+                                    onUpdateSvg={this.props.onUpdateSvg}
+                                />
+                                {/* stroke */}
+                                <StrokeColorIndicatorComponent
+                                    onUpdateSvg={this.props.onUpdateSvg}
+                                />
+                                {/* stroke width */}
+                                <StrokeWidthIndicatorComponent
+                                    onUpdateSvg={this.props.onUpdateSvg}
+                                />
+                            </div>
+                            <InputGroup className={styles.modModeTools}>
+                                <ModeToolsComponent />
+                            </InputGroup>
+                        </div>
                     </div>
-                </div>
+                ) : null}
 
                 <div className={styles.topAlignRow}>
                     {/* Modes */}
@@ -236,6 +264,8 @@ class PaintEditorComponent extends React.Component {
 }
 
 PaintEditorComponent.propTypes = {
+    canRedo: PropTypes.func.isRequired,
+    canUndo: PropTypes.func.isRequired,
     intl: intlShape,
     name: PropTypes.string,
     onGroup: PropTypes.func.isRequired,

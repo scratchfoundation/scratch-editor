@@ -43,19 +43,23 @@ $border-radius: 0.25rem;
     padding: calc(2 * $grid-unit);
 }
 
-.button-group-button:active {
-    background-color: $ui-background-blue; 
-}
-
 .button-group-button:last-of-type {
     border-top-right-radius: $border-radius;
     border-bottom-right-radius: $border-radius;
 }
 
 .button-group-button:first-of-type {
-    border-left: 1px solid #ddd;
+    border-left: 1px solid $ui-pane-border;
     border-top-left-radius: $border-radius;
     border-bottom-left-radius: $border-radius;
+}
+
+.button-group-button.mod-left-border {
+    border-left: 1px solid $ui-pane-border;
+}
+
+.button-group-button.mod-no-right-border {
+    border-right: none;
 }
 
 .button-group-button-icon {

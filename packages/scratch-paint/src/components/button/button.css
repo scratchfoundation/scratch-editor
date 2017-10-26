@@ -1,3 +1,17 @@
-.button {
+@import "../../css/colors.css";
+
+:local(.button) {
+    background: none;
     cursor: pointer;
+}
+:local(.button:active) {
+    background-color: $motion-transparent; 
+}
+
+:local(.mod-disabled) {
+    cursor: auto;
+    opacity: .3;
+}
+:local(.mod-disabled:active) {
+    background: none;
 }

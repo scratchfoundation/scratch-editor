@@ -1,4 +1,3 @@
-@import "../../css/colors.css";
 @import "../../css/units.css";
 
 $border-radius: 0.25rem;
@@ -13,10 +12,6 @@ $border-radius: 0.25rem;
     min-width: 2.5rem;
     font-size: 0.85rem;
     text-align: center;
-}
-
-.mod-edit-field:active {
-    background-color: $motion-transparent; 
 }
 
 .edit-field-icon {
