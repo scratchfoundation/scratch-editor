@@ -10,24 +10,30 @@ import Button from '../button/button.jsx';
 
 import styles from './labeled-icon-button.css';
 
-const LabeledIconButton = props => (
+const LabeledIconButton = ({
+    className,
+    imgAlt,
+    imgSrc,
+    onClick,
+    title,
+    ...props
+}) => (
     <Button
-        className={classNames(props.className, styles.modEditField)}
-        disabled={props.disabled}
-        onClick={props.onClick}
+        className={classNames(className, styles.modEditField)}
+        onClick={onClick}
+        {...props}
     >
         <img
-            alt={props.imgAlt}
+            alt={imgAlt}
             className={styles.editFieldIcon}
-            src={props.imgSrc}
+            src={imgSrc}
         />
-        <span className={styles.editFieldTitle}>{props.title}</span>
+        <span className={styles.editFieldTitle}>{title}</span>
     </Button>
 );
 
 LabeledIconButton.propTypes = {
     className: PropTypes.string,
-    disabled: PropTypes.string,
     imgAlt: PropTypes.string.isRequired,
     imgSrc: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
