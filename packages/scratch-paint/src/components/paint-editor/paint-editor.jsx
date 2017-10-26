@@ -83,6 +83,7 @@ class PaintEditorComponent extends React.Component {
                                 <ButtonGroup>
                                     <Button
                                         className={styles.buttonGroupButton}
+                                        disabled={!this.props.canUndo()}
                                         onClick={this.props.onUndo}
                                     >
                                         <img
@@ -93,6 +94,7 @@ class PaintEditorComponent extends React.Component {
                                     </Button>
                                     <Button
                                         className={styles.buttonGroupButton}
+                                        disabled={!this.props.canRedo()}
                                         onClick={this.props.onRedo}
                                     >
                                         <img
@@ -245,6 +247,8 @@ class PaintEditorComponent extends React.Component {
 }
 
 PaintEditorComponent.propTypes = {
+    canRedo: PropTypes.func.isRequired,
+    canUndo: PropTypes.func.isRequired,
     intl: intlShape,
     name: PropTypes.string,
     onGroup: PropTypes.func.isRequired,

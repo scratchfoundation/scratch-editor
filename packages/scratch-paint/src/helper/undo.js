@@ -44,8 +44,18 @@ const performRedo = function (undoState, dispatchPerformRedo, setSelectedItems, 
     }
 };
 
+const shouldShowUndo = function (undoState) {
+    return undoState.pointer > 0;
+};
+
+const shouldShowRedo = function (undoState) {
+    return (undoState.pointer > -1 && undoState.pointer !== (undoState.stack.length - 1));
+};
+
 export {
     performSnapshot,
     performUndo,
-    performRedo
+    performRedo,
+    shouldShowUndo,
+    shouldShowRedo
 };

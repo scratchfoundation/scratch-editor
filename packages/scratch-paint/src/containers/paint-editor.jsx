@@ -7,7 +7,7 @@ import {undo, redo, undoSnapshot} from '../reducers/undo';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 
 import {getGuideLayer} from '../helper/layer';
-import {performUndo, performRedo, performSnapshot} from '../helper/undo';
+import {performUndo, performRedo, performSnapshot, shouldShowUndo, shouldShowRedo} from '../helper/undo';
 import {bringToFront, sendBackward, sendToBack, bringForward} from '../helper/order';
 import {groupSelection, ungroupSelection} from '../helper/group';
 import {getSelectedLeafItems} from '../helper/selection';
@@ -29,7 +29,9 @@ class PaintEditor extends React.Component {
             'handleSendToBack',
             'handleSendToFront',
             'handleGroup',
-            'handleUngroup'
+            'handleUngroup',
+            'canRedo',
+            'canUndo'
         ]);
     }
     componentDidMount () {
@@ -79,9 +81,17 @@ class PaintEditor extends React.Component {
     handleSendToFront () {
         bringToFront(this.handleUpdateSvg);
     }
+    canUndo () {
+        return shouldShowUndo(this.props.undoState);
+    }
+    canRedo () {
+        return shouldShowRedo(this.props.undoState);
+    }
     render () {
         return (
             <PaintEditorComponent
+                canRedo={this.canRedo}
+                canUndo={this.canUndo}
                 name={this.props.name}
                 rotationCenterX={this.props.rotationCenterX}
                 rotationCenterY={this.props.rotationCenterY}
