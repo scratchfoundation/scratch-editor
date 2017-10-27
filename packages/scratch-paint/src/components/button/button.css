@@ -3,6 +3,7 @@
 :local(.button) {
     background: none;
     cursor: pointer;
+    user-select: none;
 }
 :local(.button:active) {
     background-color: $motion-transparent; 

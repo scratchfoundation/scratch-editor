@@ -3,3 +3,9 @@
 .input-group + .input-group {
     margin-left: calc(3 * $grid-unit);
 }
+
+.disabled {
+    opacity: 0.3;
+    /* Prevent any user actions */
+    pointer-events: none;
+}

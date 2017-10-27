@@ -48,3 +48,7 @@
     border: 1px solid #4C97FF;
     box-shadow: 0px 0px 0px 3px hsla(215, 100%, 65%, 0.2);
 }
+
+.swatch > img {
+    max-width: 100%;
+}
