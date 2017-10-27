@@ -42,6 +42,11 @@ class PaintEditor extends React.Component {
         document.removeEventListener('keydown', this.props.onKeyPress);
     }
     handleUpdateSvg (skipSnapshot) {
+        // Store the zoom/pan and restore it after snapshotting
+        // TODO Only doing this because snapshotting at zoom/pan makes export wrong
+        const oldZoom = paper.project.view.zoom;
+        const oldCenter = paper.project.view.center.clone();
+        resetZoom();
         // Hide guide layer
         const guideLayer = getGuideLayer();
         const backgroundGuideLayer = getBackgroundGuideLayer();
@@ -61,6 +66,10 @@ class PaintEditor extends React.Component {
         paper.project.addLayer(backgroundGuideLayer);
         backgroundGuideLayer.sendToBack();
         paper.project.addLayer(guideLayer);
+        // Restore old zoom
+        paper.project.view.zoom = oldZoom;
+        paper.project.view.center = oldCenter;
+        paper.project.view.update();
     }
     handleUndo () {
         performUndo(this.props.undoState, this.props.onUndo, this.props.setSelectedItems, this.handleUpdateSvg);

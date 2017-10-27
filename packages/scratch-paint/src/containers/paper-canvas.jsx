@@ -10,7 +10,7 @@ import {undoSnapshot, clearUndoState} from '../reducers/undo';
 import {isGroup, ungroupItems} from '../helper/group';
 import {setupLayers} from '../helper/layer';
 import {deleteSelection, getSelectedLeafItems} from '../helper/selection';
-import {pan, zoomOnFixedPoint} from '../helper/view';
+import {pan, resetZoom, zoomOnFixedPoint} from '../helper/view';
 
 import {setSelectedItems} from '../reducers/selected-items';
 
@@ -48,7 +48,14 @@ class PaperCanvas extends React.Component {
         }
         this.props.clearUndo();
         if (newProps.svg) {
+            // Store the zoom/pan and restore it after importing a new SVG
+            const oldZoom = paper.project.view.zoom;
+            const oldCenter = paper.project.view.center.clone();
+            resetZoom();
             this.importSvg(newProps.svg, newProps.rotationCenterX, newProps.rotationCenterY);
+            paper.project.view.zoom = oldZoom;
+            paper.project.view.center = oldCenter;
+            paper.project.view.update();
         }
     }
     componentWillUnmount () {
