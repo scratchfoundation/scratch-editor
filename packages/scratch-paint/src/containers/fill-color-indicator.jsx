@@ -4,6 +4,7 @@ import React from 'react';
 import bindAll from 'lodash.bindall';
 import {changeFillColor} from '../reducers/fill-color';
 import {openFillColor, closeFillColor} from '../reducers/modals';
+import Modes from '../modes/modes';
 
 import FillColorIndicatorComponent from '../components/fill-color-indicator.jsx';
 import {applyFillColorToSelection} from '../helper/style-path';
@@ -30,6 +31,7 @@ class FillColorIndicator extends React.Component {
 }
 
 const mapStateToProps = state => ({
+    disabled: state.scratchPaint.mode === Modes.PEN,
     fillColor: state.scratchPaint.color.fillColor,
     fillColorModalVisible: state.scratchPaint.modals.fillColor
 });
@@ -47,6 +49,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 FillColorIndicator.propTypes = {
+    disabled: PropTypes.bool.isRequired,
     fillColor: PropTypes.string,
     onChangeFillColor: PropTypes.func.isRequired,
     onUpdateSvg: PropTypes.func.isRequired

@@ -5,6 +5,7 @@
 }
 
 .color-button-swatch {
+    position: relative;
     display: flex;
     flex-basis: 2rem;
     flex-shrink: 0;
@@ -29,4 +30,24 @@
     justify-content: center;
     color: #575e75;
     font-size: 0.75rem;
+}
+
+.swatch-icon {
+    width: 1.75rem;
+    margin: auto;
+    /* Make sure it appears above the outline box */
+    z-index: 2;
+}
+
+.outline-swatch:after {
+    content: "";
+    position: absolute;
+    top: calc(0.5rem + 1px);
+    left: calc(0.5rem + 1px);
+    width: 0.75rem;
+    height: 0.75rem;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    /* Make sure it appears below the transparent icon */
+    z-index: 1;
 }

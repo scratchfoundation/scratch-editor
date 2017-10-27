@@ -4,6 +4,7 @@ import React from 'react';
 import bindAll from 'lodash.bindall';
 import {changeStrokeColor} from '../reducers/stroke-color';
 import {openStrokeColor, closeStrokeColor} from '../reducers/modals';
+import Modes from '../modes/modes';
 
 import StrokeColorIndicatorComponent from '../components/stroke-color-indicator.jsx';
 import {applyStrokeColorToSelection} from '../helper/style-path';
@@ -30,6 +31,7 @@ class StrokeColorIndicator extends React.Component {
 }
 
 const mapStateToProps = state => ({
+    disabled: state.scratchPaint.mode === Modes.BRUSH,
     strokeColor: state.scratchPaint.color.strokeColor,
     strokeColorModalVisible: state.scratchPaint.modals.strokeColor
 });
@@ -47,6 +49,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 StrokeColorIndicator.propTypes = {
+    disabled: PropTypes.bool.isRequired,
     onChangeStrokeColor: PropTypes.func.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
     strokeColor: PropTypes.string

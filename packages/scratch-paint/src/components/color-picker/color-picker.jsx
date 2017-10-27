@@ -9,6 +9,7 @@ import {MIXED} from '../../helper/style-path';
 
 import Slider from '../forms/slider.jsx';
 import styles from './color-picker.css';
+import noFillIcon from '../color-button/no-fill.svg';
 
 const colorStringToHsv = hexString => {
     const hsv = parseColor(hexString).hsv;
@@ -179,7 +180,9 @@ class ColorPickerComponent extends React.Component {
                                 [styles.activeSwatch]: this.props.color === null
                             })}
                             onClick={this.handleTransparent}
-                        />
+                        >
+                            <img src={noFillIcon} />
+                        </div>
                     </div>
                 </div>
             </div>

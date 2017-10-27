@@ -5,6 +5,7 @@ import bindAll from 'lodash.bindall';
 import {changeStrokeWidth} from '../reducers/stroke-width';
 import StrokeWidthIndicatorComponent from '../components/stroke-width-indicator.jsx';
 import {applyStrokeWidthToSelection} from '../helper/style-path';
+import Modes from '../modes/modes';
 
 class StrokeWidthIndicator extends React.Component {
     constructor (props) {
@@ -20,6 +21,7 @@ class StrokeWidthIndicator extends React.Component {
     render () {
         return (
             <StrokeWidthIndicatorComponent
+                disabled={this.props.disabled}
                 strokeWidth={this.props.strokeWidth}
                 onChangeStrokeWidth={this.handleChangeStrokeWidth}
             />
@@ -28,6 +30,7 @@ class StrokeWidthIndicator extends React.Component {
 }
 
 const mapStateToProps = state => ({
+    disabled: state.scratchPaint.mode === Modes.BRUSH,
     strokeWidth: state.scratchPaint.color.strokeWidth
 });
 const mapDispatchToProps = dispatch => ({
@@ -37,6 +40,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 StrokeWidthIndicator.propTypes = {
+    disabled: PropTypes.bool.isRequired,
     onChangeStrokeWidth: PropTypes.func.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
     strokeWidth: PropTypes.number
