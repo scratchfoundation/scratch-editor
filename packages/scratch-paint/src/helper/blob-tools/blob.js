@@ -335,7 +335,6 @@ class Blobbiness {
         }
         // Divide topologically separate shapes into their own compound paths, instead of
         // everything being stuck together.
-        // Assume that result of erase operation returns clockwise paths for positive shapes
         const clockwiseChildren = [];
         const ccwChildren = [];
         for (let j = compoundPath.children.length - 1; j >= 0; j--) {
