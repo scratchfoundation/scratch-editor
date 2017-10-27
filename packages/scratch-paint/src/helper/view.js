@@ -1,8 +1,24 @@
 import paper from '@scratch/paper';
 import {getSelectedRootItems} from './selection';
 
+const clampViewBounds = () => {
+    const {left, right, top, bottom} = paper.project.view.bounds;
+    if (left < 0) {
+        paper.project.view.scrollBy(new paper.Point(-left, 0));
+    }
+    if (top < 0) {
+        paper.project.view.scrollBy(new paper.Point(0, -top));
+    }
+    if (bottom > 400) {
+        paper.project.view.scrollBy(new paper.Point(0, 400 - bottom));
+    }
+    if (right > 500) {
+        paper.project.view.scrollBy(new paper.Point(500 - right, 0));
+    }
+};
+
 // Zoom keeping the selection center (if any) fixed.
-const zoomOnSelection = (deltaZoom) => {
+const zoomOnSelection = deltaZoom => {
     let fixedPoint;
     const items = getSelectedRootItems();
     if (items.length > 0) {
@@ -46,25 +62,9 @@ const pan = (dx, dy) => {
     clampViewBounds();
 };
 
-const clampViewBounds = () => {
-    const {left, right, top, bottom} = paper.project.view.bounds;
-    if (left < 0) {
-        paper.project.view.scrollBy(new paper.Point(-left, 0));
-    }
-    if (top < 0) {
-        paper.project.view.scrollBy(new paper.Point(0, -top));
-    }
-    if (bottom > 400) {
-        paper.project.view.scrollBy(new paper.Point(0, 400 - bottom));
-    }
-    if (right > 500) {
-        paper.project.view.scrollBy(new paper.Point(500 - right, 0));
-    }
-};
-
 export {
     pan,
     resetZoom,
     zoomOnSelection,
     zoomOnFixedPoint
-}
+};
