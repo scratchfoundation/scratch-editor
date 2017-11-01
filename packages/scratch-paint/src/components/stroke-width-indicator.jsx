@@ -1,22 +1,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import BufferedInputHOC from './forms/buffered-input-hoc.jsx';
 import Input from './forms/input.jsx';
 import InputGroup from './input-group/input-group.jsx';
 
 import {MAX_STROKE_WIDTH} from '../reducers/stroke-width';
 
-const BufferedInput = BufferedInputHOC(Input);
 const StrokeWidthIndicatorComponent = props => (
     <InputGroup disabled={props.disabled}>
-        <BufferedInput
+        <Input
             small
             disabled={props.disabled}
             max={MAX_STROKE_WIDTH}
             min="0"
             type="number"
             value={props.strokeWidth ? props.strokeWidth : 0}
+            onChange={function (e) {
+                if (e.target.value !== null && !isNaN(e.target.value)) {
+                    props.onChangeStrokeWidth(Number(e.target.value));
+                }
+
+            }}
             onSubmit={props.onChangeStrokeWidth}
         />
     </InputGroup>
