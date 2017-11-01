@@ -5,7 +5,7 @@ import PaintEditorComponent from '../components/paint-editor/paint-editor.jsx';
 import {changeMode} from '../reducers/modes';
 import {undo, redo, undoSnapshot} from '../reducers/undo';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
-import {setClipboardItems} from '../reducers/clipboard';
+import {incrementPasteOffset, setClipboardItems} from '../reducers/clipboard';
 
 import {getGuideLayer, getBackgroundGuideLayer} from '../helper/layer';
 import {performUndo, performRedo, performSnapshot, shouldShowUndo, shouldShowRedo} from '../helper/undo';
@@ -115,14 +115,17 @@ class PaintEditor extends React.Component {
     handlePasteFromClipboard () {
         clearSelection(this.props.clearSelectedItems);
 
-        if (this.props.clipboard.length > 0) {
-            for (let i = 0; i < this.props.clipboard.length; i++) {
-                const item = paper.Base.importJSON(this.props.clipboard[i]);
+        if (this.props.clipboardItems.length > 0) {
+            for (let i = 0; i < this.props.clipboardItems.length; i++) {
+                const item = paper.Base.importJSON(this.props.clipboardItems[i]);
                 if (item) {
                     item.selected = true;
                 }
-                paper.project.getActiveLayer().addChild(item);
+                const placedItem = paper.project.getActiveLayer().addChild(item);
+                placedItem.position.x += 10 * this.props.pasteOffset;
+                placedItem.position.y += 10 * this.props.pasteOffset;
             }
+            this.props.incrementPasteOffset();
             this.props.setSelectedItems();
             paper.project.view.update();
             this.handleUpdateSvg();
@@ -175,13 +178,15 @@ class PaintEditor extends React.Component {
 
 PaintEditor.propTypes = {
     clearSelectedItems: PropTypes.func.isRequired,
-    clipboard: PropTypes.arrayOf(PropTypes.array),
+    clipboardItems: PropTypes.arrayOf(PropTypes.array),
+    incrementPasteOffset: PropTypes.func.isRequired,
     name: PropTypes.string,
     onKeyPress: PropTypes.func.isRequired,
     onRedo: PropTypes.func.isRequired,
     onUndo: PropTypes.func.isRequired,
     onUpdateName: PropTypes.func.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
+    pasteOffset: PropTypes.number,
     rotationCenterX: PropTypes.number,
     rotationCenterY: PropTypes.number,
     setClipboardItems: PropTypes.func.isRequired,
@@ -198,7 +203,8 @@ PaintEditor.propTypes = {
 const mapStateToProps = state => ({
     selectedItems: state.scratchPaint.selectedItems,
     undoState: state.scratchPaint.undo,
-    clipboard: state.scratchPaint.clipboard
+    clipboardItems: state.scratchPaint.clipboard.items,
+    pasteOffset: state.scratchPaint.clipboard.pasteOffset
 });
 const mapDispatchToProps = dispatch => ({
     onKeyPress: event => {
@@ -229,6 +235,9 @@ const mapDispatchToProps = dispatch => ({
     },
     setClipboardItems: items => {
         dispatch(setClipboardItems(items));
+    },
+    incrementPasteOffset: () => {
+        dispatch(incrementPasteOffset());
     }
 });
 

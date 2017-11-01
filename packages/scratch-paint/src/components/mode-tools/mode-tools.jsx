@@ -122,7 +122,7 @@ const ModeToolsComponent = props => {
                         onClick={props.onCopyToClipboard}
                     />
                     <LabeledIconButton
-                        disabled={!(props.clipboard.length > 0)}
+                        disabled={!(props.clipboardItems.length > 0)}
                         imgSrc={pasteIcon}
                         title={props.intl.formatMessage(messages.paste)}
                         onClick={props.onPasteFromClipboard}
@@ -153,7 +153,7 @@ const ModeToolsComponent = props => {
 ModeToolsComponent.propTypes = {
     brushValue: PropTypes.number,
     className: PropTypes.string,
-    clipboard: PropTypes.arrayOf(PropTypes.array),
+    clipboardItems: PropTypes.arrayOf(PropTypes.array),
     eraserValue: PropTypes.number,
     intl: intlShape.isRequired,
     mode: PropTypes.string.isRequired,
@@ -167,7 +167,7 @@ ModeToolsComponent.propTypes = {
 const mapStateToProps = state => ({
     mode: state.scratchPaint.mode,
     brushValue: state.scratchPaint.brushMode.brushSize,
-    clipboard: state.scratchPaint.clipboard,
+    clipboardItems: state.scratchPaint.clipboard.items,
     eraserValue: state.scratchPaint.eraserMode.brushSize,
     selectedItems: state.scratchPaint.selectedItems
 });
