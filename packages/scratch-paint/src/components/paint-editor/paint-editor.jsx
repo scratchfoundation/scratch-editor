@@ -30,9 +30,7 @@ import StrokeWidthIndicatorComponent from '../../containers/stroke-width-indicat
 
 import styles from './paint-editor.css';
 
-import copyIcon from './icons/copy.svg';
 import groupIcon from './icons/group.svg';
-import pasteIcon from './icons/paste.svg';
 import redoIcon from './icons/redo.svg';
 import sendBackIcon from './icons/send-back.svg';
 import sendBackwardIcon from './icons/send-backward.svg';
@@ -90,16 +88,6 @@ const messages = defineMessages({
         defaultMessage: 'Back',
         description: 'Label for the `Send to back of canvas` button',
         id: 'paint.paintEditor.back'
-    },
-    copy: {
-        defaultMessage: 'Copy',
-        description: 'Label for the copy button',
-        id: 'paint.paintEditor.copy'
-    },
-    paste: {
-        defaultMessage: 'Paste',
-        description: 'Label for the paste button',
-        id: 'paint.paintEditor.paste'
     }
 });
 
@@ -256,20 +244,6 @@ class PaintEditorComponent extends React.Component {
                                 {/* stroke width */}
                                 <StrokeWidthIndicatorComponent
                                     onUpdateSvg={this.props.onUpdateSvg}
-                                />
-                            </InputGroup>
-                            <InputGroup className={classNames(styles.modDashedBorder, styles.modLabeledIconHeight)}>
-                                <LabeledIconButton
-                                    disabled
-                                    imgSrc={copyIcon}
-                                    title={this.props.intl.formatMessage(messages.copy)}
-                                    onClick={function () {}}
-                                />
-                                <LabeledIconButton
-                                    disabled
-                                    imgSrc={pasteIcon}
-                                    title={this.props.intl.formatMessage(messages.paste)}
-                                    onClick={function () {}}
                                 />
                             </InputGroup>
                             <InputGroup className={styles.modModeTools}>
