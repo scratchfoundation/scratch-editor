@@ -34,8 +34,11 @@ export default function (Input) {
             const validatesNumeric = isNumeric ? !isNaN(e.target.value) : true;
             if (e.target.value !== null && validatesNumeric ) {
                 let val = Number(e.target.value);
-                if (typeof this.props.max !== 'undefined' && val > this.props.max) {
+                if (typeof this.props.max !== 'undefined' && val > Number(this.props.max)) {
                     val = this.props.max;
+                }
+                if (typeof this.props.min !== 'undefined' && val < Number(this.props.min)) {
+                    val = this.props.min;
                 }
                 this.props.onSubmit(val);
             }
@@ -57,6 +60,7 @@ export default function (Input) {
 
     LiveInput.propTypes = {
         max: PropTypes.number,
+        min: PropTypes.number,
         onSubmit: PropTypes.func.isRequired,
         value: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
     };
