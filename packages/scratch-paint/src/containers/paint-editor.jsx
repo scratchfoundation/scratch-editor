@@ -7,7 +7,7 @@ import {undo, redo, undoSnapshot} from '../reducers/undo';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 import {incrementPasteOffset, setClipboardItems} from '../reducers/clipboard';
 
-import {getGuideLayer, getBackgroundGuideLayer} from '../helper/layer';
+import {hideGuideLayers, showGuideLayers} from '../helper/layer';
 import {performUndo, performRedo, performSnapshot, shouldShowUndo, shouldShowRedo} from '../helper/undo';
 import {bringToFront, sendBackward, sendToBack, bringForward} from '../helper/order';
 import {groupSelection, ungroupSelection} from '../helper/group';
@@ -53,11 +53,9 @@ class PaintEditor extends React.Component {
         const oldZoom = paper.project.view.zoom;
         const oldCenter = paper.project.view.center.clone();
         resetZoom();
-        // Hide guide layer
-        const guideLayer = getGuideLayer();
-        const backgroundGuideLayer = getBackgroundGuideLayer();
-        guideLayer.remove();
-        backgroundGuideLayer.remove();
+
+        const guideLayers = hideGuideLayers();
+
         const bounds = paper.project.activeLayer.bounds;
         this.props.onUpdateSvg(
             paper.project.exportSVG({
@@ -66,12 +64,13 @@ class PaintEditor extends React.Component {
             }),
             paper.project.view.center.x - bounds.x,
             paper.project.view.center.y - bounds.y);
+
+        showGuideLayers(guideLayers);
+
         if (!skipSnapshot) {
             performSnapshot(this.props.undoSnapshot);
         }
-        paper.project.addLayer(backgroundGuideLayer);
-        backgroundGuideLayer.sendToBack();
-        paper.project.addLayer(guideLayer);
+
         // Restore old zoom
         paper.project.view.zoom = oldZoom;
         paper.project.view.center = oldCenter;

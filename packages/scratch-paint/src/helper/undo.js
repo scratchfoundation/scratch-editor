@@ -1,23 +1,14 @@
 // undo functionality
 // modifed from https://github.com/memononen/stylii
 import paper from '@scratch/paper';
-import {getBackgroundGuideLayer} from '../helper/layer';
+import {hideGuideLayers, showGuideLayers} from '../helper/layer';
 
 const performSnapshot = function (dispatchPerformSnapshot) {
-    const backgroundGuideLayer = getBackgroundGuideLayer();
-    if (backgroundGuideLayer) {
-        backgroundGuideLayer.remove();
-    }
+    const guideLayers = hideGuideLayers();
     dispatchPerformSnapshot({
         json: paper.project.exportJSON({asString: false})
     });
-    if (backgroundGuideLayer) {
-        paper.project.addLayer(backgroundGuideLayer);
-        backgroundGuideLayer.sendToBack();
-    }
-
-    // @todo enable/disable buttons
-    // updateButtonVisibility();
+    showGuideLayers(guideLayers);
 };
 
 const _restore = function (entry, setSelectedItems, onUpdateSvg) {
@@ -38,9 +29,6 @@ const performUndo = function (undoState, dispatchPerformUndo, setSelectedItems, 
     if (undoState.pointer > 0) {
         _restore(undoState.stack[undoState.pointer - 1], setSelectedItems, onUpdateSvg);
         dispatchPerformUndo();
-
-        // @todo enable/disable buttons
-        // updateButtonVisibility();
     }
 };
 
@@ -49,9 +37,6 @@ const performRedo = function (undoState, dispatchPerformRedo, setSelectedItems, 
     if (undoState.pointer >= 0 && undoState.pointer < undoState.stack.length - 1) {
         _restore(undoState.stack[undoState.pointer + 1], setSelectedItems, onUpdateSvg);
         dispatchPerformRedo();
-        
-        // @todo enable/disable buttons
-        // updateButtonVisibility();
     }
 };
 

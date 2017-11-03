@@ -1,28 +1,69 @@
 import paper from '@scratch/paper';
 import canvasBg from './background.png';
+import log from '../log/log';
 
-const getGuideLayer = function () {
-    for (let i = 0; i < paper.project.layers.length; i++) {
-        const layer = paper.project.layers[i];
-        if (layer.data && layer.data.isGuideLayer) {
+const _getLayer = function (layerString) {
+    for (const layer of paper.project.layers) {
+        if (layer.data && layer.data[layerString]) {
             return layer;
         }
     }
-
-    // Create if it doesn't exist
-    const guideLayer = new paper.Layer();
-    guideLayer.data.isGuideLayer = true;
-    guideLayer.bringToFront();
-    return guideLayer;
+    log.error(`Didn't find layer ${layerString}`);
 };
 
-const getBackgroundGuideLayer = function () {
-    for (let i = 0; i < paper.project.layers.length; i++) {
-        const layer = paper.project.layers[i];
-        if (layer.data && layer.data.isBackgroundGuideLayer) {
-            return layer;
-        }
+const _getPaintingLayer = function () {
+    return _getLayer('isPaintingLayer');
+};
+
+const _getBackgroundGuideLayer = function () {
+    return _getLayer('isBackgroundGuideLayer');
+};
+
+const getGuideLayer = function () {
+    return _getLayer('isGuideLayer');
+};
+
+/**
+ * Removes the guide layers, e.g. for purposes of exporting the image. Must call showGuideLayers to re-add them.
+ * @return {object} an object of the removed layers, which should be passed to showGuideLayers to re-add them.
+ */
+const hideGuideLayers = function () {
+    const backgroundGuideLayer = _getBackgroundGuideLayer();
+    const guideLayer = getGuideLayer();
+    guideLayer.remove();
+    backgroundGuideLayer.remove();
+    return {
+        guideLayer: guideLayer,
+        backgroundGuideLayer: backgroundGuideLayer
+    };
+};
+
+/**
+ * Add back the guide layers removed by calling hideGuideLayers. This must be done before any editing operations are
+ * taken in the paint editor.
+ * @param {!object} guideLayers object of the removed layers, which was returned by hideGuideLayers
+ */
+const showGuideLayers = function (guideLayers) {
+    const backgroundGuideLayer = guideLayers.backgroundGuideLayer;
+    const guideLayer = guideLayers.guideLayer;
+    if (!backgroundGuideLayer.index) {
+        paper.project.addLayer(backgroundGuideLayer);
+        backgroundGuideLayer.sendToBack();
     }
+    if (!guideLayer.index) {
+        paper.project.addLayer(guideLayer);
+        guideLayer.bringToFront();
+    }
+    if (paper.project.activeLayer !== _getPaintingLayer()) {
+        log.error(`Wrong active layer`);
+        log.error(paper.project.activeLayer.data);
+    }
+};
+
+const _makeGuideLayer = function () {
+    const guideLayer = new paper.Layer();
+    guideLayer.data.isGuideLayer = true;
+    return guideLayer;
 };
 
 const _makePaintingLayer = function () {
@@ -67,17 +108,21 @@ const _makeBackgroundGuideLayer = function () {
     circle.locked = true;
 
     guideLayer.data.isBackgroundGuideLayer = true;
-    guideLayer.sendToBack();
     return guideLayer;
 };
 
 const setupLayers = function () {
-    _makeBackgroundGuideLayer();
-    _makePaintingLayer().activate();
+    const backgroundGuideLayer = _makeBackgroundGuideLayer();
+    const paintLayer = _makePaintingLayer();
+    const guideLayer = _makeGuideLayer();
+    backgroundGuideLayer.sendToBack();
+    guideLayer.bringToFront();
+    paintLayer.activate();
 };
 
 export {
+    hideGuideLayers,
+    showGuideLayers,
     getGuideLayer,
-    getBackgroundGuideLayer,
     setupLayers
 };
