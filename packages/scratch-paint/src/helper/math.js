@@ -27,9 +27,32 @@ const snapDeltaToAngle = function (delta, snapAngle) {
     return new paper.Point(dirx * d, diry * d);
 };
 
+const sortItemsByZIndex = function (a, b) {
+    if (a === null || b === null) {
+        // Incomparable
+        return null;
+    }
+    let tempA = a;
+    let tempB = b;
+    while (!(tempA instanceof paper.Layer)) {
+        while (!(tempB instanceof paper.Layer)) {
+            if (tempB === tempA) {
+                return 0;
+            } else if (tempB.parent === tempA.parent) {
+                return parseFloat(tempA.index) - parseFloat(tempB.index);
+            }
+            tempB = tempB.parent;
+        }
+        tempA = tempA.parent;
+    }
+    // No shared hierarchy
+    return null;
+};
+
 export {
     checkPointsClose,
     getRandomInt,
     getRandomBoolean,
-    snapDeltaToAngle
+    snapDeltaToAngle,
+    sortItemsByZIndex
 };

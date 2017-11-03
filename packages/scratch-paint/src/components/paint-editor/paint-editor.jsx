@@ -18,6 +18,7 @@ import BufferedInputHOC from '../forms/buffered-input-hoc.jsx';
 import Dropdown from '../dropdown/dropdown.jsx';
 import EraserMode from '../../containers/eraser-mode.jsx';
 import FillColorIndicatorComponent from '../../containers/fill-color-indicator.jsx';
+import FillMode from '../../containers/fill-mode.jsx';
 import Input from '../forms/input.jsx';
 import InputGroup from '../input-group/input-group.jsx';
 import Label from '../forms/label.jsx';
@@ -338,6 +339,9 @@ const PaintEditorComponent = props => {
                         />
                         {/* Text mode will go here */}
                         <LineMode
+                            onUpdateSvg={props.onUpdateSvg}
+                        />
+                        <FillMode
                             onUpdateSvg={props.onUpdateSvg}
                         />
                         <OvalMode

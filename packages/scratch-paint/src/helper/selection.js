@@ -4,6 +4,7 @@ import Modes from '../lib/modes';
 import {getItemsGroup, isGroup} from './group';
 import {getRootItem, isCompoundPathItem, isBoundsItem, isPathItem, isPGTextItem} from './item';
 import {getItemsCompoundPath, isCompoundPath, isCompoundPathChild} from './compound-path';
+import {sortItemsByZIndex} from './math';
 
 /**
  * Wrapper for paper.project.getItems that excludes our helper items
@@ -170,9 +171,7 @@ const getSelectedLeafItems = function () {
             items.push(item);
         }
     }
-
-    // sort items by index (0 at bottom)
-    items.sort((a, b) => parseFloat(a.index) - parseFloat(b.index));
+    items.sort(sortItemsByZIndex);
     return items;
 };
 

@@ -2,6 +2,7 @@ import paper from '@scratch/paper';
 import {isBoundsItem, getRootItem} from './item';
 import {hoverBounds, hoverItem} from './guides';
 import {isGroupChild} from './group';
+import {sortItemsByZIndex} from './math';
 
 /**
  * @param {!MouseEvent} event mouse event
@@ -16,6 +17,13 @@ const getHoveredItem = function (event, hitOptions, subselect) {
     if (hitResults.length === 0) {
         return null;
     }
+
+    // sort items by index
+    const items = [];
+    for (const hitResult of hitResults) {
+        items.push(hitResult.item);
+    }
+    items.sort(sortItemsByZIndex);
 
     let hitResult;
     for (const result of hitResults) {

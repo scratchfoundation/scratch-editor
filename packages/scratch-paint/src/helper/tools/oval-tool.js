@@ -21,7 +21,6 @@ class OvalTool extends paper.Tool {
         this.setSelectedItems = setSelectedItems;
         this.clearSelectedItems = clearSelectedItems;
         this.onUpdateSvg = onUpdateSvg;
-        this.prevHoveredItemId = null;
         this.boundingBoxTool = new BoundingBoxTool(Modes.OVAL, setSelectedItems, clearSelectedItems, onUpdateSvg);
         
         // We have to set these functions instead of just declaring them because

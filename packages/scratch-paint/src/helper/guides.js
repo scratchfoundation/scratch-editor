@@ -24,6 +24,7 @@ const hoverItem = function (hitResult) {
     clone.strokeColor = GUIDE_BLUE;
     clone.fillColor = null;
     clone.data.isHelperItem = true;
+    clone.data.hitResult = hitResult;
     clone.bringToFront();
 
     return clone;
