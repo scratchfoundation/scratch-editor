@@ -8,7 +8,7 @@ cache:
   - node_modules
 install:
 - sudo apt-get update && sudo apt-get install -y libcairo2-dev libpango1.0-dev libssl-dev libjpeg62-dev libgif-dev pkg-config
-- npm install canvas
+- npm install canvas@1.6.7
 - npm --production=false install
 - npm --production=false update
 before_deploy:
