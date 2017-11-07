@@ -84,8 +84,8 @@ const _removePaperItemsByTags = function (tags) {
     }
 };
 
-const removeHelperItems = function () {
-    _removePaperItemsByDataTags(['isHelperItem']);
+const removeBoundsPath = function () {
+    _removePaperItemsByDataTags(['isSelectionBound', 'isRotHandle', 'isScaleHandle']);
 };
 
 const removeAllGuides = function () {
@@ -113,7 +113,7 @@ export {
     hoverBounds,
     rectSelect,
     removeAllGuides,
-    removeHelperItems,
+    removeBoundsPath,
     drawHitPoint,
     removeHitPoint,
     getGuideColor,

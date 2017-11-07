@@ -12,7 +12,7 @@ import {getItemsCompoundPath, isCompoundPath, isCompoundPathChild} from './compo
  */
 const getItems = function (options) {
     const newMatcher = function (item) {
-        return !item.locked &&
+        return !(item instanceof paper.Layer) && !item.locked &&
             !(item.data && item.data.isHelperItem) &&
             (!options.match || options.match(item));
     };
