@@ -63,6 +63,7 @@ class LineMode extends React.Component {
             this.props.onChangeStrokeWidth(1);
         }
         this.tool = new paper.Tool();
+        this.active = false;
 
         this.path = null;
         this.hitResult = null;
@@ -88,6 +89,7 @@ class LineMode extends React.Component {
     }
     onMouseDown (event) {
         if (event.event.button > 0) return; // only first mouse button
+        this.active = true;
 
         // If you click near a point, continue that line instead of making a new line
         this.hitResult = endPointHit(event.point, LineMode.SNAP_TOLERANCE);
@@ -131,7 +133,7 @@ class LineMode extends React.Component {
         this.drawHitPoint(this.hitResult);
     }
     onMouseDrag (event) {
-        if (event.event.button > 0) return; // only first mouse button
+        if (event.event.button > 0 || !this.active) return; // only first mouse button
 
         // If near another path's endpoint, or this path's beginpoint, clip to it to suggest
         // joining/closing the paths.
@@ -162,7 +164,7 @@ class LineMode extends React.Component {
         }
     }
     onMouseUp (event) {
-        if (event.event.button > 0) return; // only first mouse button
+        if (event.event.button > 0 || !this.active) return; // only first mouse button
 
         // If I single clicked, don't do anything
         if (this.path.segments.length < 2 ||
@@ -203,6 +205,7 @@ class LineMode extends React.Component {
             this.props.onUpdateSvg();
             this.path = null;
         }
+        this.active = false;
     }
     deactivateTool () {
         this.tool.remove();

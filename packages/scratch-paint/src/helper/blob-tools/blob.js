@@ -82,6 +82,7 @@ class Blobbiness {
         this.tool = new paper.Tool();
         this.cursorPreviewLastPoint = new paper.Point(-10000, -10000);
         this.setOptions(options);
+        this.tool.active = false;
         this.tool.fixedDistance = 1;
 
         const blob = this;
@@ -95,6 +96,7 @@ class Blobbiness {
         this.tool.onMouseDown = function (event) {
             blob.resizeCursorIfNeeded(event.point);
             if (event.event.button > 0) return; // only first mouse button
+            this.active = true;
 
             if (blob.options.brushSize < Blobbiness.THRESHOLD) {
                 blob.brush = Blobbiness.BROAD;
@@ -110,7 +112,7 @@ class Blobbiness {
 
         this.tool.onMouseDrag = function (event) {
             blob.resizeCursorIfNeeded(event.point);
-            if (event.event.button > 0) return; // only first mouse button
+            if (event.event.button > 0 || !this.active) return; // only first mouse button
             if (blob.brush === Blobbiness.BROAD) {
                 blob.broadBrushHelper.onBroadMouseDrag(event, blob.tool, blob.options);
             } else if (blob.brush === Blobbiness.SEGMENT) {
@@ -126,7 +128,7 @@ class Blobbiness {
 
         this.tool.onMouseUp = function (event) {
             blob.resizeCursorIfNeeded(event.point);
-            if (event.event.button > 0) return; // only first mouse button
+            if (event.event.button > 0 || !this.active) return; // only first mouse button
             
             let lastPath;
             if (blob.brush === Blobbiness.BROAD) {
@@ -152,6 +154,7 @@ class Blobbiness {
             // Reset
             blob.brush = null;
             this.fixedDistance = 1;
+            this.active = false;
         };
         this.tool.activate();
     }

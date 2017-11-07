@@ -34,6 +34,7 @@ class SelectTool extends paper.Tool {
         this.selectionBoxTool = new SelectionBoxTool(Modes.SELECT, setSelectedItems, clearSelectedItems);
         this.selectionBoxMode = false;
         this.prevHoveredItemId = null;
+        this.active = false;
         
         // We have to set these functions instead of just declaring them because
         // paper.js tools hook up the listeners in the setter functions.
@@ -87,6 +88,7 @@ class SelectTool extends paper.Tool {
     }
     handleMouseDown (event) {
         if (event.event.button > 0) return; // only first mouse button
+        this.active = true;
 
         // If bounding box tool does not find an item that was hit, use selection box tool.
         this.clearHoveredItem();
@@ -110,7 +112,7 @@ class SelectTool extends paper.Tool {
         }
     }
     handleMouseDrag (event) {
-        if (event.event.button > 0) return; // only first mouse button
+        if (event.event.button > 0 || !this.active) return; // only first mouse button
 
         if (this.selectionBoxMode) {
             this.selectionBoxTool.onMouseDrag(event);
@@ -119,7 +121,7 @@ class SelectTool extends paper.Tool {
         }
     }
     handleMouseUp (event) {
-        if (event.event.button > 0) return; // only first mouse button
+        if (event.event.button > 0 || !this.active) return; // only first mouse button
 
         if (this.selectionBoxMode) {
             this.selectionBoxTool.onMouseUp(event);
@@ -128,6 +130,7 @@ class SelectTool extends paper.Tool {
             this.boundingBoxTool.onMouseUp(event);
         }
         this.selectionBoxMode = false;
+        this.active = false;
     }
     deactivateTool () {
         this.clearHoveredItem();

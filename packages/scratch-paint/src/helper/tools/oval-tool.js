@@ -33,6 +33,7 @@ class OvalTool extends paper.Tool {
         this.oval = null;
         this.colorState = null;
         this.isBoundingBoxMode = null;
+        this.active = false;
     }
     getHitOptions () {
         return {
@@ -58,6 +59,9 @@ class OvalTool extends paper.Tool {
         this.colorState = colorState;
     }
     handleMouseDown (event) {
+        if (event.event.button > 0) return; // only first mouse button
+        this.active = true;
+
         if (this.boundingBoxTool.onMouseDown(event, false /* clone */, false /* multiselect */, this.getHitOptions())) {
             this.isBoundingBoxMode = true;
         } else {
@@ -71,7 +75,7 @@ class OvalTool extends paper.Tool {
         }
     }
     handleMouseDrag (event) {
-        if (event.event.button > 0) return; // only first mouse button
+        if (event.event.button > 0 || !this.active) return; // only first mouse button
 
         if (this.isBoundingBoxMode) {
             this.boundingBoxTool.onMouseDrag(event);
@@ -93,7 +97,7 @@ class OvalTool extends paper.Tool {
         
     }
     handleMouseUp (event) {
-        if (event.event.button > 0) return; // only first mouse button
+        if (event.event.button > 0 || !this.active) return; // only first mouse button
         
         if (this.isBoundingBoxMode) {
             this.boundingBoxTool.onMouseUp(event);
@@ -116,6 +120,7 @@ class OvalTool extends paper.Tool {
                 this.onUpdateSvg();
             }
         }
+        this.active = false;
     }
     deactivateTool () {
         this.boundingBoxTool.removeBoundsPath();
