@@ -16,52 +16,32 @@ class ScaleTool {
         this.origSize = null;
         this.origCenter = null;
         this.itemGroup = null;
-        this.boundsPath = null;
         // Lowest item above all scale items in z index
         this.itemToInsertBelow = null;
-        this.scaleItems = [];
-        this.boundsScaleHandles = [];
-        this.boundsRotHandles = [];
         this.onUpdateSvg = onUpdateSvg;
     }
 
     /**
      * @param {!paper.HitResult} hitResult Data about the location of the mouse click
      * @param {!object} boundsPath Where the boundaries of the hit item are
-     * @param {!object} boundsScaleHandles Bounding box scale handles
-     * @param {!object} boundsRotHandles Bounding box rotation handle
      * @param {!Array.<paper.Item>} selectedItems Set of selected paper.Items
-     * @param {boolean} clone Whether to clone on mouse down (e.g. alt key held)
-     * @param {boolean} multiselect Whether to multiselect on mouse down (e.g. shift key held)
      */
-    onMouseDown (hitResult, boundsPath, boundsScaleHandles, boundsRotHandles, selectedItems) {
+    onMouseDown (hitResult, boundsPath, selectedItems) {
         const index = hitResult.item.data.index;
-        this.boundsPath = boundsPath;
-        this.boundsScaleHandles = boundsScaleHandles;
-        this.boundsRotHandles = boundsRotHandles;
-        this.pivot = this.boundsPath.bounds[this._getOpposingRectCornerNameByIndex(index)].clone();
-        this.origPivot = this.boundsPath.bounds[this._getOpposingRectCornerNameByIndex(index)].clone();
-        this.corner = this.boundsPath.bounds[this._getRectCornerNameByIndex(index)].clone();
+        this.pivot = boundsPath.bounds[this._getOpposingRectCornerNameByIndex(index)].clone();
+        this.origPivot = boundsPath.bounds[this._getOpposingRectCornerNameByIndex(index)].clone();
+        this.corner = boundsPath.bounds[this._getRectCornerNameByIndex(index)].clone();
         this.origSize = this.corner.subtract(this.pivot);
-        this.origCenter = this.boundsPath.bounds.center;
-        for (const item of selectedItems) {
-            // Scale only root items
-            if (item.parent instanceof paper.Layer) {
-                this.scaleItems.push(item);
-            }
-        }
-    }
-    onMouseDrag (event) {
-        const scaleTool = this;
-        const modOrigSize = this.origSize;
+        this.origCenter = boundsPath.bounds.center;
+        this.centered = false;
+        this.lastSx = 1;
+        this.lastSy = 1;
 
+        // Set itemGroup
         // get item to insert below so that scaled items stay in same z position
         const items = getItems({
             match: function (item) {
-                if (item instanceof paper.Layer) {
-                    return false;
-                }
-                for (const scaleItem of scaleTool.scaleItems) {
+                for (const scaleItem of selectedItems) {
                     if (!scaleItem.isBelow(item)) {
                         return false;
                     }
@@ -73,17 +53,26 @@ class ScaleTool {
             this.itemToInsertBelow = items[0];
         }
 
-        this.itemGroup = new paper.Group(this.scaleItems);
+        this.itemGroup = new paper.Group(selectedItems);
         this.itemGroup.insertBelow(this.itemToInsertBelow);
-        this.itemGroup.addChild(this.boundsPath);
         this.itemGroup.data.isHelperItem = true;
-        this.itemGroup.strokeScaling = false;
-        this.itemGroup.applyMatrix = false;
+    }
+    onMouseDrag (event) {
+        const modOrigSize = this.origSize;
 
         if (event.modifiers.alt) {
+            this.centered = true;
+            this.itemGroup.position = this.origCenter;
             this.pivot = this.origCenter;
             this.modOrigSize = this.origSize * 0.5;
         } else {
+            if (this.centered) {
+                // Reset position if we were just in alt
+                this.centered = false;
+                this.itemGroup.scale(1 / this.lastSx, 1 / this.lastSy, this.pivot);
+                this.lastSx = 1;
+                this.lastSy = 1;
+            }
             this.pivot = this.origPivot;
         }
 
@@ -105,22 +94,9 @@ class ScaleTool {
             sx *= signx;
             sy *= signy;
         }
-
-        this.itemGroup.scale(sx, sy, this.pivot);
-        
-        for (let i = 0; i < this.boundsScaleHandles.length; i++) {
-            const handle = this.boundsScaleHandles[i];
-            handle.position = this.itemGroup.bounds[this._getRectCornerNameByIndex(i)];
-            handle.bringToFront();
-        }
-        
-        for (let i = 0; i < this.boundsRotHandles.length; i++) {
-            const handle = this.boundsRotHandles[i];
-            if (handle) {
-                handle.position = this.itemGroup.bounds[this._getRectCornerNameByIndex(i)] + handle.data.offset;
-                handle.bringToFront();
-            }
-        }
+        this.itemGroup.scale(sx / this.lastSx, sy / this.lastSy, this.pivot);
+        this.lastSx = sx;
+        this.lastSy = sy;
     }
     onMouseUp () {
         this.pivot = null;
@@ -128,16 +104,13 @@ class ScaleTool {
         this.corner = null;
         this.origSize = null;
         this.origCenter = null;
-        this.scaleItems.length = 0;
-        this.boundsPath = null;
-        this.boundsScaleHandles = [];
-        this.boundsRotHandles = [];
+        this.lastSx = 1;
+        this.lastSy = 1;
+        this.centered = false;
 
         if (!this.itemGroup) {
             return;
         }
-        
-        this.itemGroup.applyMatrix = true;
         
         // mark text items as scaled (for later use on font size calc)
         for (let i = 0; i < this.itemGroup.children.length; i++) {

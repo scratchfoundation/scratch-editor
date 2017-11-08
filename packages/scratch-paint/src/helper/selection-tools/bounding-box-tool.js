@@ -2,7 +2,7 @@ import paper from '@scratch/paper';
 import keyMirror from 'keymirror';
 
 import {getSelectedRootItems} from '../selection';
-import {getGuideColor, removeHelperItems} from '../guides';
+import {getGuideColor, removeBoundsPath} from '../guides';
 import {getGuideLayer} from '../layer';
 
 import ScaleTool from './scale-tool';
@@ -103,13 +103,12 @@ class BoundingBoxTool {
         if (this.mode === BoundingBoxModes.MOVE) {
             this._modeMap[this.mode].onMouseDown(hitProperties);
         } else if (this.mode === BoundingBoxModes.SCALE) {
-            this._modeMap[this.mode].onMouseDown(
-                hitResult, this.boundsPath, this.boundsScaleHandles, this.boundsRotHandles, getSelectedRootItems());
+            this._modeMap[this.mode].onMouseDown(hitResult, this.boundsPath, getSelectedRootItems());
         } else if (this.mode === BoundingBoxModes.ROTATE) {
             this._modeMap[this.mode].onMouseDown(hitResult, this.boundsPath, getSelectedRootItems());
         }
 
-        // while transforming object, never show the bounds stuff
+        // while transforming, don't show bounds
         this.removeBoundsPath();
         return true;
     }
@@ -150,7 +149,6 @@ class BoundingBoxTool {
         this.boundsPath.data.isSelectionBound = true;
         this.boundsPath.data.isHelperItem = true;
         this.boundsPath.fillColor = null;
-        this.boundsPath.strokeScaling = false;
         this.boundsPath.fullySelected = true;
         this.boundsPath.parent = getGuideLayer();
         
@@ -205,7 +203,7 @@ class BoundingBoxTool {
         }
     }
     removeBoundsPath () {
-        removeHelperItems();
+        removeBoundsPath();
         this.boundsPath = null;
         this.boundsScaleHandles.length = 0;
         this.boundsRotHandles.length = 0;
