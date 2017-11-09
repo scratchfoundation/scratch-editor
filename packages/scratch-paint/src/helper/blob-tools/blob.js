@@ -163,32 +163,30 @@ class Blobbiness {
         if (!this.options) {
             return;
         }
-
-        if (typeof point === 'undefined') {
-            point = this.cursorPreviewLastPoint;
-        } else {
-            this.cursorPreviewLastPoint = point;
-        }
-
         if (this.cursorPreview && this.cursorPreview.parent &&
                 this.brushSize === this.options.brushSize &&
                 this.fillColor === this.options.fillColor &&
-                this.strokeColor === this.options.strokeColor) {
+                this.strokeColor === this.options.strokeColor &&
+                this.cursorPreviewLastPoint.equals(point)) {
             return;
         }
-        const newPreview = new paper.Path.Circle({
-            center: point,
-            radius: this.options.brushSize / 2
-        });
-        newPreview.parent = getGuideLayer();
-        newPreview.data.isHelperItem = true;
-        if (this.cursorPreview) {
-            this.cursorPreview.remove();
+        if (typeof point !== 'undefined') {
+            this.cursorPreviewLastPoint = point;
         }
+
+        if (!this.cursorPreview) {
+            this.cursorPreview = new paper.Shape.Ellipse({
+                point: this.cursorPreviewLastPoint,
+                size: this.options.brushSize / 2
+            });
+            this.cursorPreview.parent = getGuideLayer();
+            this.cursorPreview.data.isHelperItem = true;
+        }
+        this.cursorPreview.position = this.cursorPreviewLastPoint;
+        this.cursorPreview.radius = this.options.brushSize / 2;
         this.brushSize = this.options.brushSize;
         this.fillColor = this.options.fillColor;
         this.strokeColor = this.options.strokeColor;
-        this.cursorPreview = newPreview;
         styleCursorPreview(this.cursorPreview, this.options);
     }
 
