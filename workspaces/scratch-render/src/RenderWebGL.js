@@ -42,6 +42,12 @@ const TOLERANCE_TOUCHING_COLOR = {
 };
 
 /**
+ * Constant used for masking when detecting the color white
+ * @type {[number,number,number,number]}
+ */
+const COLOR_BLACK = [0, 0, 0, 1];
+
+/**
  * Sprite Fencing - The number of pixels a sprite is required to leave remaining
  * onscreen around the edge of the staging area.
  * @type {number}
@@ -439,7 +445,15 @@ class RenderWebGL extends EventEmitter {
         gl.viewport(0, 0, bounds.width, bounds.height);
         const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
 
-        gl.clearColor.apply(gl, this._backgroundColor);
+        let fillBackgroundColor = this._backgroundColor;
+
+        // When using masking such that the background fill color will showing through, ensure we don't
+        // fill using the same color that we are trying to detect!
+        if (mask3b && color3b[0] > 196 && color3b[1] > 196 && color3b[2] > 196) {
+            fillBackgroundColor = COLOR_BLACK;
+        }
+
+        gl.clearColor.apply(gl, fillBackgroundColor);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
         let extraUniforms;
