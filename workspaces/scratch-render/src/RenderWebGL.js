@@ -43,7 +43,8 @@ const TOLERANCE_TOUCHING_COLOR = {
 
 /**
  * Constant used for masking when detecting the color white
- * @type {[number,number,number,number]}
+ * @type {Array<int>}
+ * @memberof RenderWebGL
  */
 const COLOR_BLACK = [0, 0, 0, 1];
 
