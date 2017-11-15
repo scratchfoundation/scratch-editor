@@ -4,7 +4,9 @@ const Rectangle = require('./Rectangle');
 const RenderConstants = require('./RenderConstants');
 const ShaderManager = require('./ShaderManager');
 const Skin = require('./Skin');
+const EffectTransform = require('./EffectTransform');
 
+const __isTouchingPosition = twgl.v3.create();
 
 class Drawable {
     /**
@@ -49,6 +51,8 @@ class Drawable {
         this._scale = twgl.v3.create(100, 100);
         this._direction = 90;
         this._transformDirty = true;
+        this._inverseMatrix = twgl.m4.create();
+        this._inverseTransformDirty = true;
         this._visible = true;
         this._effectBits = 0;
 
@@ -73,6 +77,7 @@ class Drawable {
      */
     setTransformDirty () {
         this._transformDirty = true;
+        this._inverseTransformDirty = true;
     }
 
     /**
@@ -239,6 +244,50 @@ class Drawable {
     setConvexHullPoints (points) {
         this._convexHullPoints = points;
         this._convexHullDirty = false;
+    }
+
+    /**
+     * Check if the world position touches the skin.
+     * @param {twgl.v3} vec World coordinate vector.
+     * @return {boolean} True if the world position touches the skin.
+     */
+    isTouching (vec) {
+        if (!this.skin) {
+            return false;
+        }
+
+        if (this._transformDirty) {
+            this._calculateTransform();
+        }
+
+        // Get the inverse of the model matrix or update it.
+        const inverse = this._inverseMatrix;
+        if (this._inverseTransformDirty) {
+            const model = twgl.m4.copy(this._uniforms.u_modelMatrix, inverse);
+            // The normal matrix uses a z scaling of 0 causing model[10] to be
+            // 0. Getting a 4x4 inverse is impossible without a scaling in x, y,
+            // and z.
+            model[10] = 1;
+            twgl.m4.inverse(model, model);
+            this._inverseTransformDirty = false;
+        }
+
+        // Transfrom from world coordinates to Drawable coordinates.
+        const localPosition = twgl.m4.transformPoint(inverse, vec, __isTouchingPosition);
+
+        // Transform into texture coordinates. 0, 0 is the bottom left. 1, 1 is
+        // the top right.
+        localPosition[0] += 0.5;
+        localPosition[1] += 0.5;
+        // The RenderWebGL quad flips the texture's X axis. So rendered bottom
+        // left is 1, 0 and the top right is 0, 1. Flip the X axis so
+        // localPosition matches that transformation.
+        localPosition[0] = 1 - localPosition[0];
+
+        // Apply texture effect transform.
+        EffectTransform.transformPoint(this, localPosition, localPosition);
+
+        return this.skin.isTouching(localPosition);
     }
 
     /**
