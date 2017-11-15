@@ -102,7 +102,7 @@ void main()
 		const float kRadius = 0.5;
 		vec2 offset = texcoord0 - kCenter;
 		float offsetMagnitude = length(offset);
-		float whirlFactor = 1.0 - (offsetMagnitude / kRadius);
+		float whirlFactor = max(1.0 - (offsetMagnitude / kRadius), 0.0);
 		float whirlActual = u_whirl * whirlFactor * whirlFactor;
 		float sinWhirl = sin(whirlActual);
 		float cosWhirl = cos(whirlActual);
@@ -111,12 +111,7 @@ void main()
 			sinWhirl, cosWhirl
 		);
 
-		// TODO: tweak this algorithm such that texture coordinates don't depend on conditionals.
-		// see: https://www.opengl.org/wiki/Sampler_%28GLSL%29#Non-uniform_flow_control
-		if (offsetMagnitude <= kRadius)
-		{
-			texcoord0 = rotationMatrix * offset + kCenter;
-		}
+		texcoord0 = rotationMatrix * offset + kCenter;
 	}
 	#endif // ENABLE_whirl
 
