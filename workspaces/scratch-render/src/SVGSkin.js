@@ -3,6 +3,8 @@ const twgl = require('twgl.js');
 const Skin = require('./Skin');
 const SvgRenderer = require('./svg-quirks-mode/svg-renderer');
 
+const Silhouette = require('./Silhouette');
+
 class SVGSkin extends Skin {
     /**
      * Create a new SVG skin.
@@ -22,6 +24,8 @@ class SVGSkin extends Skin {
 
         /** @type {WebGLTexture} */
         this._texture = null;
+
+        this._silhouette = new Silhouette();
     }
 
     /**
@@ -75,6 +79,7 @@ class SVGSkin extends Skin {
             if (this._texture) {
                 gl.bindTexture(gl.TEXTURE_2D, this._texture);
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._svgRenderer.canvas);
+                this._silhouette.update(this._svgRenderer.canvas);
             } else {
                 const textureOptions = {
                     auto: true,
@@ -85,11 +90,21 @@ class SVGSkin extends Skin {
                 };
 
                 this._texture = twgl.createTexture(gl, textureOptions);
+                this._silhouette.update(this._svgRenderer.canvas);
             }
             if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
             this.setRotationCenter.apply(this, rotationCenter);
             this.emit(Skin.Events.WasAltered);
         });
+    }
+
+    /**
+     * Does this point touch an opaque or translucent point on this skin?
+     * @param {twgl.v3} vec A texture coordinate.
+     * @return {boolean} Did it touch?
+     */
+    isTouching (vec) {
+        return this._silhouette.isTouching(vec);
     }
 }
 
