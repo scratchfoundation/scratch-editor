@@ -450,7 +450,7 @@ class RenderWebGL extends EventEmitter {
 
         // When using masking such that the background fill color will showing through, ensure we don't
         // fill using the same color that we are trying to detect!
-        if (mask3b && color3b[0] > 196 && color3b[1] > 196 && color3b[2] > 196) {
+        if (color3b[0] > 196 && color3b[1] > 196 && color3b[2] > 196) {
             fillBackgroundColor = COLOR_BLACK;
         }
 
