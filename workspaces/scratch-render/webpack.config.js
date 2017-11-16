@@ -22,7 +22,7 @@ const base = {
                 }
             },
             {
-                test: /node_modules\/(linebreak|grapheme-breaker)\/.*\.js$/,
+                test: /node_modules[\\/](linebreak|grapheme-breaker)[\\/].*\.js$/,
                 loader: 'ify-loader'
             }
         ]
