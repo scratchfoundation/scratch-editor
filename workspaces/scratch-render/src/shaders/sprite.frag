@@ -102,7 +102,7 @@ void main()
 		const float kRadius = 0.5;
 		vec2 offset = texcoord0 - kCenter;
 		float offsetMagnitude = length(offset);
-		float whirlFactor = 1.0 - (offsetMagnitude / kRadius);
+		float whirlFactor = max(1.0 - (offsetMagnitude / kRadius), 0.0);
 		float whirlActual = u_whirl * whirlFactor * whirlFactor;
 		float sinWhirl = sin(whirlActual);
 		float cosWhirl = cos(whirlActual);
@@ -111,26 +111,18 @@ void main()
 			sinWhirl, cosWhirl
 		);
 
-		// TODO: tweak this algorithm such that texture coordinates don't depend on conditionals.
-		// see: https://www.opengl.org/wiki/Sampler_%28GLSL%29#Non-uniform_flow_control
-		if (offsetMagnitude <= kRadius)
-		{
-			texcoord0 = rotationMatrix * offset + kCenter;
-		}
+		texcoord0 = rotationMatrix * offset + kCenter;
 	}
 	#endif // ENABLE_whirl
 
 	#ifdef ENABLE_fisheye
 	{
 		vec2 vec = (texcoord0 - kCenter) / kCenter;
-		float r = pow(length(vec), u_fisheye);
-		float angle = atan(vec.y, vec.x);
-		// TODO: tweak this algorithm such that texture coordinates don't depend on conditionals.
-		// see: https://www.opengl.org/wiki/Sampler_%28GLSL%29#Non-uniform_flow_control
-		if (r <= 1.0)
-		{
-			texcoord0 = kCenter + r * vec2(cos(angle), sin(angle)) * kCenter;
-		}
+		float vecLength = length(vec);
+		float r = pow(min(vecLength, 1.0), u_fisheye) * max(1.0, vecLength);
+		vec2 unit = vec / vecLength;
+
+		texcoord0 = kCenter + r * unit * kCenter;
 	}
 	#endif // ENABLE_fisheye
 
