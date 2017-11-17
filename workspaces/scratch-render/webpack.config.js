@@ -27,13 +27,12 @@ const base = {
             }
         ]
     },
-    plugins: [
+    plugins: process.env.NODE_ENV === 'production' ? [
         new webpack.optimize.UglifyJsPlugin({
             include: /\.min\.js$/,
-            minimize: true,
-            sourceMap: true
+            minimize: true
         })
-    ]
+    ] : []
 };
 
 module.exports = [
