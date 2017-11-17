@@ -4,6 +4,9 @@ node_js:
 - "node"
 env:
   - NODE_ENV=production
+install:
+- npm --production=false install
+- npm --production=false update
 sudo: false
 cache:
   directories:
