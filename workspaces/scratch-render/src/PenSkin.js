@@ -2,7 +2,7 @@ const twgl = require('twgl.js');
 
 const RenderConstants = require('./RenderConstants');
 const Skin = require('./Skin');
-
+const Silhouette = require('./Silhouette');
 
 /**
  * Attributes to use when drawing with the pen
@@ -49,6 +49,12 @@ class PenSkin extends Skin {
 
         /** @type {WebGLTexture} */
         this._texture = null;
+
+        /** @type {Silhouette} */
+        this._silhouette = new Silhouette();
+
+        /** @type {boolean} */
+        this._silhouetteDirty = false;
 
         this.onNativeSizeChanged = this.onNativeSizeChanged.bind(this);
         this._renderer.on(RenderConstants.Events.NativeSizeChanged, this.onNativeSizeChanged);
@@ -98,6 +104,7 @@ class PenSkin extends Skin {
         const ctx = this._canvas.getContext('2d');
         ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
         this._canvasDirty = true;
+        this._silhouetteDirty = true;
     }
 
     /**
@@ -127,6 +134,7 @@ class PenSkin extends Skin {
         ctx.lineTo(this._rotationCenter[0] + x1, this._rotationCenter[1] - y1);
         ctx.stroke();
         this._canvasDirty = true;
+        this._silhouetteDirty = true;
     }
 
     /**
@@ -139,6 +147,7 @@ class PenSkin extends Skin {
         const ctx = this._canvas.getContext('2d');
         ctx.drawImage(stampElement, this._rotationCenter[0] + x, this._rotationCenter[1] - y);
         this._canvasDirty = true;
+        this._silhouetteDirty = true;
     }
 
     /**
@@ -173,6 +182,7 @@ class PenSkin extends Skin {
             }
         );
         this._canvasDirty = true;
+        this._silhouetteDirty = true;
     }
 
     /**
@@ -194,6 +204,21 @@ class PenSkin extends Skin {
         context.strokeStyle = `rgba(${r},${g},${b},${a})`;
         context.lineCap = 'round';
         context.lineWidth = diameter;
+    }
+
+    /**
+     * Does this point touch an opaque or translucent point on this skin?
+     * @param {twgl.v3} vec A texture coordinate.
+     * @return {boolean} Did it touch?
+     */
+    isTouching (vec) {
+        if (this._silhouetteDirty) {
+            if (this._canvasDirty) {
+                this.getTexture();
+            }
+            this._silhouette.update(this._canvas);
+        }
+        return this._silhouette.isTouching(vec);
     }
 }
 

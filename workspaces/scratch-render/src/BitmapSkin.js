@@ -1,6 +1,7 @@
 const twgl = require('twgl.js');
 
 const Skin = require('./Skin');
+const Silhouette = require('./Silhouette');
 
 class BitmapSkin extends Skin {
     /**
@@ -23,6 +24,8 @@ class BitmapSkin extends Skin {
 
         /** @type {Array<int>} */
         this._textureSize = [0, 0];
+
+        this._silhouette = new Silhouette();
     }
 
     /**
@@ -66,6 +69,7 @@ class BitmapSkin extends Skin {
         if (this._texture) {
             gl.bindTexture(gl.TEXTURE_2D, this._texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmapData);
+            this._silhouette.update(bitmapData);
         } else {
             const textureOptions = {
                 auto: true,
@@ -77,6 +81,7 @@ class BitmapSkin extends Skin {
             };
 
             this._texture = twgl.createTexture(gl, textureOptions);
+            this._silhouette.update(bitmapData);
         }
 
         // Do these last in case any of the above throws an exception
@@ -105,6 +110,15 @@ class BitmapSkin extends Skin {
 
         // ImageData or HTMLCanvasElement
         return [bitmapData.width, bitmapData.height];
+    }
+
+    /**
+     * Does this point touch an opaque or translucent point on this skin?
+     * @param {twgl.v3} vec A texture coordinate.
+     * @return {boolean} Did it touch?
+     */
+    isTouching (vec) {
+        return this._silhouette.isTouching(vec);
     }
 }
 

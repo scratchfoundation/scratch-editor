@@ -132,6 +132,15 @@ class Skin extends EventEmitter {
         this._uniforms.u_skinSize = this.size;
         return this._uniforms;
     }
+
+    /**
+     * Does this point touch an opaque or translucent point on this skin?
+     * @param {twgl.v3} vec A texture coordinate.
+     * @return {boolean} Did it touch?
+     */
+    isTouching () {
+        return false;
+    }
 }
 
 /**
