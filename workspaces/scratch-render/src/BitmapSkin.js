@@ -40,6 +40,13 @@ class BitmapSkin extends Skin {
     }
 
     /**
+     * @returns {boolean} true for a raster-style skin (like a BitmapSkin), false for vector-style (like SVGSkin).
+     */
+    get isRaster () {
+        return true;
+    }
+
+    /**
      * @return {Array<number>} the "native" size, in texels, of this skin.
      */
     get size () {
@@ -71,11 +78,9 @@ class BitmapSkin extends Skin {
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmapData);
             this._silhouette.update(bitmapData);
         } else {
+            // TODO: mipmaps?
             const textureOptions = {
                 auto: true,
-                mag: gl.NEAREST,
-                /** @todo mipmaps, linear (except pixelate) */
-                min: gl.NEAREST,
                 wrap: gl.CLAMP_TO_EDGE,
                 src: bitmapData
             };

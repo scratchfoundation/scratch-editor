@@ -81,10 +81,9 @@ class SVGSkin extends Skin {
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._svgRenderer.canvas);
                 this._silhouette.update(this._svgRenderer.canvas);
             } else {
+                // TODO: mipmaps?
                 const textureOptions = {
                     auto: true,
-                    mag: gl.NEAREST,
-                    min: gl.NEAREST, /** @todo mipmaps, linear (except pixelate) */
                     wrap: gl.CLAMP_TO_EDGE,
                     src: this._svgRenderer.canvas
                 };
