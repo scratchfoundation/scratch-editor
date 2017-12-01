@@ -14182,15 +14182,14 @@ var SvgRenderer = function () {
             var ratio = this.getDrawRatio();
             var bbox = this._measurements;
 
-            // Set up the canvas for drawing.
-            this._canvas.width = bbox.width * ratio;
-            this._canvas.height = bbox.height * ratio;
-            this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-            this._context.scale(ratio, ratio);
-
             // Convert the SVG text to an Image, and then draw it to the canvas.
             var img = new Image();
             img.onload = function () {
+                // Set up the canvas for drawing.
+                _this._canvas.width = bbox.width * ratio;
+                _this._canvas.height = bbox.height * ratio;
+                _this._context.clearRect(0, 0, _this._canvas.width, _this._canvas.height);
+                _this._context.scale(ratio, ratio);
                 _this._context.drawImage(img, 0, 0);
                 // Reset the canvas transform after drawing.
                 _this._context.setTransform(1, 0, 0, 1, 0, 0);
