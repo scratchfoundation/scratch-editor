@@ -1205,7 +1205,7 @@ class RenderWebGL extends EventEmitter {
             // If x is equal to the width there are no touchable points in the
             // skin. Nothing we can add to L. And looping for R would find the
             // same thing.
-            if (x === width) {
+            if (x >= width) {
                 continue;
             }
             // Decrement ll until Q is clockwise (CCW returns negative) from the
