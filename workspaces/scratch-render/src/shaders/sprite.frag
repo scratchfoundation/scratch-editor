@@ -44,7 +44,7 @@ varying vec2 v_texCoord;
 // http://www.chilliant.com/rgb2hsv.html by Ian Taylor
 // Based in part on work by Sam Hocevar and Emil Persson
 
-const float kEpsilon = 1e-6;
+const float kEpsilon = 1e-4;
 
 vec3 convertRGB2HCV(vec3 rgb)
 {
