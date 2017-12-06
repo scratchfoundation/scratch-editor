@@ -46,7 +46,7 @@ varying vec2 v_texCoord;
 // See also: https://en.wikipedia.org/wiki/HSL_and_HSV#Formal_derivation
 
 // Smaller values can cause problems with "color" and "brightness" effects on some mobile devices
-const float kEpsilon = 1e-4;
+const float epsilon = 1e-4;
 
 // Convert an RGB color to Hue, Saturation, and Lightness.
 // All components of input and output are expected to be in the [0,1] range.
@@ -78,8 +78,8 @@ vec3 convertRGB2HSL(vec3 rgb)
 	float L = 0.5 * (temp2.x + m);
 
 	return vec3(
-		abs(temp2.z + (temp2.w - temp2.y) / (6.0 * C + kEpsilon)), // Hue
-		C / (1.0 - abs(2.0 * L - 1.0) + kEpsilon), // Saturation
+		abs(temp2.z + (temp2.w - temp2.y) / (6.0 * C + epsilon)), // Hue
+		C / (1.0 - abs(2.0 * L - 1.0) + epsilon), // Saturation
 		L); // Lightness
 }
 
