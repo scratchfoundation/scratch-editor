@@ -43,24 +43,44 @@ varying vec2 v_texCoord;
 // Branchless color conversions based on code from:
 // http://www.chilliant.com/rgb2hsv.html by Ian Taylor
 // Based in part on work by Sam Hocevar and Emil Persson
+// See also: https://en.wikipedia.org/wiki/HSL_and_HSV#Formal_derivation
 
-const float kEpsilon = 1e-6;
+// Smaller values can cause problems with "color" and "brightness" effects on some mobile devices
+const float epsilon = 1e-4;
 
-vec3 convertRGB2HCV(vec3 rgb)
-{
-	vec4 p = (rgb.g < rgb.b) ? vec4(rgb.bg, -1, 2.0/3.0) : vec4(rgb.gb, 0, -1.0/3.0);
-	vec4 q = (rgb.r < p.x) ? vec4(p.xyw, rgb.r) : vec4(rgb.r, p.yzx);
-	float c = q.x - min(q.w, q.y);
-	float h = abs((q.w - q.y) / (6.0 * c + kEpsilon) + q.z);
-	return vec3(h, c, q.x);
-}
-
+// Convert an RGB color to Hue, Saturation, and Lightness.
+// All components of input and output are expected to be in the [0,1] range.
 vec3 convertRGB2HSL(vec3 rgb)
 {
-	vec3 hcv = convertRGB2HCV(rgb);
-	float l = hcv.z - hcv.y * 0.5;
-	float s = hcv.y / (1.0 - abs(l * 2.0 - 1.0) + kEpsilon);
-	return vec3(hcv.x, s, l);
+	// Hue calculation has 3 cases, depending on which RGB component is largest, and one of those cases involves a "mod"
+	// operation. In order to avoid that "mod" we split the M==R case in two: one for G<B and one for B>G. The B>G case
+	// will be calculated in the negative and fed through abs() in the hue calculation at the end.
+	// See also: https://en.wikipedia.org/wiki/HSL_and_HSV#Hue_and_chroma
+	const vec4 hueOffsets = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+
+	// temp1.xy = sort B & G (largest first)
+	// temp1.z = the hue offset we'll use if it turns out that R is the largest component (M==R)
+	// temp1.w = the hue offset we'll use if it turns out that R is not the largest component (M==G or M==B)
+	vec4 temp1 = rgb.b > rgb.g ? vec4(rgb.bg, hueOffsets.wz) : vec4(rgb.gb, hueOffsets.xy);
+
+	// temp2.x = the largest component of RGB ("M" / "Max")
+	// temp2.yw = the smaller components of RGB, ordered for the hue calculation (not necessarily sorted by magnitude!)
+	// temp2.z = the hue offset we'll use in the hue calculation
+	vec4 temp2 = rgb.r > temp1.x ? vec4(rgb.r, temp1.yzx) : vec4(temp1.xyw, rgb.r);
+
+	// m = the smallest component of RGB ("min")
+	float m = min(temp2.y, temp2.w);
+
+	// Chroma = M - m
+	float C = temp2.x - m;
+
+	// Lightness = 1/2 * (M + m)
+	float L = 0.5 * (temp2.x + m);
+
+	return vec3(
+		abs(temp2.z + (temp2.w - temp2.y) / (6.0 * C + epsilon)), // Hue
+		C / (1.0 - abs(2.0 * L - 1.0) + epsilon), // Saturation
+		L); // Lightness
 }
 
 vec3 convertHue2RGB(float hue)
