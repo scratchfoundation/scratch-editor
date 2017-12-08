@@ -436,11 +436,11 @@ class RenderWebGL extends EventEmitter {
 
         const bounds = this._touchingBounds(drawableID);
         if (!bounds) {
-            return;
+            return false;
         }
         const candidateIDs = this._filterCandidatesTouching(drawableID, this._drawList, bounds);
         if (!candidateIDs) {
-            return;
+            return false;
         }
 
         // Limit size of viewport to the bounds around the target Drawable,
@@ -537,11 +537,11 @@ class RenderWebGL extends EventEmitter {
 
         const bounds = this._touchingBounds(drawableID);
         if (!bounds) {
-            return;
+            return false;
         }
         candidateIDs = this._filterCandidatesTouching(drawableID, candidateIDs, bounds);
         if (!candidateIDs) {
-            return;
+            return false;
         }
 
         // Limit size of viewport to the bounds around the target Drawable,
