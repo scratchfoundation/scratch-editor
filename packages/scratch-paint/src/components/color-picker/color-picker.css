@@ -13,6 +13,12 @@
     stroke: #ddd;
 }
 
+.swatch-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .row-header {
     font-family: "Helvetica Neue", Helvetica, sans-serif;
     font-size: 0.65rem;

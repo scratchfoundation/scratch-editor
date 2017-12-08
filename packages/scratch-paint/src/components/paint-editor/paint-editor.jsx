@@ -10,6 +10,7 @@ import PaperCanvas from '../../containers/paper-canvas.jsx';
 import {shouldShowGroup, shouldShowUngroup} from '../../helper/group';
 import {shouldShowBringForward, shouldShowSendBackward} from '../../helper/order';
 
+import Box from '../box/box.jsx';
 import Button from '../button/button.jsx';
 import ButtonGroup from '../button-group/button-group.jsx';
 import BrushMode from '../../containers/brush-mode.jsx';
@@ -22,6 +23,7 @@ import InputGroup from '../input-group/input-group.jsx';
 import Label from '../forms/label.jsx';
 import LabeledIconButton from '../labeled-icon-button/labeled-icon-button.jsx';
 import LineMode from '../../containers/line-mode.jsx';
+import Loupe from '../loupe/loupe.jsx';
 import ModeToolsComponent from '../mode-tools/mode-tools.jsx';
 import OvalMode from '../../containers/oval-mode.jsx';
 import RectMode from '../../containers/rect-mode.jsx';
@@ -109,6 +111,7 @@ class PaintEditorComponent extends React.Component {
     }
     setCanvas (canvas) {
         this.setState({canvas: canvas});
+        this.canvas = canvas;
     }
     render () {
         const redoDisabled = !this.props.canRedo();
@@ -368,6 +371,16 @@ class PaintEditorComponent extends React.Component {
                             svgId={this.props.svgId}
                             onUpdateSvg={this.props.onUpdateSvg}
                         />
+                        {(
+                            this.props.isEyeDropping &&
+                            this.props.colorInfo !== null &&
+                            !this.props.colorInfo.hideLoupe
+                        ) ? (
+                                <Box className={styles.colorPickerWrapper}>
+                                    <Loupe colorInfo={this.props.colorInfo} />
+                                </Box>
+                            ) : null
+                        }
                         {/* Zoom controls */}
                         <InputGroup className={styles.zoomControls}>
                             <ButtonGroup>
@@ -413,7 +426,9 @@ class PaintEditorComponent extends React.Component {
 PaintEditorComponent.propTypes = {
     canRedo: PropTypes.func.isRequired,
     canUndo: PropTypes.func.isRequired,
+    colorInfo: Loupe.propTypes.colorInfo,
     intl: intlShape,
+    isEyeDropping: PropTypes.bool,
     name: PropTypes.string,
     onCopyToClipboard: PropTypes.func.isRequired,
     onGroup: PropTypes.func.isRequired,
@@ -436,4 +451,4 @@ PaintEditorComponent.propTypes = {
     svgId: PropTypes.string
 };
 
-export default injectIntl(PaintEditorComponent);
+export default injectIntl(PaintEditorComponent, {withRef: true});
