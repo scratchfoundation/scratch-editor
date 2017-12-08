@@ -20364,7 +20364,8 @@ var RenderWebGL = function (_EventEmitter) {
         }
 
         /**
-         * Detect which sprite, if any, is at the given location.
+         * Detect which sprite, if any, is at the given location. This function will not
+         * pick drawables that are not visible or have ghost set all the way up.
          * @param {int} centerX The client x coordinate of the picking location.
          * @param {int} centerY The client y coordinate of the picking location.
          * @param {int} touchWidth The client width of the touch event (optional).
@@ -20377,11 +20378,17 @@ var RenderWebGL = function (_EventEmitter) {
     }, {
         key: 'pick',
         value: function pick(centerX, centerY, touchWidth, touchHeight, candidateIDs) {
+            var _this2 = this;
+
             var gl = this._gl;
 
             touchWidth = touchWidth || 1;
             touchHeight = touchHeight || 1;
-            candidateIDs = candidateIDs || this._drawList;
+            candidateIDs = (candidateIDs || this._drawList).filter(function (id) {
+                var drawable = _this2._allDrawables[id];
+                var uniforms = drawable.getUniforms();
+                return drawable.getVisible() && uniforms.u_ghost !== 0;
+            });
 
             var clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
             var clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
@@ -20635,7 +20642,7 @@ var RenderWebGL = function (_EventEmitter) {
     }, {
         key: '_filterCandidatesTouching',
         value: function _filterCandidatesTouching(drawableID, candidateIDs, bounds) {
-            var _this2 = this;
+            var _this3 = this;
 
             // Filter candidates by rough bounding box intersection.
             // Do this before _drawThese, so we can prevent any GL operations
@@ -20643,7 +20650,7 @@ var RenderWebGL = function (_EventEmitter) {
             candidateIDs = candidateIDs.filter(function (testID) {
                 if (testID === drawableID) return false;
                 // Only draw items which could possibly overlap target Drawable.
-                var candidate = _this2._allDrawables[testID];
+                var candidate = _this3._allDrawables[testID];
                 var candidateBounds = candidate.getFastBounds();
                 return bounds.intersects(candidateBounds);
             });
