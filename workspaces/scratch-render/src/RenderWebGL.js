@@ -594,7 +594,8 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
-     * Detect which sprite, if any, is at the given location.
+     * Detect which sprite, if any, is at the given location. This function will not
+     * pick drawables that are not visible or have ghost set all the way up.
      * @param {int} centerX The client x coordinate of the picking location.
      * @param {int} centerY The client y coordinate of the picking location.
      * @param {int} touchWidth The client width of the touch event (optional).
@@ -608,7 +609,11 @@ class RenderWebGL extends EventEmitter {
 
         touchWidth = touchWidth || 1;
         touchHeight = touchHeight || 1;
-        candidateIDs = candidateIDs || this._drawList;
+        candidateIDs = (candidateIDs || this._drawList).filter(id => {
+            const drawable = this._allDrawables[id];
+            const uniforms = drawable.getUniforms();
+            return drawable.getVisible() && uniforms.u_ghost !== 0;
+        });
 
         const clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
         const clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
