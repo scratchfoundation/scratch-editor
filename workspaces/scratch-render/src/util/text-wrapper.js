@@ -20,7 +20,6 @@ const GraphemeBreaker = require('grapheme-breaker');
  * - "JavaScript has a Unicode problem" by Mathias Bynens: https://mathiasbynens.be/notes/javascript-unicode
  */
 class TextWrapper {
-
     /**
      * Construct a text wrapper which will measure text using the specified measurement provider.
      * @param {MeasurementProvider} measurementProvider - a helper object to provide text measurement services.

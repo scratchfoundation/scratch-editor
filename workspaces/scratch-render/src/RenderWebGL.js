@@ -902,7 +902,6 @@ class RenderWebGL extends EventEmitter {
      * @return {Array.<number, number>} The fenced position as an array [x, y]
      */
     getFencedPositionOfDrawable (drawableID, position) {
-
         let x = position[0];
         let y = position[1];
 
@@ -1096,7 +1095,6 @@ class RenderWebGL extends EventEmitter {
      * @private
      */
     _drawThese (drawables, drawMode, projection, opts = {}) {
-
         const near = function (a, b, relativeTolerance = 0.01) {
             const absA = Math.abs(a);
             const absB = Math.abs(b);
