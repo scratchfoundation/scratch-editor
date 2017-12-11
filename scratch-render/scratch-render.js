@@ -10864,7 +10864,7 @@ var Skin = function (_EventEmitter) {
         }
 
         /**
-         * @return {int} the unique ID for this Skin.
+         * @returns {boolean} true for a raster-style skin (like a BitmapSkin), false for vector-style (like SVGSkin).
          */
 
     }, {
@@ -10938,6 +10938,16 @@ var Skin = function (_EventEmitter) {
         value: function isTouching() {
             return false;
         }
+    }, {
+        key: 'isRaster',
+        get: function get() {
+            return false;
+        }
+
+        /**
+         * @return {int} the unique ID for this Skin.
+         */
+
     }, {
         key: 'id',
         get: function get() {
@@ -20702,7 +20712,6 @@ var RenderWebGL = function (_EventEmitter) {
     }, {
         key: 'getFencedPositionOfDrawable',
         value: function getFencedPositionOfDrawable(drawableID, position) {
-
             var x = position[0];
             var y = position[1];
 
@@ -20904,6 +20913,15 @@ var RenderWebGL = function (_EventEmitter) {
         value: function _drawThese(drawables, drawMode, projection) {
             var opts = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
 
+            var near = function near(a, b) {
+                var relativeTolerance = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0.01;
+
+                var absA = Math.abs(a);
+                var absB = Math.abs(b);
+                var error = Math.abs(a - b) / Math.max(absA, absB);
+                return error < relativeTolerance;
+            };
+
             var gl = this._gl;
             var currentShader = null;
 
@@ -20926,6 +20944,8 @@ var RenderWebGL = function (_EventEmitter) {
                 // If the skin or texture isn't ready yet, skip it.
                 if (!drawable.skin || !drawable.skin.getTexture(drawableScale)) continue;
 
+                var uniforms = {};
+
                 var effectBits = drawable.getEnabledEffects();
                 effectBits &= opts.hasOwnProperty('effectMask') ? opts.effectMask : effectBits;
                 var newShader = this._shaderManager.getShader(drawMode, effectBits);
@@ -20933,17 +20953,25 @@ var RenderWebGL = function (_EventEmitter) {
                     currentShader = newShader;
                     gl.useProgram(currentShader.program);
                     twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
-                    twgl.setUniforms(currentShader, { u_projectionMatrix: projection });
-                    twgl.setUniforms(currentShader, { u_fudge: window.fudge || 0 });
+                    Object.assign(uniforms, {
+                        u_projectionMatrix: projection,
+                        u_fudge: window.fudge || 0
+                    });
                 }
 
-                twgl.setUniforms(currentShader, drawable.skin.getUniforms(drawableScale));
-                twgl.setUniforms(currentShader, drawable.getUniforms());
+                Object.assign(uniforms, drawable.skin.getUniforms(drawableScale), drawable.getUniforms());
 
                 // Apply extra uniforms after the Drawable's, to allow overwriting.
                 if (opts.extraUniforms) {
-                    twgl.setUniforms(currentShader, opts.extraUniforms);
+                    Object.assign(uniforms, opts.extraUniforms);
                 }
+
+                if (uniforms.u_skin) {
+                    var useNearest = drawable._direction % 90 === 0 && (near(drawableScale, 100) || drawable.skin.isRaster);
+                    twgl.setTextureParameters(gl, uniforms.u_skin, { minMag: useNearest ? gl.NEAREST : gl.LINEAR });
+                }
+
+                twgl.setUniforms(currentShader, uniforms);
 
                 twgl.drawBufferInfo(gl, this._bufferInfo, gl.TRIANGLES);
             }
@@ -21549,7 +21577,7 @@ var BitmapSkin = function (_Skin) {
         }
 
         /**
-         * @return {Array<number>} the "native" size, in texels, of this skin.
+         * @returns {boolean} true for a raster-style skin (like a BitmapSkin), false for vector-style (like SVGSkin).
          */
 
     }, {
@@ -21584,11 +21612,9 @@ var BitmapSkin = function (_Skin) {
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmapData);
                 this._silhouette.update(bitmapData);
             } else {
+                // TODO: mipmaps?
                 var textureOptions = {
                     auto: true,
-                    mag: gl.NEAREST,
-                    /** @todo mipmaps, linear (except pixelate) */
-                    min: gl.NEAREST,
                     wrap: gl.CLAMP_TO_EDGE,
                     src: bitmapData
                 };
@@ -21625,6 +21651,16 @@ var BitmapSkin = function (_Skin) {
         value: function isTouching(vec) {
             return this._silhouette.isTouching(vec);
         }
+    }, {
+        key: 'isRaster',
+        get: function get() {
+            return true;
+        }
+
+        /**
+         * @return {Array<number>} the "native" size, in texels, of this skin.
+         */
+
     }, {
         key: 'size',
         get: function get() {
@@ -22239,7 +22275,7 @@ var PenSkin = function (_Skin) {
         }
 
         /**
-         * @return {Array<number>} the "native" size, in texels, of this skin. [width, height]
+         * @returns {boolean} true for a raster-style skin (like a BitmapSkin), false for vector-style (like SVGSkin).
          */
 
     }, {
@@ -22411,6 +22447,16 @@ var PenSkin = function (_Skin) {
             return this._silhouette.isTouching(vec);
         }
     }, {
+        key: 'isRaster',
+        get: function get() {
+            return true;
+        }
+
+        /**
+         * @return {Array<number>} the "native" size, in texels, of this skin. [width, height]
+         */
+
+    }, {
         key: 'size',
         get: function get() {
             return [this._canvas.width, this._canvas.height];
@@ -22540,10 +22586,9 @@ var SVGSkin = function (_Skin) {
                     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, _this2._svgRenderer.canvas);
                     _this2._silhouette.update(_this2._svgRenderer.canvas);
                 } else {
+                    // TODO: mipmaps?
                     var textureOptions = {
                         auto: true,
-                        mag: gl.NEAREST,
-                        min: gl.NEAREST, /** @todo mipmaps, linear (except pixelate) */
                         wrap: gl.CLAMP_TO_EDGE,
                         src: _this2._svgRenderer.canvas
                     };
@@ -22926,7 +22971,6 @@ var GraphemeBreaker = __webpack_require__(363);
  */
 
 var TextWrapper = function () {
-
     /**
      * Construct a text wrapper which will measure text using the specified measurement provider.
      * @param {MeasurementProvider} measurementProvider - a helper object to provide text measurement services.
