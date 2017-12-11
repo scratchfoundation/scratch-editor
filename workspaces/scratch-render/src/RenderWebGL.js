@@ -1118,7 +1118,8 @@ class RenderWebGL extends EventEmitter {
             const drawable = this._allDrawables[drawableID];
             /** @todo check if drawable is inside the viewport before anything else */
 
-            // Hidden drawables (e.g., by a "hide" block) are not drawn unless stamping
+            // Hidden drawables (e.g., by a "hide" block) are not drawn unless
+            // the ignoreVisibility flag is used (e.g. for stamping or touchingColor).
             if (!drawable.getVisible() && !opts.ignoreVisibility) continue;
 
             const drawableScale = drawable.scale;
