@@ -63,6 +63,13 @@ class Skin extends EventEmitter {
     }
 
     /**
+     * @returns {boolean} true for a raster-style skin (like a BitmapSkin), false for vector-style (like SVGSkin).
+     */
+    get isRaster () {
+        return false;
+    }
+
+    /**
      * @return {int} the unique ID for this Skin.
      */
     get id () {

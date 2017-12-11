@@ -911,7 +911,6 @@ class RenderWebGL extends EventEmitter {
      * @return {Array.<number, number>} The fenced position as an array [x, y]
      */
     getFencedPositionOfDrawable (drawableID, position) {
-
         let x = position[0];
         let y = position[1];
 
@@ -1105,6 +1104,13 @@ class RenderWebGL extends EventEmitter {
      * @private
      */
     _drawThese (drawables, drawMode, projection, opts = {}) {
+        const near = function (a, b, relativeTolerance = 0.01) {
+            const absA = Math.abs(a);
+            const absB = Math.abs(b);
+            const error = Math.abs(a - b) / Math.max(absA, absB);
+            return error < relativeTolerance;
+        };
+
         const gl = this._gl;
         let currentShader = null;
 
@@ -1127,6 +1133,8 @@ class RenderWebGL extends EventEmitter {
             // If the skin or texture isn't ready yet, skip it.
             if (!drawable.skin || !drawable.skin.getTexture(drawableScale)) continue;
 
+            const uniforms = {};
+
             let effectBits = drawable.getEnabledEffects();
             effectBits &= opts.hasOwnProperty('effectMask') ? opts.effectMask : effectBits;
             const newShader = this._shaderManager.getShader(drawMode, effectBits);
@@ -1134,17 +1142,28 @@ class RenderWebGL extends EventEmitter {
                 currentShader = newShader;
                 gl.useProgram(currentShader.program);
                 twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
-                twgl.setUniforms(currentShader, {u_projectionMatrix: projection});
-                twgl.setUniforms(currentShader, {u_fudge: window.fudge || 0});
+                Object.assign(uniforms, {
+                    u_projectionMatrix: projection,
+                    u_fudge: window.fudge || 0
+                });
             }
 
-            twgl.setUniforms(currentShader, drawable.skin.getUniforms(drawableScale));
-            twgl.setUniforms(currentShader, drawable.getUniforms());
+            Object.assign(uniforms,
+                drawable.skin.getUniforms(drawableScale),
+                drawable.getUniforms());
 
             // Apply extra uniforms after the Drawable's, to allow overwriting.
             if (opts.extraUniforms) {
-                twgl.setUniforms(currentShader, opts.extraUniforms);
+                Object.assign(uniforms, opts.extraUniforms);
             }
+
+            if (uniforms.u_skin) {
+                const useNearest =
+                    (drawable._direction % 90 === 0) && (near(drawableScale, 100) || drawable.skin.isRaster);
+                twgl.setTextureParameters(gl, uniforms.u_skin, {minMag: useNearest ? gl.NEAREST : gl.LINEAR});
+            }
+
+            twgl.setUniforms(currentShader, uniforms);
 
             twgl.drawBufferInfo(gl, this._bufferInfo, gl.TRIANGLES);
         }
