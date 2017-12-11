@@ -4,11 +4,11 @@ import bindAll from 'lodash.bindall';
 
 import Box from '../box/box.jsx';
 
-import {LOUPE_RADIUS, CANVAS_SCALE} from '../../helper/eye-dropper';
+import {LOUPE_RADIUS, CANVAS_SCALE} from '../../helper/tools/eye-dropper';
 
 import styles from './loupe.css';
 
-const zoomScale = 3;
+const ZOOM_SCALE = 3;
 
 class LoupeComponent extends React.Component {
     constructor (props) {
@@ -21,15 +21,15 @@ class LoupeComponent extends React.Component {
         this.draw();
     }
     draw () {
-        const boxSize = 6 / zoomScale;
-        const boxLineWidth = 1 / zoomScale;
-        const colorRingWidth = 15 / zoomScale;
+        const boxSize = 6 / ZOOM_SCALE;
+        const boxLineWidth = 1 / ZOOM_SCALE;
+        const colorRingWidth = 15 / ZOOM_SCALE;
 
         const color = this.props.colorInfo.color;
 
         const ctx = this.canvas.getContext('2d');
-        this.canvas.width = zoomScale * (LOUPE_RADIUS * 2);
-        this.canvas.height = zoomScale * (LOUPE_RADIUS * 2);
+        this.canvas.width = ZOOM_SCALE * (LOUPE_RADIUS * 2);
+        this.canvas.height = ZOOM_SCALE * (LOUPE_RADIUS * 2);
 
         // In order to scale the image data, must draw to a tmp canvas first
         const tmpCanvas = document.createElement('canvas');
@@ -44,7 +44,7 @@ class LoupeComponent extends React.Component {
 
         // Scale the loupe canvas and draw the zoomed image
         ctx.save();
-        ctx.scale(zoomScale, zoomScale);
+        ctx.scale(ZOOM_SCALE, ZOOM_SCALE);
         ctx.drawImage(tmpCanvas, 0, 0, LOUPE_RADIUS * 2, LOUPE_RADIUS * 2);
 
         // Draw an outlined square at the cursor position (cursor is hidden)
@@ -81,10 +81,10 @@ class LoupeComponent extends React.Component {
                 element="canvas"
                 height={LOUPE_RADIUS * 2}
                 style={{
-                    top: (colorInfo.y / CANVAS_SCALE) - ((zoomScale * (LOUPE_RADIUS * 2)) / 2),
-                    left: (colorInfo.x / CANVAS_SCALE) - ((zoomScale * (LOUPE_RADIUS * 2)) / 2),
-                    width: (LOUPE_RADIUS * 2) * zoomScale,
-                    height: (LOUPE_RADIUS * 2) * zoomScale
+                    top: (colorInfo.y / CANVAS_SCALE) - ((ZOOM_SCALE * (LOUPE_RADIUS * 2)) / 2),
+                    left: (colorInfo.x / CANVAS_SCALE) - ((ZOOM_SCALE * (LOUPE_RADIUS * 2)) / 2),
+                    width: (LOUPE_RADIUS * 2) * ZOOM_SCALE,
+                    height: (LOUPE_RADIUS * 2) * ZOOM_SCALE
                 }}
                 width={LOUPE_RADIUS * 2}
             />

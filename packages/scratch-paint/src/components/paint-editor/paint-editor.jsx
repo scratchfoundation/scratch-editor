@@ -1,4 +1,3 @@
-import bindAll from 'lodash.bindall';
 import classNames from 'classnames';
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
 import MediaQuery from 'react-responsive';
@@ -101,331 +100,317 @@ const messages = defineMessages({
     }
 });
 
-class PaintEditorComponent extends React.Component {
-    constructor (props) {
-        super(props);
-        bindAll(this, [
-            'setCanvas'
-        ]);
-        this.state = {};
-    }
-    setCanvas (canvas) {
-        this.setState({canvas: canvas});
-        this.canvas = canvas;
-    }
-    render () {
-        const redoDisabled = !this.props.canRedo();
-        const undoDisabled = !this.props.canUndo();
+const PaintEditorComponent = props => {
+    const redoDisabled = !props.canRedo();
+    const undoDisabled = !props.canUndo();
 
-        return (
-            <div className={styles.editorContainer}>
-                {this.state.canvas ? (
-                    <div className={styles.editorContainerTop}>
-                        {/* First row */}
-                        <div className={styles.row}>
-                            {/* Name field */}
-                            <InputGroup>
-                                <MediaQuery minWidth={layout.fullSizeEditorMinWidth}>
-                                    <Label text={this.props.intl.formatMessage(messages.costume)}>
-                                        <BufferedInput
-                                            type="text"
-                                            value={this.props.name}
-                                            onSubmit={this.props.onUpdateName}
-                                        />
-                                    </Label>
-                                </MediaQuery>
-                                <MediaQuery maxWidth={layout.fullSizeEditorMinWidth - 1}>
+    return (
+        <div className={styles.editorContainer}>
+            {props.canvas !== null ? ( // eslint-disable-line no-negated-condition
+                <div className={styles.editorContainerTop}>
+                    {/* First row */}
+                    <div className={styles.row}>
+                        {/* Name field */}
+                        <InputGroup>
+                            <MediaQuery minWidth={layout.fullSizeEditorMinWidth}>
+                                <Label text={props.intl.formatMessage(messages.costume)}>
                                     <BufferedInput
                                         type="text"
-                                        value={this.props.name}
-                                        onSubmit={this.props.onUpdateName}
+                                        value={props.name}
+                                        onSubmit={props.onUpdateName}
                                     />
-                                </MediaQuery>
-                            </InputGroup>
-
-                            {/* Undo/Redo */}
-                            <InputGroup>
-                                <ButtonGroup>
-                                    <Button
-                                        className={
-                                            classNames(
-                                                styles.buttonGroupButton,
-                                                {
-                                                    [styles.modNoRightBorder]: !redoDisabled
-                                                }
-                                            )
-                                        }
-                                        disabled={undoDisabled}
-                                        onClick={this.props.onUndo}
-                                    >
-                                        <img
-                                            alt={this.props.intl.formatMessage(messages.undo)}
-                                            className={styles.buttonGroupButtonIcon}
-                                            src={undoIcon}
-                                        />
-                                    </Button>
-                                    <Button
-                                        className={
-                                            classNames(
-                                                styles.buttonGroupButton,
-                                                {
-                                                    [styles.modLeftBorder]: !redoDisabled
-                                                }
-                                            )
-                                        }
-                                        disabled={redoDisabled}
-                                        onClick={this.props.onRedo}
-                                    >
-                                        <img
-                                            alt={this.props.intl.formatMessage(messages.redo)}
-                                            className={styles.buttonGroupButtonIcon}
-                                            src={redoIcon}
-                                        />
-                                    </Button>
-                                </ButtonGroup>
-                            </InputGroup>
-
-                            {/* Group/Ungroup */}
-                            <InputGroup className={styles.modDashedBorder}>
-                                <LabeledIconButton
-                                    disabled={!shouldShowGroup()}
-                                    imgSrc={groupIcon}
-                                    title={this.props.intl.formatMessage(messages.group)}
-                                    onClick={this.props.onGroup}
-                                />
-                                <LabeledIconButton
-                                    disabled={!shouldShowUngroup()}
-                                    imgSrc={ungroupIcon}
-                                    title={this.props.intl.formatMessage(messages.ungroup)}
-                                    onClick={this.props.onUngroup}
-                                />
-                            </InputGroup>
-
-                            {/* Forward/Backward */}
-                            <InputGroup className={styles.modDashedBorder}>
-                                <LabeledIconButton
-                                    disabled={!shouldShowBringForward()}
-                                    imgSrc={sendForwardIcon}
-                                    title={this.props.intl.formatMessage(messages.forward)}
-                                    onClick={this.props.onSendForward}
-                                />
-                                <LabeledIconButton
-                                    disabled={!shouldShowSendBackward()}
-                                    imgSrc={sendBackwardIcon}
-                                    title={this.props.intl.formatMessage(messages.backward)}
-                                    onClick={this.props.onSendBackward}
-                                />
-                            </InputGroup>
-
-                            <MediaQuery minWidth={layout.fullSizeEditorMinWidth}>
-                                <div className={styles.row}>
-                                    <InputGroup>
-                                        <LabeledIconButton
-                                            disabled={!shouldShowBringForward()}
-                                            imgSrc={sendFrontIcon}
-                                            title={this.props.intl.formatMessage(messages.front)}
-                                            onClick={this.props.onSendToFront}
-                                        />
-                                        <LabeledIconButton
-                                            disabled={!shouldShowSendBackward()}
-                                            imgSrc={sendBackIcon}
-                                            title={this.props.intl.formatMessage(messages.back)}
-                                            onClick={this.props.onSendToBack}
-                                        />
-                                    </InputGroup>
-
-                                    {/* To be rotation point */}
-                                    {/* <InputGroup>
-                                        <LabeledIconButton
-                                            imgAlt="Rotation Point"
-                                            imgSrc={rotationPointIcon}
-                                            title="Rotation Point"
-                                            onClick={function () {}}
-                                        />
-                                    </InputGroup> */}
-                                </div>
+                                </Label>
                             </MediaQuery>
                             <MediaQuery maxWidth={layout.fullSizeEditorMinWidth - 1}>
-                                <InputGroup>
-                                    <Dropdown
-                                        className={styles.modUnselect}
-                                        enterExitTransitionDurationMs={0}
-                                        popoverContent={
-                                            <InputGroup className={styles.modContextMenu}>
-                                                <Button
-                                                    className={classNames(styles.modMenuItem, {
-                                                        [styles.modDisabled]: !shouldShowBringForward()
-                                                    })}
-                                                    disabled={!shouldShowBringForward()}
-                                                    onClick={this.props.onSendToFront}
-                                                >
-                                                    <img
-                                                        className={styles.menuItemIcon}
-                                                        src={sendFrontIcon}
-                                                    />
-                                                    <span>{this.props.intl.formatMessage(messages.front)}</span>
-                                                </Button>
-                                                <Button
-                                                    className={classNames(styles.modMenuItem, {
-                                                        [styles.modDisabled]: !shouldShowSendBackward()
-                                                    })}
-                                                    disabled={!shouldShowSendBackward()}
-                                                    onClick={this.props.onSendToBack}
-                                                >
-                                                    <img
-                                                        className={styles.menuItemIcon}
-                                                        src={sendBackIcon}
-                                                    />
-                                                    <span>{this.props.intl.formatMessage(messages.back)}</span>
-                                                </Button>
-
-                                                {/* To be rotation point */}
-                                                {/* <Button
-                                                    className={classNames(styles.modMenuItem, styles.modTopDivider)}
-                                                    onClick={function () {}}
-                                                >
-                                                    <img
-                                                        className={styles.menuItemIcon}
-                                                        src={rotationPointIcon}
-                                                    />
-                                                    <span>{'Rotation Point'}</span>
-                                                </Button> */}
-                                            </InputGroup>
-                                        }
-                                        tipSize={.01}
-                                    >
-                                        {this.props.intl.formatMessage(messages.more)}
-                                    </Dropdown>
-                                </InputGroup>
+                                <BufferedInput
+                                    type="text"
+                                    value={props.name}
+                                    onSubmit={props.onUpdateName}
+                                />
                             </MediaQuery>
-                        </div>
+                        </InputGroup>
 
-                        {/* Second Row */}
-                        <div className={styles.row}>
-                            <InputGroup
-                                className={classNames(
-                                    styles.row,
-                                    styles.modDashedBorder,
-                                    styles.modLabeledIconHeight
-                                )}
-                            >
-                                {/* fill */}
-                                <FillColorIndicatorComponent
-                                    onUpdateSvg={this.props.onUpdateSvg}
-                                />
-                                {/* stroke */}
-                                <StrokeColorIndicatorComponent
-                                    onUpdateSvg={this.props.onUpdateSvg}
-                                />
-                                {/* stroke width */}
-                                <StrokeWidthIndicatorComponent
-                                    onUpdateSvg={this.props.onUpdateSvg}
-                                />
-                            </InputGroup>
-                            <InputGroup className={styles.modModeTools}>
-                                <ModeToolsComponent
-                                    onCopyToClipboard={this.props.onCopyToClipboard}
-                                    onPasteFromClipboard={this.props.onPasteFromClipboard}
-                                />
-                            </InputGroup>
-                        </div>
-                    </div>
-                ) : null}
-
-                <div className={styles.topAlignRow}>
-                    {/* Modes */}
-                    {this.state.canvas ? (
-                        <div className={styles.modeSelector}>
-                            <SelectMode
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                            <ReshapeMode
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                            <BrushMode
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                            <EraserMode
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                            {/* Text mode will go here */}
-                            <LineMode
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                            <OvalMode
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                            <RectMode
-                                onUpdateSvg={this.props.onUpdateSvg}
-                            />
-                        </div>
-                    ) : null}
-
-                    {/* Canvas */}
-                    <div className={styles.canvasContainer}>
-                        <PaperCanvas
-                            canvasRef={this.setCanvas}
-                            rotationCenterX={this.props.rotationCenterX}
-                            rotationCenterY={this.props.rotationCenterY}
-                            svg={this.props.svg}
-                            svgId={this.props.svgId}
-                            onUpdateSvg={this.props.onUpdateSvg}
-                        />
-                        {(
-                            this.props.isEyeDropping &&
-                            this.props.colorInfo !== null &&
-                            !this.props.colorInfo.hideLoupe
-                        ) ? (
-                                <Box className={styles.colorPickerWrapper}>
-                                    <Loupe colorInfo={this.props.colorInfo} />
-                                </Box>
-                            ) : null
-                        }
-                        {/* Zoom controls */}
-                        <InputGroup className={styles.zoomControls}>
+                        {/* Undo/Redo */}
+                        <InputGroup>
                             <ButtonGroup>
                                 <Button
-                                    className={styles.buttonGroupButton}
-                                    onClick={this.props.onZoomOut}
+                                    className={
+                                        classNames(
+                                            styles.buttonGroupButton,
+                                            {
+                                                [styles.modNoRightBorder]: !redoDisabled
+                                            }
+                                        )
+                                    }
+                                    disabled={undoDisabled}
+                                    onClick={props.onUndo}
                                 >
                                     <img
-                                        alt="Zoom Out"
+                                        alt={props.intl.formatMessage(messages.undo)}
                                         className={styles.buttonGroupButtonIcon}
-                                        src={zoomOutIcon}
+                                        src={undoIcon}
                                     />
                                 </Button>
                                 <Button
-                                    className={styles.buttonGroupButton}
-                                    onClick={this.props.onZoomReset}
+                                    className={
+                                        classNames(
+                                            styles.buttonGroupButton,
+                                            {
+                                                [styles.modLeftBorder]: !redoDisabled
+                                            }
+                                        )
+                                    }
+                                    disabled={redoDisabled}
+                                    onClick={props.onRedo}
                                 >
                                     <img
-                                        alt="Zoom Reset"
+                                        alt={props.intl.formatMessage(messages.redo)}
                                         className={styles.buttonGroupButtonIcon}
-                                        src={zoomResetIcon}
-                                    />
-                                </Button>
-                                <Button
-                                    className={styles.buttonGroupButton}
-                                    onClick={this.props.onZoomIn}
-                                >
-                                    <img
-                                        alt="Zoom In"
-                                        className={styles.buttonGroupButtonIcon}
-                                        src={zoomInIcon}
+                                        src={redoIcon}
                                     />
                                 </Button>
                             </ButtonGroup>
                         </InputGroup>
+
+                        {/* Group/Ungroup */}
+                        <InputGroup className={styles.modDashedBorder}>
+                            <LabeledIconButton
+                                disabled={!shouldShowGroup()}
+                                imgSrc={groupIcon}
+                                title={props.intl.formatMessage(messages.group)}
+                                onClick={props.onGroup}
+                            />
+                            <LabeledIconButton
+                                disabled={!shouldShowUngroup()}
+                                imgSrc={ungroupIcon}
+                                title={props.intl.formatMessage(messages.ungroup)}
+                                onClick={props.onUngroup}
+                            />
+                        </InputGroup>
+
+                        {/* Forward/Backward */}
+                        <InputGroup className={styles.modDashedBorder}>
+                            <LabeledIconButton
+                                disabled={!shouldShowBringForward()}
+                                imgSrc={sendForwardIcon}
+                                title={props.intl.formatMessage(messages.forward)}
+                                onClick={props.onSendForward}
+                            />
+                            <LabeledIconButton
+                                disabled={!shouldShowSendBackward()}
+                                imgSrc={sendBackwardIcon}
+                                title={props.intl.formatMessage(messages.backward)}
+                                onClick={props.onSendBackward}
+                            />
+                        </InputGroup>
+
+                        <MediaQuery minWidth={layout.fullSizeEditorMinWidth}>
+                            <div className={styles.row}>
+                                <InputGroup>
+                                    <LabeledIconButton
+                                        disabled={!shouldShowBringForward()}
+                                        imgSrc={sendFrontIcon}
+                                        title={props.intl.formatMessage(messages.front)}
+                                        onClick={props.onSendToFront}
+                                    />
+                                    <LabeledIconButton
+                                        disabled={!shouldShowSendBackward()}
+                                        imgSrc={sendBackIcon}
+                                        title={props.intl.formatMessage(messages.back)}
+                                        onClick={props.onSendToBack}
+                                    />
+                                </InputGroup>
+
+                                {/* To be rotation point */}
+                                {/* <InputGroup>
+                                    <LabeledIconButton
+                                        imgAlt="Rotation Point"
+                                        imgSrc={rotationPointIcon}
+                                        title="Rotation Point"
+                                        onClick={function () {}}
+                                    />
+                                </InputGroup> */}
+                            </div>
+                        </MediaQuery>
+                        <MediaQuery maxWidth={layout.fullSizeEditorMinWidth - 1}>
+                            <InputGroup>
+                                <Dropdown
+                                    className={styles.modUnselect}
+                                    enterExitTransitionDurationMs={0}
+                                    popoverContent={
+                                        <InputGroup className={styles.modContextMenu}>
+                                            <Button
+                                                className={classNames(styles.modMenuItem, {
+                                                    [styles.modDisabled]: !shouldShowBringForward()
+                                                })}
+                                                disabled={!shouldShowBringForward()}
+                                                onClick={props.onSendToFront}
+                                            >
+                                                <img
+                                                    className={styles.menuItemIcon}
+                                                    src={sendFrontIcon}
+                                                />
+                                                <span>{props.intl.formatMessage(messages.front)}</span>
+                                            </Button>
+                                            <Button
+                                                className={classNames(styles.modMenuItem, {
+                                                    [styles.modDisabled]: !shouldShowSendBackward()
+                                                })}
+                                                disabled={!shouldShowSendBackward()}
+                                                onClick={props.onSendToBack}
+                                            >
+                                                <img
+                                                    className={styles.menuItemIcon}
+                                                    src={sendBackIcon}
+                                                />
+                                                <span>{props.intl.formatMessage(messages.back)}</span>
+                                            </Button>
+
+                                            {/* To be rotation point */}
+                                            {/* <Button
+                                                className={classNames(styles.modMenuItem, styles.modTopDivider)}
+                                                onClick={function () {}}
+                                            >
+                                                <img
+                                                    className={styles.menuItemIcon}
+                                                    src={rotationPointIcon}
+                                                />
+                                                <span>{'Rotation Point'}</span>
+                                            </Button> */}
+                                        </InputGroup>
+                                    }
+                                    tipSize={.01}
+                                >
+                                    {props.intl.formatMessage(messages.more)}
+                                </Dropdown>
+                            </InputGroup>
+                        </MediaQuery>
+                    </div>
+
+                    {/* Second Row */}
+                    <div className={styles.row}>
+                        <InputGroup
+                            className={classNames(
+                                styles.row,
+                                styles.modDashedBorder,
+                                styles.modLabeledIconHeight
+                            )}
+                        >
+                            {/* fill */}
+                            <FillColorIndicatorComponent
+                                onUpdateSvg={props.onUpdateSvg}
+                            />
+                            {/* stroke */}
+                            <StrokeColorIndicatorComponent
+                                onUpdateSvg={props.onUpdateSvg}
+                            />
+                            {/* stroke width */}
+                            <StrokeWidthIndicatorComponent
+                                onUpdateSvg={props.onUpdateSvg}
+                            />
+                        </InputGroup>
+                        <InputGroup className={styles.modModeTools}>
+                            <ModeToolsComponent
+                                onCopyToClipboard={props.onCopyToClipboard}
+                                onPasteFromClipboard={props.onPasteFromClipboard}
+                            />
+                        </InputGroup>
                     </div>
                 </div>
+            ) : null}
+
+            <div className={styles.topAlignRow}>
+                {/* Modes */}
+                {props.canvas !== null ? ( // eslint-disable-line no-negated-condition
+                    <div className={styles.modeSelector}>
+                        <SelectMode
+                            onUpdateSvg={props.onUpdateSvg}
+                        />
+                        <ReshapeMode
+                            onUpdateSvg={props.onUpdateSvg}
+                        />
+                        <BrushMode
+                            onUpdateSvg={props.onUpdateSvg}
+                        />
+                        <EraserMode
+                            onUpdateSvg={props.onUpdateSvg}
+                        />
+                        {/* Text mode will go here */}
+                        <LineMode
+                            onUpdateSvg={props.onUpdateSvg}
+                        />
+                        <OvalMode
+                            onUpdateSvg={props.onUpdateSvg}
+                        />
+                        <RectMode
+                            onUpdateSvg={props.onUpdateSvg}
+                        />
+                    </div>
+                ) : null}
+
+                {/* Canvas */}
+                <div className={styles.canvasContainer}>
+                    <PaperCanvas
+                        canvasRef={props.setCanvas}
+                        rotationCenterX={props.rotationCenterX}
+                        rotationCenterY={props.rotationCenterY}
+                        svg={props.svg}
+                        svgId={props.svgId}
+                        onUpdateSvg={props.onUpdateSvg}
+                    />
+                    {props.isEyeDropping &&
+                        props.colorInfo !== null &&
+                        !props.colorInfo.hideLoupe ? (
+                            <Box className={styles.colorPickerWrapper}>
+                                <Loupe colorInfo={props.colorInfo} />
+                            </Box>
+                        ) : null
+                    }
+                    {/* Zoom controls */}
+                    <InputGroup className={styles.zoomControls}>
+                        <ButtonGroup>
+                            <Button
+                                className={styles.buttonGroupButton}
+                                onClick={props.onZoomOut}
+                            >
+                                <img
+                                    alt="Zoom Out"
+                                    className={styles.buttonGroupButtonIcon}
+                                    src={zoomOutIcon}
+                                />
+                            </Button>
+                            <Button
+                                className={styles.buttonGroupButton}
+                                onClick={props.onZoomReset}
+                            >
+                                <img
+                                    alt="Zoom Reset"
+                                    className={styles.buttonGroupButtonIcon}
+                                    src={zoomResetIcon}
+                                />
+                            </Button>
+                            <Button
+                                className={styles.buttonGroupButton}
+                                onClick={props.onZoomIn}
+                            >
+                                <img
+                                    alt="Zoom In"
+                                    className={styles.buttonGroupButtonIcon}
+                                    src={zoomInIcon}
+                                />
+                            </Button>
+                        </ButtonGroup>
+                    </InputGroup>
+                </div>
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
 PaintEditorComponent.propTypes = {
     canRedo: PropTypes.func.isRequired,
     canUndo: PropTypes.func.isRequired,
+    canvas: PropTypes.object, // eslint-disable-line react/forbid-prop-types
     colorInfo: Loupe.propTypes.colorInfo,
     intl: intlShape,
     isEyeDropping: PropTypes.bool,
@@ -447,8 +432,9 @@ PaintEditorComponent.propTypes = {
     onZoomReset: PropTypes.func.isRequired,
     rotationCenterX: PropTypes.number,
     rotationCenterY: PropTypes.number,
+    setCanvas: PropTypes.func.isRequired,
     svg: PropTypes.string,
     svgId: PropTypes.string
 };
 
-export default injectIntl(PaintEditorComponent, {withRef: true});
+export default injectIntl(PaintEditorComponent);

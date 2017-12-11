@@ -14,7 +14,7 @@ import {bringToFront, sendBackward, sendToBack, bringForward} from '../helper/or
 import {groupSelection, ungroupSelection} from '../helper/group';
 import {clearSelection, getSelectedLeafItems, getSelectedRootItems} from '../helper/selection';
 import {resetZoom, zoomOnSelection} from '../helper/view';
-import EyeDropperTool from '../helper/eye-dropper';
+import EyeDropperTool from '../helper/tools/eye-dropper';
 
 import Modes from '../lib/modes';
 import {connect} from 'react-redux';
@@ -41,12 +41,13 @@ class PaintEditor extends React.Component {
             'canUndo',
             'handleCopyToClipboard',
             'handlePasteFromClipboard',
-            'setPaintEditor',
             'onMouseDown',
+            'setCanvas',
             'startEyeDroppingLoop',
             'stopEyeDroppingLoop'
         ]);
         this.state = {
+            canvas: null,
             colorInfo: null
         };
     }
@@ -170,8 +171,9 @@ class PaintEditor extends React.Component {
     handleZoomReset () {
         resetZoom();
     }
-    setPaintEditor (paintEditor) {
-        this.paintEditor = paintEditor;
+    setCanvas (canvas) {
+        this.setState({canvas: canvas});
+        this.canvas = canvas;
     }
     onMouseDown () {
         if (this.props.isEyeDropping) {
@@ -189,8 +191,7 @@ class PaintEditor extends React.Component {
         }
     }
     startEyeDroppingLoop () {
-        const canvas = this.paintEditor.getWrappedInstance().canvas;
-        this.eyeDropper = new EyeDropperTool(canvas);
+        this.eyeDropper = new EyeDropperTool(this.canvas);
         this.eyeDropper.activate();
         
         // document listeners used to detect if a mouse is down outside of the
@@ -218,12 +219,13 @@ class PaintEditor extends React.Component {
             <PaintEditorComponent
                 canRedo={this.canRedo}
                 canUndo={this.canUndo}
+                canvas={this.state.canvas}
                 colorInfo={this.state.colorInfo}
                 isEyeDropping={this.props.isEyeDropping}
                 name={this.props.name}
-                ref={this.setPaintEditor}
                 rotationCenterX={this.props.rotationCenterX}
                 rotationCenterY={this.props.rotationCenterY}
+                setCanvas={this.setCanvas}
                 svg={this.props.svg}
                 svgId={this.props.svgId}
                 onCopyToClipboard={this.handleCopyToClipboard}

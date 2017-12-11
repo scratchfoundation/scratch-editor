@@ -113,7 +113,7 @@ ColorPicker.propTypes = {
 
 const mapStateToProps = state => ({
     currentMode: state.scratchPaint.mode,
-    isEyeDropping: state.scratchPaint.color.eyeDropper.active,
+    isEyeDropping: state.scratchPaint.color.eyeDropper.active
 });
 
 const mapDispatchToProps = dispatch => ({
