@@ -1809,7 +1809,7 @@ between 0 (exact matches only) and 255 (match anything).</p>
 
         <tr>
             
-                <td class="name"><code>isStamping</code></td>
+                <td class="name"><code>ignoreVisibility</code></td>
             
 
             <td class="type">
@@ -1825,7 +1825,7 @@ between 0 (exact matches only) and 255 (match anything).</p>
 
             
 
-            <td class="description last"><p>Stamp mode ignores sprite visibility, always drawing.</p></td>
+            <td class="description last"><p>Draw all, despite visibility (e.g. stamping, touching color)</p></td>
         </tr>
 
     
@@ -4704,7 +4704,8 @@ is always placed at the top left.</p>
 
 
 <div class="description">
-    <p>Check if a particular Drawable is touching a particular color.</p>
+    <p>Check if a particular Drawable is touching a particular color.
+Unlike touching drawable, touching color tests invisible sprites.</p>
 </div>
 
 

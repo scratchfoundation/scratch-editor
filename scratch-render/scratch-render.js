@@ -20199,6 +20199,7 @@ var RenderWebGL = function (_EventEmitter) {
 
         /**
          * Check if a particular Drawable is touching a particular color.
+         * Unlike touching drawable, touching color tests invisible sprites.
          * @param {int} drawableID The ID of the Drawable to check.
          * @param {Array<int>} color3b Test if the Drawable is touching this color.
          * @param {Array<int>} [mask3b] Optionally mask the check to this part of Drawable.
@@ -20213,11 +20214,11 @@ var RenderWebGL = function (_EventEmitter) {
 
             var bounds = this._touchingBounds(drawableID);
             if (!bounds) {
-                return;
+                return false;
             }
             var candidateIDs = this._filterCandidatesTouching(drawableID, this._drawList, bounds);
             if (!candidateIDs) {
-                return;
+                return false;
             }
 
             // Limit size of viewport to the bounds around the target Drawable,
@@ -20249,7 +20250,10 @@ var RenderWebGL = function (_EventEmitter) {
                 gl.stencilFunc(gl.ALWAYS, 1, 1);
                 gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
                 gl.colorMask(false, false, false, false);
-                this._drawThese([drawableID], mask3b ? ShaderManager.DRAW_MODE.colorMask : ShaderManager.DRAW_MODE.silhouette, projection, { extraUniforms: extraUniforms });
+                this._drawThese([drawableID], mask3b ? ShaderManager.DRAW_MODE.colorMask : ShaderManager.DRAW_MODE.silhouette, projection, {
+                    extraUniforms: extraUniforms,
+                    ignoreVisibility: true // Touching color ignores sprite visibility
+                });
 
                 gl.stencilFunc(gl.EQUAL, 1, 1);
                 gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
@@ -20306,11 +20310,11 @@ var RenderWebGL = function (_EventEmitter) {
 
             var bounds = this._touchingBounds(drawableID);
             if (!bounds) {
-                return;
+                return false;
             }
             candidateIDs = this._filterCandidatesTouching(drawableID, candidateIDs, bounds);
             if (!candidateIDs) {
-                return;
+                return false;
             }
 
             // Limit size of viewport to the bounds around the target Drawable,
@@ -20806,7 +20810,7 @@ var RenderWebGL = function (_EventEmitter) {
 
             try {
                 gl.disable(gl.BLEND);
-                this._drawThese([stampID], ShaderManager.DRAW_MODE.default, projection, { isStamping: true });
+                this._drawThese([stampID], ShaderManager.DRAW_MODE.default, projection, { ignoreVisibility: true });
             } finally {
                 gl.enable(gl.BLEND);
             }
@@ -20891,7 +20895,7 @@ var RenderWebGL = function (_EventEmitter) {
          * @param {idFilterFunc} opts.filter An optional filter function.
          * @param {object.<string,*>} opts.extraUniforms Extra uniforms for the shaders.
          * @param {int} opts.effectMask Bitmask for effects to allow
-         * @param {boolean} opts.isStamping Stamp mode ignores sprite visibility, always drawing.
+         * @param {boolean} opts.ignoreVisibility Draw all, despite visibility (e.g. stamping, touching color)
          * @private
          */
 
@@ -20913,8 +20917,9 @@ var RenderWebGL = function (_EventEmitter) {
                 var drawable = this._allDrawables[drawableID];
                 /** @todo check if drawable is inside the viewport before anything else */
 
-                // Hidden drawables (e.g., by a "hide" block) are not drawn unless stamping
-                if (!drawable.getVisible() && !opts.isStamping) continue;
+                // Hidden drawables (e.g., by a "hide" block) are not drawn unless
+                // the ignoreVisibility flag is used (e.g. for stamping or touchingColor).
+                if (!drawable.getVisible() && !opts.ignoreVisibility) continue;
 
                 var drawableScale = drawable.scale;
 
