@@ -54,14 +54,6 @@ class PaintEditor extends React.Component {
     componentDidMount () {
         document.addEventListener('keydown', this.props.onKeyPress);
     }
-    shouldComponentUpdate (nextProps, nextState) {
-        return this.props.isEyeDropping !== nextProps.isEyeDropping ||
-            this.state.colorInfo !== nextState.colorInfo ||
-            this.props.clipboardItems !== nextProps.clipboardItems ||
-            this.props.pasteOffset !== nextProps.pasteOffset ||
-            this.props.selectedItems !== nextProps.selectedItems ||
-            this.props.undoState !== nextProps.undoState;
-    }
     componentDidUpdate (prevProps) {
         if (this.props.isEyeDropping && !prevProps.isEyeDropping) {
             this.startEyeDroppingLoop();
@@ -200,20 +192,27 @@ class PaintEditor extends React.Component {
             paper.project.view.pixelRatio
         );
         this.eyeDropper.activate();
-        
+
         // document listeners used to detect if a mouse is down outside of the
         // canvas, and should therefore stop the eye dropper
         document.addEventListener('mousedown', this.onMouseDown);
         document.addEventListener('touchstart', this.onMouseDown);
         
         this.intervalId = setInterval(() => {
-            this.setState({
-                colorInfo: this.eyeDropper.getColorInfo(
-                    this.eyeDropper.pickX,
-                    this.eyeDropper.pickY,
-                    this.eyeDropper.hideLoupe
-                )
-            });
+            const colorInfo = this.eyeDropper.getColorInfo(
+                this.eyeDropper.pickX,
+                this.eyeDropper.pickY,
+                this.eyeDropper.hideLoupe
+            );
+            if (
+                this.state.colorInfo === null ||
+                this.state.colorInfo.x !== colorInfo.x ||
+                this.state.colorInfo.y !== colorInfo.y
+            ) {
+                this.setState({
+                    colorInfo: colorInfo
+                });
+            }
         }, 30);
     }
     stopEyeDroppingLoop () {
@@ -269,10 +268,12 @@ PaintEditor.propTypes = {
     onUpdateName: PropTypes.func.isRequired,
     onUpdateSvg: PropTypes.func.isRequired,
     pasteOffset: PropTypes.number,
-    previousTool: PropTypes.object,
+    previousTool: PropTypes.shape({ // paper.Tool
+        activate: PropTypes.func.isRequired,
+        remove: PropTypes.func.isRequired
+    }),
     rotationCenterX: PropTypes.number,
     rotationCenterY: PropTypes.number,
-    selectedItems: PropTypes.arrayOf(PropTypes.object),
     setClipboardItems: PropTypes.func.isRequired,
     setSelectedItems: PropTypes.func.isRequired,
     svg: PropTypes.string,
