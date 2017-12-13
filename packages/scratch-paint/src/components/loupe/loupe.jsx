@@ -4,7 +4,7 @@ import bindAll from 'lodash.bindall';
 
 import Box from '../box/box.jsx';
 
-import {LOUPE_RADIUS, CANVAS_SCALE} from '../../helper/tools/eye-dropper';
+import {LOUPE_RADIUS} from '../../helper/tools/eye-dropper';
 
 import styles from './loupe.css';
 
@@ -71,6 +71,7 @@ class LoupeComponent extends React.Component {
     render () {
         const {
             colorInfo,
+            pixelRatio,
             ...boxProps
         } = this.props;
         return (
@@ -81,8 +82,8 @@ class LoupeComponent extends React.Component {
                 element="canvas"
                 height={LOUPE_RADIUS * 2}
                 style={{
-                    top: (colorInfo.y / CANVAS_SCALE) - ((ZOOM_SCALE * (LOUPE_RADIUS * 2)) / 2),
-                    left: (colorInfo.x / CANVAS_SCALE) - ((ZOOM_SCALE * (LOUPE_RADIUS * 2)) / 2),
+                    top: (colorInfo.y / pixelRatio) - ((ZOOM_SCALE * (LOUPE_RADIUS * 2)) / 2),
+                    left: (colorInfo.x / pixelRatio) - ((ZOOM_SCALE * (LOUPE_RADIUS * 2)) / 2),
                     width: (LOUPE_RADIUS * 2) * ZOOM_SCALE,
                     height: (LOUPE_RADIUS * 2) * ZOOM_SCALE
                 }}
@@ -102,7 +103,8 @@ LoupeComponent.propTypes = {
         x: PropTypes.number,
         y: PropTypes.number,
         data: PropTypes.instanceOf(Uint8ClampedArray)
-    })
+    }),
+    pixelRatio: PropTypes.number.isRequired
 };
 
 export default LoupeComponent;

@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
 import MediaQuery from 'react-responsive';
 import React from 'react';
+import paper from '@scratch/paper';
 import PropTypes from 'prop-types';
 
 import PaperCanvas from '../../containers/paper-canvas.jsx';
@@ -362,7 +363,10 @@ const PaintEditorComponent = props => {
                         props.colorInfo !== null &&
                         !props.colorInfo.hideLoupe ? (
                             <Box className={styles.colorPickerWrapper}>
-                                <Loupe colorInfo={props.colorInfo} />
+                                <Loupe
+                                    colorInfo={props.colorInfo}
+                                    pixelRatio={paper.project.view.pixelRatio}
+                                />
                             </Box>
                         ) : null
                     }

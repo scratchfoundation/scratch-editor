@@ -193,7 +193,12 @@ class PaintEditor extends React.Component {
         }
     }
     startEyeDroppingLoop () {
-        this.eyeDropper = new EyeDropperTool(this.canvas);
+        this.eyeDropper = new EyeDropperTool(
+            this.canvas,
+            paper.project.view.size.width,
+            paper.project.view.size.height,
+            paper.project.view.pixelRatio
+        );
         this.eyeDropper.activate();
         
         // document listeners used to detect if a mouse is down outside of the
