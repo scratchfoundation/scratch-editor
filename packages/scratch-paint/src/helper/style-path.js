@@ -5,6 +5,12 @@ import {isGroup} from './group';
 
 const MIXED = 'scratch-paint/style-path/mixed';
 
+const _fillColorMatch = function (item, incomingColor) {
+    return item.fillColor && item.fillColor.type !== 'gradient' && // @todo check whether the gradient has changed
+            ((!item.fillColor && !incomingColor) ||
+            (item.fillColor && incomingColor && item.fillColor.toCSS() === new paper.Color(incomingColor).toCSS()));
+};
+
 /**
  * Called when setting fill color
  * @param {string} colorString New color, css format
@@ -19,16 +25,14 @@ const applyFillColorToSelection = function (colorString) {
                 if (child.children) {
                     for (const path of child.children) {
                         if (!path.data.isPGGlyphRect) {
-                            if ((path.fillColor === null && colorString) ||
-                                    path.fillColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+                            if (!_fillColorMatch(path.fillColor, colorString)) {
                                 changed = true;
                                 path.fillColor = colorString;
                             }
                         }
                     }
                 } else if (!child.data.isPGGlyphRect) {
-                    if ((child.fillColor === null && colorString) ||
-                            child.fillColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+                    if (!_fillColorMatch(child.fillColor, colorString)) {
                         changed = true;
                         child.fillColor = colorString;
                     }
@@ -38,8 +42,7 @@ const applyFillColorToSelection = function (colorString) {
             if (isPointTextItem(item) && !colorString) {
                 colorString = 'rgba(0,0,0,0)';
             }
-            if ((item.fillColor === null && colorString) ||
-                    item.fillColor.toCSS() !== new paper.Color(colorString).toCSS()) {
+            if (!_fillColorMatch(item, colorString)) {
                 changed = true;
                 item.fillColor = colorString;
             }
@@ -49,8 +52,9 @@ const applyFillColorToSelection = function (colorString) {
 };
 
 const _strokeColorMatch = function (item, incomingColor) {
-    return (!item.strokeColor && !incomingColor) ||
-        (item.strokeColor && incomingColor && item.strokeColor.toCSS() === new paper.Color(incomingColor).toCSS());
+    return item.strokeColor && item.strokeColor.type !== 'gradient' && // @todo check whether the gradient has changed
+            ((!item.strokeColor && !incomingColor) ||
+            (item.strokeColor && incomingColor && item.strokeColor.toCSS() === new paper.Color(incomingColor).toCSS()));
 };
 
 /**
