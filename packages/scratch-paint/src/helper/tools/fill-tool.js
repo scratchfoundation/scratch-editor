@@ -33,6 +33,10 @@ class FillTool extends paper.Tool {
         this.prevHoveredItemId = null;
     }
     getHitOptions () {
+        const isAlmostClosedPath = function (item) {
+            return item instanceof paper.Path && item.segments.length > 2 &&
+                item.lastSegment.point.getDistance(item.firstSegment.point) < 8;
+        };
         return {
             class: paper.Path,
             segments: true,
@@ -41,9 +45,7 @@ class FillTool extends paper.Tool {
             fill: true,
             guide: false,
             match: function (hitResult) {
-                return (hitResult.item.hasFill() || hitResult.item.closed ||
-                    (hitResult.item.segments.length > 2 &&
-                    hitResult.item.lastSegment.point.getDistance(hitResult.item.firstSegment.point) < 8));
+                return (hitResult.item.hasFill() || hitResult.item.closed || isAlmostClosedPath(hitResult.item));
             },
             hitUnfilledPaths: true,
             tolerance: FillTool.TOLERANCE / paper.view.zoom

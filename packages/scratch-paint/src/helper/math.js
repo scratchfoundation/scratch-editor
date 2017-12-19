@@ -43,7 +43,6 @@ const _getDepth = function (item) {
 
 const sortItemsByZIndex = function (a, b) {
     if (a === null || b === null) {
-        // Incomparable
         return null;
     }
 
