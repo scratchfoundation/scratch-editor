@@ -5,10 +5,14 @@ import {isGroup} from './group';
 
 const MIXED = 'scratch-paint/style-path/mixed';
 
-const _fillColorMatch = function (item, incomingColor) {
-    return item.fillColor && item.fillColor.type !== 'gradient' && // @todo check whether the gradient has changed
-            ((!item.fillColor && !incomingColor) ||
-            (item.fillColor && incomingColor && item.fillColor.toCSS() === new paper.Color(incomingColor).toCSS()));
+// Check if the item color matches the incoming color. If the item color is a gradient, we assume
+// that the incoming color never matches, since we don't support gradients yet.
+const _colorMatch = function (itemColor, incomingColor) {
+    // @todo check whether the gradient has changed when we support gradients
+    if (itemColor && itemColor.type === 'gradient') return false;
+    // Either both are null or both are the same color when converted to CSS.
+    return (!itemColor && !incomingColor) ||
+            (itemColor && incomingColor && itemColor.toCSS() === new paper.Color(incomingColor).toCSS());
 };
 
 /**
@@ -25,14 +29,14 @@ const applyFillColorToSelection = function (colorString) {
                 if (child.children) {
                     for (const path of child.children) {
                         if (!path.data.isPGGlyphRect) {
-                            if (!_fillColorMatch(path.fillColor, colorString)) {
+                            if (!_colorMatch(path.fillColor, colorString)) {
                                 changed = true;
                                 path.fillColor = colorString;
                             }
                         }
                     }
                 } else if (!child.data.isPGGlyphRect) {
-                    if (!_fillColorMatch(child.fillColor, colorString)) {
+                    if (!_colorMatch(child.fillColor, colorString)) {
                         changed = true;
                         child.fillColor = colorString;
                     }
@@ -42,19 +46,13 @@ const applyFillColorToSelection = function (colorString) {
             if (isPointTextItem(item) && !colorString) {
                 colorString = 'rgba(0,0,0,0)';
             }
-            if (!_fillColorMatch(item, colorString)) {
+            if (!_colorMatch(item.fillColor, colorString)) {
                 changed = true;
                 item.fillColor = colorString;
             }
         }
     }
     return changed;
-};
-
-const _strokeColorMatch = function (item, incomingColor) {
-    return item.strokeColor && item.strokeColor.type !== 'gradient' && // @todo check whether the gradient has changed
-            ((!item.strokeColor && !incomingColor) ||
-            (item.strokeColor && incomingColor && item.strokeColor.toCSS() === new paper.Color(incomingColor).toCSS()));
 };
 
 /**
@@ -72,7 +70,7 @@ const applyStrokeColorToSelection = function (colorString) {
                     if (child.children) {
                         for (const path of child.children) {
                             if (!path.data.isPGGlyphRect) {
-                                if (!_strokeColorMatch(path, colorString)) {
+                                if (!_colorMatch(path.strokeColor, colorString)) {
                                     changed = true;
                                     path.strokeColor = colorString;
                                 }
@@ -86,12 +84,12 @@ const applyStrokeColorToSelection = function (colorString) {
                     }
                 }
             } else if (!item.data.isPGGlyphRect) {
-                if (!_strokeColorMatch(item, colorString)) {
+                if (!_colorMatch(item.strokeColor, colorString)) {
                     changed = true;
                     item.strokeColor = colorString;
                 }
             }
-        } else if (!_strokeColorMatch(item, colorString)) {
+        } else if (!_colorMatch(item.strokeColor, colorString)) {
             changed = true;
             item.strokeColor = colorString;
         }
