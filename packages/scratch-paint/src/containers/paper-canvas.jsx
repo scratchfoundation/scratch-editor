@@ -26,7 +26,8 @@ class PaperCanvas extends React.Component {
             'setCanvas',
             'importSvg',
             'handleKeyDown',
-            'handleWheel'
+            'handleWheel',
+            '_ensureClockwise'
         ]);
     }
     componentDidMount () {
@@ -125,6 +126,8 @@ class PaperCanvas extends React.Component {
                     item = item.reduce();
                 }
 
+                paperCanvas._ensureClockwise(item);
+
                 if (typeof rotationCenterX !== 'undefined' && typeof rotationCenterY !== 'undefined') {
                     item.position =
                         paper.project.view.center
@@ -142,6 +145,15 @@ class PaperCanvas extends React.Component {
                 paper.project.view.update();
             }
         });
+    }
+    _ensureClockwise (item) {
+        if (item instanceof paper.Group) {
+            for (const child of item.children) {
+                this._ensureClockwise(child);
+            }
+        } else if (item instanceof paper.PathItem) {
+            item.clockwise = true;
+        }
     }
     setCanvas (canvas) {
         this.canvas = canvas;
