@@ -30,7 +30,7 @@ class HandleTool {
     }
     onMouseDrag (event) {
         this.selectedItems = getSelectedLeafItems();
-        
+
         for (const item of this.selectedItems) {
             for (const seg of item.segments) {
                 // add the point of the segment before the drag started
@@ -46,9 +46,8 @@ class HandleTool {
                         !seg.handleOut.isColinear(seg.handleIn)) {
                         seg.handleOut = seg.handleOut.add(event.delta);
                     } else {
-                        const oldLength = seg.handleOut.length;
                         seg.handleOut = seg.handleOut.add(event.delta);
-                        seg.handleIn = seg.handleOut.multiply(-seg.handleIn.length / oldLength);
+                        seg.handleIn = seg.handleOut.multiply(-seg.handleIn.length / seg.handleOut.length);
                     }
                 } else if (seg.handleIn.selected && this.hitType === 'handle-in') {
                     // if option is pressed or handles have been split,
@@ -58,9 +57,8 @@ class HandleTool {
                         seg.handleIn = seg.handleIn.add(event.delta);
 
                     } else {
-                        const oldLength = seg.handleIn.length;
                         seg.handleIn = seg.handleIn.add(event.delta);
-                        seg.handleOut = seg.handleIn.multiply(-seg.handleOut.length / oldLength);
+                        seg.handleOut = seg.handleIn.multiply(-seg.handleOut.length / seg.handleIn.length);
                     }
                 }
             }
