@@ -10,6 +10,8 @@ class ScaleTool {
      * @param {!function} onUpdateSvg A callback to call when the image visibly changes
      */
     constructor (onUpdateSvg) {
+        this.active = false;
+        this.boundsPath = null;
         this.pivot = null;
         this.origPivot = null;
         this.corner = null;
@@ -27,6 +29,9 @@ class ScaleTool {
      * @param {!Array.<paper.Item>} selectedItems Set of selected paper.Items
      */
     onMouseDown (hitResult, boundsPath, selectedItems) {
+        if (this.active) return;
+        this.active = true;
+
         const index = hitResult.item.data.index;
         this.pivot = boundsPath.bounds[this._getOpposingRectCornerNameByIndex(index)].clone();
         this.origPivot = boundsPath.bounds[this._getOpposingRectCornerNameByIndex(index)].clone();
@@ -36,6 +41,7 @@ class ScaleTool {
         this.centered = false;
         this.lastSx = 1;
         this.lastSy = 1;
+        this.boundsPath = boundsPath;
 
         // Set itemGroup
         // get item to insert below so that scaled items stay in same z position
@@ -59,6 +65,8 @@ class ScaleTool {
         this.itemGroup.data.isHelperItem = true;
     }
     onMouseDrag (event) {
+        if (!this.active) return;
+
         const modOrigSize = this.origSize;
 
         if (event.modifiers.alt) {
@@ -100,6 +108,8 @@ class ScaleTool {
         this.lastSy = sy;
     }
     onMouseUp () {
+        if (!this.active) return;
+
         this.pivot = null;
         this.origPivot = null;
         this.corner = null;
@@ -112,6 +122,8 @@ class ScaleTool {
         if (!this.itemGroup) {
             return;
         }
+        this.boundsPath.remove();
+        this.boundsPath = null;
         
         // mark text items as scaled (for later use on font size calc)
         for (let i = 0; i < this.itemGroup.children.length; i++) {
@@ -133,6 +145,7 @@ class ScaleTool {
         this.itemGroup.remove();
         
         this.onUpdateSvg();
+        this.active = false;
     }
     _getRectCornerNameByIndex (index) {
         switch (index) {
