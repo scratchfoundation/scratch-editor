@@ -19,7 +19,7 @@ const TextModeComponent = () => (
             }}
             imgSrc={textIcon}
             isSelected={false}
-            onMouseDown={function () {}}
+            onMouseDown={function () {}} // eslint-disable-line react/jsx-no-bind
         />
     </ComingSoonTooltip>
 );
