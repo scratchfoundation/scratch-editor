@@ -49,6 +49,16 @@ const ModeToolsComponent = props => {
             defaultMessage: 'Paste',
             description: 'Label for the paste button',
             id: 'paint.modeTools.paste'
+        },
+        curved: {
+            defaultMessage: 'Curved',
+            description: 'Label for the button that converts selected points to curves',
+            id: 'paint.modeTools.curved'
+        },
+        pointed: {
+            defaultMessage: 'Pointed',
+            description: 'Label for the button that converts selected points to sharp points',
+            id: 'paint.modeTools.pointed'
         }
     });
 
@@ -96,16 +106,14 @@ const ModeToolsComponent = props => {
             <div className={classNames(props.className, styles.modeTools)}>
                 <LabeledIconButton
                     disabled={!props.hasSelectedUncurvedPoints}
-                    imgAlt="Curved Point Icon"
                     imgSrc={curvedPointIcon}
-                    title="Curved"
+                    title={props.intl.formatMessage(messages.curved)}
                     onClick={props.onCurvePoints}
                 />
                 <LabeledIconButton
                     disabled={!props.hasSelectedUnpointedPoints}
-                    imgAlt="Straight Point Icon"
                     imgSrc={straightPointIcon}
-                    title="Pointed"
+                    title={props.intl.formatMessage(messages.pointed)}
                     onClick={props.onPointPoints}
                 />
             </div>
