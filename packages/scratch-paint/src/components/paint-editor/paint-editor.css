@@ -159,6 +159,7 @@ $border-radius: 0.25rem;
 
 .canvas-controls {
     display: flex;
+    margin-top: .25rem;
     justify-content: space-between;
 }
 

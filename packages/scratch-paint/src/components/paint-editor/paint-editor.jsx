@@ -215,32 +215,30 @@ const PaintEditorComponent = props => {
                         </InputGroup>
 
                         <MediaQuery minWidth={layout.fullSizeEditorMinWidth}>
-                            <div className={styles.row}>
-                                <InputGroup>
-                                    <LabeledIconButton
-                                        disabled={!shouldShowBringForward()}
-                                        imgSrc={sendFrontIcon}
-                                        title={props.intl.formatMessage(messages.front)}
-                                        onClick={props.onSendToFront}
-                                    />
-                                    <LabeledIconButton
-                                        disabled={!shouldShowSendBackward()}
-                                        imgSrc={sendBackIcon}
-                                        title={props.intl.formatMessage(messages.back)}
-                                        onClick={props.onSendToBack}
-                                    />
-                                </InputGroup>
+                            <InputGroup className={styles.row}>
+                                <LabeledIconButton
+                                    disabled={!shouldShowBringForward()}
+                                    imgSrc={sendFrontIcon}
+                                    title={props.intl.formatMessage(messages.front)}
+                                    onClick={props.onSendToFront}
+                                />
+                                <LabeledIconButton
+                                    disabled={!shouldShowSendBackward()}
+                                    imgSrc={sendBackIcon}
+                                    title={props.intl.formatMessage(messages.back)}
+                                    onClick={props.onSendToBack}
+                                />
+                            </InputGroup>
 
-                                {/* To be rotation point */}
-                                {/* <InputGroup>
-                                    <LabeledIconButton
-                                        imgAlt="Rotation Point"
-                                        imgSrc={rotationPointIcon}
-                                        title="Rotation Point"
-                                        onClick={function () {}}
-                                    />
-                                </InputGroup> */}
-                            </div>
+                            {/* To be rotation point */}
+                            {/* <InputGroup>
+                                <LabeledIconButton
+                                    imgAlt="Rotation Point"
+                                    imgSrc={rotationPointIcon}
+                                    title="Rotation Point"
+                                    onClick={function () {}}
+                                />
+                            </InputGroup> */}
                         </MediaQuery>
                         <MediaQuery maxWidth={layout.fullSizeEditorMinWidth - 1}>
                             <InputGroup>
