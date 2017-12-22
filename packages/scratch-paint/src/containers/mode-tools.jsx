@@ -85,7 +85,7 @@ class ModeTools extends React.Component {
                 // Direction is average of normal at the point and direction to prev point, using the
                 // normal that points out from the convex side
                 // Lenth is curve length * HANDLE_RATIO
-                const convexity = prev.getCurve().getCurvatureAtTime(.1) < 0 ? -1 : 1;
+                const convexity = prev.getCurve().getCurvatureAtTime(.5) < 0 ? -1 : 1;
                 point.handleIn = (prev.getCurve().getNormalAtTime(1)
                     .multiply(convexity)
                     .add(prev.point.subtract(point.point).normalize()))
@@ -96,7 +96,7 @@ class ModeTools extends React.Component {
                 // Direction is average of normal at the point and direction to prev point, using the
                 // normal that points out from the convex side
                 // Lenth is curve length * HANDLE_RATIO
-                const convexity = point.getCurve().getCurvatureAtTime(.1) < 0 ? -1 : 1;
+                const convexity = point.getCurve().getCurvatureAtTime(.5) < 0 ? -1 : 1;
                 point.handleOut = (point.getCurve().getNormalAtTime(0)
                     .multiply(convexity)
                     .add(next.point.subtract(point.point).normalize()))
