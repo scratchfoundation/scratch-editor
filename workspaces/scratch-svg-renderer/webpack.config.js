@@ -39,7 +39,7 @@ module.exports = [
             filename: '[name].js'
         }
     }),
-    // For testing only: rendering will fail outside a browser
+    // For testing only: many features will fail outside a browser
     makeExport({node: true}, {
         output: {
             library: 'ScratchSVGRenderer',
