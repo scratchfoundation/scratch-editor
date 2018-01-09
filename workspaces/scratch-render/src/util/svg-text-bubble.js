@@ -1,5 +1,6 @@
 const SVGTextWrapper = require('./svg-text-wrapper');
-const SVGRenderer = require('../svg-quirks-mode/svg-renderer');
+
+import SVGRenderer from 'scratch-svg-renderer';
 
 const MAX_LINE_LENGTH = 170;
 const MIN_WIDTH = 50;
