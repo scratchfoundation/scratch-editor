@@ -1,5 +1,6 @@
 const SVGTextWrapper = require('./svg-text-wrapper');
 const SVGRenderer = require('../svg-quirks-mode/svg-renderer');
+const xmlescape = require('xml-escape');
 
 const MAX_LINE_LENGTH = 170;
 const MIN_WIDTH = 50;
@@ -148,7 +149,7 @@ class SVGTextBubble {
     }
 
     _textFragment () {
-        return `<text fill="#575E75">${this.lines.join('\n')}</text>`;
+        return `<text fill="#575E75">${xmlescape(this.lines.join('\n'))}</text>`;
     }
 
     buildString (type, text, pointsLeft) {
