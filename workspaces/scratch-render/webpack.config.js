@@ -13,7 +13,7 @@ const base = {
         rules: [
             {
                 include: [
-                    path.resolve(__dirname, 'src')
+                    path.resolve('src')
                 ],
                 test: /\.js$/,
                 loader: 'babel-loader',
@@ -43,7 +43,8 @@ module.exports = [
             'scratch-render': './src/index-web.js'
         },
         output: {
-            path: path.resolve(__dirname, 'playground'),
+            library: 'ScratchRender',
+            path: path.resolve('playground'),
             filename: '[name].js'
         },
         plugins: base.plugins.concat([
@@ -58,11 +59,13 @@ module.exports = [
     Object.assign({}, base, {
         target: 'web',
         entry: {
-            'scratch-render': './src/index-web.js',
-            'scratch-render.min': './src/index-web.js'
+            'scratch-render': './src/index.js',
+            'scratch-render.min': './src/index.js'
         },
         output: {
-            path: path.resolve(__dirname, 'dist/web'),
+            library: 'ScratchRender',
+            libraryTarget: 'umd',
+            path: path.resolve('dist', 'web'),
             filename: '[name].js'
         }
     }),
@@ -75,7 +78,7 @@ module.exports = [
         output: {
             library: 'ScratchRender',
             libraryTarget: 'commonjs2',
-            path: path.resolve(__dirname, 'dist/node'),
+            path: path.resolve('dist', 'node'),
             filename: '[name].js'
         }
     })
