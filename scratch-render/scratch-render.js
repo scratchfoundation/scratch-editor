@@ -14143,16 +14143,21 @@ var SvgRenderer = function () {
             // This may have false-positives, but at least the bbox will always
             // contain the full graphic including strokes.
             var halfStrokeWidth = this._findLargestStrokeWidth(this._svgTag) / 2;
-            bbox.width += halfStrokeWidth * 2;
-            bbox.height += halfStrokeWidth * 2;
-            bbox.x -= halfStrokeWidth;
-            bbox.y -= halfStrokeWidth;
+            var width = bbox.width + halfStrokeWidth * 2;
+            var height = bbox.height + halfStrokeWidth * 2;
+            var x = bbox.x - halfStrokeWidth;
+            var y = bbox.y - halfStrokeWidth;
 
             // Set the correct measurements on the SVG tag, and save them.
-            this._svgTag.setAttribute('width', bbox.width);
-            this._svgTag.setAttribute('height', bbox.height);
-            this._svgTag.setAttribute('viewBox', bbox.x + ' ' + bbox.y + ' ' + bbox.width + ' ' + bbox.height);
-            this._measurements = bbox;
+            this._svgTag.setAttribute('width', width);
+            this._svgTag.setAttribute('height', height);
+            this._svgTag.setAttribute('viewBox', x + ' ' + y + ' ' + width + ' ' + height);
+            this._measurements = {
+                width: width,
+                height: height,
+                x: x,
+                y: y
+            };
         }
 
         /**
