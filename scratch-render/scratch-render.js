@@ -22668,6 +22668,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var SVGTextWrapper = __webpack_require__(356);
 var SVGRenderer = __webpack_require__(132);
+var xmlescape = __webpack_require__(369);
 
 var MAX_LINE_LENGTH = 170;
 var MIN_WIDTH = 50;
@@ -22750,7 +22751,7 @@ var SVGTextBubble = function () {
     }, {
         key: '_textFragment',
         value: function _textFragment() {
-            return '<text fill="#575E75">' + this.lines.join('\n') + '</text>';
+            return '<text fill="#575E75">' + xmlescape(this.lines.join('\n')) + '</text>';
         }
     }, {
         key: 'buildString',
@@ -26032,6 +26033,33 @@ module.exports = Array.isArray || function (arr) {
 /***/ (function(module, exports) {
 
 module.exports = {"Other":0,"CR":1,"LF":2,"Control":3,"Extend":4,"Regional_Indicator":5,"SpacingMark":6,"L":7,"V":8,"T":9,"LV":10,"LVT":11}
+
+/***/ }),
+/* 369 */
+/***/ (function(module, exports) {
+
+
+
+var escape = module.exports = function escape(string, ignore) {
+  var pattern;
+
+  if (string === null || string === undefined) return;
+
+  ignore = (ignore || '').replace(/[^&"<>\']/g, '');
+  pattern = '([&"<>\'])'.replace(new RegExp('[' + ignore + ']', 'g'), '');
+
+  return string.replace(new RegExp(pattern, 'g'), function(str, item) {
+            return escape.map[item];
+          })
+}
+
+var map = escape.map = {
+    '>': '&gt;'
+  , '<': '&lt;'
+  , "'": '&apos;'
+  , '"': '&quot;'
+  , '&': '&amp;'
+}
 
 /***/ })
 /******/ ]);
