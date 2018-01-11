@@ -201,8 +201,8 @@ class RenderWebGL extends EventEmitter {
      * Create a new bitmap skin from a snapshot of the provided bitmap data.
      * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
      * @param {!int} [costumeResolution=1] - The resolution to use for this bitmap.
-     * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
-     * skin will be used
+     * @param {?Array<number>} [rotationCenter] Optional: rotation center of the skin. If not supplied, the center of
+     * the skin will be used.
      * @returns {!int} the ID for the new skin.
      */
     createBitmapSkin (bitmapData, costumeResolution, rotationCenter) {
@@ -602,9 +602,9 @@ class RenderWebGL extends EventEmitter {
      * pick drawables that are not visible or have ghost set all the way up.
      * @param {int} centerX The client x coordinate of the picking location.
      * @param {int} centerY The client y coordinate of the picking location.
-     * @param {int} touchWidth The client width of the touch event (optional).
-     * @param {int} touchHeight The client height of the touch event (optional).
-     * @param {Array<int>} candidateIDs The Drawable IDs to pick from, otherwise all.
+     * @param {int} [touchWidth] The client width of the touch event (optional).
+     * @param {int} [touchHeight] The client height of the touch event (optional).
+     * @param {Array<int>} [candidateIDs] The Drawable IDs to pick from, otherwise all.
      * @returns {int} The ID of the topmost Drawable under the picking location, or
      * RenderConstants.ID_NONE if there is no Drawable at that location.
      */

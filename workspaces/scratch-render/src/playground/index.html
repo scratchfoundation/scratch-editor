@@ -11,6 +11,7 @@
 <canvas id="scratch-stage" width="10" height="10" style="border:3px dashed black"></canvas>
 <canvas id="debug-canvas" width="10" height="10" style="border:3px dashed red"></canvas>
 <p>
+    <label for="fudgeproperty">Property to tweak:</label>
     <select id="fudgeproperty" onchange="onFudgePropertyChanged(this.value)">
         <option value="posx">Position X</option>
         <option value="posy">Position Y</option>
@@ -25,17 +26,18 @@
         <option value="brightness">Brightness</option>
         <option value="ghost">Ghost</option>
     </select>
+    <label for="fudge">Property Value:</label>
     <input type="range" id="fudge" style="width:50%" value="90" min="-90" max="270" step="any" oninput="onFudgeChanged(this.value)" onchange="onFudgeChanged(this.value)">
 </p>
 <p>
-    Min: <input id="fudgeMin" type="number" onchange="onFudgeMinChanged(this.value)">
-    Max: <input id="fudgeMax" type="number" onchange="onFudgeMaxChanged(this.value)">
+    <label for="fudgeMin">Min:</label><input id="fudgeMin" type="number" onchange="onFudgeMinChanged(this.value)">
+    <label for="fudgeMax">Max:</label><input id="fudgeMax" type="number" onchange="onFudgeMaxChanged(this.value)">
 </p>
 <script src="scratch-render.js"></script>
 <script>
     var canvas = document.getElementById('scratch-stage');
     var fudge = 90;
-    var renderer = new RenderWebGL(canvas);
+    var renderer = new ScratchRender(canvas);
 
     var drawableID = renderer.createDrawable();
     renderer.updateDrawableProperties(drawableID, {
@@ -55,7 +57,6 @@
     image.src = 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
         '09dc888b0b7df19f70d81588ae73420e.svg/get/';
 
-    var fudgeSelect = document.getElementById('fudgeproperty');
     var posX = 0;
     var posY = 0;
     var scaleX = 100;
@@ -148,7 +149,8 @@
     }
     drawStep();
 
-    renderer.setDebugCanvas(document.getElementById('debug-canvas'));
+    var debugCanvas = /** @type {canvas} */ document.getElementById('debug-canvas');
+    renderer.setDebugCanvas(debugCanvas);
 </script>
 </body>
 </html>

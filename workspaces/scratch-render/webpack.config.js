@@ -40,10 +40,11 @@ module.exports = [
     Object.assign({}, base, {
         target: 'web',
         entry: {
-            'scratch-render': './src/index-web.js'
+            'scratch-render': './src/index.js'
         },
         output: {
             library: 'ScratchRender',
+            libraryTarget: 'umd',
             path: path.resolve('playground'),
             filename: '[name].js'
         },
