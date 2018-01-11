@@ -21060,28 +21060,68 @@ var FENCE_WIDTH = 15;
 var RenderWebGL = function (_EventEmitter) {
     _inherits(RenderWebGL, _EventEmitter);
 
-    /**
-     * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
-     * Coordinates will default to Scratch 2.0 values if unspecified.
-     * The stage's "native" size will be calculated from the these coordinates.
-     * For example, the defaults result in a native size of 480x360.
-     * Queries such as "touching color?" will always execute at the native size.
-     * @see RenderWebGL#setStageSize
-     * @see RenderWebGL#resize
-     * @param {canvas} canvas The canvas to draw onto.
-     * @param {int} [xLeft=-240] The x-coordinate of the left edge.
-     * @param {int} [xRight=240] The x-coordinate of the right edge.
-     * @param {int} [yBottom=-180] The y-coordinate of the bottom edge.
-     * @param {int} [yTop=180] The y-coordinate of the top edge.
-     * @constructor
-     * @listens RenderWebGL#event:NativeSizeChanged
-     */
+    _createClass(RenderWebGL, null, [{
+        key: 'isSupported',
+
+        /**
+         * Check if this environment appears to support this renderer before attempting to create an instance.
+         * Catching an exception from the constructor is also a valid way to test for (lack of) support.
+         * @param {canvas} [optCanvas] - An optional canvas to use for the test. Otherwise a temporary canvas will be used.
+         * @returns {boolean} - True if this environment appears to support this renderer, false otherwise.
+         */
+        value: function isSupported(optCanvas) {
+            try {
+                // Create the context the same way that the constructor will: attributes may make the difference.
+                return !!RenderWebGL._getContext(optCanvas || document.createElement('canvas'));
+            } catch (e) {
+                return false;
+            }
+        }
+
+        /**
+         * Ask TWGL to create a rendering context with the attributes used by this renderer.
+         * @param {canvas} canvas - attach the context to this canvas.
+         * @returns {WebGLRenderingContext} - a TWGL rendering context (backed by either WebGL 1.0 or 2.0).
+         * @private
+         */
+
+    }, {
+        key: '_getContext',
+        value: function _getContext(canvas) {
+            return twgl.getWebGLContext(canvas, { alpha: false, stencil: true });
+        }
+
+        /**
+         * Create a renderer for drawing Scratch sprites to a canvas using WebGL.
+         * Coordinates will default to Scratch 2.0 values if unspecified.
+         * The stage's "native" size will be calculated from the these coordinates.
+         * For example, the defaults result in a native size of 480x360.
+         * Queries such as "touching color?" will always execute at the native size.
+         * @see RenderWebGL#setStageSize
+         * @see RenderWebGL#resize
+         * @param {canvas} canvas The canvas to draw onto.
+         * @param {int} [xLeft=-240] The x-coordinate of the left edge.
+         * @param {int} [xRight=240] The x-coordinate of the right edge.
+         * @param {int} [yBottom=-180] The y-coordinate of the bottom edge.
+         * @param {int} [yTop=180] The y-coordinate of the top edge.
+         * @constructor
+         * @listens RenderWebGL#event:NativeSizeChanged
+         */
+
+    }]);
+
     function RenderWebGL(canvas, xLeft, xRight, yBottom, yTop) {
         _classCallCheck(this, RenderWebGL);
 
-        /** @type {Drawable[]} */
+        /** @type {WebGLRenderingContext} */
         var _this = _possibleConstructorReturn(this, (RenderWebGL.__proto__ || Object.getPrototypeOf(RenderWebGL)).call(this));
 
+        var gl = _this._gl = RenderWebGL._getContext(canvas);
+        if (!gl) {
+            throw new Error('Could not get WebGL context: this browser or environment may not support WebGL.');
+        }
+
+        /** @type {Drawable[]} */
         _this._allDrawables = [];
 
         /** @type {Skin[]} */
@@ -21089,9 +21129,6 @@ var RenderWebGL = function (_EventEmitter) {
 
         /** @type {Array<int>} */
         _this._drawList = [];
-
-        /** @type {WebGLRenderingContext} */
-        var gl = _this._gl = twgl.getWebGLContext(canvas, { alpha: false, stencil: true });
 
         /** @type {int} */
         _this._nextDrawableId = RenderConstants.ID_NONE + 1;
