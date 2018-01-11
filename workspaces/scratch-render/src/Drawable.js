@@ -51,7 +51,7 @@ class Drawable {
         this._scale = twgl.v3.create(100, 100);
         this._direction = 90;
         this._transformDirty = true;
-        this._inverseMatrix = twgl.m4.create();
+        this._inverseMatrix = twgl.m4.identity();
         this._inverseTransformDirty = true;
         this._visible = true;
         this._effectBits = 0;

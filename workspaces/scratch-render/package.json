@@ -44,7 +44,7 @@
     "scratch-render-fonts": "git+https://github.com/LLK/scratch-render-fonts.git",
     "tap": "^11.0.0",
     "travis-after-all": "^1.4.4",
-    "twgl.js": "3.7.0",
+    "twgl.js": "4.4.0",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.8.2",
     "xml-escape": "1.1.0"
