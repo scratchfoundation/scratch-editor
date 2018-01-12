@@ -63,6 +63,8 @@ class PaperCanvas extends React.Component {
             paper.project.view.zoom = oldZoom;
             paper.project.view.center = oldCenter;
             paper.project.view.update();
+        } else {
+            performSnapshot(this.props.undoSnapshot);
         }
     }
     componentWillUnmount () {
