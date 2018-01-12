@@ -30,6 +30,7 @@
     "eslint-config-import": "^0.13.0",
     "eslint-config-scratch": "^5.0.0",
     "eslint-plugin-import": "^2.8.0",
+    "json": "^9.0.6",
     "lodash.defaultsdeep": "4.6.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.1",
