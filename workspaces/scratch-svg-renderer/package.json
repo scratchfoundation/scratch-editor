@@ -7,7 +7,10 @@
   "scripts": {
     "build": "npm run clean && webpack --progress --colors --bail",
     "clean": "rimraf ./dist",
-    "lint": "eslint . --ext .js",
+    "test": "npm run test:lint",
+    "test:lint": "eslint . --ext .js",
+    "test:unit": "echo 'No unit tests yet'",
+    "test:integration": "echo 'No integration tests yet'",
     "watch": "webpack --progress --colors --watch"
   },
   "author": "Massachusetts Institute of Technology",
