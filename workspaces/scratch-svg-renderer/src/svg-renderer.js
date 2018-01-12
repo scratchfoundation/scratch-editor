@@ -48,6 +48,31 @@ class SvgRenderer {
     }
 
     /**
+     * Load an SVG from a string and draw it.
+     * This will be parsed and transformed, and finally drawn.
+     * When drawing is finished, the `onFinish` callback is called.
+     * @param {string} svgString String of SVG data to draw in quirks-mode.
+     * @param {Function} [onFinish] Optional callback for when drawing finished.
+     */
+    fromString (svgString, onFinish) {
+        // Store the callback for later.
+        this._onFinish = onFinish;
+        this._loadString(svgString);
+        // Draw to a canvas.
+        this._draw();
+    }
+
+    /**
+     * Load an SVG from a string and measure it.
+     * @param {string} svgString String of SVG data to draw in quirks-mode.
+     * @return {object} the natural size, in Scratch units, of this SVG.
+     */
+    measure (svgString) {
+        this._loadString(svgString);
+        return this._measurements;
+    }
+
+    /**
      * @return {Array<number>} the natural size, in Scratch units, of this SVG.
      */
     get size () {
@@ -62,25 +87,10 @@ class SvgRenderer {
     }
 
     /**
-     * Load an SVG from a string and draw it.
-     * This will be parsed and transformed, and finally drawn.
-     * When drawing is finished, the `onFinish` callback is called.
-     * @param {string} svgString String of SVG data to draw in quirks-mode.
-     * @param {Function} [onFinish] Optional callback for when drawing finished.
-     */
-    fromString (svgString, onFinish) {
-        // Store the callback for later.
-        this._onFinish = onFinish;
-        this.loadString(svgString);
-        // Draw to a canvas.
-        this._draw();
-    }
-
-    /**
      * Load an SVG string and normalize it. All the steps before drawing/measuring.
      * @param {string} svgString String of SVG data to draw in quirks-mode.
      */
-    loadString (svgString) {
+    _loadString (svgString) {
         // Parse string into SVG XML.
         const parser = new DOMParser();
         this._svgDom = parser.parseFromString(svgString, 'text/xml');
@@ -99,19 +109,9 @@ class SvgRenderer {
      * Serialize the active SVG DOM to a string.
      * @returns {string} String representing current SVG data.
      */
-    toString () {
+    _toString () {
         const serializer = new XMLSerializer();
         return serializer.serializeToString(this._svgDom);
-    }
-
-    /**
-     * Load an SVG from a string and measure it.
-     * @param {string} svgString String of SVG data to draw in quirks-mode.
-     * @return {object} the natural size, in Scratch units, of this SVG.
-     */
-    measure (svgString) {
-        this.loadString(svgString);
-        return this._measurements;
     }
 
     /**
@@ -250,7 +250,7 @@ class SvgRenderer {
      */
     _transformMeasurements () {
         // Save `svgText` for later re-parsing.
-        const svgText = this.toString();
+        const svgText = this._toString();
 
         // Append the SVG dom to the document.
         // This allows us to use `getBBox` on the page,
@@ -279,17 +279,22 @@ class SvgRenderer {
         // This may have false-positives, but at least the bbox will always
         // contain the full graphic including strokes.
         const halfStrokeWidth = this._findLargestStrokeWidth(this._svgTag) / 2;
-        bbox.width += halfStrokeWidth * 2;
-        bbox.height += halfStrokeWidth * 2;
-        bbox.x -= halfStrokeWidth;
-        bbox.y -= halfStrokeWidth;
+        const width = bbox.width + (halfStrokeWidth * 2);
+        const height = bbox.height + (halfStrokeWidth * 2);
+        const x = bbox.x - halfStrokeWidth;
+        const y = bbox.y - halfStrokeWidth;
 
         // Set the correct measurements on the SVG tag, and save them.
-        this._svgTag.setAttribute('width', bbox.width);
-        this._svgTag.setAttribute('height', bbox.height);
+        this._svgTag.setAttribute('width', width);
+        this._svgTag.setAttribute('height', height);
         this._svgTag.setAttribute('viewBox',
-            `${bbox.x} ${bbox.y} ${bbox.width} ${bbox.height}`);
-        this._measurements = bbox;
+            `${x} ${y} ${width} ${height}`);
+        this._measurements = {
+            width: width,
+            height: height,
+            x: x,
+            y: y
+        };
     }
 
     /**
@@ -318,7 +323,7 @@ class SvgRenderer {
                 this._onFinish();
             }
         };
-        const svgText = this.toString();
+        const svgText = this._toString();
         img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
     }
 
@@ -334,4 +339,4 @@ class SvgRenderer {
     }
 }
 
-export default SvgRenderer;
+module.exports = SvgRenderer;
