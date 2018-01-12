@@ -1,0 +1,42 @@
+language: node_js
+node_js:
+  - 6
+  - node
+env:
+  - NPM_SCRIPT="test:unit -- --jobs=4"
+  - NPM_SCRIPT="test:integration -- --jobs=4"
+  - NODE_ENV=production
+sudo: false
+cache:
+  directories:
+  - node_modules
+install:
+  - npm --production=false install
+  - npm --production=false update
+  - npm --production=false prune
+script: npm run $NPM_SCRIPT
+jobs:
+    include:
+    - env: NPM_SCRIPT=test:lint
+      node_js: 6
+    - stage: release
+      node_js: 6
+      env: NPM_SCRIPT=build
+      before_deploy:
+      - npm --no-git-tag-version version $($(npm bin)/json -f package.json version)-prerelease.$(date +%s)
+      - git config --global user.email $(git log --pretty=format:"%ae" -n1)
+      - git config --global user.name $(git log --pretty=format:"%an" -n1)
+      deploy:
+      - provider: script
+        "on":
+          all_branches: true
+          condition: $RELEASE_BRANCHES =~ $TRAVIS_BRANCH
+        skip_cleanup: true
+        script: npm run --silent deploy -- -x -r $GH_PAGES_REPO
+      - provider: npm
+        "on":
+          all_branches: true
+          condition: $RELEASE_BRANCHES =~ $TRAVIS_BRANCH
+        skip_cleanup: true
+        email: $NPM_EMAIL
+        api_key: $NPM_TOKEN
