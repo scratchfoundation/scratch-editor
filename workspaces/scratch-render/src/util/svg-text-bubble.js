@@ -1,6 +1,5 @@
 const SVGTextWrapper = require('./svg-text-wrapper');
-
-import SVGRenderer from 'scratch-svg-renderer';
+const SvgRenderer = require('scratch-svg-renderer');
 const xmlescape = require('xml-escape');
 
 const MAX_LINE_LENGTH = 170;

@@ -2,8 +2,7 @@ const twgl = require('twgl.js');
 
 const Silhouette = require('./Silhouette');
 const Skin = require('./Skin');
-
-import SvgRenderer from 'scratch-svg-renderer';
+const SvgRenderer = require('scratch-svg-renderer');
 
 class SVGSkin extends Skin {
     /**
