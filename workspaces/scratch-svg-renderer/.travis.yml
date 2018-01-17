@@ -19,18 +19,17 @@ jobs:
       - npm run test:lint
       - npm run test:unit -- --jobs=4
       - npm run test:integration -- --jobs=4
-    - stage: build
-      script: npm run build
-      skip_cleanup: true
+    - stage: deploy
+      if: branch IN (env(RELEASE_BRANCHES))
       node_js: 6
+      script: npm run build
       before_deploy:
-      - npm --no-git-tag-version version $($(npm bin)/json -f package.json version)-prerelease.$(date +%s)
+      - VPKG=$($(npm bin)/json -f package.json version)
+      - export VERSION=${VPKG/%?/}-prerelease.$(date +%Y%m%d%H%M%S)
+      - npm --no-git-tag-version version $VERSION
       - git config --global user.email $(git log --pretty=format:"%ae" -n1)
       - git config --global user.name $(git log --pretty=format:"%an" -n1)
       deploy:
-        on:
-          all_branches: true
-          condition: $RELEASE_BRANCHES =~ $TRAVIS_BRANCH
         provider: npm
         email: $NPM_EMAIL
         api_key: $NPM_TOKEN
