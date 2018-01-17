@@ -29,9 +29,10 @@ jobs:
       - git config --global user.email $(git log --pretty=format:"%ae" -n1)
       - git config --global user.name $(git log --pretty=format:"%an" -n1)
       deploy:
-        - provider: npm
-          "on":
-            all_branches: true
-            condition: $RELEASE_BRANCHES =~ $TRAVIS_BRANCH
-          email: $NPM_EMAIL
-          api_key: $NPM_TOKEN
+        provider: npm
+        skip_cleanup: true
+        "on":
+          all_branches: true
+          condition: $RELEASE_BRANCHES =~ $TRAVIS_BRANCH
+        email: $NPM_EMAIL
+        api_key: $NPM_TOKEN
