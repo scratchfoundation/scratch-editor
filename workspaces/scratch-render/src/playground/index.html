@@ -43,17 +43,35 @@
         scale: [100, 100],
         direction: 90
     });
+
     var drawableID2 = renderer.createDrawable();
+    var wantBitmapSkin = false;
+
+    // Bitmap (squirrel)
     var image = new Image();
     image.onload = function () {
-        var skinId = renderer.createBitmapSkin(image);
-        renderer.updateDrawableProperties(drawableID2, {
-            skinId: skinId
-        });
+        var bitmapSkinId = renderer.createBitmapSkin(image);
+        if (wantBitmapSkin) {
+            renderer.updateDrawableProperties(drawableID2, {
+                skinId: bitmapSkinId
+            });
+        }
     };
     image.crossOrigin = 'anonymous';
-    image.src = 'https://cdn.assets.scratch.mit.edu/internalapi/asset/' +
-        '09dc888b0b7df19f70d81588ae73420e.svg/get/';
+    image.src = 'https://cdn.assets.scratch.mit.edu/internalapi/asset/7e24c99c1b853e52f8e7f9004416fa34.png/get/';
+
+    // SVG (cat 1-a)
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", function () {
+        var skinId = renderer.createSVGSkin(xhr.responseText);
+        if (!wantBitmapSkin) {
+            renderer.updateDrawableProperties(drawableID2, {
+                skinId: skinId
+            });
+        }
+    });
+    xhr.open('GET', 'https://cdn.assets.scratch.mit.edu/internalapi/asset/f88bf1935daea28f8ca098462a31dbb0.svg/get/');
+    xhr.send();
 
     var fudgeSelect = document.getElementById('fudgeproperty');
     var posX = 0;

@@ -52,14 +52,12 @@ class SvgRenderer {
      * This will be parsed and transformed, and finally drawn.
      * When drawing is finished, the `onFinish` callback is called.
      * @param {string} svgString String of SVG data to draw in quirks-mode.
+     * @param {number} [scale] - Optionally, also scale the image by this factor (multiplied by `getDrawRatio()`).
      * @param {Function} [onFinish] Optional callback for when drawing finished.
      */
-    fromString (svgString, onFinish) {
-        // Store the callback for later.
-        this._onFinish = onFinish;
+    fromString (svgString, scale, onFinish) {
         this._loadString(svgString);
-        // Draw to a canvas.
-        this._draw();
+        this._draw(scale, onFinish);
     }
 
     /**
@@ -298,10 +296,12 @@ class SvgRenderer {
     }
 
     /**
-     * Draw the SVG to a canvas.
+     * Draw the SVG to a canvas. The canvas will automatically be scaled by the value returned by `getDrawRatio`.
+     * @param {number} [scale] - Optionally, also scale the image by this factor (multiplied by `getDrawRatio()`).
+     * @param {Function} [onFinish] - An optional callback to call when the draw operation is complete.
      */
-    _draw () {
-        const ratio = this.getDrawRatio();
+    _draw (scale, onFinish) {
+        const ratio = this.getDrawRatio() * (Number.isFinite(scale) ? scale : 1);
         const bbox = this._measurements;
 
         // Convert the SVG text to an Image, and then draw it to the canvas.
@@ -319,8 +319,8 @@ class SvgRenderer {
             this._canvas.style.width = bbox.width;
             this._canvas.style.height = bbox.height;
             // All finished - call the callback if provided.
-            if (this._onFinish) {
-                this._onFinish();
+            if (onFinish) {
+                onFinish();
             }
         };
         const svgText = this._toString();
