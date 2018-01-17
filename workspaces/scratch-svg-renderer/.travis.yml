@@ -20,7 +20,6 @@ jobs:
       - npm run test:unit -- --jobs=4
       - npm run test:integration -- --jobs=4
     - stage: deploy
-      if: branch IN (env(RELEASE_BRANCHES))
       node_js: 6
       script: npm run build
       before_deploy:
@@ -30,6 +29,9 @@ jobs:
       - git config --global user.email $(git log --pretty=format:"%ae" -n1)
       - git config --global user.name $(git log --pretty=format:"%an" -n1)
       deploy:
-        provider: npm
-        email: $NPM_EMAIL
-        api_key: $NPM_TOKEN
+        - provider: npm
+          "on":
+            all_branches: true
+            condition: $RELEASE_BRANCHES =~ $TRAVIS_BRANCH
+          email: $NPM_EMAIL
+          api_key: $NPM_TOKEN
