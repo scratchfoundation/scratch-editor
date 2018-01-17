@@ -88,7 +88,6 @@ class SVGSkin extends Skin {
             });
         }
 
-        /** @todo re-render a scaled version if the requested scale is significantly larger than the current render */
         return this._texture;
     }
 
@@ -103,7 +102,6 @@ class SVGSkin extends Skin {
         this._svgRenderer.fromString(svgData, 1, () => {
             const gl = this._renderer.gl;
             this._textureScale = this._maxTextureScale = 1;
-            this._svgRenderer.extraScale = 1;
             if (this._texture) {
                 gl.bindTexture(gl.TEXTURE_2D, this._texture);
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._svgRenderer.canvas);

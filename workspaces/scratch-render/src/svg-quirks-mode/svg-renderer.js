@@ -38,6 +38,7 @@ class SvgRenderer {
         this._canvas = canvas || document.createElement('canvas');
         this._context = this._canvas.getContext('2d');
         this._measurements = {x: 0, y: 0, width: 0, height: 0};
+        this._cachedImage = null;
     }
 
     /**
@@ -89,6 +90,9 @@ class SvgRenderer {
      * @param {string} svgString String of SVG data to draw in quirks-mode.
      */
     _loadString (svgString) {
+        // New svg string invalidates the cached image
+        this._cachedImage = null;
+
         // Parse string into SVG XML.
         const parser = new DOMParser();
         this._svgDom = parser.parseFromString(svgString, 'text/xml');
@@ -301,30 +305,44 @@ class SvgRenderer {
      * @param {Function} [onFinish] - An optional callback to call when the draw operation is complete.
      */
     _draw (scale, onFinish) {
+        // Convert the SVG text to an Image, and then draw it to the canvas.
+        if (this._cachedImage) {
+            this._drawFromImage(scale, onFinish);
+        } else {
+            const img = new Image();
+            img.onload = () => {
+                this._cachedImage = img;
+                this._drawFromImage(scale, onFinish);
+            };
+            const svgText = this._toString();
+            img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
+        }
+    }
+
+    /**
+     * Draw to the canvas from a loaded image element.
+     * @param {number} [scale] - Optionally, also scale the image by this factor (multiplied by `getDrawRatio()`).
+     * @param {Function} [onFinish] - An optional callback to call when the draw operation is complete.
+     **/
+    _drawFromImage (scale, onFinish) {
+        if (!this._cachedImage) return;
+
         const ratio = this.getDrawRatio() * (Number.isFinite(scale) ? scale : 1);
         const bbox = this._measurements;
-
-        // Convert the SVG text to an Image, and then draw it to the canvas.
-        const img = new Image();
-        img.onload = () => {
-            // Set up the canvas for drawing.
-            this._canvas.width = bbox.width * ratio;
-            this._canvas.height = bbox.height * ratio;
-            this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-            this._context.scale(ratio, ratio);
-            this._context.drawImage(img, 0, 0);
-            // Reset the canvas transform after drawing.
-            this._context.setTransform(1, 0, 0, 1, 0, 0);
-            // Set the CSS style of the canvas to the actual measurements.
-            this._canvas.style.width = bbox.width;
-            this._canvas.style.height = bbox.height;
-            // All finished - call the callback if provided.
-            if (onFinish) {
-                onFinish();
-            }
-        };
-        const svgText = this._toString();
-        img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
+        this._canvas.width = bbox.width * ratio;
+        this._canvas.height = bbox.height * ratio;
+        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+        this._context.scale(ratio, ratio);
+        this._context.drawImage(this._cachedImage, 0, 0);
+        // Reset the canvas transform after drawing.
+        this._context.setTransform(1, 0, 0, 1, 0, 0);
+        // Set the CSS style of the canvas to the actual measurements.
+        this._canvas.style.width = bbox.width;
+        this._canvas.style.height = bbox.height;
+        // All finished - call the callback if provided.
+        if (onFinish) {
+            onFinish();
+        }
     }
 
     /**
