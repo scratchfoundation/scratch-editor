@@ -24,7 +24,7 @@ jobs:
       script: npm run build
       before_deploy:
       - VPKG=$($(npm bin)/json -f package.json version)
-      - export VERSION=${VPKG/%?/}-prerelease.$(date +%Y%m%d%H%M%S)
+      - export VERSION=${VPKG}-prerelease.$(date +%Y%m%d%H%M%S)
       - npm --no-git-tag-version version $VERSION
       - git config --global user.email $(git log --pretty=format:"%ae" -n1)
       - git config --global user.name $(git log --pretty=format:"%an" -n1)
