@@ -7,7 +7,7 @@ const MIN_WIDTH = 50;
 
 class SVGTextBubble {
     constructor () {
-        this.svgRenderer = new SVGRenderer();
+        this.svgRenderer = new SvgRenderer();
         this.svgTextWrapper = new SVGTextWrapper();
         this._textSizeCache = {};
     }
