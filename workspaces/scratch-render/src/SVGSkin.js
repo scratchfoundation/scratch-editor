@@ -4,6 +4,8 @@ const Silhouette = require('./Silhouette');
 const Skin = require('./Skin');
 const SvgRenderer = require('scratch-svg-renderer');
 
+const MAX_TEXTURE_DIMENSION = 2048;
+
 class SVGSkin extends Skin {
     /**
      * Create a new SVG skin.
@@ -23,6 +25,12 @@ class SVGSkin extends Skin {
 
         /** @type {WebGLTexture} */
         this._texture = null;
+
+        /** @type {number} */
+        this._textureScale = 1;
+
+        /** @type {Number} */
+        this._maxTextureScale = 0;
 
         this._silhouette = new Silhouette();
     }
@@ -56,12 +64,29 @@ class SVGSkin extends Skin {
     }
 
     /**
-     * @param {Array<number>} scale - The scaling factors to be used.
+     * @param {Array<number>} scale - The scaling factors to be used, each in the [0,100] range.
      * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
      */
     // eslint-disable-next-line no-unused-vars
     getTexture (scale) {
-        /** @todo re-render a scaled version if the requested scale is significantly larger than the current render */
+        // The texture only ever gets uniform scale. Take the larger of the two axes.
+        const scaleMax = scale ? Math.max(Math.abs(scale[0]), Math.abs(scale[1])) : 100;
+        const requestedScale = Math.min(scaleMax / 100, this._maxTextureScale);
+        let newScale = this._textureScale;
+        while ((newScale < this._maxTextureScale) && (requestedScale >= 1.5 * newScale)) {
+            newScale *= 2;
+        }
+        if (this._textureScale !== newScale) {
+            this._textureScale = newScale;
+            this._svgRenderer._draw(this._textureScale, () => {
+                if (this._textureScale === newScale) {
+                    const gl = this._renderer.gl;
+                    gl.bindTexture(gl.TEXTURE_2D, this._texture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._svgRenderer.canvas);
+                }
+            });
+        }
+
         return this._texture;
     }
 
@@ -73,8 +98,9 @@ class SVGSkin extends Skin {
      * @fires Skin.event:WasAltered
      */
     setSVG (svgData, rotationCenter) {
-        this._svgRenderer.fromString(svgData, () => {
+        this._svgRenderer.fromString(svgData, 1, () => {
             const gl = this._renderer.gl;
+            this._textureScale = this._maxTextureScale = 1;
             if (this._texture) {
                 gl.bindTexture(gl.TEXTURE_2D, this._texture);
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._svgRenderer.canvas);
@@ -90,6 +116,13 @@ class SVGSkin extends Skin {
                 this._texture = twgl.createTexture(gl, textureOptions);
                 this._silhouette.update(this._svgRenderer.canvas);
             }
+
+            const maxDimension = Math.max(this._svgRenderer.canvas.width, this._svgRenderer.canvas.height);
+            let testScale = 2;
+            for (testScale; maxDimension * testScale <= MAX_TEXTURE_DIMENSION; testScale *= 2) {
+                this._maxTextureScale = testScale;
+            }
+
             if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
             this.setRotationCenter.apply(this, rotationCenter);
             this.emit(Skin.Events.WasAltered);
