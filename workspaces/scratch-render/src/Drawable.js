@@ -8,6 +8,8 @@ const EffectTransform = require('./EffectTransform');
 
 const __isTouchingPosition = twgl.v3.create();
 
+const __calculateTransformVector = twgl.v3.create();
+
 class Drawable {
     /**
      * An object which can be drawn by the renderer.
@@ -51,6 +53,10 @@ class Drawable {
         this._scale = twgl.v3.create(100, 100);
         this._direction = 90;
         this._transformDirty = true;
+        this._rotationMatrix = twgl.m4.identity();
+        this._rotationTransformDirty = true;
+        this._rotationAdjusted = twgl.v3.create();
+        this._rotationCenterDirty = true;
         this._inverseMatrix = twgl.m4.identity();
         this._inverseTransformDirty = true;
         this._visible = true;
@@ -156,6 +162,7 @@ class Drawable {
         }
         if ('direction' in properties && this._direction !== properties.direction) {
             this._direction = properties.direction;
+            this._rotationTransformDirty = true;
             dirty = true;
         }
         if ('scale' in properties && (
@@ -163,6 +170,7 @@ class Drawable {
             this._scale[1] !== properties.scale[1])) {
             this._scale[0] = properties.scale[0];
             this._scale[1] = properties.scale[1];
+            this._rotationCenterDirty = true;
             dirty = true;
         }
         if ('visible' in properties) {
@@ -199,22 +207,28 @@ class Drawable {
     _calculateTransform () {
         const modelMatrix = this._uniforms.u_modelMatrix;
 
-        twgl.m4.identity(modelMatrix);
-        twgl.m4.translate(modelMatrix, this._position, modelMatrix);
+        twgl.m4.translation(this._position, modelMatrix);
 
-        const rotation = (270 - this._direction) * Math.PI / 180;
-        twgl.m4.rotateZ(modelMatrix, rotation, modelMatrix);
+        if (this._rotationTransformDirty) {
+            const rotation = (270 - this._direction) * Math.PI / 180;
+            twgl.m4.rotationZ(rotation, this._rotationMatrix);
+            this._rotationTransformDirty = false;
+        }
+        twgl.m4.multiply(modelMatrix, this._rotationMatrix, modelMatrix);
 
         // Adjust rotation center relative to the skin.
-        let rotationAdjusted = twgl.v3.subtract(this.skin.rotationCenter, twgl.v3.divScalar(this.skin.size, 2));
-        rotationAdjusted = twgl.v3.multiply(rotationAdjusted, this.scale);
-        rotationAdjusted = twgl.v3.divScalar(rotationAdjusted, 100);
-        rotationAdjusted[1] *= -1; // Y flipped to Scratch coordinate.
-        rotationAdjusted[2] = 0; // Z coordinate is 0.
+        if (this._rotationCenterDirty) {
+            let rotationAdjusted = twgl.v3.subtract(this.skin.rotationCenter, twgl.v3.divScalar(this.skin.size, 2, this._rotationAdjusted), this._rotationAdjusted);
+            rotationAdjusted = twgl.v3.multiply(rotationAdjusted, this.scale, rotationAdjusted);
+            rotationAdjusted = twgl.v3.divScalar(rotationAdjusted, 100, rotationAdjusted);
+            rotationAdjusted[1] *= -1; // Y flipped to Scratch coordinate.
+            rotationAdjusted[2] = 0; // Z coordinate is 0.
+            this._rotationCenterDirty = false;
+        }
 
-        twgl.m4.translate(modelMatrix, rotationAdjusted, modelMatrix);
+        twgl.m4.translate(modelMatrix, this._rotationAdjusted, modelMatrix);
 
-        const scaledSize = twgl.v3.divScalar(twgl.v3.multiply(this.skin.size, this._scale), 100);
+        const scaledSize = twgl.v3.divScalar(twgl.v3.multiply(this.skin.size, this._scale, __calculateTransformVector), 100, __calculateTransformVector);
         scaledSize[2] = 0; // was NaN because the vectors have only 2 components.
         twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
 
@@ -369,6 +383,7 @@ class Drawable {
      * @private
      */
     _skinWasAltered () {
+        this._rotationCenterDirty = true;
         this.setConvexHullDirty();
         this.setTransformDirty();
     }
