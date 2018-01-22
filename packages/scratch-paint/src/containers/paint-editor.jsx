@@ -140,14 +140,14 @@ class PaintEditor extends React.Component {
             const callback = this.props.changeColorToEyeDropper;
 
             this.eyeDropper.remove();
-            this.props.previousTool.activate();
-            this.props.onDeactivateEyeDropper();
-            this.stopEyeDroppingLoop();
             if (!this.eyeDropper.hideLoupe) {
                 // If not hide loupe, that means the click is inside the canvas,
                 // so apply the new color
                 callback(colorString);
             }
+            this.props.previousTool.activate();
+            this.props.onDeactivateEyeDropper();
+            this.stopEyeDroppingLoop();
             this.setState({colorInfo: null});
         }
     }

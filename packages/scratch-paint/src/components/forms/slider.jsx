@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import bindAll from 'lodash.bindall';
+import {getEventXY} from '../../lib/touch-utils';
 
 import styles from './slider.css';
 
@@ -14,25 +15,39 @@ class SliderComponent extends React.Component {
             'handleMouseDown',
             'handleMouseUp',
             'handleMouseMove',
+            'handleClickBackground',
             'setBackground'
         ]);
     }
 
     handleMouseDown () {
-        document.addEventListener('mouseup', this.handleMouseUp);
         document.addEventListener('mousemove', this.handleMouseMove);
+        document.addEventListener('mouseup', this.handleMouseUp);
+        document.addEventListener('touchmove', this.handleMouseMove);
+        document.addEventListener('touchend', this.handleMouseUp);
     }
 
     handleMouseUp () {
-        document.removeEventListener('mouseup', this.handleMouseUp);
         document.removeEventListener('mousemove', this.handleMouseMove);
+        document.removeEventListener('mouseup', this.handleMouseUp);
+        document.removeEventListener('touchmove', this.handleMouseMove);
+        document.removeEventListener('touchend', this.handleMouseUp);
     }
 
     handleMouseMove (event) {
         event.preventDefault();
+        this.props.onChange(this.scaleMouseToSliderPosition(event));
+    }
+
+    handleClickBackground (event) {
+        this.props.onChange(this.scaleMouseToSliderPosition(event));
+    }
+
+    scaleMouseToSliderPosition (event){
+        const {x} = getEventXY(event);
         const backgroundBBox = this.background.getBoundingClientRect();
-        const x = event.clientX - backgroundBBox.left;
-        this.props.onChange(Math.max(0, Math.min(100, 100 * x / backgroundBBox.width)));
+        const scaledX = x - backgroundBBox.left;
+        return Math.max(0, Math.min(100, 100 * scaledX / backgroundBBox.width));
     }
 
     setBackground (ref) {
@@ -53,6 +68,7 @@ class SliderComponent extends React.Component {
                 style={{
                     backgroundImage: this.props.background
                 }}
+                onClick={this.handleClickBackground}
             >
                 <div
                     className={styles.handle}
@@ -60,6 +76,7 @@ class SliderComponent extends React.Component {
                         left: `${handleOffset}px`
                     }}
                     onMouseDown={this.handleMouseDown}
+                    onTouchStart={this.handleMouseDown}
                 />
             </div>
         );

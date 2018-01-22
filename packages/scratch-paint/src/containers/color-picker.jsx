@@ -28,9 +28,9 @@ const hsvToHex = (h, s, v) =>
     parseColor(`hsv(${3.6 * h}, ${s}, ${v})`).hex
 ;
 
-// Important! This component ignores new color props and cannot be updated
-// This is to make the HSV <=> RGB conversion stable. Because of this, the
-// component MUST be unmounted in order to change the props externally.
+// Important! This component ignores new color props except when isEyeDropping
+// This is to make the HSV <=> RGB conversion stable. The sliders manage their
+// own changes until unmounted or color changes with props.isEyeDropping = true.
 class ColorPicker extends React.Component {
     constructor (props) {
         super(props);
@@ -51,7 +51,7 @@ class ColorPicker extends React.Component {
         };
     }
     componentWillReceiveProps (newProps) {
-        if (this.props.color !== newProps.color) {
+        if (this.props.isEyeDropping && this.props.color !== newProps.color) {
             // color set by eye dropper, so update slider states
             const hsv = this.getHsv(newProps.color);
             this.setState({
@@ -68,16 +68,19 @@ class ColorPicker extends React.Component {
             [50, 100, 100] : colorStringToHsv(color);
     }
     handleHueChange (hue) {
-        this.setState({hue: hue});
-        this.handleColorChange();
+        this.setState({hue: hue}, () => {
+            this.handleColorChange();
+        });
     }
     handleSaturationChange (saturation) {
-        this.setState({saturation: saturation});
-        this.handleColorChange();
+        this.setState({saturation: saturation}, () => {
+            this.handleColorChange();
+        });
     }
     handleBrightnessChange (brightness) {
-        this.setState({brightness: brightness});
-        this.handleColorChange();
+        this.setState({brightness: brightness}, () => {
+            this.handleColorChange();
+        });
     }
     handleColorChange () {
         this.props.onChangeColor(hsvToHex(
