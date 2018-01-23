@@ -207,14 +207,108 @@ class Drawable {
     _calculateTransform () {
         const modelMatrix = this._uniforms.u_modelMatrix;
 
-        twgl.m4.translation(this._position, modelMatrix);
+        // twgl.m4.translation(this._position, modelMatrix);
+        // dst[ 0] = 1;
+        // dst[ 1] = 0;
+        // dst[ 2] = 0;
+        // dst[ 3] = 0;
+        // dst[ 4] = 0;
+        // dst[ 5] = 1;
+        // dst[ 6] = 0;
+        // dst[ 7] = 0;
+        // dst[ 8] = 0;
+        // dst[ 9] = 0;
+        // dst[10] = 1;
+        // dst[11] = 0;
+        // dst[12] = v[0];
+        // dst[13] = v[1];
+        // dst[14] = v[2];
+        // dst[15] = 1;
 
         if (this._rotationTransformDirty) {
             const rotation = (270 - this._direction) * Math.PI / 180;
-            twgl.m4.rotationZ(rotation, this._rotationMatrix);
+            // twgl.m4.rotationZ(rotation, this._rotationMatrix);
+            const c = Math.cos(rotation);
+            const s = Math.sin(rotation);
+            this._rotationMatrix[0] = c;
+            this._rotationMatrix[1] = s;
+            this._rotationMatrix[4] = -s;
+            this._rotationMatrix[5] = c;
+            // this._rotationMatrix[2] = 0;
+            // this._rotationMatrix[3] = 0;
+            // this._rotationMatrix[6] = 0;
+            // this._rotationMatrix[7] = 0;
+            // this._rotationMatrix[8] = 0;
+            // this._rotationMatrix[9] = 0;
+            // this._rotationMatrix[10] = 1;
+            // this._rotationMatrix[11] = 0;
+            // this._rotationMatrix[12] = 0;
+            // this._rotationMatrix[13] = 0;
+            // this._rotationMatrix[14] = 0;
+            // this._rotationMatrix[15] = 1;
+
             this._rotationTransformDirty = false;
         }
-        twgl.m4.multiply(modelMatrix, this._rotationMatrix, modelMatrix);
+        // twgl.m4.multiply(modelMatrix, this._rotationMatrix, modelMatrix);
+        // const a00 = a[0];
+        // const a01 = a[1];
+        // const a02 = a[2];
+        // const a03 = a[3];
+        // const a10 = a[ 4 + 0];
+        // const a11 = a[ 4 + 1];
+        // const a12 = a[ 4 + 2];
+        // const a13 = a[ 4 + 3];
+        // const a20 = a[ 8 + 0];
+        // const a21 = a[ 8 + 1];
+        // const a22 = a[ 8 + 2];
+        // const a23 = a[ 8 + 3];
+        // const a30 = a[12 + 0];
+        // const a31 = a[12 + 1];
+        // const a32 = a[12 + 2];
+        // const a33 = a[12 + 3];
+        // const b00 = b[0];
+        // const b01 = b[1];
+        // const b02 = b[2];
+        // const b03 = b[3];
+        // const b10 = b[ 4 + 0];
+        // const b11 = b[ 4 + 1];
+        // const b12 = b[ 4 + 2];
+        // const b13 = b[ 4 + 3];
+        // const b20 = b[ 8 + 0];
+        // const b21 = b[ 8 + 1];
+        // const b22 = b[ 8 + 2];
+        // const b23 = b[ 8 + 3];
+        // const b30 = b[12 + 0];
+        // const b31 = b[12 + 1];
+        // const b32 = b[12 + 2];
+        // const b33 = b[12 + 3];
+        //
+        // dst[ 0] = a00 * b00 + a10 * b01 + a20 * b02 + a30 * b03;
+        // dst[ 1] = a01 * b00 + a11 * b01 + a21 * b02 + a31 * b03;
+        // dst[ 2] = a02 * b00 + a12 * b01 + a22 * b02 + a32 * b03;
+        // dst[ 3] = a03 * b00 + a13 * b01 + a23 * b02 + a33 * b03;
+        // dst[ 4] = a00 * b10 + a10 * b11 + a20 * b12 + a30 * b13;
+        // dst[ 5] = a01 * b10 + a11 * b11 + a21 * b12 + a31 * b13;
+        // dst[ 6] = a02 * b10 + a12 * b11 + a22 * b12 + a32 * b13;
+        // dst[ 7] = a03 * b10 + a13 * b11 + a23 * b12 + a33 * b13;
+        // dst[ 8] = a00 * b20 + a10 * b21 + a20 * b22 + a30 * b23;
+        // dst[ 9] = a01 * b20 + a11 * b21 + a21 * b22 + a31 * b23;
+        // dst[10] = a02 * b20 + a12 * b21 + a22 * b22 + a32 * b23;
+        // dst[11] = a03 * b20 + a13 * b21 + a23 * b22 + a33 * b23;
+        // dst[12] = a00 * b30 + a10 * b31 + a20 * b32 + a30 * b33;
+        // dst[13] = a01 * b30 + a11 * b31 + a21 * b32 + a31 * b33;
+        // dst[14] = a02 * b30 + a12 * b31 + a22 * b32 + a32 * b33;
+        // dst[15] = a03 * b30 + a13 * b31 + a23 * b32 + a33 * b33;
+
+        // dst[0] = 1 * r[0] + 0 * r[1] + 0 * 0 + 0 * 0;
+        // dst[1] = 0 * r[0] + 1 * r[1] + 0 * 0 + 0 * 0;
+        // dst[4] = 1 * r[4] + 0 * r[5] + 0 * 0 + 0 * 0;
+        // dst[5] = 0 * r[4] + 1 * r[5] + 0 * 0 + 0 * 0;
+        // dst[10] = 1 * 1;
+        // dst[12] = p[0] * 1;
+        // dst[13] = p[1] * 1;
+        // dst[14] = 0 * 1;
+        // dst[15] = 1 * 1;
 
         // Adjust rotation center relative to the skin.
         if (this._rotationCenterDirty) {
@@ -226,11 +320,135 @@ class Drawable {
             this._rotationCenterDirty = false;
         }
 
-        twgl.m4.translate(modelMatrix, this._rotationAdjusted, modelMatrix);
+        // twgl.m4.translate(modelMatrix, this._rotationAdjusted, modelMatrix);
+        // const v0 = v[0];
+        // const v1 = v[1];
+        // const v2 = v[2];
+        // const m00 = m[0];
+        // const m01 = m[1];
+        // const m02 = m[2];
+        // const m03 = m[3];
+        // const m10 = m[1 * 4 + 0];
+        // const m11 = m[1 * 4 + 1];
+        // const m12 = m[1 * 4 + 2];
+        // const m13 = m[1 * 4 + 3];
+        // const m20 = m[2 * 4 + 0];
+        // const m21 = m[2 * 4 + 1];
+        // const m22 = m[2 * 4 + 2];
+        // const m23 = m[2 * 4 + 3];
+        // const m30 = m[3 * 4 + 0];
+        // const m31 = m[3 * 4 + 1];
+        // const m32 = m[3 * 4 + 2];
+        // const m33 = m[3 * 4 + 3];
+        //
+        // if (m !== dst) {
+        //   dst[ 0] = m00;
+        //   dst[ 1] = m01;
+        //   dst[ 2] = m02;
+        //   dst[ 3] = m03;
+        //   dst[ 4] = m10;
+        //   dst[ 5] = m11;
+        //   dst[ 6] = m12;
+        //   dst[ 7] = m13;
+        //   dst[ 8] = m20;
+        //   dst[ 9] = m21;
+        //   dst[10] = m22;
+        //   dst[11] = m23;
+        // }
+        //
+        // dst[12] = m00 * v0 + m10 * v1 + m20 * v2 + m30;
+        // dst[13] = m01 * v0 + m11 * v1 + m21 * v2 + m31;
+        // dst[14] = m02 * v0 + m12 * v1 + m22 * v2 + m32;
+        // dst[15] = m03 * v0 + m13 * v1 + m23 * v2 + m33;
 
-        const scaledSize = twgl.v3.divScalar(twgl.v3.multiply(this.skin.size, this._scale, __calculateTransformVector), 100, __calculateTransformVector);
-        scaledSize[2] = 0; // was NaN because the vectors have only 2 components.
-        twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
+        // dst[0] = 1 * r[0] + 0 * r[1] + 0 * 0 + 0 * 0;
+        // dst[1] = 0 * r[0] + 1 * r[1] + 0 * 0 + 0 * 0;
+        // dst[4] = 1 * r[4] + 0 * r[5] + 0 * 0 + 0 * 0;
+        // dst[5] = 0 * r[4] + 1 * r[5] + 0 * 0 + 0 * 0;
+        // dst[10] = 1 * 1;
+        // dst[12] = r[0] * a[0] + r[4] * a[1] + 0 * 0 + p[0];
+        // dst[13] = r[1] * a[0] + r[5] * a[1] + 0 * 0 + p[1];
+        // dst[14] = 0 * a[0] + 0 * a[1] + 0 * 0 + 0;
+        // dst[15] = 0 * a[0] + 0 * a[1] + 0 * 0 + 1;
+
+        // const scaledSize = twgl.v3.divScalar(twgl.v3.multiply(this.skin.size, this._scale, __calculateTransformVector), 100, __calculateTransformVector);
+        // scaledSize[2] = 0; // was NaN because the vectors have only 2 components.
+
+        const scaledSize = __calculateTransformVector;
+        scaledSize[0] = this.skin.size[0] * this._scale[0] / 100;
+        scaledSize[1] = this.skin.size[1] * this._scale[1] / 100;
+        // scaledSize[2] = 0;
+
+        // twgl.m4.scale(modelMatrix, scaledSize, modelMatrix);
+        // const v0 = v[0];
+        // const v1 = v[1];
+        // const v2 = v[2];
+        //
+        // dst[ 0] = v0 * m[0 * 4 + 0];
+        // dst[ 1] = v0 * m[0 * 4 + 1];
+        // dst[ 2] = v0 * m[0 * 4 + 2];
+        // dst[ 3] = v0 * m[0 * 4 + 3];
+        // dst[ 4] = v1 * m[1 * 4 + 0];
+        // dst[ 5] = v1 * m[1 * 4 + 1];
+        // dst[ 6] = v1 * m[1 * 4 + 2];
+        // dst[ 7] = v1 * m[1 * 4 + 3];
+        // dst[ 8] = v2 * m[2 * 4 + 0];
+        // dst[ 9] = v2 * m[2 * 4 + 1];
+        // dst[10] = v2 * m[2 * 4 + 2];
+        // dst[11] = v2 * m[2 * 4 + 3];
+        //
+        // if (m !== dst) {
+        //   dst[12] = m[12];
+        //   dst[13] = m[13];
+        //   dst[14] = m[14];
+        //   dst[15] = m[15];
+        // }
+
+        // dst[ 0] = s[0] * r[0];
+        // dst[ 1] = s[0] * r[1];
+        // dst[ 2] = s[0] * 0;
+        // dst[ 3] = s[0] * (r[0] * a[0] + r[4] * a[1] + 0 * 0 + p[0]);
+        // dst[ 4] = s[1] * r[4];
+        // dst[ 5] = s[1] * r[5];
+        // dst[ 6] = s[1] * 0;
+        // dst[ 7] = s[1] * (r[1] * a[0] + r[5] * a[1] + 0 * 0 + p[1]);
+        // dst[ 8] = 0 * 0;
+        // dst[ 9] = 0 * 0;
+        // dst[10] = 0 * 1;
+        // dst[11] = 0 * 0;
+        // dst[12] = r[0] * a[0] + r[4] * a[1] + 0 * 0 + p[0];
+        // dst[13] = r[1] * a[0] + r[5] * a[1] + 0 * 0 + p[1];
+        // dst[14] = 0 * a[0] + 0 * a[1] + 0 * 0 + 0;
+        // dst[15] = 0 * a[0] + 0 * a[1] + 0 * 0 + 1;
+
+        const scale0 = scaledSize[0];
+        const scale1 = scaledSize[1];
+        const rotation00 = this._rotationMatrix[0];
+        const rotation01 = this._rotationMatrix[1];
+        const rotation10 = this._rotationMatrix[4];
+        const rotation11 = this._rotationMatrix[5];
+        const adjusted0 = this._rotationAdjusted[0];
+        const adjusted1 = this._rotationAdjusted[1];
+        const position0 = this._position[0];
+        const position1 = this._position[1];
+
+        const dst = modelMatrix;
+        dst[0] = scale0 * rotation00;
+        dst[1] = scale0 * rotation01;
+        // dst[2] = 0;
+        // dst[3] = 0;
+        dst[4] = scale1 * rotation10;
+        dst[5] = scale1 * rotation11;
+        // dst[6] = 0;
+        // dst[7] = 0;
+        // dst[8] = 0;
+        // dst[9] = 0;
+        // dst[10] = 1;
+        // dst[11] = 0;
+        dst[12] = rotation00 * adjusted0 + rotation10 * adjusted1 + position0;
+        dst[13] = rotation01 * adjusted0 + rotation11 * adjusted1 + position1;
+        // dst[14] = 0;
+        // dst[15] = 1;
 
         this._transformDirty = false;
     }
