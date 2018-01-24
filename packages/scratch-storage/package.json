@@ -11,15 +11,15 @@
   "main": "./dist/node/scratch-storage.js",
   "browser": "./dist/web/scratch-storage.js",
   "scripts": {
-    "build": "./node_modules/.bin/webpack --progress --colors --bail",
-    "coverage": "./node_modules/.bin/tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
-    "lint": "./node_modules/.bin/eslint .",
-    "tap-integration": "./node_modules/.bin/tap ./test/integration/*.js",
-    "tap-unit": "./node_modules/.bin/tap ./test/unit/*.js",
+    "build": "webpack --progress --colors --bail",
+    "coverage": "tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
+    "lint": "eslint .",
+    "tap-integration": "tap ./test/integration/*.js",
+    "tap-unit": "tap ./test/unit/*.js",
     "tap": "npm run tap-unit && npm run tap-integration",
     "test": "npm run lint && npm run tap",
-    "version": "./node_modules/.bin/json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\"",
-    "watch": "./node_modules/.bin/webpack --progress --colors --watch",
+    "version": "json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\"",
+    "watch": "webpack --progress --colors --watch",
     "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "devDependencies": {
