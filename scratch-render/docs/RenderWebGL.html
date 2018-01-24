@@ -2832,7 +2832,7 @@ Finally, apply a convex hull algorithm to simplify the set.</p>
 
     
 
-    <h4 class="name" id="createBitmapSkin"><span class="type-signature"></span>createBitmapSkin<span class="signature">(bitmapData, costumeResolution<span class="signature-attributes">opt, non-null</span>, rotationCenter<span class="signature-attributes">nullable</span>)</span><span class="type-signature"> &rarr; (non-null) {int}</span></h4>
+    <h4 class="name" id="createBitmapSkin"><span class="type-signature"></span>createBitmapSkin<span class="signature">(bitmapData, costumeResolution<span class="signature-attributes">opt, non-null</span>, rotationCenter<span class="signature-attributes">opt, nullable</span>)</span><span class="type-signature"> &rarr; (non-null) {int}</span></h4>
 
     
 
@@ -3019,6 +3019,8 @@ Finally, apply a convex hull algorithm to simplify the set.</p>
             
                 <td class="attributes">
                 
+                    &lt;optional><br>
+                
 
                 
                     &lt;nullable><br>
@@ -3034,8 +3036,8 @@ Finally, apply a convex hull algorithm to simplify the set.</p>
                 </td>
             
 
-            <td class="description last"><p>Optional: rotation center of the skin. If not supplied, the center of the
-skin will be used</p></td>
+            <td class="description last"><p>Optional: rotation center of the skin. If not supplied, the center of
+the skin will be used.</p></td>
         </tr>
 
     
@@ -6221,7 +6223,7 @@ color-touching. The fixed size allows (more) consistent behavior across devices 
 
     
 
-    <h4 class="name" id="pick"><span class="type-signature"></span>pick<span class="signature">(centerX, centerY, touchWidth, touchHeight, candidateIDs)</span><span class="type-signature"> &rarr; {int}</span></h4>
+    <h4 class="name" id="pick"><span class="type-signature"></span>pick<span class="signature">(centerX, centerY, touchWidth<span class="signature-attributes">opt</span>, touchHeight<span class="signature-attributes">opt</span>, candidateIDs<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {int}</span></h4>
 
     
 
@@ -6295,6 +6297,8 @@ pick drawables that are not visible or have ghost set all the way up.</p>
         <th>Type</th>
 
         
+        <th>Attributes</th>
+        
 
         
 
@@ -6320,6 +6324,14 @@ pick drawables that are not visible or have ghost set all the way up.</p>
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -6342,6 +6354,14 @@ pick drawables that are not visible or have ghost set all the way up.</p>
             
             </td>
 
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
             
 
             
@@ -6366,6 +6386,16 @@ pick drawables that are not visible or have ghost set all the way up.</p>
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -6389,6 +6419,16 @@ pick drawables that are not visible or have ghost set all the way up.</p>
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -6411,6 +6451,16 @@ pick drawables that are not visible or have ghost set all the way up.</p>
             
             </td>
 
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
             
 
             
