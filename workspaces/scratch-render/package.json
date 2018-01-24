@@ -41,7 +41,7 @@
     "json": "^9.0.4",
     "linebreak": "0.3.0",
     "raw-loader": "^0.5.1",
-    "scratch-svg-renderer": "0.1.0-prerelease.20180124043252",
+    "scratch-svg-renderer": "0.1.0-prerelease.20180124054052",
     "tap": "^11.0.0",
     "travis-after-all": "^1.4.4",
     "twgl.js": "4.4.0",
