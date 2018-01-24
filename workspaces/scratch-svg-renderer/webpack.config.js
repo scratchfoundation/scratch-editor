@@ -40,7 +40,7 @@ module.exports = [
         }
     }),
     // For testing only: many features will fail outside a browser
-    makeExport({node: true}, {
+    makeExport({node: 4}, {
         output: {
             library: 'ScratchSVGRenderer',
             libraryTarget: 'commonjs2',
