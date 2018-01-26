@@ -13,6 +13,7 @@ import {changeStrokeWidth} from '../reducers/stroke-width';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems} from '../reducers/selected-items';
 import {MIXED} from '../helper/style-path';
+import {snapDeltaToAngle} from '../helper/math';
 
 import LineModeComponent from '../components/line-mode/line-mode.jsx';
 
@@ -135,32 +136,50 @@ class LineMode extends React.Component {
     onMouseDrag (event) {
         if (event.event.button > 0 || !this.active) return; // only first mouse button
 
-        // If near another path's endpoint, or this path's beginpoint, clip to it to suggest
-        // joining/closing the paths.
+        // Clear the last hit result
         if (this.hitResult) {
             removeHitPoint();
             this.hitResult = null;
         }
 
+        // If shift is held, act like event.point always lies on a straight or 45 degree line from the last point
+        let endPoint = event.point;
+        if (event.modifiers.shift) {
+            const line = event.point.subtract(this.path.lastSegment.previous.point);
+            endPoint = this.path.lastSegment.previous.point.add(snapDeltaToAngle(line, Math.PI / 4));
+        }
+
+        // Find an end point that endPoint is close to (to snap lines together)
         if (this.path &&
                 !this.path.closed &&
                 this.path.segments.length > 3 &&
-                touching(this.path.firstSegment.point, event.point, LineMode.SNAP_TOLERANCE)) {
+                touching(this.path.firstSegment.point, endPoint, LineMode.SNAP_TOLERANCE)) {
             this.hitResult = {
                 path: this.path,
                 segment: this.path.firstSegment,
                 isFirst: true
             };
         } else {
-            this.hitResult = endPointHit(event.point, LineMode.SNAP_TOLERANCE, this.path);
+            this.hitResult = endPointHit(endPoint, LineMode.SNAP_TOLERANCE, this.path);
         }
 
-        // snapping
+        // If shift is being held, we shouldn't snap to end points that change the slope by too much.
+        // In that case, clear the hit result.
+        if (this.hitResult && event.modifiers.shift) {
+            const lineToSnap = this.hitResult.segment.point.subtract(this.path.lastSegment.previous.point);
+            const lineToEndPoint = endPoint.subtract(this.path.lastSegment.previous.point);
+            if (lineToSnap.normalize().getDistance(lineToEndPoint.normalize()) > 1e-2) {
+                this.hitResult = null;
+            }
+        }
+
+        // If near another path's endpoint, or this path's beginpoint, clip to it to suggest
+        // joining/closing the paths.
         if (this.hitResult) {
             this.drawHitPoint(this.hitResult);
             this.path.lastSegment.point = this.hitResult.segment.point;
         } else {
-            this.path.lastSegment.point = event.point;
+            this.path.lastSegment.point = endPoint;
         }
     }
     onMouseUp (event) {
