@@ -98,6 +98,20 @@ class PaperCanvas extends React.Component {
             svg = svg.replace(
                 '<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
         }
+
+        // Get the origin which the viewBox is defined relative to. During import, Paper will translate
+        // the viewBox to start at (0, 0), and we need to translate it back for some costumes to render
+        // correctly.
+        const parser = new DOMParser();
+        const svgDom = parser.parseFromString(svg, 'text/xml');
+        const viewBox = svgDom.documentElement.attributes.viewBox ?
+            svgDom.documentElement.attributes.viewBox.value.match(/\S+/g) : null;
+        if (viewBox) {
+            for (let i = 0; i < viewBox.length; i++) {
+                viewBox[i] = parseFloat(viewBox[i]);
+            }
+        }
+
         paper.project.importSVG(svg, {
             expandShapes: true,
             onLoad: function (item) {
@@ -131,8 +145,12 @@ class PaperCanvas extends React.Component {
                 ensureClockwise(item);
 
                 if (typeof rotationCenterX !== 'undefined' && typeof rotationCenterY !== 'undefined') {
+                    let rotationPoint = new paper.Point(rotationCenterX, rotationCenterY);
+                    if (viewBox && viewBox.length >= 2 && !isNaN(viewBox[0]) && !isNaN(viewBox[1])) {
+                        rotationPoint = rotationPoint.subtract(viewBox[0], viewBox[1]);
+                    }
                     item.translate(paper.project.view.center
-                        .subtract(rotationCenterX, rotationCenterY));
+                        .subtract(rotationPoint));
                 } else {
                     // Center
                     item.translate(paper.project.view.center
