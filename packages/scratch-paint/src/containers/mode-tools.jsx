@@ -138,11 +138,9 @@ class ModeTools extends React.Component {
     }
     _handleFlip (horizontalScale, verticalScale) {
         let selectedItems = getSelectedRootItems();
-        let center;
         if (selectedItems.length === 0) {
-            // If nothing is selected, flip everything over the rotation point
+            // If nothing is selected, select everything
             selectedItems = getAllRootItems();
-            center = paper.view.center;
         }
         // Record old indices
         for (const item of selectedItems) {
@@ -152,7 +150,7 @@ class ModeTools extends React.Component {
         // Group items so that they flip as a unit
         const itemGroup = new paper.Group(selectedItems);
         // Flip
-        itemGroup.scale(horizontalScale, verticalScale, center);
+        itemGroup.scale(horizontalScale, verticalScale);
         ensureClockwise(itemGroup);
 
         // Remove flipped item from group and insert at old index. Must insert from bottom index up.
