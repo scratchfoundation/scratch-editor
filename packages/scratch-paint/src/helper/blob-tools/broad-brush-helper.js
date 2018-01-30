@@ -17,10 +17,13 @@ class BroadBrushHelper {
         this.lastPoint = null;
         this.secondLastPoint = null;
         this.finalPath = null;
+        this.smoothed = 0;
+        this.smoothingThreshold = 100;
+        this.smoothingOverlap = 2;
     }
 
     onBroadMouseDown (event, tool, options) {
-        tool.minDistance = options.brushSize / 2;
+        tool.minDistance = Math.max(2, options.brushSize / 2);
         tool.maxDistance = options.brushSize;
         if (event.event.button > 0) return; // only first mouse button
         
@@ -54,12 +57,17 @@ class BroadBrushHelper {
         this.finalPath.add(event.point.add(step));
         this.finalPath.insert(0, bottom);
         this.finalPath.insert(0, event.point.subtract(step));
-        if (this.finalPath.segments.length === 5) {
+        const length = this.finalPath.segments.length;
+        if (length === 5) {
             // Flatten is necessary to prevent smooth from getting rid of the effect
             // of the handles on the first point.
             this.finalPath.flatten(Math.min(5, options.brushSize / 5));
         }
-        this.finalPath.smooth();
+        if (length > this.smoothed + (this.smoothingThreshold * 2)) {
+            this.finalPath.smooth({from: 1, to: Math.min(this.smoothingThreshold, Math.floor((length / 2) - 2))});
+            this.finalPath.smooth({from: Math.max(length - 1 - this.smoothingThreshold, Math.floor(length / 2) + 2), to: length - 2});
+            this.smoothed = length - (this.smoothingOverlap * 2);
+        }
         this.lastPoint = event.point;
         this.secondLastPoint = event.lastPoint;
     }
