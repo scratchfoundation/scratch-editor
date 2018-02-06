@@ -176,6 +176,7 @@ class PaintEditor extends React.Component {
                 this.eyeDropper.pickY,
                 this.eyeDropper.hideLoupe
             );
+            if (!colorInfo) return;
             if (
                 this.state.colorInfo === null ||
                 this.state.colorInfo.x !== colorInfo.x ||

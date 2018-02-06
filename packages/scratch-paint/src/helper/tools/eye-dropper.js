@@ -21,6 +21,23 @@ class EyeDropperTool extends paper.Tool {
         this.pickX = -1;
         this.pickY = -1;
         this.hideLoupe = true;
+
+        /*
+            Chrome 64 has a bug that makes it impossible to use getImageData directly
+            a 2d canvas. Until that is resolved, copy the canvas to a buffer canvas
+            and read the data from there.
+            https://github.com/LLK/scratch-paint/issues/276
+        */
+        this.bufferLoaded = false;
+        this.bufferCanvas = document.createElement('canvas');
+        this.bufferCanvas.width = canvas.width;
+        this.bufferCanvas.height = canvas.height;
+        this.bufferImage = new Image();
+        this.bufferImage.onload = () => {
+            this.bufferCanvas.getContext('2d').drawImage(this.bufferImage, 0, 0);
+            this.bufferLoaded = true;
+        };
+        this.bufferImage.src = canvas.toDataURL();
     }
     handleMouseMove (event) {
         // Set the pickX/Y for the color picker loop to pick up
@@ -36,6 +53,7 @@ class EyeDropperTool extends paper.Tool {
     handleMouseDown () {
         if (!this.hideLoupe) {
             const colorInfo = this.getColorInfo(this.pickX, this.pickY, this.hideLoupe);
+            if (!colorInfo) return;
             const r = colorInfo.color[0];
             const g = colorInfo.color[1];
             const b = colorInfo.color[2];
@@ -50,14 +68,14 @@ class EyeDropperTool extends paper.Tool {
         }
     }
     getColorInfo (x, y, hideLoupe) {
-        const c = this.canvas.getContext('2d');
-        const colors = c.getImageData(x, y, 1, 1);
-
+        if (!this.bufferLoaded) return null;
+        const ctx = this.bufferCanvas.getContext('2d');
+        const colors = ctx.getImageData(x, y, 1, 1);
         return {
             x: x,
             y: y,
             color: colors.data,
-            data: c.getImageData(
+            data: ctx.getImageData(
                 x - LOUPE_RADIUS,
                 y - LOUPE_RADIUS,
                 LOUPE_RADIUS * 2,
