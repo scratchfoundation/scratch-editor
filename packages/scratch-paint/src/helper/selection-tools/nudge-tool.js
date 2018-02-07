@@ -34,8 +34,8 @@ class NudgeTool {
             for (const item of selected) {
                 item.translate(translation);
             }
+            this.boundingBoxTool.setSelectionBounds();
         }
-        this.boundingBoxTool.setSelectionBounds();
     }
     onKeyUp (event) {
         const selected = getSelectedRootItems();
