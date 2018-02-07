@@ -15,6 +15,9 @@ class NudgeTool {
         this.onUpdateSvg = onUpdateSvg;
     }
     onKeyDown (event) {
+        // Bail if the real event target is an input
+        if (event.event.target.tagName === 'INPUT') return;
+
         const nudgeAmount = 1 / paper.view.zoom;
         const selected = getSelectedRootItems();
         if (selected.length === 0) return;
