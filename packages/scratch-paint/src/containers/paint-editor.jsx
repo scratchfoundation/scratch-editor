@@ -75,6 +75,7 @@ class PaintEditor extends React.Component {
         this.props.onUpdateSvg(
             paper.project.exportSVG({
                 asString: true,
+                bounds: 'content',
                 matrix: new paper.Matrix().translate(-bounds.x, -bounds.y)
             }),
             paper.project.view.center.x - bounds.x,
