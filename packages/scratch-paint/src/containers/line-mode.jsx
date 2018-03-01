@@ -112,7 +112,6 @@ class LineMode extends React.Component {
 
             this.path.add(event.point);
             this.path.add(event.point); // Add second point, which is what will move when dragged
-            paper.view.draw();
         }
     }
     drawHitPoint (hitResult) {

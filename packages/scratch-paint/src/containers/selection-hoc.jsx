@@ -13,11 +13,6 @@ const SelectionHOC = function (WrappedComponent) {
                 'removeItemById'
             ]);
         }
-        componentDidMount () {
-            if (this.props.hoveredItemId) {
-                paper.view.update();
-            }
-        }
         componentDidUpdate (prevProps) {
             // Hovered item has changed
             if ((this.props.hoveredItemId && this.props.hoveredItemId !== prevProps.hoveredItemId) ||

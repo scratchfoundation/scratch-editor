@@ -194,7 +194,6 @@ class ModeTools extends React.Component {
             }
             this.props.incrementPasteOffset();
             this.props.setSelectedItems();
-            paper.project.view.update();
             this.props.onUpdateSvg();
         }
     }

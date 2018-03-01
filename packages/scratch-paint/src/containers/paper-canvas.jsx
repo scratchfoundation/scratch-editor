@@ -62,7 +62,6 @@ class PaperCanvas extends React.Component {
             this.importSvg(newProps.svg, newProps.rotationCenterX, newProps.rotationCenterY);
             paper.project.view.zoom = oldZoom;
             paper.project.view.center = oldCenter;
-            paper.project.view.update();
         } else {
             performSnapshot(this.props.undoSnapshot);
         }
@@ -161,7 +160,6 @@ class PaperCanvas extends React.Component {
                 }
 
                 performSnapshot(paperCanvas.props.undoSnapshot);
-                paper.project.view.update();
             }
         });
     }

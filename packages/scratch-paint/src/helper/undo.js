@@ -19,7 +19,6 @@ const _restore = function (entry, setSelectedItems, onUpdateSvg) {
         }
     }
     paper.project.importJSON(entry.json);
-    paper.view.update();
 
     setSelectedItems();
     onUpdateSvg(true /* skipSnapshot */);

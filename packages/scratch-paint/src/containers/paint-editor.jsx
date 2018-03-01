@@ -90,7 +90,6 @@ class PaintEditor extends React.Component {
         // Restore old zoom
         paper.project.view.zoom = oldZoom;
         paper.project.view.center = oldCenter;
-        paper.project.view.update();
     }
     handleUndo () {
         performUndo(this.props.undoState, this.props.onUndo, this.props.setSelectedItems, this.handleUpdateSvg);

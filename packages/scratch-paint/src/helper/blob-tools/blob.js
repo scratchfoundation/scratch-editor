@@ -107,7 +107,6 @@ class Blobbiness {
             }
             blob.cursorPreview.bringToFront();
             blob.cursorPreview.position = event.point;
-            paper.view.draw();
         };
 
         this.tool.onMouseDrag = function (event) {
@@ -123,7 +122,6 @@ class Blobbiness {
 
             blob.cursorPreview.bringToFront();
             blob.cursorPreview.position = event.point;
-            paper.view.draw();
         };
 
         this.tool.onMouseUp = function (event) {
