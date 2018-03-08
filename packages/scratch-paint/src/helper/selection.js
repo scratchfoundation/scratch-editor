@@ -212,6 +212,7 @@ const _removeSelectedSegments = function (items, onUpdateSvg) {
     const segmentsToRemove = [];
     
     for (let i = 0; i < items.length; i++) {
+        if (!items[i].segments) continue;
         const segments = items[i].segments;
         for (let j = 0; j < segments.length; j++) {
             const seg = segments[j];

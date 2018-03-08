@@ -4,6 +4,7 @@ const UNDO = 'scratch-paint/undo/UNDO';
 const REDO = 'scratch-paint/undo/REDO';
 const SNAPSHOT = 'scratch-paint/undo/SNAPSHOT';
 const CLEAR = 'scratch-paint/undo/CLEAR';
+const MAX_STACK_SIZE = 100;
 const initialState = {
     stack: [],
     pointer: -1
@@ -34,6 +35,14 @@ const reducer = function (state, action) {
         if (!action.snapshot) {
             log.warn(`Couldn't create undo snapshot, no data provided`);
             return state;
+        }
+        // Overflowed or about to overflow
+        if (state.pointer >= MAX_STACK_SIZE - 1) {
+            return {
+                // Make a stack of size MAX_STACK_SIZE, cutting off the oldest snapshots.
+                stack: state.stack.slice(state.pointer - MAX_STACK_SIZE + 2, state.pointer + 1).concat(action.snapshot),
+                pointer: MAX_STACK_SIZE - 1
+            };
         }
         return {
             // Performing an action clears the redo stack
@@ -75,5 +84,6 @@ export {
     undo,
     redo,
     undoSnapshot,
-    clearUndoState
+    clearUndoState,
+    MAX_STACK_SIZE
 };

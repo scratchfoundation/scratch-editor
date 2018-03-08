@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import undoReducer from '../../src/reducers/undo';
-import {undoSnapshot, undo, redo, clearUndoState} from '../../src/reducers/undo';
+import {undoSnapshot, undo, redo, clearUndoState, MAX_STACK_SIZE} from '../../src/reducers/undo';
 
 test('initialState', () => {
     let defaultState;
@@ -138,4 +138,76 @@ test('undoSnapshotCantRedo', () => {
     expect(newReduxState.stack).toHaveLength(reduxState.stack.length);
     expect(newReduxState.stack[0]).toEqual(reduxState.stack[0]);
     expect(newReduxState.stack[1]).toEqual(state3);
+});
+
+test('snapshotAtMaxStackSize', () => {
+    let defaultState;
+    const getState = function (num) {
+        return {state: num};
+    };
+    // Push MAX_STACK_SIZE states
+    let num = 1;
+    let reduxState = undoReducer(defaultState /* state */, undoSnapshot([getState(num)]) /* action */);
+    for (num = 2; num <= MAX_STACK_SIZE; num++) {
+        reduxState = undoReducer(reduxState /* state */, undoSnapshot([getState(num)]) /* action */);
+    }
+
+    expect(reduxState.pointer).toEqual(MAX_STACK_SIZE - 1);
+    expect(reduxState.stack).toHaveLength(MAX_STACK_SIZE);
+    expect(reduxState.stack[0].state).toEqual(1);
+
+    // Push one more
+    reduxState = undoReducer(reduxState /* state */, undoSnapshot([getState(num)]) /* action */);
+
+    // Stack size stays the same
+    expect(reduxState.pointer).toEqual(MAX_STACK_SIZE - 1);
+    expect(reduxState.stack).toHaveLength(MAX_STACK_SIZE);
+    expect(reduxState.stack[0].state).toEqual(2); // State 1 was cut off
+    expect(reduxState.stack[MAX_STACK_SIZE - 1].state).toEqual(MAX_STACK_SIZE + 1); // Newest added state is at end
+});
+
+test('undoRedoAtMaxStackSize', () => {
+    let defaultState;
+    const getState = function (num) {
+        return {state: num};
+    };
+    // Push MAX_STACK_SIZE states
+    let num = 1;
+    let reduxState = undoReducer(defaultState /* state */, undoSnapshot([getState(num)]) /* action */);
+    for (num = 2; num <= MAX_STACK_SIZE; num++) {
+        reduxState = undoReducer(reduxState /* state */, undoSnapshot([getState(num)]) /* action */);
+    }
+
+    // Undo twice and redo
+    reduxState = undoReducer(reduxState /* state */, undo() /* action */);
+    reduxState = undoReducer(reduxState /* state */, undo() /* action */);
+    reduxState = undoReducer(reduxState /* state */, redo() /* action */);
+
+    expect(reduxState.pointer).toEqual(MAX_STACK_SIZE - 2);
+    expect(reduxState.stack).toHaveLength(MAX_STACK_SIZE);
+    expect(reduxState.stack[0].state).toEqual(1);
+});
+
+test('undoSnapshotAtMaxStackSize', () => {
+    let defaultState;
+    const getState = function (num) {
+        return {state: num};
+    };
+    // Push MAX_STACK_SIZE states
+    let num = 1;
+    let reduxState = undoReducer(defaultState /* state */, undoSnapshot([getState(num)]) /* action */);
+    for (num = 2; num <= MAX_STACK_SIZE; num++) {
+        reduxState = undoReducer(reduxState /* state */, undoSnapshot([getState(num)]) /* action */);
+    }
+
+    // Undo twice and then take a snapshot
+    reduxState = undoReducer(reduxState /* state */, undo() /* action */);
+    reduxState = undoReducer(reduxState /* state */, undo() /* action */);
+    reduxState = undoReducer(reduxState /* state */, undoSnapshot([getState(num)]) /* action */);
+
+    expect(reduxState.pointer).toEqual(MAX_STACK_SIZE - 2);
+    expect(reduxState.stack).toHaveLength(MAX_STACK_SIZE - 1);
+    expect(reduxState.stack[0].state).toEqual(1);
+    expect(reduxState.stack[MAX_STACK_SIZE - 2].state).toEqual(MAX_STACK_SIZE + 1); // Newest added state is at end
+    expect(reduxState.stack[MAX_STACK_SIZE - 3].state).toEqual(MAX_STACK_SIZE - 2); // Old redo state is gone
 });
