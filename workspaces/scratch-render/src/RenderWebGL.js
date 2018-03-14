@@ -441,6 +441,39 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Get the precise bounds for a Drawable around the top slice.
+     * Used for positioning speech bubbles more closely to the sprite.
+     * @param {int} drawableID ID of Drawable to get bubble bounds for.
+     * @return {object} Bounds for a tight box around the Drawable top slice.
+     */
+    getBoundsForBubble (drawableID) {
+        const drawable = this._allDrawables[drawableID];
+        // Tell the Drawable about its updated convex hull, if necessary.
+        if (drawable.needsConvexHullPoints()) {
+            const points = this._getConvexHullPointsForDrawable(drawableID);
+            drawable.setConvexHullPoints(points);
+        }
+        const bounds = drawable.getBoundsForBubble();
+        // In debug mode, draw the bounds.
+        if (this._debugCanvas) {
+            const gl = this._gl;
+            this._debugCanvas.width = gl.canvas.width;
+            this._debugCanvas.height = gl.canvas.height;
+            const context = this._debugCanvas.getContext('2d');
+            context.drawImage(gl.canvas, 0, 0);
+            context.strokeStyle = '#FF0000';
+            const pr = window.devicePixelRatio;
+            context.strokeRect(
+                pr * (bounds.left + (this._nativeSize[0] / 2)),
+                pr * (-bounds.top + (this._nativeSize[1] / 2)),
+                pr * (bounds.right - bounds.left),
+                pr * (-bounds.bottom + bounds.top)
+            );
+        }
+        return bounds;
+    }
+
+    /**
      * Get the current skin (costume) size of a Drawable.
      * @param {int} drawableID The ID of the Drawable to measure.
      * @return {Array<number>} Skin size, width and height.
