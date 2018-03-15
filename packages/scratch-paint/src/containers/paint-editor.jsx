@@ -50,6 +50,10 @@ class PaintEditor extends React.Component {
     }
     componentDidMount () {
         document.addEventListener('keydown', this.props.onKeyPress);
+        // document listeners used to detect if a mouse is down outside of the
+        // canvas, and should therefore stop the eye dropper
+        document.addEventListener('mousedown', this.onMouseDown);
+        document.addEventListener('touchstart', this.onMouseDown);
     }
     componentDidUpdate (prevProps) {
         if (this.props.isEyeDropping && !prevProps.isEyeDropping) {
@@ -61,6 +65,8 @@ class PaintEditor extends React.Component {
     componentWillUnmount () {
         document.removeEventListener('keydown', this.props.onKeyPress);
         this.stopEyeDroppingLoop();
+        document.removeEventListener('mousedown', this.onMouseDown);
+        document.removeEventListener('touchstart', this.onMouseDown);
     }
     handleUpdateSvg (skipSnapshot) {
         // Store the zoom/pan and restore it after snapshotting
@@ -135,6 +141,10 @@ class PaintEditor extends React.Component {
         this.canvas = canvas;
     }
     onMouseDown () {
+        if (document.activeElement instanceof HTMLInputElement) {
+            document.activeElement.blur();
+        }
+
         if (this.props.isEyeDropping) {
             const colorString = this.eyeDropper.colorString;
             const callback = this.props.changeColorToEyeDropper;
@@ -164,11 +174,6 @@ class PaintEditor extends React.Component {
         this.eyeDropper.pickX = -1;
         this.eyeDropper.pickY = -1;
         this.eyeDropper.activate();
-
-        // document listeners used to detect if a mouse is down outside of the
-        // canvas, and should therefore stop the eye dropper
-        document.addEventListener('mousedown', this.onMouseDown);
-        document.addEventListener('touchstart', this.onMouseDown);
         
         this.intervalId = setInterval(() => {
             const colorInfo = this.eyeDropper.getColorInfo(
@@ -190,8 +195,6 @@ class PaintEditor extends React.Component {
     }
     stopEyeDroppingLoop () {
         clearInterval(this.intervalId);
-        document.removeEventListener('mousedown', this.onMouseDown);
-        document.removeEventListener('touchstart', this.onMouseDown);
     }
     render () {
         return (

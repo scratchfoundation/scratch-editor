@@ -232,6 +232,11 @@ class ReshapeTool extends paper.Tool {
         this.active = false;
     }
     handleKeyDown (event) {
+        if (event.event.target instanceof HTMLInputElement) {
+            // Ignore nudge if a text input field is focused
+            return;
+        }
+
         const nudgeAmount = 1 / paper.view.zoom;
         const selected = getSelectedLeafItems();
         if (selected.length === 0) return;
