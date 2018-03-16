@@ -82,17 +82,17 @@ const sortItemsByZIndex = function (a, b) {
     return null;
 };
 
-// Expand the size of the path by approx one pixel all around
-const expandByOne = function (path) {
+// Expand the size of the path by amount all around
+const expandBy = function (path, amount) {
     const center = path.position;
     let pathArea = path.area;
     for (const seg of path.segments) {
-        const halfNorm = seg.point.subtract(center)
+        const delta = seg.point.subtract(center)
             .normalize()
-            .divide(2);
-        seg.point = seg.point.add(halfNorm);
+            .multiply(amount);
+        seg.point = seg.point.add(delta);
         // If that made the path area smaller, go the other way.
-        if (path.area < pathArea) seg.point = seg.point.subtract(halfNorm.multiply(2));
+        if (path.area < pathArea) seg.point = seg.point.subtract(delta.multiply(2));
         pathArea = path.area;
     }
 };
@@ -112,7 +112,7 @@ export {
     HANDLE_RATIO,
     checkPointsClose,
     ensureClockwise,
-    expandByOne,
+    expandBy,
     getRandomInt,
     getRandomBoolean,
     snapDeltaToAngle,
