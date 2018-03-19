@@ -104,7 +104,7 @@ class FillTool extends paper.Tool {
                 this.addedFillItem.data.origItem = hitItem;
                 // This usually fixes it so there isn't a teeny tiny gap in between the fill and the outline
                 // when filling in a hole
-                expandBy(this.addedFillItem, .5);
+                expandBy(this.addedFillItem, .1);
                 this.addedFillItem.insertAbove(hitItem.parent);
             } else if (this.fillItem.parent instanceof paper.CompoundPath) {
                 this.fillItemOrigColor = hitItem.parent.fillColor;

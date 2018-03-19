@@ -87,12 +87,12 @@ const expandBy = function (path, amount) {
     const center = path.position;
     let pathArea = path.area;
     for (const seg of path.segments) {
-        const halfDelta = seg.point.subtract(center)
+        const delta = seg.point.subtract(center)
             .normalize()
             .multiply(amount);
-        seg.point = seg.point.add(halfDelta);
+        seg.point = seg.point.add(delta);
         // If that made the path area smaller, go the other way.
-        if (path.area < pathArea) seg.point = seg.point.subtract(halfDelta.multiply(2));
+        if (path.area < pathArea) seg.point = seg.point.subtract(delta.multiply(2));
         pathArea = path.area;
     }
 };
