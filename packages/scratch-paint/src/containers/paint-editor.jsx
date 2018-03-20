@@ -140,8 +140,9 @@ class PaintEditor extends React.Component {
         this.setState({canvas: canvas});
         this.canvas = canvas;
     }
-    onMouseDown () {
-        if (document.activeElement instanceof HTMLInputElement) {
+    onMouseDown (event) {
+        if (event.target === paper.view.element &&
+                document.activeElement instanceof HTMLInputElement) {
             document.activeElement.blur();
         }
 
