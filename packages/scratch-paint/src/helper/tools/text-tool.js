@@ -236,30 +236,26 @@ class TextTool extends paper.Tool {
         this.element.style.height = `${this.textBox.internalBounds.height}px`;
     }
     /**
-     * @param {?string} initialText Text to initialize the text area with
-     * @param {?paper.Matrix} matrix Transform matrix for the element. Defaults
+     * @param {string} initialText Text to initialize the text area with
+     * @param {paper.Matrix} matrix Transform matrix for the element. Defaults
      *     to the identity matrix.
      */
     beginTextEdit (initialText, matrix) {
         this.mode = TextTool.TEXT_EDIT_MODE;
         this.setTextEditTarget(this.textBox.id);
 
-        // TODO text not positioned correctly when zoomed in
-        // TODO undo states
+        const viewMtx = paper.view.matrix;
 
         this.element.style.display = 'initial';
         this.element.value = initialText ? initialText : '';
-        if (matrix) {
-            this.element.style.transformOrigin =
-                `${-this.textBox.internalBounds.x}px ${-this.textBox.internalBounds.y}px`;
-            this.element.style.transform =
-                `translate(0px, ${this.textBox.internalBounds.y}px)
-                matrix(${matrix.a}, ${matrix.b}, ${matrix.c}, ${matrix.d},
-                ${matrix.tx}, ${matrix.ty})`;
-        } else {
-            this.element.style.transform =
-                `translate(0px, ${this.textBox.internalBounds.y}px)`;
-        }
+        this.element.style.transformOrigin =
+            `${-this.textBox.internalBounds.x}px ${-this.textBox.internalBounds.y}px`;
+        this.element.style.transform =
+            `translate(0px, ${this.textBox.internalBounds.y}px)
+            matrix(${viewMtx.a}, ${viewMtx.b}, ${viewMtx.c}, ${viewMtx.d},
+            ${viewMtx.tx}, ${viewMtx.ty})
+            matrix(${matrix.a}, ${matrix.b}, ${matrix.c}, ${matrix.d},
+            ${matrix.tx}, ${matrix.ty})`;
         this.element.focus({preventScroll: true});
         this.eventListener = this.handleTextInput.bind(this);
         this.element.addEventListener('input', this.eventListener);
