@@ -428,26 +428,32 @@ class Drawable {
         if (this._transformDirty) {
             this._calculateTransform();
         }
-        // First, transform all the convex hull points by the current Drawable's
-        // transform. This allows us to skip recalculating the convex hull
-        // for many Drawable updates, including translation, rotation, scaling.
-        const projection = twgl.m4.ortho(-1, 1, -1, 1, -1, 1);
-        const skinSize = this.skin.size;
-        const tm = twgl.m4.multiply(this._uniforms.u_modelMatrix, projection);
-        const transformedHullPoints = [];
-        for (let i = 0; i < this._convexHullPoints.length; i++) {
-            const point = this._convexHullPoints[i];
-            const glPoint = twgl.v3.create(
-                0.5 + (-point[0] / skinSize[0]),
-                0.5 + (-point[1] / skinSize[1]),
-                0
-            );
-            twgl.m4.transformPoint(tm, glPoint, glPoint);
-            transformedHullPoints.push(glPoint);
-        }
+        const transformedHullPoints = this._getTransformedHullPoints();
         // Search through transformed points to generate box on axes.
         const bounds = new Rectangle();
         bounds.initFromPointsAABB(transformedHullPoints);
+        return bounds;
+    }
+    /**
+     * Get the precise bounds for the upper 8px slice of the Drawable.
+     * Used for calculating where to position a text bubble.
+     * Before calling this, ensure the renderer has updated convex hull points.
+     * @return {!Rectangle} Bounds for a tight box around a slice of the Drawable.
+     */
+    getBoundsForBubble () {
+        if (this.needsConvexHullPoints()) {
+            throw new Error('Needs updated convex hull points before bubble bounds calculation.');
+        }
+        if (this._transformDirty) {
+            this._calculateTransform();
+        }
+        const slice = 8; // px, how tall the top slice to measure should be.
+        const transformedHullPoints = this._getTransformedHullPoints();
+        const maxY = Math.max.apply(null, transformedHullPoints.map(p => p[1]));
+        const filteredHullPoints = transformedHullPoints.filter(p => p[1] > maxY - slice);
+        // Search through filtered points to generate box on axes.
+        const bounds = new Rectangle();
+        bounds.initFromPointsAABB(filteredHullPoints);
         return bounds;
     }
 
@@ -486,6 +492,31 @@ class Drawable {
             return this.getBounds();
         }
         return this.getAABB();
+    }
+
+    /**
+     * Transform all the convex hull points by the current Drawable's
+     * transform. This allows us to skip recalculating the convex hull
+     * for many Drawable updates, including translation, rotation, scaling.
+     * @return {!Array.<!Array.number>} Array of glPoints which are Array<x, y>
+     * @private
+     */
+    _getTransformedHullPoints () {
+        const projection = twgl.m4.ortho(-1, 1, -1, 1, -1, 1);
+        const skinSize = this.skin.size;
+        const tm = twgl.m4.multiply(this._uniforms.u_modelMatrix, projection);
+        const transformedHullPoints = [];
+        for (let i = 0; i < this._convexHullPoints.length; i++) {
+            const point = this._convexHullPoints[i];
+            const glPoint = twgl.v3.create(
+                0.5 + (-point[0] / skinSize[0]),
+                (point[1] / skinSize[1]) - 0.5,
+                0
+            );
+            twgl.m4.transformPoint(tm, glPoint, glPoint);
+            transformedHullPoints.push(glPoint);
+        }
+        return transformedHullPoints;
     }
 
     /**
