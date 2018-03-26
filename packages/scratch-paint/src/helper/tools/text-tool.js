@@ -139,6 +139,8 @@ class TextTool extends paper.Tool {
         if (event.event.button > 0) return; // only first mouse button
         this.active = true;
 
+        const lastMode = this.mode;
+
         // Check if double clicked
         let doubleClicked = false;
         if (this.lastEvent) {
@@ -165,7 +167,6 @@ class TextTool extends paper.Tool {
             return;
         }
 
-        const lastMode = this.mode;
         // We clicked away from the item, so end the current mode
         if (lastMode === TextTool.SELECT_MODE) {
             clearSelection(this.clearSelectedItems);
@@ -177,6 +178,7 @@ class TextTool extends paper.Tool {
         const hitResults = paper.project.hitTestAll(event.point, this.getTextEditHitOptions());
         if (hitResults.length) {
             // Clicking a different text item to begin text edit mode on that item
+            clearSelection(this.clearSelectedItems);
             this.textBox = hitResults[0].item;
             this.beginTextEdit(this.textBox.content, this.textBox.matrix);
         } else if (lastMode === TextTool.TEXT_EDIT_MODE) {
