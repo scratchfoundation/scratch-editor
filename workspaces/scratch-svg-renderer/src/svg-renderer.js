@@ -148,8 +148,9 @@ class SvgRenderer {
             const font = textElement.getAttribute('font-family');
             fontsNeeded[font] = true;
             // Fix line breaks in text, which are not natively supported by SVG.
+            // Only fix if text does not have child tspans.
             let text = textElement.textContent;
-            if (text) {
+            if (text && textElement.childElementCount === 0) {
                 textElement.textContent = '';
                 const lines = text.split('\n');
                 text = '';
