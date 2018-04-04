@@ -2,6 +2,7 @@
 import paper from '@scratch/paper';
 import {styleBlob} from '../../helper/style-path';
 import log from '../../log/log';
+import {getRaster} from '../../helper/layer';
 
 /**
  * Broad brush functions to add as listeners on the mouse. Call them when the corresponding mouse event happens
@@ -44,6 +45,7 @@ class BroadBrushHelper {
         });
         styleBlob(this.finalPath, options);
         this.lastPoint = event.point;
+        getRaster().setPixel(event.point, 'blue');
     }
     
     onBroadMouseDrag (event, tool, options) {
