@@ -4,6 +4,7 @@ import brushModeReducer from './brush-mode';
 import eraserModeReducer from './eraser-mode';
 import colorReducer from './color';
 import clipboardReducer from './clipboard';
+import formatReducer from './format';
 import hoverReducer from './hover';
 import modalsReducer from './modals';
 import selectedItemReducer from './selected-items';
@@ -17,6 +18,7 @@ export default combineReducers({
     color: colorReducer,
     clipboard: clipboardReducer,
     eraserMode: eraserModeReducer,
+    format: formatReducer,
     hoveredItemId: hoverReducer,
     modals: modalsReducer,
     selectedItems: selectedItemReducer,
