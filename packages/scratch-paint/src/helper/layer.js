@@ -74,7 +74,7 @@ const _makePaintingLayer = function () {
 const _makeBackgroundPaper = function (width, height, color) {
     let x = 0;
     let y = 0;
-    let pathPoints = [];
+    const pathPoints = [];
     while (x < width) {
         pathPoints.push(new paper.Point(x, y));
         x++;
