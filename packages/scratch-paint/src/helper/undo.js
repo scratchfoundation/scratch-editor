@@ -1,7 +1,7 @@
 // undo functionality
 // modifed from https://github.com/memononen/stylii
 import paper from '@scratch/paper';
-import {hideGuideLayers, showGuideLayers} from '../helper/layer';
+import {hideGuideLayers, showGuideLayers, getRaster} from '../helper/layer';
 
 const performSnapshot = function (dispatchPerformSnapshot) {
     const guideLayers = hideGuideLayers();
@@ -12,7 +12,8 @@ const performSnapshot = function (dispatchPerformSnapshot) {
 };
 
 const _restore = function (entry, setSelectedItems, onUpdateSvg) {
-    for (const layer of paper.project.layers) {
+    for (let i = paper.project.layers.length - 1; i >= 0; i--) {
+        const layer = paper.project.layers[i];
         if (!layer.data.isBackgroundGuideLayer) {
             layer.removeChildren();
             layer.remove();
@@ -21,7 +22,12 @@ const _restore = function (entry, setSelectedItems, onUpdateSvg) {
     paper.project.importJSON(entry.json);
 
     setSelectedItems();
-    onUpdateSvg(true /* skipSnapshot */);
+    getRaster().onLoad = function () {
+        onUpdateSvg(true /* skipSnapshot */);
+    };
+    if (getRaster().loaded) {
+        getRaster().onLoad();
+    }
 };
 
 const performUndo = function (undoState, dispatchPerformUndo, setSelectedItems, onUpdateSvg) {

@@ -1,5 +1,6 @@
 import paper from '@scratch/paper';
 import PropTypes from 'prop-types';
+
 import React from 'react';
 import PaintEditorComponent from '../components/paint-editor/paint-editor.jsx';
 
@@ -11,7 +12,8 @@ import {deactivateEyeDropper} from '../reducers/eye-dropper';
 import {setTextEditTarget} from '../reducers/text-edit-target';
 import {updateViewBounds} from '../reducers/view-bounds';
 
-import {hideGuideLayers, showGuideLayers} from '../helper/layer';
+import {getRaster, hideGuideLayers, showGuideLayers} from '../helper/layer';
+import {trim} from '../helper/bitmap';
 import {performUndo, performRedo, performSnapshot, shouldShowUndo, shouldShowRedo} from '../helper/undo';
 import {bringToFront, sendBackward, sendToBack, bringForward} from '../helper/order';
 import {groupSelection, ungroupSelection} from '../helper/group';
@@ -90,9 +92,20 @@ class PaintEditor extends React.Component {
         const oldCenter = paper.project.view.center.clone();
         resetZoom();
 
-        const guideLayers = hideGuideLayers();
-
+        let raster;
+        if (this.props.format === Formats.BITMAP) {
+            // @todo export bitmap here
+            raster = trim(getRaster());
+            if (raster.width === 0 || raster.height === 0) {
+                raster.remove();
+            } else {
+                paper.project.activeLayer.addChild(raster);
+            }
+        }
+        
+        const guideLayers = hideGuideLayers(true /* includeRaster */);
         const bounds = paper.project.activeLayer.bounds;
+
         this.props.onUpdateSvg(
             paper.project.exportSVG({
                 asString: true,
@@ -107,6 +120,8 @@ class PaintEditor extends React.Component {
         if (!skipSnapshot) {
             performSnapshot(this.props.undoSnapshot);
         }
+
+        if (raster) raster.remove();
 
         // Restore old zoom
         paper.project.view.zoom = oldZoom;

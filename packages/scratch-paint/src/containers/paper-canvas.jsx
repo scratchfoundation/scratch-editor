@@ -79,15 +79,17 @@ class PaperCanvas extends React.Component {
         }
     }
     convertToBitmap () {
+        this.props.clearSelectedItems();
         const raster = paper.project.activeLayer.rasterize(72, false /* insert */);
         raster.onLoad = function () {
             const subCanvas = raster.canvas;
             getRaster().drawImage(subCanvas, raster.bounds.topLeft);
-        };
-        paper.project.activeLayer.removeChildren();
-        performSnapshot(this.props.undoSnapshot);
+            paper.project.activeLayer.removeChildren();
+            this.props.onUpdateSvg();
+        }.bind(this);
     }
     convertToVector () {
+        this.props.clearSelectedItems();
         const raster = trim(getRaster());
         if (raster.width === 0 || raster.height === 0) {
             raster.remove();
@@ -95,7 +97,7 @@ class PaperCanvas extends React.Component {
             paper.project.activeLayer.addChild(raster);
         }
         clearRaster();
-        performSnapshot(this.props.undoSnapshot);
+        this.props.onUpdateSvg();
     }
     switchCostume (svg, rotationCenterX, rotationCenterY) {
         for (const layer of paper.project.layers) {

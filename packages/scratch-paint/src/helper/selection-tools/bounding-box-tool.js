@@ -54,7 +54,7 @@ class BoundingBoxTool {
      * @param {Array<paper.Item>} selectedItems Array of selected items.
      */
     onSelectionChanged (selectedItems) {
-        if (selectedItems) {
+        if (selectedItems && selectedItems.length) {
             this.setSelectionBounds();
         } else {
             this.removeBoundsPath();

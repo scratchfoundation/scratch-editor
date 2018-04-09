@@ -9,7 +9,6 @@ const _getLayer = function (layerString) {
             return layer;
         }
     }
-    log.error(`Didn't find layer ${layerString}`);
 };
 
 const _getPaintingLayer = function () {
@@ -36,22 +35,40 @@ const _getBackgroundGuideLayer = function () {
     return _getLayer('isBackgroundGuideLayer');
 };
 
+const _makeGuideLayer = function () {
+    const guideLayer = new paper.Layer();
+    guideLayer.data.isGuideLayer = true;
+    return guideLayer;
+};
+
 const getGuideLayer = function () {
-    return _getLayer('isGuideLayer');
+    let layer = _getLayer('isGuideLayer');
+    if (!layer) {
+        layer = _makeGuideLayer();
+        _getPaintingLayer().activate();
+    }
+    return layer;
 };
 
 /**
  * Removes the guide layers, e.g. for purposes of exporting the image. Must call showGuideLayers to re-add them.
+ * @param {boolean} includeRaster true if the raster layer should also be hidden
  * @return {object} an object of the removed layers, which should be passed to showGuideLayers to re-add them.
  */
-const hideGuideLayers = function () {
+const hideGuideLayers = function (includeRaster) {
     const backgroundGuideLayer = _getBackgroundGuideLayer();
     const guideLayer = getGuideLayer();
     guideLayer.remove();
     backgroundGuideLayer.remove();
+    let rasterLayer;
+    if (includeRaster) {
+        rasterLayer = _getLayer('isRasterLayer');
+        rasterLayer.remove();
+    }
     return {
         guideLayer: guideLayer,
-        backgroundGuideLayer: backgroundGuideLayer
+        backgroundGuideLayer: backgroundGuideLayer,
+        rasterLayer: rasterLayer
     };
 };
 
@@ -63,6 +80,11 @@ const hideGuideLayers = function () {
 const showGuideLayers = function (guideLayers) {
     const backgroundGuideLayer = guideLayers.backgroundGuideLayer;
     const guideLayer = guideLayers.guideLayer;
+    const rasterLayer = guideLayers.rasterLayer;
+    if (rasterLayer && !rasterLayer.index) {
+        paper.project.addLayer(rasterLayer);
+        rasterLayer.sendToBack();
+    }
     if (!backgroundGuideLayer.index) {
         paper.project.addLayer(backgroundGuideLayer);
         backgroundGuideLayer.sendToBack();
@@ -75,12 +97,6 @@ const showGuideLayers = function (guideLayers) {
         log.error(`Wrong active layer`);
         log.error(paper.project.activeLayer.data);
     }
-};
-
-const _makeGuideLayer = function () {
-    const guideLayer = new paper.Layer();
-    guideLayer.data.isGuideLayer = true;
-    return guideLayer;
 };
 
 const _makePaintingLayer = function () {
