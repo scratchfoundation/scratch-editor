@@ -141,9 +141,10 @@ class Blobbiness {
                 blob.mergeBrush(lastPath);
             }
 
+            // Remove cursor preview during snapshot, then bring it back
             blob.cursorPreview.remove();
-            blob.cursorPreview = null;
             blob.onUpdateSvg();
+            blob.cursorPreview.parent = getGuideLayer();
 
             // Reset
             blob.brush = null;

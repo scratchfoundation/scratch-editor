@@ -225,6 +225,11 @@ class TextTool extends paper.Tool {
         this.active = false;
     }
     handleKeyUp (event) {
+        if (event.event.target instanceof HTMLInputElement) {
+            // Ignore nudge if a text input field is focused
+            return;
+        }
+
         if (this.mode === TextTool.SELECT_MODE) {
             this.nudgeTool.onKeyUp(event);
         }
@@ -236,7 +241,7 @@ class TextTool extends paper.Tool {
         }
         
         if (this.mode === TextTool.SELECT_MODE) {
-            this.nudgeTool.onKeyUp(event);
+            this.nudgeTool.onKeyDown(event);
         }
     }
     handleTextInput (event) {
