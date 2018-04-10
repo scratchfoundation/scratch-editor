@@ -115,7 +115,7 @@ class PaperCanvas extends React.Component {
         this.props.clearHoveredItem();
         this.props.clearPasteOffset();
         if (svg) {
-            this.props.changeFormat(Formats.VECTOR);
+            this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
             // Store the zoom/pan and restore it after importing a new SVG
             const oldZoom = paper.project.view.zoom;
             const oldCenter = paper.project.view.center.clone();

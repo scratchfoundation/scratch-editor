@@ -43,8 +43,8 @@ const performUndo = function (undoState, dispatchPerformUndo, setSelectedItems, 
     if (undoState.pointer > 0) {
         const state = undoState.stack[undoState.pointer - 1];
         _restore(state, setSelectedItems, onUpdateSvg);
-        const format = isVector(state.paintEditorFormat) ? Formats.UNDO_VECTOR :
-            isBitmap(state.paintEditorFormat) ? Formats.UNDO_BITMAP : null;
+        const format = isVector(state.paintEditorFormat) ? Formats.VECTOR_SKIP_CONVERT :
+            isBitmap(state.paintEditorFormat) ? Formats.BITMAP_SKIP_CONVERT : null;
         if (!format) {
             log.error(`Invalid format: ${state.paintEditorFormat}`);
         }
@@ -57,8 +57,8 @@ const performRedo = function (undoState, dispatchPerformRedo, setSelectedItems, 
     if (undoState.pointer >= 0 && undoState.pointer < undoState.stack.length - 1) {
         const state = undoState.stack[undoState.pointer + 1];
         _restore(state, setSelectedItems, onUpdateSvg);
-        const format = isVector(state.paintEditorFormat) ? Formats.UNDO_VECTOR :
-            isBitmap(state.paintEditorFormat) ? Formats.UNDO_BITMAP : null;
+        const format = isVector(state.paintEditorFormat) ? Formats.VECTOR_SKIP_CONVERT :
+            isBitmap(state.paintEditorFormat) ? Formats.BITMAP_SKIP_CONVERT : null;
         if (!format) {
             log.error(`Invalid format: ${state.paintEditorFormat}`);
         }
