@@ -22,10 +22,10 @@ test('undoRedoChangeFormat', () => {
     let defaultState;
     let reduxState = reducer(defaultState /* state */, changeFormat(Formats.BITMAP) /* action */);
     expect(reduxState).toBe(Formats.BITMAP);
-    reduxState = reducer(reduxState /* state */, undo(Formats.UNDO_BITMAP) /* action */);
-    expect(reduxState).toBe(Formats.UNDO_BITMAP);
-    reduxState = reducer(reduxState /* state */, redo(Formats.UNDO_VECTOR) /* action */);
-    expect(reduxState).toBe(Formats.UNDO_VECTOR);
+    reduxState = reducer(reduxState /* state */, undo(Formats.BITMAP_SKIP_CONVERT) /* action */);
+    expect(reduxState).toBe(Formats.BITMAP_SKIP_CONVERT);
+    reduxState = reducer(reduxState /* state */, redo(Formats.VECTOR_SKIP_CONVERT) /* action */);
+    expect(reduxState).toBe(Formats.VECTOR_SKIP_CONVERT);
 });
 
 test('invalidChangeMode', () => {

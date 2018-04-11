@@ -44,8 +44,13 @@ class FillTool extends paper.Tool {
             fill: true,
             guide: false,
             match: function (hitResult) {
-                return (hitResult.item instanceof paper.Path || hitResult.item instanceof paper.PointText) &&
-                    (hitResult.item.hasFill() || hitResult.item.closed || isAlmostClosedPath(hitResult.item));
+                if (hitResult.item instanceof paper.Path &&
+                    (hitResult.item.hasFill() || hitResult.item.closed || isAlmostClosedPath(hitResult.item))) {
+                    return true;
+                }
+                if (hitResult.item instanceof paper.PointText) {
+                    return true;
+                }
             },
             hitUnfilledPaths: true,
             tolerance: FillTool.TOLERANCE / paper.view.zoom

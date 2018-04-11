@@ -1,5 +1,4 @@
 import paper from '@scratch/paper';
-import canvasBg from './background.png';
 import rasterSrc from './transparent.png';
 import log from '../log/log';
 
@@ -112,19 +111,47 @@ const _makeRasterLayer = function () {
     return rasterLayer;
 };
 
+const _makeBackgroundPaper = function (width, height, color) {
+    // creates a checkerboard path of width * height squares in color on white
+    let x = 0;
+    let y = 0;
+    const pathPoints = [];
+    while (x < width) {
+        pathPoints.push(new paper.Point(x, y));
+        x++;
+        pathPoints.push(new paper.Point(x, y));
+        y = y === 0 ? height : 0;
+    }
+    y = height - 1;
+    x = width;
+    while (y > 0) {
+        pathPoints.push(new paper.Point(x, y));
+        x = (x === 0 ? width : 0);
+        pathPoints.push(new paper.Point(x, y));
+        y--;
+    }
+    const vRect = new paper.Shape.Rectangle(new paper.Point(0, 0), new paper.Point(120, 90));
+    vRect.fillColor = '#fff';
+    vRect.guide = true;
+    vRect.locked = true;
+    const vPath = new paper.Path(pathPoints);
+    vPath.fillRule = 'evenodd';
+    vPath.fillColor = color;
+    vPath.guide = true;
+    vPath.locked = true;
+    const vGroup = new paper.Group([vRect, vPath]);
+    return vGroup;
+};
+
 const _makeBackgroundGuideLayer = function () {
     const guideLayer = new paper.Layer();
     guideLayer.locked = true;
-    const img = new Image();
-    img.src = canvasBg;
-    img.onload = () => {
-        const raster = new paper.Raster(img);
-        raster.parent = guideLayer;
-        raster.guide = true;
-        raster.locked = true;
-        raster.position = paper.view.center;
-        raster.sendToBack();
-    };
+
+    const vBackground = _makeBackgroundPaper(120, 90, '#E5E5E5');
+    vBackground.position = paper.view.center;
+    vBackground.scaling = new paper.Point(4, 4);
+    vBackground.guide = true;
+    vBackground.locked = true;
 
     const vLine = new paper.Path.Line(new paper.Point(0, -7), new paper.Point(0, 7));
     vLine.strokeWidth = 2;
