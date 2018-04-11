@@ -478,9 +478,19 @@ class RenderWebGL extends EventEmitter {
      * @param {int} drawableID The ID of the Drawable to measure.
      * @return {Array<number>} Skin size, width and height.
      */
-    getSkinSize (drawableID) {
+    getCurrentSkinSize (drawableID) {
         const drawable = this._allDrawables[drawableID];
-        return drawable.skin.size;
+        return this.getSkinSize(drawable.skin.id);
+    }
+
+    /**
+     * Get the size of a skin by ID.
+     * @param {int} skinID The ID of the Skin to measure.
+     * @return {Array<number>} Skin size, width and height.
+     */
+    getSkinSize (skinID) {
+        const skin = this._allSkins[skinID];
+        return skin.size;
     }
 
     /**
