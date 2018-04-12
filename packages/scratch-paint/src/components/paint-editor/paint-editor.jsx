@@ -310,34 +310,56 @@ const PaintEditorComponent = props => {
                     </div>
 
                     {/* Second Row */}
-                    <div className={styles.row}>
-                        <InputGroup
-                            className={classNames(
-                                styles.row,
-                                styles.modDashedBorder,
-                                styles.modLabeledIconHeight
-                            )}
-                        >
-                            {/* fill */}
-                            <FillColorIndicatorComponent
-                                className={styles.modMarginRight}
-                                onUpdateSvg={props.onUpdateSvg}
-                            />
-                            {/* stroke */}
-                            <StrokeColorIndicatorComponent
-                                onUpdateSvg={props.onUpdateSvg}
-                            />
-                            {/* stroke width */}
-                            <StrokeWidthIndicatorComponent
-                                onUpdateSvg={props.onUpdateSvg}
-                            />
-                        </InputGroup>
-                        <InputGroup className={styles.modModeTools}>
-                            <ModeToolsContainer
-                                onUpdateSvg={props.onUpdateSvg}
-                            />
-                        </InputGroup>
-                    </div>
+                    {isVector(props.format) ?
+                        <div className={styles.row}>
+                            <InputGroup
+                                className={classNames(
+                                    styles.row,
+                                    styles.modDashedBorder,
+                                    styles.modLabeledIconHeight
+                                )}
+                            >
+                                {/* fill */}
+                                <FillColorIndicatorComponent
+                                    className={styles.modMarginRight}
+                                    onUpdateSvg={props.onUpdateSvg}
+                                />
+                                {/* stroke */}
+                                <StrokeColorIndicatorComponent
+                                    onUpdateSvg={props.onUpdateSvg}
+                                />
+                                {/* stroke width */}
+                                <StrokeWidthIndicatorComponent
+                                    onUpdateSvg={props.onUpdateSvg}
+                                />
+                            </InputGroup>
+                            <InputGroup className={styles.modModeTools}>
+                                <ModeToolsContainer
+                                    onUpdateSvg={props.onUpdateSvg}
+                                />
+                            </InputGroup>
+                        </div> :
+                        <div className={styles.row}>
+                            <InputGroup
+                                className={classNames(
+                                    styles.row,
+                                    styles.modDashedBorder,
+                                    styles.modLabeledIconHeight
+                                )}
+                            >
+                                {/* fill */}
+                                <FillColorIndicatorComponent
+                                    className={styles.modMarginRight}
+                                    onUpdateSvg={props.onUpdateSvg}
+                                />
+                            </InputGroup>
+                            <InputGroup className={styles.modModeTools}>
+                                <ModeToolsContainer
+                                    onUpdateSvg={props.onUpdateSvg}
+                                />
+                            </InputGroup>
+                        </div>
+                    }
                 </div>
             ) : null}
 
