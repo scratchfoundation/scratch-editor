@@ -239,7 +239,9 @@ class TextTool extends paper.Tool {
             // Ignore nudge if a text input field is focused
             return;
         }
-        
+        if (this.mode === TextTool.TEXT_EDIT_MODE && event.key === 'escape') {
+            this.endTextEdit();
+        }        
         if (this.mode === TextTool.SELECT_MODE) {
             this.nudgeTool.onKeyDown(event);
         }
