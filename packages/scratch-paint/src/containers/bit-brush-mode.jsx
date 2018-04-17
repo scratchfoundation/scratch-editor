@@ -41,7 +41,7 @@ class BitBrushMode extends React.Component {
         }
     }
     shouldComponentUpdate (nextProps) {
-        return nextProps.isBrushModeActive !== this.props.isBitBrushModeActive;
+        return nextProps.isBitBrushModeActive !== this.props.isBitBrushModeActive;
     }
     activateTool () {
         clearSelection(this.props.clearSelectedItems);

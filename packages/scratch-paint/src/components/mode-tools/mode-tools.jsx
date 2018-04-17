@@ -78,7 +78,9 @@ const ModeToolsComponent = props => {
 
     switch (props.mode) {
     case Modes.BRUSH:
+        /* falls through */
     case Modes.BIT_BRUSH:
+    {
         const currentBrushIcon = isBitmap(props.format) ? bitBrushIcon : brushIcon;
         const currentBrushValue = isBitmap(props.format) ? props.bitBrushSize : props.brushValue;
         const changeFunction = isBitmap(props.format) ? props.onBitBrushSliderChange : props.onBrushSliderChange;
@@ -103,6 +105,7 @@ const ModeToolsComponent = props => {
                 />
             </div>
         );
+    }
     case Modes.ERASER:
         return (
             <div className={classNames(props.className, styles.modeTools)}>
