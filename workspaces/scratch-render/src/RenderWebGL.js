@@ -295,6 +295,32 @@ class RenderWebGL extends EventEmitter {
 
         const newSkin = new SVGSkin(skinId, this);
         newSkin.setSVG(svgData, rotationCenter);
+        this._reskin(skinId, newSkin);
+    }
+
+    /**
+     * Update an existing bitmap skin, or create a bitmap skin if the previous skin was not bitmap.
+     * @param {!int} skinId the ID for the skin to change.
+     * @param {!string} imgData - new bitmap to use.
+     * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
+     * skin will be used
+     */
+    updateBitmapSkin (skinId, imgData, rotationCenter) {
+        // Divide rotation center by 2 and set bitmap resolution = 2 because all images coming from paint editor
+        // are double resolution
+        const updatedRotationCenter = rotationCenter ?
+            [Math.floor(rotationCenter[0] / 2), Math.floor(rotationCenter[1] / 2)] : null;
+        if (this._allSkins[skinId] instanceof BitmapSkin) {
+            this._allSkins[skinId].setBitmap(imgData, 2, updatedRotationCenter);
+            return;
+        }
+
+        const newSkin = new BitmapSkin(skinId, this);
+        newSkin.setBitmap(imgData, 2, updatedRotationCenter);
+        this._reskin(skinId, newSkin);
+    }
+
+    _reskin (skinId, newSkin) {
         const oldSkin = this._allSkins[skinId];
         this._allSkins[skinId] = newSkin;
 
@@ -302,6 +328,8 @@ class RenderWebGL extends EventEmitter {
         for (const drawable of this._allDrawables) {
             if (drawable && drawable.skin === oldSkin) {
                 drawable.skin = newSkin;
+                drawable.setConvexHullDirty();
+                drawable.setTransformDirty();
             }
         }
         oldSkin.dispose();
