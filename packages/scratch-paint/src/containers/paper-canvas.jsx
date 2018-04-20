@@ -112,7 +112,6 @@ class PaperCanvas extends React.Component {
             const raster = new paper.Raster(img);
             raster.onLoad = () => {
                 const subCanvas = raster.canvas;
-                document.body.appendChild(subCanvas);
                 getRaster().drawImage(
                     subCanvas,
                     new paper.Point(Math.floor(bounds.topLeft.x), Math.floor(bounds.topLeft.y)));

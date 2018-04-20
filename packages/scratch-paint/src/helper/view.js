@@ -25,7 +25,7 @@ const clampViewBounds = () => {
 const zoomOnFixedPoint = (deltaZoom, fixedPoint) => {
     const {view} = paper.project;
     const preZoomCenter = view.center;
-    const newZoom = Math.max(1, view.zoom + deltaZoom);
+    const newZoom = Math.max(0.5, view.zoom + deltaZoom);
     const scaling = view.zoom / newZoom;
     const preZoomOffset = fixedPoint.subtract(preZoomCenter);
     const postZoomOffset = fixedPoint.subtract(preZoomOffset.multiply(scaling))
