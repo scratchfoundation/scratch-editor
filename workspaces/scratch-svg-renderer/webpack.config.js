@@ -16,7 +16,7 @@ const makeExport = function (targets, settings) {
             }]
         },
         entry: {
-            'scratch-svg-renderer': './src/svg-renderer.js'
+            'scratch-svg-renderer': './src/index.js'
         },
         plugins: []
             .concat(process.env.NODE_ENV === 'production' ? [
