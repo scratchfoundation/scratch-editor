@@ -2,7 +2,7 @@ const twgl = require('twgl.js');
 
 const Silhouette = require('./Silhouette');
 const Skin = require('./Skin');
-const SvgRenderer = require('scratch-svg-renderer');
+const SvgRenderer = require('scratch-svg-renderer').SVGRenderer;
 
 const MAX_TEXTURE_DIMENSION = 2048;
 
