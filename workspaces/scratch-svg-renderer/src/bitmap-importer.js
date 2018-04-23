@@ -12,15 +12,16 @@ const STAGE_RATIO = STAGE_WIDTH / STAGE_HEIGHT;
 /**
  * Given bitmap data, resize as necessary.
  * @param {ArrayBuffer} bitmapData The image data to decode and manipulate.
- * @param {Function} cb Error or manipulated image buffer
+ * @param {Function} callback NodeJS style callback function to handle errors
+ * or manipulated image buffer
  * @return {void}
  */
-const importBitmap = function (bitmapData, cb) {
+const importBitmap = function (bitmapData, callback) {
     // Decode bitmap data and extract size
     return Jimp.read(bitmapData, (err, image) => { // eslint-disable-line no-undef
         if (err) {
             log.warn(`Error reading bitmap data: ${err}.`);
-            cb(null, new Uint8Array(bitmapData));
+            callback(null, new Uint8Array(bitmapData));
         }
 
         const imageWidth = image.bitmap.width;
@@ -30,14 +31,14 @@ const importBitmap = function (bitmapData, cb) {
         // double both dimensions
         if ((imageWidth <= STAGE_WIDTH) && (imageHeight <= STAGE_HEIGHT)) {
             image.resize(2 * imageWidth, 2 * imageHeight, Jimp.RESIZE_NEAREST_NEIGHBOR); // eslint-disable-line no-undef
-            return image.getBuffer(Jimp.AUTO, cb); // eslint-disable-line no-undef
+            return image.getBuffer(Jimp.AUTO, callback); // eslint-disable-line no-undef
         }
         const doubleStageW = STAGE_WIDTH * 2;
         const doubleStageH = STAGE_HEIGHT * 2;
         // If neither dimension is larger than 2x corresponding stage dimension,
         // this is an in-between image, return it as is
         const ltDoubleStage = (imageWidth > doubleStageW) || (imageHeight > doubleStageH);
-        if (!ltDoubleStage) return image.getBuffer(Jimp.AUTO, cb); // eslint-disable-line no-undef
+        if (!ltDoubleStage) return image.getBuffer(Jimp.AUTO, callback); // eslint-disable-line no-undef
 
         const imageRatio = imageWidth / imageHeight;
         // Otherwise, figure out how to resize
@@ -55,7 +56,7 @@ const importBitmap = function (bitmapData, cb) {
             // In any of these cases, resize the image to fit the height to double the stage height
             image.resize(Jimp.AUTO, doubleStageH, Jimp.RESIZE_NEAREST_NEIGHBOR); // eslint-disable-line no-undef
         }
-        return image.getBuffer(Jimp.AUTO, cb); // eslint-disable-line no-undef
+        return image.getBuffer(Jimp.AUTO, callback); // eslint-disable-line no-undef
     });
 };
 
