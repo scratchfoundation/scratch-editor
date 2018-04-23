@@ -494,6 +494,16 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Get the rotation center of a skin by ID.
+     * @param {int} skinID The ID of the Skin
+     * @return {Array<number>} The rotationCenterX and rotationCenterY
+     */
+    getSkinRotationCenter (skinID) {
+        const skin = this._allSkins[skinID];
+        return skin.calculateRotationCenter();
+    }
+
+    /**
      * Check if a particular Drawable is touching a particular color.
      * Unlike touching drawable, touching color tests invisible sprites.
      * @param {int} drawableID The ID of the Drawable to check.
