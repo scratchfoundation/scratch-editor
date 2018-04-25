@@ -1,9 +1,11 @@
 const defaultsdeep = require('lodash.defaultsdeep');
 const path = require('path');
 const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const makeExport = function (targets, settings) {
     const base = {
+        mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
         devtool: 'cheap-module-source-map',
         module: {
             rules: [{
@@ -18,13 +20,9 @@ const makeExport = function (targets, settings) {
         entry: {
             'scratch-svg-renderer': './src/index.js'
         },
-        plugins: []
-            .concat(process.env.NODE_ENV === 'production' ? [
-                new webpack.optimize.UglifyJsPlugin({
-                    include: /\.min\.js$/,
-                    minimize: true
-                })
-            ] : [])
+        optimization: {
+            minimize: process.env.NODE_ENV === 'production' && /dist[\//]web/.test(settings.output.path)
+        }
     };
 
     return defaultsdeep(base, settings);
@@ -46,6 +44,9 @@ module.exports = [
             libraryTarget: 'commonjs2',
             path: path.resolve('dist', 'node'),
             filename: '[name].js'
+        },
+        performance: {
+            hints: false
         }
     })
 ];

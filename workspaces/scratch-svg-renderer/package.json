@@ -23,7 +23,7 @@
   "devDependencies": {
     "babel-core": "6.26.0",
     "babel-eslint": "^8.1.2",
-    "babel-loader": "7.1.2",
+    "babel-loader": "7.1.4",
     "babel-preset-env": "1.6.1",
     "base64-loader": "1.0.0",
     "eslint": "^4.14.0",
@@ -37,6 +37,7 @@
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.1",
     "scratch-render-fonts": "git+https://github.com/LLK/scratch-render-fonts.git",
-    "webpack": "3.10.0"
+    "webpack": "^4.8.0",
+    "webpack-cli": "^2.0.15"
   }
 }
