@@ -49,6 +49,7 @@ class PaintEditor extends React.Component {
             'handleZoomReset',
             'canRedo',
             'canUndo',
+            'switchMode',
             'onMouseDown',
             'setCanvas',
             'setTextArea',
@@ -81,11 +82,9 @@ class PaintEditor extends React.Component {
             this.stopEyeDroppingLoop();
         }
 
-        // @todo move to correct corresponding tool
-        if (isVector(this.props.format) && isBitmap(prevProps.format)) {
-            this.props.changeMode(Modes.BRUSH);
-        } else if (isVector(prevProps.format) && isBitmap(this.props.format)) {
-            this.props.changeMode(Modes.BIT_BRUSH);
+        if ((isVector(this.props.format) && isBitmap(prevProps.format)) ||
+            (isVector(prevProps.format) && isBitmap(this.props.format))) {
+            this.switchMode(this.props.format);
         }
     }
     componentWillUnmount () {
@@ -93,6 +92,31 @@ class PaintEditor extends React.Component {
         this.stopEyeDroppingLoop();
         document.removeEventListener('mousedown', this.onMouseDown);
         document.removeEventListener('touchstart', this.onMouseDown);
+    }
+    switchMode (newFormat) {
+        if (isVector(newFormat)) {
+            switch (this.props.mode) {
+            case Modes.BIT_BRUSH:
+                this.props.changeMode(Modes.BRUSH);
+                break;
+            case Modes.BIT_LINE:
+                this.props.changeMode(Modes.LINE);
+                break;
+            default:
+                this.props.changeMode(Modes.BRUSH);
+            }
+        } else if (isBitmap(newFormat)) {
+            switch (this.props.mode) {
+            case Modes.BRUSH:
+                this.props.changeMode(Modes.BIT_BRUSH);
+                break;
+            case Modes.LINE:
+                this.props.changeMode(Modes.BIT_LINE);
+                break;
+            default:
+                this.props.changeMode(Modes.BIT_BRUSH);
+            }
+        }
     }
     handleUpdateSvg (skipSnapshot) {
         // Store the zoom/pan and restore it after snapshotting
@@ -300,6 +324,7 @@ PaintEditor.propTypes = {
     handleSwitchToBitmap: PropTypes.func.isRequired,
     handleSwitchToVector: PropTypes.func.isRequired,
     isEyeDropping: PropTypes.bool,
+    mode: PropTypes.oneOf(Object.keys(Modes)).isRequired,
     name: PropTypes.string,
     onDeactivateEyeDropper: PropTypes.func.isRequired,
     onKeyPress: PropTypes.func.isRequired,
@@ -331,6 +356,7 @@ const mapStateToProps = state => ({
     clipboardItems: state.scratchPaint.clipboard.items,
     format: state.scratchPaint.format,
     isEyeDropping: state.scratchPaint.color.eyeDropper.active,
+    mode: state.scratchPaint.mode,
     pasteOffset: state.scratchPaint.clipboard.pasteOffset,
     previousTool: state.scratchPaint.color.eyeDropper.previousTool,
     selectedItems: state.scratchPaint.selectedItems,

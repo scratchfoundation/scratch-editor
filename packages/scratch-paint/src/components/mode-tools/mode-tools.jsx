@@ -15,14 +15,15 @@ import InputGroup from '../input-group/input-group.jsx';
 import LabeledIconButton from '../labeled-icon-button/labeled-icon-button.jsx';
 import Modes from '../../lib/modes';
 import Formats from '../../lib/format';
-import {isBitmap} from '../../lib/format';
+import {isBitmap, isVector} from '../../lib/format';
 import styles from './mode-tools.css';
 
 import copyIcon from './icons/copy.svg';
 import pasteIcon from './icons/paste.svg';
 
-import brushIcon from '../brush-mode/brush.svg';
 import bitBrushIcon from '../bit-brush-mode/brush.svg';
+import bitLineIcon from '../bit-line-mode/line.svg';
+import brushIcon from '../brush-mode/brush.svg';
 import curvedPointIcon from './icons/curved-point.svg';
 import eraserIcon from '../eraser-mode/eraser.svg';
 import flipHorizontalIcon from './icons/flip-horizontal.svg';
@@ -38,6 +39,11 @@ const ModeToolsComponent = props => {
             defaultMessage: 'Brush size',
             description: 'Label for the brush size input',
             id: 'paint.modeTools.brushSize'
+        },
+        lineSize: {
+            defaultMessage: 'Line size',
+            description: 'Label for the line size input',
+            id: 'paint.modeTools.lineSize'
         },
         eraserSize: {
             defaultMessage: 'Eraser size',
@@ -80,18 +86,22 @@ const ModeToolsComponent = props => {
     case Modes.BRUSH:
         /* falls through */
     case Modes.BIT_BRUSH:
+        /* falls through */
+    case Modes.BIT_LINE:
     {
-        const currentBrushIcon = isBitmap(props.format) ? bitBrushIcon : brushIcon;
+        const currentIcon = isVector(props.format) ? brushIcon :
+            props.mode === Modes.BIT_LINE ? bitLineIcon : bitBrushIcon;
         const currentBrushValue = isBitmap(props.format) ? props.bitBrushSize : props.brushValue;
         const changeFunction = isBitmap(props.format) ? props.onBitBrushSliderChange : props.onBrushSliderChange;
+        const currentMessage = props.mode === Modes.BIT_LINE ? messages.lineSize : messages.brushSize;
         return (
             <div className={classNames(props.className, styles.modeTools)}>
                 <div>
                     <img
-                        alt={props.intl.formatMessage(messages.brushSize)}
+                        alt={props.intl.formatMessage(currentMessage)}
                         className={styles.modeToolsIcon}
                         draggable={false}
-                        src={currentBrushIcon}
+                        src={currentIcon}
                     />
                 </div>
                 <LiveInput

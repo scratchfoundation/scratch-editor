@@ -11,7 +11,7 @@ import {shouldShowGroup, shouldShowUngroup} from '../../helper/group';
 import {shouldShowBringForward, shouldShowSendBackward} from '../../helper/order';
 
 import BitBrushMode from '../../containers/bit-brush-mode.jsx';
-import BitLineMode from '../../components/bit-line-mode/bit-line-mode.jsx';
+import BitLineMode from '../../containers/bit-line-mode.jsx';
 import BitOvalMode from '../../components/bit-oval-mode/bit-oval-mode.jsx';
 import BitRectMode from '../../components/bit-rect-mode/bit-rect-mode.jsx';
 import BitTextMode from '../../components/bit-text-mode/bit-text-mode.jsx';
@@ -410,7 +410,9 @@ const PaintEditorComponent = props => {
                         <BitBrushMode
                             onUpdateSvg={props.onUpdateSvg}
                         />
-                        <BitLineMode />
+                        <BitLineMode
+                            onUpdateSvg={props.onUpdateSvg}
+                        />
                         <BitOvalMode />
                         <BitRectMode />
                         <BitTextMode />
