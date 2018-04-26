@@ -302,21 +302,18 @@ class RenderWebGL extends EventEmitter {
      * Update an existing bitmap skin, or create a bitmap skin if the previous skin was not bitmap.
      * @param {!int} skinId the ID for the skin to change.
      * @param {!string} imgData - new bitmap to use.
+     * @param {!number} bitmapResolution - the resolution scale for a bitmap costume.
      * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
      * skin will be used
      */
-    updateBitmapSkin (skinId, imgData, rotationCenter) {
-        // Divide rotation center by 2 and set bitmap resolution = 2 because all images coming from paint editor
-        // are double resolution
-        const updatedRotationCenter = rotationCenter ?
-            [Math.floor(rotationCenter[0] / 2), Math.floor(rotationCenter[1] / 2)] : null;
+    updateBitmapSkin (skinId, imgData, bitmapResolution, rotationCenter) {
         if (this._allSkins[skinId] instanceof BitmapSkin) {
-            this._allSkins[skinId].setBitmap(imgData, 2, updatedRotationCenter);
+            this._allSkins[skinId].setBitmap(imgData, bitmapResolution, rotationCenter);
             return;
         }
 
         const newSkin = new BitmapSkin(skinId, this);
-        newSkin.setBitmap(imgData, 2, updatedRotationCenter);
+        newSkin.setBitmap(imgData, bitmapResolution, rotationCenter);
         this._reskin(skinId, newSkin);
     }
 
