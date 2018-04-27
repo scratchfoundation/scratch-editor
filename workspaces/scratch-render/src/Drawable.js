@@ -376,7 +376,7 @@ class Drawable {
      * @return {boolean} True if the world position touches the skin.
      */
     isTouching (vec) {
-        if (!this.skin) {
+        if (!(this.skin && this._visible)) {
             return false;
         }
 
@@ -411,7 +411,32 @@ class Drawable {
         // Apply texture effect transform.
         EffectTransform.transformPoint(this, localPosition, localPosition);
 
-        return this.skin.isTouching(localPosition);
+        if (this.useNearest) {
+            return this.skin.isTouchingNearest(localPosition);
+        }
+        return this.skin.isTouchingLinear(localPosition);
+    }
+
+    /**
+     * Should the drawable use NEAREST NEIGHBOR or LINEAR INTERPOLATION mode
+     */
+    get useNearest () {
+        // We can't use nearest neighbor unless we are a multiple of 90 rotation
+        if (this._direction % 90 !== 0) {
+            return false;
+        }
+
+        // Raster skins (bitmaps) should always prefer nearest neighbor
+        if (this.skin.isRaster) {
+            return true;
+        }
+
+        // If the scale of the skin is very close to 100 (0.99999 variance is okay I guess)
+        if (Math.abs(this.scale[0]) > 99 && Math.abs(this.scale[0]) < 101 &&
+            Math.abs(this.scale[1]) > 99 && Math.abs(this.scale[1]) < 101) {
+            return true;
+        }
+        return false;
     }
 
     /**

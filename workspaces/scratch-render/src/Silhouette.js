@@ -10,6 +10,23 @@
  */
 let __SilhouetteUpdateCanvas;
 
+/**
+ * Internal helper function (in hopes that compiler can inline).  Get a pixel
+ * from silhouette data, or 0 if outside it's bounds.
+ * @private
+ * @param {Silhouette} silhouette - has data width and height
+ * @param {number} x - x
+ * @param {number} y - y
+ * @return {number} Alpha value for x/y position
+ */
+const getPoint = ({_width: width, _height: height, _data: data}, x, y) => {
+    // 0 if outside bouds, otherwise read from data.
+    if (x >= width || y >= height || x < 0 || y < 0) {
+        return 0;
+    }
+    return data[(y * width) + x];
+};
+
 class Silhouette {
     constructor () {
         /**
@@ -44,6 +61,9 @@ class Silhouette {
 
         ctx.clearRect(0, 0, width, height);
         ctx.drawImage(bitmapData, 0, 0, width, height);
+        if (!(width && height)) {
+            return;
+        }
         const imageData = ctx.getImageData(0, 0, width, height);
 
         this._data = new Uint8ClampedArray(imageData.data.length / 4);
@@ -54,17 +74,31 @@ class Silhouette {
     }
 
     /**
-     * Does this point touch the silhouette?
+     * Test if texture coordinate touches the silhouette using nearest neighbor.
      * @param {twgl.v3} vec A texture coordinate.
-     * @return {boolean} Did the point touch?
+     * @return {boolean} If the nearest pixel has an alpha value.
      */
-    isTouching (vec) {
-        const x = Math.floor(vec[0] * this._width);
-        const y = Math.floor(vec[1] * this._height);
-        return (
-            x < this._width && x >= 0 &&
-            y < this._height && y >= 0 &&
-            this._data[(y * this._width) + x] !== 0);
+    isTouchingNearest (vec) {
+        return getPoint(
+            this,
+            Math.round(vec[0] * (this._width - 1)),
+            Math.round(vec[1] * (this._height - 1))
+        ) > 0;
+    }
+
+    /**
+     * Test to see if any of the 4 pixels used in the linear interpolate touch
+     * the silhouette.
+     * @param {twgl.v3} vec A texture coordinate.
+     * @return {boolean} Any of the pixels have some alpha.
+     */
+    isTouchingLinear (vec) {
+        const x = Math.floor(vec[0] * (this._width - 1));
+        const y = Math.floor(vec[1] * (this._height - 1));
+        return getPoint(this, x, y) > 0 ||
+            getPoint(this, x + 1, y) > 0 ||
+            getPoint(this, x, y + 1) > 0 ||
+            getPoint(this, x + 1, y + 1) > 0;
     }
 
     /**

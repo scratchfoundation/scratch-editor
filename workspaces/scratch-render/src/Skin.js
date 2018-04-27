@@ -3,6 +3,7 @@ const EventEmitter = require('events');
 const twgl = require('twgl.js');
 
 const RenderConstants = require('./RenderConstants');
+const Silhouette = require('./Silhouette');
 
 /**
  * Truncate a number into what could be stored in a 32 bit floating point value.
@@ -51,6 +52,12 @@ class Skin extends EventEmitter {
              */
             u_skin: null
         };
+
+        /**
+         * A silhouette to store touching data, skins are responsible for keeping it up to date.
+         * @private
+         */
+        this._silhouette = new Silhouette();
 
         this.setMaxListeners(RenderConstants.SKIN_SHARE_SOFT_LIMIT);
     }
@@ -141,13 +148,34 @@ class Skin extends EventEmitter {
     }
 
     /**
+     * If the skin defers silhouette operations until the last possible minute,
+     * this will be called before isTouching uses the silhouette.
+     * @abstract
+     */
+    updateSilhouette () {}
+
+    /**
      * Does this point touch an opaque or translucent point on this skin?
+     * Nearest Neighbor version
      * @param {twgl.v3} vec A texture coordinate.
      * @return {boolean} Did it touch?
      */
-    isTouching () {
-        return false;
+    isTouchingNearest (vec) {
+        this.updateSilhouette();
+        return this._silhouette.isTouchingNearest(vec);
     }
+
+    /**
+     * Does this point touch an opaque or translucent point on this skin?
+     * Linear Interpolation version
+     * @param {twgl.v3} vec A texture coordinate.
+     * @return {boolean} Did it touch?
+     */
+    isTouchingLinear (vec) {
+        this.updateSilhouette();
+        return this._silhouette.isTouchingLinear(vec);
+    }
+
 }
 
 /**

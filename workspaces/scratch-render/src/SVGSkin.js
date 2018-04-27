@@ -1,6 +1,5 @@
 const twgl = require('twgl.js');
 
-const Silhouette = require('./Silhouette');
 const Skin = require('./Skin');
 const SvgRenderer = require('scratch-svg-renderer').SVGRenderer;
 
@@ -31,8 +30,6 @@ class SVGSkin extends Skin {
 
         /** @type {Number} */
         this._maxTextureScale = 0;
-
-        this._silhouette = new Silhouette();
     }
 
     /**
@@ -129,14 +126,6 @@ class SVGSkin extends Skin {
         });
     }
 
-    /**
-     * Does this point touch an opaque or translucent point on this skin?
-     * @param {twgl.v3} vec A texture coordinate.
-     * @return {boolean} Did it touch?
-     */
-    isTouching (vec) {
-        return this._silhouette.isTouching(vec);
-    }
 }
 
 module.exports = SVGSkin;

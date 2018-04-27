@@ -26,10 +26,9 @@ class EffectTransform {
      * @param {Drawable} drawable The drawable whose effects to emulate.
      * @param {twgl.v3} vec The texture coordinate to transform.
      * @param {?twgl.v3} dst A place to store the output coordinate.
-     * @return {twgl.v3} The coordinate after being transform by effects.
+     * @return {twgl.v3} dst - The coordinate after being transform by effects.
      */
-    static transformPoint (drawable, vec, dst) {
-        dst = dst || twgl.v3.create();
+    static transformPoint (drawable, vec, dst = twgl.v3.create()) {
         twgl.v3.copy(vec, dst);
 
         const uniforms = drawable.getUniforms();

@@ -13,6 +13,9 @@ const SVGSkin = require('./SVGSkin');
 const SVGTextBubble = require('./util/svg-text-bubble');
 const EffectTransform = require('./EffectTransform');
 
+const __isTouchingDrawablesPoint = twgl.v3.create();
+const __candidatesBounds = new Rectangle();
+
 /**
  * @callback RenderWebGL#idFilterFunc
  * @param {int} drawableID The ID to filter.
@@ -540,14 +543,14 @@ class RenderWebGL extends EventEmitter {
         const gl = this._gl;
         twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
-        const bounds = this._touchingBounds(drawableID);
-        if (!bounds) {
+        const candidates = this._candidatesTouching(drawableID, this._drawList);
+        if (candidates.length === 0) {
             return false;
         }
-        const candidateIDs = this._filterCandidatesTouching(drawableID, this._drawList, bounds);
-        if (!candidateIDs) {
-            return false;
-        }
+
+        const bounds = this._candidatesBounds(candidates);
+
+        const candidateIDs = candidates.map(({id}) => id);
 
         // Limit size of viewport to the bounds around the target Drawable,
         // and create the projection matrix for the draw.
@@ -631,72 +634,36 @@ class RenderWebGL extends EventEmitter {
     /**
      * Check if a particular Drawable is touching any in a set of Drawables.
      * @param {int} drawableID The ID of the Drawable to check.
-     * @param {Array<int>} candidateIDs The Drawable IDs to check, otherwise all.
-     * @returns {boolean} True iff the Drawable is touching one of candidateIDs.
+     * @param {?Array<int>} candidateIDs The Drawable IDs to check, otherwise all drawables in the renderer
+     * @returns {boolean} True if the Drawable is touching one of candidateIDs.
      */
-    isTouchingDrawables (drawableID, candidateIDs) {
-        candidateIDs = candidateIDs || this._drawList;
+    isTouchingDrawables (drawableID, candidateIDs = this._drawList) {
 
-        const gl = this._gl;
-
-        twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
-
-        const bounds = this._touchingBounds(drawableID);
-        if (!bounds) {
-            return false;
-        }
-        candidateIDs = this._filterCandidatesTouching(drawableID, candidateIDs, bounds);
-        if (!candidateIDs) {
+        const candidates = this._candidatesTouching(drawableID, candidateIDs);
+        if (candidates.length === 0) {
             return false;
         }
 
-        // Limit size of viewport to the bounds around the target Drawable,
-        // and create the projection matrix for the draw.
-        gl.viewport(0, 0, bounds.width, bounds.height);
-        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
+        // Get the union of all the candidates intersections.
+        const bounds = this._candidatesBounds(candidates);
 
-        const noneColor = Drawable.color4fFromID(RenderConstants.ID_NONE);
-        gl.clearColor.apply(gl, noneColor);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+        const drawable = this._allDrawables[drawableID];
+        const point = __isTouchingDrawablesPoint;
 
-        try {
-            gl.enable(gl.STENCIL_TEST);
-            gl.stencilFunc(gl.ALWAYS, 1, 1);
-            gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
-            gl.colorMask(false, false, false, false);
-            this._drawThese([drawableID], ShaderManager.DRAW_MODE.silhouette, projection);
-
-            gl.stencilFunc(gl.EQUAL, 1, 1);
-            gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-            gl.colorMask(true, true, true, true);
-
-            this._drawThese(candidateIDs, ShaderManager.DRAW_MODE.silhouette, projection,
-                {idFilterFunc: testID => testID !== drawableID}
-            );
-        } finally {
-            gl.colorMask(true, true, true, true);
-            gl.disable(gl.STENCIL_TEST);
-        }
-
-        const pixels = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
-        gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-
-        if (this._debugCanvas) {
-            this._debugCanvas.width = bounds.width;
-            this._debugCanvas.height = bounds.height;
-            const context = this._debugCanvas.getContext('2d');
-            const imageData = context.getImageData(0, 0, bounds.width, bounds.height);
-            imageData.data.set(pixels);
-            context.putImageData(imageData, 0, 0);
-        }
-
-        for (let pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-            const pixelID = Drawable.color3bToID(
-                pixels[pixelBase],
-                pixels[pixelBase + 1],
-                pixels[pixelBase + 2]);
-            if (pixelID > RenderConstants.ID_NONE) {
-                return true;
+        // This is an EXTREMELY brute force collision detector, but it is
+        // still faster than asking the GPU to give us the pixels.
+        for (let x = bounds.left; x <= bounds.right; x++) {
+            // Scratch Space - +y is top
+            point[0] = x;
+            for (let y = bounds.bottom; y <= bounds.top; y++) {
+                point[1] = y;
+                if (drawable.isTouching(point)) {
+                    for (let index = 0; index < candidates.length; index++) {
+                        if (candidates[index].drawable.isTouching(point)) {
+                            return true;
+                        }
+                    }
+                }
             }
         }
 
@@ -965,26 +932,46 @@ class RenderWebGL extends EventEmitter {
      * could possibly intersect the given bounds.
      * @param {int} drawableID - ID for drawable of query.
      * @param {Array<int>} candidateIDs - Candidates for touching query.
-     * @param {Rectangle} bounds - Bounds to limit candidates to.
-     * @return {?Array<int>} Filtered candidateIDs, or null if none.
+     * @return {?Array< {id, drawable, intersection} >} Filtered candidates with useful data.
      */
-    _filterCandidatesTouching (drawableID, candidateIDs, bounds) {
-        // Filter candidates by rough bounding box intersection.
-        // Do this before _drawThese, so we can prevent any GL operations
-        // and readback by returning early.
-        candidateIDs = candidateIDs.filter(testID => {
-            if (testID === drawableID) return false;
-            // Only draw items which could possibly overlap target Drawable.
-            const candidate = this._allDrawables[testID];
-            const candidateBounds = candidate.getFastBounds();
-            return bounds.intersects(candidateBounds);
-        });
-        if (candidateIDs.length === 0) {
-            // No possible intersections based on bounding boxes.
-            return null;
+    _candidatesTouching (drawableID, candidateIDs) {
+        const bounds = this._touchingBounds(drawableID);
+        if (!bounds) {
+            return [];
         }
-        return candidateIDs;
+        return candidateIDs.reduce((result, id) => {
+            if (id !== drawableID) {
+                const drawable = this._allDrawables[id];
+                const candidateBounds = drawable.getFastBounds();
+
+                if (bounds.intersects(candidateBounds)) {
+                    result.push({
+                        id,
+                        drawable,
+                        intersection: Rectangle.intersect(bounds, candidateBounds)
+                    });
+                }
+            }
+            return result;
+        }, []);
     }
+
+    /**
+     * Helper to get the union bounds from a set of candidates returned from the above method
+     * @private
+     * @param {Array<object>} candidates info from _candidatesTouching
+     * @return {Rectangle} the outer bounding box union
+     */
+    _candidatesBounds (candidates) {
+        return candidates.reduce((memo, {intersection}) => {
+            if (!memo) {
+                return intersection;
+            }
+            // store the union of the two rectangles in our static rectangle instance
+            return Rectangle.union(memo, intersection, __candidatesBounds);
+        }, null);
+    }
+
 
     /**
      * Update the position, direction, scale, or effect properties of this Drawable.
@@ -1210,12 +1197,6 @@ class RenderWebGL extends EventEmitter {
      * @private
      */
     _drawThese (drawables, drawMode, projection, opts = {}) {
-        const near = function (a, b, relativeTolerance = 0.01) {
-            const absA = Math.abs(a);
-            const absB = Math.abs(b);
-            const error = Math.abs(a - b) / Math.max(absA, absB);
-            return error < relativeTolerance;
-        };
 
         const gl = this._gl;
         let currentShader = null;
@@ -1264,9 +1245,9 @@ class RenderWebGL extends EventEmitter {
             }
 
             if (uniforms.u_skin) {
-                const useNearest =
-                    (drawable._direction % 90 === 0) && (near(drawableScale, 100) || drawable.skin.isRaster);
-                twgl.setTextureParameters(gl, uniforms.u_skin, {minMag: useNearest ? gl.NEAREST : gl.LINEAR});
+                twgl.setTextureParameters(
+                    gl, uniforms.u_skin, {minMag: drawable.useNearest ? gl.NEAREST : gl.LINEAR}
+                );
             }
 
             twgl.setUniforms(currentShader, uniforms);
@@ -1332,7 +1313,7 @@ class RenderWebGL extends EventEmitter {
             for (; x < width; x++) {
                 _pixelPos[0] = x / width;
                 EffectTransform.transformPoint(drawable, _pixelPos, _effectPos);
-                if (drawable.skin.isTouching(_effectPos)) {
+                if (drawable.skin.isTouchingLinear(_effectPos)) {
                     Q = [x, y];
                     break;
                 }
@@ -1362,7 +1343,7 @@ class RenderWebGL extends EventEmitter {
             for (x = width - 1; x >= 0; x--) {
                 _pixelPos[0] = x / width;
                 EffectTransform.transformPoint(drawable, _pixelPos, _effectPos);
-                if (drawable.skin.isTouching(_effectPos)) {
+                if (drawable.skin.isTouchingLinear(_effectPos)) {
                     Q = [x, y];
                     break;
                 }

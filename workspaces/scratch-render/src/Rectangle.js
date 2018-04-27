@@ -35,6 +35,7 @@ class Rectangle {
         this.right = -Infinity;
         this.top = -Infinity;
         this.bottom = Infinity;
+
         for (let i = 0; i < points.length; i++) {
             const x = points[i][0];
             const y = points[i][1];
@@ -115,6 +116,41 @@ class Rectangle {
     }
 
     /**
+     * Compute the intersection of two bounding Rectangles.
+     * Could be an impossible box if they don't intersect.
+     * @param {Rectangle} a One rectangle
+     * @param {Rectangle} b Other rectangle
+     * @param {?Rectangle} result A resulting storage rectangle  (safe to pass
+     *                            a or b if you want to overwrite one)
+     * @returns {Rectangle} resulting rectangle
+     */
+    static intersect (a, b, result = new Rectangle()) {
+        result.left = Math.max(a.left, b.left);
+        result.right = Math.min(a.right, b.right);
+        result.top = Math.min(a.top, b.top);
+        result.bottom = Math.max(a.bottom, b.bottom);
+
+        return result;
+    }
+
+    /**
+     * Compute the union of two bounding Rectangles.
+     * @param {Rectangle} a One rectangle
+     * @param {Rectangle} b Other rectangle
+     * @param {?Rectangle} result A resulting storage rectangle  (safe to pass
+     *                            a or b if you want to overwrite one)
+     * @returns {Rectangle} resulting rectangle
+     */
+    static union (a, b, result = new Rectangle()) {
+        result.left = Math.min(a.left, b.left);
+        result.right = Math.max(a.right, b.right);
+        // Scratch Space - +y is up
+        result.top = Math.max(a.top, b.top);
+        result.bottom = Math.min(a.bottom, b.bottom);
+        return result;
+    }
+
+    /**
      * Width of the Rectangle.
      * @return {number} Width of rectangle.
      */
@@ -129,6 +165,7 @@ class Rectangle {
     get height () {
         return Math.abs(this.top - this.bottom);
     }
+
 }
 
 module.exports = Rectangle;

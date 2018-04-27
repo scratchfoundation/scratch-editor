@@ -2,7 +2,6 @@ const twgl = require('twgl.js');
 
 const RenderConstants = require('./RenderConstants');
 const Skin = require('./Skin');
-const Silhouette = require('./Silhouette');
 
 /**
  * Attributes to use when drawing with the pen
@@ -49,9 +48,6 @@ class PenSkin extends Skin {
 
         /** @type {WebGLTexture} */
         this._texture = null;
-
-        /** @type {Silhouette} */
-        this._silhouette = new Silhouette();
 
         /** @type {boolean} */
         this._silhouetteDirty = false;
@@ -214,18 +210,16 @@ class PenSkin extends Skin {
     }
 
     /**
-     * Does this point touch an opaque or translucent point on this skin?
-     * @param {twgl.v3} vec A texture coordinate.
-     * @return {boolean} Did it touch?
+     * If there have been pen operations that have dirtied the canvas, update
+     * now before someone wants to use our silhouette.
      */
-    isTouching (vec) {
+    updateSilhouette () {
         if (this._silhouetteDirty) {
             if (this._canvasDirty) {
                 this.getTexture();
             }
             this._silhouette.update(this._canvas);
         }
-        return this._silhouette.isTouching(vec);
     }
 }
 
