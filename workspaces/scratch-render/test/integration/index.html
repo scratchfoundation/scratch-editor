@@ -1,0 +1,43 @@
+<body>
+    <script src="../../node_modules/scratch-vm/dist/web/scratch-vm.js"></script>
+    <script src="../../node_modules/scratch-storage/dist/web/scratch-storage.js"></script>
+    <!-- note: this uses the BUILT version of scratch-render!  make sure to npm run build -->
+    <script src="../../dist/web/scratch-render.js"></script>
+
+    <canvas id="test" width="480" height="360"></canvas>
+    <input type="file" id="file" name="file">
+
+    <script>
+        // These variables are going to be available in the "window global" intentionally.
+        // Allows you easy access to debug with `vm.greenFlag()` etc.
+
+        var render = new ScratchRender(document.getElementById('test'));
+        var vm = new VirtualMachine();
+        var storage = new ScratchStorage();
+
+        vm.attachStorage(storage);
+        vm.attachRenderer(render);
+
+        document.getElementById('file').addEventListener('click', e => {
+            document.body.removeChild(document.getElementById('loaded'));
+        });
+
+        document.getElementById('file').addEventListener('change', e => {
+            const reader = new FileReader();
+            const thisFileInput = e.target;
+            reader.onload = () => {
+                vm.start();
+                vm.loadProject(reader.result)
+                    .then(() => {
+                        // we add a `#loaded` div to our document, the integration suite
+                        // waits for that element to show up to assume the vm is ready
+                        // to play!
+                        const div = document.createElement('div');
+                        div.id='loaded';
+                        document.body.appendChild(div);
+                    });
+            };
+            reader.readAsArrayBuffer(thisFileInput.files[0]);
+        });
+    </script>
+</body>
