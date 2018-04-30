@@ -95,9 +95,18 @@ module.exports = [
     // For use as a library
     defaultsDeep({}, base, {
         externals: {
+            'minilog': 'minilog',
+            'prop-types': 'prop-types',
             'react': 'react',
             'react-dom': 'react-dom',
-            'minilog': 'minilog'
+            'react-intl': 'react-intl',
+            'react-intl-redux': 'react-intl-redux',
+            'react-popover': 'react-popover',
+            'react-redux': 'react-redux',
+            'react-responsive': 'react-responsive',
+            'react-style-proptype': 'react-style-proptype',
+            'react-tooltip': 'react-tooltip',
+            'redux': 'redux'
         },
         entry: {
             'scratch-paint': './src/index.js'
