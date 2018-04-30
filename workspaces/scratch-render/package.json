@@ -10,7 +10,7 @@
     "url": "git+ssh://git@github.com/LLK/scratch-render.git"
   },
   "main": "./dist/node/scratch-render.js",
-  "browser": "./dist/web/scratch-render.js",
+  "browser": "./src/index.js",
   "scripts": {
     "build": "webpack --progress --colors",
     "docs": "jsdoc -c .jsdoc.json",
@@ -35,23 +35,25 @@
     "eslint": "^4.6.1",
     "eslint-config-scratch": "^5.0.0",
     "gh-pages": "^1.0.0",
+    "jsdoc": "^3.5.5",
+    "json": "^9.0.4",
+    "scratch-vm": "0.1.0-prerelease.1527254075",
+    "tap": "^11.0.0",
+    "travis-after-all": "^1.4.4",
+    "uglifyjs-webpack-plugin": "^1.2.5",
+    "webpack": "^4.8.0",
+    "webpack-cli": "^2.0.15",
+    "webpack-dev-server": "^3.1.4"
+  },
+  "dependencies": {
     "grapheme-breaker": "0.3.2",
     "hull.js": "0.2.10",
     "ify-loader": "1.0.4",
-    "jsdoc": "^3.5.5",
-    "json": "^9.0.4",
     "linebreak": "0.3.0",
     "minilog": "3.1.0",
     "raw-loader": "^0.5.1",
     "scratch-storage": "^0.4.0",
     "scratch-svg-renderer": "0.1.0-prerelease.20180524210316",
-    "scratch-vm": "0.1.0-prerelease.1527254075",
-    "tap": "^11.0.0",
-    "travis-after-all": "^1.4.4",
-    "twgl.js": "4.4.0",
-    "uglifyjs-webpack-plugin": "^1.2.5",
-    "webpack": "^4.8.0",
-    "webpack-cli": "^2.0.15",
-    "webpack-dev-server": "^3.1.4"
+    "twgl.js": "4.4.0"
   }
 }

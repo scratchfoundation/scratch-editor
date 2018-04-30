@@ -21,10 +21,6 @@ const base = {
                 options: {
                     presets: [['env', {targets: {browsers: ['last 3 versions', 'Safari >= 8', 'iOS >= 8']}}]]
                 }
-            },
-            {
-                test: /node_modules[\\/](linebreak|grapheme-breaker)[\\/].*\.js$/,
-                loader: 'ify-loader'
             }
         ]
     },
@@ -84,6 +80,14 @@ module.exports = [
             libraryTarget: 'commonjs2',
             path: path.resolve('dist', 'node'),
             filename: '[name].js'
+        },
+        externals: {
+            '!ify-loader!grapheme-breaker': 'grapheme-breaker',
+            '!ify-loader!linebreak': 'linebreak',
+            'hull.js': true,
+            'scratch-svg-renderer': true,
+            'twgl.js': true,
+            'xml-escape': true
         }
     })
 ];
