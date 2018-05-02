@@ -1215,7 +1215,11 @@ class RenderWebGL extends EventEmitter {
             // the ignoreVisibility flag is used (e.g. for stamping or touchingColor).
             if (!drawable.getVisible() && !opts.ignoreVisibility) continue;
 
-            const drawableScale = drawable.scale;
+            // Combine drawable scale with the native vs. backing pixel ratio
+            const drawableScale = [
+                drawable.scale[0] * this._gl.canvas.width / this._nativeSize[0],
+                drawable.scale[1] * this._gl.canvas.height / this._nativeSize[1]
+            ];
 
             // If the skin or texture isn't ready yet, skip it.
             if (!drawable.skin || !drawable.skin.getTexture(drawableScale)) continue;
