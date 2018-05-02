@@ -46,7 +46,7 @@ varying vec2 v_texCoord;
 // See also: https://en.wikipedia.org/wiki/HSL_and_HSV#Formal_derivation
 
 // Smaller values can cause problems with "color" and "brightness" effects on some mobile devices
-const float epsilon = 1e-4;
+const float epsilon = 1e-3;
 
 // Convert an RGB color to Hue, Saturation, and Lightness.
 // All components of input and output are expected to be in the [0,1] range.
