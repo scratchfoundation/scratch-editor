@@ -468,7 +468,7 @@ const PaintEditorComponent = props => {
                                     draggable={false}
                                     src={bitmapIcon}
                                 />
-                                <span>
+                                <span className={styles.buttonText}>
                                     {props.intl.formatMessage(messages.bitmap)}
                                 </span>
                             </Button> :
@@ -482,7 +482,7 @@ const PaintEditorComponent = props => {
                                         draggable={false}
                                         src={bitmapIcon}
                                     />
-                                    <span>
+                                    <span className={styles.buttonText}>
                                         {props.intl.formatMessage(messages.vector)}
                                     </span>
                                 </Button> : null
