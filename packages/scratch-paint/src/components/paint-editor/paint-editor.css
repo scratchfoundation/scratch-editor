@@ -230,3 +230,7 @@ $border-radius: 0.25rem;
     -webkit-text-fill-color: transparent;
     text-fill-color: transparent;
 }
+
+.button-text {
+    width: 100%; /* Fixes button text wrapping in Edge */
+}
