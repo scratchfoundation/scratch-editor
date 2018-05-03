@@ -64,7 +64,7 @@ const BufferedInput = BufferedInputHOC(Input);
 const messages = defineMessages({
     costume: {
         id: 'paint.paintEditor.costume',
-        description: 'Label for the name of a sound',
+        description: 'Label for the name of a costume',
         defaultMessage: 'Costume'
     },
     group: {
