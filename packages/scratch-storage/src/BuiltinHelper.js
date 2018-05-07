@@ -21,19 +21,25 @@ const DefaultAssets = [
         type: AssetType.ImageBitmap,
         format: DataFormat.PNG,
         id: null,
-        data: require('binary-loader!./builtins/defaultBitmap.png') // eslint-disable-line global-require
+        data: new Buffer(
+            require('arraybuffer-loader!./builtins/defaultBitmap.png') // eslint-disable-line global-require
+        )
     },
     {
         type: AssetType.Sound,
         format: DataFormat.WAV,
         id: null,
-        data: require('binary-loader!./builtins/defaultSound.wav') // eslint-disable-line global-require
+        data: new Buffer(
+            require('arraybuffer-loader!./builtins/defaultSound.wav') // eslint-disable-line global-require
+        )
     },
     {
         type: AssetType.ImageVector,
         format: DataFormat.SVG,
         id: null,
-        data: require('binary-loader!./builtins/defaultVector.svg') // eslint-disable-line global-require
+        data: new Buffer(
+            require('arraybuffer-loader!./builtins/defaultVector.svg') // eslint-disable-line global-require
+        )
     }
 ];
 
