@@ -34,7 +34,7 @@ class SvgRenderer {
      * @param {Function} [onFinish] Optional callback for when drawing finished.
      */
     fromString (svgString, scale, onFinish) {
-        this._loadString(svgString);
+        this.loadString(svgString);
         this._draw(scale, onFinish);
     }
 
@@ -44,7 +44,7 @@ class SvgRenderer {
      * @return {object} the natural size, in Scratch units, of this SVG.
      */
     measure (svgString) {
-        this._loadString(svgString);
+        this.loadString(svgString);
         return this._measurements;
     }
 
@@ -66,7 +66,7 @@ class SvgRenderer {
      * Load an SVG string and normalize it. All the steps before drawing/measuring.
      * @param {string} svgString String of SVG data to draw in quirks-mode.
      */
-    _loadString (svgString) {
+    loadString (svgString) {
         // New svg string invalidates the cached image
         this._cachedImage = null;
 
@@ -187,7 +187,7 @@ class SvgRenderer {
      */
     _transformMeasurements () {
         // Save `svgText` for later re-parsing.
-        const svgText = this._toString();
+        const svgText = this.toString();
 
         // Append the SVG dom to the document.
         // This allows us to use `getBBox` on the page,
@@ -238,7 +238,7 @@ class SvgRenderer {
      * Serialize the active SVG DOM to a string.
      * @returns {string} String representing current SVG data.
      */
-    _toString () {
+    toString () {
         const serializer = new XMLSerializer();
         return serializer.serializeToString(this._svgDom);
     }
@@ -272,7 +272,7 @@ class SvgRenderer {
                 this._cachedImage = img;
                 this._drawFromImage(scale, onFinish);
             };
-            const svgText = this._toString();
+            const svgText = this.toString();
             img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
         }
     }
