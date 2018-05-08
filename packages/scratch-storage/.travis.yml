@@ -4,7 +4,7 @@ cache:
   directories:
     - node_modules
 node_js:
-  - "4"
+  - "8"
   - "node"
 install:
   - npm install
