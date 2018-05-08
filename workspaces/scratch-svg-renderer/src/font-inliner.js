@@ -29,23 +29,17 @@ const createSVGElement = function (tagName) {
  * @return {void}
  */
 const inlineSvgFonts = function (svgTag) {
-    // Collect all text elements into a list.
-    const textElements = [];
-    const collectText = domElement => {
-        if (domElement.localName === 'text') {
-            textElements.push(domElement);
-        }
-        for (let i = 0; i < domElement.childNodes.length; i++) {
-            collectText(domElement.childNodes[i]);
-        }
-    };
-    collectText(svgTag);
     // Collect fonts that need injection.
     const fontsNeeded = {};
-    for (const textElement of textElements) {
-        const font = textElement.getAttribute('font-family');
-        fontsNeeded[font] = true;
-    }
+    const collectFonts = function collectFonts (domElement) {
+        if (domElement.getAttribute && domElement.getAttribute('font-family')) {
+            fontsNeeded[domElement.getAttribute('font-family')] = true;
+        }
+        for (let i = 0; i < domElement.children.length; i++) {
+            collectFonts(domElement.children[i]);
+        }
+    };
+    collectFonts(svgTag);
     const newDefs = createSVGElement('defs');
     const newStyle = createSVGElement('style');
     const allFonts = Object.keys(fontsNeeded);
