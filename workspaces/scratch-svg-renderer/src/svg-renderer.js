@@ -137,7 +137,6 @@ class SvgRenderer {
             }
         }
         convertFonts(this._svgTag);
-        inlineSvgFonts(this._svgTag);
     }
 
     /**
@@ -236,11 +235,19 @@ class SvgRenderer {
 
     /**
      * Serialize the active SVG DOM to a string.
+     * @param {?boolean} fontsInjected True if fonts should be included in the SVG as
+     *     base64 data.
      * @returns {string} String representing current SVG data.
      */
-    toString () {
+    toString (fontsInjected) {
+        let svgDom = this._svgDom;
+        if (fontsInjected) {
+            svgDom = this._svgDom.cloneNode(true /* deep */);
+            inlineSvgFonts(svgDom.documentElement);
+        }
         const serializer = new XMLSerializer();
-        return serializer.serializeToString(this._svgDom);
+        const string = serializer.serializeToString(svgDom);
+        return string;
     }
 
     /**
@@ -272,7 +279,7 @@ class SvgRenderer {
                 this._cachedImage = img;
                 this._drawFromImage(scale, onFinish);
             };
-            const svgText = this.toString();
+            const svgText = this.toString(true /* fontsInjected */);
             img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
         }
     }
