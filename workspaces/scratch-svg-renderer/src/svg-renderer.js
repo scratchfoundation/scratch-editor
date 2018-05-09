@@ -1,5 +1,5 @@
-import {createSVGElement, inlineSvgFonts} from './font-inliner';
-import convertFonts from './font-converter';
+const {createSVGElement, inlineSvgFonts} = require('./font-inliner');
+const convertFonts = require('./font-converter');
 
 /**
  * Main quirks-mode SVG rendering code.

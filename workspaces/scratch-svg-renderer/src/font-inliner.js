@@ -1,7 +1,7 @@
 /**
  * @fileOverview Import bitmap data into Scratch 3.0, resizing image as necessary.
  */
-import {FONTS} from 'scratch-render-fonts';
+const {FONTS} = require('scratch-render-fonts');
 
 /**
  * Helper to create an SVG element with the correct NS.
