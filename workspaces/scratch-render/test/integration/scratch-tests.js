@@ -35,9 +35,12 @@ const testFile = file => test(file, async t => {
             return Promise.resolve()
                 .then(async () => {
                     // waiting for all threads to complete, then we return
-                    while (vm.runtime.threads.length > 0) {
+
+                    while (vm.runtime.threads.filter(thread => vm.runtime.isActiveThread(thread)).length > 0) {
                         if ((Date.now() - startTime) >= TIMEOUT) {
-                            messages.push(`fail Threads still running after ${TIMEOUT}ms`);
+                            // if we push the message after end, the failure from tap is not very useful:
+                            // "not ok test after end() was called"
+                            messages.unshift(`fail Threads still running after ${TIMEOUT}ms`);
                             break;
                         }
 
