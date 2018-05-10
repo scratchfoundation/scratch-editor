@@ -279,7 +279,7 @@ class SvgRenderer {
                 this._cachedImage = img;
                 this._drawFromImage(scale, onFinish);
             };
-            const svgText = this.toString(true /* fontsInjected */);
+            const svgText = this.toString(true /* shouldInjectFonts */);
             img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
         }
     }
