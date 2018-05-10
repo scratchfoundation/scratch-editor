@@ -22,15 +22,13 @@ const convertFonts = function (svgTag) {
     // If there's an old font-family, switch to the new one.
     for (const textElement of textElements) {
         if (textElement.getAttribute('font-family') === 'Helvetica') {
-            textElement.setAttribute('font-family', 'Typey McTypeface');
+            textElement.setAttribute('font-family', 'Sans Serif');
         } else if (textElement.getAttribute('font-family') === 'Mystery') {
-            textElement.setAttribute('font-family', 'Griffy McGriffface');
-        } else if (textElement.getAttribute('font-family') === 'Marker') {
-            textElement.setAttribute('font-family', 'Knewey McKneeface');
+            textElement.setAttribute('font-family', 'Curly');
         } else if (textElement.getAttribute('font-family') === 'Gloria') {
-            textElement.setAttribute('font-family', 'Handlee McHandface');
+            textElement.setAttribute('font-family', 'Handwriting');
         } else if (textElement.getAttribute('font-family') === 'Donegal') {
-            textElement.setAttribute('font-family', 'Seriffy McSerifface');
+            textElement.setAttribute('font-family', 'Serif');
         }
     }
 };
