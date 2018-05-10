@@ -1,28 +1,5 @@
-// Synchronously load TTF fonts.
-// First, have Webpack load their data as Base 64 strings.
-/* eslint-disable global-require */
-const FONTS = {
-    Donegal: require('base64-loader!scratch-render-fonts/DonegalOne-Regular.ttf'),
-    Gloria: require('base64-loader!scratch-render-fonts/GloriaHallelujah.ttf'),
-    Mystery: require('base64-loader!scratch-render-fonts/MysteryQuest-Regular.ttf'),
-    Marker: require('base64-loader!scratch-render-fonts/PermanentMarker.ttf'),
-    Scratch: require('base64-loader!scratch-render-fonts/Scratch.ttf')
-};
-/* eslint-enable global-require */
-
-// For each Base 64 string,
-// 1. Replace each with a usable @font-face tag that points to a Data URI.
-// 2. Inject the font into a style on `document.body`, so measurements
-//    can be accurately taken in SvgRenderer._transformMeasurements.
-const documentStyleTag = document.createElement('style');
-documentStyleTag.id = 'scratch-font-styles';
-for (const fontName in FONTS) {
-    const fontData = FONTS[fontName];
-    FONTS[fontName] = '@font-face {' +
-        `font-family: "${fontName}";src: url("data:application/x-font-ttf;charset=utf-8;base64,${fontData}");}`;
-    documentStyleTag.textContent += FONTS[fontName];
-}
-document.body.insertBefore(documentStyleTag, document.body.firstChild);
+const {createSVGElement, inlineSvgFonts} = require('./font-inliner');
+const convertFonts = require('./font-converter');
 
 /**
  * Main quirks-mode SVG rendering code.
@@ -57,7 +34,7 @@ class SvgRenderer {
      * @param {Function} [onFinish] Optional callback for when drawing finished.
      */
     fromString (svgString, scale, onFinish) {
-        this._loadString(svgString);
+        this.loadString(svgString);
         this._draw(scale, onFinish);
     }
 
@@ -67,7 +44,7 @@ class SvgRenderer {
      * @return {object} the natural size, in Scratch units, of this SVG.
      */
     measure (svgString) {
-        this._loadString(svgString);
+        this.loadString(svgString);
         return this._measurements;
     }
 
@@ -89,7 +66,7 @@ class SvgRenderer {
      * Load an SVG string and normalize it. All the steps before drawing/measuring.
      * @param {string} svgString String of SVG data to draw in quirks-mode.
      */
-    _loadString (svgString) {
+    loadString (svgString) {
         // New svg string invalidates the cached image
         this._cachedImage = null;
 
@@ -128,7 +105,6 @@ class SvgRenderer {
         };
         collectText(this._svgTag);
         // For each text element, apply quirks.
-        const fontsNeeded = {};
         for (const textElement of textElements) {
             // Remove x and y attributes - they are not used in Scratch.
             textElement.removeAttribute('x');
@@ -144,9 +120,6 @@ class SvgRenderer {
             if (!textElement.getAttribute('font-family')) {
                 textElement.setAttribute('font-family', 'Helvetica');
             }
-            // Collect fonts that need injection.
-            const font = textElement.getAttribute('font-family');
-            fontsNeeded[font] = true;
             // Fix line breaks in text, which are not natively supported by SVG.
             // Only fix if text does not have child tspans.
             let text = textElement.textContent;
@@ -155,7 +128,7 @@ class SvgRenderer {
                 const lines = text.split('\n');
                 text = '';
                 for (const line of lines) {
-                    const tspanNode = this._createSVGElement('tspan');
+                    const tspanNode = createSVGElement('tspan');
                     tspanNode.setAttribute('x', '0');
                     tspanNode.setAttribute('dy', '1.2em');
                     tspanNode.textContent = line;
@@ -163,24 +136,7 @@ class SvgRenderer {
                 }
             }
         }
-        // Inject fonts that are needed.
-        // It would be nice if there were another way to get the SVG-in-canvas
-        // to render the correct font family, but I couldn't find any other way.
-        // Other things I tried:
-        // Just injecting the font-family into the document: no effect.
-        // External stylesheet linked to by SVG: no effect.
-        // Using a <link> or <style>@import</style> to link to font-family
-        // injected into the document: no effect.
-        const newDefs = this._createSVGElement('defs');
-        const newStyle = this._createSVGElement('style');
-        const allFonts = Object.keys(fontsNeeded);
-        for (const font of allFonts) {
-            if (FONTS.hasOwnProperty(font)) {
-                newStyle.textContent += FONTS[font];
-            }
-        }
-        newDefs.appendChild(newStyle);
-        this._svgTag.insertBefore(newDefs, this._svgTag.childNodes[0]);
+        convertFonts(this._svgTag);
     }
 
     /**
@@ -230,7 +186,7 @@ class SvgRenderer {
      */
     _transformMeasurements () {
         // Save `svgText` for later re-parsing.
-        const svgText = this._toString();
+        const svgText = this.toString();
 
         // Append the SVG dom to the document.
         // This allows us to use `getBBox` on the page,
@@ -279,11 +235,19 @@ class SvgRenderer {
 
     /**
      * Serialize the active SVG DOM to a string.
+     * @param {?boolean} shouldInjectFonts True if fonts should be included in the SVG as
+     *     base64 data.
      * @returns {string} String representing current SVG data.
      */
-    _toString () {
+    toString (shouldInjectFonts) {
+        let svgDom = this._svgDom;
+        if (shouldInjectFonts) {
+            svgDom = this._svgDom.cloneNode(true /* deep */);
+            inlineSvgFonts(svgDom.documentElement);
+        }
         const serializer = new XMLSerializer();
-        return serializer.serializeToString(this._svgDom);
+        const string = serializer.serializeToString(svgDom);
+        return string;
     }
 
     /**
@@ -315,7 +279,7 @@ class SvgRenderer {
                 this._cachedImage = img;
                 this._drawFromImage(scale, onFinish);
             };
-            const svgText = this._toString();
+            const svgText = this.toString(true /* fontsInjected */);
             img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
         }
     }
@@ -344,17 +308,6 @@ class SvgRenderer {
         if (onFinish) {
             onFinish();
         }
-    }
-
-    /**
-     * Helper to create an SVG element with the correct NS.
-     * @param {string} tagName Tag name for the element.
-     * @return {!DOMElement} Element created.
-     */
-    _createSVGElement (tagName) {
-        return document.createElementNS(
-            'http://www.w3.org/2000/svg', tagName
-        );
     }
 }
 
