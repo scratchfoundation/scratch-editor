@@ -35,8 +35,7 @@ const testFile = file => test(file, async t => {
             return Promise.resolve()
                 .then(async () => {
                     // waiting for all threads to complete, then we return
-
-                    while (vm.runtime.threads.filter(thread => vm.runtime.isActiveThread(thread)).length > 0) {
+                    while (vm.runtime.threads.some(thread => vm.runtime.isActiveThread(thread))) {
                         if ((Date.now() - startTime) >= TIMEOUT) {
                             // if we push the message after end, the failure from tap is not very useful:
                             // "not ok test after end() was called"
