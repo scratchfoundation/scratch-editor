@@ -30,10 +30,10 @@ const createSVGElement = function (tagName) {
  */
 const inlineSvgFonts = function (svgTag) {
     // Collect fonts that need injection.
-    const fontsNeeded = {};
+    const fontsNeeded = new Set();
     const collectFonts = function collectFonts (domElement) {
         if (domElement.getAttribute && domElement.getAttribute('font-family')) {
-            fontsNeeded[domElement.getAttribute('font-family')] = true;
+            fontsNeeded.add(domElement.getAttribute('font-family'));
         }
         for (let i = 0; i < domElement.children.length; i++) {
             collectFonts(domElement.children[i]);
@@ -42,8 +42,7 @@ const inlineSvgFonts = function (svgTag) {
     collectFonts(svgTag);
     const newDefs = createSVGElement('defs');
     const newStyle = createSVGElement('style');
-    const allFonts = Object.keys(fontsNeeded);
-    for (const font of allFonts) {
+    for (const font of fontsNeeded) {
         if (FONTS.hasOwnProperty(font)) {
             newStyle.textContent += FONTS[font];
         }

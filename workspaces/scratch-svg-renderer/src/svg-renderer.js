@@ -235,13 +235,13 @@ class SvgRenderer {
 
     /**
      * Serialize the active SVG DOM to a string.
-     * @param {?boolean} fontsInjected True if fonts should be included in the SVG as
+     * @param {?boolean} shouldInjectFonts True if fonts should be included in the SVG as
      *     base64 data.
      * @returns {string} String representing current SVG data.
      */
-    toString (fontsInjected) {
+    toString (shouldInjectFonts) {
         let svgDom = this._svgDom;
-        if (fontsInjected) {
+        if (shouldInjectFonts) {
             svgDom = this._svgDom.cloneNode(true /* deep */);
             inlineSvgFonts(svgDom.documentElement);
         }
