@@ -149,7 +149,8 @@ class SVGTextBubble {
     }
 
     _textFragment () {
-        return `<text fill="#575E75">${xmlescape(this.lines.join('\n'))}</text>`;
+        const attrs = `font-family="Helvetica, Arial, sans-serif" font-size="14px" fill="#575E75"`;
+        return `<text ${attrs}>${xmlescape(this.lines.join('\n'))}</text>`;
     }
 
     buildString (type, text, pointsLeft) {
