@@ -67,7 +67,10 @@ class SVGMeasurementProvider {
         // @TODO This code should be shared with the svg-renderer.
         svgText.setAttribute('alignment-baseline', 'text-before-edge');
         svgText.setAttribute('font-size', '14');
-        svgText.setAttribute('font-family', 'Helvetica');
+
+        // TODO Do we want to use the new default sans font instead of Helvetica?
+        // This change intentionally subverts the svg-renderer auto font conversion.
+        svgText.setAttribute('font-family', 'Helvetica, Arial, sans-serif');
 
         // hide from the user, including screen readers
         svgRoot.setAttribute('style', 'position:absolute;visibility:hidden');
