@@ -78,7 +78,7 @@
     "regenerator-runtime": "^0.11.1",
     "rimraf": "^2.6.1",
     "scratch-l10n": "^2.0.0",
-    "scratch-svg-renderer": "0.1.0-prerelease.20180511144653",
+    "scratch-svg-renderer": "0.1.0-prerelease.20180514170126",
     "style-loader": "^0.21.0",
     "svg-url-loader": "^2.3.2",
     "tap": "^11.1.0",
