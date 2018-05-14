@@ -9,7 +9,10 @@ const base = {
     },
     module: {
         rules: [{
-            include: path.resolve('src'),
+            include: [
+                path.resolve('src'),
+                path.resolve('node_modules', 'scratch-render-fonts')
+            ],
             test: /\.js$/,
             loader: 'babel-loader',
             options: {
