@@ -79,6 +79,7 @@ class Silhouette {
      * @return {boolean} If the nearest pixel has an alpha value.
      */
     isTouchingNearest (vec) {
+        if (!this._data) return;
         return getPoint(
             this,
             Math.round(vec[0] * (this._width - 1)),
@@ -93,6 +94,7 @@ class Silhouette {
      * @return {boolean} Any of the pixels have some alpha.
      */
     isTouchingLinear (vec) {
+        if (!this._data) return;
         const x = Math.floor(vec[0] * (this._width - 1));
         const y = Math.floor(vec[1] * (this._height - 1));
         return getPoint(this, x, y) > 0 ||
