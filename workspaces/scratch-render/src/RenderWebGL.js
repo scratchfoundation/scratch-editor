@@ -12,6 +12,7 @@ const ShaderManager = require('./ShaderManager');
 const SVGSkin = require('./SVGSkin');
 const SVGTextBubble = require('./util/svg-text-bubble');
 const EffectTransform = require('./EffectTransform');
+const log = require('./util/log');
 
 const __isTouchingDrawablesPoint = twgl.v3.create();
 const __candidatesBounds = new Rectangle();
@@ -119,6 +120,32 @@ class RenderWebGL extends EventEmitter {
 
         /** @type {Array<int>} */
         this._drawList = [];
+
+        /** @type {Array<String>}
+         * A list of layer group names in the order they should appear
+         * from furthest back to furthest in front.
+         */
+        this._groupOrdering = [];
+
+        /**
+         * @typedef LayerGroup
+         * @property {boolean} explicitOrdering Whether or not this group uses explicit ordering
+         * @property {Array} drawables List of drawables (either objects with drawableID and ordering
+         * OR just a drawableID if the ordering for this group is implicit)
+         */
+
+        /** @type {Object.<string, LayerGroup>}
+         * Map of group name to layer group
+         */
+        this._layerGroups = {};
+
+        /** @type {Object<string, DrawableOrderingDesc>}
+         * Group to be used for a new drawable
+         * if a group is not provided during creation.
+         * This is null to start with but will get populated
+         * if createDrawable is called without a group
+         */
+        this._unspecifiedLayerGroup = null;
 
         /** @type {int} */
         this._nextDrawableId = RenderConstants.ID_NONE + 1;
@@ -360,13 +387,16 @@ class RenderWebGL extends EventEmitter {
 
     /**
      * Create a new Drawable and add it to the scene.
+     * @param {string=} optGroup Optional layering group to add the drawable to
+     * @param {int=} optInGroupOrdering Optional ordering within the layering group
+     * (if it uses explicit ordering)
      * @returns {int} The ID of the new Drawable.
      */
-    createDrawable () {
+    createDrawable (optGroup, optInGroupOrdering) {
         const drawableID = this._nextDrawableId++;
         const drawable = new Drawable(drawableID);
         this._allDrawables[drawableID] = drawable;
-        this._drawList.push(drawableID);
+        this._updateDrawList(drawableID, optGroup, optInGroupOrdering);
 
         drawable.skin = null;
 
@@ -374,10 +404,159 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * @typedef LayerGroupOrderingDesc
+     * @property {string} group The name of the layer group
+     * @property {boolean} explicitOrdering Whether or not the given layer group is explicitly
+     * ordered, e.g. it cannot be re-ordered by the user
+     */
+    /**
+     * Set the layer group ordering for the renderer.
+     * @param {Array<LayerGroupOrderingDesc>} groupOrdering The ordered array of layer group
+     * descriptors
+     */
+    setLayerGroupOrdering (groupOrdering) {
+        this._groupOrdering = groupOrdering.map(item => item.group);
+        for (let i = 0; i < groupOrdering.length; i++) {
+            const currGroupName = groupOrdering[i].group;
+            this._layerGroups[currGroupName] = {
+                explicitOrdering: groupOrdering[i].explicitOrdering || false,
+                drawables: []
+            };
+        }
+    }
+
+    _updateDrawList (drawableID, group, inGroupOrdering) {
+        // If a layer group was not provided, put it in a special internal
+        // group of drawables without a layer group. That group is implicitly ordered.
+        if (!group) {
+            if (!this._unspecifiedLayerGroup) {
+                // Create the unspecified layer group if it doesn't already exist.
+                this._unspecifiedLayerGroup = {
+                    // The unspecified layer group should always have an implicit ordering.
+                    explicitOrdering: false,
+                    drawables: []
+                };
+            }
+
+            this._unspecifiedLayerGroup.drawables.push(drawableID);
+            // Update layers will add the items in the unspecified layer group
+            // at the very end of all the specified layers (even after a specified layer that
+            // we don't already know about (see case below))
+            this._updateLayers();
+            return;
+        }
+
+        if (!this._layerGroups.hasOwnProperty(group)) {
+            // Since there was a group specified, but we don't already know about
+            // it, add it to the end of the (known) group ordering (this does not include
+            // the unspecified layer -- see above case), and decide whether it's
+            // a group that can be re-ordered by the user, based on whether or not
+            // inGroupOrdering is specified.
+            this._groupOrdering.push(group);
+            if (typeof inGroupOrdering === 'number' && !isNaN(inGroupOrdering)) {
+                this._layerGroups[group] = {
+                    explicitOrdering: true,
+                    drawables: [{drawableID: drawableID, ordering: inGroupOrdering}]
+                };
+            } else {
+                this._layerGroups[group] = {
+                    explicitOrdering: false,
+                    drawables: [drawableID]
+                };
+            }
+            if (this._unspecifiedLayerGroup) {
+                this._updateLayers();
+            } else {
+                // If there's no unspecified layer group, we can skip
+                // updating all the layers because this drawableID should just
+                // go at the end of the list
+                this._drawList.push(drawableID);
+            }
+            return;
+        }
+
+        const currentLayerGroup = this._layerGroups[group];
+        const currentDrawables = currentLayerGroup.drawables;
+        if (currentLayerGroup.explicitOrdering) {
+            // The group is defined, and we already know about it
+            // The group is also an explicitly ordered group,
+            // and should already be sorted at this point.
+
+            // Add the drawableID in the right place
+            // If the inGroupOrdering is defined, use the inGroupOrdering to determine the place
+            // If the inGroupOrdering is not defined or not a valid number, add drawableID to the
+            // end of the array and set an explicit ordering to 1 + the current last ordering,
+            // starting at ordering 0 for an empty group
+            if (typeof inGroupOrdering === 'number' && !isNaN(inGroupOrdering)) {
+                // inGroupOrdering is defined and valid
+
+                // Find the first index where the ordering of the item in the layer group
+                // is bigger than the given ordering, or the ordering is null.
+                // This will place the item according to the ordering or before the first un-ordered
+                // (ordering property is null) item.
+                const insertIndex = currentDrawables.findIndex(
+                    item => (item.ordering > inGroupOrdering) || item.ordering === null);
+                const newDrawableOrdering = {
+                    drawableID: drawableID,
+                    ordering: inGroupOrdering
+                };
+                if (insertIndex < 0) {
+                    // None of the orderings in the layerGroup were bigger than the current
+                    // or null, add the new drawableOrdering desc to the end of the list
+                    currentDrawables.push(newDrawableOrdering);
+                } else {
+                    currentDrawables.splice(insertIndex, 0, newDrawableOrdering);
+                }
+            } else {
+                // inGroupOrdering is undefined or invalid
+                // Set a new ordering for the new drawable:
+                // 0, for empty array, or 1 + last ordering in array
+                const newOrdering = currentDrawables.length > 0 ?
+                    currentDrawables[currentDrawables.length - 1].ordering + 1 : 0;
+                // Add the drawable ordering desc with new ordering to the end of the group
+                currentDrawables.push({
+                    drawableID: drawableID,
+                    ordering: newOrdering
+                });
+            }
+        } else {
+            // Implicitly ordered group
+            if (typeof inGroupOrdering === 'number') {
+                log.warn(`Explicit ordering, ${inGroupOrdering}, provided for implicitly ordered group.` +
+                    `Ignoring ordering and placing drawable at the front.`);
+            }
+            currentDrawables.push(drawableID);
+        }
+
+        // Update full draw list
+        this._updateLayers();
+    }
+
+    _updateLayers () {
+        this._drawList = [];
+        for (let i = 0; i < this._groupOrdering.length; i++) {
+            const currGroupName = this._groupOrdering[i];
+            const currentLayerGroup = this._layerGroups[currGroupName];
+            // All the layer groups should already be sorted according to explicit or implicit
+            // ordering, get an array of just the drawableIDs
+            const layerGroupDrawables = currentLayerGroup.explicitOrdering ?
+                currentLayerGroup.drawables.map(item => item.drawableID) :
+                currentLayerGroup.drawables;
+            this._drawList = this._drawList.concat(layerGroupDrawables);
+        }
+        if (this._unspecifiedLayerGroup) { // Add unspecified items at the very end
+            this._drawList.concat(this._unspecifiedLayerGroup.drawables);
+        }
+    }
+
+    /**
      * Destroy a Drawable, removing it from the scene.
      * @param {int} drawableID The ID of the Drawable to remove.
+     * @param {string} optLayerGroup Optional group name that the drawable belongs to
+     * If the drawable was created in a specific group, it should be destroyed in the
+     * same group.
      */
-    destroyDrawable (drawableID) {
+    destroyDrawable (drawableID, optLayerGroup) {
         const drawable = this._allDrawables[drawableID];
         drawable.dispose();
         delete this._allDrawables[drawableID];
@@ -385,6 +564,19 @@ class RenderWebGL extends EventEmitter {
         let index;
         while ((index = this._drawList.indexOf(drawableID)) >= 0) {
             this._drawList.splice(index, 1);
+        }
+
+        if (optLayerGroup && this._layerGroups.hasOwnProperty(optLayerGroup)) {
+            const layerGroup = this._layerGroups[optLayerGroup];
+            const layerGroupList = this._layerGroups[optLayerGroup].drawables;
+            const groupIndex = layerGroup.explicitOrdering ?
+                layerGroupList.findIndex(item => item.drawableID === drawableID) :
+                layerGroupList.indexOf(drawableID);
+            layerGroupList.splice(groupIndex, 1);
+        } else if (this._unspecifiedLayerGroup) {
+            // look in unspecified
+            const unspecifiedLayerIndex = this._unspecifiedLayerGroup.indexOf(drawableID);
+            this._unspecifiedLayerGroup.splice(unspecifiedLayerIndex, 1);
         }
     }
 
@@ -397,15 +589,27 @@ class RenderWebGL extends EventEmitter {
      * "go to front": setDrawableOrder(id, Infinity);
      * @param {int} drawableID ID of Drawable to reorder.
      * @param {number} order New absolute order or relative order adjusment.
+     * @param {string=} optGroup Optional group name if the drawable belongs to a group
+     * Reordering will not take place if the provided group uses explicit ordering.
      * @param {boolean=} optIsRelative If set, `order` refers to a relative change.
      * @param {number=} optMin If set, order constrained to be at least `optMin`.
      * @return {?number} New order if changed, or null.
      */
-    setDrawableOrder (drawableID, order, optIsRelative, optMin) {
-        const oldIndex = this._drawList.indexOf(drawableID);
+    setDrawableOrder (drawableID, order, optGroup, optIsRelative, optMin) {
+        const usingLayerGroup = optGroup && this._layerGroups.hasOwnProperty(optGroup);
+        if (usingLayerGroup && this._layerGroups[optGroup].explicitOrdering) {
+            log.warn(`Cannot re-order the provided group ${optGroup} because it has an explicit ordering.`);
+            return null;
+        }
+        // At this point, we know that if a layer group was provided,
+        // then it is implicitly ordered.
+        const orderingList = usingLayerGroup ?
+            this._layerGroups[optGroup].drawables : this._unspecifiedLayerGroup.drawables;
+
+        const oldIndex = orderingList.indexOf(drawableID);
         if (oldIndex >= 0) {
             // Remove drawable from the list.
-            const drawable = this._drawList.splice(oldIndex, 1)[0];
+            const drawable = orderingList.splice(oldIndex, 1)[0];
             // Determine new index.
             let newIndex = order;
             if (optIsRelative) {
@@ -416,9 +620,11 @@ class RenderWebGL extends EventEmitter {
             }
             newIndex = Math.max(newIndex, 0);
             // Insert at new index.
-            this._drawList.splice(newIndex, 0, drawable);
-            return this._drawList.indexOf(drawable);
+            orderingList.splice(newIndex, 0, drawable);
+            this._updateLayers(); // Update the full drawables list
+            return this._drawList.indexOf(drawable); // return the index in the list of all drawables
         }
+
         return null;
     }
 
