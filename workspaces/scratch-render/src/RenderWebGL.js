@@ -121,10 +121,9 @@ class RenderWebGL extends EventEmitter {
         /** @type {Array<int>} */
         this._drawList = [];
 
-        /** @type {Array<String>}
-         * A list of layer group names in the order they should appear
-         * from furthest back to furthest in front.
-         */
+        // A list of layer group names in the order they should appear
+        // from furthest back to furthest in front.
+        /** @type {Array<String>} */
         this._groupOrdering = [];
 
         /**
@@ -134,17 +133,15 @@ class RenderWebGL extends EventEmitter {
          * OR just a drawableID if the ordering for this group is implicit)
          */
 
-        /** @type {Object.<string, LayerGroup>}
-         * Map of group name to layer group
-         */
+        // Map of group name to layer group
+        /** @type {Object.<string, LayerGroup>} */
         this._layerGroups = {};
 
-        /** @type {Object<string, DrawableOrderingDesc>}
-         * Group to be used for a new drawable
-         * if a group is not provided during creation.
-         * This is null to start with but will get populated
-         * if createDrawable is called without a group
-         */
+        // Group to be used for a new drawable
+        // if a group is not provided during creation.
+        // This is null to start with but will get populated
+        // if createDrawable is called without a group
+        /** @type {Object<string, DrawableOrderingDesc>} */
         this._unspecifiedLayerGroup = null;
 
         /** @type {int} */
