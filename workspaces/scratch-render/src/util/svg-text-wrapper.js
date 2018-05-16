@@ -1,13 +1,19 @@
 const TextWrapper = require('./text-wrapper');
+const xmlescape = require('xml-escape');
 
 /**
  * Measure text by using a hidden SVG attached to the DOM.
  * For use with TextWrapper.
  */
 class SVGMeasurementProvider {
-    constructor () {
+    /**
+     * @param {function} makeTextElement - provides a text node of an SVGElement
+     *     with the style of the text to be wrapped.
+     */
+    constructor (makeTextElement) {
         this._svgRoot = null;
         this._cache = {};
+        this.makeTextElement = makeTextElement;
     }
 
     /**
@@ -61,16 +67,7 @@ class SVGMeasurementProvider {
 
         const svgRoot = document.createElementNS(svgNamespace, 'svg');
         const svgGroup = document.createElementNS(svgNamespace, 'g');
-        const svgText = document.createElementNS(svgNamespace, 'text');
-
-        // Normalize text attributes to match what the svg-renderer does.
-        // @TODO This code should be shared with the svg-renderer.
-        svgText.setAttribute('alignment-baseline', 'text-before-edge');
-        svgText.setAttribute('font-size', '14');
-
-        // TODO Do we want to use the new default sans font instead of Helvetica?
-        // This change intentionally subverts the svg-renderer auto font conversion.
-        svgText.setAttribute('font-family', 'Helvetica, Arial, sans-serif');
+        const svgText = this.makeTextElement();
 
         // hide from the user, including screen readers
         svgRoot.setAttribute('style', 'position:absolute;visibility:hidden');
@@ -99,8 +96,32 @@ class SVGMeasurementProvider {
  * TextWrapper specialized for SVG text.
  */
 class SVGTextWrapper extends TextWrapper {
-    constructor () {
-        super(new SVGMeasurementProvider());
+    /**
+     * @param {function} makeTextElement - provides a text node of an SVGElement
+     *     with the style of the text to be wrapped.
+     */
+    constructor (makeTextElement) {
+        super(new SVGMeasurementProvider(makeTextElement));
+        this.makeTextElement = makeTextElement;
+    }
+
+    /**
+     * Wrap the provided text into lines restricted to a maximum width. See Unicode Standard Annex (UAX) #14.
+     * @param {number} maxWidth - the maximum allowed width of a line.
+     * @param {string} text - the text to be wrapped. Will be split on whitespace.
+     * @returns {SVGElement} wrapped text node
+     */
+    wrapText (maxWidth, text) {
+        const lines = super.wrapText(maxWidth, text);
+        const textElement = this.makeTextElement();
+        for (const line of lines) {
+            const tspanNode = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+            tspanNode.setAttribute('x', '0');
+            tspanNode.setAttribute('dy', '1.2em');
+            tspanNode.textContent = xmlescape(line);
+            textElement.appendChild(tspanNode);
+        }
+        return textElement;
     }
 }
 

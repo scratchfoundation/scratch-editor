@@ -1,6 +1,5 @@
 const SVGTextWrapper = require('./svg-text-wrapper');
 const SvgRenderer = require('scratch-svg-renderer').SVGRenderer;
-const xmlescape = require('xml-escape');
 
 const MAX_LINE_LENGTH = 170;
 const MIN_WIDTH = 50;
@@ -8,8 +7,21 @@ const MIN_WIDTH = 50;
 class SVGTextBubble {
     constructor () {
         this.svgRenderer = new SvgRenderer();
-        this.svgTextWrapper = new SVGTextWrapper();
+        this.svgTextWrapper = new SVGTextWrapper(this.makeSvgTextElement);
         this._textSizeCache = {};
+    }
+
+    /**
+     * @return {SVGElement} an SVG text node with the properties that we want for speech bubbles.
+     */
+    makeSvgTextElement () {
+        const svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        svgText.setAttribute('alignment-baseline', 'text-before-edge');
+        svgText.setAttribute('font-size', '14');
+        svgText.setAttribute('fill', '#575E75');
+        // TODO Do we want to use the new default sans font instead of Helvetica?
+        svgText.setAttribute('font-family', 'Helvetica');
+        return svgText;
     }
 
     _speechBubble (w, h, radius, pointsLeft) {
@@ -133,7 +145,7 @@ class SVGTextBubble {
 
 
     _getTextSize () {
-        const svgString = this._wrapSvgFragment(this._textFragment());
+        const svgString = this._wrapSvgFragment(this._textFragment);
         if (!this._textSizeCache[svgString]) {
             this._textSizeCache[svgString] = this.svgRenderer.measure(svgString);
         }
@@ -141,6 +153,7 @@ class SVGTextBubble {
     }
 
     _wrapSvgFragment (fragment) {
+        // @todo generate view box
         return `
           <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
               ${fragment}
@@ -148,14 +161,12 @@ class SVGTextBubble {
         `;
     }
 
-    _textFragment () {
-        return `<text fill="#575E75">${xmlescape(this.lines.join('\n'))}</text>`;
-    }
-
     buildString (type, text, pointsLeft) {
         this.type = type;
         this.pointsLeft = pointsLeft;
-        this.lines = this.svgTextWrapper.wrapText(MAX_LINE_LENGTH, text);
+        const textNode = this.svgTextWrapper.wrapText(MAX_LINE_LENGTH, text);
+        const serializer = new XMLSerializer();
+        this._textFragment = serializer.serializeToString(textNode);
 
         let fragment = '';
 
@@ -169,7 +180,7 @@ class SVGTextBubble {
         } else {
             fragment += this._thinkBubble(fullWidth, fullHeight, radius, this.pointsLeft);
         }
-        fragment += `<g transform="translate(${padding - x}, ${padding - y})">${this._textFragment()}</g>`;
+        fragment += `<g transform="translate(${padding - x}, ${padding - y})">${this._textFragment}</g>`;
         return this._wrapSvgFragment(fragment);
     }
 }
