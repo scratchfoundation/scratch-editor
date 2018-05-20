@@ -618,12 +618,10 @@ class RenderWebGL extends EventEmitter {
         if (groupIndex === this._groupOrdering.length - 1) {
             if (this._unspecifiedLayerGroup) {
                 return this._unspecifiedLayerGroup.drawListOffset;
-            } else {
-                return this._drawList.length;
             }
-        } else {
-            return this._layerGroups[this._groupOrdering[groupIndex + 1]].drawListOffset;
+            return this._drawList.length;
         }
+        return this._layerGroups[this._groupOrdering[groupIndex + 1]].drawListOffset;
     }
 
     /**
@@ -721,7 +719,8 @@ class RenderWebGL extends EventEmitter {
 
         // At this point, we know that if a layer group was provided,
         // then it is implicitly ordered.
-        let startIndex, endIndex;
+        let startIndex;
+        let endIndex;
         if (usingLayerGroup) {
             const currentLayerGroup = this._layerGroups[optGroup];
 
