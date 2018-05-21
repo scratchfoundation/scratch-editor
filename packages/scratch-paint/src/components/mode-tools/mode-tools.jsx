@@ -190,7 +190,7 @@ const ModeToolsComponent = props => {
     case Modes.TEXT:
         return (
             <div className={classNames(props.className, styles.modeTools)}>
-                <InputGroup>
+                <InputGroup className={styles.fontDropdown}>
                     <FontDropdown
                         onUpdateImage={props.onUpdateImage}
                     />

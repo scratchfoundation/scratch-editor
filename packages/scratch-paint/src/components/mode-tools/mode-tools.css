@@ -21,3 +21,7 @@
 .mod-labeled-icon-height {
     height: 2.85rem; /* for the second row so the dashed borders are equal in size */
 }
+
+.font-dropdown {
+    display: none;
+}
