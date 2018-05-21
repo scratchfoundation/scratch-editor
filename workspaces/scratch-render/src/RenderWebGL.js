@@ -128,9 +128,9 @@ class RenderWebGL extends EventEmitter {
 
         /**
          * @typedef LayerGroup
-         * @property {boolean} explicitOrdering Whether or not this group uses explicit ordering
-         * @property {Array} drawables List of drawables (either objects with drawableID and ordering
-         * OR just a drawableID if the ordering for this group is implicit)
+         * @property {int} groupIndex The relative position of this layer group in the group ordering
+         * @property {int} drawListOffset The absolute position of this layer group in the draw list
+         * This number gets updated as drawables get added to or deleted from the draw list.
          */
 
         // Map of group name to layer group
@@ -398,7 +398,7 @@ class RenderWebGL extends EventEmitter {
     /**
      * Set the layer group ordering for the renderer.
      * @param {Array<string>} groupOrdering The ordered array of layer group
-     * descriptors
+     * names
      */
     setLayerGroupOrdering (groupOrdering) {
         this._groupOrdering = groupOrdering;
@@ -431,6 +431,8 @@ class RenderWebGL extends EventEmitter {
         }
     }
 
+    // Given a layer group, return the index where it ends (non-inclusive),
+    // e.g. the returned index does not have a drawable from this layer group in it)
     _endIndexForKnownLayerGroup (layerGroup) {
         const groupIndex = layerGroup.groupIndex;
         if (groupIndex === this._groupOrdering.length - 1) {
@@ -442,9 +444,7 @@ class RenderWebGL extends EventEmitter {
     /**
      * Destroy a Drawable, removing it from the scene.
      * @param {int} drawableID The ID of the Drawable to remove.
-     * @param {string} group Optional group name that the drawable belongs to
-     * If the drawable was created in a specific group, it should be destroyed in the
-     * same group.
+     * @param {string} group Group name that the drawable belongs to
      */
     destroyDrawable (drawableID, group) {
         if (!group || !this._layerGroups.hasOwnProperty(group)) {
