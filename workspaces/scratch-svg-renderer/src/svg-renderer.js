@@ -64,9 +64,11 @@ class SvgRenderer {
 
     /**
      * Load an SVG string and normalize it. All the steps before drawing/measuring.
-     * @param {string} svgString String of SVG data to draw in quirks-mode.
+     * @param {!string} svgString String of SVG data to draw in quirks-mode.
+     * @param {?boolean} fromVersion2 True if we should perform conversion from
+     *     version 2 to version 3 svg.
      */
-    loadString (svgString) {
+    loadString (svgString, fromVersion2) {
         // New svg string invalidates the cached image
         this._cachedImage = null;
 
@@ -78,10 +80,21 @@ class SvgRenderer {
             throw new Error('Document does not appear to be SVG.');
         }
         this._svgTag = this._svgDom.documentElement;
-        // Transform all text elements.
-        this._transformText();
-        // Transform measurements.
-        this._transformMeasurements();
+        if (fromVersion2) {
+            // Transform all text elements.
+            this._transformText();
+            // Transform measurements.
+            this._transformMeasurements();
+        } else if (!this._svgTag.getAttribute('viewBox')) {
+            // Renderer expects a view box.
+            this._transformMeasurements();
+        }
+        this._measurements = {
+            width: this._svgTag.viewBox.baseVal.width,
+            height: this._svgTag.viewBox.baseVal.height,
+            x: this._svgTag.viewBox.baseVal.x,
+            y: this._svgTag.viewBox.baseVal.y
+        };
     }
 
     /**
@@ -220,17 +233,11 @@ class SvgRenderer {
         const x = bbox.x - halfStrokeWidth;
         const y = bbox.y - halfStrokeWidth;
 
-        // Set the correct measurements on the SVG tag, and save them.
+        // Set the correct measurements on the SVG tag
         this._svgTag.setAttribute('width', width);
         this._svgTag.setAttribute('height', height);
         this._svgTag.setAttribute('viewBox',
             `${x} ${y} ${width} ${height}`);
-        this._measurements = {
-            width: width,
-            height: height,
-            x: x,
-            y: y
-        };
     }
 
     /**
