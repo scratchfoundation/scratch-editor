@@ -38,15 +38,16 @@
     var canvas = document.getElementById('scratch-stage');
     var fudge = 90;
     var renderer = new ScratchRender(canvas);
+    renderer.setLayerGroupOrdering(['group1']);
 
-    var drawableID = renderer.createDrawable();
+    var drawableID = renderer.createDrawable('group1');
     renderer.updateDrawableProperties(drawableID, {
         position: [0, 0],
         scale: [100, 100],
         direction: 90
     });
 
-    var drawableID2 = renderer.createDrawable();
+    var drawableID2 = renderer.createDrawable('group1');
     var wantBitmapSkin = false;
 
     // Bitmap (squirrel)
