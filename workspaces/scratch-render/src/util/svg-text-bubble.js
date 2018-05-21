@@ -3,6 +3,7 @@ const SvgRenderer = require('scratch-svg-renderer').SVGRenderer;
 
 const MAX_LINE_LENGTH = 170;
 const MIN_WIDTH = 50;
+const STROKE_WIDTH = 4;
 
 class SVGTextBubble {
     constructor () {
@@ -57,7 +58,7 @@ class SVGTextBubble {
                 <path
                   d="${pathString}"
                   stroke="rgba(0, 0, 0, 0.15)"
-                  stroke-width="4"
+                  stroke-width="${STROKE_WIDTH}"
                   fill="rgba(0, 0, 0, 0.15)"
                   stroke-line-join="round"
               />
@@ -113,7 +114,7 @@ class SVGTextBubble {
                     rx="${rx}" ry="${ry}"
                     fill="rgba(0, 0, 0, 0.15)"
                     stroke="rgba(0, 0, 0, 0.15)"
-                    stroke-width="4"
+                    stroke-width="${STROKE_WIDTH}"
                 />
                 <ellipse
                     cx="${cx}" cy="${cy}"
@@ -137,7 +138,8 @@ class SVGTextBubble {
 
         return `
              <g>
-                <path d="${pathString}" stroke="rgba(0, 0, 0, 0.15)" stroke-width="4" fill="rgba(0, 0, 0, 0.15)" />
+                <path d="${pathString}" stroke="rgba(0, 0, 0, 0.15)" stroke-width="${STROKE_WIDTH}"
+                    fill="rgba(0, 0, 0, 0.15)" />
                 <path d="${pathString}" stroke="none" fill="white" />
                 ${ellipses.join('\n')}
             </g>`;
@@ -152,13 +154,16 @@ class SVGTextBubble {
         return this._textSizeCache[svgString];
     }
 
-    _wrapSvgFragment (fragment) {
-        // @todo generate view box
-        return `
-          <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-              ${fragment}
-          </svg>
-        `;
+    _wrapSvgFragment (fragment, width, height) {
+        let svgString = `<svg xmlns="http://www.w3.org/2000/svg" version="1.1"`;
+        if (width && height) {
+            svgString = `${svgString} viewBox="
+                ${-STROKE_WIDTH / 2} ${-STROKE_WIDTH / 2} ${width + STROKE_WIDTH} ${height + STROKE_WIDTH + 12}">`;
+        } else {
+            svgString = `${svgString}>`;
+        }
+        svgString = `${svgString} ${fragment} </svg>`;
+        return svgString;
     }
 
     buildString (type, text, pointsLeft) {
@@ -181,7 +186,7 @@ class SVGTextBubble {
             fragment += this._thinkBubble(fullWidth, fullHeight, radius, this.pointsLeft);
         }
         fragment += `<g transform="translate(${padding - x}, ${padding - y})">${this._textFragment}</g>`;
-        return this._wrapSvgFragment(fragment);
+        return this._wrapSvgFragment(fragment, fullWidth, fullHeight);
     }
 }
 
