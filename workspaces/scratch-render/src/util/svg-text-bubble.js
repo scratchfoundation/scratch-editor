@@ -157,8 +157,11 @@ class SVGTextBubble {
     _wrapSvgFragment (fragment, width, height) {
         let svgString = `<svg xmlns="http://www.w3.org/2000/svg" version="1.1"`;
         if (width && height) {
+            const fullWidth = width + STROKE_WIDTH;
+            const fullHeight = height + STROKE_WIDTH + 12;
             svgString = `${svgString} viewBox="
-                ${-STROKE_WIDTH / 2} ${-STROKE_WIDTH / 2} ${width + STROKE_WIDTH} ${height + STROKE_WIDTH + 12}">`;
+                ${-STROKE_WIDTH / 2} ${-STROKE_WIDTH / 2} ${fullWidth} ${fullHeight}"
+                width="${fullWidth}" height="${fullHeight}">`;
         } else {
             svgString = `${svgString}>`;
         }
