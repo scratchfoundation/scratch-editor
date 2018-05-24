@@ -143,7 +143,7 @@ class SvgRenderer {
                 for (const line of lines) {
                     const tspanNode = createSVGElement('tspan');
                     tspanNode.setAttribute('x', '0');
-                    tspanNode.setAttribute('dy', '1.2em');
+                    tspanNode.setAttribute('dy', '1em');
                     tspanNode.textContent = line;
                     textElement.appendChild(tspanNode);
                 }
