@@ -276,7 +276,8 @@ class TextTool extends paper.Tool {
         if (this.guide) this.guide.remove();
         this.guide = hoverBounds(this.textBox, TextTool.TEXT_PADDING);
         this.guide.dashArray = [4, 4];
-        this.element.style.width = `${this.textBox.internalBounds.width}px`;
+        // Prevent line from wrapping
+        this.element.style.width = `${this.textBox.internalBounds.width + 1}px`;
         this.element.style.height = `${this.textBox.internalBounds.height}px`;
     }
     /**
