@@ -59,11 +59,11 @@ class Silhouette {
         const height = this._height = canvas.height = bitmapData.height;
         const ctx = canvas.getContext('2d');
 
-        ctx.clearRect(0, 0, width, height);
-        ctx.drawImage(bitmapData, 0, 0, width, height);
         if (!(width && height)) {
             return;
         }
+        ctx.clearRect(0, 0, width, height);
+        ctx.drawImage(bitmapData, 0, 0, width, height);
         const imageData = ctx.getImageData(0, 0, width, height);
 
         this._data = new Uint8ClampedArray(imageData.data.length / 4);
