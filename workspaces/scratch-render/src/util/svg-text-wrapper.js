@@ -1,5 +1,4 @@
 const TextWrapper = require('./text-wrapper');
-const xmlescape = require('xml-escape');
 
 /**
  * Measure text by using a hidden SVG attached to the DOM.
@@ -118,7 +117,7 @@ class SVGTextWrapper extends TextWrapper {
             const tspanNode = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
             tspanNode.setAttribute('x', '0');
             tspanNode.setAttribute('dy', '1.2em');
-            tspanNode.textContent = xmlescape(line);
+            tspanNode.textContent = line;
             textElement.appendChild(tspanNode);
         }
         return textElement;
