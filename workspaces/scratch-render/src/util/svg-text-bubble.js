@@ -169,12 +169,16 @@ class SVGTextBubble {
         return svgString;
     }
 
+    _buildTextFragment (text) {
+        const textNode = this.svgTextWrapper.wrapText(MAX_LINE_LENGTH, text);
+        const serializer = new XMLSerializer();
+        return serializer.serializeToString(textNode);
+    }
+
     buildString (type, text, pointsLeft) {
         this.type = type;
         this.pointsLeft = pointsLeft;
-        const textNode = this.svgTextWrapper.wrapText(MAX_LINE_LENGTH, text);
-        const serializer = new XMLSerializer();
-        this._textFragment = serializer.serializeToString(textNode);
+        this._textFragment = this._buildTextFragment(text);
 
         let fragment = '';
 
