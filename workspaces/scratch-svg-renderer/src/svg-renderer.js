@@ -136,6 +136,7 @@ class SvgRenderer {
             // Fix line breaks in text, which are not natively supported by SVG.
             // Only fix if text does not have child tspans.
             let text = textElement.textContent;
+            let firstTspan = true;
             if (text && textElement.childElementCount === 0) {
                 textElement.textContent = '';
                 const lines = text.split('\n');
@@ -143,13 +144,49 @@ class SvgRenderer {
                 for (const line of lines) {
                     const tspanNode = createSVGElement('tspan');
                     tspanNode.setAttribute('x', '0');
-                    tspanNode.setAttribute('dy', '1em');
+                    if (firstTspan) {
+                        tspanNode.setAttribute('dy', '0');
+                        firstTspan = false;
+                    }
+                    const mtx = textElement.transform.baseVal[0].matrix;
+                    const dx = .2;
+                    let dy = 0;
+                    if (textElement.getAttribute('font-family') === 'Gloria') {
+                        textElement.setAttribute('font-family', 'Handwriting');
+                        tspanNode.setAttribute('dy', '2em');
+                        dy = -1.2;
+                    } else if (textElement.getAttribute('font-family') === 'Scratch') {
+                        tspanNode.setAttribute('dy', '0.89em');
+                        dy = -.1;
+                    } else if (textElement.getAttribute('font-family') === 'Mystery') {
+                        textElement.setAttribute('font-family', 'Curly');
+                        tspanNode.setAttribute('dy', '1.38em');
+                        dy = -.5;
+                    } else if (textElement.getAttribute('font-family') === 'Marker') {
+                        tspanNode.setAttribute('dy', '1.45em');
+                        dy = -.5;
+                    } else if (textElement.getAttribute('font-family') === 'Helvetica') {
+                        textElement.setAttribute('font-family', 'Sans Serif');
+                        tspanNode.setAttribute('dy', '1.13em');
+                        dy = -.2;
+                    } else if (textElement.getAttribute('font-family') === 'Donegal') {
+                        textElement.setAttribute('font-family', 'Serif');
+                        tspanNode.setAttribute('dy', '1.25em');
+                        dy = -.3;
+                    } else {
+                        tspanNode.setAttribute('dy', '1.2em');
+                    }
+
+                    // Right multiply matrix by a translation of dy
+                    mtx.e += (mtx.b * dx) + (mtx.c * dy);
+                    mtx.e *= mtx.a;
+                    mtx.f += (mtx.a * dx) + (mtx.d * dy);
+                    mtx.f *= mtx.d;
                     tspanNode.textContent = line;
                     textElement.appendChild(tspanNode);
                 }
             }
         }
-        convertFonts(this._svgTag);
     }
 
     /**
