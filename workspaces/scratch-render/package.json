@@ -53,7 +53,7 @@
     "minilog": "3.1.0",
     "raw-loader": "^0.5.1",
     "scratch-storage": "^0.4.0",
-    "scratch-svg-renderer": "0.1.0-prerelease.20180524210316",
+    "scratch-svg-renderer": "0.1.0-prerelease.20180531205843",
     "twgl.js": "4.4.0"
   }
 }
