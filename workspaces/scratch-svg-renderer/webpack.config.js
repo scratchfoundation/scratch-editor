@@ -49,6 +49,10 @@ module.exports = [
             path: path.resolve('dist', 'node'),
             filename: '[name].js'
         },
+        externals: {
+            jimp: true,
+            minilog: true
+        },
         module: {
             rules: [{
                 options: {
