@@ -1,5 +1,5 @@
-const LineBreaker = require('linebreak');
-const GraphemeBreaker = require('grapheme-breaker');
+const LineBreaker = require('!ify-loader!linebreak');
+const GraphemeBreaker = require('!ify-loader!grapheme-breaker');
 
 /**
  * Tell this text wrapper to use a specific measurement provider.
