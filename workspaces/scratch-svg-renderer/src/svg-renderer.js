@@ -170,7 +170,7 @@ class SvgRenderer {
                 ty = -4 * fontSize / 22;
             }
             // Right multiply matrix by a translation of (tx, ty)
-            const mtx = textElement.transform.baseVal[0].matrix;
+            const mtx = textElement.transform.baseVal.getItem(0).matrix;
             mtx.e += (mtx.a * tx) + (mtx.c * ty);
             mtx.f += (mtx.b * tx) + (mtx.d * ty);
 
