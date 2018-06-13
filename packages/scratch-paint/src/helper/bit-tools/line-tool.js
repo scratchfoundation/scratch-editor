@@ -38,6 +38,9 @@ class LineTool extends paper.Tool {
     }
     // Draw a brush mark at the given point
     draw (x, y) {
+        if (!this.tmpCanvas) {
+            this.tmpCanvas = getBrushMark(this.size, this.color);
+        }
         const roundedUpRadius = Math.ceil(this.size / 2);
         this.drawTarget.drawImage(this.tmpCanvas, new paper.Point(~~x - roundedUpRadius, ~~y - roundedUpRadius));
     }
@@ -72,8 +75,8 @@ class LineTool extends paper.Tool {
     handleMouseDown (event) {
         if (event.event.button > 0) return; // only first mouse button
         this.active = true;
-        
-        this.cursorPreview.remove();
+
+        if (this.cursorPreview) this.cursorPreview.remove();
 
         const tmpCanvas = document.createElement('canvas');
         tmpCanvas.width = ART_BOARD_WIDTH;

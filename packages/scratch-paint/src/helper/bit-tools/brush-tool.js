@@ -35,6 +35,9 @@ class BrushTool extends paper.Tool {
     }
     // Draw a brush mark at the given point
     draw (x, y) {
+        if (!this.tmpCanvas) {
+            this.tmpCanvas = getBrushMark(this.size, this.color);
+        }
         const roundedUpRadius = Math.ceil(this.size / 2);
         getRaster().drawImage(this.tmpCanvas, new paper.Point(~~x - roundedUpRadius, ~~y - roundedUpRadius));
     }
