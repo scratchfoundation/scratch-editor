@@ -7,6 +7,7 @@ import React from 'react';
 import {changeBrushSize} from '../../reducers/brush-mode';
 import {changeBrushSize as changeEraserSize} from '../../reducers/eraser-mode';
 import {changeBitBrushSize} from '../../reducers/bit-brush-size';
+import {changeBitEraserSize} from '../../reducers/bit-eraser-size';
 
 import FontDropdown from '../../containers/font-dropdown.jsx';
 import LiveInputHOC from '../forms/live-input-hoc.jsx';
@@ -23,6 +24,7 @@ import copyIcon from './icons/copy.svg';
 import pasteIcon from './icons/paste.svg';
 
 import bitBrushIcon from '../bit-brush-mode/brush.svg';
+import bitEraserIcon from '../bit-eraser-mode/eraser.svg';
 import bitLineIcon from '../bit-line-mode/line.svg';
 import brushIcon from '../brush-mode/brush.svg';
 import curvedPointIcon from './icons/curved-point.svg';
@@ -117,7 +119,13 @@ const ModeToolsComponent = props => {
             </div>
         );
     }
+    case Modes.BIT_ERASER:
+        /* falls through */
     case Modes.ERASER:
+    {
+        const currentIcon = isVector(props.format) ? eraserIcon : bitEraserIcon;
+        const currentEraserValue = isBitmap(props.format) ? props.bitEraserSize : props.eraserValue;
+        const changeFunction = isBitmap(props.format) ? props.onBitEraserSliderChange : props.onEraserSliderChange;
         return (
             <div className={classNames(props.className, styles.modeTools)}>
                 <div>
@@ -125,7 +133,7 @@ const ModeToolsComponent = props => {
                         alt={props.intl.formatMessage(messages.eraserSize)}
                         className={styles.modeToolsIcon}
                         draggable={false}
-                        src={eraserIcon}
+                        src={currentIcon}
                     />
                 </div>
                 <LiveInput
@@ -134,11 +142,12 @@ const ModeToolsComponent = props => {
                     max={MAX_STROKE_WIDTH}
                     min="1"
                     type="number"
-                    value={props.eraserValue}
-                    onSubmit={props.onEraserSliderChange}
+                    value={currentEraserValue}
+                    onSubmit={changeFunction}
                 />
             </div>
         );
+    }
     case Modes.RESHAPE:
         return (
             <div className={classNames(props.className, styles.modeTools)}>
@@ -207,6 +216,7 @@ const ModeToolsComponent = props => {
 
 ModeToolsComponent.propTypes = {
     bitBrushSize: PropTypes.number,
+    bitEraserSize: PropTypes.number,
     brushValue: PropTypes.number,
     className: PropTypes.string,
     clipboardItems: PropTypes.arrayOf(PropTypes.array),
@@ -233,6 +243,7 @@ const mapStateToProps = state => ({
     mode: state.scratchPaint.mode,
     format: state.scratchPaint.format,
     bitBrushSize: state.scratchPaint.bitBrushSize,
+    bitEraserSize: state.scratchPaint.bitEraserSize,
     brushValue: state.scratchPaint.brushMode.brushSize,
     clipboardItems: state.scratchPaint.clipboard.items,
     eraserValue: state.scratchPaint.eraserMode.brushSize,
@@ -244,6 +255,9 @@ const mapDispatchToProps = dispatch => ({
     },
     onBitBrushSliderChange: bitBrushSize => {
         dispatch(changeBitBrushSize(bitBrushSize));
+    },
+    onBitEraserSliderChange: eraserSize => {
+        dispatch(changeBitEraserSize(eraserSize));
     },
     onEraserSliderChange: eraserSize => {
         dispatch(changeEraserSize(eraserSize));

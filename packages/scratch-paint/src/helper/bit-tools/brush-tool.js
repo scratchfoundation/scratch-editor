@@ -4,15 +4,17 @@ import {forEachLinePoint, getBrushMark} from '../bitmap';
 import {getGuideLayer} from '../layer';
 
 /**
- * Tool for drawing with the bitmap brush.
+ * Tool for drawing with the bitmap brush and eraser
  */
 class BrushTool extends paper.Tool {
     /**
      * @param {!function} onUpdateImage A callback to call when the image visibly changes
+     * @param {boolean} isEraser True if brush should erase
      */
-    constructor (onUpdateImage) {
+    constructor (onUpdateImage, isEraser) {
         super();
         this.onUpdateImage = onUpdateImage;
+        this.isEraser = isEraser;
         
         // We have to set these functions instead of just declaring them because
         // paper.js tools hook up the listeners in the setter functions.
@@ -39,7 +41,14 @@ class BrushTool extends paper.Tool {
             this.tmpCanvas = getBrushMark(this.size, this.color);
         }
         const roundedUpRadius = Math.ceil(this.size / 2);
+        const context = getRaster().getContext('2d');
+        if (this.isEraser) {
+            context.globalCompositeOperation = 'destination-out';
+        }
         getRaster().drawImage(this.tmpCanvas, new paper.Point(~~x - roundedUpRadius, ~~y - roundedUpRadius));
+        if (this.isEraser) {
+            context.globalCompositeOperation = 'source-over';
+        }
     }
     updateCursorIfNeeded () {
         if (!this.size) {
@@ -57,7 +66,7 @@ class BrushTool extends paper.Tool {
                 this.cursorPreview.remove();
             }
 
-            this.tmpCanvas = getBrushMark(this.size, this.color);
+            this.tmpCanvas = getBrushMark(this.size, this.color, this.isEraser);
             this.cursorPreview = new paper.Raster(this.tmpCanvas);
             this.cursorPreview.guide = true;
             this.cursorPreview.parent = getGuideLayer();

@@ -86,9 +86,10 @@ const fillEllipse = function (centerX, centerY, radiusX, radiusY, context) {
 /**
  * @param {!number} size The diameter of the brush
  * @param {!string} color The css color of the brush
+ * @param {?boolean} isEraser True if we want the brush mark for the eraser
  * @return {HTMLCanvasElement} a canvas with the brush mark printed on it
  */
-const getBrushMark = function (size, color) {
+const getBrushMark = function (size, color, isEraser) {
     size = ~~size;
     const canvas = document.createElement('canvas');
     const roundedUpRadius = Math.ceil(size / 2);
@@ -96,7 +97,8 @@ const getBrushMark = function (size, color) {
     canvas.height = roundedUpRadius * 2;
     const context = canvas.getContext('2d');
     context.imageSmoothingEnabled = false;
-    context.fillStyle = color;
+    context.fillStyle = isEraser ? 'white' : color;
+    // @todo add outline for erasers
     // Small squares for pixel artists
     if (size <= 5) {
         if (size % 2) {

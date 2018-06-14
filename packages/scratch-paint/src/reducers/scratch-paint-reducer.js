@@ -1,6 +1,7 @@
 import {combineReducers} from 'redux';
 import modeReducer from './modes';
 import bitBrushSizeReducer from './bit-brush-size';
+import bitEraserSizeReducer from './bit-eraser-size';
 import brushModeReducer from './brush-mode';
 import eraserModeReducer from './eraser-mode';
 import colorReducer from './color';
@@ -17,6 +18,7 @@ import undoReducer from './undo';
 export default combineReducers({
     mode: modeReducer,
     bitBrushSize: bitBrushSizeReducer,
+    bitEraserSize: bitEraserSizeReducer,
     brushMode: brushModeReducer,
     color: colorReducer,
     clipboard: clipboardReducer,

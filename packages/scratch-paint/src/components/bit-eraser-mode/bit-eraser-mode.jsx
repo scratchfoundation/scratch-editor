@@ -1,27 +1,26 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-import {ComingSoonTooltip} from '../coming-soon/coming-soon.jsx';
 import ToolSelectComponent from '../tool-select-base/tool-select-base.jsx';
 
 import eraserIcon from './eraser.svg';
 
-const BitEraserComponent = () => (
-    <ComingSoonTooltip
-        place="right"
-        tooltipId="bit-eraser-mode"
-    >
-        <ToolSelectComponent
-            disabled
-            imgDescriptor={{
-                defaultMessage: 'Eraser',
-                description: 'Label for the eraser tool',
-                id: 'paint.eraserMode.eraser'
-            }}
-            imgSrc={eraserIcon}
-            isSelected={false}
-            onMouseDown={function () {}} // eslint-disable-line react/jsx-no-bind
-        />
-    </ComingSoonTooltip>
+const BitEraserComponent = props => (
+    <ToolSelectComponent
+        imgDescriptor={{
+            defaultMessage: 'Eraser',
+            description: 'Label for the eraser tool',
+            id: 'paint.eraserMode.eraser'
+        }}
+        imgSrc={eraserIcon}
+        isSelected={props.isSelected}
+        onMouseDown={props.onMouseDown}
+    />
 );
+
+BitEraserComponent.propTypes = {
+    isSelected: PropTypes.bool.isRequired,
+    onMouseDown: PropTypes.func.isRequired
+};
 
 export default BitEraserComponent;
