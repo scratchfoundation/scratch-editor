@@ -1,5 +1,7 @@
+import paper from '@scratch/paper';
 import {rectSelect} from '../guides';
 import {clearSelection, processRectangularSelection} from '../selection';
+import {getRaster} from '../layer';
 
 /** Tool to handle drag selection. A dotted line box appears and everything enclosed is selected. */
 class SelectionBoxTool {
@@ -29,13 +31,41 @@ class SelectionBoxTool {
         // Remove this rect on the next drag and up event
         this.selectionRect.removeOnDrag();
     }
-    onMouseUp (event) {
+    onMouseUpVector (event) {
         if (event.event.button > 0) return; // only first mouse button
         if (this.selectionRect) {
             processRectangularSelection(event, this.selectionRect, this.mode);
             this.selectionRect.remove();
             this.selectionRect = null;
             this.setSelectedItems();
+        }
+    }
+    onMouseUpBitmap (event) {
+        if (event.event.button > 0) return; // only first mouse button
+        if (this.selectionRect) {
+            const rect = new paper.Rectangle(
+                ~~this.selectionRect.bounds.x,
+                ~~this.selectionRect.bounds.y,
+                ~~this.selectionRect.bounds.width,
+                ~~this.selectionRect.bounds.height,
+            );
+
+            if (rect.area) {
+                // Pull selected raster to active layer
+                const raster = getRaster().getSubRaster(rect);
+                raster.parent = paper.project.activeLayer;
+                raster.selected = true;
+                this.setSelectedItems();
+
+                // Clear selection from raster layer
+                const context = getRaster().canvas.getContext('2d');
+                context.imageSmoothingEnabled = false;
+                context.clearRect(rect.x, rect.y, rect.width, rect.height);
+            }
+
+            // Remove dotted rectangle
+            this.selectionRect.remove();
+            this.selectionRect = null;
         }
     }
 }

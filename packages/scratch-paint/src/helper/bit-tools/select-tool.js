@@ -1,18 +1,19 @@
 import Modes from '../../lib/modes';
 
-import {getHoveredItem} from '../hover';
-import {selectRootItem} from '../selection';
-import BoundingBoxTool from './bounding-box-tool';
-import NudgeTool from './nudge-tool';
-import SelectionBoxTool from './selection-box-tool';
+import {getSelectedLeafItems} from '../selection';
+import {getRaster} from '../layer';
+
+import BoundingBoxTool from '../selection-tools/bounding-box-tool';
+import NudgeTool from '../selection-tools/nudge-tool';
+import SelectionBoxTool from '../selection-tools/selection-box-tool';
 import paper from '@scratch/paper';
 
 /**
- * paper.Tool that handles select mode. This is made up of 2 subtools.
+ * paper.Tool that handles select mode in bitmap. This is made up of 2 subtools.
  * - The selection box tool is active when the user clicks an empty space and drags.
  *   It selects all items in the rectangle.
  * - The bounding box tool is active if the user clicks on a non-empty space. It handles
- *   reshaping the item that was clicked.
+ *   reshaping the selection.
  */
 class SelectTool extends paper.Tool {
     /** The distance within which mouse events count as a hit against an item */
@@ -20,46 +21,29 @@ class SelectTool extends paper.Tool {
         return 6;
     }
     /**
-     * @param {function} setHoveredItem Callback to set the hovered item
-     * @param {function} clearHoveredItem Callback to clear the hovered item
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      * @param {!function} onUpdateImage A callback to call when the image visibly changes
      */
-    constructor (setHoveredItem, clearHoveredItem, setSelectedItems, clearSelectedItems, onUpdateImage) {
+    constructor (setSelectedItems, clearSelectedItems, onUpdateImage) {
         super();
-        this.setHoveredItem = setHoveredItem;
-        this.clearHoveredItem = clearHoveredItem;
         this.onUpdateImage = onUpdateImage;
         this.boundingBoxTool = new BoundingBoxTool(Modes.SELECT, setSelectedItems, clearSelectedItems, onUpdateImage);
         const nudgeTool = new NudgeTool(this.boundingBoxTool, onUpdateImage);
         this.selectionBoxTool = new SelectionBoxTool(Modes.SELECT, setSelectedItems, clearSelectedItems);
         this.selectionBoxMode = false;
-        this.prevHoveredItemId = null;
+        this.selection = null;
         this.active = false;
 
         // We have to set these functions instead of just declaring them because
         // paper.js tools hook up the listeners in the setter functions.
         this.onMouseDown = this.handleMouseDown;
-        this.onMouseMove = this.handleMouseMove;
         this.onMouseDrag = this.handleMouseDrag;
         this.onMouseUp = this.handleMouseUp;
         this.onKeyUp = nudgeTool.onKeyUp;
         this.onKeyDown = nudgeTool.onKeyDown;
 
-        selectRootItem();
-        setSelectedItems();
         this.boundingBoxTool.setSelectionBounds();
-    }
-    /**
-     * To be called when the hovered item changes. When the select tool hovers over a
-     * new item, it compares against this to see if a hover item change event needs to
-     * be fired.
-     * @param {paper.Item} prevHoveredItemId ID of the highlight item that indicates the mouse is
-     *     over a given item currently
-     */
-    setPrevHoveredItemId (prevHoveredItemId) {
-        this.prevHoveredItemId = prevHoveredItemId;
     }
     /**
      * Should be called if the selection changes to update the bounds of the bounding box.
@@ -94,25 +78,17 @@ class SelectTool extends paper.Tool {
         if (event.event.button > 0) return; // only first mouse button
         this.active = true;
 
-        // If bounding box tool does not find an item that was hit, use selection box tool.
-        this.clearHoveredItem();
+        // If bounding box tool does not find an item that was hit, rasterize the old selection,
+        // then use selection box tool.
         if (!this.boundingBoxTool
             .onMouseDown(
                 event,
                 event.modifiers.alt,
                 event.modifiers.shift,
                 this.getHitOptions(false /* preseelectedOnly */))) {
+            this.commitSelection();
             this.selectionBoxMode = true;
             this.selectionBoxTool.onMouseDown(event.modifiers.shift);
-        }
-    }
-    handleMouseMove (event) {
-        const hoveredItem = getHoveredItem(event, this.getHitOptions());
-        if ((!hoveredItem && this.prevHoveredItemId) || // There is no longer a hovered item
-                (hoveredItem && !this.prevHoveredItemId) || // There is now a hovered item
-                (hoveredItem && this.prevHoveredItemId &&
-                    hoveredItem.id !== this.prevHoveredItemId)) { // hovered item changed
-            this.setHoveredItem(hoveredItem ? hoveredItem.id : null);
         }
     }
     handleMouseDrag (event) {
@@ -128,19 +104,34 @@ class SelectTool extends paper.Tool {
         if (event.event.button > 0 || !this.active) return; // only first mouse button
 
         if (this.selectionBoxMode) {
-            this.selectionBoxTool.onMouseUpVector(event);
+            this.selectionBoxTool.onMouseUpBitmap(event);
         } else {
             this.boundingBoxTool.onMouseUp(event);
         }
         this.selectionBoxMode = false;
         this.active = false;
     }
+    commitSelection () {
+        const selection = getSelectedLeafItems();
+        if (selection.length) {
+            // @todo handle non-rasters?
+            for (const item of selection) {
+                if (item instanceof paper.Raster) {
+                    // TODO image smoothing?
+                    getRaster().canvas.drawImage(
+                        item.canvas,
+                        item.bounds.topLeft.x,
+                        item.bounds.topLeft.y,
+                        // Apply transform
+                    );
+                    item.remove();
+                }
+            }
+        }
+    }
     deactivateTool () {
-        this.clearHoveredItem();
+        this.commitSelection();
         this.boundingBoxTool.removeBoundsPath();
-        this.setHoveredItem = null;
-        this.clearHoveredItem = null;
-        this.onUpdateImage = null;
         this.boundingBoxTool = null;
         this.selectionBoxTool = null;
     }

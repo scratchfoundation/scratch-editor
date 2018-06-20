@@ -8,6 +8,7 @@ const Modes = keyMirror({
     BIT_TEXT: null,
     BIT_FILL: null,
     BIT_ERASER: null,
+    BIT_SELECT: null,
     BRUSH: null,
     ERASER: null,
     LINE: null,
@@ -27,7 +28,8 @@ const BitmapModes = keyMirror({
     BIT_RECT: null,
     BIT_TEXT: null,
     BIT_FILL: null,
-    BIT_ERASER: null
+    BIT_ERASER: null,
+    BIT_SELECT: null
 });
 
 export {

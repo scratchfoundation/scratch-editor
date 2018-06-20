@@ -1,5 +1,6 @@
 import paper from '@scratch/paper';
 import PropTypes from 'prop-types';
+import log from '../log/log';
 
 import React from 'react';
 import {connect} from 'react-redux';
@@ -136,7 +137,11 @@ class PaintEditor extends React.Component {
             case Modes.BIT_ERASER:
                 this.props.changeMode(Modes.ERASER);
                 break;
+            case Modes.BIT_SELECT:
+                this.props.changeMode(Modes.SELECT);
+                break;
             default:
+                log.error(`Mode not handled: ${this.props.mode}`);
                 this.props.changeMode(Modes.BRUSH);
             }
         } else if (isBitmap(newFormat)) {
@@ -162,7 +167,13 @@ class PaintEditor extends React.Component {
             case Modes.ERASER:
                 this.props.changeMode(Modes.BIT_ERASER);
                 break;
+            case Modes.RESHAPE:
+                /* falls through */
+            case Modes.SELECT:
+                this.props.changeMode(Modes.BIT_SELECT);
+                break;
             default:
+                log.error(`Mode not handled: ${this.props.mode}`);
                 this.props.changeMode(Modes.BIT_BRUSH);
             }
         }
@@ -298,7 +309,7 @@ class PaintEditor extends React.Component {
         this.eyeDropper.pickX = -1;
         this.eyeDropper.pickY = -1;
         this.eyeDropper.activate();
-        
+
         this.intervalId = setInterval(() => {
             const colorInfo = this.eyeDropper.getColorInfo(
                 this.eyeDropper.pickX,
