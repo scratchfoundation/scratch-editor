@@ -3,7 +3,7 @@ import Modes from '../../lib/modes';
 
 import {getSelectedLeafItems} from '../selection';
 import {createCanvas, getRaster} from '../layer';
-import {drawRect} from '../bitmap';
+import {fillRect} from '../bitmap';
 
 import BoundingBoxTool from '../selection-tools/bounding-box-tool';
 import NudgeTool from '../selection-tools/nudge-tool';
@@ -116,56 +116,61 @@ class SelectTool extends paper.Tool {
         const selection = getSelectedLeafItems();
         let changed = false;
         for (const item of selection) {
-            // @todo handle non-rasters?
+            // @todo should we handle non-rasters (text?)
             if (!(item instanceof paper.Raster) && item.data.expanded) continue;
-            // In the special case that there is no rotation
-            if (item.matrix.b === 0 && item.matrix.c === 0) {
-                this.commitScaleTransformation(item);
-            } else {
-                this.commitArbitraryTransformation(item);
-            }
+            this.maybeApplyScaleToCanvas(item);
+            this.commitArbitraryTransformation(item);
             changed = true;
         }
         if (changed) {
             this.onUpdateImage();
         }
     }
-    commitScaleTransformation (item) {
+    maybeApplyScaleToCanvas (item) {
+        if (!item.matrix.isInvertible()) {
+            item.remove();
+            return;
+        }
+
         // context.drawImage will anti-alias the image if both width and height are reduced.
         // However, it will preserve pixel colors if only one or the other is reduced, and
         // imageSmoothingEnabled is set to false. Therefore, we can avoid aliasing by scaling
         // down images in a 2 step process.
-
-        // @todo: Currently, we can't avoid anti-aliasing when the image is both scaled down on both axes and rotated.
-        let canvas = item.canvas;
-        if (item.matrix.a !== 1) {
-            const tmpCanvas = createCanvas(Math.round(item.size.width * Math.abs(item.matrix.a)), canvas.height);
-            const context = tmpCanvas.getContext('2d');
-            if (item.matrix.a < 0) {
-                context.save();
-                context.scale(-1, 1);
-                context.drawImage(canvas, 0, 0, -tmpCanvas.width, tmpCanvas.height);
-                context.restore();
-            } else {
-                context.drawImage(canvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
-            }
-            canvas = tmpCanvas;
+        const decomposed = item.matrix.decompose();
+        if (Math.abs(decomposed.scaling.x) < 1 && Math.abs(decomposed.scaling.y) < 1) {
+            this.scaleCanvas(item, decomposed.scaling);
+            this.scaleCanvas(item.data.expanded, decomposed.scaling);
+            const matrix = new paper.Matrix()
+                .translate(decomposed.translation)
+                .rotate(decomposed.rotation)
+                .skew(decomposed.skewing);
+            item.matrix = matrix;
         }
-        if (item.matrix.d !== 1) {
-            const tmpCanvas = createCanvas(canvas.width, Math.round(item.size.height * Math.abs(item.matrix.d)));
-            const context = tmpCanvas.getContext('2d');
-            if (item.matrix.d < 0) {
-                context.save();
-                context.scale(1, -1);
-                context.drawImage(canvas, 0, 0, tmpCanvas.width, -tmpCanvas.height);
-                context.restore();
-            } else {
-                context.drawImage(canvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
-            }
-            canvas = context.canvas;
+    }
+    scaleCanvas (raster, scale) {
+        let canvas = raster.canvas;
+        let tmpCanvas = createCanvas(Math.round(raster.size.width * Math.abs(scale.x)), canvas.height);
+        let context = tmpCanvas.getContext('2d');
+        if (scale.x < 0) {
+            context.save();
+            context.scale(-1, 1);
+            context.drawImage(canvas, 0, 0, -tmpCanvas.width, tmpCanvas.height);
+            context.restore();
+        } else {
+            context.drawImage(canvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
         }
-        getRaster().drawImage(canvas, item.bounds.topLeft);
-        item.remove();
+        canvas = tmpCanvas;
+        tmpCanvas = createCanvas(canvas.width, Math.round(raster.size.height * Math.abs(scale.y)));
+        context = tmpCanvas.getContext('2d');
+        if (scale.y < 0) {
+            context.save();
+            context.scale(1, -1);
+            context.drawImage(canvas, 0, 0, tmpCanvas.width, -tmpCanvas.height);
+            context.restore();
+        } else {
+            context.drawImage(canvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
+        }
+        raster.canvas = tmpCanvas;
     }
     commitArbitraryTransformation (item) {
         // Create a canvas to perform masking
@@ -174,7 +179,7 @@ class SelectTool extends paper.Tool {
         // Draw mask
         const rect = new paper.Shape.Rectangle(new paper.Point(), item.size);
         rect.matrix = item.matrix;
-        drawRect(rect, context);
+        fillRect(rect, context);
         context.globalCompositeOperation = 'source-in';
 
         // Draw image onto mask
