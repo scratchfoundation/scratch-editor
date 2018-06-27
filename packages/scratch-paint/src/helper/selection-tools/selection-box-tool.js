@@ -50,6 +50,10 @@ class SelectionBoxTool {
                 Math.round(this.selectionRect.bounds.height),
             );
 
+            // Remove dotted rectangle
+            this.selectionRect.remove();
+            this.selectionRect = null;
+
             if (rect.area) {
                 // Pull selected raster to active layer
                 const raster = getRaster().getSubRaster(rect);
@@ -62,14 +66,10 @@ class SelectionBoxTool {
                 raster.data = {expanded: expanded};
 
                 // Clear area from raster layer
-                const context = getRaster().canvas.getContext('2d');
+                const context = getRaster().getContext(true /* modify */);
                 context.clearRect(rect.x, rect.y, rect.width, rect.height);
                 this.setSelectedItems();
             }
-
-            // Remove dotted rectangle
-            this.selectionRect.remove();
-            this.selectionRect = null;
         }
     }
 }
