@@ -168,7 +168,7 @@ class ModeTools extends React.Component {
     handleFlipHorizontal () {
         const selectedItems = getSelectedRootItems();
         if (isBitmap(this.props.format) && selectedItems.length === 0) {
-            getRaster().canvas = flipBitmapHorizontal(getRaster());
+            getRaster().canvas = flipBitmapHorizontal(getRaster().canvas);
             this.props.onUpdateImage();
         } else {
             this._handleFlip(-1, 1, selectedItems);
@@ -177,7 +177,7 @@ class ModeTools extends React.Component {
     handleFlipVertical () {
         const selectedItems = getSelectedRootItems();
         if (isBitmap(this.props.format) && selectedItems.length === 0) {
-            getRaster().canvas = flipBitmapVertical(getRaster());
+            getRaster().canvas = flipBitmapVertical(getRaster().canvas);
             this.props.onUpdateImage();
         } else {
             this._handleFlip(1, -1, selectedItems);

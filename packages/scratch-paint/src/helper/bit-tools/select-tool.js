@@ -2,7 +2,7 @@ import paper from '@scratch/paper';
 import Modes from '../../lib/modes';
 
 import {createCanvas, getRaster} from '../layer';
-import {fillRect, flipBitmapHorizontal, flipBitmapVertical} from '../bitmap';
+import {fillRect, scaleBitmap} from '../bitmap';
 
 import BoundingBoxTool from '../selection-tools/bounding-box-tool';
 import NudgeTool from '../selection-tools/nudge-tool';
@@ -51,13 +51,14 @@ class SelectTool extends paper.Tool {
      */
     onSelectionChanged (selectedItems) {
         this.boundingBoxTool.onSelectionChanged(selectedItems);
-        if ((!this.selection || !this.selection.parent) &&
-                selectedItems && selectedItems.length === 1 && selectedItems[0] instanceof paper.Raster) {
-            // Infer that an undo occurred and get back the active selection
-            this.selection = selectedItems[0];
-        } else if (this.selection && this.selection.parent && !this.selection.selected) {
+        if (this.selection && this.selection.parent && !this.selection.selected) {
             // Selection got deselected
             this.commitSelection();
+        }
+        if ((!this.selection || !this.selection.parent) &&
+                selectedItems && selectedItems.length === 1 && selectedItems[0] instanceof paper.Raster) {
+            // Track the new active selection. This may happen via undo or paste.
+            this.selection = selectedItems[0];
         }
     }
     /**
@@ -136,40 +137,15 @@ class SelectTool extends paper.Tool {
         // However, it will preserve pixel colors if only one or the other is reduced, and
         // imageSmoothingEnabled is set to false. Therefore, we can avoid aliasing by scaling
         // down images in a 2 step process.
-        const decomposed = item.matrix.decompose();
-        if (Math.abs(decomposed.scaling.x) < 1 && Math.abs(decomposed.scaling.y) < 1) {
-            this.scaleCanvas(item, decomposed.scaling);
-            this.scaleCanvas(item.data.expanded, decomposed.scaling);
-            const matrix = new paper.Matrix()
-                .translate(decomposed.translation)
-                .skew(decomposed.skewing)
-                .rotate(decomposed.rotation);
-            console.log(item.matrix);
-            const composed = new paper.Matrix()
-                .scale(decomposed.scale)
-                .translate(decomposed.translation)
-                .skew(decomposed.skewing)
-                .rotate(decomposed.rotation);
-            console.log(composed);
-            item.matrix = matrix;
+        const decomposed = item.matrix.decompose(); // Decomposition order: translate, rotate, scale, skew
+        if (Math.abs(decomposed.scaling.x) < 1 && Math.abs(decomposed.scaling.y) < 1 &&
+                decomposed.scaling.x !== 0 && decomposed.scaling.y !== 0) {
+            item.canvas = scaleBitmap(item.canvas, decomposed.scaling);
+            item.data.expanded.canvas = scaleBitmap(item.data.expanded.canvas, decomposed.scaling);
+            // Remove the scale from the item's matrix
+            item.matrix.append(
+                new paper.Matrix().scale(new paper.Point(1 / decomposed.scaling.x, 1 / decomposed.scaling.y)));
         }
-    }
-    scaleCanvas (raster, scale) {
-        let canvas = raster.canvas;
-        let tmpCanvas = createCanvas(Math.round(raster.size.width * Math.abs(scale.x)), canvas.height);
-        let context = tmpCanvas.getContext('2d');
-        if (scale.x < 0) {
-            canvas = flipBitmapHorizontal(canvas);
-        }
-        context.drawImage(canvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
-        canvas = tmpCanvas;
-        tmpCanvas = createCanvas(canvas.width, Math.round(raster.size.height * Math.abs(scale.y)));
-        context = tmpCanvas.getContext('2d');
-        if (scale.y < 0) {
-            canvas = flipBitmapVertical(canvas);
-        }
-        context.drawImage(canvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
-        raster.canvas = tmpCanvas;
     }
     commitArbitraryTransformation (item) {
         // Create a canvas to perform masking
@@ -190,6 +166,7 @@ class SelectTool extends paper.Tool {
         // Draw temp canvas onto raster layer
         getRaster().drawImage(tmpCanvas, new paper.Point());
         item.remove();
+        this.selection = null;
     }
     deactivateTool () {
         this.commitSelection();

@@ -558,23 +558,38 @@ const fillRect = function (rect, context) {
     }
 };
 
-const flipBitmapHorizontal = function (raster) {
-    const tmpCanvas = createCanvas(raster.size.width, raster.size.height);
+const flipBitmapHorizontal = function (canvas) {
+    const tmpCanvas = createCanvas(canvas.width, canvas.height);
     const context = tmpCanvas.getContext('2d');
     context.save();
     context.scale(-1, 1);
-    context.drawImage(raster.canvas, 0, 0, -tmpCanvas.width, tmpCanvas.height);
+    context.drawImage(canvas, 0, 0, -tmpCanvas.width, tmpCanvas.height);
     context.restore();
     return tmpCanvas;
 };
 
-const flipBitmapVertical = function (raster) {
-    const tmpCanvas = createCanvas(raster.size.width, raster.size.height);
+const flipBitmapVertical = function (canvas) {
+    const tmpCanvas = createCanvas(canvas.width, canvas.height);
     const context = tmpCanvas.getContext('2d');
     context.save();
     context.scale(1, -1);
-    context.drawImage(raster.canvas, 0, 0, tmpCanvas.width, -tmpCanvas.height);
+    context.drawImage(canvas, 0, 0, tmpCanvas.width, -tmpCanvas.height);
     context.restore();
+    return tmpCanvas;
+};
+
+const scaleBitmap = function (canvas, scale) {
+    let tmpCanvas = createCanvas(Math.round(canvas.width * Math.abs(scale.x)), canvas.height);
+    if (scale.x < 0) {
+        canvas = flipBitmapHorizontal(canvas);
+    }
+    tmpCanvas.getContext('2d').drawImage(canvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
+    canvas = tmpCanvas;
+    tmpCanvas = createCanvas(canvas.width, Math.round(canvas.height * Math.abs(scale.y)));
+    if (scale.y < 0) {
+        canvas = flipBitmapVertical(canvas);
+    }
+    tmpCanvas.getContext('2d').drawImage(canvas, 0, 0, tmpCanvas.width, tmpCanvas.height);
     return tmpCanvas;
 };
 
@@ -589,5 +604,6 @@ export {
     drawEllipse,
     forEachLinePoint,
     flipBitmapHorizontal,
-    flipBitmapVertical
+    flipBitmapVertical,
+    scaleBitmap
 };
