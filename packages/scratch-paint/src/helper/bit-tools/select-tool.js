@@ -1,7 +1,6 @@
 import paper from '@scratch/paper';
 import Modes from '../../lib/modes';
 
-import {getSelectedLeafItems} from '../selection';
 import {createCanvas, getRaster} from '../layer';
 import {fillRect} from '../bitmap';
 
@@ -52,6 +51,14 @@ class SelectTool extends paper.Tool {
      */
     onSelectionChanged (selectedItems) {
         this.boundingBoxTool.onSelectionChanged(selectedItems);
+        if ((!this.selection || !this.selection.parent) &&
+                selectedItems && selectedItems.length === 1 && selectedItems[0] instanceof paper.Raster) {
+            // Infer that an undo occurred and get back the active selection
+            this.selection = selectedItems[0];
+        } else if (this.selection && this.selection.parent && !this.selection.selected) {
+            // Selection got deselected
+            this.commitSelection();
+        }
     }
     /**
      * Returns the hit options to use when conducting hit tests.
@@ -113,18 +120,11 @@ class SelectTool extends paper.Tool {
         this.active = false;
     }
     commitSelection () {
-        const selection = getSelectedLeafItems();
-        let changed = false;
-        for (const item of selection) {
-            // @todo should we handle non-rasters (text?)
-            if (!(item instanceof paper.Raster) && item.data.expanded) continue;
-            this.maybeApplyScaleToCanvas(item);
-            this.commitArbitraryTransformation(item);
-            changed = true;
-        }
-        if (changed) {
-            this.onUpdateImage();
-        }
+        if (!this.selection || !this.selection.parent) return;
+
+        this.maybeApplyScaleToCanvas(this.selection);
+        this.commitArbitraryTransformation(this.selection);
+        this.onUpdateImage();
     }
     maybeApplyScaleToCanvas (item) {
         if (!item.matrix.isInvertible()) {
@@ -193,7 +193,7 @@ class SelectTool extends paper.Tool {
         item.remove();
     }
     deactivateTool () {
-        this.commitSelection(); // TODO
+        this.commitSelection();
         this.boundingBoxTool.removeBoundsPath();
         this.boundingBoxTool = null;
         this.selectionBoxTool = null;
