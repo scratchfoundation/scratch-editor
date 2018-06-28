@@ -23,7 +23,7 @@
     "url": "git+ssh://git@github.com/LLK/scratch-paint.git"
   },
   "dependencies": {
-    "@scratch/paper": "0.11.20180614155555",
+    "@scratch/paper": "0.11.20180627210112",
     "classnames": "2.2.5",
     "keymirror": "0.1.1",
     "lodash.bindall": "4.4.0",
