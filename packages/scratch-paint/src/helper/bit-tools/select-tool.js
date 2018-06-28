@@ -149,6 +149,7 @@ class SelectTool extends paper.Tool {
         const rect = new paper.Shape.Rectangle(new paper.Point(), item.size);
         rect.matrix = item.matrix;
         fillRect(rect, context);
+        rect.remove();
         context.globalCompositeOperation = 'source-in';
 
         // Draw image onto mask

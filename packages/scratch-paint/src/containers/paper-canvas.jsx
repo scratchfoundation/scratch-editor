@@ -176,7 +176,7 @@ class PaperCanvas extends React.Component {
 
                 ensureClockwise(item);
                 scaleWithStrokes(item, 2, new paper.Point()); // Import at 2x
-                
+
                 if (typeof rotationCenterX !== 'undefined' && typeof rotationCenterY !== 'undefined') {
                     let rotationPoint = new paper.Point(rotationCenterX, rotationCenterY);
                     if (viewBox && viewBox.length >= 2 && !isNaN(viewBox[0]) && !isNaN(viewBox[1])) {
@@ -213,6 +213,11 @@ class PaperCanvas extends React.Component {
         }
     }
     handleWheel (event) {
+        // Multiplier variable, so that non-pixel-deltaModes are supported. Needed for Firefox.
+        // See #529 (or LLK/scratch-blocks#1190).
+        const multiplier = event.deltaMode === 0x1 ? 15 : 1;
+        const deltaX = event.deltaX * multiplier;
+        const deltaY = event.deltaY * multiplier;
         if (event.metaKey || event.ctrlKey) {
             // Zoom keeping mouse location fixed
             const canvasRect = this.canvas.getBoundingClientRect();
@@ -221,19 +226,19 @@ class PaperCanvas extends React.Component {
             const fixedPoint = paper.project.view.viewToProject(
                 new paper.Point(offsetX, offsetY)
             );
-            zoomOnFixedPoint(-event.deltaY / 100, fixedPoint);
+            zoomOnFixedPoint(-deltaY / 100, fixedPoint);
             this.props.updateViewBounds(paper.view.matrix);
             this.props.setSelectedItems();
         } else if (event.shiftKey && event.deltaX === 0) {
             // Scroll horizontally (based on vertical scroll delta)
             // This is needed as for some browser/system combinations which do not set deltaX.
             // See #156.
-            const dx = event.deltaY / paper.project.view.zoom;
+            const dx = deltaY / paper.project.view.zoom;
             pan(dx, 0);
             this.props.updateViewBounds(paper.view.matrix);
         } else {
-            const dx = event.deltaX / paper.project.view.zoom;
-            const dy = event.deltaY / paper.project.view.zoom;
+            const dx = deltaX / paper.project.view.zoom;
+            const dy = deltaY / paper.project.view.zoom;
             pan(dx, dy);
             this.props.updateViewBounds(paper.view.matrix);
         }
