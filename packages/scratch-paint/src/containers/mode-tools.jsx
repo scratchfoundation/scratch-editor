@@ -7,12 +7,19 @@ import bindAll from 'lodash.bindall';
 import ModeToolsComponent from '../components/mode-tools/mode-tools.jsx';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 import {incrementPasteOffset, setClipboardItems} from '../reducers/clipboard';
-import {clearSelection, getSelectedLeafItems, getSelectedRootItems, getAllRootItems} from '../helper/selection';
+import {
+    clearSelection,
+    deleteSelection,
+    getSelectedLeafItems,
+    getSelectedRootItems,
+    getAllRootItems
+} from '../helper/selection';
 import {HANDLE_RATIO, ensureClockwise} from '../helper/math';
 import {getRaster} from '../helper/layer';
 import {flipBitmapHorizontal, flipBitmapVertical} from '../helper/bitmap';
 import {isBitmap} from '../lib/format';
 import Formats from '../lib/format';
+import Modes from '../lib/modes';
 
 class ModeTools extends React.Component {
     constructor (props) {
@@ -26,6 +33,7 @@ class ModeTools extends React.Component {
             'handleCurvePoints',
             'handleFlipHorizontal',
             'handleFlipVertical',
+            'handleDelete',
             'handlePasteFromClipboard',
             'handlePointPoints'
         ]);
@@ -183,6 +191,11 @@ class ModeTools extends React.Component {
             this._handleFlip(1, -1, selectedItems);
         }
     }
+    handleDelete () {
+        if (deleteSelection(this.props.mode, this.props.onUpdateImage)) {
+            this.props.setSelectedItems();
+        }
+    }
     handleCopyToClipboard () {
         const selectedItems = getSelectedRootItems();
         if (selectedItems.length > 0) {
@@ -230,6 +243,7 @@ class ModeTools extends React.Component {
                 hasSelectedUnpointedPoints={this.hasSelectedUnpointedPoints()}
                 onCopyToClipboard={this.handleCopyToClipboard}
                 onCurvePoints={this.handleCurvePoints}
+                onDelete={this.handleDelete}
                 onFlipHorizontal={this.handleFlipHorizontal}
                 onFlipVertical={this.handleFlipVertical}
                 onPasteFromClipboard={this.handlePasteFromClipboard}
@@ -245,6 +259,7 @@ ModeTools.propTypes = {
     clipboardItems: PropTypes.arrayOf(PropTypes.array),
     format: PropTypes.oneOf(Object.keys(Formats)).isRequired,
     incrementPasteOffset: PropTypes.func.isRequired,
+    mode: PropTypes.oneOf(Object.keys(Modes)),
     onUpdateImage: PropTypes.func.isRequired,
     pasteOffset: PropTypes.number,
     // Listen on selected items to update hasSelectedPoints
@@ -257,6 +272,7 @@ ModeTools.propTypes = {
 const mapStateToProps = state => ({
     clipboardItems: state.scratchPaint.clipboard.items,
     format: state.scratchPaint.format,
+    mode: state.scratchPaint.mode,
     pasteOffset: state.scratchPaint.clipboard.pasteOffset,
     selectedItems: state.scratchPaint.selectedItems
 });

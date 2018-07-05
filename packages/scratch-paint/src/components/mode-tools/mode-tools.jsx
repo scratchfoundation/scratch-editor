@@ -22,6 +22,7 @@ import styles from './mode-tools.css';
 
 import copyIcon from './icons/copy.svg';
 import pasteIcon from './icons/paste.svg';
+import deleteIcon from './icons/delete.svg';
 
 import bitBrushIcon from '../bit-brush-mode/brush.svg';
 import bitEraserIcon from '../bit-eraser-mode/eraser.svg';
@@ -62,6 +63,11 @@ const ModeToolsComponent = props => {
             defaultMessage: 'Paste',
             description: 'Label for the paste button',
             id: 'paint.modeTools.paste'
+        },
+        delete: {
+            defaultMessage: 'Delete',
+            description: 'Label for the delete button',
+            id: 'paint.modeTools.delete'
         },
         curved: {
             defaultMessage: 'Curved',
@@ -184,6 +190,14 @@ const ModeToolsComponent = props => {
                         onClick={props.onPasteFromClipboard}
                     />
                 </InputGroup>
+                <InputGroup className={classNames(styles.modDashedBorder, styles.modLabeledIconHeight)}>
+                    <LabeledIconButton
+                        disabled={!props.selectedItems.length}
+                        imgSrc={deleteIcon}
+                        title={props.intl.formatMessage(messages.delete)}
+                        onClick={props.onDelete}
+                    />
+                </InputGroup>
                 <InputGroup className={classNames(styles.modLabeledIconHeight)}>
                     <LabeledIconButton
                         imgSrc={flipHorizontalIcon}
@@ -234,6 +248,7 @@ ModeToolsComponent.propTypes = {
     onBrushSliderChange: PropTypes.func.isRequired,
     onCopyToClipboard: PropTypes.func.isRequired,
     onCurvePoints: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
     onEraserSliderChange: PropTypes.func,
     onFlipHorizontal: PropTypes.func.isRequired,
     onFlipVertical: PropTypes.func.isRequired,
