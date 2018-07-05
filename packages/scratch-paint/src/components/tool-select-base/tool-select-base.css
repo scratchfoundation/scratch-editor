@@ -16,7 +16,7 @@ $border-radius: .25rem;
 }
 
 .mod-tool-select.is-selected {
-    background-color: $motion-transparent;
+    background-color: $motion-primary;
 }
 
 .mod-tool-select:focus {
@@ -28,6 +28,11 @@ img.tool-select-icon {
     height: 2rem;
     flex-grow: 1;
     vertical-align: middle;
+}
+
+.mod-tool-select.is-selected .tool-select-icon {
+    /* Make the tool icons white while selected by making them black and inverting */
+    filter: brightness(0) invert(1);
 }
 
 @media only screen and (max-width: $full-size-paint) {
