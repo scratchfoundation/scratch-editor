@@ -21,3 +21,17 @@ See https://github.com/LLK/scratch-paint/issues/13 */
 .input-label {
     font-weight: bold;
 }
+
+@media only screen and (max-width: $full-size-paint) {
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: -1rem; /* To align with the non-labeled inputs */
+    }
+
+    .input-label {
+        font-weight: normal;
+        margin-bottom: 0.25rem;
+    }
+}
