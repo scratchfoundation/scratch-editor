@@ -35,8 +35,8 @@ const inlineSvgFonts = function (svgTag) {
         if (domElement.getAttribute && domElement.getAttribute('font-family')) {
             fontsNeeded.add(domElement.getAttribute('font-family'));
         }
-        for (let i = 0; i < domElement.children.length; i++) {
-            collectFonts(domElement.children[i]);
+        for (let i = 0; i < domElement.childNodes.length; i++) {
+            collectFonts(domElement.childNodes[i]);
         }
     };
     collectFonts(svgTag);

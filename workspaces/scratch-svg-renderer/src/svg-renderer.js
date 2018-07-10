@@ -117,6 +117,7 @@ class SvgRenderer {
             }
         };
         collectText(this._svgTag);
+        convertFonts(this._svgTag);
         // For each text element, apply quirks.
         for (const textElement of textElements) {
             // Remove x and y attributes - they are not used in Scratch.
@@ -133,9 +134,46 @@ class SvgRenderer {
             if (!textElement.getAttribute('font-family')) {
                 textElement.setAttribute('font-family', 'Helvetica');
             }
+            let text = textElement.textContent;
+
             // Fix line breaks in text, which are not natively supported by SVG.
             // Only fix if text does not have child tspans.
-            let text = textElement.textContent;
+            // @todo this will not work for font sizes with units such as em, percent
+            // However, text made in scratch 2 should only ever export size 22 font.
+            const fontSize = parseFloat(textElement.getAttribute('font-size'));
+            const tx = 2;
+            let ty = 0;
+            let spacing = 1.2;
+            // Try to match the position and spacing of Scratch 2.0's fonts.
+            // Different fonts seem to use different line spacing.
+            // Scratch 2 always uses alignment-baseline=text-before-edge
+            // However, most SVG readers don't support this attribute
+            // or don't support it alongside use of tspan, so the translations
+            // here are to make up for that.
+            if (textElement.getAttribute('font-family') === 'Handwriting') {
+                spacing = 2;
+                ty = -11 * fontSize / 22;
+            } else if (textElement.getAttribute('font-family') === 'Scratch') {
+                spacing = 0.89;
+                ty = -3 * fontSize / 22;
+            } else if (textElement.getAttribute('font-family') === 'Curly') {
+                spacing = 1.38;
+                ty = -6 * fontSize / 22;
+            } else if (textElement.getAttribute('font-family') === 'Marker') {
+                spacing = 1.45;
+                ty = -6 * fontSize / 22;
+            } else if (textElement.getAttribute('font-family') === 'Sans Serif') {
+                spacing = 1.13;
+                ty = -3 * fontSize / 22;
+            } else if (textElement.getAttribute('font-family') === 'Serif') {
+                spacing = 1.25;
+                ty = -4 * fontSize / 22;
+            }
+            // Right multiply matrix by a translation of (tx, ty)
+            const mtx = textElement.transform.baseVal.getItem(0).matrix;
+            mtx.e += (mtx.a * tx) + (mtx.c * ty);
+            mtx.f += (mtx.b * tx) + (mtx.d * ty);
+
             if (text && textElement.childElementCount === 0) {
                 textElement.textContent = '';
                 const lines = text.split('\n');
@@ -143,13 +181,12 @@ class SvgRenderer {
                 for (const line of lines) {
                     const tspanNode = createSVGElement('tspan');
                     tspanNode.setAttribute('x', '0');
-                    tspanNode.setAttribute('dy', '1em');
+                    tspanNode.setAttribute('dy', `${spacing}em`);
                     tspanNode.textContent = line;
                     textElement.appendChild(tspanNode);
                 }
             }
         }
-        convertFonts(this._svgTag);
     }
 
     /**
