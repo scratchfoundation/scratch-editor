@@ -22,7 +22,7 @@ const base = {
     }
 };
 
-module.exports = [
+module.exports =
     defaultsDeep({}, base, {
         output: {
             library: 'ScratchSVGRenderer',
@@ -40,5 +40,4 @@ module.exports = [
         optimization: {
             minimize: process.env.NODE_ENV === 'production'
         }
-    })
-];
+    });
