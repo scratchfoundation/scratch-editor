@@ -1,6 +1,6 @@
 {
   "name": "scratch-svg-renderer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "SVG renderer for Scratch",
   "main": "./src/index.js",
   "scripts": {
@@ -19,22 +19,24 @@
     "type": "git",
     "url": "git+ssh://git@github.com/LLK/scratch-svg-renderer.git"
   },
+  "dependencies": {
+    "base64-loader": "1.0.0",
+    "jimp": "0.2.27",
+    "minilog": "3.1.0",
+    "scratch-render-fonts": "1.0.0-prerelease.20180605131737"
+  },
   "devDependencies": {
     "babel-core": "6.26.0",
     "babel-eslint": "^8.1.2",
     "babel-loader": "7.1.4",
     "babel-preset-env": "1.6.1",
-    "base64-loader": "1.0.0",
     "eslint": "^4.14.0",
     "eslint-config-scratch": "^5.0.0",
     "eslint-plugin-import": "^2.12.0",
-    "jimp": "0.2.27",
     "json": "^9.0.6",
     "lodash.defaultsdeep": "4.6.0",
-    "minilog": "3.1.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.1",
-    "scratch-render-fonts": "1.0.0-prerelease.20180524203748",
     "webpack": "^4.8.0",
     "webpack-cli": "^2.0.15"
   }
