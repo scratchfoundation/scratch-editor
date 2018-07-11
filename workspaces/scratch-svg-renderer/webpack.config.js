@@ -22,7 +22,7 @@ const base = {
     }
 };
 
-module.exports = [
+module.exports =
     defaultsDeep({}, base, {
         output: {
             library: 'ScratchSVGRenderer',
@@ -40,31 +40,4 @@ module.exports = [
         optimization: {
             minimize: process.env.NODE_ENV === 'production'
         }
-    }),
-    // For testing only: many features will fail outside a browser
-    defaultsDeep({}, base, {
-        output: {
-            library: 'ScratchSVGRenderer',
-            libraryTarget: 'commonjs2',
-            path: path.resolve('dist', 'node'),
-            filename: '[name].js'
-        },
-        externals: {
-            jimp: true,
-            minilog: true
-        },
-        module: {
-            rules: [{
-                options: {
-                    presets: [['env', {targets: {node: true, uglify: true}}]]
-                }
-            }]
-        },
-        performance: {
-            hints: false
-        },
-        optimization: {
-            minimize: false
-        }
-    })
-];
+    });
