@@ -140,12 +140,6 @@ $border-radius: 0.25rem;
     font-weight: bold;
     color: white;
     justify-content: center;
-    opacity: .75;
-}
-
-.bitmap-button:active {
-    background-color: $motion-primary;
-    opacity: 1;
 }
 
 .bitmap-button-icon {
