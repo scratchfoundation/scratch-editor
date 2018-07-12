@@ -1,5 +1,5 @@
-const importBitmap = require('./bitmap-importer');
 const SVGRenderer = require('./svg-renderer');
+const BitmapAdapter = require('./bitmap-adapter');
 const {inlineSvgFonts} = require('./font-inliner');
 const convertFonts = require('./font-converter');
 // /**
@@ -7,8 +7,8 @@ const convertFonts = require('./font-converter');
 //  * @type {RenderWebGL}
 //  */
 module.exports = {
+    BitmapAdapter: BitmapAdapter,
     convertFonts: convertFonts,
     inlineSvgFonts: inlineSvgFonts,
-    importBitmap: importBitmap,
     SVGRenderer: SVGRenderer
 };

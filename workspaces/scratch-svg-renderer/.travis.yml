@@ -16,9 +16,7 @@ jobs:
   include:
     - stage: test
       script:
-      - npm run test:lint
-      - npm run test:unit -- --jobs=4
-      - npm run test:integration -- --jobs=4
+      - npm run test
     - stage: deploy
       node_js: 6
       script: npm run build

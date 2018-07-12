@@ -6,10 +6,9 @@
   "scripts": {
     "build": "npm run clean && webpack --progress --colors --bail",
     "clean": "rimraf ./dist",
-    "test": "npm run test:lint",
+    "test": "npm run test:lint && npm run test:unit",
     "test:lint": "eslint . --ext .js",
-    "test:unit": "echo 'No unit tests yet'",
-    "test:integration": "echo 'No integration tests yet'",
+    "test:unit": "tap ./test/*.js",
     "watch": "webpack --progress --colors --watch"
   },
   "author": "Massachusetts Institute of Technology",
@@ -20,6 +19,7 @@
     "url": "git+ssh://git@github.com/LLK/scratch-svg-renderer.git"
   },
   "dependencies": {
+    "base64-js": "1.2.1",
     "base64-loader": "1.0.0",
     "jimp": "0.2.27",
     "minilog": "3.1.0",
@@ -37,6 +37,7 @@
     "lodash.defaultsdeep": "4.6.0",
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.1",
+    "tap": "^11.0.1",
     "webpack": "^4.8.0",
     "webpack-cli": "^2.0.15"
   }
