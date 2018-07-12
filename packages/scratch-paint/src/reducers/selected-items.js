@@ -10,6 +10,10 @@ const reducer = function (state, action) {
             log.warn(`No selected items or wrong format provided: ${action.selectedItems}`);
             return state;
         }
+        if (action.selectedItems.length > 1 && action.bitmapMode) {
+            log.warn(`Multiselect should not be possible in bitmap mode: ${action.selectedItems}`);
+            return state;
+        }
         // If they are both empty, no change
         if (action.selectedItems.length === 0 && state.length === 0) {
             return state;
@@ -24,12 +28,14 @@ const reducer = function (state, action) {
 /**
  * Set the selected item state to the given array of items
  * @param {Array<paper.Item>} selectedItems from paper.project.selectedItems
+ * @param {?boolean} bitmapMode True if the items are being selected in bitmap mode
  * @return {object} Redux action to change the selected items.
  */
-const setSelectedItems = function (selectedItems) {
+const setSelectedItems = function (selectedItems, bitmapMode) {
     return {
         type: CHANGE_SELECTED_ITEMS,
-        selectedItems: selectedItems
+        selectedItems: selectedItems,
+        bitmapMode: bitmapMode
     };
 };
 const clearSelectedItems = function () {

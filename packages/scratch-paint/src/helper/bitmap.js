@@ -51,6 +51,8 @@ const solveQuadratic_ = function (a, b, c) {
  * @param {!number} options.radiusY minor radius of ellipse
  * @param {!number} options.shearSlope slope of the sheared x axis
  * @param {?boolean} options.isFilled true if isFilled
+ * @param {?function} options.drawFn The function called on each point in the outline, used only
+ *     if isFilled is false.
  * @param {!CanvasRenderingContext2D} context for drawing
  * @return {boolean} true if anything was drawn, false if not
  */
@@ -61,6 +63,7 @@ const drawShearedEllipse_ = function (options, context) {
     const radiusY = ~~Math.abs(options.radiusY) - .5;
     const shearSlope = options.shearSlope;
     const isFilled = options.isFilled;
+    const drawFn = options.drawFn;
     if (shearSlope === Infinity || radiusX < 1 || radiusY < 1) {
         return false;
     }
@@ -96,8 +99,8 @@ const drawShearedEllipse_ = function (options, context) {
                 context.fillRect(centerX - pX1 - 1, centerY + pY, pX1 - pX2 + 1, 1);
                 context.fillRect(centerX + pX2, centerY - pY - 1, pX1 - pX2 + 1, 1);
             } else {
-                context.fillRect(centerX - pX1 - 1, centerY + pY, 1, 1);
-                context.fillRect(centerX + pX1, centerY - pY - 1, 1, 1);
+                drawFn(centerX - pX1 - 1, centerY + pY);
+                drawFn(centerX + pX1, centerY - pY - 1);
             }
             y--;
             x = solveQuadratic_(A, B * y, (C * y * y) - 1);
@@ -127,8 +130,8 @@ const drawShearedEllipse_ = function (options, context) {
                 context.fillRect(centerX - pX - 1, centerY + pY2, 1, pY1 - pY2 + 1);
                 context.fillRect(centerX + pX, centerY - pY1 - 1, 1, pY1 - pY2 + 1);
             } else {
-                context.fillRect(centerX - pX - 1, centerY + pY1, 1, 1);
-                context.fillRect(centerX + pX, centerY - pY1 - 1, 1, 1);
+                drawFn(centerX - pX - 1, centerY + pY1);
+                drawFn(centerX + pX, centerY - pY1 - 1);
             }
             x++;
             y = solveQuadratic_(C, B * x, (A * x * x) - 1);
@@ -189,46 +192,6 @@ const drawShearedEllipse_ = function (options, context) {
 };
 
 /**
- * Draw an ellipse, given the original axis-aligned radii and
- * an affine transformation. Returns false if the ellipse could
- * not be drawn; for instance, the matrix is non-invertible.
- *
- * @param {!number} positionX Center of ellipse
- * @param {!number} positionY Center of ellipse
- * @param {!number} radiusX x-aligned radius of ellipse
- * @param {!number} radiusY y-aligned radius of ellipse
- * @param {!paper.Matrix} matrix affine transformation matrix
- * @param {?boolean} isFilled true if isFilled
- * @param {!CanvasRenderingContext2D} context for drawing
- * @return {boolean} true if anything was drawn, false if not
- */
-const drawEllipse = function (positionX, positionY, radiusX, radiusY, matrix, isFilled, context) {
-    if (!matrix.isInvertible()) return false;
-    const inverse = matrix.clone().invert();
-
-    // Calculate the ellipse formula
-    // A, B, and C represent Ax^2 + Bxy + Cy^2 = 1 coefficients in a transformed ellipse formula
-    const A = (inverse.a * inverse.a / radiusX / radiusX) + (inverse.b * inverse.b / radiusY / radiusY);
-    const B = (2 * inverse.a * inverse.c / radiusX / radiusX) + (2 * inverse.b * inverse.d / radiusY / radiusY);
-    const C = (inverse.c * inverse.c / radiusX / radiusX) + (inverse.d * inverse.d / radiusY / radiusY);
-
-    // Convert to a sheared ellipse formula. All ellipses are equivalent to some sheared axis-aligned ellipse.
-    // radiusA, radiusB, and slope are parameters of a skewed ellipse with the above formula
-    const radiusB = 1 / Math.sqrt(C);
-    const radiusA = Math.sqrt(-4 * C / ((B * B) - (4 * A * C)));
-    const slope = B / 2 / C;
-
-    return drawShearedEllipse_({
-        centerX: positionX,
-        centerY: positionY,
-        radiusX: radiusA,
-        radiusY: radiusB,
-        shearSlope: slope,
-        isFilled: isFilled
-    }, context);
-};
-
-/**
  * @param {!number} size The diameter of the brush
  * @param {!string} color The css color of the brush
  * @param {?boolean} isEraser True if we want the brush mark for the eraser
@@ -273,11 +236,71 @@ const getBrushMark = function (size, color, isEraser) {
                 radiusX: size / 2,
                 radiusY: size / 2,
                 shearSlope: 0,
-                isFilled: false
+                isFilled: false,
+                drawFn: (x, y) => context.fillRect(x, y, 1, 1)
             }, context);
         }
     }
     return canvas;
+};
+
+/**
+ * Draw an ellipse, given the original axis-aligned radii and
+ * an affine transformation. Returns false if the ellipse could
+ * not be drawn; for instance, the matrix is non-invertible.
+ *
+ * @param {!options} options Parameters for the ellipse
+ * @param {!paper.Point} options.position Center of ellipse
+ * @param {!number} options.radiusX x-aligned radius of ellipse
+ * @param {!number} options.radiusY y-aligned radius of ellipse
+ * @param {!paper.Matrix} options.matrix affine transformation matrix
+ * @param {?boolean} options.isFilled true if isFilled
+ * @param {?number} options.thickness Thickness of outline, used only if isFilled is false.
+ * @param {!CanvasRenderingContext2D} context for drawing
+ * @return {boolean} true if anything was drawn, false if not
+ */
+const drawEllipse = function (options, context) {
+    const positionX = options.position.x;
+    const positionY = options.position.y;
+    const radiusX = options.radiusX;
+    const radiusY = options.radiusY;
+    const matrix = options.matrix;
+    const isFilled = options.isFilled;
+    const thickness = options.thickness;
+    let drawFn = null;
+
+    if (!matrix.isInvertible()) return false;
+    const inverse = matrix.clone().invert();
+
+    if (!isFilled) {
+        const brushMark = getBrushMark(thickness, context.fillStyle);
+        const roundedUpRadius = Math.ceil(thickness / 2);
+        drawFn = (x, y) => {
+            context.drawImage(brushMark, ~~x - roundedUpRadius, ~~y - roundedUpRadius);
+        };
+    }
+
+    // Calculate the ellipse formula
+    // A, B, and C represent Ax^2 + Bxy + Cy^2 = 1 coefficients in a transformed ellipse formula
+    const A = (inverse.a * inverse.a / radiusX / radiusX) + (inverse.b * inverse.b / radiusY / radiusY);
+    const B = (2 * inverse.a * inverse.c / radiusX / radiusX) + (2 * inverse.b * inverse.d / radiusY / radiusY);
+    const C = (inverse.c * inverse.c / radiusX / radiusX) + (inverse.d * inverse.d / radiusY / radiusY);
+
+    // Convert to a sheared ellipse formula. All ellipses are equivalent to some sheared axis-aligned ellipse.
+    // radiusA, radiusB, and slope are parameters of a skewed ellipse with the above formula
+    const radiusB = 1 / Math.sqrt(C);
+    const radiusA = Math.sqrt(-4 * C / ((B * B) - (4 * A * C)));
+    const slope = B / 2 / C;
+
+    return drawShearedEllipse_({
+        centerX: positionX,
+        centerY: positionY,
+        radiusX: radiusA,
+        radiusY: radiusB,
+        shearSlope: slope,
+        isFilled: isFilled,
+        drawFn: drawFn
+    }, context);
 };
 
 const rowBlank_ = function (imageData, width, y) {
@@ -558,6 +581,29 @@ const fillRect = function (rect, context) {
     }
 };
 
+/**
+ * @param {!paper.Shape.Rectangle} rect The rectangle to draw to the canvas
+ * @param {!number} thickness The thickness of the outline
+ * @param {!HTMLCanvas2DContext} context The context in which to draw
+ */
+const outlineRect = function (rect, thickness, context) {
+    const brushMark = getBrushMark(thickness, context.fillStyle);
+    const roundedUpRadius = Math.ceil(thickness / 2);
+    const drawFn = (x, y) => {
+        context.drawImage(brushMark, ~~x - roundedUpRadius, ~~y - roundedUpRadius);
+    };
+
+    const startPoint = rect.matrix.transform(new paper.Point(-rect.size.width / 2, -rect.size.height / 2));
+    const widthPoint = rect.matrix.transform(new paper.Point(rect.size.width / 2, -rect.size.height / 2));
+    const heightPoint = rect.matrix.transform(new paper.Point(-rect.size.width / 2, rect.size.height / 2));
+    const endPoint = rect.matrix.transform(new paper.Point(rect.size.width / 2, rect.size.height / 2));
+
+    forEachLinePoint(startPoint, widthPoint, drawFn);
+    forEachLinePoint(startPoint, heightPoint, drawFn);
+    forEachLinePoint(endPoint, widthPoint, drawFn);
+    forEachLinePoint(endPoint, heightPoint, drawFn);
+};
+
 const flipBitmapHorizontal = function (canvas) {
     const tmpCanvas = createCanvas(canvas.width, canvas.height);
     const context = tmpCanvas.getContext('2d');
@@ -597,6 +643,7 @@ export {
     convertToBitmap,
     convertToVector,
     fillRect,
+    outlineRect,
     floodFill,
     floodFillAll,
     getBrushMark,

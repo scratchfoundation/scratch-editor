@@ -5,6 +5,8 @@ import bindAll from 'lodash.bindall';
 import {changeStrokeColor} from '../reducers/stroke-color';
 import {openStrokeColor, closeStrokeColor} from '../reducers/modals';
 import Modes from '../lib/modes';
+import Formats from '../lib/format';
+import {isBitmap} from '../lib/format';
 
 import StrokeColorIndicatorComponent from '../components/stroke-color-indicator.jsx';
 import {applyStrokeColorToSelection} from '../helper/style-path';
@@ -30,7 +32,8 @@ class StrokeColorIndicator extends React.Component {
     }
     handleChangeStrokeColor (newColor) {
         // Apply color and update redux, but do not update svg until picker closes.
-        const isDifferent = applyStrokeColorToSelection(newColor, this.props.textEditTarget);
+        const isDifferent =
+            applyStrokeColorToSelection(newColor, isBitmap(this.props.format), this.props.textEditTarget);
         this._hasChanged = this._hasChanged || isDifferent;
         this.props.onChangeStrokeColor(newColor);
     }
@@ -53,6 +56,7 @@ class StrokeColorIndicator extends React.Component {
 const mapStateToProps = state => ({
     disabled: state.scratchPaint.mode === Modes.BRUSH ||
         state.scratchPaint.mode === Modes.TEXT,
+    format: state.scratchPaint.format,
     isEyeDropping: state.scratchPaint.color.eyeDropper.active,
     strokeColor: state.scratchPaint.color.strokeColor,
     strokeColorModalVisible: state.scratchPaint.modals.strokeColor,
@@ -73,6 +77,7 @@ const mapDispatchToProps = dispatch => ({
 
 StrokeColorIndicator.propTypes = {
     disabled: PropTypes.bool.isRequired,
+    format: PropTypes.oneOf(Object.keys(Formats)),
     isEyeDropping: PropTypes.bool.isRequired,
     onChangeStrokeColor: PropTypes.func.isRequired,
     onCloseStrokeColor: PropTypes.func.isRequired,

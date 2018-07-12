@@ -27,11 +27,20 @@ class BitRectMode extends React.Component {
         }
     }
     componentWillReceiveProps (nextProps) {
-        if (this.tool && nextProps.color !== this.props.color) {
-            this.tool.setColor(nextProps.color);
-        }
-        if (this.tool && nextProps.selectedItems !== this.props.selectedItems) {
-            this.tool.onSelectionChanged(nextProps.selectedItems);
+        if (this.tool) {
+            if (nextProps.color !== this.props.color) {
+                this.tool.setColor(nextProps.color);
+            }
+            if (nextProps.filled !== this.props.filled) {
+                this.tool.setFilled(nextProps.filled);
+            }
+            if (nextProps.thickness !== this.props.thickness ||
+                    nextProps.zoom !== this.props.zoom) {
+                this.tool.setThickness(nextProps.thickness);
+            }
+            if (nextProps.selectedItems !== this.props.selectedItems) {
+                this.tool.onSelectionChanged(nextProps.selectedItems);
+            }
         }
 
         if (nextProps.isRectModeActive && !this.props.isRectModeActive) {
@@ -55,6 +64,8 @@ class BitRectMode extends React.Component {
             this.props.clearSelectedItems,
             this.props.onUpdateImage);
         this.tool.setColor(this.props.color);
+        this.tool.setFilled(this.props.filled);
+        this.tool.setThickness(this.props.thickness);
         this.tool.activate();
     }
     deactivateTool () {
@@ -75,25 +86,31 @@ class BitRectMode extends React.Component {
 BitRectMode.propTypes = {
     clearSelectedItems: PropTypes.func.isRequired,
     color: PropTypes.string,
+    filled: PropTypes.bool,
     handleMouseDown: PropTypes.func.isRequired,
     isRectModeActive: PropTypes.bool.isRequired,
     onChangeFillColor: PropTypes.func.isRequired,
     onUpdateImage: PropTypes.func.isRequired,
     selectedItems: PropTypes.arrayOf(PropTypes.instanceOf(paper.Item)),
-    setSelectedItems: PropTypes.func.isRequired
+    setSelectedItems: PropTypes.func.isRequired,
+    thickness: PropTypes.number.isRequired,
+    zoom: PropTypes.number.isRequired
 };
 
 const mapStateToProps = state => ({
     color: state.scratchPaint.color.fillColor,
+    filled: state.scratchPaint.fillBitmapShapes,
     isRectModeActive: state.scratchPaint.mode === Modes.BIT_RECT,
-    selectedItems: state.scratchPaint.selectedItems
+    selectedItems: state.scratchPaint.selectedItems,
+    thickness: state.scratchPaint.bitBrushSize,
+    zoom: state.scratchPaint.viewBounds.scaling.x
 });
 const mapDispatchToProps = dispatch => ({
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
     },
     setSelectedItems: () => {
-        dispatch(setSelectedItems(getSelectedLeafItems()));
+        dispatch(setSelectedItems(getSelectedLeafItems(), true /* bitmapMode */));
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.BIT_RECT));

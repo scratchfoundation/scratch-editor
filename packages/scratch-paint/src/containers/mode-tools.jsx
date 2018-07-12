@@ -128,7 +128,7 @@ class ModeTools extends React.Component {
             changed = true;
         }
         if (changed) {
-            this.props.setSelectedItems();
+            this.props.setSelectedItems(this.props.format);
             this.props.onUpdateImage();
         }
     }
@@ -144,7 +144,7 @@ class ModeTools extends React.Component {
             }
         }
         if (changed) {
-            this.props.setSelectedItems();
+            this.props.setSelectedItems(this.props.format);
             this.props.onUpdateImage();
         }
     }
@@ -193,7 +193,7 @@ class ModeTools extends React.Component {
     }
     handleDelete () {
         if (deleteSelection(this.props.mode, this.props.onUpdateImage)) {
-            this.props.setSelectedItems();
+            this.props.setSelectedItems(this.props.format);
         }
     }
     handleCopyToClipboard () {
@@ -232,7 +232,7 @@ class ModeTools extends React.Component {
                 placedItem.position.y += 10 * this.props.pasteOffset;
             }
             this.props.incrementPasteOffset();
-            this.props.setSelectedItems();
+            this.props.setSelectedItems(this.props.format);
             this.props.onUpdateImage();
         }
     }
@@ -286,8 +286,8 @@ const mapDispatchToProps = dispatch => ({
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
     },
-    setSelectedItems: () => {
-        dispatch(setSelectedItems(getSelectedLeafItems()));
+    setSelectedItems: format => {
+        dispatch(setSelectedItems(getSelectedLeafItems(), isBitmap(format)));
     }
 });
 

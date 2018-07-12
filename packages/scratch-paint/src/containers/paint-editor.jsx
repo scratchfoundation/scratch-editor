@@ -45,6 +45,7 @@ class PaintEditor extends React.Component {
             'handleSendForward',
             'handleSendToBack',
             'handleSendToFront',
+            'handleSetSelectedItems',
             'handleGroup',
             'handleUngroup',
             'handleZoomIn',
@@ -218,16 +219,16 @@ class PaintEditor extends React.Component {
         }
     }
     handleUndo () {
-        performUndo(this.props.undoState, this.props.onUndo, this.props.setSelectedItems, this.handleUpdateImage);
+        performUndo(this.props.undoState, this.props.onUndo, this.handleSetSelectedItems, this.handleUpdateImage);
     }
     handleRedo () {
-        performRedo(this.props.undoState, this.props.onRedo, this.props.setSelectedItems, this.handleUpdateImage);
+        performRedo(this.props.undoState, this.props.onRedo, this.handleSetSelectedItems, this.handleUpdateImage);
     }
     handleGroup () {
-        groupSelection(this.props.clearSelectedItems, this.props.setSelectedItems, this.handleUpdateImage);
+        groupSelection(this.props.clearSelectedItems, this.handleSetSelectedItems, this.handleUpdateImage);
     }
     handleUngroup () {
-        ungroupSelection(this.props.clearSelectedItems, this.props.setSelectedItems, this.handleUpdateImage);
+        ungroupSelection(this.props.clearSelectedItems, this.handleSetSelectedItems, this.handleUpdateImage);
     }
     handleSendBackward () {
         sendBackward(this.handleUpdateImage);
@@ -241,6 +242,9 @@ class PaintEditor extends React.Component {
     handleSendToFront () {
         bringToFront(this.handleUpdateImage);
     }
+    handleSetSelectedItems () {
+        this.props.setSelectedItems(this.props.format);
+    }
     canUndo () {
         return shouldShowUndo(this.props.undoState);
     }
@@ -250,17 +254,17 @@ class PaintEditor extends React.Component {
     handleZoomIn () {
         zoomOnSelection(PaintEditor.ZOOM_INCREMENT);
         this.props.updateViewBounds(paper.view.matrix);
-        this.props.setSelectedItems();
+        this.handleSetSelectedItems();
     }
     handleZoomOut () {
         zoomOnSelection(-PaintEditor.ZOOM_INCREMENT);
         this.props.updateViewBounds(paper.view.matrix);
-        this.props.setSelectedItems();
+        this.handleSetSelectedItems();
     }
     handleZoomReset () {
         resetZoom();
         this.props.updateViewBounds(paper.view.matrix);
-        this.props.setSelectedItems();
+        this.handleSetSelectedItems();
     }
     setCanvas (canvas) {
         this.setState({canvas: canvas});
@@ -457,8 +461,8 @@ const mapDispatchToProps = dispatch => ({
     removeTextEditTarget: () => {
         dispatch(setTextEditTarget());
     },
-    setSelectedItems: () => {
-        dispatch(setSelectedItems(getSelectedLeafItems()));
+    setSelectedItems: format => {
+        dispatch(setSelectedItems(getSelectedLeafItems(), isBitmap(format)));
     },
     onDeactivateEyeDropper: () => {
         // set redux values to default for eye dropper reducer

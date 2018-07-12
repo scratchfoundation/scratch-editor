@@ -92,7 +92,7 @@ const mapDispatchToProps = dispatch => ({
         dispatch(clearSelectedItems());
     },
     setSelectedItems: () => {
-        dispatch(setSelectedItems(getSelectedLeafItems()));
+        dispatch(setSelectedItems(getSelectedLeafItems(), false /* bitmapMode */));
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.RESHAPE));

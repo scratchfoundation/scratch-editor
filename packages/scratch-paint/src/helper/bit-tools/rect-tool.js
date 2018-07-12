@@ -1,6 +1,6 @@
 import paper from '@scratch/paper';
 import Modes from '../../lib/modes';
-import {fillRect} from '../bitmap';
+import {fillRect, outlineRect} from '../bitmap';
 import {createCanvas, getRaster} from '../layer';
 import {clearSelection} from '../selection';
 import BoundingBoxTool from '../selection-tools/bounding-box-tool';
@@ -57,17 +57,49 @@ class RectTool extends paper.Tool {
      */
     onSelectionChanged (selectedItems) {
         this.boundingBoxTool.onSelectionChanged(selectedItems);
-        if ((!this.rect || !this.rect.parent) &&
+        if ((!this.rect || !this.rect.isInserted()) &&
                 selectedItems && selectedItems.length === 1 && selectedItems[0].shape === 'rectangle') {
             // Infer that an undo occurred and get back the active rect
             this.rect = selectedItems[0];
-        } else if (this.rect && this.rect.parent && !this.rect.selected) {
+            if (this.rect.data.zoomLevel !== paper.view.zoom) {
+                this.rect.strokeWidth = this.rect.strokeWidth / this.rect.data.zoomLevel * paper.view.zoom;
+                this.rect.data.zoomLevel = paper.view.zoom;
+            }
+        } else if (this.rect && this.rect.isInserted() && !this.rect.selected) {
             // Rectangle got deselected
             this.commitRect();
         }
     }
     setColor (color) {
         this.color = color;
+        if (this.rect) {
+            if (this.filled) {
+                this.rect.fillColor = this.color;
+            } else {
+                this.rect.strokeColor = this.color;
+            }
+        }
+    }
+    setFilled (filled) {
+        this.filled = filled;
+        if (this.rect) {
+            if (this.filled) {
+                this.rect.fillColor = this.color;
+                this.rect.strokeWidh = 0;
+                this.rect.strokeColor = null;
+            } else {
+                this.rect.fillColor = null;
+                this.rect.strokeWidth = this.thickness;
+                this.rect.strokeColor = this.color;
+            }
+        }
+    }
+    setThickness (thickness) {
+        this.thickness = thickness * paper.view.zoom;
+        if (this.rect && !this.filled) {
+            this.rect.strokeWidth = this.thickness;
+        }
+        if (this.rect) this.rect.data.zoomLevel = paper.view.zoom;
     }
     handleMouseDown (event) {
         if (event.event.button > 0) return; // only first mouse button
@@ -97,7 +129,16 @@ class RectTool extends paper.Tool {
         }
         if (this.rect) this.rect.remove();
         this.rect = new paper.Shape.Rectangle(baseRect);
-        this.rect.fillColor = this.color;
+        if (this.filled) {
+            this.rect.fillColor = this.color;
+            this.rect.strokeWidth = 0;
+        } else {
+            this.rect.strokeColor = this.color;
+            this.rect.strokeWidth = this.thickness;
+        }
+        this.rect.strokeJoin = 'round';
+        this.rect.strokeScaling = false;
+        this.rect.data = {zoomLevel: paper.view.zoom};
 
         if (event.modifiers.alt) {
             this.rect.position = event.downPoint;
@@ -129,12 +170,16 @@ class RectTool extends paper.Tool {
         this.active = false;
     }
     commitRect () {
-        if (!this.rect || !this.rect.parent) return;
+        if (!this.rect || !this.rect.isInserted()) return;
 
         const tmpCanvas = createCanvas();
         const context = tmpCanvas.getContext('2d');
         context.fillStyle = this.color;
-        fillRect(this.rect, context);
+        if (this.filled) {
+            fillRect(this.rect, context);
+        } else {
+            outlineRect(this.rect, this.thickness / paper.view.zoom, context);
+        }
         getRaster().drawImage(tmpCanvas, new paper.Point());
 
         this.rect.remove();

@@ -13,6 +13,7 @@ import styles from './button.css';
 
 const ButtonComponent = ({
     className,
+    highlighted,
     onClick,
     children,
     ...props
@@ -29,7 +30,8 @@ const ButtonComponent = ({
                 styles.button,
                 className,
                 {
-                    [styles.modDisabled]: disabled
+                    [styles.modDisabled]: disabled,
+                    [styles.highlighted]: highlighted
                 }
             )}
             role="button"
@@ -47,6 +49,7 @@ ButtonComponent.propTypes = {
         PropTypes.string,
         PropTypes.bool
     ]),
+    highlighted: PropTypes.bool,
     onClick: PropTypes.func.isRequired
 };
 export default ButtonComponent;

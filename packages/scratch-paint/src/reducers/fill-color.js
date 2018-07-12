@@ -22,7 +22,7 @@ const reducer = function (state, action) {
         if (!action.selectedItems || !action.selectedItems.length) {
             return state;
         }
-        return getColorsFromSelection(action.selectedItems).fillColor;
+        return getColorsFromSelection(action.selectedItems, action.bitmapMode).fillColor;
     default:
         return state;
     }

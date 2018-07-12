@@ -35,6 +35,7 @@ const LabeledIconButton = ({
 
 LabeledIconButton.propTypes = {
     className: PropTypes.string,
+    highlighted: PropTypes.bool,
     imgAlt: PropTypes.string,
     imgSrc: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,

@@ -33,10 +33,11 @@ const _getColorStateListeners = function (textEditTargetId) {
 /**
  * Called when setting fill color
  * @param {string} colorString New color, css format
+ * @param {?boolean} bitmapMode True if the fill color is being set in bitmap mode
  * @param {?string} textEditTargetId paper.Item.id of text editing target, if any
  * @return {boolean} Whether the color application actually changed visibly.
  */
-const applyFillColorToSelection = function (colorString, textEditTargetId) {
+const applyFillColorToSelection = function (colorString, bitmapMode, textEditTargetId) {
     const items = _getColorStateListeners(textEditTargetId);
     let changed = false;
     for (let item of items) {
@@ -45,7 +46,13 @@ const applyFillColorToSelection = function (colorString, textEditTargetId) {
         } else if (item.parent instanceof paper.CompoundPath) {
             item = item.parent;
         }
-        if (!_colorMatch(item.fillColor, colorString)) {
+        // In bitmap mode, fill color applies to the stroke if there is a stroke
+        if (bitmapMode && item.strokeColor !== null && item.strokeWidth !== 0) {
+            if (!_colorMatch(item.strokeColor, colorString)) {
+                changed = true;
+                item.strokeColor = colorString;
+            }
+        } else if (!_colorMatch(item.fillColor, colorString)) {
             changed = true;
             item.fillColor = colorString;
         }
@@ -56,10 +63,14 @@ const applyFillColorToSelection = function (colorString, textEditTargetId) {
 /**
  * Called when setting stroke color
  * @param {string} colorString New color, css format
+ * @param {?boolean} bitmapMode True if the stroke color is being set in bitmap mode
  * @param {?string} textEditTargetId paper.Item.id of text editing target, if any
  * @return {boolean} Whether the color application actually changed visibly.
  */
-const applyStrokeColorToSelection = function (colorString, textEditTargetId) {
+const applyStrokeColorToSelection = function (colorString, bitmapMode, textEditTargetId) {
+    // Bitmap mode doesn't have stroke color
+    if (bitmapMode) return false;
+
     const items = _getColorStateListeners(textEditTargetId);
     let changed = false;
     for (let item of items) {
@@ -125,14 +136,17 @@ const applyStrokeWidthToSelection = function (value, textEditTargetId) {
 /**
  * Get state of colors and stroke width for selection
  * @param {!Array<paper.Item>} selectedItems Selected paper items
- * @return {object} Object of strokeColor, strokeWidth, fillColor of the selection.
+ * @param {?boolean} bitmapMode True if the item is being selected in bitmap mode
+ * @return {?object} Object of strokeColor, strokeWidth, fillColor, thickness of the selection.
  *     Gives MIXED when there are mixed values for a color, and null for transparent.
  *     Gives null when there are mixed values for stroke width.
+ *     Thickness is line thickness, used in the bitmap editor
  */
-const getColorsFromSelection = function (selectedItems) {
+const getColorsFromSelection = function (selectedItems, bitmapMode) {
     let selectionFillColorString;
     let selectionStrokeColorString;
     let selectionStrokeWidth;
+    let selectionThickness;
     let firstChild = true;
 
     for (let item of selectedItems) {
@@ -185,7 +199,10 @@ const getColorsFromSelection = function (selectedItems) {
                 }
             }
             if (item.strokeColor) {
-                if (item.strokeColor.type === 'gradient') {
+                // Stroke color is fill color in bitmap
+                if (bitmapMode) {
+                    itemFillColorString = item.strokeColor.toCSS();
+                } else if (item.strokeColor.type === 'gradient') {
                     itemStrokeColorString = MIXED;
                 } else {
                     itemStrokeColorString = item.strokeColor.toCSS();
@@ -197,6 +214,9 @@ const getColorsFromSelection = function (selectedItems) {
                 selectionFillColorString = itemFillColorString;
                 selectionStrokeColorString = itemStrokeColorString;
                 selectionStrokeWidth = item.strokeWidth;
+                if (item.strokeWidth && item.data && item.data.zoomLevel) {
+                    selectionThickness = item.strokeWidth / item.data.zoomLevel;
+                }
             }
             if (itemFillColorString !== selectionFillColorString) {
                 selectionFillColorString = MIXED;
@@ -208,6 +228,12 @@ const getColorsFromSelection = function (selectedItems) {
                 selectionStrokeWidth = null;
             }
         }
+    }
+    if (bitmapMode) {
+        return {
+            fillColor: selectionFillColorString ? selectionFillColorString : null,
+            thickness: selectionThickness
+        };
     }
     return {
         fillColor: selectionFillColorString ? selectionFillColorString : null,

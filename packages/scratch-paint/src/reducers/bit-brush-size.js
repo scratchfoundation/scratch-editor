@@ -1,4 +1,6 @@
 import log from '../log/log';
+import {CHANGE_SELECTED_ITEMS} from './selected-items';
+import {getColorsFromSelection} from '../helper/style-path';
 
 // Bit brush size affects bit brush width, circle/rectangle outline drawing width, and line width
 // in the bitmap paint editor.
@@ -14,6 +16,20 @@ const reducer = function (state, action) {
             return state;
         }
         return Math.max(1, action.brushSize);
+    case CHANGE_SELECTED_ITEMS:
+    {
+        // Don't change state if no selection
+        if (!action.selectedItems || !action.selectedItems.length) {
+            return state;
+        }
+        // Vector mode doesn't have bit width
+        if (!action.bitmapMode) {
+            return state;
+        }
+        const colorState = getColorsFromSelection(action.selectedItems, action.bitmapMode);
+        if (colorState.thickness) return colorState.thickness;
+        return state;
+    }
     default:
         return state;
     }

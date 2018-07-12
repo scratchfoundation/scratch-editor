@@ -148,7 +148,7 @@ const mapStateToProps = (state, ownProps) => ({
     textEditTarget: state.scratchPaint.textEditTarget,
     viewBounds: state.scratchPaint.viewBounds
 });
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch, ownProps) => ({
     changeFont: font => {
         dispatch(changeFont(font));
     },
@@ -162,7 +162,7 @@ const mapDispatchToProps = dispatch => ({
         dispatch(changeMode(Modes.TEXT));
     },
     setSelectedItems: () => {
-        dispatch(setSelectedItems(getSelectedLeafItems()));
+        dispatch(setSelectedItems(getSelectedLeafItems(), ownProps.isBitmap));
     },
     setTextEditTarget: targetId => {
         dispatch(setTextEditTarget(targetId));

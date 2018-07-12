@@ -21,7 +21,11 @@ const reducer = function (state, action) {
         if (!action.selectedItems || !action.selectedItems.length) {
             return state;
         }
-        return getColorsFromSelection(action.selectedItems).strokeColor;
+        // Bitmap mode doesn't have stroke color
+        if (action.bitmapMode) {
+            return state;
+        }
+        return getColorsFromSelection(action.selectedItems, action.bitmapMode).strokeColor;
     default:
         return state;
     }
