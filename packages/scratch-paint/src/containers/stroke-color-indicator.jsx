@@ -55,7 +55,8 @@ class StrokeColorIndicator extends React.Component {
 
 const mapStateToProps = state => ({
     disabled: state.scratchPaint.mode === Modes.BRUSH ||
-        state.scratchPaint.mode === Modes.TEXT,
+        state.scratchPaint.mode === Modes.TEXT ||
+        state.scratchPaint.mode === Modes.FILL,
     format: state.scratchPaint.format,
     isEyeDropping: state.scratchPaint.color.eyeDropper.active,
     strokeColor: state.scratchPaint.color.strokeColor,

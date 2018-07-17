@@ -9,6 +9,7 @@ import {MIXED} from '../helper/style-path';
 import {changeFillColor, DEFAULT_COLOR} from '../reducers/fill-color';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems} from '../reducers/selected-items';
+import {clearGradient} from '../reducers/selection-gradient-type';
 import {clearSelection} from '../helper/selection';
 
 import BrushModeComponent from '../components/brush-mode/brush-mode.jsx';
@@ -48,6 +49,7 @@ class BrushMode extends React.Component {
         // TODO: Instead of clearing selection, consider a kind of "draw inside"
         // analogous to how selection works with eraser
         clearSelection(this.props.clearSelectedItems);
+        this.props.clearGradient();
         // Force the default brush color if fill is MIXED or transparent
         const {fillColor} = this.props.colorState;
         if (fillColor === MIXED || fillColor === null) {
@@ -76,6 +78,7 @@ BrushMode.propTypes = {
     brushModeState: PropTypes.shape({
         brushSize: PropTypes.number.isRequired
     }),
+    clearGradient: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
     colorState: PropTypes.shape({
         fillColor: PropTypes.string,
@@ -96,6 +99,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
+    },
+    clearGradient: () => {
+        dispatch(clearGradient());
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.BRUSH));

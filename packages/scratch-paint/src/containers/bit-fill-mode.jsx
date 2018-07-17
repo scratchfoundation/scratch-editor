@@ -9,6 +9,7 @@ import FillModeComponent from '../components/bit-fill-mode/bit-fill-mode.jsx';
 import {changeFillColor, DEFAULT_COLOR} from '../reducers/fill-color';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems} from '../reducers/selected-items';
+import {clearGradient} from '../reducers/selection-gradient-type';
 import {clearSelection} from '../helper/selection';
 import FillTool from '../helper/bit-tools/fill-tool';
 import {MIXED} from '../helper/style-path';
@@ -42,6 +43,7 @@ class BitFillMode extends React.Component {
     }
     activateTool () {
         clearSelection(this.props.clearSelectedItems);
+        this.props.clearGradient();
         // Force the default brush color if fill is MIXED or transparent
         const fillColorPresent = this.props.color !== MIXED && this.props.color !== null;
         if (!fillColorPresent) {
@@ -67,6 +69,7 @@ class BitFillMode extends React.Component {
 }
 
 BitFillMode.propTypes = {
+    clearGradient: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
     color: PropTypes.string,
     handleMouseDown: PropTypes.func.isRequired,
@@ -80,6 +83,9 @@ const mapStateToProps = state => ({
     isFillModeActive: state.scratchPaint.mode === Modes.BIT_FILL
 });
 const mapDispatchToProps = dispatch => ({
+    clearGradient: () => {
+        dispatch(clearGradient());
+    },
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
     },

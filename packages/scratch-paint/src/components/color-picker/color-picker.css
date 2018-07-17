@@ -1,3 +1,5 @@
+@import "../../css/units";
+
 /* Popover styles */
 :global(.Popover-body) {
     background: white;
@@ -11,6 +13,10 @@
 :global(.Popover-tipShape) {
     fill: white;
     stroke: #ddd;
+}
+
+.clickable {
+    cursor: pointer;
 }
 
 .swatch-row {
@@ -39,6 +45,11 @@
     margin: 8px;
 }
 
+.swap-button {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
 .swatches {
     margin: 8px;
 }
@@ -49,6 +60,18 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: content-box;
+    display: flex;
+    align-items: center;
+}
+
+.large-swatch-icon {
+    width: 1.75rem;
+    margin: auto;
+}
+
+.large-swatch {
+    width: 2rem;
+    height: 2rem;
 }
 
 .active-swatch {
@@ -56,7 +79,23 @@
     box-shadow: 0px 0px 0px 3px hsla(215, 100%, 65%, 0.2);
 }
 
-.swatch > img {
+.swatch-icon {
     width: 1.5rem;
     height: 1.5rem;
+}
+
+.inactive-gradient {
+    filter: saturate(0%);
+}
+
+.gradient-picker-row {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 8px;
+}
+
+.gradient-picker-row > img + img {
+    margin-left: calc(2 * $grid-unit);
 }

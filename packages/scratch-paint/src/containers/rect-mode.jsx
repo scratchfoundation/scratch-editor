@@ -10,6 +10,7 @@ import {changeFillColor, DEFAULT_COLOR} from '../reducers/fill-color';
 import {changeStrokeColor} from '../reducers/stroke-color';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
+import {clearGradient} from '../reducers/selection-gradient-type';
 
 import {clearSelection, getSelectedLeafItems} from '../helper/selection';
 import RectTool from '../helper/tools/rect-tool';
@@ -47,6 +48,7 @@ class RectMode extends React.Component {
     }
     activateTool () {
         clearSelection(this.props.clearSelectedItems);
+        this.props.clearGradient();
         // If fill and stroke color are both mixed/transparent/absent, set fill to default and stroke to transparent.
         // If exactly one of fill or stroke color is set, set the other one to transparent.
         // This way the tool won't draw an invisible state, or be unclear about what will be drawn.
@@ -86,6 +88,7 @@ class RectMode extends React.Component {
 }
 
 RectMode.propTypes = {
+    clearGradient: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
     colorState: PropTypes.shape({
         fillColor: PropTypes.string,
@@ -109,6 +112,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
+    },
+    clearGradient: () => {
+        dispatch(clearGradient());
     },
     setSelectedItems: () => {
         dispatch(setSelectedItems(getSelectedLeafItems(), false /* bitmapMode */));

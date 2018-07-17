@@ -1,6 +1,6 @@
 import log from '../log/log';
 import {CHANGE_SELECTED_ITEMS} from './selected-items';
-import {getColorsFromSelection} from '../helper/style-path';
+import {getColorsFromSelection, MIXED} from '../helper/style-path';
 
 const CHANGE_FILL_COLOR = 'scratch-paint/fill-color/CHANGE_FILL_COLOR';
 const DEFAULT_COLOR = '#9966FF';
@@ -12,7 +12,7 @@ const reducer = function (state, action) {
     if (typeof state === 'undefined') state = initialState;
     switch (action.type) {
     case CHANGE_FILL_COLOR:
-        if (!regExp.test(action.fillColor) && action.fillColor !== null) {
+        if (!regExp.test(action.fillColor) && action.fillColor !== null && action.fillColor !== MIXED) {
             log.warn(`Invalid hex color code: ${action.fillColor}`);
             return state;
         }

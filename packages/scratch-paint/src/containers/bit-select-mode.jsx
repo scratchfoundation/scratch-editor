@@ -7,6 +7,7 @@ import Modes from '../lib/modes';
 
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
+import {clearGradient} from '../reducers/selection-gradient-type';
 import {getSelectedLeafItems} from '../helper/selection';
 import BitSelectTool from '../helper/bit-tools/select-tool';
 import SelectModeComponent from '../components/bit-select-mode/bit-select-mode.jsx';
@@ -39,6 +40,7 @@ class BitSelectMode extends React.Component {
         return nextProps.isSelectModeActive !== this.props.isSelectModeActive;
     }
     activateTool () {
+        this.props.clearGradient();
         this.tool = new BitSelectTool(
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
@@ -62,6 +64,7 @@ class BitSelectMode extends React.Component {
 }
 
 BitSelectMode.propTypes = {
+    clearGradient: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
     handleMouseDown: PropTypes.func.isRequired,
     isSelectModeActive: PropTypes.bool.isRequired,
@@ -75,6 +78,9 @@ const mapStateToProps = state => ({
     selectedItems: state.scratchPaint.selectedItems
 });
 const mapDispatchToProps = dispatch => ({
+    clearGradient: () => {
+        dispatch(clearGradient());
+    },
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
     },

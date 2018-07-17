@@ -7,6 +7,7 @@ import ColorButton from './color-button/color-button.jsx';
 import ColorPicker from '../containers/color-picker.jsx';
 import InputGroup from './input-group/input-group.jsx';
 import Label from './forms/label.jsx';
+import GradientTypes from '../lib/gradient-types';
 
 const messages = defineMessages({
     stroke: {
@@ -25,6 +26,10 @@ const StrokeColorIndicatorComponent = props => (
             body={
                 <ColorPicker
                     color={props.strokeColor}
+                    color2={null}
+                    gradientType={GradientTypes.SOLID}
+                    shouldShowGradientTools={false}
+                    // @todo handle stroke gradient
                     onChangeColor={props.onChangeStrokeColor}
                 />
             }
@@ -36,6 +41,9 @@ const StrokeColorIndicatorComponent = props => (
                 <ColorButton
                     outline
                     color={props.strokeColor}
+                    color2={null}
+                    gradientType={GradientTypes.SOLID}
+                    // @todo handle stroke gradient
                     onClick={props.onOpenStrokeColor}
                 />
             </Label>

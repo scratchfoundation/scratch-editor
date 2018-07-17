@@ -9,6 +9,7 @@ import {changeFillColor, DEFAULT_COLOR} from '../reducers/fill-color';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems} from '../reducers/selected-items';
 import {clearSelection} from '../helper/selection';
+import {clearGradient} from '../reducers/selection-gradient-type';
 
 import BitBrushModeComponent from '../components/bit-brush-mode/bit-brush-mode.jsx';
 import BitBrushTool from '../helper/bit-tools/brush-tool';
@@ -33,7 +34,7 @@ class BitBrushMode extends React.Component {
         if (this.tool && nextProps.bitBrushSize !== this.props.bitBrushSize) {
             this.tool.setBrushSize(nextProps.bitBrushSize);
         }
-        
+
         if (nextProps.isBitBrushModeActive && !this.props.isBitBrushModeActive) {
             this.activateTool();
         } else if (!nextProps.isBitBrushModeActive && this.props.isBitBrushModeActive) {
@@ -45,6 +46,7 @@ class BitBrushMode extends React.Component {
     }
     activateTool () {
         clearSelection(this.props.clearSelectedItems);
+        this.props.clearGradient();
         // Force the default brush color if fill is MIXED or transparent
         let color = this.props.color;
         if (!color || color === MIXED) {
@@ -76,6 +78,7 @@ class BitBrushMode extends React.Component {
 
 BitBrushMode.propTypes = {
     bitBrushSize: PropTypes.number.isRequired,
+    clearGradient: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
     color: PropTypes.string,
     handleMouseDown: PropTypes.func.isRequired,
@@ -92,6 +95,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
+    },
+    clearGradient: () => {
+        dispatch(clearGradient());
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.BIT_BRUSH));

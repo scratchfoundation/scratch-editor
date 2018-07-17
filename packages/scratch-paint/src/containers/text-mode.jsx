@@ -13,6 +13,7 @@ import {changeStrokeColor} from '../reducers/stroke-color';
 import {changeMode} from '../reducers/modes';
 import {setTextEditTarget} from '../reducers/text-edit-target';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
+import {clearGradient} from '../reducers/selection-gradient-type';
 
 import {clearSelection, getSelectedLeafItems} from '../helper/selection';
 import TextTool from '../helper/tools/text-tool';
@@ -60,6 +61,7 @@ class TextMode extends React.Component {
     }
     activateTool (nextProps) {
         clearSelection(this.props.clearSelectedItems);
+        this.props.clearGradient();
 
         // If fill and stroke color are both mixed/transparent/absent, set fill to default and stroke to transparent.
         // If exactly one of fill or stroke color is set, set the other one to transparent.
@@ -116,6 +118,7 @@ class TextMode extends React.Component {
 
 TextMode.propTypes = {
     changeFont: PropTypes.func.isRequired,
+    clearGradient: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
     colorState: PropTypes.shape({
         fillColor: PropTypes.string,
@@ -154,6 +157,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
+    },
+    clearGradient: () => {
+        dispatch(clearGradient());
     },
     handleChangeModeBitText: () => {
         dispatch(changeMode(Modes.BIT_TEXT));

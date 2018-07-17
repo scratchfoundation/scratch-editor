@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import bindAll from 'lodash.bindall';
+import classNames from 'classnames';
 import {getEventXY} from '../../lib/touch-utils';
 
 import styles from './slider.css';
@@ -63,7 +64,10 @@ class SliderComponent extends React.Component {
             halfHandleWidth;
         return (
             <div
-                className={styles.container}
+                className={classNames({
+                    [styles.container]: true,
+                    [styles.last]: this.props.lastSlider
+                })}
                 ref={this.setBackground}
                 style={{
                     backgroundImage: this.props.background
@@ -85,6 +89,7 @@ class SliderComponent extends React.Component {
 
 SliderComponent.propTypes = {
     background: PropTypes.string,
+    lastSlider: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     value: PropTypes.number.isRequired
 };
