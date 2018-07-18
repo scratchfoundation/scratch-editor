@@ -20,6 +20,7 @@ import LabeledIconButton from '../labeled-icon-button/labeled-icon-button.jsx';
 import Modes from '../../lib/modes';
 import Formats from '../../lib/format';
 import {isBitmap, isVector} from '../../lib/format';
+import {hideLabel} from '../../lib/hide-label';
 import styles from './mode-tools.css';
 
 import copyIcon from './icons/copy.svg';
@@ -176,12 +177,14 @@ const ModeToolsComponent = props => {
                 <InputGroup className={classNames(styles.modDashedBorder, styles.modLabeledIconHeight)}>
                     <LabeledIconButton
                         disabled={!props.hasSelectedUncurvedPoints}
+                        hideLabel={hideLabel(props.intl.locale)}
                         imgSrc={curvedPointIcon}
                         title={props.intl.formatMessage(messages.curved)}
                         onClick={props.onCurvePoints}
                     />
                     <LabeledIconButton
                         disabled={!props.hasSelectedUnpointedPoints}
+                        hideLabel={hideLabel(props.intl.locale)}
                         imgSrc={straightPointIcon}
                         title={props.intl.formatMessage(messages.pointed)}
                         onClick={props.onPointPoints}
@@ -190,6 +193,7 @@ const ModeToolsComponent = props => {
                 <InputGroup className={classNames(styles.modLabeledIconHeight)}>
                     <LabeledIconButton
                         disabled={!props.selectedItems.length}
+                        hideLabel={hideLabel(props.intl.locale)}
                         imgSrc={deleteIcon}
                         title={props.intl.formatMessage(messages.delete)}
                         onClick={props.onDelete}
@@ -205,12 +209,14 @@ const ModeToolsComponent = props => {
                 <InputGroup className={classNames(styles.modDashedBorder, styles.modLabeledIconHeight)}>
                     <LabeledIconButton
                         disabled={!props.selectedItems.length}
+                        hideLabel={hideLabel(props.intl.locale)}
                         imgSrc={copyIcon}
                         title={props.intl.formatMessage(messages.copy)}
                         onClick={props.onCopyToClipboard}
                     />
                     <LabeledIconButton
                         disabled={!(props.clipboardItems.length > 0)}
+                        hideLabel={hideLabel(props.intl.locale)}
                         imgSrc={pasteIcon}
                         title={props.intl.formatMessage(messages.paste)}
                         onClick={props.onPasteFromClipboard}
@@ -219,6 +225,7 @@ const ModeToolsComponent = props => {
                 <InputGroup className={classNames(styles.modDashedBorder, styles.modLabeledIconHeight)}>
                     <LabeledIconButton
                         disabled={!props.selectedItems.length}
+                        hideLabel={hideLabel(props.intl.locale)}
                         imgSrc={deleteIcon}
                         title={props.intl.formatMessage(messages.delete)}
                         onClick={props.onDelete}
@@ -226,11 +233,13 @@ const ModeToolsComponent = props => {
                 </InputGroup>
                 <InputGroup className={classNames(styles.modLabeledIconHeight)}>
                     <LabeledIconButton
+                        hideLabel={props.intl.locale !== 'en'}
                         imgSrc={flipHorizontalIcon}
                         title={props.intl.formatMessage(messages.flipHorizontal)}
                         onClick={props.onFlipHorizontal}
                     />
                     <LabeledIconButton
+                        hideLabel={props.intl.locale !== 'en'}
                         imgSrc={flipVerticalIcon}
                         title={props.intl.formatMessage(messages.flipVertical)}
                         onClick={props.onFlipVertical}

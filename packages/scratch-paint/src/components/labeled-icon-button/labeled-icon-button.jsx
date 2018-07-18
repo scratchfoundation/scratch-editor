@@ -12,6 +12,7 @@ import styles from './labeled-icon-button.css';
 
 const LabeledIconButton = ({
     className,
+    hideLabel,
     imgAlt,
     imgSrc,
     onClick,
@@ -24,17 +25,19 @@ const LabeledIconButton = ({
         {...props}
     >
         <img
-            alt={imgAlt}
+            alt={imgAlt || title}
             className={styles.editFieldIcon}
             draggable={false}
             src={imgSrc}
+            title={title}
         />
-        <span className={styles.editFieldTitle}>{title}</span>
+        {!hideLabel && <span className={styles.editFieldTitle}>{title}</span>}
     </Button>
 );
 
 LabeledIconButton.propTypes = {
     className: PropTypes.string,
+    hideLabel: PropTypes.bool,
     highlighted: PropTypes.bool,
     imgAlt: PropTypes.string,
     imgSrc: PropTypes.string.isRequired,
