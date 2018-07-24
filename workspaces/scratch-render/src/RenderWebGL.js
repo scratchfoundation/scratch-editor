@@ -475,6 +475,16 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Returns the position of the given drawableID in the draw list. This is
+     * the absolute position irrespective of layer group.
+     * @param {number} drawableID The drawable ID to find.
+     * @return {number} The postion of the given drawable ID.
+     */
+    getDrawableOrder (drawableID) {
+        return this._drawList.indexOf(drawableID);
+    }
+
+    /**
      * Set a drawable's order in the drawable list (effectively, z/layer).
      * Can be used to move drawables to absolute positions in the list,
      * or relative to their current positions.
