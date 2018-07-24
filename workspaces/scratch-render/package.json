@@ -37,7 +37,7 @@
     "gh-pages": "^1.0.0",
     "jsdoc": "^3.5.5",
     "json": "^9.0.4",
-    "scratch-vm": "0.1.0-prerelease.1527254075",
+    "scratch-vm": "0.2.0-prerelease.20180724192502",
     "tap": "^11.0.0",
     "travis-after-all": "^1.4.4",
     "uglifyjs-webpack-plugin": "^1.2.5",
@@ -53,7 +53,7 @@
     "minilog": "3.1.0",
     "raw-loader": "^0.5.1",
     "scratch-storage": "^0.4.0",
-    "scratch-svg-renderer": "0.2.0-prerelease.20180613184320",
+    "scratch-svg-renderer": "0.2.0-prerelease.20180712223402",
     "twgl.js": "4.4.0"
   }
 }
