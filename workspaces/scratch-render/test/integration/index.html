@@ -1,6 +1,7 @@
 <body>
     <script src="../../node_modules/scratch-vm/dist/web/scratch-vm.js"></script>
     <script src="../../node_modules/scratch-storage/dist/web/scratch-storage.js"></script>
+    <script src="../../node_modules/scratch-svg-renderer/dist/web/scratch-svg-renderer.js"></script>
     <!-- note: this uses the BUILT version of scratch-render!  make sure to npm run build -->
     <script src="../../dist/web/scratch-render.js"></script>
 
@@ -17,6 +18,8 @@
 
         vm.attachStorage(storage);
         vm.attachRenderer(render);
+        vm.attachV2SVGAdapter(new ScratchSVGRenderer.SVGRenderer());
+        vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
 
         document.getElementById('file').addEventListener('click', e => {
             document.body.removeChild(document.getElementById('loaded'));
