@@ -79,7 +79,7 @@
     "react-dom": "16.2.0",
     "react-intl": "2.4.0",
     "react-intl-redux": "0.7.0",
-    "react-popover": "0.5.4",
+    "react-popover": "0.5.7",
     "react-redux": "5.0.7",
     "react-responsive": "4.0.5",
     "react-style-proptype": "3.2.1",
