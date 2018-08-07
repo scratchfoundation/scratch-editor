@@ -431,6 +431,10 @@ class RenderWebGL extends EventEmitter {
         }
     }
 
+    get _visibleDrawList () {
+        return this._drawList.filter(id => this._allDrawables[id]._visible);
+    }
+
     // Given a layer group, return the index where it ends (non-inclusive),
     // e.g. the returned index does not have a drawable from this layer group in it)
     _endIndexForKnownLayerGroup (layerGroup) {
@@ -656,7 +660,7 @@ class RenderWebGL extends EventEmitter {
 
     /**
      * Check if a particular Drawable is touching a particular color.
-     * Unlike touching drawable, touching color tests invisible sprites.
+     * Unlike touching drawable, if the "tester" is invisble, we will still test.
      * @param {int} drawableID The ID of the Drawable to check.
      * @param {Array<int>} color3b Test if the Drawable is touching this color.
      * @param {Array<int>} [mask3b] Optionally mask the check to this part of Drawable.
@@ -666,7 +670,7 @@ class RenderWebGL extends EventEmitter {
         const gl = this._gl;
         twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
-        const candidates = this._candidatesTouching(drawableID, this._drawList);
+        const candidates = this._candidatesTouching(drawableID, this._visibleDrawList);
         if (candidates.length === 0) {
             return false;
         }
@@ -757,13 +761,15 @@ class RenderWebGL extends EventEmitter {
     /**
      * Check if a particular Drawable is touching any in a set of Drawables.
      * @param {int} drawableID The ID of the Drawable to check.
-     * @param {?Array<int>} candidateIDs The Drawable IDs to check, otherwise all drawables in the renderer
+     * @param {?Array<int>} candidateIDs The Drawable IDs to check, otherwise all visible drawables in the renderer
      * @returns {boolean} True if the Drawable is touching one of candidateIDs.
      */
     isTouchingDrawables (drawableID, candidateIDs = this._drawList) {
-
-        const candidates = this._candidatesTouching(drawableID, candidateIDs);
-        if (candidates.length === 0) {
+        const candidates = this._candidatesTouching(drawableID,
+            // even if passed an invisible drawable, we will NEVER touch it!
+            candidateIDs.filter(id => this._allDrawables[id]._visible));
+        // if we are invisble we don't touch anything.
+        if (candidates.length === 0 || !this._allDrawables[drawableID]._visible) {
             return false;
         }
 
@@ -794,57 +800,102 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
-     * Detect which sprite, if any, is at the given location. This function will not
-     * pick drawables that are not visible or have ghost set all the way up.
+     * Convert a client based x/y position on the canvas to a Scratch 3 world space
+     * Rectangle.  This creates recangles with a radius to cover selecting multiple
+     * scratch pixels with touch / small render areas.
+     *
+     * @param {int} centerX The client x coordinate of the picking location.
+     * @param {int} centerY The client y coordinate of the picking location.
+     * @param {int} [width] The client width of the touch event (optional).
+     * @param {int} [height] The client width of the touch event (optional).
+     * @returns {Rectangle} Scratch world space rectangle, iterate bottom <= top,
+     *                      left <= right.
+     */
+    clientSpaceToScratchBounds (centerX, centerY, width = 1, height = 1) {
+        const gl = this._gl;
+
+        const clientToScratchX = this._nativeSize[0] / gl.canvas.clientWidth;
+        const clientToScratchY = this._nativeSize[1] / gl.canvas.clientHeight;
+
+        width *= clientToScratchX;
+        height *= clientToScratchY;
+
+        width = Math.max(1, Math.min(Math.round(width), MAX_TOUCH_SIZE[0]));
+        height = Math.max(1, Math.min(Math.round(height), MAX_TOUCH_SIZE[1]));
+        const x = (centerX * clientToScratchX) - ((width - 1) / 2);
+        // + because scratch y is inverted
+        const y = (centerY * clientToScratchY) + ((height - 1) / 2);
+
+        const xOfs = (width % 2) ? 0 : -0.5;
+        // y is offset +0.5
+        const yOfs = (height % 2) ? 0 : -0.5;
+
+        const bounds = new Rectangle();
+        bounds.initFromBounds(Math.floor(this._xLeft + x + xOfs), Math.floor(this._xLeft + x + xOfs + width - 1),
+            Math.ceil(this._yTop - y + yOfs), Math.ceil(this._yTop - y + yOfs + height - 1));
+        return bounds;
+    }
+
+    /**
+     * Determine if the drawable is touching a client based x/y.  Helper method for sensing
+     * touching mouse-pointer.  Ignores visibility.
+     *
+     * @param {int} drawableID The ID of the drawable to check.
      * @param {int} centerX The client x coordinate of the picking location.
      * @param {int} centerY The client y coordinate of the picking location.
      * @param {int} [touchWidth] The client width of the touch event (optional).
      * @param {int} [touchHeight] The client height of the touch event (optional).
-     * @param {Array<int>} [candidateIDs] The Drawable IDs to pick from, otherwise all.
+     * @returns {boolean} If the drawable has any pixels that would draw in the touch area
+     */
+    drawableTouching (drawableID, centerX, centerY, touchWidth, touchHeight) {
+        const drawable = this._allDrawables[drawableID];
+        if (!drawable) {
+            return false;
+        }
+        const bounds = this.clientSpaceToScratchBounds(centerX, centerY, touchWidth, touchHeight);
+        const worldPos = twgl.v3.create();
+
+        for (worldPos[1] = bounds.bottom; worldPos[1] <= bounds.top; worldPos[1]++) {
+            for (worldPos[0] = bounds.left; worldPos[0] <= bounds.right; worldPos[0]++) {
+                if (drawable.isTouching(worldPos)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Detect which sprite, if any, is at the given location.
+     * This function will pick all drawables that are visible, unless specific
+     * candidate drawable IDs are provided.  Used for determining what is clicked
+     * or dragged.  Will not select hidden / ghosted sprites.
+     *
+     * @param {int} centerX The client x coordinate of the picking location.
+     * @param {int} centerY The client y coordinate of the picking location.
+     * @param {int} [touchWidth] The client width of the touch event (optional).
+     * @param {int} [touchHeight] The client height of the touch event (optional).
+     * @param {Array<int>} [candidateIDs] The Drawable IDs to pick from, otherwise all visible drawables.
      * @returns {int} The ID of the topmost Drawable under the picking location, or
      * RenderConstants.ID_NONE if there is no Drawable at that location.
      */
     pick (centerX, centerY, touchWidth, touchHeight, candidateIDs) {
-        const gl = this._gl;
-
-        touchWidth = touchWidth || 1;
-        touchHeight = touchHeight || 1;
         candidateIDs = (candidateIDs || this._drawList).filter(id => {
             const drawable = this._allDrawables[id];
-            const uniforms = drawable.getUniforms();
-            return drawable.getVisible() && uniforms.u_ghost !== 0;
+            // default pick list ignores visible and ghosted sprites.
+            return drawable.getVisible() && drawable.getUniforms().u_ghost !== 0;
         });
-
-        const clientToGLX = gl.canvas.width / gl.canvas.clientWidth;
-        const clientToGLY = gl.canvas.height / gl.canvas.clientHeight;
-
-        centerX *= clientToGLX;
-        centerY *= clientToGLY;
-        touchWidth *= clientToGLX;
-        touchHeight *= clientToGLY;
-
-        touchWidth = Math.max(1, Math.min(touchWidth, MAX_TOUCH_SIZE[0]));
-        touchHeight = Math.max(1, Math.min(touchHeight, MAX_TOUCH_SIZE[1]));
-
-        const pixelLeft = Math.floor(centerX - Math.floor(touchWidth / 2) + 0.5);
-        const pixelTop = Math.floor(centerY - Math.floor(touchHeight / 2) + 0.5);
-
-        const widthPerPixel = (this._xRight - this._xLeft) / this._gl.canvas.width;
-        const heightPerPixel = (this._yBottom - this._yTop) / this._gl.canvas.height;
-
-        const pickLeft = this._xLeft + (pixelLeft * widthPerPixel);
-        const pickTop = this._yTop + (pixelTop * heightPerPixel);
-
+        if (candidateIDs.length === 0) {
+            return false;
+        }
+        const bounds = this.clientSpaceToScratchBounds(centerX, centerY, touchWidth, touchHeight);
         const hits = [];
         const worldPos = twgl.v3.create(0, 0, 0);
-        worldPos[2] = 0;
-
-        // Iterate over the canvas pixels and check if any candidate can be
+        // Iterate over the scratch pixels and check if any candidate can be
         // touched at that point.
-        for (let x = 0; x < touchWidth; x++) {
-            worldPos[0] = x + pickLeft;
-            for (let y = 0; y < touchHeight; y++) {
-                worldPos[1] = y + pickTop;
+        for (worldPos[1] = bounds.bottom; worldPos[1] <= bounds.top; worldPos[1]++) {
+            for (worldPos[0] = bounds.left; worldPos[0] <= bounds.right; worldPos[0]++) {
+
                 // Check candidates in the reverse order they would have been
                 // drawn. This will determine what candiate's silhouette pixel
                 // would have been drawn at the point.
@@ -869,7 +920,7 @@ class RenderWebGL extends EventEmitter {
             }
         }
 
-        return hit | 0;
+        return Number(hit);
     }
 
     /**

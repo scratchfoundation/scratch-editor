@@ -5,16 +5,22 @@
     <!-- note: this uses the BUILT version of scratch-render!  make sure to npm run build -->
     <script src="../../dist/web/scratch-render.js"></script>
 
-    <canvas id="test" width="480" height="360"></canvas>
+    <canvas id="test" width="480" height="360" style="width: 480px"></canvas>
     <input type="file" id="file" name="file">
 
     <script>
         // These variables are going to be available in the "window global" intentionally.
         // Allows you easy access to debug with `vm.greenFlag()` etc.
 
-        var render = new ScratchRender(document.getElementById('test'));
+        var canvas = document.getElementById('test');
+        var render = new ScratchRender(canvas);
         var vm = new VirtualMachine();
         var storage = new ScratchStorage();
+        var mockMouse = data => vm.runtime.postIOData('mouse', {
+            canvasWidth: canvas.width,
+            canvasHeight: canvas.height,
+            ...data,
+        });
 
         vm.attachStorage(storage);
         vm.attachRenderer(render);

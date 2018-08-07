@@ -376,7 +376,7 @@ class Drawable {
      * @return {boolean} True if the world position touches the skin.
      */
     isTouching (vec) {
-        if (!(this.skin && this._visible)) {
+        if (!this.skin) {
             return false;
         }
 
