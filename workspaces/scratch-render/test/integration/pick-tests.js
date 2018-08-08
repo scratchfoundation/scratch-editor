@@ -26,7 +26,13 @@ const runFile = (file, script) =>
             vm.greenFlag();
             const sendResults = [];
 
-            const idToTargetName = id => vm.runtime.targets.find(target => target.drawableID === id).sprite.name;
+            const idToTargetName = id => {
+                const target = vm.runtime.targets.find(tar => tar.drawableID === id);
+                if (!target) {
+                    return `[Unknown drawableID: ${id}]`;
+                }
+                return target.sprite.name;
+            };
             const sprite = vm.runtime.targets.find(target => target.sprite.name === 'Sprite1');
 
             sendResults.push(['center', idToTargetName(render.pick(240, 180))]);

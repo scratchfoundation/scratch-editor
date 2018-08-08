@@ -11,6 +11,7 @@
     <script>
         // These variables are going to be available in the "window global" intentionally.
         // Allows you easy access to debug with `vm.greenFlag()` etc.
+        window.devicePixelRatio = 1;
 
         var canvas = document.getElementById('test');
         var render = new ScratchRender(canvas);

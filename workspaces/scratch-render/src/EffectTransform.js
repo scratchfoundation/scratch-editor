@@ -20,7 +20,165 @@ const CENTER_X = 0.5;
  */
 const CENTER_Y = 0.5;
 
+// color conversions grabbed from https://gist.github.com/mjackson/5311256
+
+/**
+ * Converts an RGB color value to HSL. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+ * Assumes r, g, and b are contained in the set [0, 255] and
+ * returns h, s, and l in the set [0, 1].
+ *
+ * @param   {number}  r       The red color value
+ * @param   {number}  g       The green color value
+ * @param   {number}  b       The blue color value
+ * @return  {Array}           The HSL representation
+ */
+const rgbToHsl = ([r, g, b]) => {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h;
+    let s;
+    const l = (max + min) / 2;
+
+    if (max === min) {
+        h = s = 0; // achromatic
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+        switch (max) {
+        case r: h = ((g - b) / d) + (g < b ? 6 : 0); break;
+        case g: h = ((b - r) / d) + 2; break;
+        case b: h = ((r - g) / d) + 4; break;
+        }
+
+        h /= 6;
+    }
+
+    return [h, s, l];
+};
+
+/**
+ * Helper function for hslToRgb is called with varying 't' values to get
+ * red green and blue values from the p/q/t color space calculations
+ * @param {number} p vector coordinates
+ * @param {number} q vector coordinates
+ * @param {number} t vector coordinates
+ * @return {number} amount of r/g/b byte
+ */
+const hue2rgb = (p, q, t) => {
+    if (t < 0) t += 1;
+    if (t > 1) t -= 1;
+    if (t < 1 / 6) return p + ((q - p) * 6 * t);
+    if (t < 1 / 2) return q;
+    if (t < 2 / 3) return p + ((q - p) * ((2 / 3) - t) * 6);
+    return p;
+};
+
+
+/**
+ * Converts an HSL color value to RGB. Conversion formula
+ * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+ * Assumes h, s, and l are contained in the set [0, 1] and
+ * returns r, g, and b in the set [0, 255].
+ *
+ * @param   {number}  h       The hue
+ * @param   {number}  s       The saturation
+ * @param   {number}  l       The lightness
+ * @return  {Array}           The RGB representation
+ */
+const hslToRgb = ([h, s, l]) => {
+    let r;
+    let g;
+    let b;
+
+    if (s === 0) {
+        r = g = b = l; // achromatic
+    } else {
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - (l * s);
+        const p = (2 * l) - q;
+
+        r = hue2rgb(p, q, h + (1 / 3));
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - (1 / 3));
+    }
+
+    return [r * 255, g * 255, b * 255];
+};
+
 class EffectTransform {
+
+    /**
+     * Transform a color given the drawables effect uniforms.  Will apply
+     * Ghost and Color and Brightness effects.
+     * @param {Drawable} drawable The drawable to get uniforms from.
+     * @param {Uint8ClampedArray} color4b The initial color.
+     * @param {Uint8ClampedArary} [dst] Working space to save the color in (is returned)
+     * @param {number} [effectMask] A bitmask for which effects to use. Optional.
+     * @returns {Uint8ClampedArray} dst filled with the transformed color
+     */
+    static transformColor (drawable, color4b, dst, effectMask) {
+        dst = dst || new Uint8ClampedArray(4);
+        effectMask = effectMask || 0xffffffff;
+        dst.set(color4b);
+        if (dst[3] === 0) {
+            return dst;
+        }
+
+        const uniforms = drawable.getUniforms();
+        const effects = drawable.getEnabledEffects() & effectMask;
+
+        if ((effects & ShaderManager.EFFECT_INFO.ghost.mask) !== 0) {
+            // gl_FragColor.a *= u_ghost
+            dst[3] *= uniforms.u_ghost;
+        }
+
+        const enableColor = (effects & ShaderManager.EFFECT_INFO.color.mask) !== 0;
+        const enableBrightness = (effects & ShaderManager.EFFECT_INFO.brightness.mask) !== 0;
+
+        if (enableColor || enableBrightness) {
+            // vec3 hsl = convertRGB2HSL(gl_FragColor.xyz);
+            const hsl = rgbToHsl(dst);
+
+            if (enableColor) {
+                // this code forces grayscale values to be slightly saturated
+                // so that some slight change of hue will be visible
+                // const float minLightness = 0.11 / 2.0;
+                const minL = 0.11 / 2.0;
+                // const float minSaturation = 0.09;
+                const minS = 0.09;
+                // if (hsl.z < minLightness) hsl = vec3(0.0, 1.0, minLightness);
+                if (hsl[2] < minL) {
+                    hsl[0] = 0;
+                    hsl[1] = 1;
+                    hsl[2] = minL;
+                // else if (hsl.y < minSaturation) hsl = vec3(0.0, minSaturation, hsl.z);
+                } else if (hsl[1] < minS) {
+                    hsl[0] = 0;
+                    hsl[1] = minS;
+                }
+
+                // hsl.x = mod(hsl.x + u_color, 1.0);
+                // if (hsl.x < 0.0) hsl.x += 1.0;
+                hsl[0] = (uniforms.u_color + hsl[0] + 1) % 1;
+            }
+
+            if (enableBrightness) {
+                // hsl.z = clamp(hsl.z + u_brightness, 0.0, 1.0);
+                hsl[2] = Math.min(1, hsl[2] + uniforms.u_brightness);
+            }
+            // gl_FragColor.rgb = convertHSL2RGB(hsl);
+            dst.set(hslToRgb(hsl));
+        }
+
+        return dst;
+    }
+
     /**
      * Transform a texture coordinate to one that would be select after applying shader effects.
      * @param {Drawable} drawable The drawable whose effects to emulate.
@@ -56,7 +214,7 @@ class EffectTransform {
             const offsetX = dst[0] - CENTER_X;
             const offsetY = dst[1] - CENTER_Y;
             // float offsetMagnitude = length(offset);
-            const offsetMagnitude = twgl.v3.length(dst);
+            const offsetMagnitude = Math.sqrt(Math.pow(offsetX, 2) + Math.pow(offsetY, 2));
             // float whirlFactor = max(1.0 - (offsetMagnitude / kRadius), 0.0);
             const whirlFactor = Math.max(1.0 - (offsetMagnitude / RADIUS), 0.0);
             // float whirlActual = u_whirl * whirlFactor * whirlFactor;
@@ -69,14 +227,14 @@ class EffectTransform {
             //     cosWhirl, -sinWhirl,
             //     sinWhirl, cosWhirl
             // );
-            const rot00 = cosWhirl;
-            const rot10 = -sinWhirl;
-            const rot01 = sinWhirl;
-            const rot11 = cosWhirl;
+            const rot1 = cosWhirl;
+            const rot2 = -sinWhirl;
+            const rot3 = sinWhirl;
+            const rot4 = cosWhirl;
 
             // texcoord0 = rotationMatrix * offset + kCenter;
-            dst[0] = (rot00 * offsetX) + (rot10 * offsetY) + CENTER_X;
-            dst[1] = (rot01 * offsetX) + (rot11 * offsetY) + CENTER_Y;
+            dst[0] = (rot1 * offsetX) + (rot3 * offsetY) + CENTER_X;
+            dst[1] = (rot2 * offsetX) + (rot4 * offsetY) + CENTER_Y;
         }
         if ((effects & ShaderManager.EFFECT_INFO.fisheye.mask) !== 0) {
             // vec2 vec = (texcoord0 - kCenter) / kCenter;

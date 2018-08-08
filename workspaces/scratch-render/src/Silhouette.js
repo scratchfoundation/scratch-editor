@@ -27,6 +27,37 @@ const getPoint = ({_width: width, _height: height, _data: data}, x, y) => {
     return data[(y * width) + x];
 };
 
+/**
+ * Memory buffers for doing 4 corner sampling for linear interpolation
+ */
+const __cornerWork = [
+    new Uint8ClampedArray(4),
+    new Uint8ClampedArray(4),
+    new Uint8ClampedArray(4),
+    new Uint8ClampedArray(4)
+];
+
+/**
+ * Get the color from a given silhouette at an x/y local texture position.
+ * @param {Silhouette} The silhouette to sample.
+ * @param {number} x X position of texture (0-1).
+ * @param {number} y Y position of texture (0-1).
+ * @param {Uint8ClampedArray} dst A color 4b space.
+ * @return {Uint8ClampedArray} The dst vector.
+ */
+const getColor4b = ({_width: width, _height: height, _colorData: data}, x, y, dst) => {
+    // 0 if outside bouds, otherwise read from data.
+    if (x >= width || y >= height || x < 0 || y < 0) {
+        return dst.fill(0);
+    }
+    const offset = ((y * width) + x) * 4;
+    dst[0] = data[offset];
+    dst[1] = data[offset + 1];
+    dst[2] = data[offset + 2];
+    dst[3] = data[offset + 3];
+    return dst;
+};
+
 class Silhouette {
     constructor () {
         /**
@@ -46,6 +77,9 @@ class Silhouette {
          * @type {Uint8ClampedArray}
          */
         this._data = null;
+        this._colorData = null;
+
+        this.colorAtNearest = this.colorAtLinear = (_, dst) => dst.fill(0);
     }
 
     /**
@@ -67,10 +101,63 @@ class Silhouette {
         const imageData = ctx.getImageData(0, 0, width, height);
 
         this._data = new Uint8ClampedArray(imageData.data.length / 4);
+        this._colorData = imageData.data;
+        // delete our custom overriden "uninitalized" color functions
+        // let the prototype work for itself
+        delete this.colorAtNearest;
+        delete this.colorAtLinear;
 
         for (let i = 0; i < imageData.data.length; i += 4) {
             this._data[i / 4] = imageData.data[i + 3];
         }
+    }
+
+    /**
+     * Sample a color from the silhouette at a given local position using
+     * "nearest neighbor"
+     * @param {twgl.v3} vec [x,y] texture space (0-1)
+     * @param {Uint8ClampedArray} dst The memory buffer to store the value in. (4 bytes)
+     * @returns {Uint8ClampedArray} dst
+     */
+    colorAtNearest (vec, dst) {
+        return getColor4b(
+            this,
+            Math.floor(vec[0] * (this._width - 1)),
+            Math.floor(vec[1] * (this._height - 1)),
+            dst
+        );
+    }
+
+    /**
+     * Sample a color from the silhouette at a given local position using
+     * "linear interpolation"
+     * @param {twgl.v3} vec [x,y] texture space (0-1)
+     * @param {Uint8ClampedArray} dst The memory buffer to store the value in. (4 bytes)
+     * @returns {Uint8ClampedArray} dst
+     */
+    colorAtLinear (vec, dst) {
+        const x = vec[0] * (this._width - 1);
+        const y = vec[1] * (this._height - 1);
+
+        const x1D = x % 1;
+        const y1D = y % 1;
+        const x0D = 1 - x1D;
+        const y0D = 1 - y1D;
+
+        const xFloor = Math.floor(x);
+        const yFloor = Math.floor(y);
+
+        const x0y0 = getColor4b(this, xFloor, yFloor, __cornerWork[0]);
+        const x1y0 = getColor4b(this, xFloor + 1, yFloor, __cornerWork[1]);
+        const x0y1 = getColor4b(this, xFloor, yFloor + 1, __cornerWork[2]);
+        const x1y1 = getColor4b(this, xFloor + 1, yFloor + 1, __cornerWork[3]);
+
+        dst[0] = (x0y0[0] * x0D * y0D) + (x0y1[0] * x0D * y1D) + (x1y0[0] * x1D * y0D) + (x1y1[0] * x1D * y1D);
+        dst[1] = (x0y0[1] * x0D * y0D) + (x0y1[1] * x0D * y1D) + (x1y0[1] * x1D * y0D) + (x1y1[1] * x1D * y1D);
+        dst[2] = (x0y0[2] * x0D * y0D) + (x0y1[2] * x0D * y1D) + (x1y0[2] * x1D * y0D) + (x1y1[2] * x1D * y1D);
+        dst[3] = (x0y0[3] * x0D * y0D) + (x0y1[3] * x0D * y1D) + (x1y0[3] * x1D * y0D) + (x1y1[3] * x1D * y1D);
+
+        return dst;
     }
 
     /**
@@ -82,8 +169,8 @@ class Silhouette {
         if (!this._data) return;
         return getPoint(
             this,
-            Math.round(vec[0] * (this._width - 1)),
-            Math.round(vec[1] * (this._height - 1))
+            Math.floor(vec[0] * (this._width - 1)),
+            Math.floor(vec[1] * (this._height - 1))
         ) > 0;
     }
 

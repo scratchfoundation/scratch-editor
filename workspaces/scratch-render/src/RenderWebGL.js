@@ -16,6 +16,12 @@ const log = require('./util/log');
 
 const __isTouchingDrawablesPoint = twgl.v3.create();
 const __candidatesBounds = new Rectangle();
+const __touchingColor = new Uint8ClampedArray(4);
+const __blendColor = new Uint8ClampedArray(4);
+
+// More pixels than this and we give up to the GPU and take the cost of readPixels
+// Width * Height * Number of drawables at location
+const __cpuTouchingColorPixelCount = 4e4;
 
 /**
  * @callback RenderWebGL#idFilterFunc
@@ -32,26 +38,40 @@ const __candidatesBounds = new Rectangle();
 const MAX_TOUCH_SIZE = [3, 3];
 
 /**
- * "touching {color}?" or "{color} touching {color}?" tests will be true if the
- * target is touching a color whose components are each within this tolerance of
- * the corresponding component of the query color.
- * between 0 (exact matches only) and 255 (match anything).
- * @type {object.<string,int>}
- * @memberof RenderWebGL
+ * Passed to the uniforms for mask in touching color
  */
-const TOLERANCE_TOUCHING_COLOR = {
-    R: 7,
-    G: 7,
-    B: 15,
-    Mask: 2
-};
+const MASK_TOUCHING_COLOR_TOLERANCE = 2;
 
 /**
- * Constant used for masking when detecting the color white
- * @type {Array<int>}
- * @memberof RenderWebGL
+ * Determines if the mask color is "close enough" (only test the 6 top bits for
+ * each color).  These bit masks are what scratch 2 used to use, so we do the same.
+ * @param {Uint8Array} a A color3b or color4b value.
+ * @param {Uint8Array} b A color3b or color4b value.
+ * @returns {boolean} If the colors match within the parameters.
  */
-const COLOR_BLACK = [0, 0, 0, 1];
+const maskMatches = (a, b) => (
+    // has some non-alpha component to test against
+    a[3] > 0 &&
+    (a[0] & 0b11111100) === (b[0] & 0b11111100) &&
+    (a[1] & 0b11111100) === (b[1] & 0b11111100) &&
+    (a[2] & 0b11111100) === (b[2] & 0b11111100)
+);
+
+/**
+ * Determines if the given color is "close enough" (only test the 5 top bits for
+ * red and green, 4 bits for blue).  These bit masks are what scratch 2 used to use,
+ * so we do the same.
+ * @param {Uint8Array} a A color3b or color4b value.
+ * @param {Uint8Array} b A color3b or color4b value / or a larger array when used with offsets
+ * @param {number} offset An offset into the `b` array, which lets you use a larger array to test
+ *                  multiple values at the same time.
+ * @returns {boolean} If the colors match within the parameters.
+ */
+const colorMatches = (a, b, offset) => (
+    (a[0] & 0b11111000) === (b[offset + 0] & 0b11111000) &&
+    (a[1] & 0b11111000) === (b[offset + 1] & 0b11111000) &&
+    (a[2] & 0b11110000) === (b[offset + 2] & 0b11110000)
+);
 
 /**
  * Sprite Fencing - The number of pixels a sprite is required to leave remaining
@@ -667,9 +687,6 @@ class RenderWebGL extends EventEmitter {
      * @returns {boolean} True iff the Drawable is touching the color.
      */
     isTouchingColor (drawableID, color3b, mask3b) {
-        const gl = this._gl;
-        twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
-
         const candidates = this._candidatesTouching(drawableID, this._visibleDrawList);
         if (candidates.length === 0) {
             return false;
@@ -677,7 +694,43 @@ class RenderWebGL extends EventEmitter {
 
         const bounds = this._candidatesBounds(candidates);
 
-        const candidateIDs = candidates.map(({id}) => id);
+        // if there are just too many pixels to CPU render efficently, we
+        // need to let readPixels happen
+        if (bounds.width * bounds.height * (candidates.length + 1) >= __cpuTouchingColorPixelCount) {
+            this._isTouchingColorGpuStart(drawableID, candidates.map(({id}) => id).reverse(), bounds, color3b, mask3b);
+        }
+
+        const drawable = this._allDrawables[drawableID];
+        const point = __isTouchingDrawablesPoint;
+        const color = __touchingColor;
+        const hasMask = Boolean(mask3b);
+
+        for (let y = bounds.bottom; y <= bounds.top; y++) {
+            if (bounds.width * (y - bounds.bottom) * (candidates.length + 1) >= __cpuTouchingColorPixelCount) {
+                return this._isTouchingColorGpuFin(bounds, color3b, y - bounds.bottom);
+            }
+            // Scratch Space - +y is top
+            for (let x = bounds.left; x <= bounds.right; x++) {
+                point[1] = y;
+                point[0] = x;
+                if (
+                    // if we use a mask, check our sample color
+                    (hasMask ?
+                        maskMatches(Drawable.sampleColor4b(point, drawable, color), mask3b) :
+                        drawable.isTouching(point)) &&
+                    // and the target color is drawn at this pixel
+                    colorMatches(RenderWebGL.sampleColor3b(point, candidates, color), color3b, 0)
+                ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    _isTouchingColorGpuStart (drawableID, candidateIDs, bounds, color3b, mask3b) {
+        const gl = this._gl;
+        twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
         // Limit size of viewport to the bounds around the target Drawable,
         // and create the projection matrix for the draw.
@@ -689,7 +742,7 @@ class RenderWebGL extends EventEmitter {
         // When using masking such that the background fill color will showing through, ensure we don't
         // fill using the same color that we are trying to detect!
         if (color3b[0] > 196 && color3b[1] > 196 && color3b[2] > 196) {
-            fillBackgroundColor = COLOR_BLACK;
+            fillBackgroundColor = [0, 0, 0, 255];
         }
 
         gl.clearColor.apply(gl, fillBackgroundColor);
@@ -699,7 +752,7 @@ class RenderWebGL extends EventEmitter {
         if (mask3b) {
             extraUniforms = {
                 u_colorMask: [mask3b[0] / 255, mask3b[1] / 255, mask3b[2] / 255],
-                u_colorMaskTolerance: TOLERANCE_TOUCHING_COLOR.Mask / 255
+                u_colorMaskTolerance: MASK_TOUCHING_COLOR_TOLERANCE / 255
             };
         }
 
@@ -730,27 +783,24 @@ class RenderWebGL extends EventEmitter {
             gl.colorMask(true, true, true, true);
             gl.disable(gl.STENCIL_TEST);
         }
+    }
 
-        const pixels = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
-        gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+    _isTouchingColorGpuFin (bounds, color3b, stop) {
+        const gl = this._gl;
+        const pixels = new Uint8Array(Math.floor(bounds.width * (bounds.height - stop) * 4));
+        gl.readPixels(0, 0, bounds.width, (bounds.height - stop), gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
         if (this._debugCanvas) {
             this._debugCanvas.width = bounds.width;
             this._debugCanvas.height = bounds.height;
             const context = this._debugCanvas.getContext('2d');
-            const imageData = context.getImageData(0, 0, bounds.width, bounds.height);
+            const imageData = context.getImageData(0, 0, bounds.width, bounds.height - stop);
             imageData.data.set(pixels);
             context.putImageData(imageData, 0, 0);
         }
 
         for (let pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-            const pixelDistanceR = Math.abs(pixels[pixelBase] - color3b[0]);
-            const pixelDistanceG = Math.abs(pixels[pixelBase + 1] - color3b[1]);
-            const pixelDistanceB = Math.abs(pixels[pixelBase + 2] - color3b[2]);
-
-            if (pixelDistanceR <= TOLERANCE_TOUCHING_COLOR.R &&
-                pixelDistanceG <= TOLERANCE_TOUCHING_COLOR.G &&
-                pixelDistanceB <= TOLERANCE_TOUCHING_COLOR.B) {
+            if (colorMatches(color3b, pixels, pixelBase)) {
                 return true;
             }
         }
@@ -883,7 +933,12 @@ class RenderWebGL extends EventEmitter {
         candidateIDs = (candidateIDs || this._drawList).filter(id => {
             const drawable = this._allDrawables[id];
             // default pick list ignores visible and ghosted sprites.
-            return drawable.getVisible() && drawable.getUniforms().u_ghost !== 0;
+            if (drawable.getVisible() && drawable.getUniforms().u_ghost !== 0) {
+                drawable.updateMatrix();
+                drawable.skin.updateSilhouette();
+                return true;
+            }
+            return false;
         });
         if (candidateIDs.length === 0) {
             return false;
@@ -1085,6 +1140,8 @@ class RenderWebGL extends EventEmitter {
         /** @todo remove this once URL-based skin setting is removed. */
         if (!drawable.skin || !drawable.skin.getTexture([100, 100])) return null;
 
+        drawable.updateMatrix();
+        drawable.skin.updateSilhouette();
         const bounds = drawable.getFastBounds();
 
         // Limit queries to the stage size.
@@ -1110,24 +1167,31 @@ class RenderWebGL extends EventEmitter {
      */
     _candidatesTouching (drawableID, candidateIDs) {
         const bounds = this._touchingBounds(drawableID);
-        if (!bounds) {
-            return [];
+        const result = [];
+        if (bounds === null) {
+            return result;
         }
-        return candidateIDs.reduce((result, id) => {
+        // iterate through the drawables list BACKWARDS - we want the top most item to be the first we check
+        for (let index = candidateIDs.length - 1; index >= 0; index--) {
+            const id = candidateIDs[index];
             if (id !== drawableID) {
                 const drawable = this._allDrawables[id];
-                const candidateBounds = drawable.getFastBounds();
-
-                if (bounds.intersects(candidateBounds)) {
-                    result.push({
-                        id,
-                        drawable,
-                        intersection: Rectangle.intersect(bounds, candidateBounds)
-                    });
+                if (drawable.skin && drawable._visible) {
+                    // Update the CPU position data
+                    drawable.updateMatrix();
+                    drawable.skin.updateSilhouette();
+                    const candidateBounds = drawable.getFastBounds();
+                    if (bounds.intersects(candidateBounds)) {
+                        result.push({
+                            id,
+                            drawable,
+                            intersection: Rectangle.intersect(bounds, candidateBounds)
+                        });
+                    }
                 }
             }
-            return result;
-        }, []);
+        }
+        return result;
     }
 
     /**
@@ -1555,6 +1619,43 @@ class RenderWebGL extends EventEmitter {
         }
         // Simplify boundary points using convex hull.
         return hull(boundaryPoints, Infinity);
+    }
+
+    /**
+     * Sample a "final" color from an array of drawables at a given scratch space.
+     * Will blend any alpha values with the drawables "below" it.
+     * @param {twgl.v3} vec Scratch Vector Space to sample
+     * @param {Array<Drawables>} drawables A list of drawables with the "top most"
+     *              drawable at index 0
+     * @param {Uint8ClampedArray} dst The color3b space to store the answer in.
+     * @return {Uint8ClampedArray} The dst vector with everything blended down.
+     */
+    static sampleColor3b (vec, drawables, dst) {
+        dst = dst || new Uint8ClampedArray(3);
+        dst.fill(0);
+        let blendAlpha = 1;
+        for (let index = 0; blendAlpha !== 0 && index < drawables.length; index++) {
+            /*
+            if (left > vec[0] || right < vec[0] ||
+                bottom > vec[1] || top < vec[0]) {
+                continue;
+            }
+            */
+            Drawable.sampleColor4b(vec, drawables[index].drawable, __blendColor);
+            // if we are fully transparent, go to the next one "down"
+            const sampleAlpha = __blendColor[3] / 255;
+            // premultiply alpha
+            dst[0] += __blendColor[0] * blendAlpha * sampleAlpha;
+            dst[1] += __blendColor[1] * blendAlpha * sampleAlpha;
+            dst[2] += __blendColor[2] * blendAlpha * sampleAlpha;
+            blendAlpha *= (1 - sampleAlpha);
+        }
+        // Backdrop could be transparent, so we need to go to the "clear color" of the
+        // draw scene (white) as a fallback if everything was alpha
+        dst[0] += blendAlpha * 255;
+        dst[1] += blendAlpha * 255;
+        dst[2] += blendAlpha * 255;
+        return dst;
     }
 }
 

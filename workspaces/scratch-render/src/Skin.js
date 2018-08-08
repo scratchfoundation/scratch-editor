@@ -161,7 +161,6 @@ class Skin extends EventEmitter {
      * @return {boolean} Did it touch?
      */
     isTouchingNearest (vec) {
-        this.updateSilhouette();
         return this._silhouette.isTouchingNearest(vec);
     }
 
@@ -172,7 +171,6 @@ class Skin extends EventEmitter {
      * @return {boolean} Did it touch?
      */
     isTouchingLinear (vec) {
-        this.updateSilhouette();
         return this._silhouette.isTouchingLinear(vec);
     }
 

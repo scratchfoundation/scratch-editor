@@ -1,0 +1,86 @@
+<body>
+    <script src="../../node_modules/scratch-vm/dist/web/scratch-vm.js"></script>
+    <script src="../../node_modules/scratch-storage/dist/web/scratch-storage.js"></script>
+    <!-- note: this uses the BUILT version of scratch-render!  make sure to npm run build -->
+    <script src="../../dist/web/scratch-render.js"></script>
+
+    <canvas id="test" width="480" height="360"></canvas>
+    <canvas id="cpu" width="480" height="360"></canvas>
+    <br/>
+    <canvas id="merge" width="480" height="360"></canvas>
+    <input type="file" id="file" name="file">
+
+    <script>
+        // These variables are going to be available in the "window global" intentionally.
+        // Allows you easy access to debug with `vm.greenFlag()` etc.
+        window.devicePixelRatio = 1;
+        const gpuCanvas = document.getElementById('test');
+        var render = new ScratchRender(gpuCanvas);
+        var vm = new VirtualMachine();
+        var storage = new ScratchStorage();
+
+        vm.attachStorage(storage);
+        vm.attachRenderer(render);
+
+        document.getElementById('file').addEventListener('click', e => {
+            document.body.removeChild(document.getElementById('loaded'));
+        });
+
+        document.getElementById('file').addEventListener('change', e => {
+            const reader = new FileReader();
+            const thisFileInput = e.target;
+            reader.onload = () => {
+                vm.start();
+                vm.loadProject(reader.result)
+                    .then(() => {
+                        // we add a `#loaded` div to our document, the integration suite
+                        // waits for that element to show up to assume the vm is ready
+                        // to play!
+                        const div = document.createElement('div');
+                        div.id='loaded';
+                        document.body.appendChild(div);
+                        vm.greenFlag();
+                        setTimeout(() => {
+                            renderCpu();
+                        }, 1000);
+                    });
+            };
+            reader.readAsArrayBuffer(thisFileInput.files[0]);
+        });
+
+        const cpuCanvas = document.getElementById('cpu');
+        const cpuCtx = cpuCanvas.getContext('2d');
+        const cpuImageData = cpuCtx.getImageData(0, 0, cpuCanvas.width, cpuCanvas.height);
+        function renderCpu() {
+            cpuImageData.data.fill(255);
+            const drawBits = render._drawList.map(id => {
+                const drawable = render._allDrawables[id];
+                if (!(drawable._visible && drawable.skin)) {
+                    return;
+                }
+                drawable.updateMatrix();
+                drawable.skin.updateSilhouette();
+                return { id, drawable };
+            }).reverse().filter(Boolean);
+            const color = new Uint8ClampedArray(3);
+            for (let x = -239; x <= 240; x++) {
+                for (let y = -180; y< 180; y++) {
+                    render.constructor.sampleColor3b([x, y], drawBits, color);
+                    const offset = (((179-y) * 480) + 239 + x) * 4
+                    cpuImageData.data.set(color, offset);
+                }
+            }
+            cpuCtx.putImageData(cpuImageData, 0, 0);
+
+            const merge = document.getElementById('merge');
+            const ctx = merge.getContext('2d');
+            ctx.drawImage(gpuCanvas, 0, 0);
+            const gpuImageData = ctx.getImageData(0, 0, 480, 360);
+            for (let x=0; x<gpuImageData.data.length; x++) {
+                gpuImageData.data[x] = 255 - Math.abs(gpuImageData.data[x] - cpuImageData.data[x]);
+            }
+
+            ctx.putImageData(gpuImageData, 0, 0);
+        }
+    </script>
+</body>

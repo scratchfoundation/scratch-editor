@@ -6,7 +6,40 @@ const ShaderManager = require('./ShaderManager');
 const Skin = require('./Skin');
 const EffectTransform = require('./EffectTransform');
 
+/**
+ * An internal workspace for calculating texture locations from world vectors
+ * this is REUSED for memory conservation reasons
+ * @type {twgl.v3}
+ */
 const __isTouchingPosition = twgl.v3.create();
+
+/**
+ * Convert a scratch space location into a texture space float.  Uses the
+ * internal __isTouchingPosition as a return value, so this should be copied
+ * if you ever need to get two local positions and store both.  Requires that
+ * the drawable inverseMatrix is up to date.
+ *
+ * @param {Drawable} drawable The drawable to get the inverse matrix and uniforms from
+ * @param {twgl.v3} vec [x,y] scratch space vector
+ * @return {twgl.v3} [x,y] texture space float vector - transformed by effects and matrix
+ */
+const getLocalPosition = (drawable, vec) => {
+    // Transfrom from world coordinates to Drawable coordinates.
+    const localPosition = __isTouchingPosition;
+    const v0 = vec[0];
+    const v1 = vec[1];
+    const m = drawable._inverseMatrix;
+    // var v2 = v[2];
+    const d = (v0 * m[3]) + (v1 * m[7]) + m[15];
+    // The RenderWebGL quad flips the texture's X axis. So rendered bottom
+    // left is 1, 0 and the top right is 0, 1. Flip the X axis so
+    // localPosition matches that transformation.
+    localPosition[0] = 0.5 - (((v0 * m[0]) + (v1 * m[4]) + m[12]) / d);
+    localPosition[1] = (((v0 * m[1]) + (v1 * m[5]) + m[13]) / d) + 0.5;
+    // Apply texture effect transform.
+    EffectTransform.transformPoint(drawable, localPosition, localPosition);
+    return localPosition;
+};
 
 class Drawable {
     /**
@@ -381,36 +414,7 @@ class Drawable {
             return false;
         }
 
-        if (this._transformDirty) {
-            this._calculateTransform();
-        }
-
-        // Get the inverse of the model matrix or update it.
-        const inverse = this._inverseMatrix;
-        if (this._inverseTransformDirty) {
-            const model = twgl.m4.copy(this._uniforms.u_modelMatrix, inverse);
-            // The normal matrix uses a z scaling of 0 causing model[10] to be
-            // 0. Getting a 4x4 inverse is impossible without a scaling in x, y,
-            // and z.
-            model[10] = 1;
-            twgl.m4.inverse(model, model);
-            this._inverseTransformDirty = false;
-        }
-
-        // Transfrom from world coordinates to Drawable coordinates.
-        const localPosition = twgl.m4.transformPoint(inverse, vec, __isTouchingPosition);
-
-        // Transform into texture coordinates. 0, 0 is the bottom left. 1, 1 is
-        // the top right.
-        localPosition[0] += 0.5;
-        localPosition[1] += 0.5;
-        // The RenderWebGL quad flips the texture's X axis. So rendered bottom
-        // left is 1, 0 and the top right is 0, 1. Flip the X axis so
-        // localPosition matches that transformation.
-        localPosition[0] = 1 - localPosition[0];
-
-        // Apply texture effect transform.
-        EffectTransform.transformPoint(this, localPosition, localPosition);
+        const localPosition = getLocalPosition(this, vec);
 
         if (this.useNearest) {
             return this.skin.isTouchingNearest(localPosition);
@@ -460,6 +464,7 @@ class Drawable {
         bounds.initFromPointsAABB(transformedHullPoints);
         return bounds;
     }
+
     /**
      * Get the precise bounds for the upper 8px slice of the Drawable.
      * Used for calculating where to position a text bubble.
@@ -514,6 +519,7 @@ class Drawable {
      * @return {!Rectangle} Bounds for the Drawable.
      */
     getFastBounds () {
+        this.updateMatrix();
         if (!this.needsConvexHullPoints()) {
             return this.getBounds();
         }
@@ -543,6 +549,27 @@ class Drawable {
             transformedHullPoints.push(glPoint);
         }
         return transformedHullPoints;
+    }
+
+    /**
+     * Update the transform matrix and calculate it's inverse for collision
+     * and local texture position purposes.
+     */
+    updateMatrix () {
+        if (this._transformDirty) {
+            this._calculateTransform();
+        }
+        // Get the inverse of the model matrix or update it.
+        if (this._inverseTransformDirty) {
+            const inverse = this._inverseMatrix;
+            twgl.m4.copy(this._uniforms.u_modelMatrix, inverse);
+            // The normal matrix uses a z scaling of 0 causing model[10] to be
+            // 0. Getting a 4x4 inverse is impossible without a scaling in x, y,
+            // and z.
+            inverse[10] = 1;
+            twgl.m4.inverse(inverse, inverse);
+            this._inverseTransformDirty = false;
+        }
     }
 
     /**
@@ -585,6 +612,28 @@ class Drawable {
         id |= (g & 255) << 8;
         id |= (b & 255) << 16;
         return id + RenderConstants.ID_NONE;
+    }
+
+    /**
+     * Sample a color from a drawable's texture.
+     * @param {twgl.v3} vec The scratch space [x,y] vector
+     * @param {Drawable} drawable The drawable to sample the texture from
+     * @param {Uint8ClampedArray} dst The "color4b" representation of the texture at point.
+     * @returns {Uint8ClampedArray} The dst object filled with the color4b
+     */
+    static sampleColor4b (vec, drawable, dst) {
+        const localPosition = getLocalPosition(drawable, vec);
+        if (localPosition[0] < 0 || localPosition[1] < 0 ||
+            localPosition[0] > 1 || localPosition[1] > 1) {
+            dst[3] = 0;
+            return dst;
+        }
+        const textColor =
+        // commenting out to only use nearest for now
+        // drawable.useNearest ?
+             drawable.skin._silhouette.colorAtNearest(localPosition, dst);
+        // : drawable.skin._silhouette.colorAtLinear(localPosition, dst);
+        return EffectTransform.transformColor(drawable, textColor, textColor);
     }
 }
 
