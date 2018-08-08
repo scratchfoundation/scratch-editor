@@ -43,8 +43,9 @@ class Drawable {
         const numEffects = ShaderManager.EFFECTS.length;
         for (let index = 0; index < numEffects; ++index) {
             const effectName = ShaderManager.EFFECTS[index];
-            const converter = ShaderManager.EFFECT_INFO[effectName].converter;
-            this._uniforms[`u_${effectName}`] = converter(0);
+            const effectInfo = ShaderManager.EFFECT_INFO[effectName];
+            const converter = effectInfo.converter;
+            this._uniforms[effectInfo.uniformName] = converter(0);
         }
 
         this._position = twgl.v3.create(0, 0);
@@ -193,7 +194,7 @@ class Drawable {
                     this._effectBits &= ~effectInfo.mask;
                 }
                 const converter = effectInfo.converter;
-                this._uniforms[`u_${effectName}`] = converter(rawValue);
+                this._uniforms[effectInfo.uniformName] = converter(rawValue);
                 if (effectInfo.shapeChanges) {
                     this.setConvexHullDirty();
                 }
