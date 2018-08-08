@@ -172,6 +172,12 @@ class RenderWebGL extends EventEmitter {
         /** @type {HTMLCanvasElement} */
         this._tempCanvas = document.createElement('canvas');
 
+        /** @type {any} */
+        this._regionId = null;
+
+        /** @type {function} */
+        this._exitRegion = null;
+
         this._svgTextBubble = new SVGTextBubble();
 
         this._createGeometry();
@@ -573,6 +579,8 @@ class RenderWebGL extends EventEmitter {
      * Draw all current drawables and present the frame on the canvas.
      */
     draw () {
+        this._doExitDrawRegion();
+
         const gl = this._gl;
 
         twgl.bindFramebufferInfo(gl, null);
@@ -729,6 +737,8 @@ class RenderWebGL extends EventEmitter {
     }
 
     _isTouchingColorGpuStart (drawableID, candidateIDs, bounds, color3b, mask3b) {
+        this._doExitDrawRegion();
+
         const gl = this._gl;
         twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
@@ -997,6 +1007,8 @@ class RenderWebGL extends EventEmitter {
      * @return {?DrawableExtraction} Data about the picked drawable
      */
     extractDrawable (drawableID, x, y) {
+        this._doExitDrawRegion();
+
         const drawable = this._allDrawables[drawableID];
         if (!drawable) return null;
 
@@ -1077,6 +1089,8 @@ class RenderWebGL extends EventEmitter {
      * @return {?ColorExtraction} Data about the picked color
      */
     extractColor (x, y, radius) {
+        this._doExitDrawRegion();
+
         const scratchX = Math.round(this._nativeSize[0] * ((x / this._gl.canvas.clientWidth) - 0.5));
         const scratchY = Math.round(-this._nativeSize[1] * ((y / this._gl.canvas.clientHeight) - 0.5));
 
@@ -1313,6 +1327,8 @@ class RenderWebGL extends EventEmitter {
      * @param {int} stampID - the unique ID of the Drawable to use as the stamp.
      */
     penStamp (penSkinID, stampID) {
+        this._doExitDrawRegion();
+
         const stampDrawable = this._allDrawables[stampID];
         if (!stampDrawable) {
             return;
@@ -1337,24 +1353,12 @@ class RenderWebGL extends EventEmitter {
 
         try {
             gl.disable(gl.BLEND);
-            this._drawThese([stampID], ShaderManager.DRAW_MODE.default, projection, {ignoreVisibility: true});
+            this._drawThese([stampID], ShaderManager.DRAW_MODE.stamp, projection, {ignoreVisibility: true});
         } finally {
             gl.enable(gl.BLEND);
         }
 
-        const stampPixels = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
-        gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, stampPixels);
-
-        const stampCanvas = this._tempCanvas;
-        stampCanvas.width = bounds.width;
-        stampCanvas.height = bounds.height;
-
-        const stampContext = stampCanvas.getContext('2d');
-        const stampImageData = stampContext.createImageData(bounds.width, bounds.height);
-        stampImageData.data.set(stampPixels);
-        stampContext.putImageData(stampImageData, 0, 0);
-
-        skin.drawStamp(stampCanvas, bounds.left, bounds.top);
+        skin._drawToBuffer(this._queryBufferInfo.attachments[0], bounds.left, bounds.top);
     }
 
     /* ******
@@ -1423,6 +1427,41 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Enter a draw region.
+     *
+     * A draw region is where multiple draw operations are performed with the
+     * same GL state. WebGL performs poorly when it changes state like blend
+     * mode. Marking a collection of state values as a "region" the renderer
+     * can skip superfluous extra state calls when it is already in that
+     * region. Since one region may be entered from within another a exit
+     * handle can also be registered that is called when a new region is about
+     * to be entered to restore a common inbetween state.
+     *
+     * @param {any} regionId - id of the region to enter
+     * @param {function} enter - handle to call when first entering a region
+     * @param {function} exit - handle to call when leaving a region
+     */
+    enterDrawRegion (regionId, enter = regionId.enter, exit = regionId.exit) {
+        if (this._regionId !== regionId) {
+            this._doExitDrawRegion();
+            this._regionId = regionId;
+            enter();
+            this._exitRegion = exit;
+        }
+    }
+
+    /**
+     * Forcefully exit the current region returning to a common inbetween GL
+     * state.
+     */
+    _doExitDrawRegion () {
+        if (this._exitRegion !== null) {
+            this._exitRegion();
+        }
+        this._exitRegion = null;
+    }
+
+    /**
      * Draw a set of Drawables, by drawable ID
      * @param {Array<int>} drawables The Drawable IDs to draw, possibly this._drawList.
      * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
@@ -1467,7 +1506,13 @@ class RenderWebGL extends EventEmitter {
             let effectBits = drawable.getEnabledEffects();
             effectBits &= opts.hasOwnProperty('effectMask') ? opts.effectMask : effectBits;
             const newShader = this._shaderManager.getShader(drawMode, effectBits);
-            if (currentShader !== newShader) {
+
+            // Manually perform region check. Do not create functions inside a
+            // loop.
+            if (this._regionId !== newShader) {
+                this._doExitDrawRegion();
+                this._regionId = newShader;
+
                 currentShader = newShader;
                 gl.useProgram(currentShader.program);
                 twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
@@ -1496,6 +1541,8 @@ class RenderWebGL extends EventEmitter {
 
             twgl.drawBufferInfo(gl, this._bufferInfo, gl.TRIANGLES);
         }
+
+        this._regionId = null;
     }
 
     /**

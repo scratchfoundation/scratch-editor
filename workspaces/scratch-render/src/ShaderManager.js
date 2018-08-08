@@ -166,7 +166,17 @@ ShaderManager.DRAW_MODE = {
     /**
      * Draw only the parts of the drawable which match a particular color.
      */
-    colorMask: 'colorMask'
+    colorMask: 'colorMask',
+
+    /**
+     * Sample a "texture" to draw a line with caps.
+     */
+    lineSample: 'lineSample',
+
+    /**
+     * Draw normally except for pre-multiplied alpha
+     */
+    stamp: 'stamp'
 };
 
 module.exports = ShaderManager;

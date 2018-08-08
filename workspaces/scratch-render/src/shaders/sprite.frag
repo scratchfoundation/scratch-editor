@@ -35,6 +35,12 @@ uniform float u_mosaic;
 uniform float u_ghost;
 #endif // ENABLE_ghost
 
+#ifdef DRAW_MODE_lineSample
+uniform vec4 u_lineColor;
+uniform float u_capScale;
+uniform float u_aliasAmount;
+#endif // DRAW_MODE_lineSample
+
 uniform sampler2D u_skin;
 
 varying vec2 v_texCoord;
@@ -103,6 +109,7 @@ const vec2 kCenter = vec2(0.5, 0.5);
 
 void main()
 {
+	#ifndef DRAW_MODE_lineSample
 	vec2 texcoord0 = v_texCoord;
 
 	#ifdef ENABLE_mosaic
@@ -147,12 +154,6 @@ void main()
 	#endif // ENABLE_fisheye
 
 	gl_FragColor = texture2D(u_skin, texcoord0);
-
-
-	if (gl_FragColor.a == 0.0)
-	{
-		discard;
-	}
 
     #ifdef ENABLE_ghost
     gl_FragColor.a *= u_ghost;
@@ -199,7 +200,21 @@ void main()
 	#endif // DRAW_MODE_colorMask
 
 	// WebGL defaults to premultiplied alpha
+	#ifndef DRAW_MODE_stamp
 	gl_FragColor.rgb *= gl_FragColor.a;
+	#endif // DRAW_MODE_stamp
 
 	#endif // DRAW_MODE_silhouette
+
+	#else // DRAW_MODE_lineSample
+	gl_FragColor = u_lineColor;
+	gl_FragColor.a *= clamp(
+		// Scale the capScale a little to have an aliased region.
+		(u_capScale + u_aliasAmount -
+			u_capScale * 2.0 * distance(v_texCoord, vec2(0.5, 0.5))
+		) / (u_aliasAmount + 1.0),
+		0.0,
+		1.0
+	);
+	#endif // DRAW_MODE_lineSample
 }
