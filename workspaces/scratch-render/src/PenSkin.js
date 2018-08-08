@@ -132,9 +132,13 @@ class PenSkin extends Skin {
     drawLine (penAttributes, x0, y0, x1, y1) {
         const ctx = this._canvas.getContext('2d');
         this._setAttributes(ctx, penAttributes);
+
+        // Width 1 and 3 lines need to be offset by 0.5.
+        const diameter = penAttributes.diameter || DefaultPenAttributes.diameter;
+        const offset = (Math.max(4 - diameter, 0) % 2) / 2;
         ctx.beginPath();
-        ctx.moveTo(this._rotationCenter[0] + x0, this._rotationCenter[1] - y0);
-        ctx.lineTo(this._rotationCenter[0] + x1, this._rotationCenter[1] - y1);
+        ctx.moveTo(this._rotationCenter[0] + x0 + offset, this._rotationCenter[1] - y0 + offset);
+        ctx.lineTo(this._rotationCenter[0] + x1 + offset, this._rotationCenter[1] - y1 + offset);
         ctx.stroke();
         this._canvasDirty = true;
         this._silhouetteDirty = true;
