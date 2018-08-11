@@ -211,14 +211,10 @@ class PenSkin extends Skin {
      * @param {number} y1 - the Y coordinate of the end of the line.
      */
     drawLine (penAttributes, x0, y0, x1, y1) {
-        // Width 1 and 3 lines need to be offset by 0.5.
-        const diameter = penAttributes.diameter || DefaultPenAttributes.diameter;
-        const offset = (Math.max(4 - diameter, 0) % 2) / 2;
-
         this._drawLineOnBuffer(
             penAttributes,
-            this._rotationCenter[0] + x0 + offset, this._rotationCenter[1] - y0 + offset,
-            this._rotationCenter[0] + x1 + offset, this._rotationCenter[1] - y1 + offset
+            this._rotationCenter[0] + x0, this._rotationCenter[1] - y0,
+            this._rotationCenter[0] + x1, this._rotationCenter[1] - y1
         );
 
         this._silhouetteDirty = true;
@@ -238,7 +234,7 @@ class PenSkin extends Skin {
         // Texture coordinates are based on a "generated" texture whose general
         // shape is a circle. The line caps set their texture values to define
         // there roundedness with the texture. The body has all of its texture
-        // valeus set to the center of the texture so its a solid block.
+        // values set to the center of the texture so it's a solid block.
         const quads = {
             a_position: {
                 numComponents: 2,
@@ -366,7 +362,7 @@ class PenSkin extends Skin {
         const avgX = (x0 + x1) / 2;
         const avgY = (y0 + y1) / 2;
         const theta = Math.atan2(y0 - y1, x0 - x1);
-        const alias = x0 === x1 || y0 === y1 ? 0 : 1;
+        const alias = 1;
 
         // The line needs a bit of aliasing to look smooth. Add a small offset
         // and a small size boost to scaling to give a section to alias.
