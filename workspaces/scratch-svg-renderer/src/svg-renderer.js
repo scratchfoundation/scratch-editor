@@ -128,7 +128,7 @@ class SvgRenderer {
             textElement.setAttribute('alignment-baseline', 'text-before-edge');
             // If there's no font size provided, provide one.
             if (!textElement.getAttribute('font-size')) {
-                textElement.setAttribute('font-size', '14');
+                textElement.setAttribute('font-size', '18');
             }
             // If there's no font-family provided, provide one.
             if (!textElement.getAttribute('font-family')) {
