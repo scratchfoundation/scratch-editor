@@ -18,7 +18,7 @@ import SelectionBoxTool from '../selection-tools/selection-box-tool';
 class SelectTool extends paper.Tool {
     /** The distance within which mouse events count as a hit against an item */
     static get TOLERANCE () {
-        return 6;
+        return 2;
     }
     /**
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
@@ -74,7 +74,12 @@ class SelectTool extends paper.Tool {
             curves: true,
             fill: true,
             guide: false,
-            tolerance: SelectTool.TOLERANCE / paper.view.zoom
+            tolerance: SelectTool.TOLERANCE / paper.view.zoom,
+            match: hitResult => {
+                // Don't match helper items, unless they are handles.
+                if (!hitResult.item.data || !hitResult.item.data.isHelperItem) return true;
+                return hitResult.item.data.isScaleHandle || hitResult.item.data.isRotHandle;
+            }
         };
     }
     handleMouseDown (event) {

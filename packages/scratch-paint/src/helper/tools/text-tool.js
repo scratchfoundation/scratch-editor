@@ -12,7 +12,7 @@ import {getRaster} from '../layer';
  */
 class TextTool extends paper.Tool {
     static get TOLERANCE () {
-        return 6;
+        return 2;
     }
     static get TEXT_EDIT_MODE () {
         return 'TEXT_EDIT_MODE';
@@ -81,7 +81,7 @@ class TextTool extends paper.Tool {
             fill: true,
             guide: false,
             match: hitResult =>
-                (hitResult.item.data && hitResult.item.data.isHelperItem) ||
+                (hitResult.item.data && (hitResult.item.data.isScaleHandle || hitResult.item.data.isRotHandle)) ||
                 hitResult.item.selected, // Allow hits on bounding box and selected only
             tolerance: TextTool.TOLERANCE / paper.view.zoom
         };
@@ -94,7 +94,9 @@ class TextTool extends paper.Tool {
             curves: true,
             fill: true,
             guide: false,
-            match: hitResult => hitResult.item && !hitResult.item.selected, // Unselected only
+            match: hitResult => hitResult.item &&
+                !(hitResult.item.data && hitResult.item.data.isHelperItem) &&
+                !hitResult.item.selected, // Unselected only
             tolerance: TextTool.TOLERANCE / paper.view.zoom
         };
     }
