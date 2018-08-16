@@ -5,6 +5,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import PaperCanvas from '../../containers/paper-canvas.jsx';
+import ScrollableCanvas from '../../containers/scrollable-canvas.jsx';
 
 import BitBrushMode from '../../containers/bit-brush-mode.jsx';
 import BitLineMode from '../../containers/bit-line-mode.jsx';
@@ -200,11 +201,10 @@ const PaintEditorComponent = props => (
 
             <div>
                 {/* Canvas */}
-                <div
-                    className={classNames(
-                        styles.canvasContainer,
-                        {[styles.withEyeDropper]: props.isEyeDropping}
-                    )}
+                <ScrollableCanvas
+                    canvas={props.canvas}
+                    hideCursor={props.isEyeDropping}
+                    style={styles.canvasContainer}
                 >
                     <PaperCanvas
                         canvasRef={props.setCanvas}
@@ -231,7 +231,7 @@ const PaintEditorComponent = props => (
                             </Box>
                         ) : null
                     }
-                </div>
+                </ScrollableCanvas>
                 <div className={styles.canvasControls}>
                     {isVector(props.format) ?
                         <Button

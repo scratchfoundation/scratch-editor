@@ -14,13 +14,12 @@ import {isGroup, ungroupItems} from '../helper/group';
 import {clearRaster, getRaster, setupLayers} from '../helper/layer';
 import {deleteSelection, getSelectedLeafItems} from '../helper/selection';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
-import {ART_BOARD_WIDTH, ART_BOARD_HEIGHT, pan, resetZoom, zoomOnFixedPoint} from '../helper/view';
+import {ART_BOARD_WIDTH, ART_BOARD_HEIGHT, resetZoom} from '../helper/view';
 import {ensureClockwise, scaleWithStrokes} from '../helper/math';
 import {clearHoveredItem} from '../reducers/hover';
 import {clearPasteOffset} from '../reducers/clipboard';
-import {updateViewBounds} from '../reducers/view-bounds';
 import {changeFormat} from '../reducers/format';
-
+import {updateViewBounds} from '../reducers/view-bounds';
 import styles from './paper-canvas.css';
 
 class PaperCanvas extends React.Component {
@@ -30,7 +29,6 @@ class PaperCanvas extends React.Component {
             'setCanvas',
             'importSvg',
             'handleKeyDown',
-            'handleWheel',
             'switchCostume'
         ]);
     }
@@ -214,38 +212,6 @@ class PaperCanvas extends React.Component {
             this.props.canvasRef(canvas);
         }
     }
-    handleWheel (event) {
-        // Multiplier variable, so that non-pixel-deltaModes are supported. Needed for Firefox.
-        // See #529 (or LLK/scratch-blocks#1190).
-        const multiplier = event.deltaMode === 0x1 ? 15 : 1;
-        const deltaX = event.deltaX * multiplier;
-        const deltaY = event.deltaY * multiplier;
-        if (event.metaKey || event.ctrlKey) {
-            // Zoom keeping mouse location fixed
-            const canvasRect = this.canvas.getBoundingClientRect();
-            const offsetX = event.clientX - canvasRect.left;
-            const offsetY = event.clientY - canvasRect.top;
-            const fixedPoint = paper.project.view.viewToProject(
-                new paper.Point(offsetX, offsetY)
-            );
-            zoomOnFixedPoint(-deltaY / 100, fixedPoint);
-            this.props.updateViewBounds(paper.view.matrix);
-            this.props.setSelectedItems(this.props.format);
-        } else if (event.shiftKey && event.deltaX === 0) {
-            // Scroll horizontally (based on vertical scroll delta)
-            // This is needed as for some browser/system combinations which do not set deltaX.
-            // See #156.
-            const dx = deltaY / paper.project.view.zoom;
-            pan(dx, 0);
-            this.props.updateViewBounds(paper.view.matrix);
-        } else {
-            const dx = deltaX / paper.project.view.zoom;
-            const dy = deltaY / paper.project.view.zoom;
-            pan(dx, dy);
-            this.props.updateViewBounds(paper.view.matrix);
-        }
-        event.preventDefault();
-    }
     render () {
         return (
             <canvas
@@ -253,7 +219,6 @@ class PaperCanvas extends React.Component {
                 height="360px"
                 ref={this.setCanvas}
                 width="480px"
-                onWheel={this.handleWheel}
             />
         );
     }

@@ -1,0 +1,36 @@
+$scrollbar-size: 6px;
+$scrollbar-padding: 1px;
+
+.vertical-scrollbar, .horizontal-scrollbar {
+    position: absolute;
+    background: #BEBEBECD;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.vertical-scrollbar-wrapper {
+    position: absolute;
+    width: $scrollbar-size;
+    right: $scrollbar-padding;
+    top: $scrollbar-padding;
+    height: calc(100% - $scrollbar-size - $scrollbar-padding);
+}
+
+.horizontal-scrollbar-wrapper {
+    position: absolute;
+    height: $scrollbar-size;
+    left: $scrollbar-padding;
+    bottom: $scrollbar-padding;
+    width: calc(100% - $scrollbar-size - $scrollbar-padding);
+}
+
+.vertical-scrollbar {
+    width: $scrollbar-size;
+}
+
+.horizontal-scrollbar {
+    height: $scrollbar-size;
+}
+
+.hide-cursor {
+    cursor: none;
+}

@@ -90,10 +90,6 @@ $border-radius: 0.25rem;
     overflow: visible;
 }
 
-.with-eye-dropper {
-    cursor: none;
-}
-
 .mode-selector {
     display: flex;
     margin-right: calc(2 * $grid-unit);

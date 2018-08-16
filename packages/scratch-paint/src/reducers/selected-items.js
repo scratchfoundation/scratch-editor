@@ -1,10 +1,14 @@
 import log from '../log/log';
 const CHANGE_SELECTED_ITEMS = 'scratch-paint/select/CHANGE_SELECTED_ITEMS';
+const REDRAW_SELECTION_BOX = 'scratch-paint/select/REDRAW_SELECTION_BOX';
 const initialState = [];
 
 const reducer = function (state, action) {
     if (typeof state === 'undefined') state = initialState;
     switch (action.type) {
+    case REDRAW_SELECTION_BOX:
+        if (state.length > 0) return state.slice(0); // Sends an update even though the items haven't changed
+        return state;
     case CHANGE_SELECTED_ITEMS:
         if (!action.selectedItems || !(action.selectedItems instanceof Array)) {
             log.warn(`No selected items or wrong format provided: ${action.selectedItems}`);
@@ -44,9 +48,15 @@ const clearSelectedItems = function () {
         selectedItems: []
     };
 };
+const redrawSelectionBox = function () {
+    return {
+        type: REDRAW_SELECTION_BOX
+    };
+};
 
 export {
     reducer as default,
+    redrawSelectionBox,
     setSelectedItems,
     clearSelectedItems,
     CHANGE_SELECTED_ITEMS

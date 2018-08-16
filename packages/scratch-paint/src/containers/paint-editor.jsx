@@ -100,8 +100,11 @@ class PaintEditor extends React.Component {
             this.startEyeDroppingLoop();
         } else if (!this.props.isEyeDropping && prevProps.isEyeDropping) {
             this.stopEyeDroppingLoop();
+        } else if (this.props.isEyeDropping && this.props.viewBounds !== prevProps.viewBounds) {
+            this.props.previousTool.activate();
+            this.props.onDeactivateEyeDropper();
+            this.stopEyeDroppingLoop();
         }
-
         if (this.props.format === Formats.VECTOR && isBitmap(prevProps.format)) {
             this.isSwitchingFormats = false;
             convertToVector(this.props.clearSelectedItems, this.handleUpdateImage);
@@ -329,7 +332,6 @@ class PaintEditor extends React.Component {
             this.props.previousTool.activate();
             this.props.onDeactivateEyeDropper();
             this.stopEyeDroppingLoop();
-            this.setState({colorInfo: null});
         }
     }
     startEyeDroppingLoop () {
@@ -367,6 +369,7 @@ class PaintEditor extends React.Component {
     }
     stopEyeDroppingLoop () {
         clearInterval(this.intervalId);
+        this.setState({colorInfo: null});
     }
     render () {
         return (
@@ -442,7 +445,8 @@ PaintEditor.propTypes = {
         stack: PropTypes.arrayOf(PropTypes.object).isRequired,
         pointer: PropTypes.number.isRequired
     }),
-    updateViewBounds: PropTypes.func.isRequired
+    updateViewBounds: PropTypes.func.isRequired,
+    viewBounds: PropTypes.instanceOf(paper.Matrix).isRequired
 };
 
 const mapStateToProps = state => ({
@@ -455,7 +459,8 @@ const mapStateToProps = state => ({
     previousTool: state.scratchPaint.color.eyeDropper.previousTool,
     selectedItems: state.scratchPaint.selectedItems,
     textEditing: state.scratchPaint.textEditTarget !== null,
-    undoState: state.scratchPaint.undo
+    undoState: state.scratchPaint.undo,
+    viewBounds: state.scratchPaint.viewBounds
 });
 const mapDispatchToProps = dispatch => ({
     onKeyPress: event => {
