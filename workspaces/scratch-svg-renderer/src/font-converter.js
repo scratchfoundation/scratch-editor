@@ -21,7 +21,9 @@ const convertFonts = function (svgTag) {
     collectText(svgTag);
     // If there's an old font-family, switch to the new one.
     for (const textElement of textElements) {
-        if (textElement.getAttribute('font-family') === 'Helvetica') {
+        // If there's no font-family provided, provide one.
+        if (!textElement.getAttribute('font-family') ||
+            textElement.getAttribute('font-family') === 'Helvetica') {
             textElement.setAttribute('font-family', 'Sans Serif');
         } else if (textElement.getAttribute('font-family') === 'Mystery') {
             textElement.setAttribute('font-family', 'Curly');

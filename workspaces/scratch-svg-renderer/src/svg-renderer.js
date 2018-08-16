@@ -130,10 +130,6 @@ class SvgRenderer {
             if (!textElement.getAttribute('font-size')) {
                 textElement.setAttribute('font-size', '18');
             }
-            // If there's no font-family provided, provide one.
-            if (!textElement.getAttribute('font-family')) {
-                textElement.setAttribute('font-family', 'Helvetica');
-            }
             let text = textElement.textContent;
 
             // Fix line breaks in text, which are not natively supported by SVG.
