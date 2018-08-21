@@ -28,7 +28,7 @@
   "devDependencies": {
     "babel-core": "6.26.0",
     "babel-eslint": "^8.1.2",
-    "babel-loader": "7.1.4",
+    "babel-loader": "7.1.5",
     "babel-preset-env": "1.6.1",
     "eslint": "^4.14.0",
     "eslint-config-scratch": "^5.0.0",
