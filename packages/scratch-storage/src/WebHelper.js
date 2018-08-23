@@ -97,10 +97,9 @@ class WebHelper extends Helper {
                         };
                     }
 
-                    nets({
-                        method: 'get',
-                        ...reqConfig
-                    }, (err, resp, body) => {
+                    nets(Object.assign({
+                        method: 'get'
+                    }, reqConfig), (err, resp, body) => {
                         // body is a Buffer
                         if (err || Math.floor(resp.statusCode / 100) !== 2) {
                             tryNextSource();
@@ -154,18 +153,16 @@ class WebHelper extends Helper {
                     url: reqConfig
                 };
             }
-            return nets({
+            return nets(Object.assign({
                 body: data,
-                method: method,
-                ...reqConfig
-            }, (err, resp, body) => {
+                method: method
+            }, reqConfig), (err, resp, body) => {
                 if (err || Math.floor(resp.statusCode / 100) !== 2) {
                     return reject(err || resp.statusCode);
                 }
-                return resolve({
-                    id: body['content-name'],
-                    ...body
-                });
+                return resolve(Object.assign({
+                    id: body['content-name']
+                }, body));
             });
         });
     }
