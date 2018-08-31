@@ -27,6 +27,10 @@ const KeyboardShortcutsHOC = function (WrappedComponent) {
             ]);
         }
         handleKeyPress (event) {
+            if (event.event.target instanceof HTMLInputElement) {
+                // Ignore keyboard shortcuts if a text input field is focused
+                return;
+            }
             // Don't activate keyboard shortcuts during text editing
             if (this.props.textEditing) return;
 
@@ -38,6 +42,7 @@ const KeyboardShortcutsHOC = function (WrappedComponent) {
                     this.props.setSelectedItems(this.props.format);
                 }
             } else if (event.metaKey || event.ctrlKey) {
+                /* @todo (fsih) add back when bugs are fixed
                 if (event.shiftKey && event.key === 'z') {
                     this.props.onRedo();
                 } else if (event.key === 'z') {
@@ -51,7 +56,7 @@ const KeyboardShortcutsHOC = function (WrappedComponent) {
                     this.changeToASelectMode();
                     event.preventDefault();
                     this.selectAll();
-                }
+                }*/
             }
         }
         changeToASelectMode () {
