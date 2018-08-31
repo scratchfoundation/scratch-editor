@@ -1,5 +1,7 @@
 import paper from '@scratch/paper';
 import {getSelectedRootItems} from './selection';
+import {getRaster} from './layer';
+import {getHitBounds} from './bitmap';
 
 // Vectors are imported and exported at SVG_ART_BOARD size.
 // Once they are imported however, both SVGs and bitmaps are on
@@ -8,6 +10,9 @@ const SVG_ART_BOARD_WIDTH = 480;
 const SVG_ART_BOARD_HEIGHT = 360;
 const ART_BOARD_WIDTH = 480 * 2;
 const ART_BOARD_HEIGHT = 360 * 2;
+const PADDING_PERCENT = 25; // Padding as a percent of the max of width/height of the sprite
+const MIN_RATIO = .125; // Zoom in to at least 1/8 of the screen. This way you don't end up incredibly
+// zoomed in for tiny costumes.
 
 const clampViewBounds = () => {
     const {left, right, top, bottom} = paper.project.view.bounds;
@@ -28,7 +33,7 @@ const clampViewBounds = () => {
 // Zoom keeping a project-space point fixed.
 // This article was helpful http://matthiasberth.com/tech/stable-zoom-and-pan-in-paperjs
 const zoomOnFixedPoint = (deltaZoom, fixedPoint) => {
-    const {view} = paper.project;
+    const view = paper.view;
     const preZoomCenter = view.center;
     const newZoom = Math.max(0.5, view.zoom + deltaZoom);
     const scaling = view.zoom / newZoom;
@@ -70,6 +75,28 @@ const pan = (dx, dy) => {
     clampViewBounds();
 };
 
+const zoomToFit = isBitmap => {
+    resetZoom();
+    let bounds;
+    if (isBitmap) {
+        bounds = getHitBounds(getRaster());
+    } else {
+        bounds = paper.project.activeLayer.bounds;
+    }
+    if (bounds && bounds.width && bounds.height) {
+        // Ratio of (sprite length plus padding on all sides) to art board length.
+        let ratio = Math.max(bounds.width * (1 + (2 * PADDING_PERCENT / 100)) / ART_BOARD_WIDTH,
+            bounds.height * (1 + (2 * PADDING_PERCENT / 100)) / ART_BOARD_HEIGHT);
+        // Clamp ratio
+        ratio = Math.max(Math.min(1, ratio), MIN_RATIO);
+        if (ratio < 1) {
+            paper.view.center = bounds.center;
+            paper.view.zoom = paper.view.zoom / ratio;
+            clampViewBounds();
+        }
+    }
+};
+
 export {
     ART_BOARD_HEIGHT,
     ART_BOARD_WIDTH,
@@ -79,5 +106,6 @@ export {
     pan,
     resetZoom,
     zoomOnSelection,
-    zoomOnFixedPoint
+    zoomOnFixedPoint,
+    zoomToFit
 };

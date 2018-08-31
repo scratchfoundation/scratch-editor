@@ -11,12 +11,13 @@ import {undoSnapshot, clearUndoState} from '../reducers/undo';
 import {isGroup, ungroupItems} from '../helper/group';
 import {clearRaster, getRaster, setupLayers} from '../helper/layer';
 import {clearSelectedItems} from '../reducers/selected-items';
-import {ART_BOARD_WIDTH, ART_BOARD_HEIGHT, resetZoom} from '../helper/view';
+import {ART_BOARD_WIDTH, ART_BOARD_HEIGHT, resetZoom, zoomToFit} from '../helper/view';
 import {ensureClockwise, scaleWithStrokes} from '../helper/math';
 import {clearHoveredItem} from '../reducers/hover';
 import {clearPasteOffset} from '../reducers/clipboard';
 import {changeFormat} from '../reducers/format';
 import {updateViewBounds} from '../reducers/view-bounds';
+import {saveZoomLevel, setZoomLevelId} from '../reducers/zoom-levels';
 import styles from './paper-canvas.css';
 
 class PaperCanvas extends React.Component {
@@ -25,6 +26,7 @@ class PaperCanvas extends React.Component {
         bindAll(this, [
             'setCanvas',
             'importSvg',
+            'maybeZoomToFit',
             'switchCostume'
         ]);
     }
@@ -32,6 +34,16 @@ class PaperCanvas extends React.Component {
         paper.setup(this.canvas);
         resetZoom();
         this.props.updateViewBounds(paper.view.matrix);
+        if (this.props.zoomLevelId) {
+            this.props.setZoomLevelId(this.props.zoomLevelId);
+            if (this.props.zoomLevels[this.props.zoomLevelId]) {
+                // This is the matrix that the view should be zoomed to after image import
+                this.shouldZoomToFit = this.props.zoomLevels[this.props.zoomLevelId];
+            } else {
+                // Zoom to fit true means find a comfortable zoom level for viewing the costume
+                this.shouldZoomToFit = true;
+            }
+        }
 
         const context = this.canvas.getContext('2d');
         context.webkitImageSmoothingEnabled = false;
@@ -46,14 +58,27 @@ class PaperCanvas extends React.Component {
     }
     componentWillReceiveProps (newProps) {
         if (this.props.imageId !== newProps.imageId) {
-            this.switchCostume(
-                newProps.imageFormat, newProps.image, newProps.rotationCenterX, newProps.rotationCenterY);
+            this.switchCostume(newProps.imageFormat, newProps.image,
+                newProps.rotationCenterX, newProps.rotationCenterY,
+                this.props.zoomLevelId, newProps.zoomLevelId);
         }
     }
     componentWillUnmount () {
+        this.props.saveZoomLevel();
         paper.remove();
     }
-    switchCostume (format, image, rotationCenterX, rotationCenterY) {
+    switchCostume (format, image, rotationCenterX, rotationCenterY, oldZoomLevelId, newZoomLevelId) {
+        if (oldZoomLevelId && oldZoomLevelId !== newZoomLevelId) {
+            this.props.saveZoomLevel();
+        }
+        if (newZoomLevelId && oldZoomLevelId !== newZoomLevelId) {
+            if (this.props.zoomLevels[newZoomLevelId]) {
+                this.shouldZoomToFit = this.props.zoomLevels[newZoomLevelId];
+            } else {
+                this.shouldZoomToFit = true;
+            }
+            this.props.setZoomLevelId(newZoomLevelId);
+        }
         for (const layer of paper.project.layers) {
             if (layer.data.isRasterLayer) {
                 clearRaster();
@@ -87,17 +112,27 @@ class PaperCanvas extends React.Component {
                     imgElement,
                     (ART_BOARD_WIDTH / 2) - rotationCenterX,
                     (ART_BOARD_HEIGHT / 2) - rotationCenterY);
+                this.maybeZoomToFit(true /* isBitmap */);
                 performSnapshot(this.props.undoSnapshot, Formats.BITMAP_SKIP_CONVERT);
             };
             imgElement.src = image;
         } else if (format === 'svg') {
             this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
             this.importSvg(image, rotationCenterX, rotationCenterY);
+            this.maybeZoomToFit();
         } else {
             log.error(`Didn't recognize format: ${format}. Use 'jpg', 'png' or 'svg'.`);
             this.props.changeFormat(Formats.VECTOR_SKIP_CONVERT);
             performSnapshot(this.props.undoSnapshot, Formats.VECTOR_SKIP_CONVERT);
         }
+    }
+    maybeZoomToFit (isBitmapMode) {
+        if (this.shouldZoomToFit instanceof paper.Matrix) {
+            paper.view.matrix = this.shouldZoomToFit;
+        } else if (this.shouldZoomToFit === true) {
+            zoomToFit(isBitmapMode);
+        }
+        this.shouldZoomToFit = false;
     }
     importSvg (svg, rotationCenterX, rotationCenterY) {
         const paperCanvas = this;
@@ -221,12 +256,19 @@ PaperCanvas.propTypes = {
     imageId: PropTypes.string,
     rotationCenterX: PropTypes.number,
     rotationCenterY: PropTypes.number,
+    saveZoomLevel: PropTypes.func.isRequired,
+    setZoomLevelId: PropTypes.func.isRequired,
     undoSnapshot: PropTypes.func.isRequired,
-    updateViewBounds: PropTypes.func.isRequired
+    updateViewBounds: PropTypes.func.isRequired,
+    zoomLevelId: PropTypes.string,
+    zoomLevels: PropTypes.shape({
+        currentZoomLevelId: PropTypes.string
+    })
 };
 const mapStateToProps = state => ({
     mode: state.scratchPaint.mode,
-    format: state.scratchPaint.format
+    format: state.scratchPaint.format,
+    zoomLevels: state.scratchPaint.zoomLevels
 });
 const mapDispatchToProps = dispatch => ({
     undoSnapshot: snapshot => {
@@ -246,6 +288,12 @@ const mapDispatchToProps = dispatch => ({
     },
     changeFormat: format => {
         dispatch(changeFormat(format));
+    },
+    saveZoomLevel: () => {
+        dispatch(saveZoomLevel(paper.view.matrix));
+    },
+    setZoomLevelId: zoomLevelId => {
+        dispatch(setZoomLevelId(zoomLevelId));
     },
     updateViewBounds: matrix => {
         dispatch(updateViewBounds(matrix));

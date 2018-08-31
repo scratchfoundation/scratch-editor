@@ -17,6 +17,7 @@ import selectedItemReducer from './selected-items';
 import textEditTargetReducer from './text-edit-target';
 import viewBoundsReducer from './view-bounds';
 import undoReducer from './undo';
+import zoomLevelsReducer from './zoom-levels';
 
 export default combineReducers({
     mode: modeReducer,
@@ -36,5 +37,6 @@ export default combineReducers({
     selectedItems: selectedItemReducer,
     textEditTarget: textEditTargetReducer,
     undo: undoReducer,
-    viewBounds: viewBoundsReducer
+    viewBounds: viewBoundsReducer,
+    zoomLevels: zoomLevelsReducer
 });

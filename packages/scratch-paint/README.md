@@ -69,11 +69,6 @@ npm install --save scratch-paint
 ```
 
 For an example of how to use scratch-paint as a library, check out the `scratch-paint/src/playground` directory.
-In `playground.jsx`, you can change the image that is passed in (which may either be nothing, an SVG string or a base64 data URI) and edit the handler `onUpdateImage`, which is called with the new image (either an SVG string or an ImageData) each time the vector drawing is edited.
-
-If the `imageId` parameter changes, then the paint editor will be cleared, the undo stack reset, and the image re-imported.
-
-SVGs of up to size 480 x 360 will fit into the view window of the paint editor, while bitmaps of size up to 960 x 720 will fit into the paint editor. One unit of an SVG will appear twice as tall and wide as one unit of a bitmap. This quirky import behavior comes from needing to support legacy projects in Scratch.
 
 In your parent component:
 ```
@@ -82,12 +77,32 @@ import PaintEditor from 'scratch-paint';
 <PaintEditor
     image={optionalImage}
     imageId={optionalId}
-    imageFormat='svg' // 'svg', 'png', or 'jpg'
-    rotationCenterX={optionalCenterPointXRelativeToTopLeft}
-    rotationCenterY={optionalCenterPointYRelativeToTopLeft}
+    imageFormat='svg'
+    rotationCenterX={optionalCenterPointX}
+    rotationCenterY={optionalCenterPointY}
+    rtl={true|false}
     onUpdateImage={handleUpdateImageFunction}
+    zoomLevelId={optionalZoomLevelId}
 />
 ```
+
+`image`: may either be nothing, an SVG string or a base64 data URI)
+SVGs of up to size 480 x 360 will fit into the view window of the paint editor, while bitmaps of size up to 960 x 720 will fit into the paint editor. One unit of an SVG will appear twice as tall and wide as one unit of a bitmap. This quirky import behavior comes from needing to support legacy projects in Scratch.
+
+`imageId`: If this parameter changes, then the paint editor will be cleared, the undo stack reset, and the image re-imported.
+
+`imageFormat`: 'svg', 'png', or 'jpg'. Other formats are currently not supported.
+
+`rotationCenterX`: x coordinate relative to the top left corner of the sprite of the point that should be centered.
+
+`rotationCenterY`: y coordinate relative to the top left corner of the sprite of the point that should be centered.
+
+`rtl`: True if the paint editor should be laid out right to left (meant for right to left languages)
+
+`onUpdateImage`: A handler called with the new image (either an SVG string or an ImageData) each time the drawing is edited.
+
+`zoomLevelId`: All costumes with the same zoom level ID will share the same saved zoom level. When a new zoom level ID is encountered, the paint editor will zoom to fit the current costume comfortably. Leave undefined to perform no zoom to fit.
+
 
 In the top-level combineReducers function:
 ```
