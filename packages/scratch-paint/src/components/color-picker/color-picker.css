@@ -98,6 +98,7 @@
     flex-direction: row;
     justify-content: center;
     margin: 8px;
+    user-select: none;
 }
 
 [dir="ltr"] .gradient-picker-row > img + img {
