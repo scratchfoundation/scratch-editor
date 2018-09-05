@@ -129,7 +129,7 @@ class PaintEditor extends React.Component {
         }
     }
     componentWillUnmount () {
-        document.removeEventListener('keydown', this.onKeyPress);
+        document.removeEventListener('keydown', this.props.onKeyPress);
         this.stopEyeDroppingLoop();
         document.removeEventListener('mousedown', this.onMouseDown);
         document.removeEventListener('touchstart', this.onMouseDown);
