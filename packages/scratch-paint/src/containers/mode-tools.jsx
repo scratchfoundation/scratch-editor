@@ -7,16 +7,17 @@ import bindAll from 'lodash.bindall';
 import CopyPasteHOC from '../hocs/copy-paste-hoc.jsx';
 import ModeToolsComponent from '../components/mode-tools/mode-tools.jsx';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
-import {incrementPasteOffset, setClipboardItems} from '../reducers/clipboard';
 import {
     deleteSelection,
     getSelectedLeafItems,
     getSelectedRootItems,
-    getAllRootItems
+    getAllRootItems,
+    selectAllItems,
+    selectAllSegments
 } from '../helper/selection';
 import {HANDLE_RATIO, ensureClockwise} from '../helper/math';
 import {getRaster} from '../helper/layer';
-import {flipBitmapHorizontal, flipBitmapVertical} from '../helper/bitmap';
+import {flipBitmapHorizontal, flipBitmapVertical, selectAllBitmap} from '../helper/bitmap';
 import {isBitmap} from '../lib/format';
 import Formats from '../lib/format';
 import Modes from '../lib/modes';
@@ -196,6 +197,15 @@ class ModeTools extends React.Component {
         }
     }
     handleDelete () {
+        if (!this.props.selectedItems.length) {
+            if (isBitmap(this.props.format)) {
+                selectAllBitmap(this.props.clearSelectedItems);
+            } else if (this.props.mode === Modes.RESHAPE) {
+                selectAllSegments();
+            } else {
+                selectAllItems();
+            }
+        }
         if (deleteSelection(this.props.mode, this.props.onUpdateImage)) {
             this.props.setSelectedItems(this.props.format);
         }
@@ -219,6 +229,7 @@ class ModeTools extends React.Component {
 }
 
 ModeTools.propTypes = {
+    clearSelectedItems: PropTypes.func.isRequired,
     format: PropTypes.oneOf(Object.keys(Formats)),
     mode: PropTypes.oneOf(Object.keys(Modes)),
     onCopyToClipboard: PropTypes.func.isRequired,
@@ -231,19 +242,11 @@ ModeTools.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    clipboardItems: state.scratchPaint.clipboard.items,
     format: state.scratchPaint.format,
     mode: state.scratchPaint.mode,
-    pasteOffset: state.scratchPaint.clipboard.pasteOffset,
     selectedItems: state.scratchPaint.selectedItems
 });
 const mapDispatchToProps = dispatch => ({
-    setClipboardItems: items => {
-        dispatch(setClipboardItems(items));
-    },
-    incrementPasteOffset: () => {
-        dispatch(incrementPasteOffset());
-    },
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
     },

@@ -7,9 +7,11 @@ import {connect} from 'react-redux';
 
 import {
     clearSelection,
+    getAllRootItems,
     getSelectedLeafItems,
     getSelectedRootItems
 } from '../helper/selection';
+import {getTrimmedRaster} from '../helper/bitmap';
 import {isBitmap} from '../lib/format';
 import Formats from '../lib/format';
 import Modes from '../lib/modes';
@@ -41,14 +43,21 @@ const CopyPasteHOC = function (WrappedComponent) {
             } else {
                 selectedItems = getSelectedRootItems();
             }
-            if (selectedItems.length > 0) {
-                const clipboardItems = [];
-                for (let i = 0; i < selectedItems.length; i++) {
-                    const jsonItem = selectedItems[i].exportJSON({asString: false});
-                    clipboardItems.push(jsonItem);
+            if (selectedItems.length === 0) {
+                if (isBitmap(this.props.format)) {
+                    const raster = getTrimmedRaster(false /* shouldInsert */);
+                    if (!raster) return;
+                    selectedItems.push(raster);
+                } else {
+                    selectedItems = getAllRootItems();
                 }
-                this.props.setClipboardItems(clipboardItems);
             }
+            const clipboardItems = [];
+            for (let i = 0; i < selectedItems.length; i++) {
+                const jsonItem = selectedItems[i].exportJSON({asString: false});
+                clipboardItems.push(jsonItem);
+            }
+            this.props.setClipboardItems(clipboardItems);
         }
         handlePaste () {
             clearSelection(this.props.clearSelectedItems);

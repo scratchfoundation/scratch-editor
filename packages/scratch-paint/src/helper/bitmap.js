@@ -345,6 +345,22 @@ const trim_ = function (raster) {
     return null;
 };
 
+/**
+ * @param {boolean} shouldInsert True if the trimmed raster should be added to the active layer.
+ * @returns {paper.Raster} raster layer with whitespace trimmed from ends, or null if there is
+ * nothing on the raster layer.
+ */
+const getTrimmedRaster = function (shouldInsert) {
+    const trimmedRaster = trim_(getRaster());
+    if (!trimmedRaster) return null;
+    if (shouldInsert) {
+        paper.project.activeLayer.addChild(trimmedRaster);
+    } else {
+        trimmedRaster.remove();
+    }
+    return trimmedRaster;
+};
+
 const convertToBitmap = function (clearSelectedItems, onUpdateImage) {
     // @todo if the active layer contains only rasters, drawing them directly to the raster layer
     // would be more efficient.
@@ -395,10 +411,7 @@ const convertToBitmap = function (clearSelectedItems, onUpdateImage) {
 
 const convertToVector = function (clearSelectedItems, onUpdateImage) {
     clearSelection(clearSelectedItems);
-    const trimmedRaster = trim_(getRaster());
-    if (trimmedRaster) {
-        paper.project.activeLayer.addChild(trimmedRaster);
-    }
+    getTrimmedRaster(true /* shouldInsert */);
     clearRaster();
     onUpdateImage(false /* skipSnapshot */, Formats.VECTOR /* formatOverride */);
 };
@@ -727,12 +740,11 @@ const commitSelectionToBitmap = function (selection, bitmap) {
 const selectAllBitmap = function (clearSelectedItems) {
     clearSelection(clearSelectedItems);
 
-    // Pull raster to active layer
-    const raster = getRaster();
-    raster.guide = false;
-    raster.locked = false;
-    raster.parent = paper.project.activeLayer;
-    raster.selected = true;
+    // Copy trimmed raster to active layer. If the raster layer was empty, nothing is selected.
+    const trimmedRaster = getTrimmedRaster(true /* shouldInsert */);
+    if (trimmedRaster) {
+        trimmedRaster.selected = true;
+    }
 
     // Clear raster layer
     clearRaster();
@@ -748,6 +760,7 @@ export {
     floodFillAll,
     getBrushMark,
     getHitBounds,
+    getTrimmedRaster,
     drawEllipse,
     forEachLinePoint,
     flipBitmapHorizontal,

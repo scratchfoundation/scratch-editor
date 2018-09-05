@@ -1,4 +1,3 @@
-import paper from '@scratch/paper';
 import classNames from 'classnames';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
@@ -192,7 +191,6 @@ const ModeToolsComponent = props => {
                 </InputGroup>
                 <InputGroup className={classNames(styles.modLabeledIconHeight)}>
                     <LabeledIconButton
-                        disabled={!props.selectedItems.length}
                         hideLabel={hideLabel(props.intl.locale)}
                         imgSrc={deleteIcon}
                         title={props.intl.formatMessage(messages.delete)}
@@ -208,7 +206,6 @@ const ModeToolsComponent = props => {
             <div className={classNames(props.className, styles.modeTools)}>
                 <InputGroup className={classNames(styles.modDashedBorder, styles.modLabeledIconHeight)}>
                     <LabeledIconButton
-                        disabled={!props.selectedItems.length}
                         hideLabel={hideLabel(props.intl.locale)}
                         imgSrc={copyIcon}
                         title={props.intl.formatMessage(messages.copy)}
@@ -224,7 +221,6 @@ const ModeToolsComponent = props => {
                 </InputGroup>
                 <InputGroup className={classNames(styles.modDashedBorder, styles.modLabeledIconHeight)}>
                     <LabeledIconButton
-                        disabled={!props.selectedItems.length}
                         hideLabel={hideLabel(props.intl.locale)}
                         imgSrc={deleteIcon}
                         title={props.intl.formatMessage(messages.delete)}
@@ -335,8 +331,7 @@ ModeToolsComponent.propTypes = {
     onOutlineShapes: PropTypes.func.isRequired,
     onPasteFromClipboard: PropTypes.func.isRequired,
     onPointPoints: PropTypes.func.isRequired,
-    onUpdateImage: PropTypes.func.isRequired,
-    selectedItems: PropTypes.arrayOf(PropTypes.instanceOf(paper.Item))
+    onUpdateImage: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -347,8 +342,7 @@ const mapStateToProps = state => ({
     bitEraserSize: state.scratchPaint.bitEraserSize,
     brushValue: state.scratchPaint.brushMode.brushSize,
     clipboardItems: state.scratchPaint.clipboard.items,
-    eraserValue: state.scratchPaint.eraserMode.brushSize,
-    selectedItems: state.scratchPaint.selectedItems
+    eraserValue: state.scratchPaint.eraserMode.brushSize
 });
 const mapDispatchToProps = dispatch => ({
     onBrushSliderChange: brushSize => {
