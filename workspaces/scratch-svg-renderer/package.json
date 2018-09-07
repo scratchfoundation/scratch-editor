@@ -23,7 +23,7 @@
     "base64-loader": "1.0.0",
     "jimp": "0.2.27",
     "minilog": "3.1.0",
-    "scratch-render-fonts": "1.0.0-prerelease.20180605131737"
+    "scratch-render-fonts": "1.0.0-prerelease.20180906193204"
   },
   "devDependencies": {
     "babel-core": "6.26.0",
