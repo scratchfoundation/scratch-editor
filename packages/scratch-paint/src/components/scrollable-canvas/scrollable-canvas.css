@@ -1,16 +1,16 @@
-$scrollbar-size: 6px;
+$scrollbar-size: 8px;
 $scrollbar-padding: 1px;
 
 .vertical-scrollbar, .horizontal-scrollbar {
     position: absolute;
     background: rgba(190, 190, 190, 0.8);
-    border-radius: 3px;
+    border-radius: calc($scrollbar-size / 2);
     cursor: pointer;
 }
 .vertical-scrollbar-wrapper {
     position: absolute;
     width: $scrollbar-size;
-    right: $scrollbar-padding;
+    right: 0;
     top: $scrollbar-padding;
     height: calc(100% - $scrollbar-size - $scrollbar-padding);
 }
@@ -19,7 +19,7 @@ $scrollbar-padding: 1px;
     position: absolute;
     height: $scrollbar-size;
     left: $scrollbar-padding;
-    bottom: $scrollbar-padding;
+    bottom: 0;
     width: calc(100% - $scrollbar-size - $scrollbar-padding);
 }
 
