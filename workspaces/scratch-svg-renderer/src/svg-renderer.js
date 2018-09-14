@@ -72,6 +72,12 @@ class SvgRenderer {
         // New svg string invalidates the cached image
         this._cachedImage = null;
 
+        // Add root svg namespace if it does not exist.
+        const svgAttrs = svgString.match(/<svg [^>]*>/);
+        if (svgAttrs && svgAttrs[0].indexOf('xmlns=') === -1) {
+            svgString = svgString.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+        }
+
         // Parse string into SVG XML.
         const parser = new DOMParser();
         this._svgDom = parser.parseFromString(svgString, 'text/xml');
