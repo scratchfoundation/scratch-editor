@@ -165,6 +165,12 @@ class SvgRenderer {
                 spacing = 1.25;
                 ty = -4 * fontSize / 22;
             }
+
+            if (textElement.transform.baseVal.length === 0) {
+                const transform = this._svgTag.createSVGTransform();
+                textElement.transform.baseVal.appendItem(transform);
+            }
+
             // Right multiply matrix by a translation of (tx, ty)
             const mtx = textElement.transform.baseVal.getItem(0).matrix;
             mtx.e += (mtx.a * tx) + (mtx.c * ty);
