@@ -178,6 +178,9 @@ class RenderWebGL extends EventEmitter {
         /** @type {function} */
         this._exitRegion = null;
 
+        /** @type {Array.<function>} */
+        this._snapshotCallbacks = [];
+
         this._svgTextBubble = new SVGTextBubble();
 
         this._createGeometry();
@@ -589,6 +592,11 @@ class RenderWebGL extends EventEmitter {
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         this._drawThese(this._drawList, ShaderManager.DRAW_MODE.default, this._projection);
+        if (this._snapshotCallbacks.length > 0) {
+            const snapshot = gl.canvas.toDataURL();
+            this._snapshotCallbacks.forEach(cb => cb(snapshot));
+            this._snapshotCallbacks = [];
+        }
     }
 
     /**
@@ -1703,6 +1711,10 @@ class RenderWebGL extends EventEmitter {
         dst[1] += blendAlpha * 255;
         dst[2] += blendAlpha * 255;
         return dst;
+    }
+
+    requestSnapshot (callback) {
+        this._snapshotCallbacks.push(callback);
     }
 }
 
