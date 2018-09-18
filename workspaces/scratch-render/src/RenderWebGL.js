@@ -178,7 +178,7 @@ class RenderWebGL extends EventEmitter {
         /** @type {function} */
         this._exitRegion = null;
 
-        /** @type {Array.<function>} */
+        /** @type {Array.<snapshotCallback>} */
         this._snapshotCallbacks = [];
 
         this._svgTextBubble = new SVGTextBubble();
@@ -1713,6 +1713,14 @@ class RenderWebGL extends EventEmitter {
         return dst;
     }
 
+    /**
+     * @callback RenderWebGL#snapshotCallback
+     * @param {string} dataURI Data URI of the snapshot of the renderer
+     */
+
+    /**
+     * @param {snapshotCallback} callback Function called in the next frame with the snapshot data
+     */
     requestSnapshot (callback) {
         this._snapshotCallbacks.push(callback);
     }
