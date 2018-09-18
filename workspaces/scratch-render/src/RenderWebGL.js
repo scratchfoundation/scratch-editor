@@ -202,6 +202,13 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * @returns {HTMLCanvasElement} the canvas of the WebGL rendering context associated with this renderer.
+     */
+    get canvas () {
+        return this._gl && this._gl.canvas;
+    }
+
+    /**
      * Set the physical size of the stage in device-independent pixels.
      * This will be multiplied by the device's pixel ratio on high-DPI displays.
      * @param {int} pixelsWide The desired width in device-independent pixels.
