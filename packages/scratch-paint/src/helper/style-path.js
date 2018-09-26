@@ -1,6 +1,6 @@
 import paper from '@scratch/paper';
 import {getSelectedLeafItems} from './selection';
-import {isPGTextItem, isPointTextItem} from './item';
+import {isPointTextItem} from './item';
 import {isGroup} from './group';
 import {getItems} from './selection';
 import GradientTypes from '../lib/gradient-types';
@@ -111,7 +111,7 @@ const applyFillColorToSelection = function (colorString, colorIndex, isSolidGrad
         }
 
         // In bitmap mode, fill color applies to the stroke if there is a stroke
-        if (bitmapMode && item.strokeColor !== null && item.strokeWidth !== 0) {
+        if (bitmapMode && item.strokeColor !== null && item.strokeWidth) {
             if (!_colorMatch(item.strokeColor, colorString)) {
                 changed = true;
                 item.strokeColor = colorString;
@@ -306,32 +306,7 @@ const applyStrokeColorToSelection = function (colorString, bitmapMode, textEditT
         if (item.parent instanceof paper.CompoundPath) {
             item = item.parent;
         }
-        if (isPGTextItem(item)) {
-            if (item.children) {
-                for (const child of item.children) {
-                    if (child.children) {
-                        for (const path of child.children) {
-                            if (!path.data.isPGGlyphRect) {
-                                if (!_colorMatch(path.strokeColor, colorString)) {
-                                    changed = true;
-                                    path.strokeColor = colorString;
-                                }
-                            }
-                        }
-                    } else if (!child.data.isPGGlyphRect) {
-                        if (child.strokeColor !== colorString) {
-                            changed = true;
-                            child.strokeColor = colorString;
-                        }
-                    }
-                }
-            } else if (!item.data.isPGGlyphRect) {
-                if (!_colorMatch(item.strokeColor, colorString)) {
-                    changed = true;
-                    item.strokeColor = colorString;
-                }
-            }
-        } else if (!_colorMatch(item.strokeColor, colorString)) {
+        if (!_colorMatch(item.strokeColor, colorString)) {
             changed = true;
             item.strokeColor = colorString;
         }
@@ -428,10 +403,12 @@ const getColorsFromSelection = function (selectedItems, bitmapMode) {
                 } else if (item.strokeColor.type === 'gradient') {
                     itemStrokeColorString = MIXED;
                 } else {
-                    itemStrokeColorString = item.strokeColor.alpha === 0 ?
+                    itemStrokeColorString = item.strokeColor.alpha === 0 || !item.strokeWidth ?
                         null :
                         item.strokeColor.toCSS();
                 }
+            } else {
+                itemStrokeColorString = null;
             }
             // check every style against the first of the items
             if (firstChild) {
@@ -440,7 +417,7 @@ const getColorsFromSelection = function (selectedItems, bitmapMode) {
                 selectionFillColor2String = itemFillColor2String;
                 selectionStrokeColorString = itemStrokeColorString;
                 selectionGradientType = itemGradientType;
-                selectionStrokeWidth = item.strokeWidth;
+                selectionStrokeWidth = itemStrokeColorString ? item.strokeWidth : 0;
                 if (item.strokeWidth && item.data && item.data.zoomLevel) {
                     selectionThickness = item.strokeWidth / item.data.zoomLevel;
                 }
@@ -459,13 +436,14 @@ const getColorsFromSelection = function (selectedItems, bitmapMode) {
             if (itemStrokeColorString !== selectionStrokeColorString) {
                 selectionStrokeColorString = MIXED;
             }
-            if (selectionStrokeWidth !== item.strokeWidth) {
+            const itemStrokeWidth = itemStrokeColorString ? item.strokeWidth : 0;
+            if (selectionStrokeWidth !== itemStrokeWidth) {
                 selectionStrokeWidth = null;
             }
         }
     }
     // Convert selection gradient type from horizontal to vertical if first item is exactly vertical
-    if (selectionGradientType !== GradientTypes.SOLID) {
+    if (selectedItems && selectedItems.length && selectionGradientType !== GradientTypes.SOLID) {
         let firstItem = selectedItems[0];
         if (firstItem.parent instanceof paper.CompoundPath) firstItem = firstItem.parent;
         const direction = firstItem.fillColor.destination.subtract(firstItem.fillColor.origin);

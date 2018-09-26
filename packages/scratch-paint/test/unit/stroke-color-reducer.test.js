@@ -34,15 +34,27 @@ test('changeStrokeColorViaSelectedItems', () => {
 
     const strokeColor1 = 6;
     const strokeColor2 = null; // transparent
-    let selectedItems = [mockPaperRootItem({strokeColor: strokeColor1})];
+    let selectedItems = [mockPaperRootItem({strokeColor: strokeColor1, strokeWidth: 1})];
     expect(strokeColorReducer(defaultState /* state */, setSelectedItems(selectedItems) /* action */))
         .toEqual(strokeColor1);
-    selectedItems = [mockPaperRootItem({strokeColor: strokeColor2})];
+    selectedItems = [mockPaperRootItem({strokeColor: strokeColor2, strokeWidth: 1})];
     expect(strokeColorReducer(defaultState /* state */, setSelectedItems(selectedItems) /* action */))
         .toEqual(strokeColor2);
-    selectedItems = [mockPaperRootItem({strokeColor: strokeColor1}), mockPaperRootItem({strokeColor: strokeColor2})];
+    selectedItems = [mockPaperRootItem({strokeColor: strokeColor1, strokeWidth: 1}),
+        mockPaperRootItem({strokeColor: strokeColor2, strokeWidth: 1})];
     expect(strokeColorReducer(defaultState /* state */, setSelectedItems(selectedItems) /* action */))
         .toEqual(MIXED);
+});
+
+test('showNoStrokeColorIfNoStrokeWidth', () => {
+    let defaultState;
+
+    let selectedItems = [mockPaperRootItem({strokeColor: '#fff', strokeWidth: null})];
+    expect(strokeColorReducer(defaultState /* state */, setSelectedItems(selectedItems) /* action */))
+        .toEqual(null);
+    selectedItems = [mockPaperRootItem({strokeColor: '#fff', strokeWidth: 0})];
+    expect(strokeColorReducer(defaultState /* state */, setSelectedItems(selectedItems) /* action */))
+        .toEqual(null);
 });
 
 test('invalidChangeStrokeColor', () => {

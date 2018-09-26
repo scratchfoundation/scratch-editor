@@ -1,6 +1,7 @@
 import log from '../log/log';
 import {CHANGE_SELECTED_ITEMS} from './selected-items';
-import {getColorsFromSelection} from '../helper/style-path';
+import {CHANGE_STROKE_WIDTH} from './stroke-width';
+import {getColorsFromSelection, MIXED} from '../helper/style-path';
 
 const CHANGE_STROKE_COLOR = 'scratch-paint/stroke-color/CHANGE_STROKE_COLOR';
 const initialState = '#000';
@@ -10,8 +11,13 @@ const regExp = /^#([0-9a-f]{3}){1,2}$/i;
 const reducer = function (state, action) {
     if (typeof state === 'undefined') state = initialState;
     switch (action.type) {
+    case CHANGE_STROKE_WIDTH:
+        if (Math.max(0, action.strokeWidth) === 0) {
+            return null;
+        }
+        return state;
     case CHANGE_STROKE_COLOR:
-        if (!regExp.test(action.strokeColor) && action.strokeColor !== null) {
+        if (!regExp.test(action.strokeColor) && action.strokeColor !== null && action.strokeColor !== MIXED) {
             log.warn(`Invalid hex color code: ${action.fillColor}`);
             return state;
         }

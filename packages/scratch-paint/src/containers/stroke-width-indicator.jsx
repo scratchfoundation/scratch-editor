@@ -2,10 +2,16 @@ import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 import React from 'react';
 import bindAll from 'lodash.bindall';
+import parseColor from 'parse-color';
+import {changeStrokeColor} from '../reducers/stroke-color';
 import {changeStrokeWidth} from '../reducers/stroke-width';
 import StrokeWidthIndicatorComponent from '../components/stroke-width-indicator.jsx';
-import {applyStrokeWidthToSelection} from '../helper/style-path';
+import {getSelectedLeafItems} from '../helper/selection';
+import {applyStrokeColorToSelection, applyStrokeWidthToSelection, getColorsFromSelection, MIXED}
+    from '../helper/style-path';
 import Modes from '../lib/modes';
+import Formats from '../lib/format';
+import {isBitmap} from '../lib/format';
 
 class StrokeWidthIndicator extends React.Component {
     constructor (props) {
@@ -15,10 +21,20 @@ class StrokeWidthIndicator extends React.Component {
         ]);
     }
     handleChangeStrokeWidth (newWidth) {
-        if (applyStrokeWidthToSelection(newWidth, this.props.textEditTarget)) {
-            this.props.onUpdateImage();
+        let changed = applyStrokeWidthToSelection(newWidth, this.props.textEditTarget);
+        if ((!this.props.strokeWidth || this.props.strokeWidth === 0) && newWidth > 0) {
+            let currentColor = getColorsFromSelection(getSelectedLeafItems(), isBitmap(this.props.format)).strokeColor;
+            if (currentColor === null) {
+                changed = applyStrokeColorToSelection('#000', isBitmap(this.props.format), this.props.textEditTarget) ||
+                    changed;
+                currentColor = '#000';
+            } else if (currentColor !== MIXED) {
+                currentColor = parseColor(currentColor).hex;
+            }
+            this.props.onChangeStrokeColor(currentColor);
         }
         this.props.onChangeStrokeWidth(newWidth);
+        if (changed) this.props.onUpdateImage();
     }
     render () {
         return (
@@ -35,10 +51,14 @@ const mapStateToProps = state => ({
     disabled: state.scratchPaint.mode === Modes.BRUSH ||
         state.scratchPaint.mode === Modes.TEXT ||
         state.scratchPaint.mode === Modes.FILL,
+    format: state.scratchPaint.format,
     strokeWidth: state.scratchPaint.color.strokeWidth,
     textEditTarget: state.scratchPaint.textEditTarget
 });
 const mapDispatchToProps = dispatch => ({
+    onChangeStrokeColor: strokeColor => {
+        dispatch(changeStrokeColor(strokeColor));
+    },
     onChangeStrokeWidth: strokeWidth => {
         dispatch(changeStrokeWidth(strokeWidth));
     }
@@ -46,6 +66,8 @@ const mapDispatchToProps = dispatch => ({
 
 StrokeWidthIndicator.propTypes = {
     disabled: PropTypes.bool.isRequired,
+    format: PropTypes.oneOf(Object.keys(Formats)),
+    onChangeStrokeColor: PropTypes.func.isRequired,
     onChangeStrokeWidth: PropTypes.func.isRequired,
     onUpdateImage: PropTypes.func.isRequired,
     strokeWidth: PropTypes.number,

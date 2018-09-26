@@ -41,5 +41,6 @@ const changeStrokeWidth = function (strokeWidth) {
 export {
     reducer as default,
     changeStrokeWidth,
+    CHANGE_STROKE_WIDTH,
     MAX_STROKE_WIDTH
 };
