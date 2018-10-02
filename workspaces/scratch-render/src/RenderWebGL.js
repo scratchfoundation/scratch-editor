@@ -968,7 +968,12 @@ class RenderWebGL extends EventEmitter {
         if (candidateIDs.length === 0) {
             return false;
         }
+
         const bounds = this.clientSpaceToScratchBounds(centerX, centerY, touchWidth, touchHeight);
+        if (bounds.left === -Infinity || bounds.bottom === -Infinity) {
+            return false;
+        }
+
         const hits = [];
         const worldPos = twgl.v3.create(0, 0, 0);
         // Iterate over the scratch pixels and check if any candidate can be
