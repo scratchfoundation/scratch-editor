@@ -1,5 +1,17 @@
-const TextDecoder = require('text-encoding').TextDecoder;
-const TextEncoder = require('text-encoding').TextEncoder;
+// Use JS implemented TextDecoder and TextEncoder if it is not provided by the
+// browser.
+let _TextDecoder;
+let _TextEncoder;
+const encoding = require('text-encoding');
+if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
+    _TextDecoder = encoding.TextDecoder;
+    _TextEncoder = encoding.TextEncoder;
+} else {
+    /* global TextDecoder TextEncoder */
+    _TextDecoder = TextDecoder;
+    _TextEncoder = TextEncoder;
+}
+
 const base64js = require('base64-js');
 
 const memoizedToString = (function () {
@@ -49,7 +61,7 @@ class Asset {
      * @returns {string} - This asset's data, decoded as text.
      */
     decodeText () {
-        const decoder = new TextDecoder();
+        const decoder = new _TextDecoder();
         return decoder.decode(this.data);
     }
 
@@ -59,7 +71,7 @@ class Asset {
      * @param {DataFormat} dataFormat - the format of the data (DataFormat.SVG for example).
      */
     encodeTextData (data, dataFormat) {
-        const encoder = new TextEncoder();
+        const encoder = new _TextEncoder();
         this.setData(encoder.encode(data), dataFormat);
     }
 
