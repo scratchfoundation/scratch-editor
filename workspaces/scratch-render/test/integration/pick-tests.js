@@ -57,21 +57,21 @@ const runFile = (file, action, script) =>
         {
             name: 'pick Sprite1',
             action: ({sendResults, render, idToTargetName}) => {
-                sendResults.push(['center', idToTargetName(render.pick(240, 180))]);
+                sendResults.push(['center', idToTargetName(render.pick(360, 180))]);
             },
             expect: [['center', 'Sprite1']]
         },
         {
             name: 'pick Stage',
             action: ({sendResults, render, idToTargetName}) => {
-                sendResults.push(['left', idToTargetName(render.pick(200, 180))]);
+                sendResults.push(['left', idToTargetName(render.pick(320, 180))]);
             },
             expect: [['left', 'Stage']]
         },
         {
             name: 'touching Sprite1',
             action: ({sprite, sendResults, render}) => {
-                sendResults.push(['over', render.drawableTouching(sprite.drawableID, 240, 180)]);
+                sendResults.push(['over', render.drawableTouching(sprite.drawableID, 360, 180)]);
             },
             expect: [['over', true]]
         },
@@ -79,7 +79,7 @@ const runFile = (file, action, script) =>
             name: 'pick Stage through hidden Sprite1',
             action: ({sprite, sendResults, render, idToTargetName}) => {
                 sprite.setVisible(false);
-                sendResults.push(['hidden sprite pick center', idToTargetName(render.pick(240, 180))]);
+                sendResults.push(['hidden sprite pick center', idToTargetName(render.pick(360, 180))]);
             },
             expect: [['hidden sprite pick center', 'Stage']]
         },
@@ -87,7 +87,7 @@ const runFile = (file, action, script) =>
             name: 'touching hidden Sprite1',
             action: ({sprite, sendResults, render}) => {
                 sprite.setVisible(false);
-                sendResults.push(['hidden over', render.drawableTouching(sprite.drawableID, 240, 180)]);
+                sendResults.push(['hidden over', render.drawableTouching(sprite.drawableID, 360, 180)]);
             },
             expect: [['hidden over', true]]
         }
