@@ -161,6 +161,17 @@ class WebHelper extends Helper {
                 if (err || Math.floor(resp.statusCode / 100) !== 2) {
                     return reject(err || resp.statusCode);
                 }
+                // xhr makes it difficult to both send FormData and automatically
+                // parse a JSON response. So try to parse everything as JSON.
+                if (typeof body === 'string') {
+                    try {
+                        body = JSON.parse(body);
+                    } catch (parseError) {
+                        // If it's not parseable, then we can't add the id even
+                        // if we want to, so stop here
+                        return resolve(body);
+                    }
+                }
                 return resolve(Object.assign({
                     id: body['content-name'] || assetId
                 }, body));
