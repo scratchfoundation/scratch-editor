@@ -54,9 +54,9 @@ varying vec2 v_texCoord;
 // Smaller values can cause problems with "color" and "brightness" effects on some mobile devices
 const float epsilon = 1e-3;
 
-// Convert an RGB color to Hue, Saturation, and Lightness.
+// Convert an RGB color to Hue, Saturation, and Value.
 // All components of input and output are expected to be in the [0,1] range.
-vec3 convertRGB2HSL(vec3 rgb)
+vec3 convertRGB2HSV(vec3 rgb)
 {
 	// Hue calculation has 3 cases, depending on which RGB component is largest, and one of those cases involves a "mod"
 	// operation. In order to avoid that "mod" we split the M==R case in two: one for G<B and one for B>G. The B>G case
@@ -80,13 +80,13 @@ vec3 convertRGB2HSL(vec3 rgb)
 	// Chroma = M - m
 	float C = temp2.x - m;
 
-	// Lightness = 1/2 * (M + m)
-	float L = 0.5 * (temp2.x + m);
+	// Value = M
+	float V = temp2.x;
 
 	return vec3(
 		abs(temp2.z + (temp2.w - temp2.y) / (6.0 * C + epsilon)), // Hue
-		C / (1.0 - abs(2.0 * L - 1.0) + epsilon), // Saturation
-		L); // Lightness
+		C / (temp2.x + epsilon), // Saturation
+		V); // Value
 }
 
 vec3 convertHue2RGB(float hue)
@@ -97,11 +97,11 @@ vec3 convertHue2RGB(float hue)
 	return clamp(vec3(r, g, b), 0.0, 1.0);
 }
 
-vec3 convertHSL2RGB(vec3 hsl)
+vec3 convertHSV2RGB(vec3 hsv)
 {
-	vec3 rgb = convertHue2RGB(hsl.x);
-	float c = (1.0 - abs(2.0 * hsl.z - 1.0)) * hsl.y;
-	return (rgb - 0.5) * c + hsl.z;
+	vec3 rgb = convertHue2RGB(hsv.x);
+	float c = hsv.z * hsv.y;
+	return rgb * c + hsv.z - c;
 }
 #endif // !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color) || defined(ENABLE_brightness))
 
@@ -166,7 +166,7 @@ void main()
 
 	#if defined(ENABLE_color) || defined(ENABLE_brightness)
 	{
-		vec3 hsl = convertRGB2HSL(gl_FragColor.xyz);
+		vec3 hsv = convertRGB2HSV(gl_FragColor.xyz);
 
 		#ifdef ENABLE_color
 		{
@@ -174,19 +174,19 @@ void main()
 			// so that some slight change of hue will be visible
 			const float minLightness = 0.11 / 2.0;
 			const float minSaturation = 0.09;
-			if (hsl.z < minLightness) hsl = vec3(0.0, 1.0, minLightness);
-			else if (hsl.y < minSaturation) hsl = vec3(0.0, minSaturation, hsl.z);
+			if (hsv.z < minLightness) hsv = vec3(0.0, 1.0, minLightness);
+			else if (hsv.y < minSaturation) hsv = vec3(0.0, minSaturation, hsv.z);
 
-			hsl.x = mod(hsl.x + u_color, 1.0);
-			if (hsl.x < 0.0) hsl.x += 1.0;
+			hsv.x = mod(hsv.x + u_color, 1.0);
+			if (hsv.x < 0.0) hsv.x += 1.0;
 		}
 		#endif // ENABLE_color
 
 		#ifdef ENABLE_brightness
-		hsl.z = clamp(hsl.z + u_brightness, 0.0, 1.0);
+		hsv.z = clamp(hsv.z + u_brightness, 0.0, 1.0);
 		#endif // ENABLE_brightness
 
-		gl_FragColor.rgb = convertHSL2RGB(hsl);
+		gl_FragColor.rgb = convertHSV2RGB(hsv);
 	}
 	#endif // defined(ENABLE_color) || defined(ENABLE_brightness)
 
