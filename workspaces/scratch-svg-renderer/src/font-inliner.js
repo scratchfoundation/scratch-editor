@@ -1,18 +1,8 @@
+const SvgElement = require('./svg-element');
 /**
  * @fileOverview Import bitmap data into Scratch 3.0, resizing image as necessary.
  */
 const {FONTS} = require('scratch-render-fonts');
-
-/**
- * Helper to create an SVG element with the correct NS.
- * @param {string} tagName Tag name for the element.
- * @return {!DOMElement} Element created.
- */
-const createSVGElement = function (tagName) {
-    return document.createElementNS(
-        'http://www.w3.org/2000/svg', tagName
-    );
-};
 
 /**
  * Given SVG data, inline the fonts. This allows them to be rendered correctly when set
@@ -40,8 +30,8 @@ const inlineSvgFonts = function (svgTag) {
         }
     };
     collectFonts(svgTag);
-    const newDefs = createSVGElement('defs');
-    const newStyle = createSVGElement('style');
+    const newDefs = SvgElement.create('defs');
+    const newStyle = SvgElement.create('style');
     for (const font of fontsNeeded) {
         if (FONTS.hasOwnProperty(font)) {
             newStyle.textContent += FONTS[font];
@@ -51,7 +41,4 @@ const inlineSvgFonts = function (svgTag) {
     svgTag.insertBefore(newDefs, svgTag.childNodes[0]);
 };
 
-module.exports = {
-    createSVGElement,
-    inlineSvgFonts
-};
+module.exports = inlineSvgFonts;

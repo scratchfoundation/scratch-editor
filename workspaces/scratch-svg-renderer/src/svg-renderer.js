@@ -1,4 +1,5 @@
-const {createSVGElement, inlineSvgFonts} = require('./font-inliner');
+const inlineSvgFonts = require('./font-inliner');
+const SvgElement = require('./svg-element');
 const convertFonts = require('./font-converter');
 
 /**
@@ -189,7 +190,7 @@ class SvgRenderer {
                 const lines = text.split('\n');
                 text = '';
                 for (const line of lines) {
-                    const tspanNode = createSVGElement('tspan');
+                    const tspanNode = SvgElement.create('tspan');
                     tspanNode.setAttribute('x', '0');
                     tspanNode.setAttribute('dy', `${spacing}em`);
                     tspanNode.textContent = line;
