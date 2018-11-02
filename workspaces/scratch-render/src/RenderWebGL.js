@@ -930,6 +930,9 @@ class RenderWebGL extends EventEmitter {
         const bounds = this.clientSpaceToScratchBounds(centerX, centerY, touchWidth, touchHeight);
         const worldPos = twgl.v3.create();
 
+        drawable.updateMatrix();
+        drawable.skin.updateSilhouette();
+
         for (worldPos[1] = bounds.bottom; worldPos[1] <= bounds.top; worldPos[1]++) {
             for (worldPos[0] = bounds.left; worldPos[0] <= bounds.right; worldPos[0]++) {
                 if (drawable.isTouching(worldPos)) {
