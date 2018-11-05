@@ -32,7 +32,7 @@
     "parse-color": "1.0.0",
     "prop-types": "^15.5.10",
     "scratch-l10n": "^2.0.0",
-    "scratch-svg-renderer": "0.2.0-prerelease.20181024192149"
+    "scratch-svg-renderer": "0.2.0-prerelease.20181101210634"
   },
   "peerDependencies": {
     "react": "^16",
