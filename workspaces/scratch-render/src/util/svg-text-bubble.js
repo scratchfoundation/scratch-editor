@@ -145,11 +145,16 @@ class SVGTextBubble {
             </g>`;
     }
 
-
-    _getTextSize () {
-        const svgString = this._wrapSvgFragment(this._textFragment);
+    _getTextSize (textFragment) {
+        const svgString = this._wrapSvgFragment(textFragment);
         if (!this._textSizeCache[svgString]) {
             this._textSizeCache[svgString] = this.svgRenderer.measure(svgString);
+            if (this._textSizeCache[svgString].height === 0) {
+                // The speech bubble is empty, so use the height of a single line with content (or else it renders
+                // weirdly, see issue #302).
+                const dummyFragment = this._buildTextFragment('X');
+                this._textSizeCache[svgString] = this._getTextSize(dummyFragment);
+            }
         }
         return this._textSizeCache[svgString];
     }
@@ -183,7 +188,7 @@ class SVGTextBubble {
         let fragment = '';
 
         const radius = 16;
-        const {x, y, width, height} = this._getTextSize();
+        const {x, y, width, height} = this._getTextSize(this._textFragment);
         const padding = 10;
         const fullWidth = Math.max(MIN_WIDTH, width) + (2 * padding);
         const fullHeight = height + (2 * padding);
