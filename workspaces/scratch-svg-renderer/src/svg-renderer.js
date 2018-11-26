@@ -97,6 +97,9 @@ class SvgRenderer {
         } else if (!this._svgTag.getAttribute('viewBox')) {
             // Renderer expects a view box.
             this._transformMeasurements();
+        } else if (!this._svgTag.getAttribute('width') || !this._svgTag.getAttribute('height')) {
+            this._svgTag.setAttribute('width', this._svgTag.viewBox.baseVal.width);
+            this._svgTag.setAttribute('height', this._svgTag.viewBox.baseVal.height);
         }
         this._measurements = {
             width: this._svgTag.viewBox.baseVal.width,
