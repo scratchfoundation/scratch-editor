@@ -1,7 +1,7 @@
 const inlineSvgFonts = require('./font-inliner');
 const SvgElement = require('./svg-element');
 const convertFonts = require('./font-converter');
-const Matrix = require('transformation-matrix');
+const transformStrokeWidths = require('./transform-applier');
 
 /**
  * Main quirks-mode SVG rendering code.
@@ -88,7 +88,7 @@ class SvgRenderer {
             throw new Error('Document does not appear to be SVG.');
         }
         this._svgTag = this._svgDom.documentElement;
-        this._transformStrokeWidths();
+        transformStrokeWidths(this._svgTag);
         if (fromVersion2) {
             // Transform all text elements.
             this._transformText();
@@ -109,81 +109,6 @@ class SvgRenderer {
             x: this._svgTag.viewBox.baseVal.x,
             y: this._svgTag.viewBox.baseVal.y
         };
-    }
-
-    /**
-     * Scratch 2.0 displays stroke widths in a "normalized" way, that is,
-     * if a shape with a stroke width has a transform applied, it will be
-     * rendered with a stroke that is the same width all the way around,
-     * instead of stretched looking.
-     *
-     * The vector paint editor also prefers to normalize the stroke width,
-     * rather than keep track of transforms at the group level, as this
-     * simplifies editing (e.g. stroke width 3 always means the same thickness)
-     *
-     * This function performs that normalization process, pushing transforms
-     * on groups down to the leaf level and averaging out the stroke width
-     * around the shapes.
-     */
-    _transformStrokeWidths () {
-        const inherited = Matrix.identity();
-        const applyTransforms = (domElement, matrix) => {
-            if (domElement.childNodes.length) {
-                // multiply to inherited
-                for (let i = 0; i < domElement.childNodes.length; i++) {
-                    applyTransforms(domElement.childNodes[i], Matrix.compose(matrix, this._localXForm(domElement)));
-                }
-                domElement.removeAttribute('transform');
-            } else if (domElement.localName === 'path') {
-                // multiply to inherited
-                //domElement.removeAttribute('transform');
-            }
-        };
-        applyTransforms(this._svgTag, inherited);
-    }
-
-    _localXForm (domElement) {
-        let result = Matrix.identity();
-        const degToRadians = Math.pi / 180;
-        const string = domElement.attributes.transform;
-        if (!string) return result;
-        const regExp = /(\w+)\s*\(([^)]*)\)/g;
-        let xform = regExp.test(string);
-        while (xform) {
-            let m = Matrix.identity();
-            const type = xform[1].toLowerCase();
-            const args = domElement.extractNumericArgs(xform[2]);
-            switch (type) {
-            case 'translate' :
-                m.translate(args[0], args.length > 1 ? args[1] : 0);
-                break;
-            case 'scale' :
-                m.scale(args[0], args.length > 1 ? args[1] : args[0]);
-                break;
-            case 'rotate' :
-                if (args.length > 1) {
-                    const tx = args.length > 1 ? args[1] : 0;
-                    const ty = args.length > 2 ? args[2] : 0;
-                    m.translate(-tx, -ty);
-                    m.rotate(args[0] * degToRadians);
-                    m.translate(tx, ty);
-                } else m.rotate(args[0] * degToRadians);
-                break;
-            case 'skewx' :
-                m.c = Math.tan(args[0] * degToRadians);
-                break;
-            case 'skewy' :
-                m.b = Math.tan(args[0] * degToRadians);
-                break;
-            case 'matrix':
-                m = {a: args[0], c: args[1], e: args[2], b: args[3], d: args[4], f: args[5]};
-                break;
-            }
-            m.concat(result);
-            result = m;
-            xform = regExp.test(string);
-        }
-        return result;
     }
 
     /**
