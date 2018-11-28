@@ -169,3 +169,25 @@ test('siblingsTransformPath', t => {
     // TODO check siblings get correct transform
     t.end();
 });
+
+// Stroke width is pushed down
+test('siblingsStroke', t => {
+    const {window} = new JSDOM();
+    const svgString =
+        `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="100px" height="100px" viewBox="0 0 100 100">` +
+            `<g stroke-width="5">` +
+                `<g stroke-width="10">` +
+                    `<path transform="matrix(.5 0 0 .5 0 0)" id="path" fill="#5E4A42" stroke="#000000" d="${d}" id="path"/>` +
+                    `<shape id="sibling"/>` +
+                `</g>` +
+                `<shape id="distantCousin1" stroke-width="15" />` +
+                `<shape id="distantCousin2" />` +
+            `</g>` +
+        `</svg>`;
+    const parser = new window.DOMParser();
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+
+    transformStrokeWidths(svgElement);
+    // TODO check siblings get correct stroke width
+    t.end();
+});

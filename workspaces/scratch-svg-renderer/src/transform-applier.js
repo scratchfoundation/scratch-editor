@@ -5,6 +5,7 @@ const log = require('./util/log');
  * @fileOverview Apply transforms to match stroke width appearance in 2.0 and 3.0
  */
 
+// Adapted from paper.js's Path.applyTransform
 const _parseTransform = function (domElement) {
     let matrix = Matrix.identity();
     const string = domElement.attributes && domElement.attributes.transform && domElement.attributes.transform.value;
@@ -49,6 +50,28 @@ const _parseTransform = function (domElement) {
     return matrix;
 };
 
+// Adapted from paper.js's Matrix.decompose
+// Given a matrix, return the x and y scale factors of the matrix
+const _getScaleFactor = function (matrix) {
+    const a = matrix.a;
+    const b = matrix.b;
+    const c = matrix.c;
+    const d = matrix.d;
+    const det = (a * d) - (b * c);
+
+    if (a !== 0 || b !== 0) {
+        const r = Math.sqrt((a * a) + (b * b));
+        return {x: r, y: det / r};
+    }
+    if (c !== 0 || d !== 0) {
+        const s = Math.sqrt((c * c) + (d * d));
+        return {x: det / s, y: s};
+    }
+    // a = b = c = d = 0
+    return {x: 0, y: 0};
+};
+
+// Adapted from paper.js's PathItem.setPathData
 const _transformPath = function (pathString, transform) {
     if (!transform || Matrix.toString(transform) === Matrix.toString(Matrix.identity())) return pathString;
     // First split the path data into parts of command-coordinates pairs
@@ -74,6 +97,12 @@ const _transformPath = function (pathString, transform) {
         return {x: getCoord(index, 'x'), y: getCoord(index + 1, 'y')};
     };
 
+    // Returns the transformed point as a string
+    const getString = function (point) {
+        const transformed = Matrix.applyToPoint(transform, point);
+        return `${transformed.x} ${transformed.y} `;
+    };
+
     for (let i = 0, l = parts && parts.length; i < l; i++) {
         const part = parts[i];
         const command = part[0];
@@ -83,7 +112,7 @@ const _transformPath = function (pathString, transform) {
         const length = coords && coords.length;
         relative = command === lower;
         // Fix issues with z in the middle of SVG path data, not followed by
-        // a m command, see #413:
+        // a m command, see paper.js#413:
         if (previous === 'z' && !/[mz]/.test(lower)) {
             translated += `M ${current.x} ${current.y} `;
         }
@@ -95,7 +124,7 @@ const _transformPath = function (pathString, transform) {
                 for (let j = 0; j < length; j += 2) {
                     translated += move ? 'M ' : 'L ';
                     current = getPoint(j);
-                    translated += `${current.x} ${current.y} `;
+                    translated += getString(current);
                     if (move) {
                         start = current;
                         move = false;
@@ -111,7 +140,7 @@ const _transformPath = function (pathString, transform) {
                 current = current.clone(); // Clone as we're going to modify it.
                 for (let j = 0; j < length; j++) {
                     current[coord] = getCoord(j, coord);
-                    translated += `L ${current.x} ${current.y} `;
+                    translated += `L ${getString(current)}`;
                 }
                 control = current;
                 break;
@@ -121,7 +150,7 @@ const _transformPath = function (pathString, transform) {
                 const handle1 = getPoint(j);
                 const handle2 = getPoint(j + 2);
                 current = getPoint(j + 4);
-                translated += `C ${handle1.x} ${handle1.y} ${handle2.x} ${handle2.y} ${current.x} ${current.y} `;
+                translated += `C ${getString(handle1)}${getString(handle2)}${getString(current)}`;
             }
             break;
         case 's':
@@ -134,7 +163,7 @@ const _transformPath = function (pathString, transform) {
                 const handle2 = getPoint(j);
                 current = getPoint(j + 2);
 
-                translated += `S ${handle1.x} ${handle1.y} ${handle2.x} ${handle2.y} ${current.x} ${current.y} `;
+                translated += `C ${getString(handle1)}${getString(handle2)}${getString(current)}`;
                 previous = lower;
             }
             break;
@@ -142,7 +171,7 @@ const _transformPath = function (pathString, transform) {
             for (let j = 0; j < length; j += 4) {
                 const handle = getPoint(j);
                 current = getPoint(j + 2);
-                translated += `Q ${handle.x} ${handle.y} ${current.x} ${current.y} `;
+                translated += `Q ${getString(handle)}${getString(current)}`;
             }
             break;
         case 't':
@@ -152,20 +181,23 @@ const _transformPath = function (pathString, transform) {
                                 current.multiply(2).subtract(control) :
                                 current;
                 current = getPoint(j);
-                translated += `Q ${handle.x} ${handle.y} ${current.x} ${current.y} `;
+                translated += `Q ${getString(handle)}${getString(current)}`;
                 previous = lower;
             }
             break;
         case 'a':
+            // TODO figure out what to do with A...
             for (let j = 0; j < length; j += 7) {
                 current = getPoint(j + 5);
-                translated += `A ${+coords[j]} ${+coords[j + 1]} ${+coords[j + 2]} ${+coords[j + 3]} ` +
-                    `${+coords[j + 4]} ${current.x} ${current.y} `;
+                const scale = _getScaleFactor(transform);
+                translated += `A ${+coords[j]} ${+coords[j + 1]} ` +
+                    `${+coords[j + 2]} ${+coords[j + 3]} ` +
+                    `${+coords[j + 4]} ${getString(current)}`;
             }
             break;
         case 'z':
             translated += `Z `;
-            // Correctly handle relative m commands, see #1101:
+            // Correctly handle relative m commands, see paper.js#1101:
             current = start;
             break;
         }
@@ -193,19 +225,46 @@ const _transformPath = function (pathString, transform) {
  */
 const transformStrokeWidths = function (svgTag) {
     const inherited = Matrix.identity();
-    const applyTransforms = (domElement, matrix) => {
+    const applyTransforms = (domElement, matrix, strokeWidth) => {
         if (domElement.childNodes.length) {
-            for (let i = 0; i < domElement.childNodes.length; i++) {
-                applyTransforms(domElement.childNodes[i], Matrix.compose(matrix, _parseTransform(domElement)));
+            if (domElement.attributes && domElement.attributes['stroke-width']) {
+                strokeWidth = domElement.attributes['stroke-width'].value;
             }
-            if (domElement.attributes) domElement.removeAttribute('transform');
-        } else if (domElement.localName === 'path' && domElement.attributes &&
-                domElement.attributes.d && domElement.attributes.d.value) {
+            for (let i = 0; i < domElement.childNodes.length; i++) {
+                applyTransforms(
+                    domElement.childNodes[i],
+                    Matrix.compose(matrix, _parseTransform(domElement)),
+                    strokeWidth
+                );
+            }
+            if (domElement.attributes) {
+                domElement.removeAttribute('transform');
+                domElement.removeAttribute('stroke-width');
+            }
+        } else if (domElement.localName === 'path' &&
+                domElement.attributes &&
+                (strokeWidth || domElement.attributes['stroke-width']) &&
+                domElement.attributes.d &&
+                domElement.attributes.d.value) {
+
+            if (domElement.attributes['stroke-width']) {
+                strokeWidth = domElement.attributes['stroke-width'].value;
+            }
+
             matrix = Matrix.compose(matrix, _parseTransform(domElement));
-            console.log(matrix);
             domElement.setAttribute('d', _transformPath(domElement.attributes.d.value, matrix));
-            // TODO update stroke width here
+            domElement.removeAttribute('transform');
+
+            const matrixScale = _getScaleFactor(matrix);
+            const quadraticMean = Math.sqrt(((matrixScale.x * matrixScale.x) + (matrixScale.y * matrixScale.y)) / 2);
+            domElement.setAttribute('stroke-width', quadraticMean * strokeWidth);
         } else {
+            // Push stroke width down to leaves
+            if (strokeWidth && (!domElement.attributes || !domElement.attributes['stroke-width'])) {
+                domElement.setAttribute('stroke-width', strokeWidth);
+            }
+
+            // Push transform down to leaves
             matrix = Matrix.compose(matrix, _parseTransform(domElement));
             if (Matrix.toString(matrix) === Matrix.toString(Matrix.identity())) {
                 if (domElement.attributes) domElement.removeAttribute('transform');
