@@ -71,6 +71,48 @@ const _getScaleFactor = function (matrix) {
     return {x: 0, y: 0};
 };
 
+// Returns null if matrix is not invertible
+_calculateTransformedEllipse(radiusX, radiusY, theta, transform) {
+    // Non-invertible matrix
+    if ((transform.a * transform.d) - (transform.b * transform.c) === 0) return null;
+    const matrix = inverse(transform);
+    const a = matrix.a;
+    const b = matrix.b;
+    const c = matrix.c;
+    const d = matrix.d;
+    // Since other parameters determine the translation of the ellipse in SVG, we do not need to worry
+    // about what e and f are.
+
+    // rotA, rotB, and rotC represent Ax^2 + Bxy + Cy^2 = 1 coefficients for a rotated ellipse formula
+    const rotA = Math.cos(theta) * Math.cos(theta) / a / a + Math.sin(theta) * Math.sin(theta) / b / b;
+    const rotB = 2 * Math.cos(theta) * Math.sin(theta) * (1 / a / a - 1 / b / b);
+    const rotC = Math.sin(theta) * Math.sin(theta) / a / a + Math.cos(theta) * Math.cos(theta) / b / b;
+
+    // Calculate the ellipse formula of the transformed ellipse
+    // A, B, and C represent Ax^2 + Bxy + Cy^2 = 1 coefficients in a transformed ellipse formula
+    const A = (inverse.a * inverse.a / radiusX / radiusX) + (inverse.b * inverse.b / radiusY / radiusY);
+    const B = (2 * inverse.a * inverse.c / radiusX / radiusX) + (2 * inverse.b * inverse.d / radiusY / radiusY);
+    const C = (inverse.c * inverse.c / radiusX / radiusX) + (inverse.d * inverse.d / radiusY / radiusY);
+
+    const newRadiusX = Math.sqrt(2) *
+        Math.sqrt(
+            (A + C - Math.sqrt((A * A) + (B * B) - (2 * A * C) + (C * C))) /
+            ((-B * B) + (4 * A * C))
+        );
+    const newRadiusY = 1 / Math.sqrt(A + C - (1 / newRadiusX / newRadiusX));
+    let temp = (A - (1 / newRadiusX / newRadiusX)) /
+        ((1 / newRadiusY / newRadiusY) - (1 / newRadiusX / newRadiusX));
+    if (temp < 0 && Math.abs(temp) < 1e-8) temp = 0; // Fix floating point issue
+    temp = Math.sqrt(temp);
+    if (Math.abs(1 - temp) < 1e-8) temp = 1; // Fix floating point issue
+    // Solve for which of the two possible thetas
+    let newTheta = Math.asin(temp);
+    const newTheta2 = -newTheta;
+    if (Math.abs(Math.sin(2 * newTheta2) - (B / ((1 / newRadiusX / newRadiusX) - (1 / newRadiusY / newRadiusY)))) < 1e-8) {
+        newTheta = newTheta2;
+    }
+}
+
 // Adapted from paper.js's PathItem.setPathData
 const _transformPath = function (pathString, transform) {
     if (!transform || Matrix.toString(transform) === Matrix.toString(Matrix.identity())) return pathString;
