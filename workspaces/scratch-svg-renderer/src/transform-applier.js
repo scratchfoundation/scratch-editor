@@ -29,19 +29,19 @@ const _parseTransform = function (domElement) {
             matrix = Matrix.compose(matrix, {a: v[0], b: v[1], c: v[2], d: v[3], e: v[4], f: v[5]});
             break;
         case 'rotate':
-            matrix = matrix.rotateDEG(v[0], v[1] || 0, v[2] || 0);
+            matrix = Matrix.compose(matrix, Matrix.rotateDEG(v[0], v[1] || 0, v[2] || 0));
             break;
         case 'translate':
-            matrix = matrix.translate(v[0], v[1] || 0);
+            matrix = Matrix.compose(matrix, Matrix.translate(v[0], v[1] || 0));
             break;
         case 'scale':
-            matrix = matrix.scale(v[0], v[1] || v[0]);
+            matrix = Matrix.compose(matrix, Matrix.scale(v[0], v[1] || v[0]));
             break;
         case 'skewX':
-            matrix = matrix.skewDEG(v[0], 0);
+            matrix = Matrix.compose(matrix, Matrix.skewDEG(v[0], 0));
             break;
         case 'skewY':
-            matrix = matrix.skewDEG(0, v[0]);
+            matrix = Matrix.compose(matrix, Matrix.skewDEG(0, v[0]));
             break;
         default:
             log.error(`Couldn't parse: ${command}`);
@@ -188,7 +188,7 @@ const _transformPath = function (pathString, transform) {
         case 'v': // Vertical line
         {
             const coord = lower === 'h' ? 'x' : 'y';
-            current = current.clone(); // Clone as we're going to modify it.
+            current = {x: current.x, y: current.y}; // Clone as we're going to modify it.
             for (let j = 0; j < length; j++) {
                 current[coord] = getCoord(j, coord);
                 translated += `L ${getString(current)}`;
@@ -200,41 +200,41 @@ const _transformPath = function (pathString, transform) {
             // Cubic Bezier curve
             for (let j = 0; j < length; j += 6) {
                 const handle1 = getPoint(j);
-                const handle2 = getPoint(j + 2);
+                control = getPoint(j + 2);
                 current = getPoint(j + 4);
-                translated += `C ${getString(handle1)}${getString(handle2)}${getString(current)}`;
+                translated += `C ${getString(handle1)}${getString(control)}${getString(current)}`;
             }
             break;
         case 's':
             // Smooth cubic Bezier curve
             for (let j = 0; j < length; j += 4) {
-
                 const handle1 = /[cs]/.test(previous) ?
-                    current.multiply(2).subtract(control) :
+                    {x: (current.x * 2) - control.x, y: (current.y * 2) - control.y} :
                     current;
-                const handle2 = getPoint(j);
+                control = getPoint(j);
                 current = getPoint(j + 2);
 
-                translated += `C ${getString(handle1)}${getString(handle2)}${getString(current)}`;
+                translated += `C ${getString(handle1)}${getString(control)}${getString(current)}`;
                 previous = lower;
             }
             break;
         case 'q':
             // Quadratic Bezier curve
             for (let j = 0; j < length; j += 4) {
-                const handle = getPoint(j);
+                control = getPoint(j);
                 current = getPoint(j + 2);
-                translated += `Q ${getString(handle)}${getString(current)}`;
+                translated += `Q ${getString(control)}${getString(current)}`;
             }
             break;
         case 't':
             // Smooth quadratic Bezier curve
             for (let j = 0; j < length; j += 2) {
-                const handle = /[qt]/.test(previous) ?
-                    current.multiply(2).subtract(control) :
+                control = /[qt]/.test(previous) ?
+                    {x: (current.x * 2) - control.x, y: (current.y * 2) - control.y} :
                     current;
                 current = getPoint(j);
-                translated += `Q ${getString(handle)}${getString(current)}`;
+
+                translated += `Q ${getString(control)}${getString(current)}`;
                 previous = lower;
             }
             break;
