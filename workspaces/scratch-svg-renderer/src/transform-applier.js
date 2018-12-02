@@ -71,29 +71,35 @@ const _getScaleFactor = function (matrix) {
     return {x: 0, y: 0};
 };
 
-// Returns null if matrix is not invertible
-_calculateTransformedEllipse(radiusX, radiusY, theta, transform) {
-    // Non-invertible matrix
-    if ((transform.a * transform.d) - (transform.b * transform.c) === 0) return null;
-    const matrix = inverse(transform);
-    const a = matrix.a;
-    const b = matrix.b;
-    const c = matrix.c;
-    const d = matrix.d;
+// Returns null if matrix is not invertible. Otherwise returns given ellipse
+// transformed by transform, an object {radiusX, radiusY, rotation}.
+const _calculateTransformedEllipse = function (radiusX, radiusY, theta, transform) {
+    theta = theta * Math.PI / 180;
+    const a = transform.a;
+    const b = transform.b;
+    const c = transform.c;
+    const d = transform.d;
     // Since other parameters determine the translation of the ellipse in SVG, we do not need to worry
     // about what e and f are.
+    const det = (a * d) - (b * c);
+    // Non-invertible matrix
+    if (det === 0) return null;
 
     // rotA, rotB, and rotC represent Ax^2 + Bxy + Cy^2 = 1 coefficients for a rotated ellipse formula
-    const rotA = Math.cos(theta) * Math.cos(theta) / a / a + Math.sin(theta) * Math.sin(theta) / b / b;
-    const rotB = 2 * Math.cos(theta) * Math.sin(theta) * (1 / a / a - 1 / b / b);
-    const rotC = Math.sin(theta) * Math.sin(theta) / a / a + Math.cos(theta) * Math.cos(theta) / b / b;
+    const rotA = (Math.cos(theta) * Math.cos(theta) / radiusX / radiusX) +
+        (Math.sin(theta) * Math.sin(theta) / radiusY / radiusY);
+    const rotB = 2 * Math.cos(theta) * Math.sin(theta) * ((1 / radiusX / radiusX) - (1 / radiusY / radiusY));
+    const rotC = (Math.sin(theta) * Math.sin(theta) / radiusX / radiusX) +
+        (Math.cos(theta) * Math.cos(theta) / radiusY / radiusY);
 
     // Calculate the ellipse formula of the transformed ellipse
     // A, B, and C represent Ax^2 + Bxy + Cy^2 = 1 coefficients in a transformed ellipse formula
-    const A = (inverse.a * inverse.a / radiusX / radiusX) + (inverse.b * inverse.b / radiusY / radiusY);
-    const B = (2 * inverse.a * inverse.c / radiusX / radiusX) + (2 * inverse.b * inverse.d / radiusY / radiusY);
-    const C = (inverse.c * inverse.c / radiusX / radiusX) + (inverse.d * inverse.d / radiusY / radiusY);
+    const invDetSq = 1 / det / det;
+    const A = invDetSq * ((rotA * d * d) - (rotB * d * c) + (rotC * c * c));
+    const B = invDetSq * ((-2 * rotA * b * d) + (rotB * a * d) + (rotB * b * c) - (2 * rotC * a * c));
+    const C = invDetSq * ((rotA * b * b) - (rotB * a * b) + (rotC * a * a));
 
+    // Derive new radii and theta from the transformed ellipse formula
     const newRadiusX = Math.sqrt(2) *
         Math.sqrt(
             (A + C - Math.sqrt((A * A) + (B * B) - (2 * A * C) + (C * C))) /
@@ -105,13 +111,16 @@ _calculateTransformedEllipse(radiusX, radiusY, theta, transform) {
     if (temp < 0 && Math.abs(temp) < 1e-8) temp = 0; // Fix floating point issue
     temp = Math.sqrt(temp);
     if (Math.abs(1 - temp) < 1e-8) temp = 1; // Fix floating point issue
-    // Solve for which of the two possible thetas
+    // Solve for which of the two possible thetas is correct
     let newTheta = Math.asin(temp);
     const newTheta2 = -newTheta;
-    if (Math.abs(Math.sin(2 * newTheta2) - (B / ((1 / newRadiusX / newRadiusX) - (1 / newRadiusY / newRadiusY)))) < 1e-8) {
+    if (Math.abs(Math.sin(2 * newTheta2) - (B / ((1 / newRadiusX / newRadiusX) - (1 / newRadiusY / newRadiusY)))) <
+            1e-8) {
         newTheta = newTheta2;
     }
-}
+
+    return {radiusX: newRadiusX, radiusY: newRadiusY, rotation: newTheta * 180 / Math.PI};
+};
 
 // Adapted from paper.js's PathItem.setPathData
 const _transformPath = function (pathString, transform) {
@@ -161,32 +170,32 @@ const _transformPath = function (pathString, transform) {
         switch (lower) {
         case 'm':
         case 'l':
-            {
-                let move = lower === 'm';
-                for (let j = 0; j < length; j += 2) {
-                    translated += move ? 'M ' : 'L ';
-                    current = getPoint(j);
-                    translated += getString(current);
-                    if (move) {
-                        start = current;
-                        move = false;
-                    }
+        {
+            let move = lower === 'm';
+            for (let j = 0; j < length; j += 2) {
+                translated += move ? 'M ' : 'L ';
+                current = getPoint(j);
+                translated += getString(current);
+                if (move) {
+                    start = current;
+                    move = false;
                 }
-                control = current;
-                break;
             }
+            control = current;
+            break;
+        }
         case 'h':
         case 'v':
-            {
-                const coord = lower === 'h' ? 'x' : 'y';
-                current = current.clone(); // Clone as we're going to modify it.
-                for (let j = 0; j < length; j++) {
-                    current[coord] = getCoord(j, coord);
-                    translated += `L ${getString(current)}`;
-                }
-                control = current;
-                break;
+        {
+            const coord = lower === 'h' ? 'x' : 'y';
+            current = current.clone(); // Clone as we're going to modify it.
+            for (let j = 0; j < length; j++) {
+                current[coord] = getCoord(j, coord);
+                translated += `L ${getString(current)}`;
             }
+            control = current;
+            break;
+        }
         case 'c':
             for (let j = 0; j < length; j += 6) {
                 const handle1 = getPoint(j);
@@ -200,8 +209,8 @@ const _transformPath = function (pathString, transform) {
             for (let j = 0; j < length; j += 4) {
 
                 const handle1 = /[cs]/.test(previous) ?
-                                current.multiply(2).subtract(control) :
-                                current;
+                    current.multiply(2).subtract(control) :
+                    current;
                 const handle2 = getPoint(j);
                 current = getPoint(j + 2);
 
@@ -220,20 +229,23 @@ const _transformPath = function (pathString, transform) {
             // Smooth quadraticCurveTo
             for (let j = 0; j < length; j += 2) {
                 const handle = /[qt]/.test(previous) ?
-                                current.multiply(2).subtract(control) :
-                                current;
+                    current.multiply(2).subtract(control) :
+                    current;
                 current = getPoint(j);
                 translated += `Q ${getString(handle)}${getString(current)}`;
                 previous = lower;
             }
             break;
         case 'a':
-            // TODO figure out what to do with A...
             for (let j = 0; j < length; j += 7) {
                 current = getPoint(j + 5);
-                const scale = _getScaleFactor(transform);
-                translated += `A ${+coords[j]} ${+coords[j + 1]} ` +
-                    `${+coords[j + 2]} ${+coords[j + 3]} ` +
+                const rx = +coords[j];
+                const ry = +coords[j + 1];
+                const rotation = +coords[j + 2];
+                const newEllipse = _calculateTransformedEllipse(rx, ry, rotation, transform);
+                if (!newEllipse) break;
+                translated += `A ${newEllipse.radiusX} ${newEllipse.radiusY} ` +
+                    `${newEllipse.rotation} ${+coords[j + 3]} ` +
                     `${+coords[j + 4]} ${getString(current)}`;
             }
             break;
