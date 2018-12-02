@@ -168,8 +168,8 @@ const _transformPath = function (pathString, transform) {
             translated += `M ${current.x} ${current.y} `;
         }
         switch (lower) {
-        case 'm':
-        case 'l':
+        case 'm': // Move to
+        case 'l': // Line to
         {
             let move = lower === 'm';
             for (let j = 0; j < length; j += 2) {
@@ -184,8 +184,8 @@ const _transformPath = function (pathString, transform) {
             control = current;
             break;
         }
-        case 'h':
-        case 'v':
+        case 'h': // Horizontal line
+        case 'v': // Vertical line
         {
             const coord = lower === 'h' ? 'x' : 'y';
             current = current.clone(); // Clone as we're going to modify it.
@@ -197,6 +197,7 @@ const _transformPath = function (pathString, transform) {
             break;
         }
         case 'c':
+            // Cubic Bezier curve
             for (let j = 0; j < length; j += 6) {
                 const handle1 = getPoint(j);
                 const handle2 = getPoint(j + 2);
@@ -205,7 +206,7 @@ const _transformPath = function (pathString, transform) {
             }
             break;
         case 's':
-            // Smooth cubicCurveTo
+            // Smooth cubic Bezier curve
             for (let j = 0; j < length; j += 4) {
 
                 const handle1 = /[cs]/.test(previous) ?
@@ -219,6 +220,7 @@ const _transformPath = function (pathString, transform) {
             }
             break;
         case 'q':
+            // Quadratic Bezier curve
             for (let j = 0; j < length; j += 4) {
                 const handle = getPoint(j);
                 current = getPoint(j + 2);
@@ -226,7 +228,7 @@ const _transformPath = function (pathString, transform) {
             }
             break;
         case 't':
-            // Smooth quadraticCurveTo
+            // Smooth quadratic Bezier curve
             for (let j = 0; j < length; j += 2) {
                 const handle = /[qt]/.test(previous) ?
                     current.multiply(2).subtract(control) :
@@ -237,6 +239,7 @@ const _transformPath = function (pathString, transform) {
             }
             break;
         case 'a':
+            // Elliptical arc curve
             for (let j = 0; j < length; j += 7) {
                 current = getPoint(j + 5);
                 const rx = +coords[j];
@@ -250,6 +253,7 @@ const _transformPath = function (pathString, transform) {
             }
             break;
         case 'z':
+            // Close path
             translated += `Z `;
             // Correctly handle relative m commands, see paper.js#1101:
             current = start;
