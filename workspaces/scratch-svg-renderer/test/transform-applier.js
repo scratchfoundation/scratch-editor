@@ -76,6 +76,26 @@ test('identityTransformPath', t => {
     t.end();
 });
 
+// Transform on a simple box
+test('transformBox', t => {
+    const svgString =
+        `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="250px" height="250px" viewBox="0 0 250 250">` +
+            `<path transform="matrix(20 0 0 10 45 45)" id="path" fill="#0000" stroke="red" stroke-width="1" ` +
+                `d="M0,0 h 10 v 10 h -10 z"/>` +
+        `</svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement);
+    comparisonFileAppend(svgString, svgElement, 'transformBox');
+
+    const transformed = `M 45 45 L 245 45 L 245 145 L 45 145 Z `;
+    t.equals(transformed, svgElement.getElementById('path').attributes.d.value);
+    // Transform is integrated into path, so the attribute should be gone
+    t.false(svgElement.getElementById('path').attributes.transform);
+    const quadraticMean = Math.sqrt(((20 * 20) + (10 * 10)) / 2);
+    t.equals(quadraticMean, svgElement.getElementById('path').attributes['stroke-width'].value);
+    t.end();
+});
+
 // Transform is not identity matrix
 test('transformPath', t => {
     const svgString =
