@@ -6,8 +6,14 @@ const {JSDOM} = jsdom;
 const transformStrokeWidths = require('../src/transform-applier');
 
 // PathData, absolute instructions only
-const d = 'M -20 -20 0 10 L 5 5 H 10 V 10 C 10 10 20 10 15 25 S 15 30 15 40 ' +
-    'Q 20 50 30 60 T 30 70 20 80 A 30 90 0 10 1 0 100 Z ';
+const d = 'M -20 -20 0 10 ' +
+    'L 5 5 H 10 V 10 ' +
+    'C 10 10 20 10 15 25 ' +
+    'S 15 30 15 40 ' +
+    'Q 20 50 30 60 ' +
+    'T 30 70 20 80 ' +
+    'M 0 0 ' +
+    'A 40 50 0 1 1 0 100 Z ';
 const ellipticalPath = 'M10,300 l 50,-25  ' +
     'a25,25 -60 0,1 50,-25 l 50,-25  ' +
     'a25,50 -45 0,1 50,-25 l 50,-25  ' +
@@ -29,10 +35,10 @@ const comparisonFileAppend = function (svgString, svgElement, name) {
     const newSvgString = new window.XMLSerializer().serializeToString(svgElement);
     comparisonFileString +=
         `<p>${name}</p>
-        <div style="border-style: solid; border-width: 1px;">
+        <div style="width: 500px; border-style: solid; border-width: 1px;">
             ${svgString}
         </div>
-        <div style="border-style: solid; border-width: 0 1px 1px 1px;">
+        <div style="width: 500px; border-style: solid; border-width: 0 1px 1px 1px;">
             ${newSvgString}
         </div>`;
 };
@@ -232,10 +238,10 @@ test('siblingsTransformPath', t => {
             `<g transform="matrix(0.5 0 0 0.5 0 0)">` +
                 `<g transform="translate(10, 20)">` +
                     `<path transform="matrix(2 0 0 2 0 0)" id="path" fill="#0000" stroke="red" stroke-width="1" d="${d}"/>` +
-                    `<shape id="sibling"/>` +
+                    `<rect id="sibling" x="40" y="40" width="40" height="40" fill="#0000" stroke="blue" />` +
                 `</g>` +
-                `<shape id="distantCousin1" transform="translate(-0.5,-.5)" />` +
-                `<shape id="distantCousin2" />` +
+                `<rect id="distantCousin1" transform="translate(-0.5,-.5)"  x="40" y="40" width="40" height="40" fill="#0000" stroke="blue" />` +
+                `<rect id="distantCousin2" x="40" y="40" width="40" height="40" fill="#0000" stroke="blue" />` +
             `</g>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
@@ -255,10 +261,10 @@ test('siblingsStroke', t => {
             `<g stroke-width="5">` +
                 `<g stroke-width="10">` +
                     `<path transform="matrix(.5 0 0 .5 0 0)" fill="#0000" stroke="red" stroke-width="1" d="${d}" id="path"/>` +
-                    `<shape id="sibling"/>` +
+                    `<rect id="sibling" x="10" y="10" width="40" height="40" fill="#0000" stroke="blue" />` +
                 `</g>` +
-                `<shape id="distantCousin1" stroke-width="15" />` +
-                `<shape id="distantCousin2" />` +
+                `<rect id="distantCousin1" stroke-width="15" x="25" y="25" width="40" height="40" fill="#0000" stroke="blue" />` +
+                `<rect id="distantCousin2" x="40" y="40" width="40" height="40" fill="#0000" stroke="blue" />` +
             `</g>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
@@ -274,7 +280,7 @@ test('siblingsStroke', t => {
 // Stroke width is transformed
 test('transformedStroke', t => {
     const svgString =
-        `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="650px" height="350px" viewBox="-100 -100 550 250">` +
+        `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="650px" height="320px" viewBox="-100 -50 550 270">` +
             `<path transform="matrix(5 0 0 2 0 0)" fill="#0000" stroke="red" stroke-width="1" d="${d}" id="path"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
@@ -288,10 +294,10 @@ test('transformedStroke', t => {
 
 // Various transforms applied to a path with relative instructions
 test('variousTransformsRelativePath', t => {
-    const pathData = 'm 20 20 0 10 l 5 5 h 10 v 10 c 0 10 0 20 15 5 ' +
-        'm -50 5 s 15 0 15 10 q 20 10 10 20 t 20 10 20 10 a 30 10 0 10 1 0 50 z';
+    const pathData = 'm 20 20 0 20 10 0 l 5 5 h 10 v 10 c 0 10 0 20 15 5 z ' +
+        'm -50 5 s 15 0 15 10 q 20 10 10 20 t 20 10 20 10 a 30 10 30 1 1 0 1 ';
     const svgString =
-        `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="100px" height="100px" viewBox="0 0 100 100">` +
+        `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="200px" height="150px" viewBox="0 0 200 150">` +
             `<path transform="skewX(10) rotate(-25) translate(5 20)" ` +
                 `id="path" fill="#0000" stroke="red" stroke-width="5" d="${pathData}" />` +
         `</svg>`;

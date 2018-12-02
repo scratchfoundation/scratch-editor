@@ -88,7 +88,7 @@ const _calculateTransformedEllipse = function (radiusX, radiusY, theta, transfor
     // rotA, rotB, and rotC represent Ax^2 + Bxy + Cy^2 = 1 coefficients for a rotated ellipse formula
     const rotA = (Math.cos(theta) * Math.cos(theta) / radiusX / radiusX) +
         (Math.sin(theta) * Math.sin(theta) / radiusY / radiusY);
-    const rotB = 2 * Math.cos(theta) * Math.sin(theta) * ((1 / radiusX / radiusX) - (1 / radiusY / radiusY));
+    const rotB = (Math.sin(2 * theta) / radiusX / radiusX) - (Math.sin(2 * theta) / radiusY / radiusY);
     const rotC = (Math.sin(theta) * Math.sin(theta) / radiusX / radiusX) +
         (Math.cos(theta) * Math.cos(theta) / radiusY / radiusY);
 
@@ -245,11 +245,13 @@ const _transformPath = function (pathString, transform) {
                 const rx = +coords[j];
                 const ry = +coords[j + 1];
                 const rotation = +coords[j + 2];
+                const largeArcFlag = +coords[j + 3];
+                const clockwiseFlag = +coords[j + 4];
                 const newEllipse = _calculateTransformedEllipse(rx, ry, rotation, transform);
                 if (!newEllipse) break;
                 translated += `A ${newEllipse.radiusX} ${newEllipse.radiusY} ` +
-                    `${newEllipse.rotation} ${+coords[j + 3]} ` +
-                    `${+coords[j + 4]} ${getString(current)}`;
+                    `${newEllipse.rotation} ${largeArcFlag} ` +
+                    `${clockwiseFlag} ${getString(current)}`;
             }
             break;
         case 'z':
