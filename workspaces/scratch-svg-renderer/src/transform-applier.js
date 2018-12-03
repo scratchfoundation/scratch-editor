@@ -74,7 +74,7 @@ const _getScaleFactor = function (matrix) {
 // Returns null if matrix is not invertible. Otherwise returns given ellipse
 // transformed by transform, an object {radiusX, radiusY, rotation}.
 const _calculateTransformedEllipse = function (radiusX, radiusY, theta, transform) {
-    theta = theta * Math.PI / 180;
+    theta = -theta * Math.PI / 180;
     const a = transform.a;
     const b = transform.b;
     const c = transform.c;
@@ -93,33 +93,40 @@ const _calculateTransformedEllipse = function (radiusX, radiusY, theta, transfor
         (Math.cos(theta) * Math.cos(theta) / radiusY / radiusY);
 
     // Calculate the ellipse formula of the transformed ellipse
-    // A, B, and C represent Ax^2 + Bxy + Cy^2 = 1 coefficients in a transformed ellipse formula
-    const invDetSq = 1 / det / det;
-    const A = invDetSq * ((rotA * d * d) - (rotB * d * c) + (rotC * c * c));
-    const B = invDetSq * ((-2 * rotA * b * d) + (rotB * a * d) + (rotB * b * c) - (2 * rotC * a * c));
-    const C = invDetSq * ((rotA * b * b) - (rotB * a * b) + (rotC * a * a));
+    // A, B, and C represent Ax^2 + Bxy + Cy^2 = 1 / det / det coefficients in a transformed ellipse formula
+    // scaled by inverse det squared (to preserve accuracy)
+    const A = ((rotA * d * d) - (rotB * d * c) + (rotC * c * c));
+    const B = ((-2 * rotA * b * d) + (rotB * a * d) + (rotB * b * c) - (2 * rotC * a * c));
+    const C = ((rotA * b * b) - (rotB * a * b) + (rotC * a * a));
 
     // Derive new radii and theta from the transformed ellipse formula
-    const newRadiusX = Math.sqrt(2) *
+    const newRadiusXOverDet = Math.sqrt(2) *
         Math.sqrt(
             (A + C - Math.sqrt((A * A) + (B * B) - (2 * A * C) + (C * C))) /
             ((-B * B) + (4 * A * C))
         );
-    const newRadiusY = 1 / Math.sqrt(A + C - (1 / newRadiusX / newRadiusX));
-    let temp = (A - (1 / newRadiusX / newRadiusX)) /
-        ((1 / newRadiusY / newRadiusY) - (1 / newRadiusX / newRadiusX));
+    const newRadiusYOverDet = 1 / Math.sqrt(A + C - (1 / newRadiusXOverDet / newRadiusXOverDet));
+    let temp = (A - (1 / newRadiusXOverDet / newRadiusXOverDet)) /
+        ((1 / newRadiusYOverDet / newRadiusYOverDet) - (1 / newRadiusXOverDet / newRadiusXOverDet));
     if (temp < 0 && Math.abs(temp) < 1e-8) temp = 0; // Fix floating point issue
     temp = Math.sqrt(temp);
     if (Math.abs(1 - temp) < 1e-8) temp = 1; // Fix floating point issue
     // Solve for which of the two possible thetas is correct
     let newTheta = Math.asin(temp);
+    temp = (B / (
+        (1 / newRadiusXOverDet / newRadiusXOverDet) -
+        (1 / newRadiusYOverDet / newRadiusYOverDet)));
     const newTheta2 = -newTheta;
-    if (Math.abs(Math.sin(2 * newTheta2) - (B / ((1 / newRadiusX / newRadiusX) - (1 / newRadiusY / newRadiusY)))) <
-            1e-8) {
+    if (Math.abs(Math.sin(2 * newTheta2) - temp) <
+        Math.abs(Math.sin(2 * newTheta) - temp)) {
         newTheta = newTheta2;
     }
 
-    return {radiusX: newRadiusX, radiusY: newRadiusY, rotation: newTheta * 180 / Math.PI};
+    return {
+        radiusX: newRadiusXOverDet * det,
+        radiusY: newRadiusYOverDet * det,
+        rotation: -newTheta * 180 / Math.PI
+    };
 };
 
 // Adapted from paper.js's PathItem.setPathData
