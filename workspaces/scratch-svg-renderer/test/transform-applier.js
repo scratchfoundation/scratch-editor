@@ -49,7 +49,7 @@ const outputComparisonFile = function () {
     if (!OUTPUT_COMPARISON_FILES) return;
     fs.writeFile(
         `${__dirname}/test-output/transform-applier-test.html`,
-        `<html><body>${comparisonFileString}\n</body></html>`,
+        `<!-- THIS IS A GENERATED FILE -->\n<html><body>${comparisonFileString}\n</body></html>`,
         err => log.error(err)
     );
 };
