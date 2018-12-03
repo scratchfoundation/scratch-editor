@@ -248,10 +248,13 @@ const _transformPath = function (pathString, transform) {
                 const largeArcFlag = +coords[j + 3];
                 const clockwiseFlag = +coords[j + 4];
                 const newEllipse = _calculateTransformedEllipse(rx, ry, rotation, transform);
-                if (!newEllipse) break;
-                translated += `A ${newEllipse.radiusX} ${newEllipse.radiusY} ` +
-                    `${newEllipse.rotation} ${largeArcFlag} ` +
-                    `${clockwiseFlag} ${getString(current)}`;
+                if (newEllipse) {
+                    translated += `A ${newEllipse.radiusX} ${newEllipse.radiusY} ` +
+                        `${newEllipse.rotation} ${largeArcFlag} ` +
+                        `${clockwiseFlag} ${getString(current)}`;
+                } else {
+                    translated += `L ${getString(current)}`;
+                }
             }
             break;
         case 'z':
