@@ -253,10 +253,15 @@ const _transformPath = function (pathString, transform) {
                 const ry = +coords[j + 1];
                 const rotation = +coords[j + 2];
                 const largeArcFlag = +coords[j + 3];
-                const clockwiseFlag = +coords[j + 4];
+                let clockwiseFlag = +coords[j + 4];
                 const newEllipse = _calculateTransformedEllipse(rx, ry, rotation, transform);
+                const matrixScale = _getScaleFactor(transform);
                 if (newEllipse) {
-                    translated += `A ${newEllipse.radiusX} ${newEllipse.radiusY} ` +
+                    if ((matrixScale.x > 0 && matrixScale.y < 0) ||
+                        (matrixScale.x < 0 && matrixScale.y > 0)) {
+                        clockwiseFlag = clockwiseFlag ^ 1;
+                    }
+                    translated += `A ${Math.abs(newEllipse.radiusX)} ${Math.abs(newEllipse.radiusY)} ` +
                         `${newEllipse.rotation} ${largeArcFlag} ` +
                         `${clockwiseFlag} ${getString(current)}`;
                 } else {

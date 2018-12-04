@@ -358,6 +358,29 @@ test('scaleTransformEllipticalPath', t => {
     t.end();
 });
 
+// Testing invert transform, elliptical paths
+test('invertTransformEllipticalPath', t => {
+    const svgString =
+        `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="600px" height="250px" viewBox="0 0 600 250"> ` +
+            `<path transform="matrix(0 1 1 0 0 0)" ` +
+                `id="path" fill="#0000" stroke="red" stroke-width="5" d="${ellipticalPath}"/>` +
+        `</svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement);
+    comparisonFileAppend(svgString, svgElement, 'invertTransformEllipticalPath');
+
+    const scaled = 'M 300 10 L 275 60 A 25.000000000000004 24.999999999999996 -50.76847951640775 0 0 250 110 ' +
+    'L 225 160 A 25.000000000000004 49.999999999999964 -45.00000000000001 0 0 200 210 L 175 260 ' +
+    'A 25.000000000000004 74.99999999999982 -60.00000000000002 0 0 150 310 L 125 360 ' +
+    'A 24.999999999999993 100.00000000000041 -74.99999999999996 0 0 100 410 L 75 460 L 125 460 L 150 410 ' +
+    'A 25.000000000000004 24.999999999999996 -50.76847951640775 1 0 175 360 L 200 310 ' +
+    'A 25.000000000000004 49.999999999999964 45.00000000000001 1 0 225 260 L 250 210 ' +
+    'A 25.000000000000004 74.99999999999982 60.00000000000002 1 0 275 160 L 300 110 ' +
+    'A 24.999999999999993 100.00000000000041 74.99999999999996 1 0 325 60 L 350 10 ';
+    t.equals(scaled, svgElement.getElementById('path').attributes.d.value);
+    t.end();
+});
+
 // Testing various transforms, elliptical paths
 test('variousTransformsEllipticalPath', t => {
     const svgString =
