@@ -384,7 +384,7 @@ test('invertTransformEllipticalPath', t => {
     t.end();
 });
 
-// Testing invert transform, elliptical paths
+// Testing rotate transform, elliptical paths
 test('rotateTransformEllipticalPath', t => {
     const svgString =
         `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="600px" height="600px" viewBox="0 0 600 600"> ` +
@@ -413,7 +413,7 @@ test('rotateTransformEllipticalPath', t => {
     t.end();
 });
 
-// Testing invert transform, elliptical paths
+// Testing skewX transform, elliptical paths
 test('skewXTransformEllipticalPath', t => {
     const svgString =
         `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="600px" height="350px" viewBox="0 0 600 350"> ` +
@@ -440,7 +440,7 @@ test('skewXTransformEllipticalPath', t => {
     t.end();
 });
 
-// Testing invert transform, elliptical paths
+// Testing skewY transform, elliptical paths
 test('skewYTransformEllipticalPath', t => {
     const svgString =
         `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="600px" height="400px" viewBox="0 0 600 400"> ` +
