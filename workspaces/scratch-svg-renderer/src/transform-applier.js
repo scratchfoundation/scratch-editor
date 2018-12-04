@@ -76,8 +76,8 @@ const _getScaleFactor = function (matrix) {
 const _calculateTransformedEllipse = function (radiusX, radiusY, theta, transform) {
     theta = -theta * Math.PI / 180;
     const a = transform.a;
-    const b = transform.b;
-    const c = transform.c;
+    const b = -transform.c;
+    const c = -transform.b;
     const d = transform.d;
     // Since other parameters determine the translation of the ellipse in SVG, we do not need to worry
     // about what e and f are.
