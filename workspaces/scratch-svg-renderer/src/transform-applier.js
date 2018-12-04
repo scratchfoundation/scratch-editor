@@ -155,10 +155,14 @@ const _transformPath = function (pathString, transform) {
         return {x: getCoord(index, 'x'), y: getCoord(index + 1, 'y')};
     };
 
+    const roundTo4Places = function (num) {
+        return Number(num.toFixed(4));
+    };
+
     // Returns the transformed point as a string
     const getString = function (point) {
         const transformed = Matrix.applyToPoint(transform, point);
-        return `${transformed.x} ${transformed.y} `;
+        return `${roundTo4Places(transformed.x)} ${roundTo4Places(transformed.y)} `;
     };
 
     for (let i = 0, l = parts && parts.length; i < l; i++) {
@@ -261,8 +265,9 @@ const _transformPath = function (pathString, transform) {
                         (matrixScale.x < 0 && matrixScale.y > 0)) {
                         clockwiseFlag = clockwiseFlag ^ 1;
                     }
-                    translated += `A ${Math.abs(newEllipse.radiusX)} ${Math.abs(newEllipse.radiusY)} ` +
-                        `${newEllipse.rotation} ${largeArcFlag} ` +
+                    translated += `A ${roundTo4Places(Math.abs(newEllipse.radiusX))} ` +
+                        `${roundTo4Places(Math.abs(newEllipse.radiusY))} ` +
+                        `${roundTo4Places(newEllipse.rotation)} ${largeArcFlag} ` +
                         `${clockwiseFlag} ${getString(current)}`;
                 } else {
                     translated += `L ${getString(current)}`;
@@ -291,7 +296,8 @@ const _isGraphicsElement = function (element) {
 };
 const _isPathWithTransformAndStroke = function (element, strokeWidth) {
     if (!element.attributes) return false;
-    strokeWidth = element.attributes['stroke-width'] ? Number(element.attributes['stroke-width']) : Number(strokeWidth);
+    strokeWidth = element.attributes['stroke-width'] ?
+        Number(element.attributes['stroke-width'].value) : Number(strokeWidth);
     return strokeWidth &&
         element.tagName && element.tagName.toLowerCase() === 'path' &&
         element.attributes.d && element.attributes.d.value;
