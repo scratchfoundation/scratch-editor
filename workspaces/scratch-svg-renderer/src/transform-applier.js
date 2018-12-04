@@ -281,6 +281,15 @@ const _transformPath = function (pathString, transform) {
     return translated;
 };
 
+const GRAPHICS_ELEMENTS = ['circle', 'ellipse', 'image', 'line', 'path', 'polygon', 'polyline', 'rect', 'text', 'use'];
+const CONTAINER_ELEMENTS = ['a', 'defs', 'g', 'marker', 'glyph', 'missing-glyph', 'pattern', 'svg', 'switch', 'symbol'];
+const _isContainerElement = function (element) {
+    return element.tagName && CONTAINER_ELEMENTS.includes(element.tagName.toLowerCase());
+};
+const _isGraphicsElement = function (element) {
+    return element.tagName && GRAPHICS_ELEMENTS.includes(element.tagName.toLowerCase());
+};
+
 /**
  * Scratch 2.0 displays stroke widths in a "normalized" way, that is,
  * if a shape with a stroke width has a transform applied, it will be
@@ -301,10 +310,12 @@ const _transformPath = function (pathString, transform) {
 const transformStrokeWidths = function (svgTag) {
     const inherited = Matrix.identity();
     const applyTransforms = (domElement, matrix, strokeWidth) => {
-        if (domElement.childNodes.length) {
-            if (domElement.attributes && domElement.attributes['stroke-width']) {
+        if (_isContainerElement(domElement)) {
+            if (domElement.attributes['stroke-width']) {
                 strokeWidth = domElement.attributes['stroke-width'].value;
             }
+            // If any child nodes don't take attributes, leave the attributes
+            // at the parent level.
             for (let i = 0; i < domElement.childNodes.length; i++) {
                 applyTransforms(
                     domElement.childNodes[i],
@@ -312,12 +323,9 @@ const transformStrokeWidths = function (svgTag) {
                     strokeWidth
                 );
             }
-            if (domElement.attributes) {
-                domElement.removeAttribute('transform');
-                domElement.removeAttribute('stroke-width');
-            }
-        } else if (domElement.localName === 'path' &&
-                domElement.attributes &&
+            domElement.removeAttribute('transform');
+            domElement.removeAttribute('stroke-width');
+        } else if (domElement.tagName && domElement.tagName.toLowerCase() === 'path' &&
                 (strokeWidth || domElement.attributes['stroke-width']) &&
                 domElement.attributes.d &&
                 domElement.attributes.d.value) {
@@ -333,16 +341,16 @@ const transformStrokeWidths = function (svgTag) {
             const matrixScale = _getScaleFactor(matrix);
             const quadraticMean = Math.sqrt(((matrixScale.x * matrixScale.x) + (matrixScale.y * matrixScale.y)) / 2);
             domElement.setAttribute('stroke-width', quadraticMean * strokeWidth);
-        } else {
+        } else if (_isGraphicsElement(domElement)) {
             // Push stroke width down to leaves
-            if (strokeWidth && (!domElement.attributes || !domElement.attributes['stroke-width'])) {
+            if (strokeWidth && !domElement.attributes['stroke-width']) {
                 domElement.setAttribute('stroke-width', strokeWidth);
             }
 
             // Push transform down to leaves
             matrix = Matrix.compose(matrix, _parseTransform(domElement));
             if (Matrix.toString(matrix) === Matrix.toString(Matrix.identity())) {
-                if (domElement.attributes) domElement.removeAttribute('transform');
+                domElement.removeAttribute('transform');
             } else {
                 domElement.setAttribute('transform', Matrix.toString(matrix));
             }
