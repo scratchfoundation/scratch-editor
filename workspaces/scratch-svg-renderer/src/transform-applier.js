@@ -289,6 +289,13 @@ const _isContainerElement = function (element) {
 const _isGraphicsElement = function (element) {
     return element.tagName && GRAPHICS_ELEMENTS.includes(element.tagName.toLowerCase());
 };
+const _isPathWithTransformAndStroke = function (element, strokeWidth) {
+    if (!element.attributes) return false;
+    strokeWidth = element.attributes['stroke-width'] ? Number(element.attributes['stroke-width']) : Number(strokeWidth);
+    return strokeWidth &&
+        element.tagName && element.tagName.toLowerCase() === 'path' &&
+        element.attributes.d && element.attributes.d.value;
+};
 
 /**
  * Scratch 2.0 displays stroke widths in a "normalized" way, that is,
@@ -325,11 +332,7 @@ const transformStrokeWidths = function (svgTag) {
             }
             domElement.removeAttribute('transform');
             domElement.removeAttribute('stroke-width');
-        } else if (domElement.tagName && domElement.tagName.toLowerCase() === 'path' &&
-                (strokeWidth || domElement.attributes['stroke-width']) &&
-                domElement.attributes.d &&
-                domElement.attributes.d.value) {
-
+        } else if (_isPathWithTransformAndStroke(domElement, strokeWidth)) {
             if (domElement.attributes['stroke-width']) {
                 strokeWidth = domElement.attributes['stroke-width'].value;
             }
