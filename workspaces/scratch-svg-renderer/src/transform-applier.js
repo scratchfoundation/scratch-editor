@@ -365,7 +365,7 @@ const transformStrokeWidths = function (svgTag) {
             }
         }
     };
-    applyTransforms(svgTag, inherited);
+    applyTransforms(svgTag, inherited, 1 /* default SVG stroke width */);
 };
 
 module.exports = transformStrokeWidths;

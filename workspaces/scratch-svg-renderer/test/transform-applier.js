@@ -69,6 +69,20 @@ test('noTransformPath', t => {
     t.end();
 });
 
+// No stroke width attribute on the path. Stroke width is 1 by default in SVG, so transform should increase it to 2.
+test('noStrokeWidthPath', t => {
+    const svgString =
+        `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="100px" height="100px" viewBox="0 0 100 100">` +
+            `<path id="path" transform="scale(2)" fill="#0000" stroke="red" d="${d}"/>` +
+        `</svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement);
+    comparisonFileAppend(svgString, svgElement, 'noStrokeWidthPath');
+
+    t.equals('2', svgElement.getElementById('path').attributes['stroke-width'].value);
+    t.end();
+});
+
 // Transform is identity matrix
 test('identityTransformPath', t => {
     const svgString =
