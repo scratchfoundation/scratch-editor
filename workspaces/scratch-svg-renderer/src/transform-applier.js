@@ -1,4 +1,5 @@
 const Matrix = require('transformation-matrix');
+const SvgElement = require('./svg-element');
 const log = require('./util/log');
 
 /**
@@ -315,56 +316,105 @@ const _isPathWithTransformAndStroke = function (element, strokeWidth) {
  *
  * This function performs that normalization process, pushing transforms
  * on groups down to the leaf level and averaging out the stroke width
- * around the shapes.
+ * around the shapes. Note that this doens't just change stroke widths, it
+ * changes path data and attributes throughout the SVG.
  *
  * @param {SVGElement} svgTag The SVG dom object
  * @return {void}
  */
 const transformStrokeWidths = function (svgTag) {
     const inherited = Matrix.identity();
-    const applyTransforms = (domElement, matrix, strokeWidth) => {
-        if (_isContainerElement(domElement)) {
-            if (domElement.attributes['stroke-width']) {
-                strokeWidth = domElement.attributes['stroke-width'].value;
+    const gradientElements = {};
+    const gradientRefs = [];
+    const gatherGradients = element => {
+        if (element.tagName && element.tagName.toLowerCase() === 'radialgradient' && element.id) {
+            gradientElements[element.id] = element;
+        }
+        for (let i = 0; i < element.childNodes.length; i++) {
+            gatherGradients(element.childNodes[i]);
+        }
+    };
+    const applyTransforms = (element, matrix, strokeWidth, fill) => {
+        if (_isContainerElement(element)) {
+            // Push fills and stroke width down to leaves
+            if (element.attributes['stroke-width']) {
+                strokeWidth = element.attributes['stroke-width'].value;
             }
-            // If any child nodes don't take attributes, leave the attributes
-            // at the parent level.
-            for (let i = 0; i < domElement.childNodes.length; i++) {
-                applyTransforms(
-                    domElement.childNodes[i],
-                    Matrix.compose(matrix, _parseTransform(domElement)),
-                    strokeWidth
-                );
-            }
-            domElement.removeAttribute('transform');
-            domElement.removeAttribute('stroke-width');
-        } else if (_isPathWithTransformAndStroke(domElement, strokeWidth)) {
-            if (domElement.attributes['stroke-width']) {
-                strokeWidth = domElement.attributes['stroke-width'].value;
+            if (element.attributes && element.attributes.fill) {
+                fill = element.attributes.fill.value;
             }
 
-            matrix = Matrix.compose(matrix, _parseTransform(domElement));
-            domElement.setAttribute('d', _transformPath(domElement.attributes.d.value, matrix));
-            domElement.removeAttribute('transform');
+            // If any child nodes don't take attributes, leave the attributes
+            // at the parent level.
+            for (let i = 0; i < element.childNodes.length; i++) {
+                applyTransforms(
+                    element.childNodes[i],
+                    Matrix.compose(matrix, _parseTransform(element)),
+                    strokeWidth,
+                    fill
+                );
+            }
+            element.removeAttribute('transform');
+            element.removeAttribute('stroke-width');
+            element.removeAttribute('fill');
+        } else if (_isPathWithTransformAndStroke(element, strokeWidth)) {
+            if (element.attributes['stroke-width']) {
+                strokeWidth = element.attributes['stroke-width'].value;
+            }
+            if (element.attributes.fill) {
+                fill = element.attributes.fill.value;
+            }
+            matrix = Matrix.compose(matrix, _parseTransform(element));
+
+            if (fill.startsWith('url(#') && fill.endsWith(')')) {
+                const gradientId = fill.substring(5, fill.length - 1).trim();
+                let defs = svgTag.getElementsByTagName('defs');
+                if (defs.length === 0) {
+                    defs = SvgElement.create('defs');
+                    svgTag.appendChild(defs);
+                } else {
+                    defs = defs[0];
+                }
+                const oldGradient = svgTag.getElementById(gradientId);
+                if (!oldGradient) return;
+                const newGradient = svgTag.getElementById(gradientId).cloneNode(true /* deep */);
+                let matrixString = Matrix.toString(matrix);
+                matrixString = matrixString.substring(8, matrixString.length - 1);
+                const newGradientId = `${gradientId}-${matrixString}`;
+                newGradient.setAttribute('id', newGradientId);
+                defs.appendChild(newGradient);
+
+                fill = `url(#${newGradientId})`;
+            }
+
+            element.setAttribute('d', _transformPath(element.attributes.d.value, matrix));
+            element.removeAttribute('transform');
 
             const matrixScale = _getScaleFactor(matrix);
             const quadraticMean = Math.sqrt(((matrixScale.x * matrixScale.x) + (matrixScale.y * matrixScale.y)) / 2);
-            domElement.setAttribute('stroke-width', quadraticMean * strokeWidth);
-        } else if (_isGraphicsElement(domElement)) {
-            // Push stroke width down to leaves
-            if (strokeWidth && !domElement.attributes['stroke-width']) {
-                domElement.setAttribute('stroke-width', strokeWidth);
+            element.setAttribute('stroke-width', quadraticMean * strokeWidth);
+            element.setAttribute('fill', fill);
+        } else if (_isGraphicsElement(element)) {
+            // Push stroke width and fill down to leaves
+            if (strokeWidth && !element.attributes['stroke-width']) {
+                element.setAttribute('stroke-width', strokeWidth);
+            }
+            if (fill && !element.attributes.fill) {
+                element.setAttribute('fill', fill);
             }
 
             // Push transform down to leaves
-            matrix = Matrix.compose(matrix, _parseTransform(domElement));
+            matrix = Matrix.compose(matrix, _parseTransform(element));
             if (Matrix.toString(matrix) === Matrix.toString(Matrix.identity())) {
-                domElement.removeAttribute('transform');
+                element.removeAttribute('transform');
             } else {
-                domElement.setAttribute('transform', Matrix.toString(matrix));
+                element.setAttribute('transform', Matrix.toString(matrix));
             }
         }
     };
+    gatherGradients(svgTag);
+    console.log(gradientRefs);
+    console.log(gradientElements);
     applyTransforms(svgTag, inherited, 1 /* default SVG stroke width */);
 };
 

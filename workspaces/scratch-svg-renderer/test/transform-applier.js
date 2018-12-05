@@ -70,7 +70,7 @@ test('noTransformPath', t => {
 });
 
 // No stroke width attribute on the path. Stroke width is 1 by default in SVG, so transform should increase it to 2.
-test('noStrokeWidthPath', t => {
+test('transformedNoStrokeWidthPath', t => {
     const svgString =
         `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="100px" height="100px" viewBox="0 0 100 100">` +
             `<path id="path" transform="scale(2)" fill="#0000" stroke="red" d="${d}"/>` +
@@ -303,17 +303,19 @@ test('siblingsStroke', t => {
     t.end();
 });
 
-// Stroke width is transformed
-test('transformedStroke', t => {
+// Nested stroke width is transformed
+test('transformedNestedStroke', t => {
     const svgString =
-        `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="650px" height="320px" viewBox="-100 -50 550 270">` +
-            `<path transform="matrix(5 0 0 2 0 0)" fill="#0000" stroke="red" stroke-width="1" d="${d}" id="path"/>` +
+        `<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="650px" height="170px" viewBox="-100 -20 550 150">` +
+            `<g stroke-width="1" transform="scale(-.5,.5)">` +
+                `<path transform="matrix(5 0 0 2 0 0)" fill="#0000" stroke="red" d="${d}" id="path"/>` +
+            `</g>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement);
-    comparisonFileAppend(svgString, svgElement, 'transformedStroke');
+    comparisonFileAppend(svgString, svgElement, 'transformedNestedStroke');
 
-    const quadraticMean = Math.sqrt(((5 * 5) + (2 * 2)) / 2);
+    const quadraticMean = Math.sqrt(((5 / 2 * 5 / 2) + (2 / 2 * 2 / 2)) / 2);
     t.equals(`${quadraticMean}`, svgElement.getElementById('path').attributes['stroke-width'].value);
     t.end();
 });
@@ -461,6 +463,48 @@ test('variousTransformsEllipticalPath', t => {
     'A 24.9487 75.1544 -6.3334 1 1 135.1786 21.4851 L 108.1498 65.2737 ' +
     'A 23.9235 104.4996 -19.9344 1 1 81.121 109.0623 L 54.0922 152.8509 ';
     t.equals(transformed, svgElement.getElementById('path').attributes.d.value);
+    t.end();
+});
+
+test('linearGradientTransform', t => {
+    const svgString =
+    `<svg version="1.1" width="300" height="203" viewBox="-1 -10 300 193" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+      `<defs>` +
+        `<linearGradient id="grad_1" y2="1">` +
+          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+        `</linearGradient>` +
+      `</defs>` +
+      `<path id="path" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="M 53 133 V 304 H 328 V 53 H 133 Z " ` +
+          `transform="matrix(0.3, 0.4, -0.6, 0.44, 182.85, -79)"/>` +
+    `</svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement);
+    comparisonFileAppend(svgString, svgElement, 'linearGradientTransform');
+
+    t.end();
+});
+
+test('nestedLinearGradientTransform', t => {
+    const svgString =
+    `<svg version="1.1" width="300" height="150" viewBox="-1 150 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+      `<defs>` +
+        `<linearGradient id="grad_1" y2="1">` +
+          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+        `</linearGradient>` +
+      `</defs>` +
+      `<g transform="rotate(-25)">` +
+        `<g transform="translate(20,20)" fill="url(#grad_1)">` +
+          `<path id="path" stroke="#000000" stroke-width="2" d="M 53 133 V 304 H 328 V 53 H 133 Z " ` +
+            `transform="skewX(-35) skewY(35)"/>` +
+        `</g>` +
+      `</g>` +
+    `</svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement);
+    comparisonFileAppend(svgString, svgElement, 'nestedLinearGradientTransform');
+
     t.end();
 });
 
