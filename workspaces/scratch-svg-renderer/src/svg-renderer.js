@@ -88,12 +88,18 @@ class SvgRenderer {
             throw new Error('Document does not appear to be SVG.');
         }
         this._svgTag = this._svgDom.documentElement;
-        transformStrokeWidths(this._svgTag);
+        if (fromVersion2) {
+            // Fix gradients
+            this._transformGradients();
+        }
+        console.log('before');
+        console.log(svgString);
+        //transformStrokeWidths(this._svgTag);
+        console.log('after');
+        console.log(new XMLSerializer().serializeToString(this._svgTag));
         if (fromVersion2) {
             // Transform all text elements.
             this._transformText();
-            // Fix gradients
-            this._transformGradients();
             // Transform measurements.
             this._transformMeasurements();
         } else if (!this._svgTag.getAttribute('viewBox')) {

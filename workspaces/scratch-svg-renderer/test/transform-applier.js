@@ -29,7 +29,7 @@ const ellipticalPath = 'M10,300 l 50,-25  ' +
 const {window} = new JSDOM();
 const parser = new window.DOMParser();
 const fs = require('fs');
-const OUTPUT_COMPARISON_FILES = false;
+const OUTPUT_COMPARISON_FILES = true;
 let comparisonFileString = '';
 
 const comparisonFileAppend = function (svgString, svgElement, name) {

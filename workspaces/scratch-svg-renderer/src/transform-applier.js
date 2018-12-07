@@ -304,6 +304,98 @@ const _isPathWithTransformAndStroke = function (element, strokeWidth) {
         element.attributes.d && element.attributes.d.value;
 };
 
+const _createGradient = function (gradientId, svgTag, element, matrix) {
+    debugger;
+    const getValue = function (node, name, isString, allowNull, allowPercent) {
+        // Interpret value as number. Never return NaN, but 0 instead.
+        // If the value is a sequence of numbers, parseFloat will
+        // return the first occurring number, which is enough for now.
+        var value = SvgElement.get(node, name),
+            res = value == null
+                ? allowNull
+                    ? null
+                    : isString ? '' : 0
+                : isString
+                    ? value
+                    : parseFloat(value);
+        // Support for dimensions in percentage of the root size. If root-size
+        // is not set (e.g. during <defs>), just scale the percentage value to
+        // 0..1, as required by gradients with gradientUnits="objectBoundingBox"
+        return /%\s*$/.test(value)
+            ? (res / 100) * (allowPercent ? 1
+                : rootSize[/x|^width/.test(name) ? 'width' : 'height'])
+            : res;
+    };
+    const getPoint = function (node, x, y, allowNull, allowPercent) {
+        x = getValue(node, x || 'x', false, allowNull, allowPercent);
+        y = getValue(node, y || 'y', false, allowNull, allowPercent);
+        return allowNull && (x == null || y == null) ? null
+                : {x, y};
+    };
+
+    let defs = svgTag.getElementsByTagName('defs');
+    if (defs.length === 0) {
+        defs = SvgElement.create('defs');
+        svgTag.appendChild(defs);
+    } else {
+        defs = defs[0];
+    }
+
+    // Clone the old gradient. We'll make a new one, since the gradient might be reused elsewhere
+    // with different transform matrix
+    const oldGradient = svgTag.getElementById(gradientId);
+    if (!oldGradient) return;
+    const newGradient = svgTag.getElementById(gradientId).cloneNode(true /* deep */);
+
+    // Give the new gradient a new ID
+    let matrixString = Matrix.toString(matrix);
+    matrixString = matrixString.substring(8, matrixString.length - 1);
+    const newGradientId = `${gradientId}-${matrixString}`;
+    newGradient.setAttribute('id', newGradientId);
+
+    const scaleToBounds = newGradient.attributes.gradientUnits ?
+        newGradient.attributes.gradientUnits.value === 'userSpaceOnUse' : false;
+    let origin = getPoint(element, 'x1', 'y1', false, scaleToBounds);
+    let destination = getPoint(element, 'x2', 'y2', false, scaleToBounds);
+
+    // Transform points
+    // TOOD transform stops
+    // Emulate SVG's gradientUnits="objectBoundingBox"
+    if (scaleToBounds) {
+        var bounds = item.getBounds();
+        color.transform(new Matrix()
+            .translate(bounds.getPoint())
+            .scale(bounds.getSize()));
+    }
+
+    origin = Matrix.applyToPoint(matrix, origin);
+    destination = Matrix.applyToPoint(matrix, destination);
+    newGradient.setAttribute('x1', origin.x.toFixed(4));
+    newGradient.setAttribute('y1', origin.y.toFixed(4));
+    newGradient.setAttribute('x2', destination.x.toFixed(4));
+    newGradient.setAttribute('y2', destination.y.toFixed(4));
+    defs.appendChild(newGradient);
+
+    return `url(#${newGradientId})`;
+};
+
+// Adapted from paper.js's SvgImport.getDefinition
+const _parseUrl = value => {
+    debugger;
+    // When url() comes from a style property, '#'' seems to be missing on
+    // WebKit. We also get variations of quotes or no quotes, single or
+    // double, so handle it all with one regular expression:
+    const match = value && value.match(/\((?:["'#]*)([^"')]+)/);
+    const name = match && match[1];
+    // const res = name && window ?
+    //             // This is required by Firefox, which can produce absolute
+    //             // urls for local gradients, see #1001:
+    //             name.replace(`${window.location.href.split('#')[0]}#`, '') :
+    //             name;
+    // return res;
+    return name;
+};
+
 /**
  * Scratch 2.0 displays stroke widths in a "normalized" way, that is,
  * if a shape with a stroke width has a transform applied, it will be
@@ -325,9 +417,10 @@ const _isPathWithTransformAndStroke = function (element, strokeWidth) {
 const transformStrokeWidths = function (svgTag) {
     const inherited = Matrix.identity();
     const gradientElements = {};
-    const gradientRefs = [];
+    // Ignore radial gradients for now, since most from Scratch 2 are oblong,
+    // and we can't recreate that with the transforms applied to the path.
     const gatherGradients = element => {
-        if (element.tagName && element.tagName.toLowerCase() === 'radialgradient' && element.id) {
+        if (element.tagName && element.tagName.toLowerCase() === 'lineargradient' && element.id) {
             gradientElements[element.id] = element;
         }
         for (let i = 0; i < element.childNodes.length; i++) {
@@ -366,25 +459,10 @@ const transformStrokeWidths = function (svgTag) {
             }
             matrix = Matrix.compose(matrix, _parseTransform(element));
 
-            if (fill.startsWith('url(#') && fill.endsWith(')')) {
-                const gradientId = fill.substring(5, fill.length - 1).trim();
-                let defs = svgTag.getElementsByTagName('defs');
-                if (defs.length === 0) {
-                    defs = SvgElement.create('defs');
-                    svgTag.appendChild(defs);
-                } else {
-                    defs = defs[0];
-                }
-                const oldGradient = svgTag.getElementById(gradientId);
-                if (!oldGradient) return;
-                const newGradient = svgTag.getElementById(gradientId).cloneNode(true /* deep */);
-                let matrixString = Matrix.toString(matrix);
-                matrixString = matrixString.substring(8, matrixString.length - 1);
-                const newGradientId = `${gradientId}-${matrixString}`;
-                newGradient.setAttribute('id', newGradientId);
-                defs.appendChild(newGradient);
-
-                fill = `url(#${newGradientId})`;
+            const gradientId = _parseUrl(fill);
+            if (gradientId) {
+                const newRef = _createGradient(gradientId, svgTag, element, matrix);
+                if (newRef) fill = newRef;
             }
 
             element.setAttribute('d', _transformPath(element.attributes.d.value, matrix));
@@ -413,8 +491,6 @@ const transformStrokeWidths = function (svgTag) {
         }
     };
     gatherGradients(svgTag);
-    console.log(gradientRefs);
-    console.log(gradientElements);
     applyTransforms(svgTag, inherited, 1 /* default SVG stroke width */);
 };
 
