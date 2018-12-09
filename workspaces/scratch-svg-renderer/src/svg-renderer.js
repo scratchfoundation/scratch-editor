@@ -92,11 +92,7 @@ class SvgRenderer {
             // Fix gradients
             this._transformGradients();
         }
-        console.log('before');
-        console.log(svgString);
-        //transformStrokeWidths(this._svgTag);
-        console.log('after');
-        console.log(new XMLSerializer().serializeToString(this._svgTag));
+        transformStrokeWidths(this._svgTag, window);
         if (fromVersion2) {
             // Transform all text elements.
             this._transformText();

@@ -304,8 +304,8 @@ const _isPathWithTransformAndStroke = function (element, strokeWidth) {
         element.attributes.d && element.attributes.d.value;
 };
 
-const _createGradient = function (gradientId, svgTag, element, matrix) {
-    debugger;
+const _createGradient = function (gradientId, svgTag, bbox, matrix) {
+    // TODO %s
     const getValue = function (node, name, isString, allowNull, allowPercent) {
         // Interpret value as number. Never return NaN, but 0 instead.
         // If the value is a sequence of numbers, parseFloat will
@@ -344,7 +344,9 @@ const _createGradient = function (gradientId, svgTag, element, matrix) {
     // Clone the old gradient. We'll make a new one, since the gradient might be reused elsewhere
     // with different transform matrix
     const oldGradient = svgTag.getElementById(gradientId);
-    if (!oldGradient) return;
+    // Ignore radial gradients for now, since most from Scratch 2 are oblong,
+    // and we can't recreate that with the transforms applied to the path.
+    if (!oldGradient || !oldGradient.tagName.toLowerCase() === 'lineargradient') return;
     const newGradient = svgTag.getElementById(gradientId).cloneNode(true /* deep */);
 
     // Give the new gradient a new ID
@@ -353,47 +355,44 @@ const _createGradient = function (gradientId, svgTag, element, matrix) {
     const newGradientId = `${gradientId}-${matrixString}`;
     newGradient.setAttribute('id', newGradientId);
 
-    const scaleToBounds = newGradient.attributes.gradientUnits ?
-        newGradient.attributes.gradientUnits.value === 'userSpaceOnUse' : false;
-    let origin = getPoint(element, 'x1', 'y1', false, scaleToBounds);
-    let destination = getPoint(element, 'x2', 'y2', false, scaleToBounds);
+    const scaleToBounds = getValue(newGradient, 'gradientUnits', true) !==
+                'userSpaceOnUse';
+    let origin = getPoint(newGradient, 'x1', 'y1', false, scaleToBounds);
+    let destination = getPoint(newGradient, 'x2', 'y2', false, scaleToBounds);
 
     // Transform points
-    // TOOD transform stops
     // Emulate SVG's gradientUnits="objectBoundingBox"
     if (scaleToBounds) {
-        var bounds = item.getBounds();
-        color.transform(new Matrix()
-            .translate(bounds.getPoint())
-            .scale(bounds.getSize()));
+        const boundsMatrix = Matrix.compose(Matrix.translate(bbox.x, bbox.y), Matrix.scale(bbox.width, bbox.height));
+        origin = Matrix.applyToPoint(boundsMatrix, origin);
+        destination = Matrix.applyToPoint(boundsMatrix, destination);
     }
 
     origin = Matrix.applyToPoint(matrix, origin);
     destination = Matrix.applyToPoint(matrix, destination);
-    newGradient.setAttribute('x1', origin.x.toFixed(4));
-    newGradient.setAttribute('y1', origin.y.toFixed(4));
-    newGradient.setAttribute('x2', destination.x.toFixed(4));
-    newGradient.setAttribute('y2', destination.y.toFixed(4));
+    newGradient.setAttribute('x1', Number(origin.x.toFixed(4)));
+    newGradient.setAttribute('y1', Number(origin.y.toFixed(4)));
+    newGradient.setAttribute('x2', Number(destination.x.toFixed(4)));
+    newGradient.setAttribute('y2', Number(destination.y.toFixed(4)));
+    newGradient.setAttribute('gradientUnits', 'userSpaceOnUse');
     defs.appendChild(newGradient);
 
     return `url(#${newGradientId})`;
 };
 
 // Adapted from paper.js's SvgImport.getDefinition
-const _parseUrl = value => {
-    debugger;
+const _parseUrl = (value, windowRef) => {
     // When url() comes from a style property, '#'' seems to be missing on
     // WebKit. We also get variations of quotes or no quotes, single or
     // double, so handle it all with one regular expression:
     const match = value && value.match(/\((?:["'#]*)([^"')]+)/);
     const name = match && match[1];
-    // const res = name && window ?
-    //             // This is required by Firefox, which can produce absolute
-    //             // urls for local gradients, see #1001:
-    //             name.replace(`${window.location.href.split('#')[0]}#`, '') :
-    //             name;
-    // return res;
-    return name;
+    const res = name && windowRef ?
+        // This is required by Firefox, which can produce absolute
+        // urls for local gradients, see #1001:
+        name.replace(`${windowRef.location.href.split('#')[0]}#`, '') :
+        name;
+    return res;
 };
 
 /**
@@ -412,21 +411,12 @@ const _parseUrl = value => {
  * changes path data and attributes throughout the SVG.
  *
  * @param {SVGElement} svgTag The SVG dom object
+ * @param {Window} windowRef The window to use. Need to pass in for
+ *     testing purposes.
  * @return {void}
  */
-const transformStrokeWidths = function (svgTag) {
+const transformStrokeWidths = function (svgTag, windowRef) {
     const inherited = Matrix.identity();
-    const gradientElements = {};
-    // Ignore radial gradients for now, since most from Scratch 2 are oblong,
-    // and we can't recreate that with the transforms applied to the path.
-    const gatherGradients = element => {
-        if (element.tagName && element.tagName.toLowerCase() === 'lineargradient' && element.id) {
-            gradientElements[element.id] = element;
-        }
-        for (let i = 0; i < element.childNodes.length; i++) {
-            gatherGradients(element.childNodes[i]);
-        }
-    };
     const applyTransforms = (element, matrix, strokeWidth, fill) => {
         if (_isContainerElement(element)) {
             // Push fills and stroke width down to leaves
@@ -458,16 +448,41 @@ const transformStrokeWidths = function (svgTag) {
                 fill = element.attributes.fill.value;
             }
             matrix = Matrix.compose(matrix, _parseTransform(element));
-
-            const gradientId = _parseUrl(fill);
+            if (Matrix.toString(matrix) === Matrix.toString(Matrix.identity())) {
+                element.removeAttribute('transform');
+                return;
+            }
+            
+            // Transform gradient
+            const gradientId = _parseUrl(fill, windowRef);
             if (gradientId) {
-                const newRef = _createGradient(gradientId, svgTag, element, matrix);
+                const doc = windowRef.document;
+                // Need path bounds to transform gradient
+                const svgSpot = doc.createElement('span');
+                let bbox;
+                try {
+                    doc.body.appendChild(svgSpot);
+                    const svg = SvgElement.set(windowRef.document.createElementNS(SvgElement.svg, 'svg'));
+                    const path = SvgElement.set(windowRef.document.createElementNS(SvgElement.svg, 'path'));
+                    path.setAttribute('d', element.attributes.d.value);
+                    svg.appendChild(path);
+                    svgSpot.appendChild(svg);
+                    // Take the bounding box.
+                    bbox = svg.getBBox();
+                } finally {
+                    // Always destroy the element, even if, for example, getBBox throws.
+                    doc.body.removeChild(svgSpot);
+                }
+
+                const newRef = _createGradient(gradientId, svgTag, bbox, matrix);
                 if (newRef) fill = newRef;
             }
 
+            // Transform path data
             element.setAttribute('d', _transformPath(element.attributes.d.value, matrix));
             element.removeAttribute('transform');
 
+            // Transform stroke width
             const matrixScale = _getScaleFactor(matrix);
             const quadraticMean = Math.sqrt(((matrixScale.x * matrixScale.x) + (matrixScale.y * matrixScale.y)) / 2);
             element.setAttribute('stroke-width', quadraticMean * strokeWidth);
@@ -490,7 +505,6 @@ const transformStrokeWidths = function (svgTag) {
             }
         }
     };
-    gatherGradients(svgTag);
     applyTransforms(svgTag, inherited, 1 /* default SVG stroke width */);
 };
 

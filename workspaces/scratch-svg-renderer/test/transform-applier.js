@@ -61,7 +61,7 @@ test('noTransformPath', t => {
             `<path id="path" fill="#0000" stroke="red" stroke-width="1" d="${d}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'noTransformPath');
 
     t.equals(d, svgElement.getElementById('path').attributes.d.value);
@@ -76,7 +76,7 @@ test('transformedNoStrokeWidthPath', t => {
             `<path id="path" transform="scale(2)" fill="#0000" stroke="red" d="${d}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'noStrokeWidthPath');
 
     t.equals('2', svgElement.getElementById('path').attributes['stroke-width'].value);
@@ -90,7 +90,7 @@ test('identityTransformPath', t => {
             `<path transform="matrix(1 0 0 1 0 0)" id="path" fill="#0000" stroke="red" stroke-width="1" d="${d}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'identityTransformPath');
 
     t.equals(d, svgElement.getElementById('path').attributes.d.value);
@@ -106,7 +106,7 @@ test('transformBox', t => {
                 `d="M0,0 h 10 v 10 h -10 z"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'transformBox');
 
     const transformed = `M 45 45 L 245 45 L 245 145 L 45 145 Z `;
@@ -125,7 +125,7 @@ test('transformPath', t => {
             `<path transform="matrix(2 0 0 2 45 45)" id="path" fill="#0000" stroke="red" stroke-width="1" d="${d}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'transformPath');
 
     const doubled = 'M 5 5 L 45 65 L 55 55 L 65 55 L 65 65 C 65 65 85 65 75 95 C 65 125 75 105 75 125 ' +
@@ -145,7 +145,7 @@ test('composedTransformPathIdentity', t => {
             `fill="#0000" stroke="red" stroke-width="1" d="${d}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'composedTransformPathIdentity');
 
     t.equals(d, svgElement.getElementById('path').attributes.d.value);
@@ -161,7 +161,7 @@ test('composedTransformPath', t => {
                 `fill="#0000" stroke="red" stroke-width="1" d="${d}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'composedTransformPath');
 
     const transformedPath = 'M -29.5 -29 L 0.5 16 L 8 8.5 L 15.5 8.5 L 15.5 16 C 15.5 16 30.5 16 23 38.5 ' +
@@ -180,7 +180,7 @@ test('parentTransformPath', t => {
             `</g>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'parentTransformPath');
 
     const doubled = 'M -40 -40 L 0 20 L 10 10 L 20 10 L 20 20 C 20 20 40 20 30 50 C 20 80 30 60 30 80 ' +
@@ -202,7 +202,7 @@ test('nestedNoTransformPath', t => {
             `</g>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'nestedNoTransformPath');
 
     t.equals(d, svgElement.getElementById('path').attributes.d.value);
@@ -221,7 +221,7 @@ test('nestedTransformPath', t => {
             `</g>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'nestedTransformPath');
 
     const quartered = 'M -45 -45 L 0 22.5 L 11.25 11.25 L 22.5 11.25 L 22.5 22.5 C 22.5 22.5 45 22.5 33.75 56.25 ' +
@@ -240,7 +240,7 @@ test('variousTransformsPath', t => {
                 `id="path" fill="#0000" stroke="red" stroke-width="1" d="${d}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'variousTransformsPath');
 
     const transformedPath = 'M 115.3172 96.7866 L 134.6908 171.2195 L 151.9584 175.6212 L 164.2563 185.7055 ' +
@@ -269,7 +269,7 @@ test('siblingsTransformPath', t => {
             `</g>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'siblingsTransformPath');
 
     t.equals('matrix(0.5,0,0,0.5,5,10)', svgElement.getElementById('sibling').attributes.transform.value);
@@ -294,7 +294,7 @@ test('siblingsStroke', t => {
             `</g>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'siblingsStroke');
 
     t.equals('10', svgElement.getElementById('sibling').attributes['stroke-width'].value);
@@ -312,7 +312,7 @@ test('transformedNestedStroke', t => {
             `</g>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'transformedNestedStroke');
 
     const quadraticMean = Math.sqrt(((5 / 2 * 5 / 2) + (2 / 2 * 2 / 2)) / 2);
@@ -330,7 +330,7 @@ test('variousTransformsRelativePath', t => {
                 `id="path" fill="#0000" stroke="red" stroke-width="5" d="${pathData}" />` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'variousTransformsRelativePath');
 
     const transformed = 'M 44.0917 25.6869 L 55.7402 43.813 L 64.0581 39.5868 L 71.1292 42.0053 L 79.447 37.7791 ' +
@@ -350,7 +350,7 @@ test('scaleTransformEllipticalPath', t => {
                 `id="path" fill="#0000" stroke="red" stroke-width="5" d="${ellipticalPath}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'scaleTransformEllipticalPath');
 
     const scaled = 'M 5 150 L 30 137.5 A 12.5 12.5 -50.7685 0 1 55 125 L 80 112.5 A 12.5 25 -45 0 1 105 100 ' +
@@ -369,7 +369,7 @@ test('invertTransformEllipticalPath', t => {
                 `id="path" fill="#0000" stroke="red" stroke-width="5" d="${ellipticalPath}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'invertTransformEllipticalPath');
 
     const inverted = 'M 300 10 L 275 60 A 25 25 -50.7685 0 0 250 110 L 225 160 A 25 50 -45 0 0 200 210 ' +
@@ -388,7 +388,7 @@ test('rotateTransformEllipticalPath', t => {
                 `id="path" fill="#0000" stroke="red" stroke-width="5" d="${ellipticalPath}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'rotateTransformEllipticalPath');
 
     const rotated = 'M 190.597 61.4231 L 201.8042 116.1898 A 25 25 -50.7685 0 1 213.0114 170.9566 ' +
@@ -409,7 +409,7 @@ test('skewXTransformEllipticalPath', t => {
                 `id="path" fill="#0000" stroke="red" stroke-width="5" d="${ellipticalPath}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'skewXTransformEllipticalPath');
 
     const skewed = 'M -99.1911 300 L -40.0918 275 A 20.861 29.9602 50.1571 0 1 19.0074 250 L 78.1067 225 ' +
@@ -430,7 +430,7 @@ test('skewYTransformEllipticalPath', t => {
                 `id="path" fill="#0000" stroke="red" stroke-width="5" d="${ellipticalPath}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'skewYTransformEllipticalPath');
 
     const skewed = 'M 10 296.3603 L 60 253.1618 A 20.861 29.9602 39.8429 0 1 110 209.9633 L 160 166.7648 ' +
@@ -451,7 +451,7 @@ test('variousTransformsEllipticalPath', t => {
                 `id="path" fill="#0000" stroke="red" stroke-width="5" d="${ellipticalPath}"/>` +
         `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'variousTransformsEllipticalPath');
 
     const transformed = 'M 24.9709 107.5355 L 51.9997 63.7469 A 22.8929 27.3011 -47.5192 0 1 79.0286 19.9583 ' +
@@ -479,7 +479,7 @@ test('linearGradientTransform', t => {
           `transform="matrix(0.3, 0.4, -0.6, 0.44, 182.85, -79)"/>` +
     `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'linearGradientTransform');
 
     t.end();
@@ -502,8 +502,26 @@ test('nestedLinearGradientTransform', t => {
       `</g>` +
     `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement);
+    transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'nestedLinearGradientTransform');
+
+    t.end();
+});
+
+test('nestedLinearGradientTransform2', t => {
+    const svgString =
+    `<svg version="1.1" width="382" height="282" viewBox="-1 -1 382 282" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+      `<defs>` +
+        `<linearGradient id="grad_2" x2="1">` +
+          `<stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>` +
+          `<stop offset="1" stop-color="#FF9400" stop-opacity="1"/>` +
+        `</linearGradient>` +
+      `</defs>` +
+      `<path id="ID0.9637056556530297" fill="url(#grad_2)" stroke="#003FFF" stroke-width="5" d="M 109 208 L 144 208 L 144 245 L 109 245 L 109 208 Z " transform="matrix(1.1977064609527588, -2.8831300735473633, 2.9411463737487793, 1.2218074798583984, -731.15, 285)"/>` +
+    `</svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window);
+    comparisonFileAppend(svgString, svgElement, 'nestedLinearGradientTransform2');
 
     t.end();
 });
