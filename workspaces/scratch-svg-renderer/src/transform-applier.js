@@ -344,9 +344,9 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
     // Clone the old gradient. We'll make a new one, since the gradient might be reused elsewhere
     // with different transform matrix
     const oldGradient = svgTag.getElementById(gradientId);
-    // Ignore radial gradients for now, since most from Scratch 2 are oblong,
-    // and we can't recreate that with the transforms applied to the path.
-    if (!oldGradient || !oldGradient.tagName.toLowerCase() === 'lineargradient') return;
+    if (!oldGradient) return;
+
+    const radial = oldGradient.tagName.toLowerCase() === 'radialgradient';
     const newGradient = svgTag.getElementById(gradientId).cloneNode(true /* deep */);
 
     // Give the new gradient a new ID
@@ -357,8 +357,17 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
 
     const scaleToBounds = getValue(newGradient, 'gradientUnits', true) !==
                 'userSpaceOnUse';
-    let origin = getPoint(newGradient, 'x1', 'y1', false, scaleToBounds);
-    let destination = getPoint(newGradient, 'x2', 'y2', false, scaleToBounds);
+    let origin;
+    let destination;
+    let focal;
+    if (radial) {
+        origin = getPoint(newGradient, 'cx', 'cy', false, scaleToBounds);
+        destination = {x: getValue(newGradient, 'r', false, false, scaleToBounds), y: 0};
+        focal = getPoint(newGradient, 'fx', 'fy', true, scaleToBounds);
+    } else {
+        origin = getPoint(newGradient, 'x1', 'y1', false, scaleToBounds);
+        destination = getPoint(newGradient, 'x2', 'y2', false, scaleToBounds);
+    }
 
     // Transform points
     // Emulate SVG's gradientUnits="objectBoundingBox"
@@ -366,14 +375,28 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
         const boundsMatrix = Matrix.compose(Matrix.translate(bbox.x, bbox.y), Matrix.scale(bbox.width, bbox.height));
         origin = Matrix.applyToPoint(boundsMatrix, origin);
         destination = Matrix.applyToPoint(boundsMatrix, destination);
+        if (focal) focal = Matrix.applyToPoint(boundsMatrix, focal);
     }
-
     origin = Matrix.applyToPoint(matrix, origin);
     destination = Matrix.applyToPoint(matrix, destination);
-    newGradient.setAttribute('x1', Number(origin.x.toFixed(4)));
-    newGradient.setAttribute('y1', Number(origin.y.toFixed(4)));
-    newGradient.setAttribute('x2', Number(destination.x.toFixed(4)));
-    newGradient.setAttribute('y2', Number(destination.y.toFixed(4)));
+    if (focal) focal = Matrix.applyToPoint(matrix, focal);
+
+    // Put values back into svg
+    if (radial) {
+        newGradient.setAttribute('cx', Number(origin.x.toFixed(4)));
+        newGradient.setAttribute('cy', Number(origin.y.toFixed(4)));
+        const r = Math.sqrt(Math.pow(destination.x - origin.x, 2) + Math.pow(destination.y - origin.y, 2));
+        newGradient.setAttribute('r', Number(r.toFixed(4)));
+        if (focal) {
+            newGradient.setAttribute('fx', Number(focal.x.toFixed(4)));
+            newGradient.setAttribute('fy', Number(focal.y.toFixed(4)));
+        }
+    } else {
+        newGradient.setAttribute('x1', Number(origin.x.toFixed(4)));
+        newGradient.setAttribute('y1', Number(origin.y.toFixed(4)));
+        newGradient.setAttribute('x2', Number(destination.x.toFixed(4)));
+        newGradient.setAttribute('y2', Number(destination.y.toFixed(4)));
+    }
     newGradient.setAttribute('gradientUnits', 'userSpaceOnUse');
     defs.appendChild(newGradient);
 
