@@ -5,6 +5,7 @@ import {getSelectedRootItems} from '../selection';
 import {getGuideColor, removeBoundsPath, removeBoundsHandles} from '../guides';
 import {getGuideLayer} from '../layer';
 
+import Cursors from '../../lib/cursors';
 import ScaleTool from './scale-tool';
 import RotateTool from './rotate-tool';
 import MoveTool from './move-tool';
@@ -35,10 +36,12 @@ class BoundingBoxTool {
      * @param {Modes} mode Paint editor mode
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
+     * @param {function} setCursor Callback to set the visible mouse cursor
      * @param {!function} onUpdateImage A callback to call when the image visibly changes
      * @param {?function} switchToTextTool A callback to call to switch to the text tool
      */
-    constructor (mode, setSelectedItems, clearSelectedItems, onUpdateImage, switchToTextTool) {
+    constructor (mode, setSelectedItems, clearSelectedItems, setCursor, onUpdateImage, switchToTextTool) {
+        this.dispatchSetCursor = setCursor;
         this.onUpdateImage = onUpdateImage;
         this.mode = null;
         this.boundsPath = null;
@@ -49,6 +52,7 @@ class BoundingBoxTool {
         this._modeMap[BoundingBoxModes.ROTATE] = new RotateTool(onUpdateImage);
         this._modeMap[BoundingBoxModes.MOVE] =
             new MoveTool(mode, setSelectedItems, clearSelectedItems, onUpdateImage, switchToTextTool);
+        this._currentCursor = null;
     }
 
     /**
@@ -74,29 +78,14 @@ class BoundingBoxTool {
      */
     onMouseDown (event, clone, multiselect, doubleClicked, hitOptions) {
         if (event.event.button > 0) return; // only first mouse button
-        const hitResults = paper.project.hitTestAll(event.point, hitOptions);
-        if (!hitResults || hitResults.length === 0) {
+        const {hitResult, mode} = this._determineMode(event, multiselect, hitOptions);
+        if (!hitResult) {
             if (!multiselect) {
                 this.removeBoundsPath();
             }
             return false;
         }
-
-        // Prefer scale to trigger over rotate, and scale and rotate to trigger over other hits
-        let hitResult = hitResults[0];
-        for (let i = 0; i < hitResults.length; i++) {
-            if (hitResults[i].item.data && hitResults[i].item.data.isScaleHandle) {
-                hitResult = hitResults[i];
-                this.mode = BoundingBoxModes.SCALE;
-                break;
-            } else if (hitResults[i].item.data && hitResults[i].item.data.isRotHandle) {
-                hitResult = hitResults[i];
-                this.mode = BoundingBoxModes.ROTATE;
-            }
-        }
-        if (!this.mode) {
-            this.mode = BoundingBoxModes.MOVE;
-        }
+        this.mode = mode;
 
         const hitProperties = {
             hitResult: hitResult,
@@ -111,6 +100,7 @@ class BoundingBoxTool {
             this._modeMap[this.mode].onMouseDown(hitResult, this.boundsPath, getSelectedRootItems());
             this.removeBoundsHandles();
         } else if (this.mode === BoundingBoxModes.ROTATE) {
+            this.setCursor(Cursors.GRABBING);
             this._modeMap[this.mode].onMouseDown(hitResult, this.boundsPath, getSelectedRootItems());
             // While transforming, don't show bounds
             this.removeBoundsPath();
@@ -118,17 +108,80 @@ class BoundingBoxTool {
 
         return true;
     }
+    onMouseMove (event, hitOptions) {
+        this._updateCursor(event, hitOptions);
+    }
+    _updateCursor (event, hitOptions) {
+        const {mode, hitResult} = this._determineMode(event, false, hitOptions);
+        if (hitResult) {
+            if (mode === BoundingBoxModes.MOVE) {
+                this.setCursor(Cursors.DEFAULT);
+            } else if (mode === BoundingBoxModes.ROTATE) {
+                this.setCursor(Cursors.GRAB);
+            } else if (mode === BoundingBoxModes.SCALE) {
+                this.setSelectionBounds();
+                if (this._impreciseEqual(hitResult.item.position.x, this.boundsPath.position.x)) {
+                    this.setCursor(Cursors.RESIZE_NS);
+                } else if (this._impreciseEqual(hitResult.item.position.y, this.boundsPath.position.y)) {
+                    this.setCursor(Cursors.RESIZE_EW);
+                } else if (
+                    hitResult.item.position.equals(this.boundsPath.bounds.bottomLeft) ||
+                    hitResult.item.position.equals(this.boundsPath.bounds.topRight)
+                ) {
+                    this.setCursor(Cursors.RESIZE_NESW);
+                } else {
+                    this.setCursor(Cursors.RESIZE_NWSE);
+                }
+            }
+        } else {
+            this.setCursor(Cursors.DEFAULT);
+        }
+    }
+    _impreciseEqual (a, b) {
+        // This is the same math paper.js uses to check if two numbers are "equal".
+        return Math.abs(a - b) < 1e-8;
+    }
+    _determineMode (event, multiselect, hitOptions) {
+        const hitResults = paper.project.hitTestAll(event.point, hitOptions);
+
+        let mode;
+
+        // Prefer scale to trigger over rotate, and scale and rotate to trigger over other hits
+        let hitResult = hitResults[0];
+        for (let i = 0; i < hitResults.length; i++) {
+            if (hitResults[i].item.data && hitResults[i].item.data.isScaleHandle) {
+                hitResult = hitResults[i];
+                mode = BoundingBoxModes.SCALE;
+                break;
+            } else if (hitResults[i].item.data && hitResults[i].item.data.isRotHandle) {
+                hitResult = hitResults[i];
+                mode = BoundingBoxModes.ROTATE;
+            }
+        }
+        if (!mode) {
+            mode = BoundingBoxModes.MOVE;
+        }
+
+        return {mode, hitResult};
+    }
     onMouseDrag (event) {
         if (event.event.button > 0 || !this.mode) return; // only first mouse button
         this._modeMap[this.mode].onMouseDrag(event);
+
+        // Set the cursor for moving a sprite once the drag has actually started (i.e. the mouse has been moved while
+        // pressed), so that the mouse doesn't "flash" to the grabbing cursor every time a sprite is clicked.
+        if (this.mode === BoundingBoxModes.MOVE) {
+            this.setCursor(Cursors.GRABBING);
+        }
     }
-    onMouseUp (event) {
+    onMouseUp (event, hitOptions) {
         if (event.event.button > 0 || !this.mode) return; // only first mouse button
         this._modeMap[this.mode].onMouseUp(event);
 
         // After transforming, show bounds again
         this.setSelectionBounds();
         this.mode = null;
+        this._updateCursor(event, hitOptions);
     }
     setSelectionBounds () {
         this.removeBoundsPath();
@@ -249,6 +302,17 @@ class BoundingBoxTool {
         removeBoundsHandles();
         this.boundsScaleHandles.length = 0;
         this.boundsRotHandles.length = 0;
+    }
+    deactivateTool () {
+        this.removeBoundsPath();
+        this.setCursor(Cursors.DEFAULT);
+    }
+
+    setCursor (cursorString) {
+        if (this._currentCursor !== cursorString) {
+            this.dispatchSetCursor(cursorString);
+            this._currentCursor = cursorString;
+        }
     }
 }
 

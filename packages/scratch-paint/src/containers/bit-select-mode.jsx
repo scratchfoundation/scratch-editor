@@ -8,6 +8,8 @@ import Modes from '../lib/modes';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 import {clearGradient} from '../reducers/selection-gradient-type';
+import {setCursor} from '../reducers/cursor';
+
 import {getSelectedLeafItems} from '../helper/selection';
 import BitSelectTool from '../helper/bit-tools/select-tool';
 import SelectModeComponent from '../components/bit-select-mode/bit-select-mode.jsx';
@@ -49,6 +51,7 @@ class BitSelectMode extends React.Component {
         this.tool = new BitSelectTool(
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
+            this.props.setCursor,
             this.props.onUpdateImage
         );
         this.tool.activate();
@@ -75,6 +78,7 @@ BitSelectMode.propTypes = {
     isSelectModeActive: PropTypes.bool.isRequired,
     onUpdateImage: PropTypes.func.isRequired,
     selectedItems: PropTypes.arrayOf(PropTypes.instanceOf(paper.Item)),
+    setCursor: PropTypes.func.isRequired,
     setSelectedItems: PropTypes.func.isRequired
 };
 
@@ -88,6 +92,9 @@ const mapDispatchToProps = dispatch => ({
     },
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
+    },
+    setCursor: cursorType => {
+        dispatch(setCursor(cursorType));
     },
     setSelectedItems: () => {
         dispatch(setSelectedItems(getSelectedLeafItems()));

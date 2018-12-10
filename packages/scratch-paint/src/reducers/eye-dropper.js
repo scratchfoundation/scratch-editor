@@ -51,5 +51,7 @@ const deactivateEyeDropper = function () {
 export {
     reducer as default,
     activateEyeDropper,
-    deactivateEyeDropper
+    deactivateEyeDropper,
+    ACTIVATE_EYE_DROPPER,
+    DEACTIVATE_EYE_DROPPER
 };

@@ -14,6 +14,7 @@ import {changeMode} from '../reducers/modes';
 import {setTextEditTarget} from '../reducers/text-edit-target';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 import {clearGradient} from '../reducers/selection-gradient-type';
+import {setCursor} from '../reducers/cursor';
 
 import {clearSelection, getSelectedLeafItems} from '../helper/selection';
 import TextTool from '../helper/tools/text-tool';
@@ -102,6 +103,7 @@ class TextMode extends React.Component {
             this.props.textArea,
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
+            this.props.setCursor,
             this.props.onUpdateImage,
             this.props.setTextEditTarget,
             this.props.changeFont,
@@ -155,6 +157,7 @@ TextMode.propTypes = {
     onUpdateImage: PropTypes.func.isRequired,
     rtl: PropTypes.bool,
     selectedItems: PropTypes.arrayOf(PropTypes.instanceOf(paper.Item)),
+    setCursor: PropTypes.func.isRequired,
     setSelectedItems: PropTypes.func.isRequired,
     setTextEditTarget: PropTypes.func.isRequired,
     textArea: PropTypes.instanceOf(Element),
@@ -188,6 +191,9 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     },
     handleChangeModeText: () => {
         dispatch(changeMode(Modes.TEXT));
+    },
+    setCursor: cursorString => {
+        dispatch(setCursor(cursorString));
     },
     setSelectedItems: () => {
         dispatch(setSelectedItems(getSelectedLeafItems(), ownProps.isBitmap));

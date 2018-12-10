@@ -265,6 +265,7 @@ class PaperCanvas extends React.Component {
                 className={styles.paperCanvas}
                 height="360px"
                 ref={this.setCanvas}
+                style={{cursor: this.props.cursor}}
                 width="480px"
             />
         );
@@ -278,6 +279,7 @@ PaperCanvas.propTypes = {
     clearPasteOffset: PropTypes.func.isRequired,
     clearSelectedItems: PropTypes.func.isRequired,
     clearUndo: PropTypes.func.isRequired,
+    cursor: PropTypes.string,
     image: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.instanceOf(HTMLImageElement)
@@ -297,6 +299,7 @@ PaperCanvas.propTypes = {
 };
 const mapStateToProps = state => ({
     mode: state.scratchPaint.mode,
+    cursor: state.scratchPaint.cursor,
     format: state.scratchPaint.format,
     zoomLevels: state.scratchPaint.zoomLevels
 });

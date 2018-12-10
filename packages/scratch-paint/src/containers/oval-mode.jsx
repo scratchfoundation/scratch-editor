@@ -11,6 +11,7 @@ import {changeStrokeColor} from '../reducers/stroke-color';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 import {clearGradient} from '../reducers/selection-gradient-type';
+import {setCursor} from '../reducers/cursor';
 
 import {clearSelection, getSelectedLeafItems} from '../helper/selection';
 import OvalTool from '../helper/tools/oval-tool';
@@ -72,6 +73,7 @@ class OvalMode extends React.Component {
         this.tool = new OvalTool(
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
+            this.props.setCursor,
             this.props.onUpdateImage
         );
         this.tool.setColorState(this.props.colorState);
@@ -106,6 +108,7 @@ OvalMode.propTypes = {
     onChangeStrokeColor: PropTypes.func.isRequired,
     onUpdateImage: PropTypes.func.isRequired,
     selectedItems: PropTypes.arrayOf(PropTypes.instanceOf(paper.Item)),
+    setCursor: PropTypes.func.isRequired,
     setSelectedItems: PropTypes.func.isRequired
 };
 
@@ -120,6 +123,9 @@ const mapDispatchToProps = dispatch => ({
     },
     clearGradient: () => {
         dispatch(clearGradient());
+    },
+    setCursor: cursorString => {
+        dispatch(setCursor(cursorString));
     },
     setSelectedItems: () => {
         dispatch(setSelectedItems(getSelectedLeafItems(), false /* bitmapMode */));

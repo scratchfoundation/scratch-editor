@@ -131,7 +131,7 @@ class ScrollableCanvas extends React.Component {
         }
         return (
             <ScrollableCanvasComponent
-                hideCursor={this.props.hideCursor}
+                hideScrollbars={this.props.hideScrollbars}
                 horizontalScrollLengthPercent={widthPercent}
                 horizontalScrollStartPercent={leftPercent}
                 style={this.props.style}
@@ -149,7 +149,7 @@ class ScrollableCanvas extends React.Component {
 ScrollableCanvas.propTypes = {
     canvas: PropTypes.instanceOf(Element),
     children: PropTypes.node.isRequired,
-    hideCursor: PropTypes.bool,
+    hideScrollbars: PropTypes.bool,
     redrawSelectionBox: PropTypes.func.isRequired,
     style: PropTypes.string,
     updateViewBounds: PropTypes.func.isRequired

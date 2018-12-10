@@ -28,17 +28,24 @@ class SelectTool extends paper.Tool {
      * @param {function} clearHoveredItem Callback to clear the hovered item
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
+     * @param {function} setCursor Callback to set the visible mouse cursor
      * @param {!function} onUpdateImage A callback to call when the image visibly changes
      * @param {!function} switchToTextTool A callback to call to switch to the text tool
      */
-    constructor (setHoveredItem, clearHoveredItem, setSelectedItems, clearSelectedItems, onUpdateImage,
+    constructor (setHoveredItem, clearHoveredItem, setSelectedItems, clearSelectedItems, setCursor, onUpdateImage,
         switchToTextTool) {
         super();
         this.setHoveredItem = setHoveredItem;
         this.clearHoveredItem = clearHoveredItem;
         this.onUpdateImage = onUpdateImage;
-        this.boundingBoxTool =
-            new BoundingBoxTool(Modes.SELECT, setSelectedItems, clearSelectedItems, onUpdateImage, switchToTextTool);
+        this.boundingBoxTool = new BoundingBoxTool(
+            Modes.SELECT,
+            setSelectedItems,
+            clearSelectedItems,
+            setCursor,
+            onUpdateImage,
+            switchToTextTool
+        );
         const nudgeTool = new NudgeTool(this.boundingBoxTool, onUpdateImage);
         this.selectionBoxTool = new SelectionBoxTool(Modes.SELECT, setSelectedItems, clearSelectedItems);
         this.selectionBoxMode = false;
@@ -138,6 +145,10 @@ class SelectTool extends paper.Tool {
                     hoveredItem.id !== this.prevHoveredItemId)) { // hovered item changed
             this.setHoveredItem(hoveredItem ? hoveredItem.id : null);
         }
+
+        if (!this.selectionBoxMode) {
+            this.boundingBoxTool.onMouseMove(event, this.getHitOptions(false));
+        }
     }
     handleMouseDrag (event) {
         if (event.event.button > 0 || !this.active) return; // only first mouse button
@@ -154,14 +165,14 @@ class SelectTool extends paper.Tool {
         if (this.selectionBoxMode) {
             this.selectionBoxTool.onMouseUpVector(event);
         } else {
-            this.boundingBoxTool.onMouseUp(event);
+            this.boundingBoxTool.onMouseUp(event, this.getHitOptions(false));
         }
         this.selectionBoxMode = false;
         this.active = false;
     }
     deactivateTool () {
         this.clearHoveredItem();
-        this.boundingBoxTool.removeBoundsPath();
+        this.boundingBoxTool.deactivateTool();
         this.setHoveredItem = null;
         this.clearHoveredItem = null;
         this.onUpdateImage = null;

@@ -10,6 +10,8 @@ import {changeFillColor, DEFAULT_COLOR} from '../reducers/fill-color';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 import {clearGradient} from '../reducers/selection-gradient-type';
+import {setCursor} from '../reducers/cursor';
+
 import {clearSelection, getSelectedLeafItems} from '../helper/selection';
 import OvalTool from '../helper/bit-tools/oval-tool';
 import OvalModeComponent from '../components/bit-oval-mode/bit-oval-mode.jsx';
@@ -69,7 +71,9 @@ class BitOvalMode extends React.Component {
         this.tool = new OvalTool(
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
-            this.props.onUpdateImage);
+            this.props.setCursor,
+            this.props.onUpdateImage
+        );
         this.tool.setColor(this.props.color);
         this.tool.setFilled(this.props.filled);
         this.tool.setThickness(this.props.thickness);
@@ -100,6 +104,7 @@ BitOvalMode.propTypes = {
     onChangeFillColor: PropTypes.func.isRequired,
     onUpdateImage: PropTypes.func.isRequired,
     selectedItems: PropTypes.arrayOf(PropTypes.instanceOf(paper.Item)),
+    setCursor: PropTypes.func.isRequired,
     setSelectedItems: PropTypes.func.isRequired,
     thickness: PropTypes.number.isRequired,
     zoom: PropTypes.number.isRequired
@@ -119,6 +124,9 @@ const mapDispatchToProps = dispatch => ({
     },
     clearGradient: () => {
         dispatch(clearGradient());
+    },
+    setCursor: cursorString => {
+        dispatch(setCursor(cursorString));
     },
     setSelectedItems: () => {
         dispatch(setSelectedItems(getSelectedLeafItems(), true /* bitmapMode */));

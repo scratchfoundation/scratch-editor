@@ -8,6 +8,7 @@ import Modes from '../lib/modes';
 import {changeMode} from '../reducers/modes';
 import {clearHoveredItem, setHoveredItem} from '../reducers/hover';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
+import {setCursor} from '../reducers/cursor';
 
 import {getSelectedLeafItems} from '../helper/selection';
 import SelectTool from '../helper/selection-tools/select-tool';
@@ -54,6 +55,7 @@ class SelectMode extends React.Component {
             this.props.clearHoveredItem,
             this.props.setSelectedItems,
             this.props.clearSelectedItems,
+            this.props.setCursor,
             this.props.onUpdateImage,
             this.props.switchToTextTool
         );
@@ -82,6 +84,7 @@ SelectMode.propTypes = {
     isSelectModeActive: PropTypes.bool.isRequired,
     onUpdateImage: PropTypes.func.isRequired,
     selectedItems: PropTypes.arrayOf(PropTypes.instanceOf(paper.Item)),
+    setCursor: PropTypes.func.isRequired,
     setHoveredItem: PropTypes.func.isRequired,
     setSelectedItems: PropTypes.func.isRequired,
     switchToTextTool: PropTypes.func.isRequired
@@ -104,6 +107,9 @@ const mapDispatchToProps = dispatch => ({
     },
     setSelectedItems: () => {
         dispatch(setSelectedItems(getSelectedLeafItems(), false /* bitmapMode */));
+    },
+    setCursor: cursorString => {
+        dispatch(setCursor(cursorString));
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.SELECT));

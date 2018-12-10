@@ -35,13 +35,14 @@ class TextTool extends paper.Tool {
      * @param {HTMLTextAreaElement} textAreaElement dom element for the editable text field
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
+     * @param {function} setCursor Callback to set the visible mouse cursor
      * @param {!function} onUpdateImage A callback to call when the image visibly changes
      * @param {!function} setTextEditTarget Call to set text editing target whenever text editing is active
      * @param {!function} changeFont Call to change the font in the dropdown
      * @param {?boolean} isBitmap True if text should be rasterized once it's deselected
      */
-    constructor (textAreaElement, setSelectedItems, clearSelectedItems, onUpdateImage, setTextEditTarget, changeFont,
-        isBitmap) {
+    constructor (textAreaElement, setSelectedItems, clearSelectedItems, setCursor, onUpdateImage, setTextEditTarget,
+        changeFont, isBitmap) {
         super();
         this.element = textAreaElement;
         this.setSelectedItems = setSelectedItems;
@@ -49,7 +50,13 @@ class TextTool extends paper.Tool {
         this.onUpdateImage = onUpdateImage;
         this.setTextEditTarget = setTextEditTarget;
         this.changeFont = changeFont;
-        this.boundingBoxTool = new BoundingBoxTool(Modes.TEXT, setSelectedItems, clearSelectedItems, onUpdateImage);
+        this.boundingBoxTool = new BoundingBoxTool(
+            Modes.TEXT,
+            setSelectedItems,
+            clearSelectedItems,
+            setCursor,
+            onUpdateImage
+        );
         this.nudgeTool = new NudgeTool(this.boundingBoxTool, onUpdateImage);
         this.isBitmap = isBitmap;
 
@@ -181,6 +188,7 @@ class TextTool extends paper.Tool {
         } else {
             document.body.style.cursor = 'auto';
         }
+        this.boundingBoxTool.onMouseMove(event, this.getBoundingBoxHitOptions());
     }
     handleMouseDown (event) {
         if (event.event.button > 0) return; // only first mouse button
@@ -404,7 +412,7 @@ class TextTool extends paper.Tool {
         if (this.isBitmap) {
             this.commitText();
         }
-        this.boundingBoxTool.removeBoundsPath();
+        this.boundingBoxTool.deactivateTool();
     }
 }
 

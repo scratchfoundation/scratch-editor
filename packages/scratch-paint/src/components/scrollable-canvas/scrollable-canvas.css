@@ -30,7 +30,3 @@ $scrollbar-padding: 1px;
 .horizontal-scrollbar {
     height: $scrollbar-size;
 }
-
-.hide-cursor {
-    cursor: none;
-}
