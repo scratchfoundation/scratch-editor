@@ -305,32 +305,38 @@ const _isPathWithTransformAndStroke = function (element, strokeWidth) {
 };
 
 const _createGradient = function (gradientId, svgTag, bbox, matrix) {
-    // TODO %s
     const getValue = function (node, name, isString, allowNull, allowPercent) {
         // Interpret value as number. Never return NaN, but 0 instead.
         // If the value is a sequence of numbers, parseFloat will
         // return the first occurring number, which is enough for now.
-        var value = SvgElement.get(node, name),
-            res = value == null
-                ? allowNull
-                    ? null
-                    : isString ? '' : 0
-                : isString
-                    ? value
-                    : parseFloat(value);
+        const value = SvgElement.get(node, name);
+        let res;
+        if (value === null) {
+            if (allowNull) {
+                res = null;
+            } else if (isString) {
+                res = '';
+            } else {
+                res = 0;
+            }
+        } else if (isString) {
+            res = value;
+        } else {
+            res = parseFloat(value);
+        }
         // Support for dimensions in percentage of the root size. If root-size
         // is not set (e.g. during <defs>), just scale the percentage value to
         // 0..1, as required by gradients with gradientUnits="objectBoundingBox"
-        return /%\s*$/.test(value)
-            ? (res / 100) * (allowPercent ? 1
-                : rootSize[/x|^width/.test(name) ? 'width' : 'height'])
-            : res;
+        if (/%\s*$/.test(value)) {
+            const size = allowPercent ? 1 : bbox[/x|^width/.test(name) ? 'width' : 'height'];
+            return res / 100 * size;
+        }
+        return res;
     };
     const getPoint = function (node, x, y, allowNull, allowPercent) {
         x = getValue(node, x || 'x', false, allowNull, allowPercent);
         y = getValue(node, y || 'y', false, allowNull, allowPercent);
-        return allowNull && (x == null || y == null) ? null
-                : {x, y};
+        return allowNull && (x === null || y === null) ? null : {x, y};
     };
 
     let defs = svgTag.getElementsByTagName('defs');
@@ -435,10 +441,14 @@ const _parseUrl = (value, windowRef) => {
  *
  * @param {SVGElement} svgTag The SVG dom object
  * @param {Window} windowRef The window to use. Need to pass in for
- *     testing purposes.
+ *     tests to work, as they get angry at even the mention of window.
+ * @param {object} bboxForTesting The bounds to use. Need to pass in for
+ *     tests only, because getBBox doesn't work in Node. This should
+ *     be the bounds of the svgTag without including stroke width or transforms.
  * @return {void}
  */
-const transformStrokeWidths = function (svgTag, windowRef) {
+const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
+    // TODO x2, r, cy, cx, fy, fx defaults are wrong.
     const inherited = Matrix.identity();
     const applyTransforms = (element, matrix, strokeWidth, fill) => {
         if (_isContainerElement(element)) {
@@ -475,7 +485,7 @@ const transformStrokeWidths = function (svgTag, windowRef) {
                 element.removeAttribute('transform');
                 return;
             }
-            
+
             // Transform gradient
             const gradientId = _parseUrl(fill, windowRef);
             if (gradientId) {
@@ -483,18 +493,22 @@ const transformStrokeWidths = function (svgTag, windowRef) {
                 // Need path bounds to transform gradient
                 const svgSpot = doc.createElement('span');
                 let bbox;
-                try {
-                    doc.body.appendChild(svgSpot);
-                    const svg = SvgElement.set(windowRef.document.createElementNS(SvgElement.svg, 'svg'));
-                    const path = SvgElement.set(windowRef.document.createElementNS(SvgElement.svg, 'path'));
-                    path.setAttribute('d', element.attributes.d.value);
-                    svg.appendChild(path);
-                    svgSpot.appendChild(svg);
-                    // Take the bounding box.
-                    bbox = svg.getBBox();
-                } finally {
-                    // Always destroy the element, even if, for example, getBBox throws.
-                    doc.body.removeChild(svgSpot);
+                if (bboxForTesting) {
+                    bbox = bboxForTesting;
+                } else {
+                    try {
+                        doc.body.appendChild(svgSpot);
+                        const svg = SvgElement.set(windowRef.document.createElementNS(SvgElement.svg, 'svg'));
+                        const path = SvgElement.set(windowRef.document.createElementNS(SvgElement.svg, 'path'));
+                        path.setAttribute('d', element.attributes.d.value);
+                        svg.appendChild(path);
+                        svgSpot.appendChild(svg);
+                        // Take the bounding box.
+                        bbox = svg.getBBox();
+                    } finally {
+                        // Always destroy the element, even if, for example, getBBox throws.
+                        doc.body.removeChild(svgSpot);
+                    }
                 }
 
                 const newRef = _createGradient(gradientId, svgTag, bbox, matrix);

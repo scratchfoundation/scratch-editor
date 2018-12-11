@@ -26,10 +26,22 @@ const ellipticalPath = 'M10,300 l 50,-25  ' +
     'a25,75 30 1,1 -50,25 l -50,25  ' +
     'a25,100 15 1,1 -50,25 l -50,25  ';
 
+// This path is tricky because all of its bounds lie outside
+// the 2 given points
+const trickyBoundsPath = 'M 40 40 A 30 50 -45 1,1 80 80';
+// Because jsdom doesn't simulate SvgElement.getBBox(), we need to store
+// the bounds for testing.
+const trickyBoundsPathBounds = {
+    height: 82.46210479736328,
+    width: 82.46211242675781,
+    x: 36.26179885864258,
+    y: 1.2760814428329468
+};
+
 const {window} = new JSDOM();
 const parser = new window.DOMParser();
 const fs = require('fs');
-const OUTPUT_COMPARISON_FILES = true;
+const OUTPUT_COMPARISON_FILES = false;
 let comparisonFileString = '';
 
 const comparisonFileAppend = function (svgString, svgElement, name) {
@@ -468,60 +480,163 @@ test('variousTransformsEllipticalPath', t => {
 
 test('linearGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="300" height="203" viewBox="-1 -10 300 193" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
       `<defs>` +
-        `<linearGradient id="grad_1" y2="1">` +
+        `<linearGradient id="grad_1" x2="0" y2="1">` +
           `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
           `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
         `</linearGradient>` +
       `</defs>` +
-      `<path id="path" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="M 53 133 V 304 H 328 V 53 H 133 Z " ` +
-          `transform="matrix(0.3, 0.4, -0.6, 0.44, 182.85, -79)"/>` +
+      `<path id="path" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+          `transform="scale(.75) skewX(-15)"/>` +
     `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement, window);
+    transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'linearGradientTransform');
+    t.equals('26.9399', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
+    t.equals('10.3682', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equals('0.9571', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
+    t.equals('62.8036', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
 
     t.end();
 });
 
 test('nestedLinearGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="300" height="150" viewBox="-1 150 300 300" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
-      `<defs>` +
-        `<linearGradient id="grad_1" y2="1">` +
-          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
-          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
-        `</linearGradient>` +
-      `</defs>` +
-      `<g transform="rotate(-25)">` +
-        `<g transform="translate(20,20)" fill="url(#grad_1)">` +
-          `<path id="path" stroke="#000000" stroke-width="2" d="M 53 133 V 304 H 328 V 53 H 133 Z " ` +
-            `transform="skewX(-35) skewY(35)"/>` +
-        `</g>` +
-      `</g>` +
-    `</svg>`;
+    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <linearGradient id="grad_2" x2="0" y2="1">
+          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+        </linearGradient>
+      </defs>
+      <g transform="scale(.75) skewX(-15)">
+        <path id="path" fill="url(#grad_2)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
+      </g>
+    </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement, window);
+    transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'nestedLinearGradientTransform');
+    t.equals('26.9399', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
+    t.equals('10.3682', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equals('0.9571', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
+    t.equals('62.8036', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
 
     t.end();
 });
 
-test('nestedLinearGradientTransform2', t => {
+test('percentLinearGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="382" height="282" viewBox="-1 -1 382 282" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
-      `<defs>` +
-        `<linearGradient id="grad_2" x2="1">` +
-          `<stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>` +
-          `<stop offset="1" stop-color="#FF9400" stop-opacity="1"/>` +
-        `</linearGradient>` +
-      `</defs>` +
-      `<path id="ID0.9637056556530297" fill="url(#grad_2)" stroke="#003FFF" stroke-width="5" d="M 109 208 L 144 208 L 144 245 L 109 245 L 109 208 Z " transform="matrix(1.1977064609527588, -2.8831300735473633, 2.9411463737487793, 1.2218074798583984, -731.15, 285)"/>` +
-    `</svg>`;
+    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <linearGradient id="grad_3" x2="50%" y2="50%">
+          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+        </linearGradient>
+      </defs>
+      <path id="path" fill="url(#grad_3)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}"
+          transform="scale(.75) skewX(-15)" />
+    </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
-    transformStrokeWidths(svgElement, window);
-    comparisonFileAppend(svgString, svgElement, 'nestedLinearGradientTransform2');
+    transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
+    comparisonFileAppend(svgString, svgElement, 'percentLinearGradientTransform');
+    t.equals('26.9399', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
+    t.equals('49.5773', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equals('0.9571', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
+    t.equals('31.8804', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+
+    t.end();
+});
+
+test('userSpaceLinearGradientTransform', t => {
+    const svgString =
+    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <linearGradient id="grad_4" x1="20" x2="80" y1="20" y2="80" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+        </linearGradient>
+      </defs>
+      <path id="path" fill="url(#grad_4)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}"
+          transform="scale(.75) skewX(-15)" />
+    </svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
+    comparisonFileAppend(svgString, svgElement, 'userSpaceLinearGradientTransform');
+    t.equals('10.9808', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
+    t.equals('43.923', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equals('15', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
+    t.equals('60', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+
+    t.end();
+});
+
+test('nestedRadialGradientTransform', t => {
+    const svgString =
+    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <radialGradient id="grad_5" r=".5" cx=".5" cy=".5">
+          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+        </radialGradient>
+      </defs>
+      <g transform="scale(.75) skewX(-15)">
+        <path id="path" fill="url(#grad_5)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
+      </g>
+    </svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
+    comparisonFileAppend(svgString, svgElement, 'nestedRadialGradientTransform');
+    t.equals('49.5773', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
+    t.equals('31.8804', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
+    t.equals('32.0141', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+
+    t.end();
+});
+
+test('focalRadialGradientTransform', t => {
+    const svgString =
+    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <radialGradient id="grad_6" r=".5" cx=".5" cy=".5" fx=".75" fy=".75">
+          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+        </radialGradient>
+      </defs>
+      <g transform="scale(.75) skewX(-15)">
+        <path id="path" fill="url(#grad_6)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
+      </g>
+    </svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
+    comparisonFileAppend(svgString, svgElement, 'focalRadialGradientTransform');
+    t.equals('49.5773', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
+    t.equals('31.8804', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
+    t.equals('32.0141', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+    t.equals('60.896', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.fx.value);
+    t.equals('47.342', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.fy.value);
+
+    t.end();
+});
+
+test('userSpaceRadialGradientTransform', t => {
+    const svgString =
+    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <radialGradient id="grad_7" cx="60" r="10" cy="60" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+        </radialGradient>
+      </defs>
+      <path id="path" fill="url(#grad_7)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}"
+          transform="scale(.75) skewX(-15)" />
+    </svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
+    comparisonFileAppend(svgString, svgElement, 'userSpaceRadialGradientTransform');
+    t.equals('32.9423', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
+    t.equals('45', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
+    t.equals('51.6944', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
 
     t.end();
 });
