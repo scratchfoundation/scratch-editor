@@ -482,7 +482,7 @@ test('linearGradientTransform', t => {
     const svgString =
     `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
       `<defs>` +
-        `<linearGradient id="grad_1" x2="0" y2="1">` +
+        `<linearGradient id="grad_1">` +
           `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
           `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
         `</linearGradient>` +
@@ -575,7 +575,7 @@ test('nestedRadialGradientTransform', t => {
     const svgString =
     `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <defs>
-        <radialGradient id="grad_5" r=".5" cx=".5" cy=".5">
+        <radialGradient id="grad_5">
           <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
           <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
         </radialGradient>
@@ -586,7 +586,7 @@ test('nestedRadialGradientTransform', t => {
     </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
-    comparisonFileAppend(svgString, svgElement, 'nestedRadialGradientTransform');
+    comparisonFileAppend(svgString, svgElement, 'nestedRadialGradientTransform. Note that radial gradients are not expected to match exactly.');
     t.equals('49.5773', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
     t.equals('31.8804', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
     t.equals('32.0141', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
@@ -598,7 +598,7 @@ test('focalRadialGradientTransform', t => {
     const svgString =
     `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <defs>
-        <radialGradient id="grad_6" r=".5" cx=".5" cy=".5" fx=".75" fy=".75">
+        <radialGradient id="grad_6" fx=".75" fy=".75">
           <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
           <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
         </radialGradient>
@@ -619,24 +619,49 @@ test('focalRadialGradientTransform', t => {
     t.end();
 });
 
-test('userSpaceRadialGradientTransform', t => {
+test('percentRadialGradientTransform', t => {
     const svgString =
     `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
       <defs>
-        <radialGradient id="grad_7" cx="60" r="10" cy="60" gradientUnits="userSpaceOnUse">
+        <radialGradient id="grad_7" cx="60%" cy="80%" fx="75%" fy="85%">
           <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
           <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
         </radialGradient>
       </defs>
-      <path id="path" fill="url(#grad_7)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}"
+      <g transform="scale(.75) skewX(-15)">
+        <path id="path" fill="url(#grad_7)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
+      </g>
+    </svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
+    comparisonFileAppend(svgString, svgElement, 'percentRadialGradientTransform');
+    t.equals('49.5773', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
+    t.equals('31.8804', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
+    t.equals('32.0141', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+    t.equals('60.896', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.fx.value);
+    t.equals('47.342', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.fy.value);
+
+    t.end();
+});
+
+test('userSpaceRadialGradientTransform', t => {
+    const svgString =
+    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <radialGradient id="grad_8" cx="60" r="10" cy="60" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+        </radialGradient>
+      </defs>
+      <path id="path" fill="url(#grad_8)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}"
           transform="scale(.75) skewX(-15)" />
     </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'userSpaceRadialGradientTransform');
-    t.equals('32.9423', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
-    t.equals('45', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
-    t.equals('51.6944', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+    t.equals('32.9423', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
+    t.equals('45', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
+    t.equals('51.6944', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
 
     t.end();
 });

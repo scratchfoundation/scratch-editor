@@ -305,14 +305,20 @@ const _isPathWithTransformAndStroke = function (element, strokeWidth) {
 };
 
 const _createGradient = function (gradientId, svgTag, bbox, matrix) {
-    const getValue = function (node, name, isString, allowNull, allowPercent) {
+    const getValue = function (node, name, isString, allowNull, allowPercent, defaultValue) {
         // Interpret value as number. Never return NaN, but 0 instead.
         // If the value is a sequence of numbers, parseFloat will
         // return the first occurring number, which is enough for now.
-        const value = SvgElement.get(node, name);
+        let value = SvgElement.get(node, name);
         let res;
         if (value === null) {
-            if (allowNull) {
+            if (defaultValue) {
+                res = defaultValue;
+                if (/%\s*$/.test(res)) {
+                    value = defaultValue;
+                    res = parseFloat(value);
+                }
+            } else if (allowNull) {
                 res = null;
             } else if (isString) {
                 res = '';
@@ -333,9 +339,9 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
         }
         return res;
     };
-    const getPoint = function (node, x, y, allowNull, allowPercent) {
-        x = getValue(node, x || 'x', false, allowNull, allowPercent);
-        y = getValue(node, y || 'y', false, allowNull, allowPercent);
+    const getPoint = function (node, x, y, allowNull, allowPercent, defaultX, defaultY) {
+        x = getValue(node, x || 'x', false, allowNull, allowPercent, defaultX);
+        y = getValue(node, y || 'y', false, allowNull, allowPercent, defaultY);
         return allowNull && (x === null || y === null) ? null : {x, y};
     };
 
@@ -367,12 +373,12 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
     let destination;
     let focal;
     if (radial) {
-        origin = getPoint(newGradient, 'cx', 'cy', false, scaleToBounds);
-        destination = {x: getValue(newGradient, 'r', false, false, scaleToBounds), y: 0};
+        origin = getPoint(newGradient, 'cx', 'cy', false, scaleToBounds, '50%', '50%');
+        destination = {x: getValue(newGradient, 'r', false, false, scaleToBounds, '50%'), y: 0};
         focal = getPoint(newGradient, 'fx', 'fy', true, scaleToBounds);
     } else {
         origin = getPoint(newGradient, 'x1', 'y1', false, scaleToBounds);
-        destination = getPoint(newGradient, 'x2', 'y2', false, scaleToBounds);
+        destination = getPoint(newGradient, 'x2', 'y2', false, scaleToBounds, '1');
     }
 
     // Transform points
