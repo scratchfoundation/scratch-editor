@@ -41,7 +41,7 @@ const trickyBoundsPathBounds = {
 const {window} = new JSDOM();
 const parser = new window.DOMParser();
 const fs = require('fs');
-const OUTPUT_COMPARISON_FILES = true;
+const OUTPUT_COMPARISON_FILES = false;
 let comparisonFileString = '';
 
 const comparisonFileAppend = function (svgString, svgElement, name) {
@@ -494,9 +494,44 @@ test('linearGradientTransform', t => {
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'linearGradientTransform');
     t.equals('26.9399', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
-    t.equals('10.3682', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equals('88.7865', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
     t.equals('0.9571', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
-    t.equals('62.8036', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+    t.equals('0.9571', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+
+    t.end();
+});
+
+test('reusedLinearGradientTransform', t => {
+    const svgString =
+    `<svg version="1.1" width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+      `<defs>` +
+        `<linearGradient id="grad_1">` +
+          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+        `</linearGradient>` +
+      `</defs>` +
+      `<path id="path" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+          `transform="scale(.75) skewX(-15)"/>` +
+      `<path id="path2" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+          `transform="translate(150, 150) rotate(180)"/>` +
+      `<path id="path3" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+          `transform="translate(150, 150) rotate(180)"/>` +
+    `</svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
+    comparisonFileAppend(svgString, svgElement, 'reusedLinearGradientTransform');
+    t.equals('26.9399', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
+    t.equals('88.7865', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equals('0.9571', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
+    t.equals('0.9571', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+    t.equals('113.7382', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
+        .attributes.x1.value);
+    t.equals('31.2761', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
+        .attributes.x2.value);
+    t.equals('148.7239', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
+        .attributes.y1.value);
+    t.equals('148.7239', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
+        .attributes.y2.value);
 
     t.end();
 });
@@ -590,7 +625,7 @@ test('nestedRadialGradientTransform', t => {
         'nestedRadialGradientTransform. Note that radial gradients are not expected to match exactly.');
     t.equals('49.5773', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
     t.equals('31.8804', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
-    t.equals('32.0141', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+    t.equals('30.9233', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
 
     t.end();
 });
@@ -613,7 +648,7 @@ test('focalRadialGradientTransform', t => {
     comparisonFileAppend(svgString, svgElement, 'focalRadialGradientTransform');
     t.equals('49.5773', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
     t.equals('31.8804', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
-    t.equals('32.0141', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+    t.equals('30.9233', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
     t.equals('60.896', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.fx.value);
     t.equals('47.342', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.fy.value);
 
@@ -636,11 +671,11 @@ test('percentRadialGradientTransform', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'percentRadialGradientTransform');
-    t.equals('49.5773', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
-    t.equals('31.8804', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
-    t.equals('32.0141', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
-    t.equals('60.896', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.fx.value);
-    t.equals('47.342', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.fy.value);
+    t.equals('50.7905', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
+    t.equals('50.4343', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
+    t.equals('30.9233', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+    t.equals('59.2389', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.fx.value);
+    t.equals('53.5267', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.fy.value);
 
     t.end();
 });
@@ -660,9 +695,9 @@ test('userSpaceRadialGradientTransform', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'userSpaceRadialGradientTransform');
-    t.equals('32.9423', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
+    t.equals('47.9423', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
     t.equals('45', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
-    t.equals('51.6944', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+    t.equals('7.5', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
 
     t.end();
 });
