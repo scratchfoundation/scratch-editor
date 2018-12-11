@@ -303,6 +303,9 @@ const _isPathWithTransformAndStroke = function (element, strokeWidth) {
         element.tagName && element.tagName.toLowerCase() === 'path' &&
         element.attributes.d && element.attributes.d.value;
 };
+const _quadraticMean = function (a, b) {
+    return Math.sqrt(((a * a) + (b * b)) / 2);
+};
 
 const _createGradient = function (gradientId, svgTag, bbox, matrix) {
     const getValue = function (node, name, isString, allowNull, allowPercent, defaultValue) {
@@ -371,10 +374,11 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
                 'userSpaceOnUse';
     let origin;
     let destination;
+    let radius;
     let focal;
     if (radial) {
         origin = getPoint(newGradient, 'cx', 'cy', false, scaleToBounds, '50%', '50%');
-        destination = {x: getValue(newGradient, 'r', false, false, scaleToBounds, '50%'), y: 0};
+        radius = getValue(newGradient, 'r', false, false, scaleToBounds, '50%');
         focal = getPoint(newGradient, 'fx', 'fy', true, scaleToBounds);
     } else {
         origin = getPoint(newGradient, 'x1', 'y1', false, scaleToBounds);
@@ -386,19 +390,25 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
     if (scaleToBounds) {
         const boundsMatrix = Matrix.compose(Matrix.translate(bbox.x, bbox.y), Matrix.scale(bbox.width, bbox.height));
         origin = Matrix.applyToPoint(boundsMatrix, origin);
-        destination = Matrix.applyToPoint(boundsMatrix, destination);
+        if (destination) destination = Matrix.applyToPoint(boundsMatrix, destination);
+        if (radius) {
+            radius = _quadraticMean(bbox.width, bbox.height) * radius;
+        }
         if (focal) focal = Matrix.applyToPoint(boundsMatrix, focal);
     }
     origin = Matrix.applyToPoint(matrix, origin);
-    destination = Matrix.applyToPoint(matrix, destination);
+    if (destination) destination = Matrix.applyToPoint(matrix, destination);
+    if (radius) {
+        const matrixScale = _getScaleFactor(matrix);
+        radius = _quadraticMean(matrixScale.x, matrixScale.y) * radius;
+    }
     if (focal) focal = Matrix.applyToPoint(matrix, focal);
 
     // Put values back into svg
     if (radial) {
         newGradient.setAttribute('cx', Number(origin.x.toFixed(4)));
         newGradient.setAttribute('cy', Number(origin.y.toFixed(4)));
-        const r = Math.sqrt(Math.pow(destination.x - origin.x, 2) + Math.pow(destination.y - origin.y, 2));
-        newGradient.setAttribute('r', Number(r.toFixed(4)));
+        newGradient.setAttribute('r', Number(radius.toFixed(4)));
         if (focal) {
             newGradient.setAttribute('fx', Number(focal.x.toFixed(4)));
             newGradient.setAttribute('fy', Number(focal.y.toFixed(4)));
@@ -527,8 +537,7 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
 
             // Transform stroke width
             const matrixScale = _getScaleFactor(matrix);
-            const quadraticMean = Math.sqrt(((matrixScale.x * matrixScale.x) + (matrixScale.y * matrixScale.y)) / 2);
-            element.setAttribute('stroke-width', quadraticMean * strokeWidth);
+            element.setAttribute('stroke-width', _quadraticMean(matrixScale.x, matrixScale.y) * strokeWidth);
             element.setAttribute('fill', fill);
         } else if (_isGraphicsElement(element)) {
             // Push stroke width and fill down to leaves
