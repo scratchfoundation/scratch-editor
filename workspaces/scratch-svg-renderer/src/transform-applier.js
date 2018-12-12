@@ -398,6 +398,7 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
         }
         if (focal) focal = Matrix.applyToPoint(boundsMatrix, focal);
     }
+    console.log(matrix);
     origin = Matrix.applyToPoint(matrix, origin);
     if (destination) destination = Matrix.applyToPoint(matrix, destination);
     if (radius) {
@@ -405,6 +406,8 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
         radius = _quadraticMean(matrixScale.x, matrixScale.y) * radius;
     }
     if (focal) focal = Matrix.applyToPoint(matrix, focal);
+    if (destination)
+        console.log(origin.x + "," + origin.y + " " + destination.x + "," + destination.y);
 
     // Put values back into svg
     if (radial) {
