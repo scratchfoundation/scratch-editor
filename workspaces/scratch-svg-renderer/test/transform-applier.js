@@ -41,7 +41,7 @@ const trickyBoundsPathBounds = {
 const {window} = new JSDOM();
 const parser = new window.DOMParser();
 const fs = require('fs');
-const OUTPUT_COMPARISON_FILES = true;
+const OUTPUT_COMPARISON_FILES = false;
 let comparisonFileString = '';
 
 const comparisonFileAppend = function (svgString, svgElement, name) {
