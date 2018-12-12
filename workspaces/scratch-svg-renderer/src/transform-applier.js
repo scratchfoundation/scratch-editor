@@ -87,11 +87,12 @@ const _calculateTransformedEllipse = function (radiusX, radiusY, theta, transfor
     if (det === 0) return null;
 
     // rotA, rotB, and rotC represent Ax^2 + Bxy + Cy^2 = 1 coefficients for a rotated ellipse formula
-    const rotA = (Math.cos(theta) * Math.cos(theta) / radiusX / radiusX) +
-        (Math.sin(theta) * Math.sin(theta) / radiusY / radiusY);
-    const rotB = (Math.sin(2 * theta) / radiusX / radiusX) - (Math.sin(2 * theta) / radiusY / radiusY);
-    const rotC = (Math.sin(theta) * Math.sin(theta) / radiusX / radiusX) +
-        (Math.cos(theta) * Math.cos(theta) / radiusY / radiusY);
+    const sinT = Math.sin(theta);
+    const cosT = Math.cos(theta);
+    const sin2T = Math.sin(2 * theta);
+    const rotA = (cosT * cosT / radiusX / radiusX) + (sinT * sinT / radiusY / radiusY);
+    const rotB = (sin2T / radiusX / radiusX) - (sin2T / radiusY / radiusY);
+    const rotC = (sinT * sinT / radiusX / radiusX) + (cosT * cosT / radiusY / radiusY);
 
     // Calculate the ellipse formula of the transformed ellipse
     // A, B, and C represent Ax^2 + Bxy + Cy^2 = 1 / det / det coefficients in a transformed ellipse formula
@@ -142,7 +143,7 @@ const _transformPath = function (pathString, transform) {
     let control;
     let current = {x: 0, y: 0};
     let start = {x: 0, y: 0};
-    let translated = '';
+    let result = '';
 
     const getCoord = function (index, coord) {
         let val = +coords[index];
@@ -177,7 +178,7 @@ const _transformPath = function (pathString, transform) {
         // Fix issues with z in the middle of SVG path data, not followed by
         // a m command, see paper.js#413:
         if (previous === 'z' && !/[mz]/.test(lower)) {
-            translated += `M ${current.x} ${current.y} `;
+            result += `M ${current.x} ${current.y} `;
         }
         switch (lower) {
         case 'm': // Move to
@@ -185,9 +186,9 @@ const _transformPath = function (pathString, transform) {
         {
             let move = lower === 'm';
             for (let j = 0; j < length; j += 2) {
-                translated += move ? 'M ' : 'L ';
+                result += move ? 'M ' : 'L ';
                 current = getPoint(j);
-                translated += getString(current);
+                result += getString(current);
                 if (move) {
                     start = current;
                     move = false;
@@ -203,7 +204,7 @@ const _transformPath = function (pathString, transform) {
             current = {x: current.x, y: current.y}; // Clone as we're going to modify it.
             for (let j = 0; j < length; j++) {
                 current[coord] = getCoord(j, coord);
-                translated += `L ${getString(current)}`;
+                result += `L ${getString(current)}`;
             }
             control = current;
             break;
@@ -214,7 +215,7 @@ const _transformPath = function (pathString, transform) {
                 const handle1 = getPoint(j);
                 control = getPoint(j + 2);
                 current = getPoint(j + 4);
-                translated += `C ${getString(handle1)}${getString(control)}${getString(current)}`;
+                result += `C ${getString(handle1)}${getString(control)}${getString(current)}`;
             }
             break;
         case 's':
@@ -226,7 +227,7 @@ const _transformPath = function (pathString, transform) {
                 control = getPoint(j);
                 current = getPoint(j + 2);
 
-                translated += `C ${getString(handle1)}${getString(control)}${getString(current)}`;
+                result += `C ${getString(handle1)}${getString(control)}${getString(current)}`;
                 previous = lower;
             }
             break;
@@ -235,7 +236,7 @@ const _transformPath = function (pathString, transform) {
             for (let j = 0; j < length; j += 4) {
                 control = getPoint(j);
                 current = getPoint(j + 2);
-                translated += `Q ${getString(control)}${getString(current)}`;
+                result += `Q ${getString(control)}${getString(current)}`;
             }
             break;
         case 't':
@@ -246,7 +247,7 @@ const _transformPath = function (pathString, transform) {
                     current;
                 current = getPoint(j);
 
-                translated += `Q ${getString(control)}${getString(current)}`;
+                result += `Q ${getString(control)}${getString(current)}`;
                 previous = lower;
             }
             break;
@@ -266,25 +267,25 @@ const _transformPath = function (pathString, transform) {
                         (matrixScale.x < 0 && matrixScale.y > 0)) {
                         clockwiseFlag = clockwiseFlag ^ 1;
                     }
-                    translated += `A ${roundTo4Places(Math.abs(newEllipse.radiusX))} ` +
+                    result += `A ${roundTo4Places(Math.abs(newEllipse.radiusX))} ` +
                         `${roundTo4Places(Math.abs(newEllipse.radiusY))} ` +
                         `${roundTo4Places(newEllipse.rotation)} ${largeArcFlag} ` +
                         `${clockwiseFlag} ${getString(current)}`;
                 } else {
-                    translated += `L ${getString(current)}`;
+                    result += `L ${getString(current)}`;
                 }
             }
             break;
         case 'z':
             // Close path
-            translated += `Z `;
+            result += `Z `;
             // Correctly handle relative m commands, see paper.js#1101:
             current = start;
             break;
         }
         previous = lower;
     }
-    return translated;
+    return result;
 };
 
 const GRAPHICS_ELEMENTS = ['circle', 'ellipse', 'image', 'line', 'path', 'polygon', 'polyline', 'rect', 'text', 'use'];
@@ -308,6 +309,7 @@ const _quadraticMean = function (a, b) {
 };
 
 const _createGradient = function (gradientId, svgTag, bbox, matrix) {
+    // Adapted from Paper.js's SvgImport.getValue
     const getValue = function (node, name, isString, allowNull, allowPercent, defaultValue) {
         // Interpret value as number. Never return NaN, but 0 instead.
         // If the value is a sequence of numbers, parseFloat will
@@ -434,7 +436,7 @@ const _parseUrl = (value, windowRef) => {
     const name = match && match[1];
     const res = name && windowRef ?
         // This is required by Firefox, which can produce absolute
-        // urls for local gradients, see #1001:
+        // urls for local gradients, see paperjs#1001:
         name.replace(`${windowRef.location.href.split('#')[0]}#`, '') :
         name;
     return res;
@@ -464,7 +466,6 @@ const _parseUrl = (value, windowRef) => {
  * @return {void}
  */
 const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
-    // TODO x2, r, cy, cx, fy, fx defaults are wrong.
     const inherited = Matrix.identity();
     const applyTransforms = (element, matrix, strokeWidth, fill) => {
         if (_isContainerElement(element)) {
