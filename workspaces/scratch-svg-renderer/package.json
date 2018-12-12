@@ -22,6 +22,7 @@
     "base64-js": "1.2.1",
     "base64-loader": "1.0.0",
     "minilog": "3.1.0",
+    "transformation-matrix": "1.14.1",
     "scratch-render-fonts": "1.0.0-prerelease.20180906193204"
   },
   "devDependencies": {
@@ -38,7 +39,6 @@
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.1",
     "tap": "^11.0.1",
-    "transformation-matrix": "1.14.1",
     "webpack": "^4.8.0",
     "webpack-cli": "^3.1.0"
   }
