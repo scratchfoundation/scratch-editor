@@ -1048,10 +1048,17 @@ class RenderWebGL extends EventEmitter {
         const scratchY = this._nativeSize[1] * ((y / this._gl.canvas.clientHeight) - 0.5);
 
         const gl = this._gl;
-        twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
 
         const bounds = drawable.getFastBounds();
         bounds.snapToInt();
+
+        // Use a new bufferInfo since _queryBufferInfo is limited to 480x360
+        const attachments = [
+            {format: gl.RGBA},
+            {format: gl.DEPTH_STENCIL}
+        ];
+        const bufferInfo = twgl.createFramebufferInfo(gl, attachments, bounds.width, bounds.height);
+        twgl.bindFramebufferInfo(gl, bufferInfo);
 
         // Translate to scratch units relative to the drawable
         const pickX = scratchX - bounds.left;
