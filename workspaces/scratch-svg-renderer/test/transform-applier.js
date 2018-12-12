@@ -478,25 +478,71 @@ test('variousTransformsEllipticalPath', t => {
     t.end();
 });
 
-test('linearGradientTransform', t => {
+test('linearGradientTransformSquareSkewY', t => {
     const svgString =
-    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+    `<svg version="1.1" width="200" height="200" viewBox="-100 0 100 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
       `<defs>` +
-        `<linearGradient id="grad_1">` +
+        `<linearGradient id="grad_a" x2="0" y2="1">` +
           `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
           `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
         `</linearGradient>` +
       `</defs>` +
-      `<path id="path" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+      `<path id="path" fill="url(#grad_a)" stroke="#000000" stroke-width="2" d="M0,0 0,100 100,100 100,0 z" ` +
+          `transform="translate(-50, 50) scale(-.75, 1) skewY(-15)"/>` +
+    `</svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window, {width: 100, height: 100, x: 0, y: 0});
+    comparisonFileAppend(svgString, svgElement, 'linearGradientTransformSquareSkewY');
+    t.equals('-50', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.x1.value);
+    t.equals('-81.6826', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.x2.value);
+    t.equals('50', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.y1.value);
+    t.equals('138.6809', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.y2.value);
+
+    t.end();
+});
+
+test('linearGradientTransformSquareSkewX', t => {
+    const svgString =
+    `<svg version="1.1" width="200" height="200" viewBox="-100 0 100 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+      `<defs>` +
+        `<linearGradient id="grad_b" x2="0" y2="1">` +
+          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+        `</linearGradient>` +
+      `</defs>` +
+      `<path id="path" fill="url(#grad_b)" stroke="#000000" stroke-width="2" d="M0,0 0,100 100,100 100,0 z" ` +
+          `transform="translate(-50, 50) scale(-.75, 1) skewX(-15)"/>` +
+    `</svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window, {width: 100, height: 100, x: 0, y: 0});
+    comparisonFileAppend(svgString, svgElement, 'linearGradientTransformSquareSkewX');
+    t.equals('-50', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.x1.value);
+    t.equals('-50', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.x2.value);
+    t.equals('50', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.y1.value);
+    t.equals('150', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.y2.value);
+
+    t.end();
+});
+
+test('linearGradientTransform', t => {
+    const svgString =
+    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+      `<defs>` +
+        `<linearGradient id="grad_c">` +
+          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+        `</linearGradient>` +
+      `</defs>` +
+      `<path id="path" fill="url(#grad_c)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
           `transform="scale(.75) skewX(-15)"/>` +
     `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'linearGradientTransform');
-    t.equals('26.9399', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
-    t.equals('88.7865', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
-    t.equals('0.9571', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
-    t.equals('0.9571', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+    t.equals('26.9399', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
+    t.equals('84.6436', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equals('0.9571', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
+    t.equals('16.4187', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
 
     t.end();
 });
@@ -521,9 +567,9 @@ test('reusedLinearGradientTransform', t => {
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'reusedLinearGradientTransform');
     t.equals('26.9399', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
-    t.equals('88.7865', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equals('84.6436', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
     t.equals('0.9571', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
-    t.equals('0.9571', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+    t.equals('16.4187', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
     t.equals('113.7382', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
         .attributes.x1.value);
     t.equals('31.2761', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
@@ -553,7 +599,7 @@ test('nestedLinearGradientTransform', t => {
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'nestedLinearGradientTransform');
     t.equals('26.9399', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
-    t.equals('10.3682', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equals('26.9399', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
     t.equals('0.9571', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
     t.equals('62.8036', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
 
@@ -576,9 +622,9 @@ test('percentLinearGradientTransform', t => {
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'percentLinearGradientTransform');
     t.equals('26.9399', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
-    t.equals('49.5773', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equals('50.6569', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
     t.equals('0.9571', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
-    t.equals('31.8804', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+    t.equals('31.029', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
 
     t.end();
 });
@@ -599,9 +645,28 @@ test('userSpaceLinearGradientTransform', t => {
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'userSpaceLinearGradientTransform');
     t.equals('10.9808', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
-    t.equals('43.923', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equals('45.494', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
     t.equals('15', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
-    t.equals('60', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+    t.equals('58.761', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+
+    t.end();
+});
+
+test('degenerateLinearGradientTransform', t => {
+    const svgString =
+    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+      `<defs>` +
+        `<linearGradient id="grad_d" x1="50%" x2="50%" y1="50%" y2="50%">` +
+          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+        `</linearGradient>` +
+      `</defs>` +
+      `<path id="path" fill="url(#grad_d)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+          `transform="scale(.75) skewX(-15)"/>` +
+    `</svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
+    comparisonFileAppend(svgString, svgElement, 'linearGradientTransform');
 
     t.end();
 });

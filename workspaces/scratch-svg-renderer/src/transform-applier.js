@@ -385,6 +385,16 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
     } else {
         origin = getPoint(newGradient, 'x1', 'y1', false, scaleToBounds);
         destination = getPoint(newGradient, 'x2', 'y2', false, scaleToBounds, '1');
+        if (origin.x === destination.x && origin.y === destination.y) {
+            // If it's degenerate, use the color of the last stop, as described by
+            // https://www.w3.org/TR/SVG/pservers.html#LinearGradientNotes
+            const stops = newGradient.getElementsByTagName('stop');
+            if (!stops.length || !stops[stops.length - 1].attributes ||
+                    !stops[stops.length - 1].attributes['stop-color']) {
+                return null;
+            }
+            return stops[stops.length - 1].attributes['stop-color'].value;
+        }
     }
 
     // Transform points
@@ -398,13 +408,41 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
         }
         if (focal) focal = Matrix.applyToPoint(boundsMatrix, focal);
     }
-    origin = Matrix.applyToPoint(matrix, origin);
-    if (destination) destination = Matrix.applyToPoint(matrix, destination);
-    if (radius) {
+
+    if (radial) {
+        origin = Matrix.applyToPoint(matrix, origin);
         const matrixScale = _getScaleFactor(matrix);
         radius = _quadraticMean(matrixScale.x, matrixScale.y) * radius;
+        if (focal) focal = Matrix.applyToPoint(matrix, focal);
+    } else {
+        const dot = (a, b) => (a.x * b.x) + (a.y * b.y);
+        const multiply = (coefficient, v) => ({x: coefficient * v.x, y: coefficient * v.y});
+        const add = (a, b) => ({x: a.x + b.x, y: a.y + b.y});
+        const subtract = (a, b) => ({x: a.x - b.x, y: a.y - b.y});
+
+        // The line through origin and gradientPerpendicular is the line at which the gradient starts
+        let gradientPerpendicular = Math.abs(origin.x - destination.x) < 1e-8 ?
+            add(origin, {x: 1, y: (origin.x - destination.x) / (destination.y - origin.y)}) :
+            add(origin, {x: (destination.y - origin.y) / (origin.x - destination.x), y: 1});
+
+        // Transform points
+        gradientPerpendicular = Matrix.applyToPoint(matrix, gradientPerpendicular);
+        origin = Matrix.applyToPoint(matrix, origin);
+        destination = Matrix.applyToPoint(matrix, destination);
+
+        // Calculate the direction that the gradient has changed to
+        const originToPerpendicular = subtract(gradientPerpendicular, origin);
+        const originToDestination = subtract(destination, origin);
+        const gradientDirection = Math.abs(originToPerpendicular.x) < 1e-8 ?
+            {x: 1, y: -originToPerpendicular.x / originToPerpendicular.y} :
+            {x: -originToPerpendicular.y / originToPerpendicular.x, y: 1};
+
+        // Set the destination so that the gradient moves in the correct direction, by projecting the destination vector
+        // onto the gradient direction vector
+        const projectionCoeff = dot(originToDestination, gradientDirection) / dot(gradientDirection, gradientDirection);
+        const projection = multiply(projectionCoeff, gradientDirection);
+        destination = {x: origin.x + projection.x, y: origin.y + projection.y};
     }
-    if (focal) focal = Matrix.applyToPoint(matrix, focal);
 
     // Put values back into svg
     if (radial) {
