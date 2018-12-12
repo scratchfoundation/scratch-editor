@@ -1052,7 +1052,7 @@ class RenderWebGL extends EventEmitter {
         const bounds = drawable.getFastBounds();
         bounds.snapToInt();
 
-        // Use a new bufferInfo since _queryBufferInfo is limited to 480x360
+        // Use a new bufferInfo since this._queryBufferInfo is limited to 480x360
         const attachments = [
             {format: gl.RGBA},
             {format: gl.DEPTH_STENCIL}
