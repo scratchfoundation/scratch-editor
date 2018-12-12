@@ -87,12 +87,18 @@ class SvgRenderer {
             this._svgDom.documentElement.localName !== 'svg') {
             throw new Error('Document does not appear to be SVG.');
         }
+        this._svgTag = this._svgDom.documentElement;
+        if (fromVersion2) {
+            // Fix gradients. Scratch 2 exports no x2 when x2 = 0, but
+            // SVG default is that x2 is 1. This must be done before
+            // transformStrokeWidths since transformStrokeWidths affects
+            // gradients.
+            this._transformGradients();
+        }
         transformStrokeWidths(this._svgTag, window);
         if (fromVersion2) {
             // Transform all text elements.
             this._transformText();
-            // Fix gradients
-            this._transformGradients();
             // Transform measurements.
             this._transformMeasurements();
         } else if (!this._svgTag.getAttribute('viewBox')) {
