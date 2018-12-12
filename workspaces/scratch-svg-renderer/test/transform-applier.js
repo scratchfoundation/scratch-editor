@@ -41,7 +41,7 @@ const trickyBoundsPathBounds = {
 const {window} = new JSDOM();
 const parser = new window.DOMParser();
 const fs = require('fs');
-const OUTPUT_COMPARISON_FILES = false;
+const OUTPUT_COMPARISON_FILES = true;
 let comparisonFileString = '';
 
 const comparisonFileAppend = function (svgString, svgElement, name) {
@@ -648,6 +648,25 @@ test('userSpaceLinearGradientTransform', t => {
     t.equals('45.494', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
     t.equals('15', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
     t.equals('58.761', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+
+    t.end();
+});
+
+test('degenerateLinearGradientTransform', t => {
+    const svgString =
+    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+      `<defs>` +
+        `<linearGradient id="grad_d" x1="50%" x2="50%" y1="50%" y2="50%">` +
+          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+        `</linearGradient>` +
+      `</defs>` +
+      `<path id="path" fill="url(#grad_d)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+          `transform="scale(.75) skewX(-15)"/>` +
+    `</svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
+    comparisonFileAppend(svgString, svgElement, 'linearGradientTransform');
 
     t.end();
 });

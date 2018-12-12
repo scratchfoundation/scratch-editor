@@ -385,7 +385,16 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
     } else {
         origin = getPoint(newGradient, 'x1', 'y1', false, scaleToBounds);
         destination = getPoint(newGradient, 'x2', 'y2', false, scaleToBounds, '1');
-        if (origin.x === destination.x && origin.y === destination.y) return null;
+        if (origin.x === destination.x && origin.y === destination.y) {
+            // If it's degenerate, use the color of the last stop, as described by
+            // https://www.w3.org/TR/SVG/pservers.html#LinearGradientNotes
+            const stops = newGradient.getElementsByTagName('stop');
+            if (!stops.length || !stops[stops.length - 1].attributes ||
+                    !stops[stops.length - 1].attributes['stop-color']) {
+                return null;
+            }
+            return stops[stops.length - 1].attributes['stop-color'].value;
+        }
     }
 
     // Transform points
@@ -406,18 +415,10 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
         radius = _quadraticMean(matrixScale.x, matrixScale.y) * radius;
         if (focal) focal = Matrix.applyToPoint(matrix, focal);
     } else {
-        /* eslint-disable arrow-body-style */ // Doing what this lint rule wants causes syntax errors
         const dot = (a, b) => (a.x * b.x) + (a.y * b.y);
-        const multiply = (coefficient, v) => {
-            return {x: coefficient * v.x, y: coefficient * v.y};
-        };
-        const add = (a, b) => {
-            return {x: a.x + b.x, y: a.y + b.y};
-        };
-        const subtract = (a, b) => {
-            return {x: a.x - b.x, y: a.y - b.y};
-        };
-        /* eslint-enable arrow-body-style */
+        const multiply = (coefficient, v) => ({x: coefficient * v.x, y: coefficient * v.y});
+        const add = (a, b) => ({x: a.x + b.x, y: a.y + b.y});
+        const subtract = (a, b) => ({x: a.x - b.x, y: a.y - b.y});
 
         // The line through origin and gradientPerpendicular is the line at which the gradient starts
         let gradientPerpendicular = Math.abs(origin.x - destination.x) < 1e-8 ?
