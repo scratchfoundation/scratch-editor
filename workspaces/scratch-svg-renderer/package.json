@@ -22,6 +22,7 @@
     "base64-js": "1.2.1",
     "base64-loader": "1.0.0",
     "minilog": "3.1.0",
+    "transformation-matrix": "1.14.1",
     "scratch-render-fonts": "1.0.0-prerelease.20180906193204"
   },
   "devDependencies": {
@@ -32,6 +33,7 @@
     "eslint": "^4.14.0",
     "eslint-config-scratch": "^5.0.0",
     "eslint-plugin-import": "^2.12.0",
+    "jsdom": "^13.0.0",
     "json": "^9.0.6",
     "lodash.defaultsdeep": "4.6.0",
     "mkdirp": "^0.5.1",
