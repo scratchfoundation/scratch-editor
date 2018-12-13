@@ -20,6 +20,8 @@ test('fixupSvgString should make parsing fixtures not throw', t => {
         .toString();
     const fixed = fixupSvgString(svgString);
 
+    // Make sure undefineds aren't being written into the file
+    t.equal(fixed.indexOf('undefined'), -1);
     t.notThrow(() => {
         domParser.parseFromString(fixed, 'text/xml');
     });
