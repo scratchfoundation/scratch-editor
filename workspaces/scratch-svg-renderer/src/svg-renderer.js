@@ -1,6 +1,7 @@
 const inlineSvgFonts = require('./font-inliner');
 const SvgElement = require('./svg-element');
 const convertFonts = require('./font-converter');
+const fixupSvgString = require('./fixup-svg-string');
 const transformStrokeWidths = require('./transform-applier');
 
 /**
@@ -74,14 +75,9 @@ class SvgRenderer {
         // New svg string invalidates the cached image
         this._cachedImage = null;
 
-        // Add root svg namespace if it does not exist.
-        const svgAttrs = svgString.match(/<svg [^>]*>/);
-        if (svgAttrs && svgAttrs[0].indexOf('xmlns=') === -1) {
-            svgString = svgString.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
-        }
-
         // Parse string into SVG XML.
         const parser = new DOMParser();
+        svgString = fixupSvgString(svgString);
         this._svgDom = parser.parseFromString(svgString, 'text/xml');
         if (this._svgDom.childNodes.length < 1 ||
             this._svgDom.documentElement.localName !== 'svg') {
