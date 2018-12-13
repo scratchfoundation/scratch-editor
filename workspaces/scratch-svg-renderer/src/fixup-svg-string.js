@@ -15,7 +15,7 @@ module.exports = function (svgString) {
     // DOMParser from crashing
     if (svgAttrs && svgAttrs[0].indexOf('&ns_') !== -1 && svgString.indexOf('<!DOCTYPE') === -1) {
         svgString = svgString.replace(svgAttrs[0],
-            svgAttrs[0].replace(/&ns_[^;]+;/g), 'http://ns.adobe.com/Extensibility/1.0/');
+            svgAttrs[0].replace(/&ns_[^;]+;/g, 'http://ns.adobe.com/Extensibility/1.0/'));
     }
 
     // The <metadata> element is not needed for rendering and sometimes contains
