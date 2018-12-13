@@ -1052,13 +1052,25 @@ class RenderWebGL extends EventEmitter {
         const bounds = drawable.getFastBounds();
         bounds.snapToInt();
 
-        // Use a new bufferInfo since this._queryBufferInfo is limited to 480x360
+        // Set a reasonable max limit width and height for the bufferInfo bounds
+        const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+        const clampedWidth = Math.min(2048, bounds.width, maxTextureSize);
+        const clampedHeight = Math.min(2048, bounds.height, maxTextureSize);
+
+        // Make a new bufferInfo since this._queryBufferInfo is limited to 480x360
         const attachments = [
             {format: gl.RGBA},
             {format: gl.DEPTH_STENCIL}
         ];
-        const bufferInfo = twgl.createFramebufferInfo(gl, attachments, bounds.width, bounds.height);
-        twgl.bindFramebufferInfo(gl, bufferInfo);
+        const bufferInfo = twgl.createFramebufferInfo(gl, attachments, clampedWidth, clampedHeight);
+
+        // If the new bufferInfo is invalid fall back to using the smaller _queryBufferInfo
+        if (gl.checkFramebufferStatus(bufferInfo.framebuffer) === 0) {
+            // twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+            twgl.bindFramebufferInfo(gl, bufferInfo);
+        } else {
+            twgl.bindFramebufferInfo(gl, bufferInfo);
+        }
 
         // Translate to scratch units relative to the drawable
         const pickX = scratchX - bounds.left;
