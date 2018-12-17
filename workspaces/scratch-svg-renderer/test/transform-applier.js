@@ -767,4 +767,29 @@ test('userSpaceRadialGradientTransform', t => {
     t.end();
 });
 
+test('blackFillsBugFix', t => {
+    const svgString =
+    `<svg width="26px" height="14px" viewBox="0 0 26 14" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <g>
+        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+          <path d="M23.87,0.75 C20.19,0.75 16.38,4.75 16.38,4.75 L16.38,9.25 C16.38,9.25 20.19,13.25 23.87,13.25
+              C24.6811343,11.269062 25.0661499,9.139551 25,7 C25.0661499,4.860449 24.6811343,2.73093802 23.87,0.75 Z"
+              id="Shape" stroke="#149948" stroke-width="0.8"/>
+        </g>
+      </g>
+    </svg>`;
+    const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
+    transformStrokeWidths(svgElement, window,
+        {
+            height: 12.5,
+            width: 24.020904541015625,
+            x: 0.9896308183670044,
+            y: 0.75
+        });
+    comparisonFileAppend(svgString, svgElement, 'blackFillsBugFix');
+    t.equals('none', svgElement.getElementById('Shape').attributes.fill.value);
+
+    t.end();
+});
+
 outputComparisonFile();
