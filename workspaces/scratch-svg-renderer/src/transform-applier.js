@@ -538,6 +538,8 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
             matrix = Matrix.compose(matrix, _parseTransform(element));
             if (Matrix.toString(matrix) === Matrix.toString(Matrix.identity())) {
                 element.removeAttribute('transform');
+                element.setAttribute('stroke-width', strokeWidth);
+                element.setAttribute('fill', fill);
                 return;
             }
 
