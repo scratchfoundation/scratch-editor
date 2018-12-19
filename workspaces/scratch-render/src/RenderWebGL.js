@@ -1065,14 +1065,9 @@ class RenderWebGL extends EventEmitter {
         const bufferInfo = twgl.createFramebufferInfo(gl, attachments, clampedWidth, clampedHeight);
 
         // If the new bufferInfo is invalid, fall back to using the smaller _queryBufferInfo
-        console.log(bufferInfo);
-        if (gl.checkFramebufferStatus(bufferInfo.framebuffer) === 0) {
-            // twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
-            twgl.bindFramebufferInfo(gl, bufferInfo);
-            console.log(bufferInfo);
-        } else {
-            twgl.bindFramebufferInfo(gl, bufferInfo);
-            console.log(bufferInfo);
+        twgl.bindFramebufferInfo(gl, bufferInfo);
+        if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+            twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
         }
 
         // Translate to scratch units relative to the drawable
