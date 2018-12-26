@@ -536,13 +536,15 @@ class Drawable {
     _getTransformedHullPoints () {
         const projection = twgl.m4.ortho(-1, 1, -1, 1, -1, 1);
         const skinSize = this.skin.size;
+        const halfXPixel = 1 / skinSize[0] / 2;
+        const halfYPixel = 1 / skinSize[1] / 2;
         const tm = twgl.m4.multiply(this._uniforms.u_modelMatrix, projection);
         const transformedHullPoints = [];
         for (let i = 0; i < this._convexHullPoints.length; i++) {
             const point = this._convexHullPoints[i];
             const glPoint = twgl.v3.create(
-                0.5 + (-point[0] / skinSize[0]),
-                (point[1] / skinSize[1]) - 0.5,
+                0.5 + (-point[0] / skinSize[0]) - halfXPixel,
+                (point[1] / skinSize[1]) - 0.5 + halfYPixel,
                 0
             );
             twgl.m4.transformPoint(tm, glPoint, glPoint);
