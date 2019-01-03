@@ -426,14 +426,14 @@ class Drawable {
      * Should the drawable use NEAREST NEIGHBOR or LINEAR INTERPOLATION mode
      */
     get useNearest () {
-        // We can't use nearest neighbor unless we are a multiple of 90 rotation
-        if (this._direction % 90 !== 0) {
-            return false;
-        }
-
         // Raster skins (bitmaps) should always prefer nearest neighbor
         if (this.skin.isRaster) {
             return true;
+        }
+
+        // We can't use nearest neighbor unless we are a multiple of 90 rotation
+        if (this._direction % 90 !== 0) {
+            return false;
         }
 
         // If the scale of the skin is very close to 100 (0.99999 variance is okay I guess)
