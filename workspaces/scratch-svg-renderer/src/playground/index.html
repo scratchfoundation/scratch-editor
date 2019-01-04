@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scratch SVG rendering playground</title>
+</head>
+<body>
+    <p>
+        <input type="file" id="svg-file-upload", accept="image/svg+xml">
+    </p>
+    <p>
+        <label for="render-scale">Scale:</label>
+        <input type="range" id="render-scale" value="1" min="0.5" max="2" step="0.1">
+    </p>
+    <p>
+        <input type="button" id="trigger-render" value="Render">
+    </p>
+
+    <canvas id="render-canvas"></canvas>
+
+    <script src="scratch-svg-renderer.js"></script>
+    <script>
+        const renderCanvas = document.getElementById("render-canvas");
+        const fileChooser = document.getElementById("svg-file-upload");
+        const scaleSlider = document.getElementById("render-scale");
+        const renderButton = document.getElementById("trigger-render");
+
+        const renderer = new ScratchSVGRenderer.SVGRenderer(renderCanvas);
+
+        function renderSVGString(str) {
+            renderer.fromString(str);
+            renderer._draw(parseFloat(scaleSlider.value));
+        }
+
+        function readFileAsText(file) {
+            return new Promise((res, rej) => {
+                const reader = new FileReader();
+  
+                reader.onload = function(event) {
+                    res(reader.result);
+                }
+
+                reader.onerror = console.log;
+
+                reader.readAsText(file);
+            })
+            
+        }
+
+        renderButton.addEventListener("click", (event => {
+            readFileAsText(fileChooser.files[0]).then(renderSVGString).catch(console.error);
+        }));
+    </script>
+</body>
+</html>

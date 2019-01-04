@@ -1,8 +1,14 @@
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const defaultsDeep = require('lodash.defaultsdeep');
 const path = require('path');
 
 const base = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+    devServer: {
+        contentBase: false,
+        host: '0.0.0.0',
+        port: process.env.PORT || 8576
+    },
     devtool: 'cheap-module-source-map',
     entry: {
         'scratch-svg-renderer': './src/index.js'
@@ -19,10 +25,27 @@ const base = {
                 presets: [['env', {targets: {}}]]
             }
         }]
-    }
+    },
+    plugins: []
 };
 
-module.exports =
+module.exports = [
+    defaultsDeep({}, base, {
+        target: 'web',
+        output: {
+            library: 'ScratchSVGRenderer',
+            libraryTarget: 'umd',
+            path: path.resolve('playground'),
+            filename: '[name].js'
+        },
+        plugins: base.plugins.concat([
+            new CopyWebpackPlugin([
+                {
+                    from: 'src/playground'
+                }
+            ])
+        ])
+    }),
     defaultsDeep({}, base, {
         output: {
             library: 'ScratchSVGRenderer',
@@ -40,4 +63,5 @@ module.exports =
         optimization: {
             minimize: process.env.NODE_ENV === 'production'
         }
-    });
+    })
+];
