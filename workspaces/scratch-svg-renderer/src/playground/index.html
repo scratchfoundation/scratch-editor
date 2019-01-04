@@ -3,6 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Scratch SVG rendering playground</title>
+    <style>
+        .result {
+            /*border:1px solid lightgray*/
+        }
+        #reference {
+            display:inline-block;
+            font-size:0;
+        }
+        .column {
+            display:inline-block;
+        }
+    </style>
 </head>
 <body>
     <p>
@@ -10,26 +22,53 @@
     </p>
     <p>
         <label for="render-scale">Scale:</label>
-        <input type="range" id="render-scale" value="1" min="0.5" max="2" step="0.1">
+        <input type="range" style="width:50%;" id="render-scale" value="1" min="0.5" max="3" step="any">
+        <label for="render-scale" id="scale-display"></label>
     </p>
     <p>
         <input type="button" id="trigger-render" value="Render">
     </p>
 
-    <canvas id="render-canvas"></canvas>
+    <div class="columns">
+        <div class="column">
+            <div>Rendered Result</div>
+            <canvas id="render-canvas" class="result"></canvas>
+       </div>
+       <div class="column">
+            <div>Reference</div>
+            <span id="reference"></span>
+       </div>
+     </div>
+    
 
     <script src="scratch-svg-renderer.js"></script>
     <script>
         const renderCanvas = document.getElementById("render-canvas");
+        const referenceImage = document.getElementById("reference");
         const fileChooser = document.getElementById("svg-file-upload");
         const scaleSlider = document.getElementById("render-scale");
+        const scaleDisplay = document.getElementById("scale-display");
         const renderButton = document.getElementById("trigger-render");
 
         const renderer = new ScratchSVGRenderer.SVGRenderer(renderCanvas);
 
+        let loadedSVGString = "";
+
+        if (fileChooser.value) {
+            loadSVGString();
+        }
+
         function renderSVGString(str) {
             renderer.fromString(str);
             renderer._draw(parseFloat(scaleSlider.value));
+        }
+
+        function updateReferenceImage() {
+            referenceImage.innerHTML = loadedSVGString;
+            scalePercent = (parseFloat(scaleSlider.value) * 100) + "%"
+            referenceSVG = referenceImage.children[0];
+            referenceSVG.style.width = referenceSVG.style.height = scalePercent;
+            referenceSVG.classList.add("result");
         }
 
         function readFileAsText(file) {
@@ -47,8 +86,29 @@
             
         }
 
+        function loadSVGString() {
+            readFileAsText(fileChooser.files[0]).then(str => {
+                loadedSVGString = str;
+            })
+        }
+
+        function renderLoadedString() {
+            renderSVGString(loadedSVGString);
+            updateReferenceImage();
+        }
+
+        function scaleSliderChanged() {
+            renderLoadedString();
+            scaleDisplay.innerText = scaleSlider.value;
+        }
+
+        fileChooser.addEventListener("change", loadSVGString);
+
+        scaleSlider.addEventListener("change", scaleSliderChanged);
+        scaleSlider.addEventListener("input", scaleSliderChanged);
+
         renderButton.addEventListener("click", (event => {
-            readFileAsText(fileChooser.files[0]).then(renderSVGString).catch(console.error);
+            renderLoadedString();
         }));
     </script>
 </body>
