@@ -81,15 +81,18 @@ class SVGSkin extends Skin {
                 gl.bindTexture(gl.TEXTURE_2D, this._texture);
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._svgRenderer.canvas);
                 error = gl.getError();
+                if (error && newScale > 1) {
+                    newScale /= 2;
+                    this._textureScale = newScale;
+                    this._maxTextureScale = newScale;
+                    this._svgRenderer._draw(this._textureScale, callback);
+                }
             }
         };
-        do {
-            if (this._textureScale !== newScale) {
-                this._textureScale = newScale;
-                this._svgRenderer._draw(this._textureScale, callback);
-            }
-            newScale /= 2;
-        } while (error && newScale > 1);
+        if (this._textureScale !== newScale) {
+            this._textureScale = newScale;
+            this._svgRenderer._draw(this._textureScale, callback);
+        }
 
         return this._texture;
     }
