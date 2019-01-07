@@ -931,7 +931,11 @@ class RenderWebGL extends EventEmitter {
         const worldPos = twgl.v3.create();
 
         drawable.updateMatrix();
-        drawable.skin.updateSilhouette();
+        if (drawable.skin) {
+            drawable.skin.updateSilhouette();
+        } else {
+            log.warn(`Could not find skin for drawable with id: ${drawableID}`);
+        }
 
         for (worldPos[1] = bounds.bottom; worldPos[1] <= bounds.top; worldPos[1]++) {
             for (worldPos[0] = bounds.left; worldPos[0] <= bounds.right; worldPos[0]++) {
@@ -963,7 +967,11 @@ class RenderWebGL extends EventEmitter {
             // default pick list ignores visible and ghosted sprites.
             if (drawable.getVisible() && drawable.getUniforms().u_ghost !== 0) {
                 drawable.updateMatrix();
-                drawable.skin.updateSilhouette();
+                if (drawable.skin) {
+                    drawable.skin.updateSilhouette();
+                } else {
+                    log.warn(`Could not find skin for drawable with id: ${id}`);
+                }
                 return true;
             }
             return false;
