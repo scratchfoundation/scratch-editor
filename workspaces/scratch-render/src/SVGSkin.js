@@ -3,7 +3,7 @@ const twgl = require('twgl.js');
 const Skin = require('./Skin');
 const SvgRenderer = require('scratch-svg-renderer').SVGRenderer;
 
-const MAX_TEXTURE_DIMENSION = 10240;
+const MAX_TEXTURE_DIMENSION = 2048;
 
 class SVGSkin extends Skin {
     /**
@@ -68,30 +68,20 @@ class SVGSkin extends Skin {
     getTexture (scale) {
         // The texture only ever gets uniform scale. Take the larger of the two axes.
         const scaleMax = scale ? Math.max(Math.abs(scale[0]), Math.abs(scale[1])) : 100;
-        const requestedScale = scaleMax / 100;
+        const requestedScale = Math.min(scaleMax / 100, this._maxTextureScale);
         let newScale = this._textureScale;
         while ((newScale < this._maxTextureScale) && (requestedScale >= 1.5 * newScale)) {
             newScale *= 2;
         }
-
-        let error;
-        const callback = () => {
-            if (this._textureScale === newScale) {
-                const gl = this._renderer.gl;
-                gl.bindTexture(gl.TEXTURE_2D, this._texture);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._svgRenderer.canvas);
-                error = gl.getError();
-                if (error && newScale > 1) {
-                    newScale /= 2;
-                    this._textureScale = newScale;
-                    this._maxTextureScale = newScale;
-                    this._svgRenderer._draw(this._textureScale, callback);
-                }
-            }
-        };
         if (this._textureScale !== newScale) {
             this._textureScale = newScale;
-            this._svgRenderer._draw(this._textureScale, callback);
+            this._svgRenderer._draw(this._textureScale, () => {
+                if (this._textureScale === newScale) {
+                    const gl = this._renderer.gl;
+                    gl.bindTexture(gl.TEXTURE_2D, this._texture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._svgRenderer.canvas);
+                }
+            });
         }
 
         return this._texture;
