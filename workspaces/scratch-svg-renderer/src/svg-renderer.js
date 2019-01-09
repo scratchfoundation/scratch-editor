@@ -327,13 +327,11 @@ class SvgRenderer {
      * @returns {string} String representing current SVG data.
      */
     toString (shouldInjectFonts) {
-        let svgDom = this._svgDom;
-        if (shouldInjectFonts) {
-            svgDom = this._svgDom.cloneNode(true /* deep */);
-            inlineSvgFonts(svgDom.documentElement);
-        }
         const serializer = new XMLSerializer();
-        const string = serializer.serializeToString(svgDom);
+        let string = serializer.serializeToString(this._svgDom);
+        if (shouldInjectFonts) {
+            string = inlineSvgFonts(string);
+        }
         return string;
     }
 

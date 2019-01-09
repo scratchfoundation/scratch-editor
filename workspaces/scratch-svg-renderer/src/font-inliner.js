@@ -1,4 +1,3 @@
-const SvgElement = require('./svg-element');
 /**
  * @fileOverview Import bitmap data into Scratch 3.0, resizing image as necessary.
  */
@@ -15,30 +14,30 @@ const {FONTS} = require('scratch-render-fonts');
  *   // External stylesheet linked to by SVG: no effect.
  *   // Using a <link> or <style>@import</style> to link to font-family
  *   // injected into the document: no effect.
- * @param {SVGElement} svgTag The SVG dom object
- * @return {void}
+ * @param {string} svgString The string representation of the svg to modify
+ * @return {string} The svg with any needed fonts inlined
  */
-const inlineSvgFonts = function (svgTag) {
+const inlineSvgFonts = function (svgString) {
     // Collect fonts that need injection.
     const fontsNeeded = new Set();
-    const collectFonts = function collectFonts (domElement) {
-        if (domElement.getAttribute && domElement.getAttribute('font-family')) {
-            fontsNeeded.add(domElement.getAttribute('font-family'));
-        }
-        for (let i = 0; i < domElement.childNodes.length; i++) {
-            collectFonts(domElement.childNodes[i]);
-        }
-    };
-    collectFonts(svgTag);
-    const newDefs = SvgElement.create('defs');
-    const newStyle = SvgElement.create('style');
-    for (const font of fontsNeeded) {
-        if (FONTS.hasOwnProperty(font)) {
-            newStyle.textContent += FONTS[font];
-        }
+    const fontRegex = /font-family="([^"]*)"/g;
+    let matches = fontRegex.exec(svgString);
+    while (matches) {
+        fontsNeeded.add(matches[1]);
+        matches = fontRegex.exec(svgString);
     }
-    newDefs.appendChild(newStyle);
-    svgTag.insertBefore(newDefs, svgTag.childNodes[0]);
+    if (fontsNeeded.size > 0) {
+        let str = '<defs><style>';
+        for (const font of fontsNeeded) {
+            if (FONTS.hasOwnProperty(font)) {
+                str += `${FONTS[font]}`;
+            }
+        }
+        str += '</style></defs>';
+        svgString = svgString.replace(/<svg[^>]*>/, `$&${str}`);
+        return svgString;
+    }
+    return svgString;
 };
 
 module.exports = inlineSvgFonts;
