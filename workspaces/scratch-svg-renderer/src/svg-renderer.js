@@ -307,7 +307,14 @@ class SvgRenderer {
         // Enlarge the bbox from the largest found stroke width
         // This may have false-positives, but at least the bbox will always
         // contain the full graphic including strokes.
-        const halfStrokeWidth = this._findLargestStrokeWidth(this._svgTag) / 2;
+        // If the width or height is zero however, don't enlarge since
+        // they won't have a stroke width that needs to be enlarged.
+        let halfStrokeWidth;
+        if (bbox.width === 0 || bbox.height === 0) {
+            halfStrokeWidth = 0;
+        } else {
+            halfStrokeWidth = this._findLargestStrokeWidth(this._svgTag) / 2;
+        }
         const width = bbox.width + (halfStrokeWidth * 2);
         const height = bbox.height + (halfStrokeWidth * 2);
         const x = bbox.x - halfStrokeWidth;
