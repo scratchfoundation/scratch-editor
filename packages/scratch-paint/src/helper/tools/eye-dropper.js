@@ -32,6 +32,7 @@ class EyeDropperTool extends paper.Tool {
         };
 
         this.onMouseDown = this.handleMouseDown;
+        this.onMouseUp = this.handleMouseUp;
         this.onMouseMove = this.handleMouseMove;
 
         this.canvas = canvas;
@@ -58,7 +59,13 @@ class EyeDropperTool extends paper.Tool {
             this.pickY > this.height ||
             this.pickY < 0;
     }
-    handleMouseDown () {
+    handleMouseDown (event) {
+        // Nothing special on mousedown, just send to move handler which will show the loupe,
+        // and the mouse up handler submits the color. This allows touch to drag
+        // with the loupe visible to find the correct color
+        this.handleMouseMove(event);
+    }
+    handleMouseUp () {
         if (!this.hideLoupe) {
             const colorInfo = this.getColorInfo(this.pickX, this.pickY, this.hideLoupe);
             if (!colorInfo) return;
