@@ -101,6 +101,7 @@ class SVGSkin extends Skin {
             if (this._texture) {
                 gl.bindTexture(gl.TEXTURE_2D, this._texture);
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._svgRenderer.canvas);
+                this._silhouette.update(this._svgRenderer.canvas);
             } else {
                 // TODO: mipmaps?
                 const textureOptions = {
@@ -110,8 +111,8 @@ class SVGSkin extends Skin {
                 };
 
                 this._texture = twgl.createTexture(gl, textureOptions);
+                this._silhouette.update(this._svgRenderer.canvas);
             }
-            this._silhouetteDirty = true;
 
             const maxDimension = Math.max(this._svgRenderer.canvas.width, this._svgRenderer.canvas.height);
             let testScale = 2;
@@ -125,12 +126,6 @@ class SVGSkin extends Skin {
         });
     }
 
-    updateSilhouette () {
-        if (this._silhouetteDirty) {
-            this._silhouette.update(this._svgRenderer.canvas);
-            this._silhouetteDirty = false;
-        }
-    }
 }
 
 module.exports = SVGSkin;
