@@ -45,13 +45,13 @@ uniform sampler2D u_skin;
 
 varying vec2 v_texCoord;
 
-#if !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color) || defined(ENABLE_brightness))
+#if !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color))
 // Branchless color conversions based on code from:
 // http://www.chilliant.com/rgb2hsv.html by Ian Taylor
 // Based in part on work by Sam Hocevar and Emil Persson
 // See also: https://en.wikipedia.org/wiki/HSL_and_HSV#Formal_derivation
 
-// Smaller values can cause problems with "color" and "brightness" effects on some mobile devices
+// Smaller values can cause problems on some mobile devices
 const float epsilon = 1e-3;
 
 // Convert an RGB color to Hue, Saturation, and Value.
@@ -103,7 +103,7 @@ vec3 convertHSV2RGB(vec3 hsv)
 	float c = hsv.z * hsv.y;
 	return rgb * c + hsv.z - c;
 }
-#endif // !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color) || defined(ENABLE_brightness))
+#endif // !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color))
 
 const vec2 kCenter = vec2(0.5, 0.5);
 
@@ -164,31 +164,27 @@ void main()
 	gl_FragColor = u_silhouetteColor;
 	#else // DRAW_MODE_silhouette
 
-	#if defined(ENABLE_color) || defined(ENABLE_brightness)
+	#if defined(ENABLE_color)
 	{
 		vec3 hsv = convertRGB2HSV(gl_FragColor.xyz);
 
-		#ifdef ENABLE_color
-		{
-			// this code forces grayscale values to be slightly saturated
-			// so that some slight change of hue will be visible
-			const float minLightness = 0.11 / 2.0;
-			const float minSaturation = 0.09;
-			if (hsv.z < minLightness) hsv = vec3(0.0, 1.0, minLightness);
-			else if (hsv.y < minSaturation) hsv = vec3(0.0, minSaturation, hsv.z);
+		// this code forces grayscale values to be slightly saturated
+		// so that some slight change of hue will be visible
+		const float minLightness = 0.11 / 2.0;
+		const float minSaturation = 0.09;
+		if (hsv.z < minLightness) hsv = vec3(0.0, 1.0, minLightness);
+		else if (hsv.y < minSaturation) hsv = vec3(0.0, minSaturation, hsv.z);
 
-			hsv.x = mod(hsv.x + u_color, 1.0);
-			if (hsv.x < 0.0) hsv.x += 1.0;
-		}
-		#endif // ENABLE_color
-
-		#ifdef ENABLE_brightness
-		hsv.z = clamp(hsv.z + u_brightness, 0.0, 1.0);
-		#endif // ENABLE_brightness
+		hsv.x = mod(hsv.x + u_color, 1.0);
+		if (hsv.x < 0.0) hsv.x += 1.0;
 
 		gl_FragColor.rgb = convertHSV2RGB(hsv);
 	}
-	#endif // defined(ENABLE_color) || defined(ENABLE_brightness)
+	#endif // defined(ENABLE_color)
+
+	#if defined(ENABLE_brightness)
+	gl_FragColor.rgb = clamp(gl_FragColor.rgb + vec3(u_brightness), vec3(0), vec3(1));
+	#endif // defined(ENABLE_brightness)
 
 	#ifdef DRAW_MODE_colorMask
 	vec3 maskDistance = abs(gl_FragColor.rgb - u_colorMask);
