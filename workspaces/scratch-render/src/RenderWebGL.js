@@ -1301,14 +1301,15 @@ class RenderWebGL extends EventEmitter {
         const dy = y - drawable._position[1];
 
         const aabb = drawable.getFastBounds();
+        const inset = Math.floor(Math.min(aabb.width, aabb.height) / 2);
 
-        const sx = this._xRight - Math.min(FENCE_WIDTH, Math.floor((aabb.right - aabb.left) / 2));
+        const sx = this._xRight - Math.min(FENCE_WIDTH, inset);
         if (aabb.right + dx < -sx) {
             x = drawable._position[0] - (sx + aabb.right);
         } else if (aabb.left + dx > sx) {
             x = drawable._position[0] + (sx - aabb.left);
         }
-        const sy = this._yTop - Math.min(FENCE_WIDTH, Math.floor((aabb.top - aabb.bottom) / 2));
+        const sy = this._yTop - Math.min(FENCE_WIDTH, inset);
         if (aabb.top + dy < -sy) {
             y = drawable._position[1] - (sy + aabb.top);
         } else if (aabb.bottom + dy > sy) {
