@@ -114,7 +114,7 @@ const testBubbles = () => test('bubble snapshot', async t => {
 // immediately invoked async function to let us wait for each test to finish before starting the next.
 (async () => {
     const files = fs.readdirSync(testDir())
-        .filter(uri => uri.endsWith('.sb2') || uri.endsWidth('.sb3'));
+        .filter(uri => uri.endsWith('.sb2') || uri.endsWith('.sb3'));
 
     for (const file of files) {
         await testFile(file);
