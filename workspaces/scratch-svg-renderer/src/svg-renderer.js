@@ -92,6 +92,7 @@ class SvgRenderer {
             this._transformGradients();
         }
         transformStrokeWidths(this._svgTag, window);
+        this._transformImages(this._svgTag);
         if (fromVersion2) {
             // Transform all text elements.
             this._transformText();
@@ -209,25 +210,51 @@ class SvgRenderer {
     }
 
     /**
-     * Fix SVGs to comply with SVG spec. Scratch 2 defaults to x2 = 0 when x2 is missing, but
-     * SVG defaults to x2 = 1 when missing.
+     * @param {string} tagName svg tag to search for
+     * @return {Array} a list of elements with the given tagname in _svgTag
      */
-    _transformGradients () {
-        // Collect all gradient elements into a list.
-        const linearGradientElements = [];
+    _collectElements (tagName) {
+        const elts = [];
         const collectElements = domElement => {
-            if (domElement.localName === 'linearGradient') {
-                linearGradientElements.push(domElement);
+            if (domElement.localName === tagName) {
+                elts.push(domElement);
             }
             for (let i = 0; i < domElement.childNodes.length; i++) {
                 collectElements(domElement.childNodes[i]);
             }
         };
         collectElements(this._svgTag);
+        return elts;
+    }
+
+    /**
+     * Fix SVGs to comply with SVG spec. Scratch 2 defaults to x2 = 0 when x2 is missing, but
+     * SVG defaults to x2 = 1 when missing.
+     */
+    _transformGradients () {
+        const linearGradientElements = this._collectElements('linearGradient');
+
         // For each gradient element, supply x2 if necessary.
         for (const gradientElement of linearGradientElements) {
             if (!gradientElement.getAttribute('x2')) {
                 gradientElement.setAttribute('x2', '0');
+            }
+        }
+    }
+
+    /**
+     * Fix SVGs to match appearance in Scratch 2, which used nearest neighbor scaling for bitmaps
+     * within SVGs.
+     */
+    _transformImages () {
+        const imageElements = this._collectElements('image');
+
+        // For each image element, set image rendering to pixelated"
+        for (const elt of imageElements) {
+            if (elt.getAttribute('style')) {
+                elt.setAttribute('style', `image-rendering: pixelated; ${elt.getAttribute('style')}`);
+            } else {
+                elt.setAttribute('style', 'image-rendering: pixelated;');
             }
         }
     }
