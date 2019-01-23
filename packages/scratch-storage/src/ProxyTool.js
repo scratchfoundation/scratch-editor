@@ -49,6 +49,36 @@ class ProxyTool {
         };
         return nextTool();
     }
+
+    /**
+     * Is sending supported? false if all proxied tool return false.
+     * @returns {boolean} Is sending supported?
+     */
+    get sendSupported () {
+        return this.tools.some(tool => tool.sendSupported);
+    }
+
+    /**
+     * Send data to a server with one of the proxied tools.
+     * @param {{url:string}} reqConfig - Request configuration for data to send.
+     * @param {*} data - Data to send.
+     * @param {string} method - HTTP method to sending the data as.
+     * @returns {Promise.<Buffer|string|object>} Server returned metadata.
+     */
+    send (reqConfig, data, method) {
+        let toolIndex = 0;
+        const nextTool = err => {
+            const tool = this.tools[toolIndex++];
+            if (!tool.sendSupported) {
+                return nextTool(err);
+            }
+            if (!tool) {
+                throw err;
+            }
+            return tool.send(reqConfig, data, method).catch(nextTool);
+        };
+        return nextTool();
+    }
 }
 
 /**

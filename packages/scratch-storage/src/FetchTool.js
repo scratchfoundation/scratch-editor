@@ -23,6 +23,30 @@ class FetchTool {
             .then(result => result.arrayBuffer())
             .then(body => new Uint8Array(body));
     }
+
+    /**
+     * Is sending supported? false if the environment does not support sending
+     * with fetch.
+     * @returns {boolean} Is sending supported?
+     */
+    get sendSupported () {
+        return typeof fetch !== 'undefined';
+    }
+
+    /**
+     * Send data to a server with fetch.
+     * @param {{url:string}} reqConfig - Request configuration for data to send.
+     * @param {*} data - Data to send.
+     * @param {string} method - HTTP method to sending the data as.
+     * @returns {Promise.<string>} Server returned metadata.
+     */
+    send ({url}, data, method) {
+        return fetch(url, {
+            method,
+            body: data
+        })
+            .then(result => result.text());
+    }
 }
 
 module.exports = FetchTool;

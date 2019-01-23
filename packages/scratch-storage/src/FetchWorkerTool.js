@@ -158,6 +158,22 @@ class PublicFetchWorkerTool {
     get (reqConfig, options) {
         return this.inner.get(reqConfig, options);
     }
+
+    /**
+     * Is sending supported?
+     * @returns {boolean} Is sending supported?
+     */
+    get sendSupported () {
+        return false;
+    }
+
+    /**
+     * Send data to a server with a worker that uses fetch.
+     * @throws {Error} A not implemented error.
+     */
+    send () {
+        throw new Error('Not implemented.');
+    }
 }
 
 module.exports = PublicFetchWorkerTool;
