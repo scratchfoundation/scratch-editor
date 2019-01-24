@@ -254,7 +254,7 @@ class SvgRenderer {
         for (const elt of imageElements) {
             if (elt.getAttribute('style')) {
                 elt.setAttribute('style',
-                    `image-rendering: optimizespeed; image-rendering: pixelated; ${elt.getAttribute('style')}`);
+                    `${pixelatedImages} ${elt.getAttribute('style')}`);
             } else {
                 elt.setAttribute('style', 'image-rendering: optimizespeed; image-rendering: pixelated;');
             }
