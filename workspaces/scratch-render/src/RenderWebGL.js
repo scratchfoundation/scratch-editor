@@ -1038,7 +1038,6 @@ class RenderWebGL extends EventEmitter {
      * @return {?DrawableExtraction} Data about the picked drawable
      */
     extractDrawable (drawableID, x, y) {
-        // console.log('here');
         this._doExitDrawRegion();
 
         const drawable = this._allDrawables[drawableID];
