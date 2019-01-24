@@ -256,7 +256,7 @@ class SvgRenderer {
                 elt.setAttribute('style',
                     `${pixelatedImages} ${elt.getAttribute('style')}`);
             } else {
-                elt.setAttribute('style', 'image-rendering: optimizespeed; image-rendering: pixelated;');
+                elt.setAttribute('style', pixelatedImages);
             }
         }
     }
