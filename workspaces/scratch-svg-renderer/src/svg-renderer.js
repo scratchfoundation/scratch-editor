@@ -250,6 +250,7 @@ class SvgRenderer {
         const imageElements = this._collectElements('image');
 
         // For each image element, set image rendering to pixelated"
+        const pixelatedImages = 'image-rendering: optimizespeed; image-rendering: pixelated;';
         for (const elt of imageElements) {
             if (elt.getAttribute('style')) {
                 elt.setAttribute('style',
