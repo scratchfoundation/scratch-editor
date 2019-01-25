@@ -39,10 +39,9 @@ module.exports = [
     Object.assign({}, base, {
         target: 'web',
         entry: {
-            'scratch-render': './src/index.js'
+            playground: './src/playground/playground.js'
         },
         output: {
-            library: 'ScratchRender',
             libraryTarget: 'umd',
             path: path.resolve('playground'),
             filename: '[name].js'
@@ -50,7 +49,8 @@ module.exports = [
         plugins: base.plugins.concat([
             new CopyWebpackPlugin([
                 {
-                    from: 'src/playground'
+                    context: 'src/playground',
+                    from: '*.html'
                 }
             ])
         ])
