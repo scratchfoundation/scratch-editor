@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scratch WebGL Query Playground</title>
+    <style>
+        input[type=range][orient=vertical] {
+            writing-mode: bt-lr; /* IE */
+            -webkit-appearance: slider-vertical;
+            width: 1rem;
+            padding: 0 0.5rem;
+        }
+    </style>
+</head>
+<body style="background: lightsteelblue">
+    <div>
+        <fieldset>
+            <legend>Query Canvas</legend>
+            <div>Touching white? <span id="touchingWhite">maybe</span></div>
+            <div>Touching black? <span id="touchingBlack">maybe</span></div>
+            <canvas id="queryCanvas" width="480" height="360" style="border:3px dashed black"></canvas>
+        </fieldset>
+        <fieldset>
+            <legend>Render Canvas</legend>
+            <div>Cursor Position: <span id="cursorPosition">somewhere</span></div>
+            <table>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input id="cursorX" type="range" step="0.25" value="0" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input id="cursorY" type="range" orient="vertical" step="0.25" value="0" />
+                    </td>
+                    <td>
+                        <canvas id="renderCanvas" width="480" height="360" style="border:3px dashed black"></canvas>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+</body>
+<script src="queryPlayground.js"></script>
+</html>
