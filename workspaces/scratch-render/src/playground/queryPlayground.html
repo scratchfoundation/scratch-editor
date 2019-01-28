@@ -10,15 +10,35 @@
             width: 1rem;
             padding: 0 0.5rem;
         }
+        canvas {
+            border: 3px dashed black;
+        }
     </style>
 </head>
 <body style="background: lightsteelblue">
     <div>
         <fieldset>
-            <legend>Query Canvas</legend>
-            <div>Touching white? <span id="touchingWhite">maybe</span></div>
-            <div>Touching black? <span id="touchingBlack">maybe</span></div>
-            <canvas id="queryCanvas" width="480" height="360" style="border:3px dashed black"></canvas>
+            <legend>Query Canvases</legend>
+            <table>
+                <tr>
+                    <td>
+                        <fieldset>
+                            <legend>GPU</legend>
+                            <div>Touching color A? <span id="gpuTouchingA">maybe</span></div>
+                            <div>Touching color B? <span id="gpuTouchingB">maybe</span></div>
+                            <canvas id="gpuQueryCanvas" width="480" height="360" style="height: 20rem"></canvas>
+                        </fieldset>
+                    </td>
+                    <td>
+                        <fieldset>
+                            <legend>CPU</legend>
+                            <div>Touching color A? <span id="cpuTouchingA">maybe</span></div>
+                            <div>Touching color B? <span id="cpuTouchingB">maybe</span></div>
+                            <canvas id="cpuQueryCanvas" width="480" height="360" style="height: 20rem"></canvas>
+                        </fieldset>
+                    </td>
+                </tr>
+            </table>
         </fieldset>
         <fieldset>
             <legend>Render Canvas</legend>

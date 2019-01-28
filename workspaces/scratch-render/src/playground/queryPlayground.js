@@ -1,9 +1,27 @@
+const ScratchRender = require('../RenderWebGL');
 const getMousePosition = require('./getMousePosition');
 
 const renderCanvas = document.getElementById('renderCanvas');
+const gpuQueryCanvas = document.getElementById('gpuQueryCanvas');
+const cpuQueryCanvas = document.getElementById('cpuQueryCanvas');
 const inputCursorX = document.getElementById('cursorX');
 const inputCursorY = document.getElementById('cursorY');
 const labelCursorPosition = document.getElementById('cursorPosition');
+const labelGpuTouchingA = document.getElementById('gpuTouchingA');
+const labelGpuTouchingB = document.getElementById('gpuTouchingB');
+const labelCpuTouchingA = document.getElementById('cpuTouchingA');
+const labelCpuTouchingB = document.getElementById('cpuTouchingB');
+
+const drawables = {
+    testPattern: -1,
+    cursor: -1
+};
+
+const colors = {
+    cursor: [255, 0, 0],
+    patternA: [0, 255, 0],
+    patternB: [0, 0, 255]
+};
 
 const handleResizeRenderCanvas = () => {
     const halfWidth = renderCanvas.clientWidth / 2;
@@ -24,6 +42,28 @@ const handleCursorPositionChanged = () => {
     const cursorY = inputCursorY.valueAsNumber;
     const positionHTML = `${cursorX}, ${cursorY}`;
     labelCursorPosition.innerHTML = positionHTML;
+    if (drawables.cursor >= 0) {
+        renderer.draw();
+        renderer.updateDrawableProperties(drawables.cursor, {
+            position: [cursorX, cursorY]
+        });
+
+        renderer.setForceGPU(true);
+        renderer.setDebugCanvas(gpuQueryCanvas);
+        const isGpuTouchingA = renderer.isTouchingColor(drawables.cursor, colors.patternA);
+        const isGpuTouchingB = renderer.isTouchingColor(drawables.cursor, colors.patternB);
+        labelGpuTouchingA.innerHTML = isGpuTouchingA ? 'yes' : 'no';
+        labelGpuTouchingB.innerHTML = isGpuTouchingB ? 'yes' : 'no';
+
+        renderer.setForceGPU(false);
+        renderer.setDebugCanvas(cpuQueryCanvas);
+        const isCpuTouchingA = renderer.isTouchingColor(drawables.cursor, colors.patternA);
+        const isCpuTouchingB = renderer.isTouchingColor(drawables.cursor, colors.patternB);
+        labelCpuTouchingA.innerHTML = isCpuTouchingA ? 'yes' : 'no';
+        labelCpuTouchingB.innerHTML = isCpuTouchingB ? 'yes' : 'no';
+
+        renderer.clearForceGPU();
+    }
 };
 inputCursorX.addEventListener('change', handleCursorPositionChanged);
 inputCursorY.addEventListener('change', handleCursorPositionChanged);
@@ -48,3 +88,97 @@ const handleMouseMove = event => {
     }
 };
 renderCanvas.addEventListener('mousemove', handleMouseMove);
+
+const rgb2fillStyle = (rgb) => {
+    return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+};
+
+const makeCursorImage = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 1;
+
+    const context = canvas.getContext('2d');
+    context.fillStyle = rgb2fillStyle(colors.cursor);
+    context.fillRect(0, 0, 1, 1);
+
+    return canvas;
+};
+
+const makeTestPatternImage = () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 480;
+    canvas.height = 360;
+
+    const patternA = rgb2fillStyle(colors.patternA);
+    const patternB = rgb2fillStyle(colors.patternB);
+
+    const context = canvas.getContext('2d');
+    context.fillStyle = patternA;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    context.fillStyle = patternB;
+    const xSplit1 = Math.floor(canvas.width * 0.25);
+    const xSplit2 = Math.floor(canvas.width * 0.5);
+    const xSplit3 = Math.floor(canvas.width * 0.75);
+    const ySplit = Math.floor(canvas.height * 0.5);
+    for (let y = 0; y < ySplit; y += 2) {
+        context.fillRect(0, y, xSplit2, 1);
+    }
+    for (let x = xSplit2; x < canvas.width; x += 2) {
+        context.fillRect(x, 0, 1, ySplit);
+    }
+    for (let x = 0; x < xSplit1; x += 2) {
+        for (let y = ySplit; y < canvas.height; y += 2) {
+            context.fillRect(x, y, 1, 1);
+        }
+    }
+    for (let x = xSplit1; x < xSplit2; x += 3) {
+        for (let y = ySplit; y < canvas.height; y += 3) {
+            context.fillRect(x, y, 2, 2);
+        }
+    }
+    for (let x = xSplit2; x < xSplit3; ++x) {
+        for (let y = ySplit; y < canvas.height; ++y) {
+            context.fillStyle = (x + y) % 2 ? patternA : patternB;
+            context.fillRect(x, y, 1, 1);
+        }
+    }
+    for (let x = xSplit3; x < canvas.width; x += 2) {
+        for (let y = ySplit; y < canvas.height; y += 2) {
+            context.fillStyle = (x + y) % 4 ? patternA : patternB;
+            context.fillRect(x, y, 2, 2);
+        }
+    }
+
+    return canvas;
+};
+
+const makeBitmapDrawable = function (renderer, group, image) {
+    const skinId = renderer.createBitmapSkin(image, 1);
+    const drawableId = renderer.createDrawable(group);
+    renderer.updateDrawableProperties(drawableId, {skinId});
+    return drawableId;
+};
+
+const initRendering = () => {
+    const renderer = new ScratchRender(renderCanvas);
+
+    const layerGroup = {
+        testPattern: 'testPattern',
+        cursor: 'cursor'
+    };
+    renderer.setLayerGroupOrdering([layerGroup.testPattern, layerGroup.cursor]);
+
+    const images = {
+        testPattern: makeTestPatternImage(),
+        cursor: makeCursorImage()
+    };
+
+    drawables.testPattern = makeBitmapDrawable(renderer, layerGroup.testPattern, images.testPattern);
+    drawables.cursor = makeBitmapDrawable(renderer, layerGroup.cursor, images.cursor);
+
+    return renderer;
+};
+
+const renderer = initRendering();
+renderer.draw();

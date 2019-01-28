@@ -244,6 +244,21 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Force "touching color" operations to use (or not use) the GPU. By default the renderer will decide.
+     * @param {boolean} forceGPU - true to force the renderer to use the GPU, false to force CPU.
+     */
+    setForceGPU (forceGPU) {
+        this._forceGPU = !!forceGPU;
+    }
+
+    /**
+     * Clear any value set by `setForceGPU`, allowing the renderer to decide.
+     */
+    clearForceGPU () {
+        this._forceGPU = null;
+    }
+
+    /**
      * Set logical size of the stage in Scratch units.
      * @param {int} xLeft The left edge's x-coordinate. Scratch 2 uses -240.
      * @param {int} xRight The right edge's x-coordinate. Scratch 2 uses 240.
@@ -717,9 +732,12 @@ class RenderWebGL extends EventEmitter {
 
         const bounds = this._candidatesBounds(candidates);
 
-        // if there are just too many pixels to CPU render efficently, we
-        // need to let readPixels happen
-        if (bounds.width * bounds.height * (candidates.length + 1) >= __cpuTouchingColorPixelCount) {
+        const maxPixelsForCPU = (typeof this._forceGPU === 'boolean') ?
+            (this._forceGPU ? 0 : Infinity) :
+            __cpuTouchingColorPixelCount;
+
+        // if there are just too many pixels to CPU render efficiently, we need to let readPixels happen
+        if (bounds.width * bounds.height * (candidates.length + 1) >= maxPixelsForCPU) {
             this._isTouchingColorGpuStart(drawableID, candidates.map(({id}) => id).reverse(), bounds, color3b, mask3b);
         }
 
@@ -729,7 +747,7 @@ class RenderWebGL extends EventEmitter {
         const hasMask = Boolean(mask3b);
 
         for (let y = bounds.bottom; y <= bounds.top; y++) {
-            if (bounds.width * (y - bounds.bottom) * (candidates.length + 1) >= __cpuTouchingColorPixelCount) {
+            if (bounds.width * (y - bounds.bottom) * (candidates.length + 1) >= maxPixelsForCPU) {
                 return this._isTouchingColorGpuFin(bounds, color3b, y - bounds.bottom);
             }
             // Scratch Space - +y is top
