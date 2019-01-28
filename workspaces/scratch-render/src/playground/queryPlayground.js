@@ -23,6 +23,8 @@ const colors = {
     patternB: [0, 0, 255]
 };
 
+const renderer = new ScratchRender(renderCanvas);
+
 const handleResizeRenderCanvas = () => {
     const halfWidth = renderCanvas.clientWidth / 2;
     const halfHeight = renderCanvas.clientHeight / 2;
@@ -72,13 +74,6 @@ inputCursorY.addEventListener('input', handleCursorPositionChanged);
 handleCursorPositionChanged();
 
 let trackingMouse = true;
-renderCanvas.addEventListener('click', event => {
-    trackingMouse = !trackingMouse;
-    if (trackingMouse) {
-        handleMouseMove(event);
-    }
-});
-
 const handleMouseMove = event => {
     if (trackingMouse) {
         const mousePosition = getMousePosition(event, renderCanvas);
@@ -88,6 +83,13 @@ const handleMouseMove = event => {
     }
 };
 renderCanvas.addEventListener('mousemove', handleMouseMove);
+
+renderCanvas.addEventListener('click', event => {
+    trackingMouse = !trackingMouse;
+    if (trackingMouse) {
+        handleMouseMove(event);
+    }
+});
 
 const rgb2fillStyle = (rgb) => {
     return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
@@ -153,7 +155,7 @@ const makeTestPatternImage = () => {
     return canvas;
 };
 
-const makeBitmapDrawable = function (renderer, group, image) {
+const makeBitmapDrawable = function (group, image) {
     const skinId = renderer.createBitmapSkin(image, 1);
     const drawableId = renderer.createDrawable(group);
     renderer.updateDrawableProperties(drawableId, {skinId});
@@ -161,8 +163,6 @@ const makeBitmapDrawable = function (renderer, group, image) {
 };
 
 const initRendering = () => {
-    const renderer = new ScratchRender(renderCanvas);
-
     const layerGroup = {
         testPattern: 'testPattern',
         cursor: 'cursor'
@@ -174,11 +174,9 @@ const initRendering = () => {
         cursor: makeCursorImage()
     };
 
-    drawables.testPattern = makeBitmapDrawable(renderer, layerGroup.testPattern, images.testPattern);
-    drawables.cursor = makeBitmapDrawable(renderer, layerGroup.cursor, images.cursor);
-
-    return renderer;
+    drawables.testPattern = makeBitmapDrawable(layerGroup.testPattern, images.testPattern);
+    drawables.cursor = makeBitmapDrawable(layerGroup.cursor, images.cursor);
 };
 
-const renderer = initRendering();
+initRendering();
 renderer.draw();
