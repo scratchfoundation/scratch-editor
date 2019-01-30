@@ -179,6 +179,16 @@ const initRendering = () => {
     renderer.setLayerGroupOrdering([layerGroup.testPattern, layerGroup.cursor]);
     drawables.testPattern = makeTestPatternDrawable(layerGroup.testPattern);
     drawables.cursor = makeCursorDrawable(layerGroup.cursor);
+
+    const corner00 = makeCursorDrawable(layerGroup.cursor);
+    const corner01 = makeCursorDrawable(layerGroup.cursor);
+    const corner10 = makeCursorDrawable(layerGroup.cursor);
+    const corner11 = makeCursorDrawable(layerGroup.cursor);
+
+    renderer.updateDrawableProperties(corner00, {position: [-240, -179]});
+    renderer.updateDrawableProperties(corner01, {position: [-240, 180]});
+    renderer.updateDrawableProperties(corner10, {position: [239, -179]});
+    renderer.updateDrawableProperties(corner11, {position: [239, 180]});
 };
 
 initRendering();
