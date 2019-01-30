@@ -155,8 +155,17 @@ const makeTestPatternImage = () => {
     return canvas;
 };
 
-const makeBitmapDrawable = function (group, image) {
+const makeTestPatternDrawable = function (group) {
+    const image = makeTestPatternImage();
     const skinId = renderer.createBitmapSkin(image, 1);
+    const drawableId = renderer.createDrawable(group);
+    renderer.updateDrawableProperties(drawableId, {skinId});
+    return drawableId;
+};
+
+const makeCursorDrawable = function (group) {
+    const image = makeCursorImage();
+    const skinId = renderer.createBitmapSkin(image, 1, [0, 0]);
     const drawableId = renderer.createDrawable(group);
     renderer.updateDrawableProperties(drawableId, {skinId});
     return drawableId;
@@ -168,14 +177,8 @@ const initRendering = () => {
         cursor: 'cursor'
     };
     renderer.setLayerGroupOrdering([layerGroup.testPattern, layerGroup.cursor]);
-
-    const images = {
-        testPattern: makeTestPatternImage(),
-        cursor: makeCursorImage()
-    };
-
-    drawables.testPattern = makeBitmapDrawable(layerGroup.testPattern, images.testPattern);
-    drawables.cursor = makeBitmapDrawable(layerGroup.cursor, images.cursor);
+    drawables.testPattern = makeTestPatternDrawable(layerGroup.testPattern);
+    drawables.cursor = makeCursorDrawable(layerGroup.cursor);
 };
 
 initRendering();
