@@ -40,8 +40,9 @@ renderCanvas.addEventListener('resize', handleResizeRenderCanvas);
 handleResizeRenderCanvas();
 
 const handleCursorPositionChanged = () => {
-    const cursorX = inputCursorX.valueAsNumber;
-    const cursorY = inputCursorY.valueAsNumber;
+    const devicePixelRatio = window.devicePixelRatio || 1;
+    const cursorX = inputCursorX.valueAsNumber / devicePixelRatio;
+    const cursorY = inputCursorY.valueAsNumber / devicePixelRatio;
     const positionHTML = `${cursorX}, ${cursorY}`;
     labelCursorPosition.innerHTML = positionHTML;
     if (drawables.cursor >= 0) {
@@ -141,13 +142,13 @@ const makeTestPatternImage = () => {
     }
     for (let x = xSplit2; x < xSplit3; ++x) {
         for (let y = ySplit; y < canvas.height; ++y) {
-            context.fillStyle = (x + y) % 2 ? patternA : patternB;
+            context.fillStyle = (x + y) % 2 ? patternB : patternA;
             context.fillRect(x, y, 1, 1);
         }
     }
     for (let x = xSplit3; x < canvas.width; x += 2) {
         for (let y = ySplit; y < canvas.height; y += 2) {
-            context.fillStyle = (x + y) % 4 ? patternA : patternB;
+            context.fillStyle = (x + y) % 4 ? patternB : patternA;
             context.fillRect(x, y, 2, 2);
         }
     }
