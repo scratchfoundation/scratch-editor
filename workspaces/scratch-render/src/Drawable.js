@@ -24,12 +24,11 @@ const __isTouchingPosition = twgl.v3.create();
  * @return {twgl.v3} [x,y] texture space float vector - transformed by effects and matrix
  */
 const getLocalPosition = (drawable, vec) => {
-    // Transfrom from world coordinates to Drawable coordinates.
+    // Transform from world coordinates to Drawable coordinates.
     const localPosition = __isTouchingPosition;
     const v0 = vec[0];
     const v1 = vec[1];
     const m = drawable._inverseMatrix;
-    // var v2 = v[2];
     const d = (v0 * m[3]) + (v1 * m[7]) + m[15];
     // The RenderWebGL quad flips the texture's X axis. So rendered bottom
     // left is 1, 0 and the top right is 0, 1. Flip the X axis so
@@ -342,7 +341,7 @@ class Drawable {
         // Drawable configures a 3D matrix for drawing in WebGL, but most values
         // will never be set because the inputs are on the X and Y position axis
         // and the Z rotation axis. Drawable can bring the work inside
-        // _calculateTransform and greatly reduce the ammount of math and array
+        // _calculateTransform and greatly reduce the amount of math and array
         // assignments needed.
 
         const scale0 = this._skinScale[0];
@@ -625,11 +624,6 @@ class Drawable {
      */
     static sampleColor4b (vec, drawable, dst) {
         const localPosition = getLocalPosition(drawable, vec);
-        if (localPosition[0] < 0 || localPosition[1] < 0 ||
-            localPosition[0] > 1 || localPosition[1] > 1) {
-            dst[3] = 0;
-            return dst;
-        }
         const textColor =
         // commenting out to only use nearest for now
         // drawable.useNearest ?
