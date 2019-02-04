@@ -11,16 +11,16 @@
 let __SilhouetteUpdateCanvas;
 
 /**
- * Internal helper function (in hopes that compiler can inline).  Get a pixel
- * from silhouette data, or 0 if outside it's bounds.
+ * Internal helper function (in hopes that compiler can inline). Get the alpha value for a texel in the silhouette
+ * data, or 0 if outside it's bounds.
  * @private
- * @param {Silhouette} silhouette - has data width and height
- * @param {number} x - x
- * @param {number} y - y
+ * @param {Silhouette} $0 - has data, width, and height
+ * @param {number} x - X position in texels (0..width).
+ * @param {number} y - Y position in texels (0..height).
  * @return {number} Alpha value for x/y position
  */
 const getPoint = ({_width: width, _height: height, _colorData: data}, x, y) => {
-    // 0 if outside bouds, otherwise read from data.
+    // 0 if outside bounds, otherwise read from data.
     if (x >= width || y >= height || x < 0 || y < 0) {
         return 0;
     }
@@ -39,14 +39,14 @@ const __cornerWork = [
 
 /**
  * Get the color from a given silhouette at an x/y local texture position.
- * @param {Silhouette} The silhouette to sample.
- * @param {number} x X position of texture (0-1).
- * @param {number} y Y position of texture (0-1).
- * @param {Uint8ClampedArray} dst A color 4b space.
- * @return {Uint8ClampedArray} The dst vector.
+ * @param {Silhouette} $0 - The silhouette to sample.
+ * @param {number} x - X position in texels (0..width).
+ * @param {number} y - Y position in texels (0..height).
+ * @param {Uint8ClampedArray} dst - A color 4b space.
+ * @return {Uint8ClampedArray} - The dst vector.
  */
 const getColor4b = ({_width: width, _height: height, _colorData: data}, x, y, dst) => {
-    // 0 if outside bouds, otherwise read from data.
+    // 0 if outside bounds, otherwise read from data.
     if (x >= width || y >= height || x < 0 || y < 0) {
         return dst.fill(0);
     }
@@ -100,7 +100,7 @@ class Silhouette {
         const imageData = ctx.getImageData(0, 0, width, height);
 
         this._colorData = imageData.data;
-        // delete our custom overriden "uninitalized" color functions
+        // delete our custom overridden "uninitialized" color functions
         // let the prototype work for itself
         delete this.colorAtNearest;
         delete this.colorAtLinear;
@@ -114,12 +114,10 @@ class Silhouette {
      * @returns {Uint8ClampedArray} dst
      */
     colorAtNearest (vec, dst) {
-        return getColor4b(
-            this,
-            Math.floor(vec[0] * (this._width - 1)),
-            Math.floor(vec[1] * (this._height - 1)),
-            dst
-        );
+        const x = Math.round(vec[0] * this._width);
+        const y = Math.round(vec[1] * this._height);
+        const color = getColor4b(this, x, y, dst);
+        return color;
     }
 
     /**
