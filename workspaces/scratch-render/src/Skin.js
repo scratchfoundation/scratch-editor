@@ -137,6 +137,15 @@ class Skin extends EventEmitter {
     }
 
     /**
+     * Get the bounds of the drawable for determining its fenced position.
+     * @param {Array<number>} drawable - The Drawable instance this skin is using.
+     * @return {!Rectangle} The drawable's bounds.
+     */
+    getFenceBounds (drawable) {
+        return drawable.getFastBounds();
+    }
+
+    /**
      * Update and returns the uniforms for this skin.
      * @param {Array<number>} scale - The scaling factors to be used.
      * @returns {object.<string, *>} the shader uniforms to be used when rendering with this Skin.
