@@ -765,8 +765,8 @@ class RenderWebGL extends EventEmitter {
                 return this._isTouchingColorGpuFin(bounds, color3b, y);
             }
             for (let x = 0; x < bounds.width; ++x) {
-                point[1] = bounds.top - y; // bounds.top <= y < bounds.bottom ("flipped")
-                point[0] = bounds.left + x; // bounds.left <= x < bounds.right
+                point[0] = bounds.left + x; // bounds.left <= point[0] < bounds.right
+                point[1] = bounds.top - y; // bounds.bottom < point[1] <= bounds.top ("flipped")
                 // if we use a mask, check our sample color...
                 if (hasMask ?
                     maskMatches(Drawable.sampleColor4b(point, drawable, color), mask3b) :
