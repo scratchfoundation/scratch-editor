@@ -51,21 +51,21 @@ const handleCursorPositionChanged = () => {
             position: [cursorX, cursorY]
         });
 
-        renderer.setForceGPU(true);
+        renderer.setUseGpuMode(ScratchRender.UseGpuModes.ForceGPU);
         renderer.setDebugCanvas(gpuQueryCanvas);
         const isGpuTouchingA = renderer.isTouchingColor(drawables.cursor, colors.patternA);
         const isGpuTouchingB = renderer.isTouchingColor(drawables.cursor, colors.patternB);
         labelGpuTouchingA.innerHTML = isGpuTouchingA ? 'yes' : 'no';
         labelGpuTouchingB.innerHTML = isGpuTouchingB ? 'yes' : 'no';
 
-        renderer.setForceGPU(false);
+        renderer.setUseGpuMode(ScratchRender.UseGpuModes.ForceCPU);
         renderer.setDebugCanvas(cpuQueryCanvas);
         const isCpuTouchingA = renderer.isTouchingColor(drawables.cursor, colors.patternA);
         const isCpuTouchingB = renderer.isTouchingColor(drawables.cursor, colors.patternB);
         labelCpuTouchingA.innerHTML = isCpuTouchingA ? 'yes' : 'no';
         labelCpuTouchingB.innerHTML = isCpuTouchingB ? 'yes' : 'no';
 
-        renderer.clearForceGPU();
+        renderer.setUseGpuMode(ScratchRender.UseGpuModes.Automatic);
     }
 };
 inputCursorX.addEventListener('change', handleCursorPositionChanged);
