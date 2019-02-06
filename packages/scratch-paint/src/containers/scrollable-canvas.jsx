@@ -89,14 +89,14 @@ class ScrollableCanvas extends React.Component {
         const multiplier = event.deltaMode === 0x1 ? 15 : 1;
         const deltaX = event.deltaX * multiplier;
         const deltaY = event.deltaY * multiplier;
+        const canvasRect = this.props.canvas.getBoundingClientRect();
+        const offsetX = event.clientX - canvasRect.left;
+        const offsetY = event.clientY - canvasRect.top;
+        const fixedPoint = paper.view.viewToProject(
+            new paper.Point(offsetX, offsetY)
+        );
         if (event.metaKey || event.ctrlKey) {
             // Zoom keeping mouse location fixed
-            const canvasRect = this.props.canvas.getBoundingClientRect();
-            const offsetX = event.clientX - canvasRect.left;
-            const offsetY = event.clientY - canvasRect.top;
-            const fixedPoint = paper.view.viewToProject(
-                new paper.Point(offsetX, offsetY)
-            );
             zoomOnFixedPoint(-deltaY / 1000, fixedPoint);
             this.props.updateViewBounds(paper.view.matrix);
             this.props.redrawSelectionBox(); // Selection handles need to be resized after zoom
@@ -112,6 +112,9 @@ class ScrollableCanvas extends React.Component {
             const dy = deltaY / paper.view.zoom;
             pan(dx, dy);
             this.props.updateViewBounds(paper.view.matrix);
+            if (paper.tool) {
+                paper.tool.view._handleMouseEvent('mousemove', event, fixedPoint)
+            }
         }
         event.preventDefault();
     }
