@@ -1316,7 +1316,7 @@ class RenderWebGL extends EventEmitter {
 
         const dx = x - drawable._position[0];
         const dy = y - drawable._position[1];
-        const aabb = drawable.getFastBounds();
+        const aabb = drawable._skin.getFenceBounds(drawable);
         const inset = Math.floor(Math.min(aabb.width, aabb.height) / 2);
 
         const sx = this._xRight - Math.min(FENCE_WIDTH, inset);
