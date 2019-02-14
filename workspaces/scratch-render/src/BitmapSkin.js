@@ -79,20 +79,31 @@ class BitmapSkin extends Skin {
     setBitmap (bitmapData, costumeResolution, rotationCenter) {
         const gl = this._renderer.gl;
 
+        // Preferably bitmapData is ImageData. ImageData speeds up updating
+        // Silhouette and is better handled by more browsers in regards to
+        // memory.
+        let textureData = bitmapData;
+        if (bitmapData instanceof HTMLCanvasElement) {
+            // Given a HTMLCanvasElement get the image data to pass to webgl and
+            // Silhouette.
+            const context = bitmapData.getContext('2d');
+            textureData = context.getImageData(0, 0, bitmapData.width, bitmapData.height);
+        }
+
         if (this._texture) {
             gl.bindTexture(gl.TEXTURE_2D, this._texture);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, bitmapData);
-            this._silhouette.update(bitmapData);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
+            this._silhouette.update(textureData);
         } else {
             // TODO: mipmaps?
             const textureOptions = {
                 auto: true,
                 wrap: gl.CLAMP_TO_EDGE,
-                src: bitmapData
+                src: textureData
             };
 
             this._texture = twgl.createTexture(gl, textureOptions);
-            this._silhouette.update(bitmapData);
+            this._silhouette.update(textureData);
         }
 
         // Do these last in case any of the above throws an exception
