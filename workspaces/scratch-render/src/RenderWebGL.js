@@ -132,6 +132,9 @@ class RenderWebGL extends EventEmitter {
             throw new Error('Could not get WebGL context: this browser or environment may not support WebGL.');
         }
 
+        /** @type {RenderWebGL.UseGpuModes} */
+        this._useGpuMode = RenderWebGL.UseGpuModes.Automatic;
+
         /** @type {Drawable[]} */
         this._allDrawables = [];
 
@@ -241,6 +244,14 @@ class RenderWebGL extends EventEmitter {
      */
     setDebugCanvas (canvas) {
         this._debugCanvas = canvas;
+    }
+
+    /**
+     * Control the use of the GPU or CPU paths in `isTouchingColor`.
+     * @param {RenderWebGL.UseGpuModes} useGpuMode - automatically decide, force CPU, or force GPU.
+     */
+    setUseGpuMode (useGpuMode) {
+        this._useGpuMode = useGpuMode;
     }
 
     /**
@@ -717,9 +728,16 @@ class RenderWebGL extends EventEmitter {
 
         const bounds = this._candidatesBounds(candidates);
 
-        // if there are just too many pixels to CPU render efficently, we
-        // need to let readPixels happen
-        if (bounds.width * bounds.height * (candidates.length + 1) >= __cpuTouchingColorPixelCount) {
+        const maxPixelsForCPU = this._getMaxPixelsForCPU();
+
+        const debugCanvasContext = this._debugCanvas && this._debugCanvas.getContext('2d');
+        if (debugCanvasContext) {
+            this._debugCanvas.width = bounds.width;
+            this._debugCanvas.height = bounds.height;
+        }
+
+        // if there are just too many pixels to CPU render efficiently, we need to let readPixels happen
+        if (bounds.width * bounds.height * (candidates.length + 1) >= maxPixelsForCPU) {
             this._isTouchingColorGpuStart(drawableID, candidates.map(({id}) => id).reverse(), bounds, color3b, mask3b);
         }
 
@@ -728,27 +746,43 @@ class RenderWebGL extends EventEmitter {
         const color = __touchingColor;
         const hasMask = Boolean(mask3b);
 
+        // Scratch Space - +y is top
         for (let y = bounds.bottom; y <= bounds.top; y++) {
-            if (bounds.width * (y - bounds.bottom) * (candidates.length + 1) >= __cpuTouchingColorPixelCount) {
+            if (bounds.width * (y - bounds.bottom) * (candidates.length + 1) >= maxPixelsForCPU) {
                 return this._isTouchingColorGpuFin(bounds, color3b, y - bounds.bottom);
             }
-            // Scratch Space - +y is top
             for (let x = bounds.left; x <= bounds.right; x++) {
                 point[1] = y;
                 point[0] = x;
-                if (
-                    // if we use a mask, check our sample color
-                    (hasMask ?
-                        maskMatches(Drawable.sampleColor4b(point, drawable, color), mask3b) :
-                        drawable.isTouching(point)) &&
-                    // and the target color is drawn at this pixel
-                    colorMatches(RenderWebGL.sampleColor3b(point, candidates, color), color3b, 0)
-                ) {
-                    return true;
+                // if we use a mask, check our sample color...
+                if (hasMask ?
+                    maskMatches(Drawable.sampleColor4b(point, drawable, color), mask3b) :
+                    drawable.isTouching(point)) {
+                    RenderWebGL.sampleColor3b(point, candidates, color);
+                    if (debugCanvasContext) {
+                        debugCanvasContext.fillStyle = `rgb(${color[0]},${color[1]},${color[2]})`;
+                        debugCanvasContext.fillRect(x - bounds.left, bounds.bottom - y, 1, 1);
+                    }
+                    // ...and the target color is drawn at this pixel
+                    if (colorMatches(color, color3b, 0)) {
+                        return true;
+                    }
                 }
             }
         }
         return false;
+    }
+
+    _getMaxPixelsForCPU () {
+        switch (this._useGpuMode) {
+        case RenderWebGL.UseGpuModes.ForceCPU:
+            return Infinity;
+        case RenderWebGL.UseGpuModes.ForceGPU:
+            return 0;
+        case RenderWebGL.UseGpuModes.Automatic:
+        default:
+            return __cpuTouchingColorPixelCount;
+        }
     }
 
     _isTouchingColorGpuStart (drawableID, candidateIDs, bounds, color3b, mask3b) {
@@ -1768,5 +1802,26 @@ class RenderWebGL extends EventEmitter {
 
 // :3
 RenderWebGL.prototype.canHazPixels = RenderWebGL.prototype.extractDrawable;
+
+/**
+ * Values for setUseGPU()
+ * @enum {string}
+ */
+RenderWebGL.UseGpuModes = {
+    /**
+     * Heuristically decide whether to use the GPU path, the CPU path, or a dynamic mixture of the two.
+     */
+    Automatic: 'Automatic',
+
+    /**
+     * Always use the GPU path.
+     */
+    ForceGPU: 'ForceGPU',
+
+    /**
+     * Always use the CPU path.
+     */
+    ForceCPU: 'ForceCPU'
+};
 
 module.exports = RenderWebGL;
