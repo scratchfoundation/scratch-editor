@@ -751,7 +751,7 @@ class RenderWebGL extends EventEmitter {
 
         // if there are just too many pixels to CPU render efficiently, we need to let readPixels happen
         if (bounds.width * bounds.height * (candidates.length + 1) >= maxPixelsForCPU) {
-            this._isTouchingColorGpuStart(drawableID, candidates.map(({id}) => id).reverse(), bounds, color3b, mask3b);
+            this._isTouchingColorGpuStart(drawableID, candidates.map(({id}) => id), bounds, color3b, mask3b);
         }
 
         const drawable = this._allDrawables[drawableID];
@@ -761,7 +761,7 @@ class RenderWebGL extends EventEmitter {
 
         // Scratch Space - +y is top
         for (let y = 0; y < bounds.height; ++y) {
-            if (bounds.width * y * (candidates.length + 1) >= __cpuTouchingColorPixelCount) {
+            if (bounds.width * y * (candidates.length + 1) >= maxPixelsForCPU) {
                 return this._isTouchingColorGpuFin(bounds, color3b, y);
             }
             for (let x = 0; x < bounds.width; ++x) {
@@ -1268,8 +1268,7 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
-     * Filter a list of candidates for a touching query into only those that
-     * could possibly intersect the given bounds.
+     * Filter a list of candidates for a touching query into only those that could possibly intersect the given bounds.
      * @param {int} drawableID - ID for drawable of query.
      * @param {Array<int>} candidateIDs - Candidates for touching query.
      * @return {?Array< {id, drawable, intersection} >} Filtered candidates with useful data.
@@ -1280,8 +1279,7 @@ class RenderWebGL extends EventEmitter {
         if (bounds === null) {
             return result;
         }
-        // iterate through the drawables list BACKWARDS - we want the top most item to be the first we check
-        for (let index = candidateIDs.length - 1; index >= 0; index--) {
+        for (let index = 0; index < candidateIDs.length; ++index) {
             const id = candidateIDs[index];
             if (id !== drawableID) {
                 const drawable = this._allDrawables[id];
@@ -1767,8 +1765,7 @@ class RenderWebGL extends EventEmitter {
      * Sample a "final" color from an array of drawables at a given scratch space.
      * Will blend any alpha values with the drawables "below" it.
      * @param {twgl.v3} vec Scratch Vector Space to sample
-     * @param {Array<Drawables>} drawables A list of drawables with the "top most"
-     *              drawable at index 0
+     * @param {Array<Drawables>} drawables A list of drawables with the "bottom most" drawable at index 0
      * @param {Uint8ClampedArray} dst The color3b space to store the answer in.
      * @return {Uint8ClampedArray} The dst vector with everything blended down.
      */
@@ -1776,7 +1773,7 @@ class RenderWebGL extends EventEmitter {
         dst = dst || new Uint8ClampedArray(3);
         dst.fill(0);
         let blendAlpha = 1;
-        for (let index = 0; blendAlpha !== 0 && index < drawables.length; index++) {
+        for (let index = drawables.length - 1; blendAlpha !== 0 && index >= 0; --index) {
             /*
             if (left > vec[0] || right < vec[0] ||
                 bottom > vec[1] || top < vec[0]) {
