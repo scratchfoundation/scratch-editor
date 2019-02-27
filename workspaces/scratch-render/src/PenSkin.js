@@ -181,8 +181,9 @@ class PenSkin extends Skin {
     clear () {
         const gl = this._renderer.gl;
         twgl.bindFramebufferInfo(gl, this._framebuffer);
-
-        gl.clearColor(1, 1, 1, 0);
+        
+        /* Reset framebuffer to transparent black */
+        gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         const ctx = this._canvas.getContext('2d');
