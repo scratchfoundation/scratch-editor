@@ -45,6 +45,8 @@ uniform sampler2D u_skin;
 
 varying vec2 v_texCoord;
 
+const float minAlpha = 1.0 / 255.0;
+
 #if !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color))
 // Branchless color conversions based on code from:
 // http://www.chilliant.com/rgb2hsv.html by Ian Taylor
@@ -155,9 +157,14 @@ void main()
 
 	gl_FragColor = texture2D(u_skin, texcoord0);
 
-    #ifdef ENABLE_ghost
-    gl_FragColor.a *= u_ghost;
-    #endif // ENABLE_ghost
+	if (gl_FragColor.a < minAlpha)
+	{
+		discard;
+	}
+
+	#ifdef ENABLE_ghost
+	gl_FragColor.a *= u_ghost;
+	#endif // ENABLE_ghost
 
 	#ifdef DRAW_MODE_silhouette
 	// switch to u_silhouetteColor only AFTER the alpha test
