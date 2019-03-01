@@ -599,7 +599,7 @@ class PenSkin extends Skin {
             this._silhouetteBuffer = twgl.createFramebufferInfo(gl, [{format: gl.RGBA}], width, height);
         }
 
-        gl.clearColor(1, 1, 1, 0);
+        gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         this._silhouetteDirty = true;
