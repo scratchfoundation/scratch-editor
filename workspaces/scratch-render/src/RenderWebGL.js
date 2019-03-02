@@ -1620,7 +1620,9 @@ class RenderWebGL extends EventEmitter {
             }
 
             twgl.setUniforms(currentShader, uniforms);
-
+            
+            gl.blendFuncSeparate(gl.ONE,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);
+            
             twgl.drawBufferInfo(gl, this._bufferInfo, gl.TRIANGLES);
         }
 
