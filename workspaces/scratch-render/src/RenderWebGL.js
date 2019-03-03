@@ -1622,7 +1622,7 @@ class RenderWebGL extends EventEmitter {
             twgl.setUniforms(currentShader, uniforms);
             
             /* set blend function to work with premultiplied alpha */
-            gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+            gl.blendFuncSeparate(gl.ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             
             twgl.drawBufferInfo(gl, this._bufferInfo, gl.TRIANGLES);
         }
