@@ -1624,7 +1624,7 @@ class RenderWebGL extends EventEmitter {
             /* adjust blend function for this skin */
             if (drawable.skin.hasPremultipliedAlpha){
                 gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-            }else {
+            } else {
                 gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             }
             
