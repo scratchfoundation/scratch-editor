@@ -155,6 +155,13 @@ class PenSkin extends Skin {
     }
 
     /**
+     * @returns {boolean} true if alpha is premultiplied, false otherwise
+     */
+    get hasPremultipliedAlpha () {
+        return true;
+    }
+
+    /**
      * @return {Array<number>} the "native" size, in texels, of this skin. [width, height]
      */
     get size () {
