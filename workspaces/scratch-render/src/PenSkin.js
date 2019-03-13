@@ -371,8 +371,10 @@ class PenSkin extends Skin {
         translationVector[1] = avgY + (alias / 4);
 
         const scalingVector = __modelScalingVector;
-        scalingVector[0] = diameter + alias;
-        scalingVector[1] = length + diameter - (alias / 2);
+        // Dots tend to be ovals that are longer on the y-axis, so we use a smaller alias
+        // for the y value than for the x value to make dots more circular.
+        scalingVector[0] = diameter + (alias / 2);
+        scalingVector[1] = length + diameter - (alias / 6);
 
         const radius = diameter / 2;
         const yScalar = (0.50001 - (radius / (length + diameter)));
