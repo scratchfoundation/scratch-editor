@@ -39,7 +39,6 @@
             <span id="reference"></span>
        </div>
      </div>
-    
 
     <script src="scratch-svg-renderer.js"></script>
     <script>
@@ -74,7 +73,7 @@
         function readFileAsText(file) {
             return new Promise((res, rej) => {
                 const reader = new FileReader();
-  
+
                 reader.onload = function(event) {
                     res(reader.result);
                 }
@@ -83,7 +82,6 @@
 
                 reader.readAsText(file);
             })
-            
         }
 
         function loadSVGString() {

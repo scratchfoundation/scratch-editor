@@ -36,6 +36,7 @@ module.exports = [
             library: 'ScratchSVGRenderer',
             libraryTarget: 'umd',
             path: path.resolve('playground'),
+            publicPath: '/',
             filename: '[name].js'
         },
         plugins: base.plugins.concat([
