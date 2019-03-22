@@ -1,9 +1,16 @@
-const twgl = require('twgl.js');
-
 const Skin = require('./Skin');
+const SVGMIP = require('./SVGMIP');
 const SvgRenderer = require('scratch-svg-renderer').SVGRenderer;
 
 const MAX_TEXTURE_DIMENSION = 2048;
+const MIN_TEXTURE_SCALE = 1 / 256;
+/**
+ * All scaled renderings of the SVG are stored in an array. The 1.0 scale of
+ * the SVG is stored at the 8th index. The smallest possible 1 / 256 scale
+ * rendering is stored at the 0th index.
+ * @const {number}
+ */
+const INDEX_OFFSET = 8;
 
 class SVGSkin extends Skin {
     /**
@@ -25,11 +32,14 @@ class SVGSkin extends Skin {
         /** @type {WebGLTexture} */
         this._texture = null;
 
-        /** @type {number} */
-        this._textureScale = 1;
+        /** @type {Array.<SVGMIPs>} */
+        this._scaledMIPs = [];
 
-        /** @type {Number} */
-        this._maxTextureScale = 0;
+        /**
+        * Ratio of the size of the SVG and the max size of the WebGL texture
+        * @type {Number}
+        */
+        this._maxTextureScale = 1;
     }
 
     /**
@@ -37,8 +47,13 @@ class SVGSkin extends Skin {
      */
     dispose () {
         if (this._texture) {
-            this._renderer.gl.deleteTexture(this._texture);
+            for (const mip of this._scaledMIPs) {
+                if (mip) {
+                    mip.dispose();
+                }
+            }
             this._texture = null;
+            this._scaledMIPs.length = 0;
         }
         super.dispose();
     }
@@ -61,10 +76,32 @@ class SVGSkin extends Skin {
     }
 
     /**
+     * Create a MIP for a given scale and pass it a callback for updating
+     * state when switching between scales and MIPs.
+     * @param {number} scale - The relative size of the MIP
+     * @param {function} resetCallback - this is a callback for doing a hard reset
+     * of MIPs and a reset of the rotation center. Only passed in if the MIP scale is 1.
+     * @return {SVGMIP} An object that handles creating and updating SVG textures.
+     */
+    createMIP (scale, resetCallback) {
+        const textureCallback = textureData => {
+            if (resetCallback) resetCallback();
+            // Check if we have the largest MIP
+            // eslint-disable-next-line no-use-before-define
+            if (!this._scaledMIPs.length || this._scaledMIPs[this._scaledMIPs.length - 1]._scale <= scale) {
+                // Currently silhouette only gets scaled up
+                this._silhouette.update(textureData);
+            }
+        };
+        const mip = new SVGMIP(this._renderer, this._svgRenderer, scale, textureCallback);
+
+        return mip;
+    }
+
+    /**
      * @param {Array<number>} scale - The scaling factors to be used, each in the [0,100] range.
      * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
      */
-    // eslint-disable-next-line no-unused-vars
     getTexture (scale) {
         if (!this._svgRenderer.canvas.width || !this._svgRenderer.canvas.height) {
             return super.getTexture();
@@ -73,80 +110,70 @@ class SVGSkin extends Skin {
         // The texture only ever gets uniform scale. Take the larger of the two axes.
         const scaleMax = scale ? Math.max(Math.abs(scale[0]), Math.abs(scale[1])) : 100;
         const requestedScale = Math.min(scaleMax / 100, this._maxTextureScale);
-        let newScale = this._textureScale;
-        while ((newScale < this._maxTextureScale) && (requestedScale >= 1.5 * newScale)) {
-            newScale *= 2;
-        }
-        if (this._textureScale !== newScale) {
-            this._textureScale = newScale;
-            this._svgRenderer._draw(this._textureScale, () => {
-                if (this._textureScale === newScale) {
-                    const canvas = this._svgRenderer.canvas;
-                    const context = canvas.getContext('2d');
-                    const textureData = context.getImageData(0, 0, canvas.width, canvas.height);
+        let newScale = 1;
+        let textureIndex = 0;
 
-                    const gl = this._renderer.gl;
-                    gl.bindTexture(gl.TEXTURE_2D, this._texture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
-                    this._silhouette.update(textureData);
-                }
-            });
+        if (requestedScale < 1) {
+            while ((newScale > MIN_TEXTURE_SCALE) && (requestedScale <= newScale * .75)) {
+                newScale /= 2;
+                textureIndex -= 1;
+            }
+        } else {
+            while ((newScale < this._maxTextureScale) && (requestedScale >= 1.5 * newScale)) {
+                newScale *= 2;
+                textureIndex += 1;
+            }
         }
 
-        return this._texture;
+        if (!this._scaledMIPs[textureIndex + INDEX_OFFSET]) {
+            this._scaledMIPs[textureIndex + INDEX_OFFSET] = this.createMIP(newScale);
+        }
+
+        return this._scaledMIPs[textureIndex + INDEX_OFFSET].getTexture();
+    }
+
+    /**
+     * Do a hard reset of the existing MIPs by calling dispose(), setting a new
+     * scale 1 MIP in this._scaledMIPs, and finally updating the rotationCenter.
+     * @param {SVGMIPs} mip - An object that handles creating and updating SVG textures.
+     * @param {Array<number>} [rotationCenter] - Optional rotation center for the SVG. If not supplied, it will be
+     * calculated from the bounding box
+    * @fires Skin.event:WasAltered
+     */
+    resetMIPs (mip, rotationCenter) {
+        this._scaledMIPs.forEach(oldMIP => oldMIP.dispose());
+        this._scaledMIPs.length = 0;
+
+        // Set new scale 1 MIP after outdated MIPs have been disposed
+        this._texture = this._scaledMIPs[INDEX_OFFSET] = mip;
+
+        if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
+        this.setRotationCenter.apply(this, rotationCenter);
+        this.emit(Skin.Events.WasAltered);
     }
 
     /**
      * Set the contents of this skin to a snapshot of the provided SVG data.
      * @param {string} svgData - new SVG to use.
-     * @param {Array<number>} [rotationCenter] - Optional rotation center for the SVG. If not supplied, it will be
-     * calculated from the bounding box
-     * @fires Skin.event:WasAltered
+     * @param {Array<number>} [rotationCenter] - Optional rotation center for the SVG.
      */
     setSVG (svgData, rotationCenter) {
-        this._svgRenderer.fromString(svgData, 1, () => {
-            const gl = this._renderer.gl;
-            this._textureScale = this._maxTextureScale = 1;
+        this._svgRenderer.loadString(svgData);
 
-            // Pull out the ImageData from the canvas. ImageData speeds up
-            // updating Silhouette and is better handled by more browsers in
-            // regards to memory.
-            const canvas = this._svgRenderer.canvas;
+        if (!this._svgRenderer.canvas.width || !this._svgRenderer.canvas.height) {
+            super.setEmptyImageData();
+            return;
+        }
 
-            if (!canvas.width || !canvas.height) {
-                super.setEmptyImageData();
-                return;
-            }
+        const maxDimension = Math.ceil(Math.max(this.size[0], this.size[1]));
+        let testScale = 2;
+        for (testScale; maxDimension * testScale <= MAX_TEXTURE_DIMENSION; testScale *= 2) {
+            this._maxTextureScale = testScale;
+        }
 
-            const context = canvas.getContext('2d');
-            const textureData = context.getImageData(0, 0, canvas.width, canvas.height);
-
-            if (this._texture) {
-                gl.bindTexture(gl.TEXTURE_2D, this._texture);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
-                this._silhouette.update(textureData);
-            } else {
-                // TODO: mipmaps?
-                const textureOptions = {
-                    auto: true,
-                    wrap: gl.CLAMP_TO_EDGE,
-                    src: textureData
-                };
-
-                this._texture = twgl.createTexture(gl, textureOptions);
-                this._silhouette.update(textureData);
-            }
-
-            const maxDimension = Math.max(this._svgRenderer.canvas.width, this._svgRenderer.canvas.height);
-            let testScale = 2;
-            for (testScale; maxDimension * testScale <= MAX_TEXTURE_DIMENSION; testScale *= 2) {
-                this._maxTextureScale = testScale;
-            }
-
-            if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
-            this.setRotationCenter.apply(this, rotationCenter);
-            this.emit(Skin.Events.WasAltered);
-        });
+        // Create the 1.0 scale MIP at INDEX_OFFSET.
+        const textureScale = 1;
+        const mip = this.createMIP(textureScale, () => this.resetMIPs(mip, rotationCenter));
     }
 
 }
