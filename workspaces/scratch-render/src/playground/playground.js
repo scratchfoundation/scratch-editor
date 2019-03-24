@@ -39,7 +39,7 @@ xhr.addEventListener('load', function () {
         });
     }
 });
-xhr.open('GET', 'https://cdn.assets.scratch.mit.edu/internalapi/asset/f88bf1935daea28f8ca098462a31dbb0.svg/get/');
+xhr.open('GET', 'https://cdn.assets.scratch.mit.edu/internalapi/asset/b7853f557e4426412e64bb3da6531a99.svg/get/');
 xhr.send();
 
 var posX = 0;
