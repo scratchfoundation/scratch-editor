@@ -51,7 +51,7 @@ module.exports = [
             new CopyWebpackPlugin([
                 {
                     context: 'src/playground',
-                    from: '*.html'
+                    from: '*'
                 }
             ])
         ])
