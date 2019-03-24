@@ -3,9 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Scratch WebGL rendering demo</title>
-    <style>
-        #scratch-stage { width: 480px; }
-    </style>
 </head>
 <body style="background: lightsteelblue">
 <canvas id="scratch-stage" width="10" height="10" style="border:3px dashed black"></canvas>
@@ -28,6 +25,10 @@
     </select>
     <label for="fudge">Property Value:</label>
     <input type="range" id="fudge" style="width:50%" value="90" min="-90" max="270" step="any">
+</p>
+<p>
+    <label for="stage-scale">Stage scale:</label>
+    <input type="range" style="width:50%" id="stage-scale" value="1" min="1" max="2.5" step="any">
 </p>
 <p>
     <label for="fudgeMin">Min:</label><input id="fudgeMin" type="number">

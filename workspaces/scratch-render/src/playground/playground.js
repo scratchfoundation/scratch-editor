@@ -134,6 +134,15 @@ fudgeInput.addEventListener('input', handleFudgeChanged);
 fudgeInput.addEventListener('change', handleFudgeChanged);
 fudgeInput.addEventListener('init', handleFudgeChanged);
 
+const stageScaleInput = document.getElementById("stage-scale");
+
+stageScaleInput.addEventListener('input', updateStageScale);
+stageScaleInput.addEventListener('change', updateStageScale);
+
+function updateStageScale(event) {
+    renderer.resize(480 * event.target.valueAsNumber, 360 * event.target.valueAsNumber);
+}
+
 canvas.addEventListener('mousemove', event => {
     var mousePos = getMousePosition(event, canvas);
     renderer.extractColor(mousePos.x, mousePos.y, 30);
