@@ -49,21 +49,37 @@ var scaleY = 100;
 var fudgeProperty = 'posx';
 
 const fudgePropertyInput = document.getElementById('fudgeproperty');
-fudgePropertyInput.addEventListener('change', event => {
-    fudgeProperty = event.target.value;
-});
+fudgePropertyInput.addEventListener('change', updateFudgeProperty);
+fudgePropertyInput.addEventListener('init', updateFudgeProperty);
 
 const fudgeInput = document.getElementById('fudge');
 
 const fudgeMinInput = document.getElementById('fudgeMin');
-fudgeMinInput.addEventListener('change', event => {
-    fudgeInput.min = event.target.valueAsNumber;
-});
+fudgeMinInput.addEventListener('change', updateFudgeMin);
+fudgeMinInput.addEventListener('init', updateFudgeMin);
 
 const fudgeMaxInput = document.getElementById('fudgeMax');
-fudgeMaxInput.addEventListener('change', event => {
+fudgeMaxInput.addEventListener('change', updateFudgeMax);
+fudgeMaxInput.addEventListener('init', updateFudgeMax);
+
+function updateFudgeProperty(event) {
+    fudgeProperty = event.target.value;
+}
+
+function updateFudgeMin(event) {
+    fudgeInput.min = event.target.valueAsNumber;
+}
+
+function updateFudgeMax(event) {
     fudgeInput.max = event.target.valueAsNumber;
-});
+}
+
+// Ugly hack to properly set the values of the inputs on page load,
+// since they persist across reloads, at least in Firefox.
+// The best ugly hacks are the ones that reduce code duplication!
+fudgePropertyInput.dispatchEvent(new CustomEvent("init"));
+fudgeMinInput.dispatchEvent(new CustomEvent("init"));
+fudgeMaxInput.dispatchEvent(new CustomEvent("init"));
 
 const handleFudgeChanged = function (event) {
     fudge = event.target.valueAsNumber;
@@ -114,6 +130,7 @@ const handleFudgeChanged = function (event) {
 };
 fudgeInput.addEventListener('input', handleFudgeChanged);
 fudgeInput.addEventListener('change', handleFudgeChanged);
+fudgeInput.addEventListener('load', handleFudgeChanged);
 
 canvas.addEventListener('mousemove', event => {
     var mousePos = getMousePosition(event, canvas);
