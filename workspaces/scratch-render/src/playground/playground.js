@@ -80,6 +80,7 @@ function updateFudgeMax(event) {
 fudgePropertyInput.dispatchEvent(new CustomEvent("init"));
 fudgeMinInput.dispatchEvent(new CustomEvent("init"));
 fudgeMaxInput.dispatchEvent(new CustomEvent("init"));
+fudgeInput.dispatchEvent(new CustomEvent("init"));
 
 const handleFudgeChanged = function (event) {
     fudge = event.target.valueAsNumber;
@@ -128,9 +129,10 @@ const handleFudgeChanged = function (event) {
     }
     renderer.updateDrawableProperties(drawableID2, props);
 };
+
 fudgeInput.addEventListener('input', handleFudgeChanged);
 fudgeInput.addEventListener('change', handleFudgeChanged);
-fudgeInput.addEventListener('load', handleFudgeChanged);
+fudgeInput.addEventListener('init', handleFudgeChanged);
 
 canvas.addEventListener('mousemove', event => {
     var mousePos = getMousePosition(event, canvas);
