@@ -77,10 +77,14 @@ class SVGSkin extends Skin {
             this._textureScale = newScale;
             this._svgRenderer._draw(this._textureScale, () => {
                 if (this._textureScale === newScale) {
+                    const canvas = this._svgRenderer.canvas;
+                    const context = canvas.getContext('2d');
+                    const textureData = context.getImageData(0, 0, canvas.width, canvas.height);
+
                     const gl = this._renderer.gl;
                     gl.bindTexture(gl.TEXTURE_2D, this._texture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._svgRenderer.canvas);
-                    this._silhouette.update(this._svgRenderer.canvas);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
+                    this._silhouette.update(textureData);
                 }
             });
         }
@@ -99,20 +103,28 @@ class SVGSkin extends Skin {
         this._svgRenderer.fromString(svgData, 1, () => {
             const gl = this._renderer.gl;
             this._textureScale = this._maxTextureScale = 1;
+
+            // Pull out the ImageData from the canvas. ImageData speeds up
+            // updating Silhouette and is better handled by more browsers in
+            // regards to memory.
+            const canvas = this._svgRenderer.canvas;
+            const context = canvas.getContext('2d');
+            const textureData = context.getImageData(0, 0, canvas.width, canvas.height);
+
             if (this._texture) {
                 gl.bindTexture(gl.TEXTURE_2D, this._texture);
-                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._svgRenderer.canvas);
-                this._silhouette.update(this._svgRenderer.canvas);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
+                this._silhouette.update(textureData);
             } else {
                 // TODO: mipmaps?
                 const textureOptions = {
                     auto: true,
                     wrap: gl.CLAMP_TO_EDGE,
-                    src: this._svgRenderer.canvas
+                    src: textureData
                 };
 
                 this._texture = twgl.createTexture(gl, textureOptions);
-                this._silhouette.update(this._svgRenderer.canvas);
+                this._silhouette.update(textureData);
             }
 
             const maxDimension = Math.max(this._svgRenderer.canvas.width, this._svgRenderer.canvas.height);
