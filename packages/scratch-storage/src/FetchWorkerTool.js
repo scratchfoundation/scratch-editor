@@ -30,7 +30,7 @@ class PrivateFetchWorkerTool {
         this.jobs = {};
 
         try {
-            if (this.getSupported) {
+            if (this.isGetSupported) {
                 // eslint-disable-next-line global-require
                 const FetchWorker = require('worker-loader?{"inline":true,"fallback":true}!./FetchWorkerTool.worker');
 
@@ -66,7 +66,7 @@ class PrivateFetchWorkerTool {
      * guess that it does if the window does until the worker can inform us.
      * @returns {boolean} Is get supported?
      */
-    get getSupported () {
+    get isGetSupported () {
         return (
             typeof Worker !== 'undefined' &&
             this._workerSupport.fetch &&
@@ -103,7 +103,7 @@ class PrivateFetchWorkerTool {
      * Is sending supported? always false for FetchWorkerTool.
      * @returns {boolean} Is sending supported?
      */
-    get sendSupported () {
+    get isSendSupported () {
         return false;
     }
 
@@ -145,8 +145,8 @@ class PublicFetchWorkerTool {
      * Is get supported?
      * @returns {boolean} Is get supported?
      */
-    get getSupported () {
-        return this.inner.getSupported;
+    get isGetSupported () {
+        return this.inner.isGetSupported;
     }
 
     /**
@@ -163,7 +163,7 @@ class PublicFetchWorkerTool {
      * Is sending supported?
      * @returns {boolean} Is sending supported?
      */
-    get sendSupported () {
+    get isSendSupported () {
         return false;
     }
 

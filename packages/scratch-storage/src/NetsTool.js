@@ -6,7 +6,7 @@ class NetsTool {
      * Is get supported? false if the environment does not support nets.
      * @returns {boolean} Is get supported?
      */
-    get getSupported () {
+    get isGetSupported () {
         return true;
     }
 
@@ -40,7 +40,7 @@ class NetsTool {
      * with nets.
      * @returns {boolean} Is sending supported?
      */
-    get sendSupported () {
+    get isSendSupported () {
         return true;
     }
 
@@ -53,7 +53,7 @@ class NetsTool {
      */
     send (reqConfig, data, method) {
         return new Promise((resolve, reject) => {
-            /* eslint global-require:0 */
+            // eslint-disable-next-lint global-require
             // Wait to evaluate nets and its dependencies until we know we need
             // it as NetsTool may never be used if fetch is available.
             const nets = require('nets');

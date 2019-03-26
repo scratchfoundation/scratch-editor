@@ -25,8 +25,8 @@ class ProxyTool {
      * Is get supported? false if all proxied tool return false.
      * @returns {boolean} Is get supported?
      */
-    get getSupported () {
-        return this.tools.some(tool => tool.getSupported);
+    get isGetSupported () {
+        return this.tools.some(tool => tool.isGetSupported);
     }
 
     /**
@@ -39,11 +39,11 @@ class ProxyTool {
         let toolIndex = 0;
         const nextTool = err => {
             const tool = this.tools[toolIndex++];
-            if (!tool.getSupported) {
-                return nextTool(err);
-            }
             if (!tool) {
                 throw err;
+            }
+            if (!tool.isGetSupported) {
+                return nextTool(err);
             }
             return tool.get(reqConfig, options).catch(nextTool);
         };
@@ -54,8 +54,8 @@ class ProxyTool {
      * Is sending supported? false if all proxied tool return false.
      * @returns {boolean} Is sending supported?
      */
-    get sendSupported () {
-        return this.tools.some(tool => tool.sendSupported);
+    get isSendSupported () {
+        return this.tools.some(tool => tool.isSendSupported);
     }
 
     /**
@@ -69,11 +69,11 @@ class ProxyTool {
         let toolIndex = 0;
         const nextTool = err => {
             const tool = this.tools[toolIndex++];
-            if (!tool.sendSupported) {
-                return nextTool(err);
-            }
             if (!tool) {
                 throw err;
+            }
+            if (!tool.isSendSupported) {
+                return nextTool(err);
             }
             return tool.send(reqConfig, data, method).catch(nextTool);
         };

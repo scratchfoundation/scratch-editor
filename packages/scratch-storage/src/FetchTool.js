@@ -8,7 +8,7 @@ class FetchTool {
      * Is get supported? false if the environment does not support fetch.
      * @returns {boolean} Is get supported?
      */
-    get getSupported () {
+    get isGetSupported () {
         return typeof fetch !== 'undefined';
     }
 
@@ -29,7 +29,7 @@ class FetchTool {
      * with fetch.
      * @returns {boolean} Is sending supported?
      */
-    get sendSupported () {
+    get isSendSupported () {
         return typeof fetch !== 'undefined';
     }
 
