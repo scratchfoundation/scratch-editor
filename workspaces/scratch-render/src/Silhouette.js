@@ -87,17 +87,27 @@ class Silhouette {
      * rendering can be queried from.
      */
     update (bitmapData) {
-        const canvas = Silhouette._updateCanvas();
-        const width = this._width = canvas.width = bitmapData.width;
-        const height = this._height = canvas.height = bitmapData.height;
-        const ctx = canvas.getContext('2d');
+        let imageData;
+        if (bitmapData instanceof ImageData) {
+            // If handed ImageData directly, use it directly.
+            imageData = bitmapData;
+            this._width = bitmapData.width;
+            this._height = bitmapData.height;
+        } else {
+            // Draw about anything else to our update canvas and poll image data
+            // from that.
+            const canvas = Silhouette._updateCanvas();
+            const width = this._width = canvas.width = bitmapData.width;
+            const height = this._height = canvas.height = bitmapData.height;
+            const ctx = canvas.getContext('2d');
 
-        if (!(width && height)) {
-            return;
+            if (!(width && height)) {
+                return;
+            }
+            ctx.clearRect(0, 0, width, height);
+            ctx.drawImage(bitmapData, 0, 0, width, height);
+            imageData = ctx.getImageData(0, 0, width, height);
         }
-        ctx.clearRect(0, 0, width, height);
-        ctx.drawImage(bitmapData, 0, 0, width, height);
-        const imageData = ctx.getImageData(0, 0, width, height);
 
         this._colorData = imageData.data;
         // delete our custom overriden "uninitalized" color functions
