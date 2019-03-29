@@ -62,25 +62,25 @@ const fudgeMaxInput = document.getElementById('fudgeMax');
 fudgeMaxInput.addEventListener('change', updateFudgeMax);
 fudgeMaxInput.addEventListener('init', updateFudgeMax);
 
-function updateFudgeProperty(event) {
+function updateFudgeProperty (event) {
     fudgeProperty = event.target.value;
 }
 
-function updateFudgeMin(event) {
+function updateFudgeMin (event) {
     fudgeInput.min = event.target.valueAsNumber;
 }
 
-function updateFudgeMax(event) {
+function updateFudgeMax (event) {
     fudgeInput.max = event.target.valueAsNumber;
 }
 
 // Ugly hack to properly set the values of the inputs on page load,
 // since they persist across reloads, at least in Firefox.
 // The best ugly hacks are the ones that reduce code duplication!
-fudgePropertyInput.dispatchEvent(new CustomEvent("init"));
-fudgeMinInput.dispatchEvent(new CustomEvent("init"));
-fudgeMaxInput.dispatchEvent(new CustomEvent("init"));
-fudgeInput.dispatchEvent(new CustomEvent("init"));
+fudgePropertyInput.dispatchEvent(new CustomEvent('init'));
+fudgeMinInput.dispatchEvent(new CustomEvent('init'));
+fudgeMaxInput.dispatchEvent(new CustomEvent('init'));
+fudgeInput.dispatchEvent(new CustomEvent('init'));
 
 const handleFudgeChanged = function (event) {
     fudge = event.target.valueAsNumber;
@@ -103,6 +103,11 @@ const handleFudgeChanged = function (event) {
         break;
     case 'scaley':
         props.scale = [scaleX, fudge];
+        scaleY = fudge;
+        break;
+    case 'scaleboth':
+        props.scale = [fudge, fudge];
+        scaleX = fudge;
         scaleY = fudge;
         break;
     case 'color':
@@ -134,12 +139,12 @@ fudgeInput.addEventListener('input', handleFudgeChanged);
 fudgeInput.addEventListener('change', handleFudgeChanged);
 fudgeInput.addEventListener('init', handleFudgeChanged);
 
-const stageScaleInput = document.getElementById("stage-scale");
+const stageScaleInput = document.getElementById('stage-scale');
 
 stageScaleInput.addEventListener('input', updateStageScale);
 stageScaleInput.addEventListener('change', updateStageScale);
 
-function updateStageScale(event) {
+function updateStageScale (event) {
     renderer.resize(480 * event.target.valueAsNumber, 360 * event.target.valueAsNumber);
 }
 
