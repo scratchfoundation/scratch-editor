@@ -92,6 +92,9 @@ test('load', t => {
         t.strictEqual(asset.assetType, assetInfo.type);
         t.ok(asset.data.length);
 
+        // Web assets should come back as clean
+        t.true(asset.clean);
+
         if (assetInfo.md5) {
             t.strictEqual(md5(asset.data), assetInfo.md5);
         }

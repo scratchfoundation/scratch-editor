@@ -177,49 +177,52 @@ class ScratchStorage {
         /** @type {Helper[]} */
         const helpers = this._helpers.map(x => x.helper);
         const errors = [];
-        let helperIndex = 0;
         dataFormat = dataFormat || assetType.runtimeFormat;
 
-        return new Promise((resolve, reject) => {
-            const tryNextHelper = () => {
-                if (helperIndex < helpers.length) {
-                    const helper = helpers[helperIndex++];
-                    helper.load(assetType, assetId, dataFormat)
-                        .then(
-                            asset => {
-                                if (asset === null) {
-                                    tryNextHelper();
-                                } else {
-                                    // TODO? this.localHelper.cache(assetType, assetId, asset);
-                                    if (helper !== this.builtinHelper && assetType.immutable) {
-                                        asset.assetId = this.builtinHelper._store(
-                                            assetType,
-                                            asset.dataFormat,
-                                            asset.data,
-                                            assetId
-                                        );
-                                    }
-                                    // Note that other attempts may have caused errors, effectively suppressed here.
-                                    resolve(asset);
-                                }
-                            },
-                            error => {
-                                errors.push(error);
-                                // TODO: maybe some types of error should prevent trying the next helper?
-                                tryNextHelper();
-                            }
-                        );
-                } else if (errors.length === 0) {
-                    // Nothing went wrong but we couldn't find the asset.
-                    resolve(null);
-                } else {
-                    // At least one thing went wrong and also we couldn't find the asset.
-                    reject(errors);
-                }
-            };
+        let helperIndex = 0;
+        let helper;
+        const tryNextHelper = err => {
+            if (err) {
+                errors.push(err);
+            }
 
-            tryNextHelper();
-        });
+            helper = helpers[helperIndex++];
+
+            if (helper) {
+                const loading = helper.load(assetType, assetId, dataFormat);
+                if (loading === null) {
+                    return tryNextHelper();
+                }
+                return loading
+                    // TODO: maybe some types of error should prevent trying the
+                    // next helper?
+                    .catch(tryNextHelper);
+            } else if (errors.length > 0) {
+                // At least one thing went wrong and also we couldn't find the
+                // asset.
+                return Promise.reject(errors);
+            }
+
+            // Nothing went wrong but we couldn't find the asset.
+            return Promise.resolve(null);
+        };
+
+        return tryNextHelper()
+            .then(asset => {
+                // TODO? this.localHelper.cache(assetType, assetId, asset);
+                if (helper !== this.builtinHelper && asset && assetType.immutable) {
+                    asset.assetId = this.builtinHelper._store(
+                        assetType,
+                        asset.dataFormat,
+                        asset.data,
+                        assetId
+                    );
+                }
+
+                // Note that other attempts may have caused errors, effectively
+                // suppressed here.
+                return asset;
+            });
     }
 
     /**
