@@ -193,9 +193,9 @@ class ScratchStorage {
                 if (loading === null) {
                     return tryNextHelper();
                 }
+                // Note that other attempts may have logged errors; if this succeeds they will be suppressed.
                 return loading
-                    // TODO: maybe some types of error should prevent trying the
-                    // next helper?
+                    // TODO: maybe some types of error should prevent trying the next helper?
                     .catch(tryNextHelper);
             } else if (errors.length > 0) {
                 // At least one thing went wrong and also we couldn't find the
@@ -207,22 +207,7 @@ class ScratchStorage {
             return Promise.resolve(null);
         };
 
-        return tryNextHelper()
-            .then(asset => {
-                // TODO? this.localHelper.cache(assetType, assetId, asset);
-                if (helper !== this.builtinHelper && asset && assetType.immutable) {
-                    asset.assetId = this.builtinHelper._store(
-                        assetType,
-                        asset.dataFormat,
-                        asset.data,
-                        assetId
-                    );
-                }
-
-                // Note that other attempts may have caused errors, effectively
-                // suppressed here.
-                return asset;
-            });
+        return tryNextHelper();
     }
 
     /**
