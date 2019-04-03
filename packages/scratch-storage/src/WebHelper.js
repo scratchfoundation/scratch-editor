@@ -1,9 +1,17 @@
-const nets = require('nets');
-
 const log = require('./log');
 
 const Asset = require('./Asset');
 const Helper = require('./Helper');
+const ProxyTool = require('./ProxyTool');
+
+const ensureRequestConfig = reqConfig => {
+    if (typeof reqConfig === 'string') {
+        return {
+            url: reqConfig
+        };
+    }
+    return reqConfig;
+};
 
 /**
  * @typedef {function} UrlFunction - A function which computes a URL from asset information.
@@ -25,6 +33,21 @@ class WebHelper extends Helper {
          * @property {UrlFunction} updateFunction - A function which computes a URL from an Asset.
          */
         this.stores = [];
+
+        /**
+         * Set of tools to best load many assets in parallel. If one tool
+         * cannot be used, it will use the next.
+         * @type {ProxyTool}
+         */
+        this.assetTool = new ProxyTool();
+
+        /**
+         * Set of tools to best load project data in parallel with assets. This
+         * tool set prefers tools that are immediately ready. Some tools have
+         * to initialize before they can load files.
+         * @type {ProxyTool}
+         */
+        this.projectTool = new ProxyTool(ProxyTool.TOOL_FILTER.READY);
     }
 
     /**
@@ -65,58 +88,40 @@ class WebHelper extends Helper {
 
         /** @type {Array.<{url:string, result:*}>} List of URLs attempted & errors encountered. */
         const errors = [];
-        const stores = this.stores.slice();
+        const stores = this.stores.slice()
+            .filter(store => store.types.indexOf(assetType.name) >= 0);
         const asset = new Asset(assetType, assetId, dataFormat);
+
+        let tool = this.assetTool;
+        if (assetType.name === 'Project') {
+            tool = this.projectTool;
+        }
+
         let storeIndex = 0;
+        const tryNextSource = () => {
+            const store = stores[storeIndex++];
 
-        return new Promise((resolve, reject) => {
+            /** @type {UrlFunction} */
+            const reqConfigFunction = store.get;
 
-            const tryNextSource = () => {
-
-                /** @type {UrlFunction} */
-                let reqConfigFunction;
-
-                while (storeIndex < stores.length) {
-                    const store = stores[storeIndex];
-                    ++storeIndex;
-                    if (store.types.indexOf(assetType.name) >= 0) {
-                        reqConfigFunction = store.get;
-                        break;
-                    }
+            if (reqConfigFunction) {
+                const reqConfig = ensureRequestConfig(reqConfigFunction(asset));
+                if (reqConfig === false) {
+                    return tryNextSource();
                 }
 
-                if (reqConfigFunction) {
-                    let reqConfig = reqConfigFunction(asset);
-                    if (reqConfig === false) {
-                        tryNextSource();
-                        return;
-                    }
-                    if (typeof reqConfig === 'string') {
-                        reqConfig = {
-                            url: reqConfig
-                        };
-                    }
+                return tool.get(reqConfig)
+                    .then(body => asset.setData(body, dataFormat))
+                    .catch(tryNextSource);
+            } else if (errors.length > 0) {
+                return Promise.reject(errors);
+            }
 
-                    nets(Object.assign({
-                        method: 'get'
-                    }, reqConfig), (err, resp, body) => {
-                        // body is a Buffer
-                        if (err || Math.floor(resp.statusCode / 100) !== 2) {
-                            tryNextSource();
-                        } else {
-                            asset.setData(body, dataFormat);
-                            resolve(asset);
-                        }
-                    });
-                } else if (errors.length > 0) {
-                    reject(errors);
-                } else {
-                    resolve(null); // no stores matching asset
-                }
-            };
+            // no stores matching asset
+            return Promise.resolve(null);
+        };
 
-            tryNextSource();
-        });
+        return tryNextSource().then(() => asset);
     }
 
     /**
@@ -144,39 +149,34 @@ class WebHelper extends Helper {
 
         const method = create ? 'post' : 'put';
 
-        return new Promise((resolve, reject) => {
-            if (!store) return reject('No appropriate stores');
+        if (!store) return Promise.reject('No appropriate stores');
 
-            let reqConfig = create ? store.create(asset) : store.update(asset);
-            if (typeof reqConfig === 'string') {
-                reqConfig = {
-                    url: reqConfig
-                };
-            }
-            return nets(Object.assign({
-                body: data,
-                method: method,
-                encoding: undefined // eslint-disable-line no-undefined
-            }, reqConfig), (err, resp, body) => {
-                if (err || Math.floor(resp.statusCode / 100) !== 2) {
-                    return reject(err || resp.statusCode);
-                }
-                // xhr makes it difficult to both send FormData and automatically
-                // parse a JSON response. So try to parse everything as JSON.
+        let tool = this.assetTool;
+        if (assetType.name === 'Project') {
+            tool = this.projectTool;
+        }
+
+        const reqConfig = ensureRequestConfig(
+            create ? store.create(asset) : store.update(asset)
+        );
+        return tool.send(reqConfig, data, method)
+            .then(body => {
+                // xhr makes it difficult to both send FormData and
+                // automatically parse a JSON response. So try to parse
+                // everything as JSON.
                 if (typeof body === 'string') {
                     try {
                         body = JSON.parse(body);
                     } catch (parseError) {
                         // If it's not parseable, then we can't add the id even
                         // if we want to, so stop here
-                        return resolve(body);
+                        return body;
                     }
                 }
-                return resolve(Object.assign({
+                return Object.assign({
                     id: body['content-name'] || assetId
-                }, body));
+                }, body);
             });
-        });
     }
 }
 
