@@ -29,7 +29,10 @@
         vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
 
         document.getElementById('file').addEventListener('click', e => {
-            document.body.removeChild(document.getElementById('loaded'));
+            const loaded = document.getElementById('loaded');
+            if (loaded) {
+                document.body.removeChild(loaded);
+            }
         });
 
         document.getElementById('file').addEventListener('change', e => {
