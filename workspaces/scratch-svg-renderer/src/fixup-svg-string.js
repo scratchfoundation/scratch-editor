@@ -18,6 +18,17 @@ module.exports = function (svgString) {
             svgAttrs[0].replace(/&ns_[^;]+;/g, 'http://ns.adobe.com/Extensibility/1.0/'));
     }
 
+    // Some SVGs exported from Photoshop have been found to have an invalid mime type
+    // Chrome and Safari won't render these SVGs, so we correct it here
+    if (svgString.includes('data:img/png')) {
+        svgString = svgString.replace(
+            // capture entire image tag with xlink:href=and the quote - dont capture data: bit
+            /(<image[^>]+?xlink:href=["'])data:img\/png/g,
+            // use the captured <image ..... xlink:href=" then append the right data uri mime type
+            ($0, $1) => `${$1}data:image/png`
+        );
+    }
+
     // The <metadata> element is not needed for rendering and sometimes contains
     // unparseable garbage from Illustrator :(
     // Note: [\s\S] matches everything including newlines, which .* does not
