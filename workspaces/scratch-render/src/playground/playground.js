@@ -60,7 +60,7 @@ if (wantPenSkin) {
             color4f: [Math.random(), Math.random(), Math.random(), 1],
             diameter: 8
         },
-        x - 240, 180 - y, Math.random() * 480 - 240, Math.random() * 360 - 180);
+        x - 240, 180 - y, (Math.random() * 480) - 240, (Math.random() * 360) - 180);
     });
 }
 
@@ -70,31 +70,32 @@ var scaleX = 100;
 var scaleY = 100;
 var fudgeProperty = 'posx';
 
+const fudgeInput = document.getElementById('fudge');
 const fudgePropertyInput = document.getElementById('fudgeproperty');
+const fudgeMinInput = document.getElementById('fudgeMin');
+const fudgeMaxInput = document.getElementById('fudgeMax');
+
+/* eslint require-jsdoc: 0 */
+const updateFudgeProperty = event => {
+    fudgeProperty = event.target.value;
+};
+
+const updateFudgeMin = event => {
+    fudgeInput.min = event.target.valueAsNumber;
+};
+
+const updateFudgeMax = event => {
+    fudgeInput.max = event.target.valueAsNumber;
+};
+
 fudgePropertyInput.addEventListener('change', updateFudgeProperty);
 fudgePropertyInput.addEventListener('init', updateFudgeProperty);
 
-const fudgeInput = document.getElementById('fudge');
-
-const fudgeMinInput = document.getElementById('fudgeMin');
 fudgeMinInput.addEventListener('change', updateFudgeMin);
 fudgeMinInput.addEventListener('init', updateFudgeMin);
 
-const fudgeMaxInput = document.getElementById('fudgeMax');
 fudgeMaxInput.addEventListener('change', updateFudgeMax);
 fudgeMaxInput.addEventListener('init', updateFudgeMax);
-
-function updateFudgeProperty (event) {
-    fudgeProperty = event.target.value;
-}
-
-function updateFudgeMin (event) {
-    fudgeInput.min = event.target.valueAsNumber;
-}
-
-function updateFudgeMax (event) {
-    fudgeInput.max = event.target.valueAsNumber;
-}
 
 // Ugly hack to properly set the values of the inputs on page load,
 // since they persist across reloads, at least in Firefox.
@@ -161,14 +162,14 @@ fudgeInput.addEventListener('input', handleFudgeChanged);
 fudgeInput.addEventListener('change', handleFudgeChanged);
 fudgeInput.addEventListener('init', handleFudgeChanged);
 
+const updateStageScale = event => {
+    renderer.resize(480 * event.target.valueAsNumber, 360 * event.target.valueAsNumber);
+};
+
 const stageScaleInput = document.getElementById('stage-scale');
 
 stageScaleInput.addEventListener('input', updateStageScale);
 stageScaleInput.addEventListener('change', updateStageScale);
-
-function updateStageScale (event) {
-    renderer.resize(480 * event.target.valueAsNumber, 360 * event.target.valueAsNumber);
-}
 
 canvas.addEventListener('mousemove', event => {
     var mousePos = getMousePosition(event, canvas);
