@@ -5,12 +5,51 @@ const path = require('path');
 const fs = require('fs');
 const chromeless = new Chromeless();
 
-const allGpuModes = ['ForceCPU', 'ForceGPU', 'Automatic'];
-
 const indexHTML = path.resolve(__dirname, 'index.html');
 const testDir = (...args) => path.resolve(__dirname, 'scratch-tests', ...args);
 
-const checkOneGpuMode = (t, says) => {
+const testFile = file => test(file, async t => {
+    // start each test by going to the index.html, and loading the scratch file
+    const says = await chromeless.goto(`file://${indexHTML}`)
+        .setFileInput('#file', testDir(file))
+        // the index.html handler for file input will add a #loaded element when it
+        // finishes.
+        .wait('#loaded')
+        .evaluate(() => {
+            // This function is run INSIDE the integration chrome browser via some
+            // injection and .toString() magic.  We can return some "simple data"
+            // back across as a promise, so we will just log all the says that happen
+            // for parsing after.
+
+            // this becomes the `says` in the outer scope
+            const messages = [];
+            const TIMEOUT = 5000;
+
+            vm.runtime.on('SAY', (_, __, message) => {
+                messages.push(message);
+            });
+
+            vm.greenFlag();
+            const startTime = Date.now();
+
+            return Promise.resolve()
+                .then(async () => {
+                    // waiting for all threads to complete, then we return
+                    while (vm.runtime.threads.some(thread => vm.runtime.isActiveThread(thread))) {
+                        if ((Date.now() - startTime) >= TIMEOUT) {
+                            // if we push the message after end, the failure from tap is not very useful:
+                            // "not ok test after end() was called"
+                            messages.unshift(`fail Threads still running after ${TIMEOUT}ms`);
+                            break;
+                        }
+
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
+
+                    return messages;
+                });
+        });
+
     // Map string messages to tap reporting methods. This will be used
     // with events from scratch's runtime emitted on block instructions.
     let didPlan = false;
@@ -60,57 +99,7 @@ const checkOneGpuMode = (t, says) => {
         t.fail('did not say "end"');
         t.end();
     }
-};
-
-const testFile = async file => {
-    // start each test by going to the index.html, and loading the scratch file
-    const says = await chromeless.goto(`file://${indexHTML}`)
-        .setFileInput('#file', testDir(file))
-        // the index.html handler for file input will add a #loaded element when it
-        // finishes.
-        .wait('#loaded')
-        .evaluate(async useGpuModes => {
-            // This function is run INSIDE the integration chrome browser via some
-            // injection and .toString() magic.  We can return some "simple data"
-            // back across as a promise, so we will just log all the says that happen
-            // for parsing after.
-
-            // this becomes the `says` in the outer scope
-            const allMessages = {};
-            const TIMEOUT = 5000;
-
-            vm.runtime.on('SAY', (_, __, message) => {
-                const messages = allMessages[vm.renderer._useGpuMode];
-                messages.push(message);
-            });
-
-            for (const useGpuMode of useGpuModes) {
-                const messages = allMessages[useGpuMode] = [];
-
-                vm.renderer.setUseGpuMode(useGpuMode);
-                vm.greenFlag();
-                const startTime = Date.now();
-
-                // wait for all threads to complete before moving on to the next mode
-                while (vm.runtime.threads.some(thread => vm.runtime.isActiveThread(thread))) {
-                    if ((Date.now() - startTime) >= TIMEOUT) {
-                        // if we push the message after end, the failure from tap is not very useful:
-                        // "not ok test after end() was called"
-                        messages.unshift(`fail Threads still running after ${TIMEOUT}ms`);
-                        break;
-                    }
-
-                    await new Promise(resolve => setTimeout(resolve, 50));
-                }
-            }
-
-            return allMessages;
-        }, allGpuModes);
-
-    for (const gpuMode of allGpuModes) {
-        test(`File: ${file}, GPU Mode: ${gpuMode}`, t => checkOneGpuMode(t, says[gpuMode]));
-    }
-};
+});
 
 const testBubbles = () => test('bubble snapshot', async t => {
     const bubbleSvg = await chromeless.goto(`file://${indexHTML}`)
