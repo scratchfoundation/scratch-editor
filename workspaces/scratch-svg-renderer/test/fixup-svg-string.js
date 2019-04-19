@@ -27,3 +27,12 @@ test('fixupSvgString should make parsing fixtures not throw', t => {
     });
     t.end();
 });
+
+test('fixupSvgString should prevent script tags', t => {
+    const filePath = path.resolve(__dirname, './fixtures/script.svg');
+    const svgString = fs.readFileSync(filePath)
+        .toString();
+    const fixed = fixupSvgString(svgString);
+    t.equal(fixed.indexOf('script'), -1);
+    t.end();
+});
