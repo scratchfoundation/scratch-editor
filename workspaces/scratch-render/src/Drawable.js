@@ -432,7 +432,12 @@ class Drawable {
         }
 
         // If the effect bits for mosaic, pixelate, whirl, or fisheye are set, use linear
-        if (this._effectBits & 0b0011110) {
+        if (this._effectBits & (
+            ShaderManager.EFFECT_INFO.fisheye.mask |
+            ShaderManager.EFFECT_INFO.whirl.mask |
+            ShaderManager.EFFECT_INFO.pixelate.mask |
+            ShaderManager.EFFECT_INFO.mosaic.mask
+        )) {
             return false;
         }
 
