@@ -1541,6 +1541,7 @@ class RenderWebGL extends EventEmitter {
             this._exitRegion();
         }
         this._exitRegion = null;
+        this._regionId = null;
     }
 
     /**
