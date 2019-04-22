@@ -98,11 +98,11 @@ class Rectangle {
         this.right = Math.min(this.right, right);
         this.bottom = Math.max(this.bottom, bottom);
         this.top = Math.min(this.top, top);
-        // Ensure rectangle coordinates in order.
-        this.left = Math.min(this.left, this.right);
-        this.right = Math.max(this.right, this.left);
-        this.bottom = Math.min(this.bottom, this.top);
-        this.top = Math.max(this.top, this.bottom);
+        
+        this.left = Math.min(this.left, right);
+        this.right = Math.max(this.right, left);
+        this.bottom = Math.min(this.bottom, top);
+        this.top = Math.max(this.top, bottom);
     }
 
     /**
