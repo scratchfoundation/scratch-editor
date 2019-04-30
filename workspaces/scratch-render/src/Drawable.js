@@ -36,8 +36,10 @@ const getLocalPosition = (drawable, vec) => {
     // localPosition matches that transformation.
     localPosition[0] = 0.5 - (((v0 * m[0]) + (v1 * m[4]) + m[12]) / d);
     localPosition[1] = (((v0 * m[1]) + (v1 * m[5]) + m[13]) / d) + 0.5;
-    // Apply texture effect transform.
-    EffectTransform.transformPoint(drawable, localPosition, localPosition);
+    // Apply texture effect transform if the localPosition is within the drawable's space.
+    if ((localPosition[0] >= 0 && localPosition[0] < 1) && (localPosition[1] >= 0 && localPosition[1] < 1)) {
+        EffectTransform.transformPoint(drawable, localPosition, localPosition);
+    }
     return localPosition;
 };
 
