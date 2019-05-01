@@ -6,6 +6,8 @@ var fudge = 90;
 var renderer = new ScratchRender(canvas);
 renderer.setLayerGroupOrdering(['group1']);
 
+window.renderer = renderer;
+
 var drawableID = renderer.createDrawable('group1');
 renderer.updateDrawableProperties(drawableID, {
     position: [0, 0],
@@ -15,12 +17,13 @@ renderer.updateDrawableProperties(drawableID, {
 
 var drawableID2 = renderer.createDrawable('group1');
 var wantBitmapSkin = false;
+var wantTextSkin = true;
 
 // Bitmap (squirrel)
 var image = new Image();
 image.addEventListener('load', () => {
     var bitmapSkinId = renderer.createBitmapSkin(image);
-    if (wantBitmapSkin) {
+    if (wantBitmapSkin && !wantTextSkin) {
         renderer.updateDrawableProperties(drawableID2, {
             skinId: bitmapSkinId
         });
@@ -33,7 +36,7 @@ image.src = 'https://cdn.assets.scratch.mit.edu/internalapi/asset/7e24c99c1b853e
 var xhr = new XMLHttpRequest();
 xhr.addEventListener('load', function () {
     var skinId = renderer.createSVGSkin(xhr.responseText);
-    if (!wantBitmapSkin) {
+    if (!wantBitmapSkin && !wantTextSkin) {
         renderer.updateDrawableProperties(drawableID2, {
             skinId: skinId
         });
@@ -41,6 +44,11 @@ xhr.addEventListener('load', function () {
 });
 xhr.open('GET', 'https://cdn.assets.scratch.mit.edu/internalapi/asset/f88bf1935daea28f8ca098462a31dbb0.svg/get/');
 xhr.send();
+
+var skinId = renderer.createTextSkin("think", "testing text bubble", false);
+renderer.updateDrawableProperties(drawableID2, {
+    skinId: skinId
+});
 
 var posX = 0;
 var posY = 0;
@@ -81,7 +89,7 @@ const handleFudgeChanged = function (event) {
         props.direction = fudge;
         break;
     case 'scalex':
-        props.scale = [fudge, scaleY];
+        props.scale = [fudge, fudge];
         scaleX = fudge;
         break;
     case 'scaley':

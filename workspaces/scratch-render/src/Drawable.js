@@ -329,6 +329,11 @@ class Drawable {
             scaledSize[1] = skinSize[1] * this._scale[1] / 100;
             // scaledSize[2] = 0;
 
+            if (this.skin.roundBounds) {
+                scaledSize[0] = Math.ceil(scaledSize[0]);
+                scaledSize[1] = Math.ceil(scaledSize[1]);
+            }
+
             this._skinScaleDirty = false;
         }
 
