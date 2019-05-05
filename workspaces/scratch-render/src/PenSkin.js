@@ -155,6 +155,13 @@ class PenSkin extends Skin {
     }
 
     /**
+     * @returns {boolean} true if alpha is premultiplied, false otherwise
+     */
+    get hasPremultipliedAlpha () {
+        return true;
+    }
+
+    /**
      * @return {Array<number>} the "native" size, in texels, of this skin. [width, height]
      */
     get size () {
@@ -181,8 +188,9 @@ class PenSkin extends Skin {
     clear () {
         const gl = this._renderer.gl;
         twgl.bindFramebufferInfo(gl, this._framebuffer);
-
-        gl.clearColor(1, 1, 1, 0);
+        
+        /* Reset framebuffer to transparent black */
+        gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         const ctx = this._canvas.getContext('2d');
@@ -598,7 +606,7 @@ class PenSkin extends Skin {
             this._silhouetteBuffer = twgl.createFramebufferInfo(gl, [{format: gl.RGBA}], width, height);
         }
 
-        gl.clearColor(1, 1, 1, 0);
+        gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         this._silhouetteDirty = true;
