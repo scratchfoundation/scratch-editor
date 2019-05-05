@@ -74,7 +74,7 @@ class TextBubbleSkin extends Skin {
 
         this._restyleCanvas();
     }
-    
+
     /**
      * Dispose of this object. Do not use it after calling this method.
      */
@@ -87,14 +87,6 @@ class TextBubbleSkin extends Skin {
         super.dispose();
     }
 
-    /**
-     * @returns {boolean} whether this skin's pixel bounds should be rounded up to the nearest screen-space pixel.
-     * Useful for skins always rendered in screen-space, e.g. text bubbles.
-     */
-    get roundBounds () {
-        return true;
-    }
-    
     /**
      * @return {Array<number>} the dimensions, in Scratch units, of this skin.
      */

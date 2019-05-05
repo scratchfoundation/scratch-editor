@@ -77,15 +77,6 @@ class Skin extends EventEmitter {
     }
 
     /**
-     * @returns {boolean} whether this skin's pixel bounds should be rounded up to the nearest screen-space pixel.
-     * Useful for skins always rendered in screen-space, e.g. text bubbles.
-     */
-
-    get roundBounds () {
-        return false;
-    }
-
-    /**
      * @returns {boolean} true if alpha is premultiplied, false otherwise
      */
     get hasPremultipliedAlpha () {
