@@ -379,8 +379,9 @@ const convertToBitmap = function (clearSelectedItems, onUpdateImage) {
     // Get rid of anti-aliasing
     // @todo get crisp text https://github.com/LLK/scratch-paint/issues/508
     svg.setAttribute('shape-rendering', 'crispEdges');
-    inlineSvgFonts(svg);
-    const svgString = (new XMLSerializer()).serializeToString(svg);
+
+    let svgString = (new XMLSerializer()).serializeToString(svg);
+    svgString = inlineSvgFonts(svgString);
 
     // Put anti-aliased SVG into image, and dump image back into canvas
     const img = new Image();
