@@ -14,6 +14,7 @@ const localeTooBig = [
     'ja-Hira',
     'nb',
     'nn',
+    'rap',
     'th',
     'sr',
     'sk',
