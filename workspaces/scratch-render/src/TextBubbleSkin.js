@@ -122,7 +122,6 @@ class TextBubbleSkin extends Skin {
 
     /**
      * Update the array of wrapped lines and the text dimensions.
-     * @param {string} text - The text to wrap.
      */
     _reflowLines () {
         this._lines = this.textWrapper.wrapText(BubbleStyle.MAX_LINE_WIDTH, this._text);
