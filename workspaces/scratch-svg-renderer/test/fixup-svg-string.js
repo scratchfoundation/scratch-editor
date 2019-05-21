@@ -36,3 +36,24 @@ test('fixupSvgString should prevent script tags', t => {
     t.equal(fixed.indexOf('script'), -1);
     t.end();
 });
+
+test('fixupSvgString should correct invalid mime type', t => {
+    const filePath = path.resolve(__dirname, './fixtures/invalid-cloud.svg');
+    const svgString = fs.readFileSync(filePath, 'utf8');
+    const fixed = fixupSvgString(svgString);
+
+    // Make sure we replace an invalid mime type from Photoshop exported SVGs
+    t.notEqual(svgString.indexOf('img/png'), -1);
+    t.equal(fixed.indexOf('img/png'), -1);
+    t.notThrow(() => {
+        domParser.parseFromString(fixed, 'text/xml');
+    });
+    t.end();
+});
+
+test('fixupSvgString shouldn\'t correct non-image tags', t => {
+    const dontFix = fixupSvgString('<text>data:img/png is not a mime type</text>');
+
+    t.notEqual(dontFix.indexOf('img/png'), -1);
+    t.end();
+});
