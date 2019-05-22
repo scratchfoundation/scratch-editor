@@ -437,7 +437,7 @@ class Drawable {
             ShaderManager.EFFECT_INFO.whirl.mask |
             ShaderManager.EFFECT_INFO.pixelate.mask |
             ShaderManager.EFFECT_INFO.mosaic.mask
-        )) {
+        ) !== 0) {
             return false;
         }
 
