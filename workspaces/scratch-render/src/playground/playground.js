@@ -13,15 +13,20 @@ renderer.updateDrawableProperties(drawableID, {
     direction: 90
 });
 
+const WantedSkinType = {
+    bitmap: 'bitmap',
+    vector: 'vector',
+    pen: 'pen'
+};
+
 const drawableID2 = renderer.createDrawable('group1');
-const wantBitmapSkin = false;
-const wantPenSkin = false;
+const wantedSkin = WantedSkinType.vector;
 
 // Bitmap (squirrel)
 const image = new Image();
 image.addEventListener('load', () => {
     const bitmapSkinId = renderer.createBitmapSkin(image);
-    if (wantBitmapSkin && !wantPenSkin) {
+    if (wantedSkin === WantedSkinType.bitmap) {
         renderer.updateDrawableProperties(drawableID2, {
             skinId: bitmapSkinId
         });
@@ -34,7 +39,7 @@ image.src = 'https://cdn.assets.scratch.mit.edu/internalapi/asset/7e24c99c1b853e
 const xhr = new XMLHttpRequest();
 xhr.addEventListener('load', function () {
     const skinId = renderer.createSVGSkin(xhr.responseText);
-    if (!(wantBitmapSkin || wantPenSkin)) {
+    if (wantedSkin === WantedSkinType.vector) {
         renderer.updateDrawableProperties(drawableID2, {
             skinId: skinId
         });
@@ -43,7 +48,7 @@ xhr.addEventListener('load', function () {
 xhr.open('GET', 'https://cdn.assets.scratch.mit.edu/internalapi/asset/b7853f557e4426412e64bb3da6531a99.svg/get/');
 xhr.send();
 
-if (wantPenSkin) {
+if (wantedSkin === WantedSkinType.pen) {
     const penSkinID = renderer.createPenSkin();
 
     renderer.updateDrawableProperties(drawableID2, {
