@@ -1,26 +1,26 @@
 const ScratchRender = require('../RenderWebGL');
 const getMousePosition = require('./getMousePosition');
 
-var canvas = document.getElementById('scratch-stage');
-var fudge = 90;
-var renderer = new ScratchRender(canvas);
+const canvas = document.getElementById('scratch-stage');
+let fudge = 90;
+const renderer = new ScratchRender(canvas);
 renderer.setLayerGroupOrdering(['group1']);
 
-var drawableID = renderer.createDrawable('group1');
+const drawableID = renderer.createDrawable('group1');
 renderer.updateDrawableProperties(drawableID, {
     position: [0, 0],
     scale: [100, 100],
     direction: 90
 });
 
-var drawableID2 = renderer.createDrawable('group1');
-var wantBitmapSkin = false;
-var wantPenSkin = false;
+const drawableID2 = renderer.createDrawable('group1');
+const wantBitmapSkin = false;
+const wantPenSkin = false;
 
 // Bitmap (squirrel)
-var image = new Image();
+const image = new Image();
 image.addEventListener('load', () => {
-    var bitmapSkinId = renderer.createBitmapSkin(image);
+    const bitmapSkinId = renderer.createBitmapSkin(image);
     if (wantBitmapSkin && !wantPenSkin) {
         renderer.updateDrawableProperties(drawableID2, {
             skinId: bitmapSkinId
@@ -31,9 +31,9 @@ image.crossOrigin = 'anonymous';
 image.src = 'https://cdn.assets.scratch.mit.edu/internalapi/asset/7e24c99c1b853e52f8e7f9004416fa34.png/get/';
 
 // SVG (cat 1-a)
-var xhr = new XMLHttpRequest();
+const xhr = new XMLHttpRequest();
 xhr.addEventListener('load', function () {
-    var skinId = renderer.createSVGSkin(xhr.responseText);
+    const skinId = renderer.createSVGSkin(xhr.responseText);
     if (!(wantBitmapSkin || wantPenSkin)) {
         renderer.updateDrawableProperties(drawableID2, {
             skinId: skinId
@@ -44,7 +44,7 @@ xhr.open('GET', 'https://cdn.assets.scratch.mit.edu/internalapi/asset/b7853f557e
 xhr.send();
 
 if (wantPenSkin) {
-    var penSkinID = renderer.createPenSkin();
+    const penSkinID = renderer.createPenSkin();
 
     renderer.updateDrawableProperties(drawableID2, {
         skinId: penSkinID
@@ -64,11 +64,11 @@ if (wantPenSkin) {
     });
 }
 
-var posX = 0;
-var posY = 0;
-var scaleX = 100;
-var scaleY = 100;
-var fudgeProperty = 'posx';
+let posX = 0;
+let posY = 0;
+let scaleX = 100;
+let scaleY = 100;
+let fudgeProperty = 'posx';
 
 const fudgeInput = document.getElementById('fudge');
 const fudgePropertyInput = document.getElementById('fudgeproperty');
@@ -107,7 +107,7 @@ fudgeInput.dispatchEvent(new CustomEvent('init'));
 
 const handleFudgeChanged = function (event) {
     fudge = event.target.valueAsNumber;
-    var props = {};
+    const props = {};
     switch (fudgeProperty) {
     case 'posx':
         props.position = [fudge, posY];
@@ -172,13 +172,13 @@ stageScaleInput.addEventListener('input', updateStageScale);
 stageScaleInput.addEventListener('change', updateStageScale);
 
 canvas.addEventListener('mousemove', event => {
-    var mousePos = getMousePosition(event, canvas);
+    const mousePos = getMousePosition(event, canvas);
     renderer.extractColor(mousePos.x, mousePos.y, 30);
 });
 
 canvas.addEventListener('click', event => {
-    var mousePos = getMousePosition(event, canvas);
-    var pickID = renderer.pick(mousePos.x, mousePos.y);
+    const mousePos = getMousePosition(event, canvas);
+    const pickID = renderer.pick(mousePos.x, mousePos.y);
     console.log('You clicked on ' + (pickID < 0 ? 'nothing' : 'ID# ' + pickID));
     if (pickID >= 0) {
         console.dir(renderer.extractDrawable(pickID, mousePos.x, mousePos.y));
@@ -193,5 +193,5 @@ const drawStep = function () {
 };
 drawStep();
 
-var debugCanvas = /** @type {canvas} */ document.getElementById('debug-canvas');
+const debugCanvas = /** @type {canvas} */ document.getElementById('debug-canvas');
 renderer.setDebugCanvas(debugCanvas);
