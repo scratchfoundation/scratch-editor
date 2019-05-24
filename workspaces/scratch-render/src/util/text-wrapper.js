@@ -16,7 +16,7 @@ const GraphemeBreaker = require('!ify-loader!grapheme-breaker');
  * break opportunities.
  * Reference material:
  * - Unicode Standard Annex #14: http://unicode.org/reports/tr14/
- * - Unicode Standard Annex #39: http://unicode.org/reports/tr29/
+ * - Unicode Standard Annex #29: http://unicode.org/reports/tr29/
  * - "JavaScript has a Unicode problem" by Mathias Bynens: https://mathiasbynens.be/notes/javascript-unicode
  */
 class TextWrapper {

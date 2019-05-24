@@ -1,4 +1,4 @@
-/* global vm, render, Promise */
+/* global vm, Promise */
 const {Chromeless} = require('chromeless');
 const test = require('tap').test;
 const path = require('path');
@@ -101,16 +101,6 @@ const testFile = file => test(file, async t => {
     }
 });
 
-const testBubbles = () => test('bubble snapshot', async t => {
-    const bubbleSvg = await chromeless.goto(`file://${indexHTML}`)
-        .evaluate(() => {
-            const testString = '<e*&%$&^$></!abc\'>';
-            return render._svgTextBubble._buildTextFragment(testString);
-        });
-    t.matchSnapshot(bubbleSvg, 'bubble-text-snapshot');
-    t.end();
-});
-
 // immediately invoked async function to let us wait for each test to finish before starting the next.
 (async () => {
     const files = fs.readdirSync(testDir())
@@ -119,8 +109,6 @@ const testBubbles = () => test('bubble snapshot', async t => {
     for (const file of files) {
         await testFile(file);
     }
-
-    await testBubbles();
 
     // close the browser window we used
     await chromeless.end();

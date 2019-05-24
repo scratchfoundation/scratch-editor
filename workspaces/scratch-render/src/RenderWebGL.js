@@ -10,7 +10,7 @@ const PenSkin = require('./PenSkin');
 const RenderConstants = require('./RenderConstants');
 const ShaderManager = require('./ShaderManager');
 const SVGSkin = require('./SVGSkin');
-const SVGTextBubble = require('./util/svg-text-bubble');
+const TextBubbleSkin = require('./TextBubbleSkin');
 const EffectTransform = require('./EffectTransform');
 const log = require('./util/log');
 
@@ -184,8 +184,6 @@ class RenderWebGL extends EventEmitter {
         /** @type {Array.<snapshotCallback>} */
         this._snapshotCallbacks = [];
 
-        this._svgTextBubble = new SVGTextBubble();
-
         this._createGeometry();
 
         this.on(RenderConstants.Events.NativeSizeChanged, this.onNativeSizeChanged);
@@ -343,8 +341,11 @@ class RenderWebGL extends EventEmitter {
      * @returns {!int} the ID for the new skin.
      */
     createTextSkin (type, text, pointsLeft) {
-        const bubbleSvg = this._svgTextBubble.buildString(type, text, pointsLeft);
-        return this.createSVGSkin(bubbleSvg, [0, 0]);
+        const skinId = this._nextSkinId++;
+        const newSkin = new TextBubbleSkin(skinId, this);
+        newSkin.setTextBubble(type, text, pointsLeft);
+        this._allSkins[skinId] = newSkin;
+        return skinId;
     }
 
     /**
@@ -407,8 +408,14 @@ class RenderWebGL extends EventEmitter {
      * @param {!boolean} pointsLeft - which side the bubble is pointing.
      */
     updateTextSkin (skinId, type, text, pointsLeft) {
-        const bubbleSvg = this._svgTextBubble.buildString(type, text, pointsLeft);
-        this.updateSVGSkin(skinId, bubbleSvg, [0, 0]);
+        if (this._allSkins[skinId] instanceof TextBubbleSkin) {
+            this._allSkins[skinId].setTextBubble(type, text, pointsLeft);
+            return;
+        }
+
+        const newSkin = new TextBubbleSkin(skinId, this);
+        newSkin.setTextBubble(type, text, pointsLeft);
+        this._reskin(skinId, newSkin);
     }
 
 
