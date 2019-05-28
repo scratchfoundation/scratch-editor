@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Scratch WebGL Query Playground</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <style>
         input[type=range][orient=vertical] {
             writing-mode: bt-lr; /* IE */
@@ -11,8 +12,6 @@
             padding: 0 0.5rem;
         }
         canvas {
-            border: 3px dashed black;
-
             /* https://stackoverflow.com/a/7665647 */
             image-rendering: optimizeSpeed; /* Older versions of FF */
             image-rendering: -moz-crisp-edges; /* FF 6.0+ */
@@ -23,7 +22,7 @@
         }
     </style>
 </head>
-<body style="background: lightsteelblue">
+<body>
     <div>
         <fieldset>
             <legend>Query Canvases</legend>
@@ -63,7 +62,7 @@
                         <input id="cursorY" type="range" orient="vertical" step="0.25" value="0" />
                     </td>
                     <td>
-                        <canvas id="renderCanvas" width="480" height="360" style="border:3px dashed black"></canvas>
+                        <canvas id="renderCanvas" width="480" height="360"></canvas>
                     </td>
                 </tr>
             </table>
