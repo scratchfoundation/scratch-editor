@@ -453,7 +453,7 @@ class Drawable {
      * Before calling this, ensure the renderer has updated convex hull points.
      * @return {!Rectangle} Bounds for a tight box around the Drawable.
      */
-    getBounds () {
+    getBounds (bounds) {
         if (this.needsConvexHullPoints()) {
             throw new Error('Needs updated convex hull points before bounds calculation.');
         }
@@ -462,7 +462,7 @@ class Drawable {
         }
         const transformedHullPoints = this._getTransformedHullPoints();
         // Search through transformed points to generate box on axes.
-        const bounds = new Rectangle();
+        bounds = bounds || new Rectangle();
         bounds.initFromPointsAABB(transformedHullPoints);
         return bounds;
     }
@@ -473,7 +473,7 @@ class Drawable {
      * Before calling this, ensure the renderer has updated convex hull points.
      * @return {!Rectangle} Bounds for a tight box around a slice of the Drawable.
      */
-    getBoundsForBubble () {
+    getBoundsForBubble (bounds) {
         if (this.needsConvexHullPoints()) {
             throw new Error('Needs updated convex hull points before bubble bounds calculation.');
         }
@@ -485,7 +485,7 @@ class Drawable {
         const maxY = Math.max.apply(null, transformedHullPoints.map(p => p[1]));
         const filteredHullPoints = transformedHullPoints.filter(p => p[1] > maxY - slice);
         // Search through filtered points to generate box on axes.
-        const bounds = new Rectangle();
+        bounds = bounds || new Rectangle();
         bounds.initFromPointsAABB(filteredHullPoints);
         return bounds;
     }
@@ -499,18 +499,13 @@ class Drawable {
      * faster to calculate so may be desired for quick checks/optimizations.
      * @return {!Rectangle} Rough axis-aligned bounding box for Drawable.
      */
-    getAABB () {
+    getAABB (bounds) {
         if (this._transformDirty) {
             this._calculateTransform();
         }
         const tm = this._uniforms.u_modelMatrix;
-        const bounds = new Rectangle();
-        bounds.initFromPointsAABB([
-            twgl.m4.transformPoint(tm, [-0.5, -0.5, 0]),
-            twgl.m4.transformPoint(tm, [0.5, -0.5, 0]),
-            twgl.m4.transformPoint(tm, [-0.5, 0.5, 0]),
-            twgl.m4.transformPoint(tm, [0.5, 0.5, 0])
-        ]);
+        bounds = bounds || new Rectangle();
+        bounds.initFromMatrixRadius(tm, 0.5);
         return bounds;
     }
 
@@ -520,12 +515,12 @@ class Drawable {
      * known, but otherwise return the rough AABB of the Drawable.
      * @return {!Rectangle} Bounds for the Drawable.
      */
-    getFastBounds () {
+    getFastBounds (bounds) {
         this.updateMatrix();
         if (!this.needsConvexHullPoints()) {
-            return this.getBounds();
+            return this.getBounds(bounds);
         }
-        return this.getAABB();
+        return this.getAABB(bounds);
     }
 
     /**

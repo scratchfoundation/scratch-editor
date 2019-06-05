@@ -148,8 +148,8 @@ class Skin extends EventEmitter {
      * @param {Array<number>} drawable - The Drawable instance this skin is using.
      * @return {!Rectangle} The drawable's bounds.
      */
-    getFenceBounds (drawable) {
-        return drawable.getFastBounds();
+    getFenceBounds (drawable, bounds) {
+        return drawable.getFastBounds(bounds);
     }
 
     /**

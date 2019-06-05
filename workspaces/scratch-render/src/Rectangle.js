@@ -54,6 +54,31 @@ class Rectangle {
         }
     }
 
+    initFromMatrixRadius (m, r) {
+        // const v0 = r;
+        // const v1 = r;
+        // const v2 = r;
+        const m00 = m[(0 * 4) + 0];
+        const m01 = m[(0 * 4) + 1];
+        const m10 = m[(1 * 4) + 0];
+        const m11 = m[(1 * 4) + 1];
+        const m30 = m[(3 * 4) + 0];
+        const m31 = m[(3 * 4) + 1];
+        // var d = v0 * m03 + v1 * m13 + v2 * m23 + m33;
+        // dst[0] = (
+        const x = Math.abs(r * m00) + Math.abs(r * m10);
+        // + v2 * m20 + m30) / d;
+        // dst[1] = (
+        const y = Math.abs(r * m01) + Math.abs(r * m11);
+        // + v2 * m21 + m31) / d;
+        // dst[2] = (v0 * m02 + v1 * m12 + v2 * m22 + m32) / d;
+
+        this.left = -x + m30;
+        this.right = x + m30;
+        this.top = y + m31;
+        this.bottom = -y + m31;
+    }
+
     /**
      * Determine if this Rectangle intersects some other.
      * Note that this is a comparison assuming the Rectangle was
