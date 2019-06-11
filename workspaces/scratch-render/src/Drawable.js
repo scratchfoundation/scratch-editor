@@ -508,7 +508,7 @@ class Drawable {
         }
         const tm = this._uniforms.u_modelMatrix;
         result = result || new Rectangle();
-        result.initFromMatrixRadius(tm, 0.5);
+        result.initFromModelMatrix(tm);
         return result;
     }
 
