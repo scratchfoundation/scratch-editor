@@ -45,7 +45,9 @@ class ScrollableCanvas extends React.Component {
         this.initialMouseX = getEventXY(event).x;
         this.initialScreenX = paper.view.matrix.tx;
         window.addEventListener('mousemove', this.handleHorizontalScrollbarMouseMove);
+        window.addEventListener('touchmove', this.handleHorizontalScrollbarMouseMove);
         window.addEventListener('mouseup', this.handleHorizontalScrollbarMouseUp);
+        window.addEventListener('touchend', this.handleHorizontalScrollbarMouseUp);
         event.preventDefault();
     }
     handleHorizontalScrollbarMouseMove (event) {
@@ -57,7 +59,9 @@ class ScrollableCanvas extends React.Component {
     }
     handleHorizontalScrollbarMouseUp () {
         window.removeEventListener('mousemove', this.handleHorizontalScrollbarMouseMove);
+        window.removeEventListener('touchmove', this.handleHorizontalScrollbarMouseMove);
         window.removeEventListener('mouseup', this.handleHorizontalScrollbarMouseUp);
+        window.removeEventListener('touchend', this.handleHorizontalScrollbarMouseUp);
         this.initialMouseX = null;
         this.initialScreenX = null;
         event.preventDefault();
@@ -66,7 +70,9 @@ class ScrollableCanvas extends React.Component {
         this.initialMouseY = getEventXY(event).y;
         this.initialScreenY = paper.view.matrix.ty;
         window.addEventListener('mousemove', this.handleVerticalScrollbarMouseMove);
+        window.addEventListener('touchmove', this.handleVerticalScrollbarMouseMove);
         window.addEventListener('mouseup', this.handleVerticalScrollbarMouseUp);
+        window.addEventListener('touchend', this.handleVerticalScrollbarMouseUp);
         event.preventDefault();
     }
     handleVerticalScrollbarMouseMove (event) {
@@ -78,7 +84,9 @@ class ScrollableCanvas extends React.Component {
     }
     handleVerticalScrollbarMouseUp (event) {
         window.removeEventListener('mousemove', this.handleVerticalScrollbarMouseMove);
+        window.removeEventListener('touchmove', this.handleVerticalScrollbarMouseMove);
         window.removeEventListener('mouseup', this.handleVerticalScrollbarMouseUp);
+        window.removeEventListener('touchend', this.handleVerticalScrollbarMouseUp);
         this.initialMouseY = null;
         this.initialScreenY = null;
         event.preventDefault();

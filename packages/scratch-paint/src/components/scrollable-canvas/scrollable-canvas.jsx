@@ -22,6 +22,7 @@ const ScrollableCanvasComponent = props => (
                         Math.abs(props.horizontalScrollLengthPercent - 100) < 1e-8 ? 'none' : 'block'}`
                 }}
                 onMouseDown={props.onHorizontalScrollbarMouseDown}
+                onTouchStart={props.onHorizontalScrollbarMouseDown}
             />
         </div>
         <div
@@ -38,6 +39,7 @@ const ScrollableCanvasComponent = props => (
                         Math.abs(props.verticalScrollLengthPercent - 100) < 1e-8 ? 'none' : 'block'}`
                 }}
                 onMouseDown={props.onVerticalScrollbarMouseDown}
+                onTouchStart={props.onVerticalScrollbarMouseDown}
             />
         </div>
     </div>
