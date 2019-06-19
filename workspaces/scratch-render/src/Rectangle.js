@@ -55,98 +55,24 @@ class Rectangle {
     }
 
     /**
-     * Initialize a Rectangle to a 1 unit square transformed by a model matrix.
+     * Initialize a Rectangle to a 1 unit square centered at 0 x 0 transformed
+     * by a model matrix.
      * @param {Array.<number>} m A 4x4 matrix to transform the rectangle by.
+     * @tutorial Rectangle-AABB-Matrix
      */
     initFromModelMatrix (m) {
-        // Treat this function like we are transforming a vector with each
-        // component set to 0.5 by a matrix m.
-        // const v0 = 0.5;
-        // const v1 = 0.5;
-        // const v2 = 0.5;
-
-        // Of the matrix to do this in 2D space, instead of the 3D provided by
-        // the matrix, we need the 2x2 "top left" that represents the scale and
-        // rotation ...
-        const m00 = m[(0 * 4) + 0];
-        const m01 = m[(0 * 4) + 1];
-        const m10 = m[(1 * 4) + 0];
-        const m11 = m[(1 * 4) + 1];
-        // ... and the 1x2 "top right" that represents position.
+        // In 2D space, we will soon use the 2x2 "top left" scale and rotation
+        // submatrix, while we store and the 1x2 "top right" that position
+        // vector.
         const m30 = m[(3 * 4) + 0];
         const m31 = m[(3 * 4) + 1];
 
-        // This is how we would normally transform the vector by the matrix.
-        // var determinant = v0 * m03 + v1 * m13 + v2 * m23 + m33;
-        // dst[0] = (v0 * m00 + v1 * m10 + v2 * m20 + m30) / determinant;
-        // dst[1] = (v0 * m01 + v1 * m11 + v2 * m21 + m31) / determinant;
-        // dst[2] = (v0 * m02 + v1 * m12 + v2 * m22 + m32) / determinant;
+        // "Transform" a (0.5, 0.5) vector by the scale and rotation matrix but
+        // sum the absolute of each component instead of use the signed values.
+        const x = Math.abs(0.5 * m[(0 * 4) + 0]) + Math.abs(0.5 * m[(1 * 4) + 0]);
+        const y = Math.abs(0.5 * m[(0 * 4) + 1]) + Math.abs(0.5 * m[(1 * 4) + 1]);
 
-        // We can skip the v2 multiplications and the determinant.
-
-        // Alternatively done with 4 vectors, those vectors would be reflected
-        // on the x and y axis. We can build those 4 vectors by transforming the
-        // parts of one vector and reflecting them on the axises after
-        // multiplication.
-
-        // const x0 = 0.5 * m00;
-        // const x1 = 0.5 * m10;
-        // const y0 = 0.5 * m01;
-        // const y1 = 0.5 * m11;
-
-        // const p0x = x0 + x1;
-        // const p0y = y0 + y1;
-        // const p1x = -x0 + x1;
-        // const p1y = -y0 + y1;
-        // const p2x = -x0 + -x1;
-        // const p2y = -y0 + -y1;
-        // const p3x = x0 + -x1;
-        // const p3y = y0 + -y1;
-
-        // Since we want to reduce those 4 points to a min and max for each
-        // axis, we can use those multiplied components to build the min and max
-        // values without comparing the points.
-
-        // We can start by getting the min and max for each of all the points.
-        // const left = Math.min(x0 + x1, -x0 + x1, -x0 + -x1, x0 + -x1);
-        // const right = Math.max(x0 + x1, -x0 + x1, -x0 + -x1, x0 + -x1);
-        // const top = Math.max(y0 + y1, -y0 + y1, -y0 + -y1, y0 + -y1);
-        // const bottom = Math.min(y0 + y1, -y0 + y1, -y0 + -y1, y0 + -y1);
-
-        // Each of those can be replaced with min and max operations on the 0
-        // and 1 matrix output components.
-        // const left = Math.min(x0, -x0) + Math.min(x1, -x1);
-        // const right = Math.max(x0, -x0) + Math.max(x1, -x1);
-        // const top = Math.max(y0, -y0) + Math.max(y1, -y1);
-        // const bottom = Math.min(y0, -y0) + Math.min(y1, -y1);
-
-        // And they can be replaced with absolute values.
-        // const left = -Math.abs(x0) + -Math.abs(x1);
-        // const right = Math.abs(x0) + Math.abs(x1);
-        // const top = Math.abs(y0) + Math.abs(y1);
-        // const bottom = -Math.abs(y0) + -Math.abs(y1);
-
-        // And those with positive and negative sums of the absolute values.
-        // const left = -(Math.abs(x0) + Math.abs(x1));
-        // const right = +(Math.abs(x0) + Math.abs(x1));
-        // const top = +(Math.abs(y0) + Math.abs(y1));
-        // const bottom = -(Math.abs(y0) + -Math.abs(y1));
-
-        // We can perform those sums once and reuse them for the bounds.
-        // const x = Math.abs(x0) + Math.abs(x1);
-        // const y = Math.abs(y0) + Math.abs(y1);
-        // const left = -x;
-        // const right = x;
-        // const top = y;
-        // const bottom = -y;
-
-        // Building those absolute sums for the 0.5 vector components by the
-        // matrix components ...
-        const x = Math.abs(0.5 * m00) + Math.abs(0.5 * m10);
-        const y = Math.abs(0.5 * m01) + Math.abs(0.5 * m11);
-
-        // And adding them to the position components in the matrices
-        // initializes our Rectangle.
+        // And adding them to the position components initializes our Rectangle.
         this.left = -x + m30;
         this.right = x + m30;
         this.top = y + m31;
