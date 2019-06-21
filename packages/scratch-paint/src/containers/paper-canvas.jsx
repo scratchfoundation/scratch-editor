@@ -150,10 +150,11 @@ class PaperCanvas extends React.Component {
     maybeZoomToFit (isBitmapMode) {
         if (this.shouldZoomToFit instanceof paper.Matrix) {
             paper.view.matrix = this.shouldZoomToFit;
+            this.props.updateViewBounds(paper.view.matrix);
         } else if (this.shouldZoomToFit === true) {
             zoomToFit(isBitmapMode);
+            this.props.updateViewBounds(paper.view.matrix);
         }
-        this.props.updateViewBounds(paper.view.matrix);
         this.shouldZoomToFit = false;
     }
     importSvg (svg, rotationCenterX, rotationCenterY) {
