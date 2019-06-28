@@ -1765,9 +1765,7 @@ class RenderWebGL extends EventEmitter {
 
     /**
      * Get the convex hull points for a particular Drawable.
-     * To do this, draw the Drawable unrotated, unscaled, and untranslated.
-     * Read back the pixels and find all boundary points.
-     * Finally, apply a convex hull algorithm to simplify the set.
+     * To do this, calculate it based on the drawable's Silhouette.
      * @param {int} drawableID The Drawable IDs calculate convex hull for.
      * @return {Array<Array<number>>} points Convex hull points, as [[x, y], ...]
      */
@@ -1784,110 +1782,119 @@ class RenderWebGL extends EventEmitter {
         }
 
         /**
-         * Return the determinant of two vectors, the vector from A to B and
-         * the vector from A to C.
+         * Return the determinant of two vectors, the vector from A to B and the vector from A to C.
          *
-         * The determinant is useful in this case to know if AC is counter
-         * clockwise from AB. A positive value means the AC is counter
-         * clockwise from AC. A negative value menas AC is clockwise from AB.
+         * The determinant is useful in this case to know if AC is counter-clockwise from AB.
+         * A positive value means that AC is counter-clockwise from AB. A negative value means AC is clockwise from AB.
          *
          * @param {Float32Array} A A 2d vector in space.
          * @param {Float32Array} B A 2d vector in space.
          * @param {Float32Array} C A 2d vector in space.
-         * @return {number} Greater than 0 if counter clockwise, less than if
-         * clockwise, 0 if all points are on a line.
+         * @return {number} Greater than 0 if counter clockwise, less than if clockwise, 0 if all points are on a line.
          */
-        const CCW = function (A, B, C) {
+        const determinant = function (A, B, C) {
             // AB = B - A
             // AC = C - A
             // det (AB BC) = AB0 * AC1 - AB1 * AC0
             return (((B[0] - A[0]) * (C[1] - A[1])) - ((B[1] - A[1]) * (C[0] - A[0])));
         };
 
-        // https://github.com/LLK/scratch-flash/blob/dcbeeb59d44c3be911545dfe54d
-        // 46a32404f8e69/src/scratch/ScratchCostume.as#L369-L413 Following
-        // RasterHull creation, compare and store left and right values that
-        // maintain a convex shape until that data can be passed to `hull` for
-        // further work.
-        const L = [];
-        const R = [];
+        // This algorithm for calculating the convex hull somewhat resembles the monotone chain algorithm.
+        // The main difference is that instead of sorting the points by x-coordinate, and y-coordinate in case of ties,
+        // it goes through them by y-coordinate in the outer loop and x-coordinate in the inner loop.
+        // This gives us "left" and "right" hulls, whereas the monotone chain algorithm gives "top" and "bottom" hulls.
+
+        const leftHull = [];
+        const rightHull = [];
+
+        // While convex hull algorithms usually push and pop values from the list of hull points,
+        // here, we keep indices for the "last" point in each array. Any points past these indices are ignored.
+        // This is functionally equivalent to pushing and popping from a "stack" of hull points.
+        let leftEndPointIndex = -1;
+        let rightEndPointIndex = -1;
+
         const _pixelPos = twgl.v3.create();
         const _effectPos = twgl.v3.create();
-        let ll = -1;
-        let rr = -1;
-        let Q;
+
+        let currentPoint;
+
+        // *Not* Scratch Space-- +y is bottom
+        // Loop over all rows of pixels, starting at the top
         for (let y = 0; y < height; y++) {
             _pixelPos[1] = y / height;
-            // Scan from left to right, looking for a touchable spot in the
-            // skin.
+
+            // We start at the leftmost point, then go rightwards until we hit an opaque pixel
             let x = 0;
             for (; x < width; x++) {
                 _pixelPos[0] = x / width;
                 EffectTransform.transformPoint(drawable, _pixelPos, _effectPos);
                 if (drawable.skin.isTouchingLinear(_effectPos)) {
-                    Q = [x, y];
+                    currentPoint = [x, y];
                     break;
                 }
             }
-            // If x is equal to the width there are no touchable points in the
-            // skin. Nothing we can add to L. And looping for R would find the
-            // same thing.
+
+            // If we managed to loop all the way through, there are no opaque pixels on this row. Go to the next one
             if (x >= width) {
                 continue;
             }
-            // Decrement ll until Q is clockwise (CCW returns negative) from the
-            // last two points in L.
-            while (ll > 0) {
-                if (CCW(L[ll - 1], L[ll], Q) < 0) {
+
+            // Because leftEndPointIndex is initialized to -1, this is skipped for the first two rows.
+            // It runs only when there are enough points in the left hull to make at least one line.
+            // If appending the current point to the left hull makes a counter-clockwise turn,
+            // we want to append the current point. Otherwise, we decrement the index of the "last" hull point until the
+            // current point makes a counter-clockwise turn.
+            // This decrementing has the same effect as popping from the point list, but is hopefully faster.
+            while (leftEndPointIndex > 0) {
+                if (determinant(leftHull[leftEndPointIndex], leftHull[leftEndPointIndex - 1], currentPoint) > 0) {
                     break;
                 } else {
-                    --ll;
+                    // leftHull.pop();
+                    --leftEndPointIndex;
                 }
             }
-            // Increment ll and then set L[ll] to Q. If ll was -1 before this
-            // line, this will set L[0] to Q. If ll was 0 before this line, this
-            // will set L[1] to Q.
-            L[++ll] = Q;
 
-            // Scan from right to left, looking for a touchable spot in the
-            // skin.
+            // This has the same effect as pushing to the point list.
+            // This "list head pointer" coding style leaves excess points dangling at the end of the list,
+            // but that doesn't matter; we simply won't copy them over to the final hull.
+
+            // leftHull.push(currentPoint);
+            leftHull[++leftEndPointIndex] = currentPoint;
+
+            // Now we repeat the process for the right side, looking leftwards for a pixel.
             for (x = width - 1; x >= 0; x--) {
                 _pixelPos[0] = x / width;
                 EffectTransform.transformPoint(drawable, _pixelPos, _effectPos);
                 if (drawable.skin.isTouchingLinear(_effectPos)) {
-                    Q = [x, y];
+                    currentPoint = [x, y];
                     break;
                 }
             }
-            // Decrement rr until Q is counter clockwise (CCW returns positive)
-            // from the last two points in L. L takes clockwise points and R
-            // takes counter clockwise points. if y was decremented instead of
-            // incremented R would take clockwise points. We are going in the
-            // right direction for L and the wrong direction for R, so we
-            // compare the opposite value for R from L.
-            while (rr > 0) {
-                if (CCW(R[rr - 1], R[rr], Q) > 0) {
+
+            // Because we're coming at this from the right, it goes clockwise this time.
+            while (rightEndPointIndex > 0) {
+                if (determinant(rightHull[rightEndPointIndex], rightHull[rightEndPointIndex - 1], currentPoint) < 0) {
                     break;
                 } else {
-                    --rr;
+                    --rightEndPointIndex;
                 }
             }
-            // Increment rr and then set R[rr] to Q.
-            R[++rr] = Q;
+
+            rightHull[++rightEndPointIndex] = currentPoint;
         }
 
-        // Known boundary points on left/right edges of pixels.
-        const boundaryPoints = L;
-        // Truncate boundaryPoints to the index of the last added Q to L. L may
-        // have more entries than the index for the last Q.
-        boundaryPoints.length = ll + 1;
-        // Add points in R to boundaryPoints in reverse so all points in
-        // boundaryPoints are clockwise from each other.
-        for (let j = rr; j >= 0; --j) {
-            boundaryPoints.push(R[j]);
+        // Start off "hullPoints" with the left hull points.
+        const hullPoints = leftHull;
+        // This is where we get rid of those dangling extra points.
+        hullPoints.length = leftEndPointIndex + 1;
+        // Add points from the right side in reverse order so all points are ordered clockwise.
+        for (let j = rightEndPointIndex; j >= 0; --j) {
+            hullPoints.push(rightHull[j]);
         }
-        // Simplify boundary points using convex hull.
-        return hull(boundaryPoints, Infinity);
+
+        // Simplify boundary points using hull.js.
+        // TODO: Remove this; this algorithm already generates convex hulls.
+        return hull(hullPoints, Infinity);
     }
 
     /**
