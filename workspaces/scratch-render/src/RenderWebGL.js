@@ -16,6 +16,7 @@ const log = require('./util/log');
 
 const __isTouchingDrawablesPoint = twgl.v3.create();
 const __candidatesBounds = new Rectangle();
+const __fenceBounds = new Rectangle();
 const __touchingColor = new Uint8ClampedArray(4);
 const __blendColor = new Uint8ClampedArray(4);
 
@@ -1357,7 +1358,7 @@ class RenderWebGL extends EventEmitter {
 
         const dx = x - drawable._position[0];
         const dy = y - drawable._position[1];
-        const aabb = drawable._skin.getFenceBounds(drawable);
+        const aabb = drawable._skin.getFenceBounds(drawable, __fenceBounds);
         const inset = Math.floor(Math.min(aabb.width, aabb.height) / 2);
 
         const sx = this._xRight - Math.min(FENCE_WIDTH, inset);
@@ -1627,14 +1628,14 @@ class RenderWebGL extends EventEmitter {
             }
 
             twgl.setUniforms(currentShader, uniforms);
-            
+
             /* adjust blend function for this skin */
             if (drawable.skin.hasPremultipliedAlpha){
                 gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             } else {
                 gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             }
-            
+
             twgl.drawBufferInfo(gl, this._bufferInfo, gl.TRIANGLES);
         }
 
