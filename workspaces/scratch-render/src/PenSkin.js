@@ -88,6 +88,9 @@ class PenSkin extends Skin {
         /** @type {HTMLCanvasElement} */
         this._canvas = document.createElement('canvas');
 
+        /** @type {Array<number>} */
+        this._canvasSize = twgl.v3.create();
+
         /** @type {WebGLTexture} */
         this._texture = null;
 
@@ -165,7 +168,7 @@ class PenSkin extends Skin {
      * @return {Array<number>} the "native" size, in texels, of this skin. [width, height]
      */
     get size () {
-        return [this._canvas.width, this._canvas.height];
+        return this._canvasSize;
     }
 
     /**
@@ -188,13 +191,13 @@ class PenSkin extends Skin {
     clear () {
         const gl = this._renderer.gl;
         twgl.bindFramebufferInfo(gl, this._framebuffer);
-        
+
         /* Reset framebuffer to transparent black */
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
         const ctx = this._canvas.getContext('2d');
-        ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+        ctx.clearRect(0, 0, this._canvasSize[0], this._canvasSize[1]);
 
         this._silhouetteDirty = true;
     }
@@ -451,7 +454,7 @@ class PenSkin extends Skin {
      * @param {number} x - centered at x
      * @param {number} y - centered at y
      */
-    _drawRectangle (currentShader, texture, bounds, x = -this._canvas.width / 2, y = this._canvas.height / 2) {
+    _drawRectangle (currentShader, texture, bounds, x = -this._canvasSize[0] / 2, y = this._canvasSize[1] / 2) {
         const gl = this._renderer.gl;
 
         const projection = twgl.m4.ortho(
@@ -514,7 +517,7 @@ class PenSkin extends Skin {
      * @param {number} x - texture centered at x
      * @param {number} y - texture centered at y
      */
-    _drawToBuffer (texture = this._texture, x = -this._canvas.width / 2, y = this._canvas.height / 2) {
+    _drawToBuffer (texture = this._texture, x = -this._canvasSize[0] / 2, y = this._canvasSize[1] / 2) {
         if (texture !== this._texture && this._canvasDirty) {
             this._drawToBuffer();
         }
@@ -528,7 +531,7 @@ class PenSkin extends Skin {
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._canvas);
 
             const ctx = this._canvas.getContext('2d');
-            ctx.clearRect(0, 0, this._canvas.width, this._canvas.height);
+            ctx.clearRect(0, 0, this._canvasSize[0], this._canvasSize[1]);
 
             this._canvasDirty = false;
         }
@@ -564,8 +567,8 @@ class PenSkin extends Skin {
         this._bounds = new Rectangle();
         this._bounds.initFromBounds(width / 2, width / -2, height / 2, height / -2);
 
-        this._canvas.width = width;
-        this._canvas.height = height;
+        this._canvas.width = this._canvasSize[0] = width;
+        this._canvas.height = this._canvasSize[1] = height;
         this._rotationCenter[0] = width / 2;
         this._rotationCenter[1] = height / 2;
 
@@ -651,8 +654,8 @@ class PenSkin extends Skin {
             this._renderer.enterDrawRegion(this._toBufferDrawRegionId);
 
             // Sample the framebuffer's pixels into the silhouette instance
-            const skinPixels = new Uint8Array(Math.floor(this._canvas.width * this._canvas.height * 4));
-            gl.readPixels(0, 0, this._canvas.width, this._canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, skinPixels);
+            const skinPixels = new Uint8Array(Math.floor(this._canvasSize[0] * this._canvasSize[1] * 4));
+            gl.readPixels(0, 0, this._canvasSize[0], this._canvasSize[1], gl.RGBA, gl.UNSIGNED_BYTE, skinPixels);
 
             const skinCanvas = this._canvas;
             skinCanvas.width = bounds.width;
