@@ -146,10 +146,10 @@ class Skin extends EventEmitter {
      * Get the bounds of the drawable for determining its fenced position.
      * @param {Array<number>} drawable - The Drawable instance this skin is using.
      * @param {?Rectangle} result - Optional destination for bounds calculation.
-     * @return {!Rectangle} The drawable's bounds.
+     * @return {!Rectangle} The drawable's bounds. For compatibility with Scratch 2, we always use getAABB.
      */
     getFenceBounds (drawable, result) {
-        return drawable.getFastBounds(result);
+        return drawable.getAABB(result);
     }
 
     /**
