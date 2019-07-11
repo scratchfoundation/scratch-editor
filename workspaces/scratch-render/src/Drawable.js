@@ -409,7 +409,9 @@ class Drawable {
 
         const localPosition = getLocalPosition(this, vec);
 
-        if (this.useNearest) {
+        // We're not passing in a scale to useNearest, but that's okay because "touching" queries
+        // happen at the "native" size anyway.
+        if (this.useNearest()) {
             return this.skin.isTouchingNearest(localPosition);
         }
         return this.skin.isTouchingLinear(localPosition);
@@ -417,8 +419,9 @@ class Drawable {
 
     /**
      * Should the drawable use NEAREST NEIGHBOR or LINEAR INTERPOLATION mode
+     * @param {?Array<Number>} scale Optionally, the screen-space scale of the drawable.
      */
-    get useNearest () {
+    useNearest (scale = this.scale) {
         // Raster skins (bitmaps) should always prefer nearest neighbor
         if (this.skin.isRaster) {
             return true;
@@ -430,8 +433,8 @@ class Drawable {
         }
 
         // If the scale of the skin is very close to 100 (0.99999 variance is okay I guess)
-        if (Math.abs(this.scale[0]) > 99 && Math.abs(this.scale[0]) < 101 &&
-            Math.abs(this.scale[1]) > 99 && Math.abs(this.scale[1]) < 101) {
+        if (Math.abs(scale[0]) > 99 && Math.abs(scale[0]) < 101 &&
+            Math.abs(scale[1]) > 99 && Math.abs(scale[1]) < 101) {
             return true;
         }
         return false;
@@ -624,7 +627,7 @@ class Drawable {
         }
         const textColor =
         // commenting out to only use nearest for now
-        // drawable.useNearest ?
+        // drawable.useNearest() ?
              drawable.skin._silhouette.colorAtNearest(localPosition, dst);
         // : drawable.skin._silhouette.colorAtLinear(localPosition, dst);
         return EffectTransform.transformColor(drawable, textColor, textColor);
