@@ -420,6 +420,7 @@ class Drawable {
     /**
      * Should the drawable use NEAREST NEIGHBOR or LINEAR INTERPOLATION mode
      * @param {?Array<Number>} scale Optionally, the screen-space scale of the drawable.
+     * @return {boolean} True if the drawable should use nearest-neighbor interpolation.
      */
     useNearest (scale = this.scale) {
         // Raster skins (bitmaps) should always prefer nearest neighbor
