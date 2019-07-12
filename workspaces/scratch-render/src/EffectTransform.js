@@ -123,15 +123,17 @@ class EffectTransform {
      * @returns {Uint8ClampedArray} dst filled with the transformed color
      */
     static transformColor (drawable, color4b, dst, effectMask) {
-        dst = dst || new Uint8ClampedArray(4);
-        effectMask = effectMask || 0xffffffff;
+        if (typeof effectMask === 'undefined') effectMask = 0xffffffff;
+        if (typeof dst === 'undefined') dst = new Uint8ClampedArray(4);
+        
         dst.set(color4b);
+        // If the color is fully transparent, don't bother attempting any transformations.
         if (dst[3] === 0) {
             return dst;
         }
 
+        const effects = drawable.enabledEffects & effectMask;
         const uniforms = drawable.getUniforms();
-        const effects = drawable.getEnabledEffects() & effectMask;
 
         if ((effects & ShaderManager.EFFECT_INFO.ghost.mask) !== 0) {
             // gl_FragColor.a *= u_ghost
@@ -186,12 +188,12 @@ class EffectTransform {
      * @param {?twgl.v3} dst A place to store the output coordinate.
      * @return {twgl.v3} dst - The coordinate after being transform by effects.
      */
-    static transformPoint (drawable, vec, dst = twgl.v3.create()) {
+    static transformPoint (drawable, vec, dst) {
+        if (typeof dst === 'undefined') dst = twgl.v3.create();
         twgl.v3.copy(vec, dst);
 
+        const effects = drawable.enabledEffects;
         const uniforms = drawable.getUniforms();
-        const effects = drawable.getEnabledEffects();
-
         if ((effects & ShaderManager.EFFECT_INFO.mosaic.mask) !== 0) {
             // texcoord0 = fract(u_mosaic * texcoord0);
             dst[0] = uniforms.u_mosaic * dst[0] % 1;
