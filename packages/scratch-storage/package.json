@@ -38,7 +38,7 @@
     "@babel/preset-env": "^7.4.3",
     "@commitlint/cli": "8.1.0",
     "@commitlint/config-conventional": "8.1.0",
-    "@commitlint/travis-cli": "7.2.1",
+    "@commitlint/travis-cli": "8.1.0",
     "babel-eslint": "10.0.2",
     "babel-loader": "^8.0.4",
     "cz-conventional-changelog": "^2.0.0",
