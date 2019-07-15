@@ -29,6 +29,17 @@ module.exports = function (svgString) {
         );
     }
 
+    // Some SVGs from Inkscape attempt to bind a prefix to a reserved namespace name.
+    // This will cause SVG parsing to fail, so replace these with a dummy namespace name.
+    if (svgString.match(/xmlns:.*="http:\/\/www.w3.org\/XML\/1998\/namespace"/) !== null) {
+        svgString = svgString.replace(
+            // capture the entire attribute
+            /(xmlns:.*)="http:\/\/www.w3.org\/XML\/1998\/namespace"/g,
+            // use the captured attribute name; replace only the URL
+            ($0, $1) => `${$1}="http://dummy.namespace"`
+        );
+    }
+
     // The <metadata> element is not needed for rendering and sometimes contains
     // unparseable garbage from Illustrator :(
     // Note: [\s\S] matches everything including newlines, which .* does not

@@ -28,6 +28,20 @@ test('fixupSvgString should make parsing fixtures not throw', t => {
     t.end();
 });
 
+test('fixupSvgString should correct namespace declarations bound to reserved namespace names', t => {
+    const filePath = path.resolve(__dirname, './fixtures/reserved-namespace.svg');
+    const svgString = fs.readFileSync(filePath)
+        .toString();
+    const fixed = fixupSvgString(svgString);
+
+    // Make sure undefineds aren't being written into the file
+    t.equal(fixed.indexOf('undefined'), -1);
+    t.notThrow(() => {
+        domParser.parseFromString(fixed, 'text/xml');
+    });
+    t.end();
+});
+
 test('fixupSvgString should prevent script tags', t => {
     const filePath = path.resolve(__dirname, './fixtures/script.svg');
     const svgString = fs.readFileSync(filePath)
