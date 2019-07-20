@@ -147,8 +147,9 @@ class SVGSkin extends Skin {
                 this._maxTextureScale = testScale;
             }
 
-            if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
             this.size = this._svgRenderer.size;
+            if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
+
             this._viewOffset = this._svgRenderer.viewOffset;
             // Reset rawRotationCenter when we update viewOffset.
             this._rawRotationCenter = [NaN, NaN];
