@@ -1,6 +1,7 @@
 language: node_js
 node_js:
 - 8
+- 10
 addons:
   apt:
     packages:
@@ -9,6 +10,11 @@ addons:
     - libssl-dev
     - libjpeg62-dev
     - libgif-dev
+env:
+  global:
+  - NODE_ENV=production
+  matrix:
+  - NPM_SCRIPT="unit -- --jobs=1"
 cache:
   directories:
   - node_modules
@@ -16,34 +22,48 @@ install:
 - npm install canvas@1.6.11
 - npm --production=false install
 - npm --production=false update
-before_deploy:
-- npm --no-git-tag-version version 0.2.0-prerelease.$(date +%Y%m%d%H%M%S)
-- git config --global user.email $(git log --pretty=format:"%ae" -n1)
-- git config --global user.name $(git log --pretty=format:"%an" -n1)
-deploy:
-- provider: script
-  node_js: 8
-  on:
-    all_branches: true
-    condition: $TRAVIS_BRANCH != develop && $TRAVIS_EVENT_TYPE != cron
-  skip_cleanup: true
-  script: npm run deploy -- -x -e $TRAVIS_BRANCH -r https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-- provider: script
-  on:
-    branch: develop
-    condition: $TRAVIS_EVENT_TYPE != cron
-  skip_cleanup: true
-  script: npm run --silent deploy -- -x -a -r https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
-- provider: npm
-  on:
-    branch: develop
-    condition: $TRAVIS_EVENT_TYPE != cron
-  skip_cleanup: true
-  email: $NPM_EMAIL
-  api_key: $NPM_TOKEN
-- provider: script
-  on:
-    branch: develop
-    condition: $TRAVIS_EVENT_TYPE == cron
-  skip_cleanup: true
-  script: npm run i18n:src && npm run i18n:push
+script: npm run $NPM_SCRIPT
+jobs:
+    include:
+    - env: NPM_SCRIPT=lint
+      node_js: 8
+    - env: NPM_SCRIPT=build
+      node_js: 8
+      if: not (branch in (master, develop) and type != pull_request)
+    - stage: release
+      node_js: 8
+      env: NPM_SCRIPT=build
+      before_deploy:
+      - npm --no-git-tag-version version 0.2.0-prerelease.$(date +%Y%m%d%H%M%S)
+      - git config --global user.email $(git log --pretty=format:"%ae" -n1)
+      - git config --global user.name $(git log --pretty=format:"%an" -n1)
+      deploy:
+      - provider: script
+        on:
+          all_branches: true
+          condition: $TRAVIS_BRANCH != develop && $TRAVIS_EVENT_TYPE != cron
+        skip_cleanup: true
+        script: npm run deploy -- -x -e $TRAVIS_BRANCH -r https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+      - provider: script
+        on:
+          branch: develop
+          condition: $TRAVIS_EVENT_TYPE != cron
+        skip_cleanup: true
+        script: npm run --silent deploy -- -x -a -r https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git
+      - provider: npm
+        on:
+          branch: develop
+          condition: $TRAVIS_EVENT_TYPE != cron
+        skip_cleanup: true
+        email: $NPM_EMAIL
+        api_key: $NPM_TOKEN
+      - provider: script
+        on:
+          branch: develop
+          condition: $TRAVIS_EVENT_TYPE == cron
+        skip_cleanup: true
+        script: npm run i18n:src && npm run i18n:push
+stages:
+- test
+- name: release
+  if: branch in (master, develop) and type != pull_request
