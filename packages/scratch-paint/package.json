@@ -76,7 +76,7 @@
     "postcss-simple-vars": "^5.0.1",
     "raf": "^3.4.0",
     "react": "16.2.0",
-    "react-dom": "16.2.0",
+    "react-dom": "16.4.0",
     "react-intl": "2.9.0",
     "react-intl-redux": "2.0.0",
     "react-popover": "0.5.10",
