@@ -30,11 +30,10 @@ const base = {
             }, {
                 loader: 'css-loader',
                 options: {
+                    modules: true,
                     importLoaders: 1,
-                    modules: {
-                        localIdentName: '[name]_[local]_[hash:base64:5]'
-                    },
-                    localsConvention: 'camelCase'
+                    localIdentName: '[name]_[local]_[hash:base64:5]',
+                    camelCase: true
                 }
             }, {
                 loader: 'postcss-loader',
