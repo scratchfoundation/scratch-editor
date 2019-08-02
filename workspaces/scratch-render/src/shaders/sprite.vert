@@ -60,6 +60,9 @@ void main() {
 	// Apply view transform
 	position *= 2.0 / u_stageSize;
 	gl_Position = vec4(position, 0, 1);
+	#elif defined(DRAW_MODE_background)
+	gl_Position = vec4(a_position * 2.0, 0, 1);
+	v_texCoord = a_texCoord;
 	#else
 	gl_Position = u_projectionMatrix * u_modelMatrix * vec4(a_position, 0, 1);
 	v_texCoord = a_texCoord;
