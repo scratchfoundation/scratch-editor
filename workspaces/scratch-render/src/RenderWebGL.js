@@ -1464,6 +1464,7 @@ class RenderWebGL extends EventEmitter {
 
         // Draw the stamped sprite onto the PenSkin's framebuffer.
         this._drawThese([stampID], ShaderManager.DRAW_MODE.stamp, projection, {ignoreVisibility: true});
+        skin._silhouetteDirty = true;
     }
 
     /* ******
