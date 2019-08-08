@@ -1626,8 +1626,7 @@ class RenderWebGL extends EventEmitter {
                 gl.useProgram(currentShader.program);
                 twgl.setBuffersAndAttributes(gl, currentShader, this._bufferInfo);
                 Object.assign(uniforms, {
-                    u_projectionMatrix: projection,
-                    u_fudge: window.fudge || 0
+                    u_projectionMatrix: projection
                 });
             }
 

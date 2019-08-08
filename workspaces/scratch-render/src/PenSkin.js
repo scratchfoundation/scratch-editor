@@ -335,8 +335,7 @@ class PenSkin extends Skin {
 
         const uniforms = {
             u_skin: this._texture,
-            u_projectionMatrix: projection,
-            u_fudge: 0
+            u_projectionMatrix: projection
         };
 
         twgl.setUniforms(currentShader, uniforms);
@@ -477,8 +476,7 @@ class PenSkin extends Skin {
                     0
                 ), __modelScalingMatrix),
                 __modelMatrix
-            ),
-            u_fudge: 0
+            )
         };
 
         twgl.setTextureParameters(gl, texture, {minMag: gl.NEAREST});
