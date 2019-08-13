@@ -15,7 +15,6 @@
         "private": true,
         "readme": "README.md",
         "recurse": true,
-        "template": "node_modules/docdash",
-        "tutorials": "docs"
+        "template": "node_modules/docdash"
     }
 }
