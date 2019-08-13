@@ -3,7 +3,6 @@ const twgl = require('twgl.js');
 const Rectangle = require('./Rectangle');
 const RenderConstants = require('./RenderConstants');
 const ShaderManager = require('./ShaderManager');
-const Skin = require('./Skin');
 const EffectTransform = require('./EffectTransform');
 
 /**
@@ -101,8 +100,6 @@ class Drawable {
         /** @todo move convex hull functionality, maybe bounds functionality overall, to Skin classes */
         this._convexHullPoints = null;
         this._convexHullDirty = true;
-
-        this._skinWasAltered = this._skinWasAltered.bind(this);
     }
 
     /**
@@ -141,13 +138,7 @@ class Drawable {
      */
     set skin (newSkin) {
         if (this._skin !== newSkin) {
-            if (this._skin) {
-                this._skin.removeListener(Skin.Events.WasAltered, this._skinWasAltered);
-            }
             this._skin = newSkin;
-            if (this._skin) {
-                this._skin.addListener(Skin.Events.WasAltered, this._skinWasAltered);
-            }
             this._skinWasAltered();
         }
     }
