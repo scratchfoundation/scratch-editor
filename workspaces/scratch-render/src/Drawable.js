@@ -451,9 +451,10 @@ class Drawable {
      * This function applies the transform matrix to the known convex hull,
      * and then finds the minimum box along the axes.
      * Before calling this, ensure the renderer has updated convex hull points.
+     * @param {?Rectangle} result optional destination for bounds calculation
      * @return {!Rectangle} Bounds for a tight box around the Drawable.
      */
-    getBounds () {
+    getBounds (result) {
         if (this.needsConvexHullPoints()) {
             throw new Error('Needs updated convex hull points before bounds calculation.');
         }
@@ -462,18 +463,19 @@ class Drawable {
         }
         const transformedHullPoints = this._getTransformedHullPoints();
         // Search through transformed points to generate box on axes.
-        const bounds = new Rectangle();
-        bounds.initFromPointsAABB(transformedHullPoints);
-        return bounds;
+        result = result || new Rectangle();
+        result.initFromPointsAABB(transformedHullPoints);
+        return result;
     }
 
     /**
      * Get the precise bounds for the upper 8px slice of the Drawable.
      * Used for calculating where to position a text bubble.
      * Before calling this, ensure the renderer has updated convex hull points.
+     * @param {?Rectangle} result optional destination for bounds calculation
      * @return {!Rectangle} Bounds for a tight box around a slice of the Drawable.
      */
-    getBoundsForBubble () {
+    getBoundsForBubble (result) {
         if (this.needsConvexHullPoints()) {
             throw new Error('Needs updated convex hull points before bubble bounds calculation.');
         }
@@ -485,9 +487,9 @@ class Drawable {
         const maxY = Math.max.apply(null, transformedHullPoints.map(p => p[1]));
         const filteredHullPoints = transformedHullPoints.filter(p => p[1] > maxY - slice);
         // Search through filtered points to generate box on axes.
-        const bounds = new Rectangle();
-        bounds.initFromPointsAABB(filteredHullPoints);
-        return bounds;
+        result = result || new Rectangle();
+        result.initFromPointsAABB(filteredHullPoints);
+        return result;
     }
 
     /**
@@ -497,35 +499,32 @@ class Drawable {
      * which is tightly snapped to account for a Drawable's transparent regions.
      * `getAABB` returns a much less accurate bounding box, but will be much
      * faster to calculate so may be desired for quick checks/optimizations.
+     * @param {?Rectangle} result optional destination for bounds calculation
      * @return {!Rectangle} Rough axis-aligned bounding box for Drawable.
      */
-    getAABB () {
+    getAABB (result) {
         if (this._transformDirty) {
             this._calculateTransform();
         }
         const tm = this._uniforms.u_modelMatrix;
-        const bounds = new Rectangle();
-        bounds.initFromPointsAABB([
-            twgl.m4.transformPoint(tm, [-0.5, -0.5, 0]),
-            twgl.m4.transformPoint(tm, [0.5, -0.5, 0]),
-            twgl.m4.transformPoint(tm, [-0.5, 0.5, 0]),
-            twgl.m4.transformPoint(tm, [0.5, 0.5, 0])
-        ]);
-        return bounds;
+        result = result || new Rectangle();
+        result.initFromModelMatrix(tm);
+        return result;
     }
 
     /**
      * Return the best Drawable bounds possible without performing graphics queries.
      * I.e., returns the tight bounding box when the convex hull points are already
      * known, but otherwise return the rough AABB of the Drawable.
+     * @param {?Rectangle} result optional destination for bounds calculation
      * @return {!Rectangle} Bounds for the Drawable.
      */
-    getFastBounds () {
+    getFastBounds (result) {
         this.updateMatrix();
         if (!this.needsConvexHullPoints()) {
-            return this.getBounds();
+            return this.getBounds(result);
         }
-        return this.getAABB();
+        return this.getAABB(result);
     }
 
     /**
