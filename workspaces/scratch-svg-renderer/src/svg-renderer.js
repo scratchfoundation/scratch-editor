@@ -183,7 +183,7 @@ class SvgRenderer {
                 ty = -4 * fontSize / 22;
             }
 
-            if (textElement.transform.baseVal.length === 0) {
+            if (textElement.transform.baseVal.numberOfItems === 0) {
                 const transform = this._svgTag.createSVGTransform();
                 textElement.transform.baseVal.appendItem(transform);
             }
