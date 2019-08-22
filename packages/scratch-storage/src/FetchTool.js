@@ -42,7 +42,10 @@ class FetchTool {
         return fetch(url, Object.assign({
             credentials: withCredentials ? 'include' : 'omit'
         }, options))
-            .then(result => result.text());
+            .then(response => {
+                if (response.ok) return response.text();
+                return Promise.reject(response.status);
+            });
     }
 }
 
