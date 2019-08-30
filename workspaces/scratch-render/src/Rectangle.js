@@ -55,6 +55,31 @@ class Rectangle {
     }
 
     /**
+     * Initialize a Rectangle to a 1 unit square centered at 0 x 0 transformed
+     * by a model matrix.
+     * @param {Array.<number>} m A 4x4 matrix to transform the rectangle by.
+     * @tutorial Rectangle-AABB-Matrix
+     */
+    initFromModelMatrix (m) {
+        // In 2D space, we will soon use the 2x2 "top left" scale and rotation
+        // submatrix, while we store and the 1x2 "top right" that position
+        // vector.
+        const m30 = m[(3 * 4) + 0];
+        const m31 = m[(3 * 4) + 1];
+
+        // "Transform" a (0.5, 0.5) vector by the scale and rotation matrix but
+        // sum the absolute of each component instead of use the signed values.
+        const x = Math.abs(0.5 * m[(0 * 4) + 0]) + Math.abs(0.5 * m[(1 * 4) + 0]);
+        const y = Math.abs(0.5 * m[(0 * 4) + 1]) + Math.abs(0.5 * m[(1 * 4) + 1]);
+
+        // And adding them to the position components initializes our Rectangle.
+        this.left = -x + m30;
+        this.right = x + m30;
+        this.top = y + m31;
+        this.bottom = -y + m31;
+    }
+
+    /**
      * Determine if this Rectangle intersects some other.
      * Note that this is a comparison assuming the Rectangle was
      * initialized with Scratch-space bounds or points.
