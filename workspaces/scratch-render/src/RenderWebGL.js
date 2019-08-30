@@ -1416,8 +1416,6 @@ class RenderWebGL extends EventEmitter {
      * @param {int} stampID - the unique ID of the Drawable to use as the stamp.
      */
     penStamp (penSkinID, stampID) {
-        this._doExitDrawRegion();
-
         const stampDrawable = this._allDrawables[stampID];
         if (!stampDrawable) {
             return;
@@ -1427,6 +1425,8 @@ class RenderWebGL extends EventEmitter {
         if (!bounds) {
             return;
         }
+
+        this._doExitDrawRegion();
 
         const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
 
