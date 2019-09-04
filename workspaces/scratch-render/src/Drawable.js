@@ -433,6 +433,16 @@ class Drawable {
             return true;
         }
 
+        // If the effect bits for mosaic, pixelate, whirl, or fisheye are set, use linear
+        if ((this._effectBits & (
+            ShaderManager.EFFECT_INFO.fisheye.mask |
+            ShaderManager.EFFECT_INFO.whirl.mask |
+            ShaderManager.EFFECT_INFO.pixelate.mask |
+            ShaderManager.EFFECT_INFO.mosaic.mask
+        )) !== 0) {
+            return false;
+        }
+
         // We can't use nearest neighbor unless we are a multiple of 90 rotation
         if (this._direction % 90 !== 0) {
             return false;
