@@ -30,24 +30,6 @@ class SVGSkin extends Skin {
 
         /** @type {Number} */
         this._maxTextureScale = 0;
-
-        /**
-         * The natural size, in Scratch units, of this skin.
-         * @type {Array<number>}
-         */
-        this.size = [0, 0];
-
-        /**
-         * The viewbox offset of the svg.
-         * @type {Array<number>}
-         */
-        this._viewOffset = [0, 0];
-
-        /**
-         * The rotation center before offset by _viewOffset.
-         * @type {Array<number>}
-         */
-        this._rawRotationCenter = [NaN, NaN];
     }
 
     /**
@@ -62,16 +44,20 @@ class SVGSkin extends Skin {
     }
 
     /**
+     * @return {Array<number>} the natural size, in Scratch units, of this skin.
+     */
+    get size () {
+        return this._svgRenderer.size;
+    }
+
+    /**
      * Set the origin, in object space, about which this Skin should rotate.
      * @param {number} x - The x coordinate of the new rotation center.
      * @param {number} y - The y coordinate of the new rotation center.
      */
     setRotationCenter (x, y) {
-        if (x !== this._rawRotationCenter[0] || y !== this._rawRotationCenter[1]) {
-            this._rawRotationCenter[0] = x;
-            this._rawRotationCenter[1] = y;
-            super.setRotationCenter(x - this._viewOffset[0], y - this._viewOffset[1]);
-        }
+        const viewOffset = this._svgRenderer.viewOffset;
+        super.setRotationCenter(x - viewOffset[0], y - viewOffset[1]);
     }
 
     /**
@@ -114,19 +100,7 @@ class SVGSkin extends Skin {
      * @fires Skin.event:WasAltered
      */
     setSVG (svgData, rotationCenter) {
-        this._svgRenderer.loadString(svgData);
-
-        // Size must be updated synchronously because the VM sets the costume's `size` immediately after calling this.
-        // TODO: add either a callback to this function so the costume size can be set after this is done,
-        // or something in the VM to handle setting the costume size when Skin.Events.WasAltered is emitted.
-        this.size = this._svgRenderer.size;
-        if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
-        this._viewOffset = this._svgRenderer.viewOffset;
-        // Reset rawRotationCenter when we update viewOffset.
-        this._rawRotationCenter = [NaN, NaN];
-        this.setRotationCenter(rotationCenter[0], rotationCenter[1]);
-
-        this._svgRenderer._draw(1, () => {
+        this._svgRenderer.fromString(svgData, 1, () => {
             const gl = this._renderer.gl;
             this._textureScale = this._maxTextureScale = 1;
 
@@ -159,6 +133,8 @@ class SVGSkin extends Skin {
                 this._maxTextureScale = testScale;
             }
 
+            if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
+            this.setRotationCenter.apply(this, rotationCenter);
             this.emit(Skin.Events.WasAltered);
         });
     }
