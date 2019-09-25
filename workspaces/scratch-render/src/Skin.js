@@ -34,6 +34,13 @@ class Skin extends EventEmitter {
         this._rotationCenter = twgl.v3.create(0, 0);
 
         /**
+         * The "native" size, in texels, of this skin.
+         * @member size
+         * @abstract
+         * @type {Array<number>}
+         */
+
+        /**
          * The uniforms to be used by the vertex and pixel shaders.
          * Some of these are used by other parts of the renderer as well.
          * @type {Object.<string,*>}
@@ -95,14 +102,6 @@ class Skin extends EventEmitter {
      */
     get rotationCenter () {
         return this._rotationCenter;
-    }
-
-    /**
-     * @abstract
-     * @return {Array<number>} the "native" size, in texels, of this skin.
-     */
-    get size () {
-        return [0, 0];
     }
 
     /**

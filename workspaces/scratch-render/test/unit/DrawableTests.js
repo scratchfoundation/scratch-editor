@@ -8,6 +8,7 @@ global.document = {
 
 const Drawable = require('../../src/Drawable');
 const MockSkin = require('../fixtures/MockSkin');
+const MockSkinPool = require('../fixtures/MockSkinPool');
 const Rectangle = require('../../src/Rectangle');
 
 /**
@@ -31,6 +32,7 @@ test('translate by position', t => {
     const drawable = new Drawable();
     drawable.skin = new MockSkin();
     drawable.skin.size = [200, 50];
+    MockSkinPool.forDrawableSkin(drawable);
 
     expected.initFromBounds(0, 200, -50, 0);
     t.same(snapToNearest(drawable.getAABB()), expected);
@@ -47,6 +49,7 @@ test('translate by costume center', t => {
     const drawable = new Drawable();
     drawable.skin = new MockSkin();
     drawable.skin.size = [200, 50];
+    MockSkinPool.forDrawableSkin(drawable);
 
     drawable.skin.setRotationCenter(1, 0);
     expected.initFromBounds(-1, 199, -50, 0);
@@ -64,6 +67,7 @@ test('translate and rotate', t => {
     const drawable = new Drawable();
     drawable.skin = new MockSkin();
     drawable.skin.size = [200, 50];
+    MockSkinPool.forDrawableSkin(drawable);
 
     drawable.updateProperties({position: [1, 2], direction: 0});
     expected.initFromBounds(1, 51, 2, 202);
@@ -90,6 +94,7 @@ test('rotate by non-right-angles', t => {
     drawable.skin = new MockSkin();
     drawable.skin.size = [10, 10];
     drawable.skin.setRotationCenter(5, 5);
+    MockSkinPool.forDrawableSkin(drawable);
 
     expected.initFromBounds(-5, 5, -5, 5);
     t.same(snapToNearest(drawable.getAABB()), expected);
@@ -106,6 +111,7 @@ test('scale', t => {
     const drawable = new Drawable();
     drawable.skin = new MockSkin();
     drawable.skin.size = [200, 50];
+    MockSkinPool.forDrawableSkin(drawable);
 
     drawable.updateProperties({scale: [100, 50]});
     expected.initFromBounds(0, 200, -25, 0);
@@ -128,6 +134,7 @@ test('rotate and scale', t => {
     const drawable = new Drawable();
     drawable.skin = new MockSkin();
     drawable.skin.size = [100, 1000];
+    MockSkinPool.forDrawableSkin(drawable);
 
     drawable.skin.setRotationCenter(50, 50);
     expected.initFromBounds(-50, 50, -950, 50);
