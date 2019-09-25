@@ -116,15 +116,13 @@ class SVGSkin extends Skin {
     setSVG (svgData, rotationCenter) {
         this._svgRenderer.loadString(svgData);
 
-        // Size must be updated synchronously because the VM sets the costume's `size` immediately after calling this.
-        // TODO: add either a callback to this function so the costume size can be set after this is done,
-        // or something in the VM to handle setting the costume size when Skin.Events.WasAltered is emitted.
+        // Size must be updated synchronously because the VM sets the costume's
+        // `size` immediately after calling this.
         this.size = this._svgRenderer.size;
-        if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
         this._viewOffset = this._svgRenderer.viewOffset;
-        // Reset rawRotationCenter when we update viewOffset.
+        // Reset rawRotationCenter when we update viewOffset. The rotation
+        // center used to render will be updated later.
         this._rawRotationCenter = [NaN, NaN];
-        this.setRotationCenter(rotationCenter[0], rotationCenter[1]);
 
         this._svgRenderer._draw(1, () => {
             const gl = this._renderer.gl;
@@ -158,6 +156,9 @@ class SVGSkin extends Skin {
             for (testScale; maxDimension * testScale <= MAX_TEXTURE_DIMENSION; testScale *= 2) {
                 this._maxTextureScale = testScale;
             }
+
+            if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
+            this.setRotationCenter(rotationCenter[0], rotationCenter[1]);
 
             this.emit(Skin.Events.WasAltered);
         });
