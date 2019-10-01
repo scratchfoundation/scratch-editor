@@ -16,6 +16,7 @@ const log = require('./util/log');
 
 const __isTouchingDrawablesPoint = twgl.v3.create();
 const __candidatesBounds = new Rectangle();
+const __fenceBounds = new Rectangle();
 const __touchingColor = new Uint8ClampedArray(4);
 const __blendColor = new Uint8ClampedArray(4);
 
@@ -104,7 +105,7 @@ class RenderWebGL extends EventEmitter {
      * @private
      */
     static _getContext (canvas) {
-        return twgl.getWebGLContext(canvas, {alpha: false, stencil: true});
+        return twgl.getWebGLContext(canvas, {alpha: false, stencil: true, antialias: false});
     }
 
     /**
@@ -1313,9 +1314,122 @@ class RenderWebGL extends EventEmitter {
         }, null);
     }
 
+    /**
+     * Update a drawable's skin.
+     * @param {number} drawableID The drawable's id.
+     * @param {number} skinId The skin to update to.
+     */
+    updateDrawableSkinId (drawableID, skinId) {
+        const drawable = this._allDrawables[drawableID];
+        // TODO: https://github.com/LLK/scratch-vm/issues/2288
+        if (!drawable) return;
+        drawable.skin = this._allSkins[skinId];
+    }
+
+    /**
+     * Update a drawable's skin rotation center.
+     * @param {number} drawableID The drawable's id.
+     * @param {Array.<number>} rotationCenter The rotation center for the skin.
+     */
+    updateDrawableRotationCenter (drawableID, rotationCenter) {
+        const drawable = this._allDrawables[drawableID];
+        // TODO: https://github.com/LLK/scratch-vm/issues/2288
+        if (!drawable) return;
+        drawable.skin.setRotationCenter(rotationCenter[0], rotationCenter[1]);
+    }
+
+    /**
+     * Update a drawable's skin and rotation center together.
+     * @param {number} drawableID The drawable's id.
+     * @param {number} skinId The skin to update to.
+     * @param {Array.<number>} rotationCenter The rotation center for the skin.
+     */
+    updateDrawableSkinIdRotationCenter (drawableID, skinId, rotationCenter) {
+        const drawable = this._allDrawables[drawableID];
+        // TODO: https://github.com/LLK/scratch-vm/issues/2288
+        if (!drawable) return;
+        drawable.skin = this._allSkins[skinId];
+        drawable.skin.setRotationCenter(rotationCenter[0], rotationCenter[1]);
+    }
+
+    /**
+     * Update a drawable's position.
+     * @param {number} drawableID The drawable's id.
+     * @param {Array.<number>} position The new position.
+     */
+    updateDrawablePosition (drawableID, position) {
+        const drawable = this._allDrawables[drawableID];
+        // TODO: https://github.com/LLK/scratch-vm/issues/2288
+        if (!drawable) return;
+        drawable.updatePosition(position);
+    }
+
+    /**
+     * Update a drawable's direction.
+     * @param {number} drawableID The drawable's id.
+     * @param {number} direction A new direction.
+     */
+    updateDrawableDirection (drawableID, direction) {
+        const drawable = this._allDrawables[drawableID];
+        // TODO: https://github.com/LLK/scratch-vm/issues/2288
+        if (!drawable) return;
+        drawable.updateDirection(direction);
+    }
+
+    /**
+     * Update a drawable's scale.
+     * @param {number} drawableID The drawable's id.
+     * @param {Array.<number>} scale A new scale.
+     */
+    updateDrawableScale (drawableID, scale) {
+        const drawable = this._allDrawables[drawableID];
+        // TODO: https://github.com/LLK/scratch-vm/issues/2288
+        if (!drawable) return;
+        drawable.updateScale(scale);
+    }
+
+    /**
+     * Update a drawable's direction and scale together.
+     * @param {number} drawableID The drawable's id.
+     * @param {number} direction A new direction.
+     * @param {Array.<number>} scale A new scale.
+     */
+    updateDrawableDirectionScale (drawableID, direction, scale) {
+        const drawable = this._allDrawables[drawableID];
+        // TODO: https://github.com/LLK/scratch-vm/issues/2288
+        if (!drawable) return;
+        drawable.updateDirection(direction);
+        drawable.updateScale(scale);
+    }
+
+    /**
+     * Update a drawable's visibility.
+     * @param {number} drawableID The drawable's id.
+     * @param {boolean} visible Will the drawable be visible?
+     */
+    updateDrawableVisible (drawableID, visible) {
+        const drawable = this._allDrawables[drawableID];
+        // TODO: https://github.com/LLK/scratch-vm/issues/2288
+        if (!drawable) return;
+        drawable.updateVisible(visible);
+    }
+
+    /**
+     * Update a drawable's visual effect.
+     * @param {number} drawableID The drawable's id.
+     * @param {string} effectName The effect to change.
+     * @param {number} value A new effect value.
+     */
+    updateDrawableEffect (drawableID, effectName, value) {
+        const drawable = this._allDrawables[drawableID];
+        // TODO: https://github.com/LLK/scratch-vm/issues/2288
+        if (!drawable) return;
+        drawable.updateEffect(effectName, value);
+    }
 
     /**
      * Update the position, direction, scale, or effect properties of this Drawable.
+     * @deprecated Use specific updateDrawable* methods instead.
      * @param {int} drawableID The ID of the Drawable to update.
      * @param {object.<string,*>} properties The new property values to set.
      */
@@ -1323,17 +1437,16 @@ class RenderWebGL extends EventEmitter {
         const drawable = this._allDrawables[drawableID];
         if (!drawable) {
             /**
-             * @todo fix whatever's wrong in the VM which causes this, then add a warning or throw here.
+             * @todo(https://github.com/LLK/scratch-vm/issues/2288) fix whatever's wrong in the VM which causes this, then add a warning or throw here.
              * Right now this happens so much on some projects that a warning or exception here can hang the browser.
              */
             return;
         }
         if ('skinId' in properties) {
-            drawable.skin = this._allSkins[properties.skinId];
+            this.updateDrawableSkinId(drawableID, properties.skinId);
         }
         if ('rotationCenter' in properties) {
-            const newRotationCenter = properties.rotationCenter;
-            drawable.skin.setRotationCenter(newRotationCenter[0], newRotationCenter[1]);
+            this.updateDrawableRotationCenter(drawableID, properties.rotationCenter);
         }
         drawable.updateProperties(properties);
     }
@@ -1350,14 +1463,14 @@ class RenderWebGL extends EventEmitter {
 
         const drawable = this._allDrawables[drawableID];
         if (!drawable) {
-            // TODO: fix whatever's wrong in the VM which causes this, then add a warning or throw here.
+            // @todo(https://github.com/LLK/scratch-vm/issues/2288) fix whatever's wrong in the VM which causes this, then add a warning or throw here.
             // Right now this happens so much on some projects that a warning or exception here can hang the browser.
             return [x, y];
         }
 
         const dx = x - drawable._position[0];
         const dy = y - drawable._position[1];
-        const aabb = drawable._skin.getFenceBounds(drawable);
+        const aabb = drawable._skin.getFenceBounds(drawable, __fenceBounds);
         const inset = Math.floor(Math.min(aabb.width, aabb.height) / 2);
 
         const sx = this._xRight - Math.min(FENCE_WIDTH, inset);
@@ -1416,8 +1529,6 @@ class RenderWebGL extends EventEmitter {
      * @param {int} stampID - the unique ID of the Drawable to use as the stamp.
      */
     penStamp (penSkinID, stampID) {
-        this._doExitDrawRegion();
-
         const stampDrawable = this._allDrawables[stampID];
         if (!stampDrawable) {
             return;
@@ -1427,6 +1538,8 @@ class RenderWebGL extends EventEmitter {
         if (!bounds) {
             return;
         }
+
+        this._doExitDrawRegion();
 
         const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
 
@@ -1548,6 +1661,7 @@ class RenderWebGL extends EventEmitter {
             this._exitRegion();
         }
         this._exitRegion = null;
+        this._regionId = null;
     }
 
     /**
@@ -1627,14 +1741,14 @@ class RenderWebGL extends EventEmitter {
             }
 
             twgl.setUniforms(currentShader, uniforms);
-            
+
             /* adjust blend function for this skin */
             if (drawable.skin.hasPremultipliedAlpha){
                 gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             } else {
                 gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             }
-            
+
             twgl.drawBufferInfo(gl, this._bufferInfo, gl.TRIANGLES);
         }
 
