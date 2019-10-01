@@ -1,7 +1,5 @@
 precision mediump float;
 
-uniform float u_fudge;
-
 #ifdef DRAW_MODE_silhouette
 uniform vec4 u_silhouetteColor;
 #else // DRAW_MODE_silhouette
