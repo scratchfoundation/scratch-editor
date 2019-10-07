@@ -66,6 +66,10 @@ class SVGSkin extends Skin {
      */
     // eslint-disable-next-line no-unused-vars
     getTexture (scale) {
+        if (!this._svgRenderer.canvas.width || !this._svgRenderer.canvas.height) {
+            return super.getTexture();
+        }
+
         // The texture only ever gets uniform scale. Take the larger of the two axes.
         const scaleMax = scale ? Math.max(Math.abs(scale[0]), Math.abs(scale[1])) : 100;
         const requestedScale = Math.min(scaleMax / 100, this._maxTextureScale);
@@ -108,6 +112,12 @@ class SVGSkin extends Skin {
             // updating Silhouette and is better handled by more browsers in
             // regards to memory.
             const canvas = this._svgRenderer.canvas;
+
+            if (!canvas.width || !canvas.height) {
+                super.setEmptyImageData();
+                return;
+            }
+
             const context = canvas.getContext('2d');
             const textureData = context.getImageData(0, 0, canvas.width, canvas.height);
 
