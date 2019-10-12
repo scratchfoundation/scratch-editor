@@ -394,8 +394,6 @@ class RenderWebGL extends EventEmitter {
         for (const drawable of this._allDrawables) {
             if (drawable && drawable.skin === oldSkin) {
                 drawable.skin = newSkin;
-                drawable.setConvexHullDirty();
-                drawable.setTransformDirty();
             }
         }
         oldSkin.dispose();
