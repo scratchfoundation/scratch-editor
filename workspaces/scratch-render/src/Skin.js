@@ -173,10 +173,6 @@ class Skin extends EventEmitter {
 
     /**
      * Set the contents of this skin to an empty skin.
-     * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
-     * @param {int} [costumeResolution=1] - The resolution to use for this bitmap.
-     * @param {Array<number>} [rotationCenter] - Optional rotation center for the bitmap. If not supplied, it will be
-     * calculated from the bounding box
      * @fires Skin.event:WasAltered
      */
     setEmptyImageData () {
