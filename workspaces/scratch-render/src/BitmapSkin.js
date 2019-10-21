@@ -56,7 +56,7 @@ class BitmapSkin extends Skin {
      */
     // eslint-disable-next-line no-unused-vars
     getTexture (scale) {
-        return this._texture;
+        return this._texture || super.getTexture();
     }
 
     /**
@@ -78,6 +78,10 @@ class BitmapSkin extends Skin {
      * @fires Skin.event:WasAltered
      */
     setBitmap (bitmapData, costumeResolution, rotationCenter) {
+        if (!bitmapData.width || !bitmapData.height) {
+            super.setEmptyImageData();
+            return;
+        }
         const gl = this._renderer.gl;
 
         // Preferably bitmapData is ImageData. ImageData speeds up updating

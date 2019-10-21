@@ -140,7 +140,7 @@ class Skin extends EventEmitter {
      */
     // eslint-disable-next-line no-unused-vars
     getTexture (scale) {
-        return null;
+        return this._emptyImageTexture;
     }
 
     /**
@@ -170,6 +170,38 @@ class Skin extends EventEmitter {
      * @abstract
      */
     updateSilhouette () {}
+
+    /**
+     * Set the contents of this skin to an empty skin.
+     * @fires Skin.event:WasAltered
+     */
+    setEmptyImageData () {
+        // Free up the current reference to the _texture
+        this._texture = null;
+
+        if (!this._emptyImageData) {
+            // Create a transparent pixel
+            this._emptyImageData = new ImageData(1, 1);
+
+            // Create a new texture and update the silhouette
+            const gl = this._renderer.gl;
+
+            const textureOptions = {
+                auto: true,
+                wrap: gl.CLAMP_TO_EDGE,
+                src: this._emptyImageData
+            };
+
+            // Note: we're using _emptyImageTexture here instead of _texture
+            // so that we can cache this empty texture for later use as needed.
+            // this._texture can get modified by other skins (e.g. BitmapSkin
+            // and SVGSkin, so we can't use that same field for caching)
+            this._emptyImageTexture = twgl.createTexture(gl, textureOptions);
+        }
+
+        this._silhouette.update(this._emptyImageData);
+        this.emit(Skin.Events.WasAltered);
+    }
 
     /**
      * Does this point touch an opaque or translucent point on this skin?
