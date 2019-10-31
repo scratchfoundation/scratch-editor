@@ -33,7 +33,7 @@ class SvgRenderer {
      * This will be parsed and transformed, and finally drawn.
      * When drawing is finished, the `onFinish` callback is called.
      * @param {string} svgString String of SVG data to draw in quirks-mode.
-     * @param {number} [scale] - Optionally, also scale the image by this factor (multiplied by `getDrawRatio()`).
+     * @param {number} [scale] - Optionally, also scale the image by this factor.
      * @param {Function} [onFinish] Optional callback for when drawing finished.
      */
     fromString (svgString, scale, onFinish) {
@@ -366,22 +366,8 @@ class SvgRenderer {
     }
 
     /**
-     * Get the drawing ratio, adjusted for HiDPI screens.
-     * @return {number} Scale ratio to draw to canvases with.
-     */
-    getDrawRatio () {
-        const devicePixelRatio = window.devicePixelRatio || 1;
-        const backingStoreRatio = this._context.webkitBackingStorePixelRatio ||
-            this._context.mozBackingStorePixelRatio ||
-            this._context.msBackingStorePixelRatio ||
-            this._context.oBackingStorePixelRatio ||
-            this._context.backingStorePixelRatio || 1;
-        return devicePixelRatio / backingStoreRatio;
-    }
-
-    /**
-     * Draw the SVG to a canvas. The canvas will automatically be scaled by the value returned by `getDrawRatio`.
-     * @param {number} [scale] - Optionally, also scale the image by this factor (multiplied by `getDrawRatio()`).
+     * Draw the SVG to a canvas.
+     * @param {number} [scale] - Optionally, also scale the image by this factor.
      * @param {Function} [onFinish] - An optional callback to call when the draw operation is complete.
      */
     _draw (scale, onFinish) {
@@ -401,13 +387,13 @@ class SvgRenderer {
 
     /**
      * Draw to the canvas from a loaded image element.
-     * @param {number} [scale] - Optionally, also scale the image by this factor (multiplied by `getDrawRatio()`).
+     * @param {number} [scale] - Optionally, also scale the image by this factor.
      * @param {Function} [onFinish] - An optional callback to call when the draw operation is complete.
      **/
     _drawFromImage (scale, onFinish) {
         if (!this._cachedImage) return;
 
-        const ratio = this.getDrawRatio() * (Number.isFinite(scale) ? scale : 1);
+        const ratio = Number.isFinite(scale) ? scale : 1;
         const bbox = this._measurements;
         this._canvas.width = bbox.width * ratio;
         this._canvas.height = bbox.height * ratio;
