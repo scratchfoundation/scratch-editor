@@ -539,7 +539,7 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
             if (Matrix.toString(matrix) === Matrix.toString(Matrix.identity())) {
                 element.removeAttribute('transform');
                 element.setAttribute('stroke-width', strokeWidth);
-                element.setAttribute('fill', fill);
+                if (fill) element.setAttribute('fill', fill);
                 return;
             }
 
@@ -579,7 +579,7 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
             // Transform stroke width
             const matrixScale = _getScaleFactor(matrix);
             element.setAttribute('stroke-width', _quadraticMean(matrixScale.x, matrixScale.y) * strokeWidth);
-            element.setAttribute('fill', fill);
+            if (fill) element.setAttribute('fill', fill);
         } else if (_isGraphicsElement(element)) {
             // Push stroke width and fill down to leaves
             if (strokeWidth && !element.attributes['stroke-width']) {
