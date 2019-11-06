@@ -54,7 +54,7 @@ class TextBubbleSkin extends Skin {
         /** @type {Array<string>} */
         this._lines = [];
 
-        this._textSize = {width: 0, height: 0};
+        /** @type {object} */
         this._textAreaSize = {width: 0, height: 0};
 
         /** @type {string} */
@@ -127,17 +127,14 @@ class TextBubbleSkin extends Skin {
         this._lines = this.textWrapper.wrapText(BubbleStyle.MAX_LINE_WIDTH, this._text);
 
         // Measure width of longest line to avoid extra-wide bubbles
-        let longestLine = 0;
+        let longestLineWidth = 0;
         for (const line of this._lines) {
-            longestLine = Math.max(longestLine, this.measurementProvider.measureText(line));
+            longestLineWidth = Math.max(longestLineWidth, this.measurementProvider.measureText(line));
         }
 
-        this._textSize.width = longestLine;
-        this._textSize.height = BubbleStyle.LINE_HEIGHT * this._lines.length;
-
         // Calculate the canvas-space sizes of the padded text area and full text bubble
-        const paddedWidth = Math.max(this._textSize.width, BubbleStyle.MIN_WIDTH) + (BubbleStyle.PADDING * 2);
-        const paddedHeight = this._textSize.height + (BubbleStyle.PADDING * 2);
+        const paddedWidth = Math.max(longestLineWidth, BubbleStyle.MIN_WIDTH) + (BubbleStyle.PADDING * 2);
+        const paddedHeight = (BubbleStyle.LINE_HEIGHT * this._lines.length) + (BubbleStyle.PADDING * 2);
 
         this._textAreaSize.width = paddedWidth;
         this._textAreaSize.height = paddedHeight;
@@ -267,14 +264,13 @@ class TextBubbleSkin extends Skin {
 
             if (this._texture === null) {
                 const textureOptions = {
-                    auto: true,
-                    wrap: gl.CLAMP_TO_EDGE,
-                    src: textureData
+                    auto: false,
+                    wrap: gl.CLAMP_TO_EDGE
                 };
 
                 this._texture = twgl.createTexture(gl, textureOptions);
             }
-    
+
             gl.bindTexture(gl.TEXTURE_2D, this._texture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
             this._silhouette.update(textureData);
