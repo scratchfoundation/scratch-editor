@@ -180,6 +180,7 @@ class TextBubbleSkin extends Skin {
         }
 
         // Draw the bubble's rounded borders
+        ctx.beginPath();
         ctx.moveTo(BubbleStyle.CORNER_RADIUS, paddedHeight);
         ctx.arcTo(0, paddedHeight, 0, paddedHeight - BubbleStyle.CORNER_RADIUS, BubbleStyle.CORNER_RADIUS);
         ctx.arcTo(0, 0, paddedWidth, 0, BubbleStyle.CORNER_RADIUS);
