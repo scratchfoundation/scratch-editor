@@ -82,10 +82,10 @@ const setGuideItem = function (item) {
     item.guide = true;
     if (isGroupItem(item)) {
         for (let i = 0; i < item.children.length; i++) {
-            setGuideItem(item.children[i])
+            setGuideItem(item.children[i]);
         }
     }
-}
+};
 
 /**
  * Removes the guide layers, e.g. for purposes of exporting the image. Must call showGuideLayers to re-add them.

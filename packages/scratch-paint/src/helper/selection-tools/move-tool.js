@@ -75,11 +75,11 @@ class MoveTool {
         this.selectedItems = this.mode === Modes.RESHAPE ? getSelectedLeafItems() : getSelectedRootItems();
 
         let selectionBounds;
-        for (const item of this.selectedItems) {
-            if (!selectionBounds) {
-                selectionBounds = item.bounds;
+        for (const selectedItem of this.selectedItems) {
+            if (selectionBounds) {
+                selectionBounds = selectionBounds.unite(selectedItem.bounds);
             } else {
-                selectionBounds = selectionBounds.unite(item.bounds);
+                selectionBounds = selectedItem.bounds;
             }
         }
         this.selectionCenter = selectionBounds.center;
@@ -128,7 +128,11 @@ class MoveTool {
         // crosshair to line up.
         const center = new paper.Point(ART_BOARD_WIDTH / 2, ART_BOARD_HEIGHT / 2);
         if (!event.modifiers.shift && this.mode === Modes.SELECT) {
-            if (checkPointsClose(this.selectionCenter.add(dragVector), center, SNAPPING_THRESHOLD / paper.view.zoom /* threshold */)) {
+            if (checkPointsClose(
+                this.selectionCenter.add(dragVector),
+                center,
+                SNAPPING_THRESHOLD / paper.view.zoom /* threshold */)) {
+                
                 snapVector = center.subtract(this.selectionCenter);
             }
         }

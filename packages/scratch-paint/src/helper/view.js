@@ -39,7 +39,7 @@ const _resizeCrosshair = () => {
         getBackgroundGuideLayer().dragCrosshair.scale(
             CROSSHAIR_SIZE / getBackgroundGuideLayer().dragCrosshair.bounds.width / paper.view.zoom);
     }
-}
+};
 
 // Zoom keeping a project-space point fixed.
 // This article was helpful http://matthiasberth.com/tech/stable-zoom-and-pan-in-paperjs
