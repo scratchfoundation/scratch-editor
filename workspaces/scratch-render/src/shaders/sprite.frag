@@ -33,11 +33,12 @@ uniform float u_mosaic;
 uniform float u_ghost;
 #endif // ENABLE_ghost
 
-#ifdef DRAW_MODE_lineSample
+#ifdef DRAW_MODE_line
 uniform vec4 u_lineColor;
-uniform float u_capScale;
-uniform float u_aliasAmount;
-#endif // DRAW_MODE_lineSample
+uniform float u_lineThickness;
+uniform vec2 u_p1;
+uniform vec2 u_p2;
+#endif // DRAW_MODE_line
 
 uniform sampler2D u_skin;
 
@@ -109,7 +110,7 @@ const vec2 kCenter = vec2(0.5, 0.5);
 
 void main()
 {
-	#ifndef DRAW_MODE_lineSample
+	#ifndef DRAW_MODE_line
 	vec2 texcoord0 = v_texCoord;
 
 	#ifdef ENABLE_mosaic
@@ -210,14 +211,15 @@ void main()
 	#endif // DRAW_MODE_colorMask
 	#endif // DRAW_MODE_silhouette
 
-	#else // DRAW_MODE_lineSample
-	gl_FragColor = u_lineColor * clamp(
-		// Scale the capScale a little to have an aliased region.
-		(u_capScale + u_aliasAmount -
-			u_capScale * 2.0 * distance(v_texCoord, vec2(0.5, 0.5))
-		) / (u_aliasAmount + 1.0),
-		0.0,
-		1.0
-	);
-	#endif // DRAW_MODE_lineSample
+	#else // DRAW_MODE_line
+	// Maaaaagic antialiased-line-with-round-caps shader.
+	// Adapted from Inigo Quilez' 2D distance function cheat sheet
+	// https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
+	vec2 pa = v_texCoord - u_p1, ba = u_p2 - u_p1;
+	float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+
+	float cappedLine = clamp((u_lineThickness + 1.0) * 0.5 - length(pa - ba*h), 0.0, 1.0);
+
+	gl_FragColor = u_lineColor * cappedLine;
+	#endif // DRAW_MODE_line
 }
