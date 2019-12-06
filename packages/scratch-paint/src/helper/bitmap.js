@@ -334,6 +334,14 @@ const getHitBounds = function (raster) {
     while (left < right && columnBlank_(imageData, width, left, top, bottom)) ++left;
     while (right - 1 > left && columnBlank_(imageData, width, right - 1, top, bottom)) --right;
 
+    // Center an empty bitmap
+    if (top === bottom) {
+        top = bottom = imageData.height / 2;
+    }
+    if (left === right) {
+        left = right = imageData.width / 2;
+    }
+
     return new paper.Rectangle(left, top, right - left, bottom - top);
 };
 
