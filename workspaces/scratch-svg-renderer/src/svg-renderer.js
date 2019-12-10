@@ -19,6 +19,7 @@ class SvgRenderer {
         this._context = this._canvas.getContext('2d');
         this._measurements = {x: 0, y: 0, width: 0, height: 0};
         this._cachedImage = null;
+        this.loaded = false;
     }
 
     /**
@@ -26,13 +27,6 @@ class SvgRenderer {
      */
     get canvas () {
         return this._canvas;
-    }
-
-    /**
-     * @returns {boolean} True if this renderer's set SVG has been loaded and can be rendered, false if not.
-     */
-    get loaded () {
-        return this._cachedImage !== null;
     }
 
     /**
@@ -139,14 +133,16 @@ class SvgRenderer {
      * @param {Function} [onFinish] - An optional callback to call when the <img> has loaded.
      */
     _createSVGImage (onFinish) {
-        const img = new Image();
-        this._cachedImage = null;
+        if (this._cachedImage === null) this._cachedImage = new Image();
+        const img = this._cachedImage;
+
         img.onload = () => {
-            this._cachedImage = img;
+            this.loaded = true;
             if (onFinish) onFinish();
         };
         const svgText = this.toString(true /* shouldInjectFonts */);
         img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
+        this.loaded = false;
     }
 
     /**
@@ -406,7 +402,7 @@ class SvgRenderer {
      * @param {number} [scale] - Optionally, also scale the image by this factor.
      */
     draw (scale) {
-        if (this._cachedImage === null) throw new Error('SVG image has not finished loading');
+        if (!this.loaded) throw new Error('SVG image has not finished loading');
         this._drawFromImage(scale);
     }
 
