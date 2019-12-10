@@ -130,15 +130,21 @@ class EffectTransform {
         const effects = drawable.enabledEffects;
         const uniforms = drawable.getUniforms();
 
-        if ((effects & ShaderManager.EFFECT_INFO.ghost.mask) !== 0) {
-            // gl_FragColor.a *= u_ghost
-            inOutColor[3] *= uniforms.u_ghost;
-        }
-
         const enableColor = (effects & ShaderManager.EFFECT_INFO.color.mask) !== 0;
         const enableBrightness = (effects & ShaderManager.EFFECT_INFO.brightness.mask) !== 0;
 
         if (enableColor || enableBrightness) {
+            // gl_FragColor.rgb /= gl_FragColor.a + epsilon;
+            // Here, we're dividing by the (previously pre-multiplied) alpha to ensure HSV is properly calculated
+            // for partially transparent pixels.
+            // epsilon is present in the shader because dividing by 0 (fully transparent pixels) messes up calculations.
+            // We're doing this with a Uint8ClampedArray here, so dividing by 0 just gives 255. We're later multiplying
+            // by 0 again, so it won't affect results.
+            const alpha = inOutColor[3] / 255;
+            inOutColor[0] /= alpha;
+            inOutColor[1] /= alpha;
+            inOutColor[2] /= alpha;
+
             // vec3 hsl = convertRGB2HSL(gl_FragColor.xyz);
             const hsl = rgbToHsl(inOutColor);
 
@@ -171,6 +177,20 @@ class EffectTransform {
             }
             // gl_FragColor.rgb = convertHSL2RGB(hsl);
             inOutColor.set(hslToRgb(hsl));
+
+            // gl_FragColor.rgb *= gl_FragColor.a + epsilon;
+            // Now we're doing the reverse, premultiplying by the alpha once again.
+            inOutColor[0] *= alpha;
+            inOutColor[1] *= alpha;
+            inOutColor[2] *= alpha;
+        }
+
+        if ((effects & ShaderManager.EFFECT_INFO.ghost.mask) !== 0) {
+            // gl_FragColor *= u_ghost
+            inOutColor[0] *= uniforms.u_ghost;
+            inOutColor[1] *= uniforms.u_ghost;
+            inOutColor[2] *= uniforms.u_ghost;
+            inOutColor[3] *= uniforms.u_ghost;
         }
 
         return inOutColor;

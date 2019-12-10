@@ -33,6 +33,9 @@ class Skin extends EventEmitter {
         /** @type {Vec3} */
         this._rotationCenter = twgl.v3.create(0, 0);
 
+        /** @type {WebGLTexture} */
+        this._texture = null;
+
         /**
          * The uniforms to be used by the vertex and pixel shaders.
          * Some of these are used by other parts of the renderer as well.
@@ -170,6 +173,23 @@ class Skin extends EventEmitter {
      * @abstract
      */
     updateSilhouette () {}
+
+    /**
+     * Set this skin's texture to the given image.
+     * @param {ImageData|HTMLCanvasElement} textureData - The canvas or image data to set the texture to.
+     */
+    _setTexture (textureData) {
+        const gl = this._renderer.gl;
+
+        gl.bindTexture(gl.TEXTURE_2D, this._texture);
+        // Premultiplied alpha is necessary for proper blending.
+        // See http://www.realtimerendering.com/blog/gpus-prefer-premultiplication/
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
+
+        this._silhouette.update(textureData);
+    }
 
     /**
      * Set the contents of this skin to an empty skin.

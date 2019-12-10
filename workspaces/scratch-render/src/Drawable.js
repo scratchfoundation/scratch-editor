@@ -685,6 +685,9 @@ class Drawable {
         const localPosition = getLocalPosition(drawable, vec);
         if (localPosition[0] < 0 || localPosition[1] < 0 ||
             localPosition[0] > 1 || localPosition[1] > 1) {
+            dst[0] = 0;
+            dst[1] = 0;
+            dst[2] = 0;
             dst[3] = 0;
             return dst;
         }

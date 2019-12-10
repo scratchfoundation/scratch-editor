@@ -18,9 +18,6 @@ class BitmapSkin extends Skin {
         /** @type {!RenderWebGL} */
         this._renderer = renderer;
 
-        /** @type {WebGLTexture} */
-        this._texture = null;
-
         /** @type {Array<int>} */
         this._textureSize = [0, 0];
     }
@@ -95,21 +92,16 @@ class BitmapSkin extends Skin {
             textureData = context.getImageData(0, 0, bitmapData.width, bitmapData.height);
         }
 
-        if (this._texture) {
-            gl.bindTexture(gl.TEXTURE_2D, this._texture);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, textureData);
-            this._silhouette.update(textureData);
-        } else {
-            // TODO: mipmaps?
+        if (this._texture === null) {
             const textureOptions = {
-                auto: true,
-                wrap: gl.CLAMP_TO_EDGE,
-                src: textureData
+                auto: false,
+                wrap: gl.CLAMP_TO_EDGE
             };
 
             this._texture = twgl.createTexture(gl, textureOptions);
-            this._silhouette.update(textureData);
         }
+
+        this._setTexture(textureData);
 
         // Do these last in case any of the above throws an exception
         this._costumeResolution = costumeResolution || 2;

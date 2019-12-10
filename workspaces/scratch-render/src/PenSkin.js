@@ -79,6 +79,9 @@ class PenSkin extends Skin {
     constructor (id, renderer) {
         super(id);
 
+        // This silhouette will be updated with data from `gl.readPixels`, which is premultiplied.
+        this._silhouette.premultiplied = true;
+
         /**
          * @private
          * @type {RenderWebGL}
@@ -87,9 +90,6 @@ class PenSkin extends Skin {
 
         /** @type {HTMLCanvasElement} */
         this._canvas = document.createElement('canvas');
-
-        /** @type {WebGLTexture} */
-        this._texture = null;
 
         /** @type {WebGLTexture} */
         this._exportTexture = null;
@@ -123,7 +123,7 @@ class PenSkin extends Skin {
 
         const NO_EFFECTS = 0;
         /** @type {twgl.ProgramInfo} */
-        this._stampShader = this._renderer._shaderManager.getShader(ShaderManager.DRAW_MODE.stamp, NO_EFFECTS);
+        this._stampShader = this._renderer._shaderManager.getShader(ShaderManager.DRAW_MODE.default, NO_EFFECTS);
 
         /** @type {twgl.ProgramInfo} */
         this._lineShader = this._renderer._shaderManager.getShader(ShaderManager.DRAW_MODE.lineSample, NO_EFFECTS);
@@ -317,13 +317,6 @@ class PenSkin extends Skin {
 
         twgl.bindFramebufferInfo(gl, this._framebuffer);
 
-        // Needs a blend function that blends a destination that starts with
-        // no alpha.
-        gl.blendFuncSeparate(
-            gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
-            gl.ONE, gl.ONE_MINUS_SRC_ALPHA
-        );
-
         gl.viewport(0, 0, bounds.width, bounds.height);
 
         gl.useProgram(currentShader.program);
@@ -343,8 +336,6 @@ class PenSkin extends Skin {
      */
     _exitDrawLineOnBuffer () {
         const gl = this._renderer.gl;
-
-        gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
 
         twgl.bindFramebufferInfo(gl, null);
     }
@@ -490,8 +481,6 @@ class PenSkin extends Skin {
 
         twgl.bindFramebufferInfo(gl, this._framebuffer);
 
-        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
         this._drawRectangleRegionEnter(this._stampShader, this._bounds);
     }
 
@@ -500,8 +489,6 @@ class PenSkin extends Skin {
      */
     _exitDrawToBuffer () {
         const gl = this._renderer.gl;
-
-        gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
 
         twgl.bindFramebufferInfo(gl, null);
     }
