@@ -1542,23 +1542,20 @@ class RenderWebGL extends EventEmitter {
         const skin = /** @type {PenSkin} */ this._allSkins[penSkinID];
 
         const gl = this._gl;
-        twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+        twgl.bindFramebufferInfo(gl, skin._framebuffer);
 
         // Limit size of viewport to the bounds around the stamp Drawable and create the projection matrix for the draw.
-        gl.viewport(0, 0, bounds.width, bounds.height);
+        gl.viewport(
+            (this._nativeSize[0] * 0.5) + bounds.left,
+            (this._nativeSize[1] * 0.5) - bounds.top,
+            bounds.width,
+            bounds.height
+        );
         const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
 
-        gl.clearColor(0, 0, 0, 0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
-
-        try {
-            gl.disable(gl.BLEND);
-            this._drawThese([stampID], ShaderManager.DRAW_MODE.stamp, projection, {ignoreVisibility: true});
-        } finally {
-            gl.enable(gl.BLEND);
-        }
-
-        skin._drawToBuffer(this._queryBufferInfo.attachments[0], bounds.left, bounds.top);
+        // Draw the stamped sprite onto the PenSkin's framebuffer.
+        this._drawThese([stampID], ShaderManager.DRAW_MODE.stamp, projection, {ignoreVisibility: true});
+        skin._silhouetteDirty = true;
     }
 
     /* ******
