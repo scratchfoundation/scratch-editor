@@ -43,12 +43,12 @@ module.exports = function (svgString) {
     }
 
     // The <metadata> element is not needed for rendering and sometimes contains
-    // unparseable garbage from Illustrator :(
+    // unparseable garbage from Illustrator :( Empty out the contents.
     // Note: [\s\S] matches everything including newlines, which .* does not
-    svgString = svgString.replace(/<metadata>[\s\S]*<\/metadata>/, '');
+    svgString = svgString.replace(/<metadata>[\s\S]*<\/metadata>/, '<metadata></metadata>');
 
-    // Strip script tags and javascript executing
-    svgString = svgString.replace(/<script[\s\S]*>[\s\S]*<\/script>/, '');
+    // Empty script tags and javascript executing
+    svgString = svgString.replace(/<script[\s\S]*>[\s\S]*<\/script>/, '<script></script>');
 
     return svgString;
 };
