@@ -42,12 +42,47 @@ test('fixupSvgString should correct namespace declarations bound to reserved nam
     t.end();
 });
 
-test('fixupSvgString should prevent script tags', t => {
+test('fixupSvgString should empty script tags', t => {
     const filePath = path.resolve(__dirname, './fixtures/script.svg');
     const svgString = fs.readFileSync(filePath)
         .toString();
     const fixed = fixupSvgString(svgString);
-    t.equal(fixed.indexOf('script'), -1);
+    // Script tag should remain but have no contents.
+    t.equals(fixed.indexOf('<script></script>'), 207);
+    // The contents of the script tag (e.g. the alert) are no longer there.
+    t.equals(fixed.indexOf('stuff inside'), -1);
+    t.end();
+});
+
+test('fixupSvgString should empty script tags in onload', t => {
+    const filePath = path.resolve(__dirname, './fixtures/onload-script.svg');
+    const svgString = fs.readFileSync(filePath)
+        .toString();
+    const fixed = fixupSvgString(svgString);
+    // Script tag should remain but have no contents.
+    t.equals(fixed.indexOf('<script></script>'), 792);
+    t.end();
+});
+
+test('fixupSvgString strips contents of metadata', t => {
+    const filePath = path.resolve(__dirname, './fixtures/metadata-body.svg');
+    const svgString = fs.readFileSync(filePath)
+        .toString();
+    const fixed = fixupSvgString(svgString);
+    // Metadata tag should still exist, it'll just be empty.
+    t.equals(fixed.indexOf('<metadata></metadata>'), 207);
+    // The contents of the metadata tag are gone.
+    t.equals(fixed.indexOf('stuff inside'), -1);
+    t.end();
+});
+
+test('fixupSvgString strips contents of metadata in onload', t => {
+    const filePath = path.resolve(__dirname, './fixtures/metadata-onload.svg');
+    const svgString = fs.readFileSync(filePath)
+        .toString();
+    const fixed = fixupSvgString(svgString);
+    // Metadata tag should still exist, it'll just be empty.
+    t.equals(fixed.indexOf('<metadata></metadata>'), 800);
     t.end();
 });
 
