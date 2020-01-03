@@ -19,6 +19,7 @@ class SvgRenderer {
         this._context = this._canvas.getContext('2d');
         this._measurements = {x: 0, y: 0, width: 0, height: 0};
         this._cachedImage = null;
+        this.loaded = false;
     }
 
     /**
@@ -35,10 +36,13 @@ class SvgRenderer {
      * @param {string} svgString String of SVG data to draw in quirks-mode.
      * @param {number} [scale] - Optionally, also scale the image by this factor.
      * @param {Function} [onFinish] Optional callback for when drawing finished.
+     * @deprecated Use the `loadSVG` method and public `draw` method instead.
      */
     fromString (svgString, scale, onFinish) {
-        this.loadString(svgString);
-        this._draw(scale, onFinish);
+        this.loadSVG(svgString, false, () => {
+            this.draw(scale);
+            if (onFinish) onFinish();
+        });
     }
 
     /**
@@ -111,6 +115,34 @@ class SvgRenderer {
             x: this._svgTag.viewBox.baseVal.x,
             y: this._svgTag.viewBox.baseVal.y
         };
+    }
+
+    /**
+     * Load an SVG string, normalize it, and prepare it for (synchronous) rendering.
+     * @param {!string} svgString String of SVG data to draw in quirks-mode.
+     * @param {?boolean} fromVersion2 True if we should perform conversion from version 2 to version 3 svg.
+     * @param {Function} [onFinish] - An optional callback to call when the SVG is loaded and can be rendered.
+     */
+    loadSVG (svgString, fromVersion2, onFinish) {
+        this.loadString(svgString, fromVersion2);
+        this._createSVGImage(onFinish);
+    }
+
+    /**
+     * Creates an <img> element for the currently loaded SVG string, then calls the callback once it's loaded.
+     * @param {Function} [onFinish] - An optional callback to call when the <img> has loaded.
+     */
+    _createSVGImage (onFinish) {
+        if (this._cachedImage === null) this._cachedImage = new Image();
+        const img = this._cachedImage;
+
+        img.onload = () => {
+            this.loaded = true;
+            if (onFinish) onFinish();
+        };
+        const svgText = this.toString(true /* shouldInjectFonts */);
+        img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
+        this.loaded = false;
     }
 
     /**
@@ -366,32 +398,39 @@ class SvgRenderer {
     }
 
     /**
-     * Draw the SVG to a canvas.
+     * Synchronously draw the loaded SVG to this renderer's `canvas`.
+     * @param {number} [scale] - Optionally, also scale the image by this factor.
+     */
+    draw (scale) {
+        if (!this.loaded) throw new Error('SVG image has not finished loading');
+        this._drawFromImage(scale);
+    }
+
+    /**
+     * Asynchronously draw the (possibly non-loaded) SVG to a canvas.
      * @param {number} [scale] - Optionally, also scale the image by this factor.
      * @param {Function} [onFinish] - An optional callback to call when the draw operation is complete.
+     * @deprecated Use the `loadSVG` and public `draw` method instead.
      */
     _draw (scale, onFinish) {
         // Convert the SVG text to an Image, and then draw it to the canvas.
-        if (this._cachedImage) {
-            this._drawFromImage(scale, onFinish);
+        if (this._cachedImage === null) {
+            this._createSVGImage(() => {
+                this._drawFromImage(scale);
+                onFinish();
+            });
         } else {
-            const img = new Image();
-            img.onload = () => {
-                this._cachedImage = img;
-                this._drawFromImage(scale, onFinish);
-            };
-            const svgText = this.toString(true /* shouldInjectFonts */);
-            img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
+            this._drawFromImage(scale);
+            onFinish();
         }
     }
 
     /**
      * Draw to the canvas from a loaded image element.
      * @param {number} [scale] - Optionally, also scale the image by this factor.
-     * @param {Function} [onFinish] - An optional callback to call when the draw operation is complete.
      **/
-    _drawFromImage (scale, onFinish) {
-        if (!this._cachedImage) return;
+    _drawFromImage (scale) {
+        if (this._cachedImage === null) return;
 
         const ratio = Number.isFinite(scale) ? scale : 1;
         const bbox = this._measurements;
@@ -405,10 +444,6 @@ class SvgRenderer {
         // Set the CSS style of the canvas to the actual measurements.
         this._canvas.style.width = bbox.width;
         this._canvas.style.height = bbox.height;
-        // All finished - call the callback if provided.
-        if (onFinish) {
-            onFinish();
-        }
     }
 }
 
