@@ -32,7 +32,7 @@
     "minilog": "3.1.0",
     "parse-color": "1.0.0",
     "prop-types": "^15.5.10",
-    "scratch-svg-renderer": "0.2.0-prerelease.20191217211338"
+    "scratch-svg-renderer": "0.2.0-prerelease.20200103191258"
   },
   "peerDependencies": {
     "react": "^16",
