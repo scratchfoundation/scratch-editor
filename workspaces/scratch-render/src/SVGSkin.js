@@ -1,5 +1,6 @@
+const twgl = require('twgl.js');
+
 const Skin = require('./Skin');
-const SVGMIP = require('./SVGMIP');
 const SvgRenderer = require('scratch-svg-renderer').SVGRenderer;
 
 const MAX_TEXTURE_DIMENSION = 2048;
@@ -29,11 +30,11 @@ class SVGSkin extends Skin {
         /** @type {SvgRenderer} */
         this._svgRenderer = new SvgRenderer();
 
-        /** @type {WebGLTexture} */
-        this._texture = null;
-
-        /** @type {Array.<SVGMIPs>} */
+        /** @type {Array<WebGLTexture>} */
         this._scaledMIPs = [];
+
+        /** @type {number} */
+        this._largestMIPScale = 0;
 
         /**
         * Ratio of the size of the SVG and the max size of the WebGL texture
@@ -46,15 +47,7 @@ class SVGSkin extends Skin {
      * Dispose of this object. Do not use it after calling this method.
      */
     dispose () {
-        if (this._texture) {
-            for (const mip of this._scaledMIPs) {
-                if (mip) {
-                    mip.dispose();
-                }
-            }
-            this._texture = null;
-            this._scaledMIPs.length = 0;
-        }
+        this.resetMIPs();
         super.dispose();
     }
 
@@ -76,24 +69,33 @@ class SVGSkin extends Skin {
     }
 
     /**
-     * Create a MIP for a given scale and pass it a callback for updating
-     * state when switching between scales and MIPs.
+     * Create a MIP for a given scale.
      * @param {number} scale - The relative size of the MIP
-     * @param {function} resetCallback - this is a callback for doing a hard reset
-     * of MIPs and a reset of the rotation center. Only passed in if the MIP scale is 1.
      * @return {SVGMIP} An object that handles creating and updating SVG textures.
      */
-    createMIP (scale, resetCallback) {
-        const textureCallback = textureData => {
-            if (resetCallback) resetCallback();
-            // Check if we have the largest MIP
-            // eslint-disable-next-line no-use-before-define
-            if (!this._scaledMIPs.length || this._scaledMIPs[this._scaledMIPs.length - 1]._scale <= scale) {
-                // Currently silhouette only gets scaled up
-                this._silhouette.update(textureData);
-            }
+    createMIP (scale) {
+        this._svgRenderer.draw(scale);
+
+        // Pull out the ImageData from the canvas. ImageData speeds up
+        // updating Silhouette and is better handled by more browsers in
+        // regards to memory.
+        const canvas = this._svgRenderer.canvas;
+        const context = canvas.getContext('2d');
+        const textureData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+        const textureOptions = {
+            auto: false,
+            wrap: this._renderer.gl.CLAMP_TO_EDGE,
+            src: textureData
         };
-        const mip = new SVGMIP(this._renderer, this._svgRenderer, scale, textureCallback);
+
+        const mip = twgl.createTexture(this._renderer.gl, textureOptions);
+
+        // Check if this is the largest MIP created so far. Currently, silhouettes only get scaled up.
+        if (this._largestMIPScale < scale) {
+            this._silhouette.update(textureData);
+            this._largestMIPScale = scale;
+        }
 
         return mip;
     }
@@ -125,31 +127,23 @@ class SVGSkin extends Skin {
             }
         }
 
-        if (!this._scaledMIPs[textureIndex + INDEX_OFFSET]) {
+        if (this._svgRenderer.loaded && !this._scaledMIPs[textureIndex + INDEX_OFFSET]) {
             this._scaledMIPs[textureIndex + INDEX_OFFSET] = this.createMIP(newScale);
         }
 
-        return this._scaledMIPs[textureIndex + INDEX_OFFSET].getTexture();
+        return this._scaledMIPs[textureIndex + INDEX_OFFSET] || super.getTexture();
     }
 
     /**
-     * Do a hard reset of the existing MIPs by calling dispose(), setting a new
-     * scale 1 MIP in this._scaledMIPs, and finally updating the rotationCenter.
-     * @param {SVGMIPs} mip - An object that handles creating and updating SVG textures.
+     * Do a hard reset of the existing MIPs by deleting them.
      * @param {Array<number>} [rotationCenter] - Optional rotation center for the SVG. If not supplied, it will be
      * calculated from the bounding box
-    * @fires Skin.event:WasAltered
+     * @fires Skin.event:WasAltered
      */
-    resetMIPs (mip, rotationCenter) {
-        this._scaledMIPs.forEach(oldMIP => oldMIP.dispose());
+    resetMIPs () {
+        this._scaledMIPs.forEach(oldMIP => this._renderer.gl.deleteTexture(oldMIP));
         this._scaledMIPs.length = 0;
-
-        // Set new scale 1 MIP after outdated MIPs have been disposed
-        this._texture = this._scaledMIPs[INDEX_OFFSET] = mip;
-
-        if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
-        this.setRotationCenter.apply(this, rotationCenter);
-        this.emit(Skin.Events.WasAltered);
+        this._largestMIPScale = 0;
     }
 
     /**
@@ -158,22 +152,25 @@ class SVGSkin extends Skin {
      * @param {Array<number>} [rotationCenter] - Optional rotation center for the SVG.
      */
     setSVG (svgData, rotationCenter) {
-        this._svgRenderer.loadString(svgData);
+        this._svgRenderer.loadSVG(svgData, false, () => {
+            const svgSize = this._svgRenderer.size;
+            if (svgSize[0] === 0 || svgSize[1] === 0) {
+                super.setEmptyImageData();
+                return;
+            }
 
-        if (!this._svgRenderer.canvas.width || !this._svgRenderer.canvas.height) {
-            super.setEmptyImageData();
-            return;
-        }
+            const maxDimension = Math.ceil(Math.max(this.size[0], this.size[1]));
+            let testScale = 2;
+            for (testScale; maxDimension * testScale <= MAX_TEXTURE_DIMENSION; testScale *= 2) {
+                this._maxTextureScale = testScale;
+            }
 
-        const maxDimension = Math.ceil(Math.max(this.size[0], this.size[1]));
-        let testScale = 2;
-        for (testScale; maxDimension * testScale <= MAX_TEXTURE_DIMENSION; testScale *= 2) {
-            this._maxTextureScale = testScale;
-        }
+            this.resetMIPs();
 
-        // Create the 1.0 scale MIP at INDEX_OFFSET.
-        const textureScale = 1;
-        const mip = this.createMIP(textureScale, () => this.resetMIPs(mip, rotationCenter));
+            if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
+            this.setRotationCenter.apply(this, rotationCenter);
+            this.emit(Skin.Events.WasAltered);
+        });
     }
 
 }
