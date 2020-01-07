@@ -695,7 +695,7 @@ class Drawable {
         // : drawable.skin._silhouette.colorAtLinear(localPosition, dst);
 
         if (drawable.enabledEffects === 0) return textColor;
-        return EffectTransform.transformColor(drawable, textColor, textColor);
+        return EffectTransform.transformColor(drawable, textColor);
     }
 }
 

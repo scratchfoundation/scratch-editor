@@ -114,30 +114,25 @@ const hslToRgb = ([h, s, l]) => {
 class EffectTransform {
 
     /**
-     * Transform a color given the drawables effect uniforms.  Will apply
+     * Transform a color in-place given the drawable's effect uniforms.  Will apply
      * Ghost and Color and Brightness effects.
      * @param {Drawable} drawable The drawable to get uniforms from.
-     * @param {Uint8ClampedArray} color4b The initial color.
-     * @param {Uint8ClampedArary} [dst] Working space to save the color in (is returned)
-     * @param {number} [effectMask] A bitmask for which effects to use. Optional.
+     * @param {Uint8ClampedArray} inOutColor The color to transform.
      * @returns {Uint8ClampedArray} dst filled with the transformed color
      */
-    static transformColor (drawable, color4b, dst, effectMask) {
-        if (typeof effectMask === 'undefined') effectMask = 0xffffffff;
-        if (typeof dst === 'undefined') dst = new Uint8ClampedArray(4);
-        
-        dst.set(color4b);
+    static transformColor (drawable, inOutColor) {
+
         // If the color is fully transparent, don't bother attempting any transformations.
-        if (dst[3] === 0) {
-            return dst;
+        if (inOutColor[3] === 0) {
+            return inOutColor;
         }
 
-        const effects = drawable.enabledEffects & effectMask;
+        const effects = drawable.enabledEffects;
         const uniforms = drawable.getUniforms();
 
         if ((effects & ShaderManager.EFFECT_INFO.ghost.mask) !== 0) {
             // gl_FragColor.a *= u_ghost
-            dst[3] *= uniforms.u_ghost;
+            inOutColor[3] *= uniforms.u_ghost;
         }
 
         const enableColor = (effects & ShaderManager.EFFECT_INFO.color.mask) !== 0;
@@ -145,7 +140,7 @@ class EffectTransform {
 
         if (enableColor || enableBrightness) {
             // vec3 hsl = convertRGB2HSL(gl_FragColor.xyz);
-            const hsl = rgbToHsl(dst);
+            const hsl = rgbToHsl(inOutColor);
 
             if (enableColor) {
                 // this code forces grayscale values to be slightly saturated
@@ -175,21 +170,20 @@ class EffectTransform {
                 hsl[2] = Math.min(1, hsl[2] + uniforms.u_brightness);
             }
             // gl_FragColor.rgb = convertHSL2RGB(hsl);
-            dst.set(hslToRgb(hsl));
+            inOutColor.set(hslToRgb(hsl));
         }
 
-        return dst;
+        return inOutColor;
     }
 
     /**
      * Transform a texture coordinate to one that would be select after applying shader effects.
      * @param {Drawable} drawable The drawable whose effects to emulate.
      * @param {twgl.v3} vec The texture coordinate to transform.
-     * @param {?twgl.v3} dst A place to store the output coordinate.
+     * @param {twgl.v3} dst A place to store the output coordinate.
      * @return {twgl.v3} dst - The coordinate after being transform by effects.
      */
     static transformPoint (drawable, vec, dst) {
-        if (typeof dst === 'undefined') dst = twgl.v3.create();
         twgl.v3.copy(vec, dst);
 
         const effects = drawable.enabledEffects;
