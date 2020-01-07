@@ -131,7 +131,7 @@ class SVGSkin extends Skin {
             this._scaledMIPs[textureIndex + INDEX_OFFSET] = this.createMIP(newScale);
         }
 
-        return this._scaledMIPs[textureIndex + INDEX_OFFSET];
+        return this._scaledMIPs[textureIndex + INDEX_OFFSET] || super.getTexture();
     }
 
     /**
