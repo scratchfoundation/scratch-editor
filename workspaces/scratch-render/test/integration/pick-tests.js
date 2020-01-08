@@ -1,7 +1,9 @@
 /* global vm, render, Promise */
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
 const test = require('tap').test;
 const path = require('path');
+
+const downloadChromium = require('../helper/download-chromium');
 
 const indexHTML = path.resolve(__dirname, 'index.html');
 const testDir = (...args) => path.resolve(__dirname, 'pick-tests', ...args);
@@ -19,6 +21,7 @@ const runFile = async (file, action, page, script) => {
 
 // immediately invoked async function to let us wait for each test to finish before starting the next.
 (async () => {
+    await downloadChromium();
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
