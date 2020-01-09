@@ -436,6 +436,7 @@ class SvgRenderer {
         const bbox = this._measurements;
         this._canvas.width = bbox.width * ratio;
         this._canvas.height = bbox.height * ratio;
+        if (this._canvas.width <= 0 || this._canvas.height <= 0) return;
         this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
         this._context.scale(ratio, ratio);
         this._context.drawImage(this._cachedImage, 0, 0);
