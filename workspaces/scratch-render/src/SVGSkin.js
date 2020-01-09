@@ -80,6 +80,10 @@ class SVGSkin extends Skin {
         // updating Silhouette and is better handled by more browsers in
         // regards to memory.
         const canvas = this._svgRenderer.canvas;
+        // If one of the canvas dimensions is 0, set this MIP to an empty image texture.
+        // This avoids an IndexSizeError from attempting to getImageData when one of the dimensions is 0.
+        if (canvas.width === 0 || canvas.height === 0) return super.getTexture();
+
         const context = canvas.getContext('2d');
         const textureData = context.getImageData(0, 0, canvas.width, canvas.height);
 
@@ -105,10 +109,6 @@ class SVGSkin extends Skin {
      * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
      */
     getTexture (scale) {
-        if (!this._svgRenderer.canvas.width || !this._svgRenderer.canvas.height) {
-            return super.getTexture();
-        }
-
         // The texture only ever gets uniform scale. Take the larger of the two axes.
         const scaleMax = scale ? Math.max(Math.abs(scale[0]), Math.abs(scale[1])) : 100;
         const requestedScale = Math.min(scaleMax / 100, this._maxTextureScale);
