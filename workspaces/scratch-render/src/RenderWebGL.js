@@ -1701,7 +1701,7 @@ class RenderWebGL extends EventEmitter {
 
             const uniforms = {};
 
-            let effectBits = drawable.getEnabledEffects();
+            let effectBits = drawable.enabledEffects;
             effectBits &= opts.hasOwnProperty('effectMask') ? opts.effectMask : effectBits;
             const newShader = this._shaderManager.getShader(drawMode, effectBits);
 

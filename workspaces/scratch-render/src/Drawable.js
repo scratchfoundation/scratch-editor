@@ -36,8 +36,12 @@ const getLocalPosition = (drawable, vec) => {
     // localPosition matches that transformation.
     localPosition[0] = 0.5 - (((v0 * m[0]) + (v1 * m[4]) + m[12]) / d);
     localPosition[1] = (((v0 * m[1]) + (v1 * m[5]) + m[13]) / d) + 0.5;
-    // Apply texture effect transform if the localPosition is within the drawable's space.
-    if ((localPosition[0] >= 0 && localPosition[0] < 1) && (localPosition[1] >= 0 && localPosition[1] < 1)) {
+    // Apply texture effect transform if the localPosition is within the drawable's space,
+    // and any effects are currently active.
+    if (drawable.enabledEffects !== 0 &&
+        (localPosition[0] >= 0 && localPosition[0] < 1) &&
+        (localPosition[1] >= 0 && localPosition[1] < 1)) {
+
         EffectTransform.transformPoint(drawable, localPosition, localPosition);
     }
     return localPosition;
@@ -96,7 +100,11 @@ class Drawable {
         this._inverseMatrix = twgl.m4.identity();
         this._inverseTransformDirty = true;
         this._visible = true;
-        this._effectBits = 0;
+
+        /** A bitmask identifying which effects are currently in use.
+         * @readonly
+         * @type {int} */
+        this.enabledEffects = 0;
 
         /** @todo move convex hull functionality, maybe bounds functionality overall, to Skin classes */
         this._convexHullPoints = null;
@@ -157,13 +165,6 @@ class Drawable {
      */
     get scale () {
         return [this._scale[0], this._scale[1]];
-    }
-
-    /**
-     * @returns {int} A bitmask identifying which effects are currently in use.
-     */
-    getEnabledEffects () {
-        return this._effectBits;
     }
 
     /**
@@ -242,9 +243,9 @@ class Drawable {
     updateEffect (effectName, rawValue) {
         const effectInfo = ShaderManager.EFFECT_INFO[effectName];
         if (rawValue) {
-            this._effectBits |= effectInfo.mask;
+            this.enabledEffects |= effectInfo.mask;
         } else {
-            this._effectBits &= ~effectInfo.mask;
+            this.enabledEffects &= ~effectInfo.mask;
         }
         const converter = effectInfo.converter;
         this._uniforms[effectInfo.uniformName] = converter(rawValue);
@@ -481,7 +482,7 @@ class Drawable {
         }
 
         // If the effect bits for mosaic, pixelate, whirl, or fisheye are set, use linear
-        if ((this._effectBits & (
+        if ((this.enabledEffects & (
             ShaderManager.EFFECT_INFO.fisheye.mask |
             ShaderManager.EFFECT_INFO.whirl.mask |
             ShaderManager.EFFECT_INFO.pixelate.mask |
@@ -692,7 +693,9 @@ class Drawable {
         // drawable.useNearest() ?
              drawable.skin._silhouette.colorAtNearest(localPosition, dst);
         // : drawable.skin._silhouette.colorAtLinear(localPosition, dst);
-        return EffectTransform.transformColor(drawable, textColor, textColor);
+
+        if (drawable.enabledEffects === 0) return textColor;
+        return EffectTransform.transformColor(drawable, textColor);
     }
 }
 
