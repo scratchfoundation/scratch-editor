@@ -100,6 +100,11 @@ class SVGSkin extends Skin {
         return mip;
     }
 
+    updateSilhouette (scale = 1) {
+        // Ensure a silhouette exists.
+        this.getTexture(scale);
+    }
+
     /**
      * @param {Array<number>} scale - The scaling factors to be used, each in the [0,100] range.
      * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.

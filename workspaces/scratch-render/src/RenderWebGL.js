@@ -972,7 +972,7 @@ class RenderWebGL extends EventEmitter {
 
         drawable.updateMatrix();
         if (drawable.skin) {
-            drawable.skin.updateSilhouette();
+            drawable.skin.updateSilhouette(this._getDrawableScreenSpaceScale(drawable));
         } else {
             log.warn(`Could not find skin for drawable with id: ${drawableID}`);
         }
@@ -1008,7 +1008,7 @@ class RenderWebGL extends EventEmitter {
             if (drawable.getVisible() && drawable.getUniforms().u_ghost !== 0) {
                 drawable.updateMatrix();
                 if (drawable.skin) {
-                    drawable.skin.updateSilhouette();
+                    drawable.skin.updateSilhouette(this._getDrawableScreenSpaceScale(drawable));
                 } else {
                     log.warn(`Could not find skin for drawable with id: ${id}`);
                 }
@@ -1243,7 +1243,7 @@ class RenderWebGL extends EventEmitter {
         if (!drawable.skin || !drawable.skin.getTexture([100, 100])) return null;
 
         drawable.updateMatrix();
-        drawable.skin.updateSilhouette();
+        drawable.skin.updateSilhouette(this._getDrawableScreenSpaceScale(drawable));
         const bounds = drawable.getFastBounds();
 
         // Limit queries to the stage size.
@@ -1281,7 +1281,7 @@ class RenderWebGL extends EventEmitter {
                 if (drawable.skin && drawable._visible) {
                     // Update the CPU position data
                     drawable.updateMatrix();
-                    drawable.skin.updateSilhouette();
+                    drawable.skin.updateSilhouette(this._getDrawableScreenSpaceScale(drawable));
                     const candidateBounds = drawable.getFastBounds();
                     if (bounds.intersects(candidateBounds)) {
                         result.push({
@@ -1660,6 +1660,18 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Get the screen-space scale of a drawable, as percentages of the drawable's "normal" size.
+     * @param {Drawable} drawable The drawable whose screen-space scale we're fetching.
+     * @returns {Array<number>} The screen-space X and Y dimensions of the drawable's scale, as percentages.
+     */
+    _getDrawableScreenSpaceScale (drawable) {
+        return [
+            drawable.scale[0] * this._gl.canvas.width / this._nativeSize[0],
+            drawable.scale[1] * this._gl.canvas.height / this._nativeSize[1]
+        ];
+    }
+
+    /**
      * Draw a set of Drawables, by drawable ID
      * @param {Array<int>} drawables The Drawable IDs to draw, possibly this._drawList.
      * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
@@ -1691,10 +1703,7 @@ class RenderWebGL extends EventEmitter {
             if (!drawable.getVisible() && !opts.ignoreVisibility) continue;
 
             // Combine drawable scale with the native vs. backing pixel ratio
-            const drawableScale = [
-                drawable.scale[0] * this._gl.canvas.width / this._nativeSize[0],
-                drawable.scale[1] * this._gl.canvas.height / this._nativeSize[1]
-            ];
+            const drawableScale = this._getDrawableScreenSpaceScale(drawable);
 
             // If the skin or texture isn't ready yet, skip it.
             if (!drawable.skin || !drawable.skin.getTexture(drawableScale)) continue;
