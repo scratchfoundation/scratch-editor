@@ -126,7 +126,7 @@ $border-radius: 0.25rem;
 
 .mode-selector {
     display: flex;
-    max-width: 7.8rem;
+    max-width: 6rem;
     flex-direction: row;
     flex-wrap: wrap;
     align-items: flex-start;
