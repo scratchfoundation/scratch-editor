@@ -1895,7 +1895,7 @@ class RenderWebGL extends EventEmitter {
             }
             */
             Drawable.sampleColor4b(vec, drawables[index].drawable, __blendColor);
-            // if we are fully transparent, go to the next one "down"
+            // Equivalent to gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA)
             dst[0] += __blendColor[0] * blendAlpha;
             dst[1] += __blendColor[1] * blendAlpha;
             dst[2] += __blendColor[2] * blendAlpha;

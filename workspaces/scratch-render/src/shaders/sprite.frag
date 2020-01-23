@@ -43,14 +43,16 @@ uniform sampler2D u_skin;
 
 varying vec2 v_texCoord;
 
+// Add this to divisors to prevent division by 0, which results in NaNs propagating through calculations.
+// Smaller values can cause problems on some mobile devices.
+const float epsilon = 1e-3;
+
 #if !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color))
 // Branchless color conversions based on code from:
 // http://www.chilliant.com/rgb2hsv.html by Ian Taylor
 // Based in part on work by Sam Hocevar and Emil Persson
 // See also: https://en.wikipedia.org/wiki/HSL_and_HSV#Formal_derivation
 
-// Smaller values can cause problems on some mobile devices
-const float epsilon = 1e-3;
 
 // Convert an RGB color to Hue, Saturation, and Value.
 // All components of input and output are expected to be in the [0,1] range.
@@ -156,7 +158,7 @@ void main()
 	#if defined(ENABLE_color) || defined(ENABLE_brightness)
 	// Divide premultiplied alpha values for proper color processing
 	// Add epsilon to avoid dividing by 0 for fully transparent pixels
-	gl_FragColor.rgb /= gl_FragColor.a + epsilon;
+	gl_FragColor.rgb = clamp(gl_FragColor.rgb / (gl_FragColor.a + epsilon), 0.0, 1.0);
 
 	#ifdef ENABLE_color
 	{
@@ -209,9 +211,7 @@ void main()
 	#endif // DRAW_MODE_silhouette
 
 	#else // DRAW_MODE_lineSample
-	// Pen skins use premultiplied alpha, but u_lineColor is not premultiplied, so multiply it here
-	vec4 premulColor = vec4(u_lineColor.rgb * u_lineColor.a, u_lineColor.a);
-	gl_FragColor = premulColor * clamp(
+	gl_FragColor = u_lineColor * clamp(
 		// Scale the capScale a little to have an aliased region.
 		(u_capScale + u_aliasAmount -
 			u_capScale * 2.0 * distance(v_texCoord, vec2(0.5, 0.5))

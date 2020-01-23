@@ -20,7 +20,7 @@ let __SilhouetteUpdateCanvas;
  * @return {number} Alpha value for x/y position
  */
 const getPoint = ({_width: width, _height: height, _colorData: data}, x, y) => {
-    // 0 if outside bouds, otherwise read from data.
+    // 0 if outside bounds, otherwise read from data.
     if (x >= width || y >= height || x < 0 || y < 0) {
         return 0;
     }
@@ -47,7 +47,7 @@ const __cornerWork = [
  * @return {Uint8ClampedArray} The dst vector.
  */
 const getColor4b = ({_width: width, _height: height, _colorData: data}, x, y, dst) => {
-    // 0 if outside bouds, otherwise read from data.
+    // 0 if outside bounds, otherwise read from data.
     if (x >= width || y >= height || x < 0 || y < 0) {
         return dst.fill(0);
     }
@@ -71,7 +71,7 @@ const getColor4b = ({_width: width, _height: height, _colorData: data}, x, y, ds
  * @return {Uint8ClampedArray} The dst vector.
  */
 const getPremultipliedColor4b = ({_width: width, _height: height, _colorData: data}, x, y, dst) => {
-    // 0 if outside bouds, otherwise read from data.
+    // 0 if outside bounds, otherwise read from data.
     if (x >= width || y >= height || x < 0 || y < 0) {
         return dst.fill(0);
     }
@@ -103,13 +103,6 @@ class Silhouette {
          */
         this._colorData = null;
 
-        /**
-         * Whether or not the color data is premultiplied with its alpha channel.
-         * If it isn't, it will be multiplied here.
-         * @type {boolean}
-         */
-        this._isPremultiplied = false;
-
         // By default, silhouettes are assumed not to contain premultiplied image data,
         // so when we get a color, we want to multiply it by its alpha channel.
         // Point `_getColor` to the version of the function that multiplies.
@@ -119,35 +112,12 @@ class Silhouette {
     }
 
     /**
-     * @returns {boolean} true if the silhouette color data is premultiplied, false if not.
-     */
-    get premultiplied () {
-        return this._isPremultiplied;
-    }
-
-    /**
-     * Set the alpha premultiplication state of this silhouette, to ensure proper color values are returned.
-     * If set to true, the silhouette will assume it is being set with premultiplied color data,
-     * and will not multiply color values by alpha.
-     * If set to false, it will multiply color values by alpha.
-     * @param {boolean} isPremultiplied Whether this silhouette will be populated with premultiplied color data.
-     */
-    set premultiplied (isPremultiplied) {
-        this._isPremultiplied = isPremultiplied;
-
-        if (isPremultiplied) {
-            this._getColor = getPremultipliedColor4b;
-        } else {
-            this._getColor = getColor4b;
-        }
-    }
-
-    /**
      * Update this silhouette with the bitmapData for a skin.
-     * @param {*} bitmapData An image, canvas or other element that the skin
+     * @param {ImageData|HTMLCanvasElement|HTMLImageElement} bitmapData An image, canvas or other element that the skin
+     * @param {boolean} isPremultiplied True if the source bitmap data comes premultiplied (e.g. from readPixels).
      * rendering can be queried from.
      */
-    update (bitmapData) {
+    update (bitmapData, isPremultiplied = false) {
         let imageData;
         if (bitmapData instanceof ImageData) {
             // If handed ImageData directly, use it directly.
@@ -168,6 +138,12 @@ class Silhouette {
             ctx.clearRect(0, 0, width, height);
             ctx.drawImage(bitmapData, 0, 0, width, height);
             imageData = ctx.getImageData(0, 0, width, height);
+        }
+
+        if (isPremultiplied) {
+            this._getColor = getPremultipliedColor4b;
+        } else {
+            this._getColor = getColor4b;
         }
 
         this._colorData = imageData.data;

@@ -25,6 +25,12 @@ const DefaultPenAttributes = {
     diameter: 1
 };
 
+/**
+ * Reused memory location for storing a premultiplied pen color.
+ * @type {FloatArray}
+ */
+const __premultipliedColor = [0, 0, 0, 0];
+
 
 /**
  * Reused memory location for projection matrices.
@@ -78,9 +84,6 @@ class PenSkin extends Skin {
      */
     constructor (id, renderer) {
         super(id);
-
-        // This silhouette will be updated with data from `gl.readPixels`, which is premultiplied.
-        this._silhouette.premultiplied = true;
 
         /**
          * @private
@@ -155,13 +158,6 @@ class PenSkin extends Skin {
     }
 
     /**
-     * @returns {boolean} true if alpha is premultiplied, false otherwise
-     */
-    get hasPremultipliedAlpha () {
-        return true;
-    }
-
-    /**
      * @return {Array<number>} the "native" size, in texels, of this skin. [width, height]
      */
     get size () {
@@ -188,7 +184,7 @@ class PenSkin extends Skin {
     clear () {
         const gl = this._renderer.gl;
         twgl.bindFramebufferInfo(gl, this._framebuffer);
-        
+
         /* Reset framebuffer to transparent black */
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
@@ -375,6 +371,13 @@ class PenSkin extends Skin {
         const radius = diameter / 2;
         const yScalar = (0.50001 - (radius / (length + diameter)));
 
+        // Premultiply pen color by pen transparency
+        const penColor = penAttributes.color4f || DefaultPenAttributes.color4f;
+        __premultipliedColor[0] = penColor[0] * penColor[3];
+        __premultipliedColor[1] = penColor[1] * penColor[3];
+        __premultipliedColor[2] = penColor[2] * penColor[3];
+        __premultipliedColor[3] = penColor[3];
+
         const uniforms = {
             u_positionScalar: yScalar,
             u_capScale: diameter,
@@ -388,7 +391,7 @@ class PenSkin extends Skin {
                 twgl.m4.scaling(scalingVector, __modelScalingMatrix),
                 __modelMatrix
             ),
-            u_lineColor: penAttributes.color4f || DefaultPenAttributes.color4f
+            u_lineColor: __premultipliedColor
         };
 
         twgl.setUniforms(currentShader, uniforms);
@@ -648,7 +651,7 @@ class PenSkin extends Skin {
             skinImageData.data.set(skinPixels);
             skinContext.putImageData(skinImageData, 0, 0);
 
-            this._silhouette.update(this._canvas);
+            this._silhouette.update(this._canvas, true /* isPremultiplied */);
 
             this._silhouetteDirty = false;
         }

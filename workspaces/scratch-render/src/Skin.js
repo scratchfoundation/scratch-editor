@@ -80,13 +80,6 @@ class Skin extends EventEmitter {
     }
 
     /**
-     * @returns {boolean} true if alpha is premultiplied, false otherwise
-     */
-    get hasPremultipliedAlpha () {
-        return false;
-    }
-
-    /**
      * @return {int} the unique ID for this Skin.
      */
     get id () {
