@@ -23,4 +23,4 @@ $form-radius: calc($space / 2);
 
 /* layout contants from `layout-constants.js`, minus 1px */
 $full-size: 1095px;
-$full-size-paint: 1249px;
+$full-size-paint: 1256px;

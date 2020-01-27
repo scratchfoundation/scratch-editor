@@ -9,6 +9,8 @@ $arrow-border-width: 14px;
     min-width: 3.5rem;
     color: $motion-primary;
     padding: .5rem;
+    display: flex;
+    align-items: center;
 }
 
 .mod-open {

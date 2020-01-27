@@ -8,6 +8,10 @@
     margin-right: calc(2 * $grid-unit);
 }
 
+.input-group {
+    display:flex;
+}
+
 .disabled {
     opacity: 0.3;
     /* Prevent any user actions */
