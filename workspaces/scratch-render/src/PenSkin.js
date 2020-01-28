@@ -25,6 +25,12 @@ const DefaultPenAttributes = {
     diameter: 1
 };
 
+/**
+ * Reused memory location for storing a premultiplied pen color.
+ * @type {FloatArray}
+ */
+const __premultipliedColor = [0, 0, 0, 0];
+
 
 /**
  * Reused memory location for projection matrices.
@@ -89,9 +95,6 @@ class PenSkin extends Skin {
         this._canvas = document.createElement('canvas');
 
         /** @type {WebGLTexture} */
-        this._texture = null;
-
-        /** @type {WebGLTexture} */
         this._exportTexture = null;
 
         /** @type {WebGLFramebuffer} */
@@ -123,7 +126,7 @@ class PenSkin extends Skin {
 
         const NO_EFFECTS = 0;
         /** @type {twgl.ProgramInfo} */
-        this._stampShader = this._renderer._shaderManager.getShader(ShaderManager.DRAW_MODE.stamp, NO_EFFECTS);
+        this._stampShader = this._renderer._shaderManager.getShader(ShaderManager.DRAW_MODE.default, NO_EFFECTS);
 
         /** @type {twgl.ProgramInfo} */
         this._lineShader = this._renderer._shaderManager.getShader(ShaderManager.DRAW_MODE.lineSample, NO_EFFECTS);
@@ -155,13 +158,6 @@ class PenSkin extends Skin {
     }
 
     /**
-     * @returns {boolean} true if alpha is premultiplied, false otherwise
-     */
-    get hasPremultipliedAlpha () {
-        return true;
-    }
-
-    /**
      * @return {Array<number>} the "native" size, in texels, of this skin. [width, height]
      */
     get size () {
@@ -188,7 +184,7 @@ class PenSkin extends Skin {
     clear () {
         const gl = this._renderer.gl;
         twgl.bindFramebufferInfo(gl, this._framebuffer);
-        
+
         /* Reset framebuffer to transparent black */
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
@@ -317,13 +313,6 @@ class PenSkin extends Skin {
 
         twgl.bindFramebufferInfo(gl, this._framebuffer);
 
-        // Needs a blend function that blends a destination that starts with
-        // no alpha.
-        gl.blendFuncSeparate(
-            gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
-            gl.ONE, gl.ONE_MINUS_SRC_ALPHA
-        );
-
         gl.viewport(0, 0, bounds.width, bounds.height);
 
         gl.useProgram(currentShader.program);
@@ -343,8 +332,6 @@ class PenSkin extends Skin {
      */
     _exitDrawLineOnBuffer () {
         const gl = this._renderer.gl;
-
-        gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
 
         twgl.bindFramebufferInfo(gl, null);
     }
@@ -384,6 +371,13 @@ class PenSkin extends Skin {
         const radius = diameter / 2;
         const yScalar = (0.50001 - (radius / (length + diameter)));
 
+        // Premultiply pen color by pen transparency
+        const penColor = penAttributes.color4f || DefaultPenAttributes.color4f;
+        __premultipliedColor[0] = penColor[0] * penColor[3];
+        __premultipliedColor[1] = penColor[1] * penColor[3];
+        __premultipliedColor[2] = penColor[2] * penColor[3];
+        __premultipliedColor[3] = penColor[3];
+
         const uniforms = {
             u_positionScalar: yScalar,
             u_capScale: diameter,
@@ -397,7 +391,7 @@ class PenSkin extends Skin {
                 twgl.m4.scaling(scalingVector, __modelScalingMatrix),
                 __modelMatrix
             ),
-            u_lineColor: penAttributes.color4f || DefaultPenAttributes.color4f
+            u_lineColor: __premultipliedColor
         };
 
         twgl.setUniforms(currentShader, uniforms);
@@ -490,8 +484,6 @@ class PenSkin extends Skin {
 
         twgl.bindFramebufferInfo(gl, this._framebuffer);
 
-        gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
-
         this._drawRectangleRegionEnter(this._stampShader, this._bounds);
     }
 
@@ -500,8 +492,6 @@ class PenSkin extends Skin {
      */
     _exitDrawToBuffer () {
         const gl = this._renderer.gl;
-
-        gl.blendFuncSeparate(gl.ONE, gl.ONE_MINUS_SRC_ALPHA, gl.ZERO, gl.ONE);
 
         twgl.bindFramebufferInfo(gl, null);
     }
@@ -661,7 +651,7 @@ class PenSkin extends Skin {
             skinImageData.data.set(skinPixels);
             skinContext.putImageData(skinImageData, 0, 0);
 
-            this._silhouette.update(this._canvas);
+            this._silhouette.update(this._canvas, true /* isPremultiplied */);
 
             this._silhouetteDirty = false;
         }

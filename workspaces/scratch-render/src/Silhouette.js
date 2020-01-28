@@ -20,7 +20,7 @@ let __SilhouetteUpdateCanvas;
  * @return {number} Alpha value for x/y position
  */
 const getPoint = ({_width: width, _height: height, _colorData: data}, x, y) => {
-    // 0 if outside bouds, otherwise read from data.
+    // 0 if outside bounds, otherwise read from data.
     if (x >= width || y >= height || x < 0 || y < 0) {
         return 0;
     }
@@ -39,6 +39,7 @@ const __cornerWork = [
 
 /**
  * Get the color from a given silhouette at an x/y local texture position.
+ * Multiply color values by alpha for proper blending.
  * @param {Silhouette} The silhouette to sample.
  * @param {number} x X position of texture (0-1).
  * @param {number} y Y position of texture (0-1).
@@ -46,7 +47,31 @@ const __cornerWork = [
  * @return {Uint8ClampedArray} The dst vector.
  */
 const getColor4b = ({_width: width, _height: height, _colorData: data}, x, y, dst) => {
-    // 0 if outside bouds, otherwise read from data.
+    // 0 if outside bounds, otherwise read from data.
+    if (x >= width || y >= height || x < 0 || y < 0) {
+        return dst.fill(0);
+    }
+    const offset = ((y * width) + x) * 4;
+    // premultiply alpha
+    const alpha = data[offset + 3] / 255;
+    dst[0] = data[offset] * alpha;
+    dst[1] = data[offset + 1] * alpha;
+    dst[2] = data[offset + 2] * alpha;
+    dst[3] = data[offset + 3];
+    return dst;
+};
+
+/**
+ * Get the color from a given silhouette at an x/y local texture position.
+ * Do not multiply color values by alpha, as it has already been done.
+ * @param {Silhouette} The silhouette to sample.
+ * @param {number} x X position of texture (0-1).
+ * @param {number} y Y position of texture (0-1).
+ * @param {Uint8ClampedArray} dst A color 4b space.
+ * @return {Uint8ClampedArray} The dst vector.
+ */
+const getPremultipliedColor4b = ({_width: width, _height: height, _colorData: data}, x, y, dst) => {
+    // 0 if outside bounds, otherwise read from data.
     if (x >= width || y >= height || x < 0 || y < 0) {
         return dst.fill(0);
     }
@@ -78,15 +103,21 @@ class Silhouette {
          */
         this._colorData = null;
 
+        // By default, silhouettes are assumed not to contain premultiplied image data,
+        // so when we get a color, we want to multiply it by its alpha channel.
+        // Point `_getColor` to the version of the function that multiplies.
+        this._getColor = getColor4b;
+
         this.colorAtNearest = this.colorAtLinear = (_, dst) => dst.fill(0);
     }
 
     /**
      * Update this silhouette with the bitmapData for a skin.
-     * @param {*} bitmapData An image, canvas or other element that the skin
+     * @param {ImageData|HTMLCanvasElement|HTMLImageElement} bitmapData An image, canvas or other element that the skin
+     * @param {boolean} isPremultiplied True if the source bitmap data comes premultiplied (e.g. from readPixels).
      * rendering can be queried from.
      */
-    update (bitmapData) {
+    update (bitmapData, isPremultiplied = false) {
         let imageData;
         if (bitmapData instanceof ImageData) {
             // If handed ImageData directly, use it directly.
@@ -109,6 +140,12 @@ class Silhouette {
             imageData = ctx.getImageData(0, 0, width, height);
         }
 
+        if (isPremultiplied) {
+            this._getColor = getPremultipliedColor4b;
+        } else {
+            this._getColor = getColor4b;
+        }
+
         this._colorData = imageData.data;
         // delete our custom overriden "uninitalized" color functions
         // let the prototype work for itself
@@ -124,7 +161,7 @@ class Silhouette {
      * @returns {Uint8ClampedArray} dst
      */
     colorAtNearest (vec, dst) {
-        return getColor4b(
+        return this._getColor(
             this,
             Math.floor(vec[0] * (this._width - 1)),
             Math.floor(vec[1] * (this._height - 1)),
@@ -151,10 +188,10 @@ class Silhouette {
         const xFloor = Math.floor(x);
         const yFloor = Math.floor(y);
 
-        const x0y0 = getColor4b(this, xFloor, yFloor, __cornerWork[0]);
-        const x1y0 = getColor4b(this, xFloor + 1, yFloor, __cornerWork[1]);
-        const x0y1 = getColor4b(this, xFloor, yFloor + 1, __cornerWork[2]);
-        const x1y1 = getColor4b(this, xFloor + 1, yFloor + 1, __cornerWork[3]);
+        const x0y0 = this._getColor(this, xFloor, yFloor, __cornerWork[0]);
+        const x1y0 = this._getColor(this, xFloor + 1, yFloor, __cornerWork[1]);
+        const x0y1 = this._getColor(this, xFloor, yFloor + 1, __cornerWork[2]);
+        const x1y1 = this._getColor(this, xFloor + 1, yFloor + 1, __cornerWork[3]);
 
         dst[0] = (x0y0[0] * x0D * y0D) + (x0y1[0] * x0D * y1D) + (x1y0[0] * x1D * y0D) + (x1y1[0] * x1D * y1D);
         dst[1] = (x0y0[1] * x0D * y0D) + (x0y1[1] * x0D * y1D) + (x1y0[1] * x1D * y0D) + (x1y1[1] * x1D * y1D);

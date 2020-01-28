@@ -90,7 +90,8 @@ class SVGSkin extends Skin {
         const textureOptions = {
             auto: false,
             wrap: this._renderer.gl.CLAMP_TO_EDGE,
-            src: textureData
+            src: textureData,
+            premultiplyAlpha: true
         };
 
         const mip = twgl.createTexture(this._renderer.gl, textureOptions);

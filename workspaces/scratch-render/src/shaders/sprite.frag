@@ -43,14 +43,16 @@ uniform sampler2D u_skin;
 
 varying vec2 v_texCoord;
 
+// Add this to divisors to prevent division by 0, which results in NaNs propagating through calculations.
+// Smaller values can cause problems on some mobile devices.
+const float epsilon = 1e-3;
+
 #if !defined(DRAW_MODE_silhouette) && (defined(ENABLE_color))
 // Branchless color conversions based on code from:
 // http://www.chilliant.com/rgb2hsv.html by Ian Taylor
 // Based in part on work by Sam Hocevar and Emil Persson
 // See also: https://en.wikipedia.org/wiki/HSL_and_HSV#Formal_derivation
 
-// Smaller values can cause problems on some mobile devices
-const float epsilon = 1e-3;
 
 // Convert an RGB color to Hue, Saturation, and Value.
 // All components of input and output are expected to be in the [0,1] range.
@@ -153,16 +155,12 @@ void main()
 
 	gl_FragColor = texture2D(u_skin, texcoord0);
 
-    #ifdef ENABLE_ghost
-    gl_FragColor.a *= u_ghost;
-    #endif // ENABLE_ghost
+	#if defined(ENABLE_color) || defined(ENABLE_brightness)
+	// Divide premultiplied alpha values for proper color processing
+	// Add epsilon to avoid dividing by 0 for fully transparent pixels
+	gl_FragColor.rgb = clamp(gl_FragColor.rgb / (gl_FragColor.a + epsilon), 0.0, 1.0);
 
-	#ifdef DRAW_MODE_silhouette
-	// switch to u_silhouetteColor only AFTER the alpha test
-	gl_FragColor = u_silhouetteColor;
-	#else // DRAW_MODE_silhouette
-
-	#if defined(ENABLE_color)
+	#ifdef ENABLE_color
 	{
 		vec3 hsv = convertRGB2HSV(gl_FragColor.xyz);
 
@@ -178,11 +176,29 @@ void main()
 
 		gl_FragColor.rgb = convertHSV2RGB(hsv);
 	}
-	#endif // defined(ENABLE_color)
+	#endif // ENABLE_color
 
-	#if defined(ENABLE_brightness)
+	#ifdef ENABLE_brightness
 	gl_FragColor.rgb = clamp(gl_FragColor.rgb + vec3(u_brightness), vec3(0), vec3(1));
-	#endif // defined(ENABLE_brightness)
+	#endif // ENABLE_brightness
+
+	// Re-multiply color values
+	gl_FragColor.rgb *= gl_FragColor.a + epsilon;
+
+	#endif // defined(ENABLE_color) || defined(ENABLE_brightness)
+
+	#ifdef ENABLE_ghost
+	gl_FragColor *= u_ghost;
+	#endif // ENABLE_ghost
+
+	#ifdef DRAW_MODE_silhouette
+	// Discard fully transparent pixels for stencil test
+	if (gl_FragColor.a == 0.0) {
+		discard;
+	}
+	// switch to u_silhouetteColor only AFTER the alpha test
+	gl_FragColor = u_silhouetteColor;
+	#else // DRAW_MODE_silhouette
 
 	#ifdef DRAW_MODE_colorMask
 	vec3 maskDistance = abs(gl_FragColor.rgb - u_colorMask);
@@ -195,8 +211,7 @@ void main()
 	#endif // DRAW_MODE_silhouette
 
 	#else // DRAW_MODE_lineSample
-	gl_FragColor = u_lineColor;
-	gl_FragColor.a *= clamp(
+	gl_FragColor = u_lineColor * clamp(
 		// Scale the capScale a little to have an aliased region.
 		(u_capScale + u_aliasAmount -
 			u_capScale * 2.0 * distance(v_texCoord, vec2(0.5, 0.5))
