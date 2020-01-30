@@ -73,6 +73,9 @@ class MoveTool {
         if (hitProperties.clone) cloneSelection(hitProperties.subselect, this.onUpdateImage);
 
         this.selectedItems = this.mode === Modes.RESHAPE ? getSelectedLeafItems() : getSelectedRootItems();
+        if (this.selectedItems.length === 0) {
+            return;
+        }
 
         let selectionBounds;
         for (const selectedItem of this.selectedItems) {
