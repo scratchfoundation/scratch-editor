@@ -102,6 +102,8 @@ class SvgRenderer {
             this._transformText();
             // Transform measurements.
             this._transformMeasurements();
+            // Fix stroke roundedness.
+            this._setGradientStrokeRoundedness();
         } else if (!this._svgTag.getAttribute('viewBox')) {
             // Renderer expects a view box.
             this._transformMeasurements();
@@ -242,13 +244,13 @@ class SvgRenderer {
     }
 
     /**
-     * @param {string} tagName svg tag to search for
+     * @param {string} [tagName] svg tag to search for (or collect all elements if not given)
      * @return {Array} a list of elements with the given tagname in _svgTag
      */
     _collectElements (tagName) {
         const elts = [];
         const collectElements = domElement => {
-            if (domElement.localName === tagName) {
+            if ((domElement.localName === tagName || typeof tagName === 'undefined') && domElement.getAttribute) {
                 elts.push(domElement);
             }
             for (let i = 0; i < domElement.childNodes.length; i++) {
@@ -281,7 +283,7 @@ class SvgRenderer {
     _transformImages () {
         const imageElements = this._collectElements('image');
 
-        // For each image element, set image rendering to pixelated"
+        // For each image element, set image rendering to pixelated
         const pixelatedImages = 'image-rendering: optimizespeed; image-rendering: pixelated;';
         for (const elt of imageElements) {
             if (elt.getAttribute('style')) {
@@ -322,6 +324,23 @@ class SvgRenderer {
         };
         collectStrokeWidths(rootNode);
         return largestStrokeWidth;
+    }
+
+    /**
+     * Find all instances of a URL-referenced `stroke` in the svg. In 2.0, all gradient strokes
+     * have a round `stroke-linejoin` and `stroke-linecap`... for some reason.
+     */
+    _setGradientStrokeRoundedness () {
+        const elements = this._collectElements();
+
+        for (const elt of elements) {
+            if (!elt.style) continue;
+            const stroke = elt.style.stroke || elt.getAttribute('stroke');
+            if (stroke && stroke.match(/^url\(#.*\)$/)) {
+                elt.style['stroke-linejoin'] = 'round';
+                elt.style['stroke-linecap'] = 'round';
+            }
+        }
     }
 
     /**
