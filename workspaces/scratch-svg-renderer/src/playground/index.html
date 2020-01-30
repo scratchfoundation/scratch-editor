@@ -72,9 +72,10 @@
             loadSVGString();
         }
 
-        function renderSVGString(str) {
-            renderer.fromString(str);
-            renderer._draw(parseFloat(scaleSlider.value), ()=>{});
+        function renderSVGString() {
+            if (renderer.loaded) {
+                renderer.draw(parseFloat(scaleSlider.value));
+            }
             renderedContent.value = renderer.toString(true);
         }
 
@@ -103,11 +104,12 @@
         function loadSVGString() {
             readFileAsText(fileChooser.files[0]).then(str => {
                 loadedSVGString = str;
+                renderer.loadSVG(str, false);
             })
         }
 
         function renderLoadedString() {
-            renderSVGString(loadedSVGString);
+            renderSVGString();
             referenceContent.value = loadedSVGString;
             shouldRenderReference.checked && updateReferenceImage();
         }

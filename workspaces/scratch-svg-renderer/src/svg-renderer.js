@@ -31,22 +31,6 @@ class SvgRenderer {
     }
 
     /**
-     * Load an SVG from a string and draw it.
-     * This will be parsed and transformed, and finally drawn.
-     * When drawing is finished, the `onFinish` callback is called.
-     * @param {string} svgString String of SVG data to draw in quirks-mode.
-     * @param {number} [scale] - Optionally, also scale the image by this factor.
-     * @param {Function} [onFinish] Optional callback for when drawing finished.
-     * @deprecated Use the `loadSVG` method and public `draw` method instead.
-     */
-    fromString (svgString, scale, onFinish) {
-        this.loadSVG(svgString, false, () => {
-            this.draw(scale);
-            if (onFinish) onFinish();
-        });
-    }
-
-    /**
      * Load an SVG from a string and measure it.
      * @param {string} svgString String of SVG data to draw in quirks-mode.
      * @return {object} the natural size, in Scratch units, of this SVG.
@@ -436,25 +420,6 @@ class SvgRenderer {
     draw (scale) {
         if (!this.loaded) throw new Error('SVG image has not finished loading');
         this._drawFromImage(scale);
-    }
-
-    /**
-     * Asynchronously draw the (possibly non-loaded) SVG to a canvas.
-     * @param {number} [scale] - Optionally, also scale the image by this factor.
-     * @param {Function} [onFinish] - An optional callback to call when the draw operation is complete.
-     * @deprecated Use the `loadSVG` and public `draw` method instead.
-     */
-    _draw (scale, onFinish) {
-        // Convert the SVG text to an Image, and then draw it to the canvas.
-        if (this._cachedImage === null) {
-            this._createSVGImage(() => {
-                this._drawFromImage(scale);
-                onFinish();
-            });
-        } else {
-            this._drawFromImage(scale);
-            onFinish();
-        }
     }
 
     /**

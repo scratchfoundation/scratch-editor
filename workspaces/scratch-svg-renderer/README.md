@@ -21,8 +21,17 @@ npm install
 ```js
 import SvgRenderer from 'scratch-svg-renderer';
 
-var svgRenderer = new SvgRenderer();
-svgRenderer.fromString(svgData, callback);
+const svgRenderer = new SvgRenderer();
+
+const svgData = "<svg>...</svg>";
+const scale = 1;
+const quirksMode = false; // If true, emulate Scratch 2.0 SVG rendering "quirks"
+function doSomethingWith(canvas) {...};
+
+svgRenderer.loadSVG(svgData, quirksMode, () => {
+	svgRenderer.draw(scale);
+	doSomethingWith(svgRenderer.canvas);
+});
 ```
 
 ## How to run locally as part of scratch-gui
