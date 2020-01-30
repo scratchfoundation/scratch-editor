@@ -59,16 +59,6 @@ class SVGSkin extends Skin {
     }
 
     /**
-     * Set the origin, in object space, about which this Skin should rotate.
-     * @param {number} x - The x coordinate of the new rotation center.
-     * @param {number} y - The y coordinate of the new rotation center.
-     */
-    setRotationCenter (x, y) {
-        const viewOffset = this._svgRenderer.viewOffset;
-        super.setRotationCenter(x - viewOffset[0], y - viewOffset[1]);
-    }
-
-    /**
      * Create a MIP for a given scale.
      * @param {number} scale - The relative size of the MIP
      * @return {SVGMIP} An object that handles creating and updating SVG textures.
@@ -174,7 +164,10 @@ class SVGSkin extends Skin {
             this.resetMIPs();
 
             if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
-            this.setRotationCenter.apply(this, rotationCenter);
+            const viewOffset = this._svgRenderer.viewOffset;
+            this._rotationCenter[0] = rotationCenter[0] - viewOffset[0];
+            this._rotationCenter[1] = rotationCenter[1] - viewOffset[1];
+
             this.emit(Skin.Events.WasAltered);
         });
     }

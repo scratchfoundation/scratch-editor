@@ -98,7 +98,8 @@ class BitmapSkin extends Skin {
         this._textureSize = BitmapSkin._getBitmapSize(bitmapData);
 
         if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
-        this.setRotationCenter.apply(this, rotationCenter);
+        this._rotationCenter[0] = rotationCenter[0];
+        this._rotationCenter[1] = rotationCenter[1];
 
         this.emit(Skin.Events.WasAltered);
     }
