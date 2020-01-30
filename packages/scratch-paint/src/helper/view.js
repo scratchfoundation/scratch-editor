@@ -105,6 +105,7 @@ const zoomToFit = isBitmap => {
         if (ratio < 1) {
             paper.view.center = bounds.center;
             paper.view.zoom = paper.view.zoom / ratio;
+            _resizeCrosshair();
             clampViewBounds();
         }
     }
