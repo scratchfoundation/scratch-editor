@@ -99,8 +99,8 @@ class EyeDropperTool extends paper.Tool {
             y: y,
             color: colors.data,
             data: bufferContext.getImageData(
-                (artX * ZOOM_SCALE) - (LOUPE_RADIUS * ZOOM_SCALE),
-                (artY * ZOOM_SCALE) - (LOUPE_RADIUS * ZOOM_SCALE),
+                ZOOM_SCALE * (artX - LOUPE_RADIUS),
+                ZOOM_SCALE * (artY - LOUPE_RADIUS),
                 LOUPE_RADIUS * 2 * ZOOM_SCALE,
                 LOUPE_RADIUS * 2 * ZOOM_SCALE
             ).data,

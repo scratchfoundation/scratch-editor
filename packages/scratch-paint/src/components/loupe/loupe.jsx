@@ -41,7 +41,16 @@ class LoupeComponent extends React.Component {
         const imageData = tmpCtx.createImageData(
             loupeDiameter, loupeDiameter
         );
-        imageData.data.set(this.props.colorInfo.data);
+
+        // Since the color info comes from elsewhere there is no guarantee
+        // about the size. Make sure it matches to prevent data.set from throwing.
+        // See issue #966 for example of how that can happen.
+        if (this.props.colorInfo.data.length === imageData.data.length) {
+            imageData.data.set(this.props.colorInfo.data);
+        } else {
+            console.warn('Image data size mismatch drawing loupe'); // eslint-disable-line no-console
+        }
+
         tmpCtx.putImageData(imageData, 0, 0);
 
         // Scale the loupe canvas and draw the zoomed image
