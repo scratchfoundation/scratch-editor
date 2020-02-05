@@ -214,10 +214,21 @@ void main()
 	// Maaaaagic antialiased-line-with-round-caps shader.
 	// Adapted from Inigo Quilez' 2D distance function cheat sheet
 	// https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
-	vec2 pa = v_texCoord - u_penPoints.xy, ba = u_penPoints.zw - u_penPoints.xy;
-	float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
 
-	float cappedLine = clamp((u_lineThickness + 1.0) * 0.5 - length(pa - ba*h), 0.0, 1.0);
+	// The xy component of u_penPoints is the first point; the zw is the second point.
+	// This is done to minimize the number of gl.uniform calls, which can add up.
+	vec2 pa = v_texCoord - u_penPoints.xy, ba = u_penPoints.zw - u_penPoints.xy;
+	// Magnitude of vector projection of this fragment onto the line (both relative to the line's start point).
+	// This results in a "linear gradient" which goes from 0.0 at the start point to 1.0 at the end point.
+	float projMagnitude = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+
+	float lineDistance = length(pa - (ba * projMagnitude));
+
+	// The distance to the line allows us to create lines of any thickness.
+	// Instead of checking whether this fragment's distance < the line thickness,
+	// utilize the distance field to get some antialiasing. Fragments far away from the line are 0,
+	// fragments close to the line are 1, and fragments that are within a 1-pixel border of the line are in between.
+	float cappedLine = clamp((u_lineThickness + 1.0) * 0.5 - lineDistance, 0.0, 1.0);
 
 	gl_FragColor = u_lineColor * cappedLine;
 	#endif // DRAW_MODE_line
