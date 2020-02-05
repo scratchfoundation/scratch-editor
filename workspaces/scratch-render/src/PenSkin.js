@@ -210,9 +210,10 @@ class PenSkin extends Skin {
      * @param {number} y1 - the Y coordinate of the end of the line.
      */
     drawLine (penAttributes, x0, y0, x1, y1) {
-        // Width 1 and 3 lines need to be offset by 0.5.
+        // For compatibility with Scratch 2.0, offset pen lines of width 1 and 3 so they're pixel-aligned.
+        // See https://github.com/LLK/scratch-render/pull/314
         const diameter = penAttributes.diameter || DefaultPenAttributes.diameter;
-        const offset = (Math.max(4 - diameter, 0) % 2) / 2;
+        const offset = (diameter === 1 || diameter === 3) ? 0.5 : 0;
 
         this._drawLineOnBuffer(
             penAttributes,

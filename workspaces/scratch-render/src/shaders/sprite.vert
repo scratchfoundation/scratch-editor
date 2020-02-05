@@ -6,10 +6,10 @@ uniform vec2 u_stageSize;
 
 #ifndef DRAW_MODE_line
 uniform mat4 u_projectionMatrix;
+attribute vec2 a_texCoord;
 #endif
 
 attribute vec2 a_position;
-attribute vec2 a_texCoord;
 
 varying vec2 v_texCoord;
 
