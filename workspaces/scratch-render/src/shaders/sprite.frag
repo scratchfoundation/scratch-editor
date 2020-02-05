@@ -36,8 +36,7 @@ uniform float u_ghost;
 #ifdef DRAW_MODE_line
 uniform vec4 u_lineColor;
 uniform float u_lineThickness;
-uniform vec2 u_p1;
-uniform vec2 u_p2;
+uniform vec4 u_penPoints;
 #endif // DRAW_MODE_line
 
 uniform sampler2D u_skin;
@@ -215,7 +214,7 @@ void main()
 	// Maaaaagic antialiased-line-with-round-caps shader.
 	// Adapted from Inigo Quilez' 2D distance function cheat sheet
 	// https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
-	vec2 pa = v_texCoord - u_p1, ba = u_p2 - u_p1;
+	vec2 pa = v_texCoord - u_penPoints.xy, ba = u_penPoints.zw - u_penPoints.xy;
 	float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
 
 	float cappedLine = clamp((u_lineThickness + 1.0) * 0.5 - length(pa - ba*h), 0.0, 1.0);

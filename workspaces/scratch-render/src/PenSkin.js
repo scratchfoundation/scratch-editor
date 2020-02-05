@@ -217,8 +217,8 @@ class PenSkin extends Skin {
 
         this._drawLineOnBuffer(
             penAttributes,
-            this._rotationCenter[0] + x0 + offset, this._rotationCenter[1] - y0 + offset,
-            this._rotationCenter[0] + x1 + offset, this._rotationCenter[1] - y1 + offset
+            x0 + offset, -y0 + offset,
+            x1 + offset, -y1 + offset
         );
 
         this._silhouetteDirty = true;
@@ -230,17 +230,6 @@ class PenSkin extends Skin {
     _createLineGeometry () {
         const quads = {
             a_position: {
-                numComponents: 2,
-                data: [
-                    -1, -1,
-                    1, -1,
-                    -1, 1,
-                    -1, 1,
-                    1, -1,
-                    1, 1
-                ]
-            },
-            a_texCoord: {
                 numComponents: 2,
                 data: [
                     1, 0,
@@ -293,6 +282,8 @@ class PenSkin extends Skin {
 
     /**
      * Draw a line on the framebuffer.
+     * Note that the point coordinates are in the following coordinate space:
+     * +y is down, (0, 0) is the center, and the coords range from (-width / 2, -height / 2) to (height / 2, width / 2).
      * @param {PenAttributes} penAttributes - how the line should be drawn.
      * @param {number} x0 - the X coordinate of the beginning of the line.
      * @param {number} y0 - the Y coordinate of the beginning of the line.
@@ -306,31 +297,27 @@ class PenSkin extends Skin {
 
         this._renderer.enterDrawRegion(this._lineOnBufferDrawRegionId);
 
-        const radius = penAttributes.diameter / 2;
+        const diameter = penAttributes.diameter || DefaultPenAttributes.diameter;
+        const radius = diameter / 2;
+        // Expand line bounds by sqrt(2) / 2 each side-- this ensures that all antialiased pixels
+        // fall within the quad, even at a 45-degree diagonal
+        const expandedRadius = radius + 1.4142135623730951;
 
-        // Clip drawn polygon to line's AABB.
+        const lineLength = Math.hypot(x1 - x0, y1 - y0);
+        const lineAngle = Math.atan2(y1 - y0, x1 - x0);
+
+        const halfWidth = this._bounds.width * 0.5;
+        const halfHeight = this._bounds.height * 0.5;
+
         const transformMatrix = __modelMatrix;
+        twgl.m4.identity(transformMatrix);
+        // Apply view transform to matrix
+        twgl.m4.scale(transformMatrix, [1 / halfWidth, 1 / halfHeight, 1], transformMatrix);
 
-        const left = Math.floor(Math.min(x0, x1) - radius) - 1;
-        const right = Math.ceil(Math.max(x0, x1) + radius) + 1;
-        const top = Math.floor(Math.min(y0, y1) - radius) - 1;
-        const bottom = Math.floor(Math.max(y0, y1) + radius) + 1;
-
-        const width = this._bounds.width;
-        const height = this._bounds.height;
-
-        const translationVector = __modelTranslationVector;
-        translationVector[0] = (left / (width * 0.5)) - 1;
-        translationVector[1] = (top / (height * 0.5)) - 1;
-
-        const scalingVector = __modelScalingVector;
-        scalingVector[0] = (right - left) / width;
-        scalingVector[1] = (bottom - top) / height;
-
-        transformMatrix[0] = scalingVector[0];
-        transformMatrix[5] = scalingVector[1];
-        transformMatrix[12] = translationVector[0] + scalingVector[0];
-        transformMatrix[13] = translationVector[1] + scalingVector[1];
+        twgl.m4.translate(transformMatrix, [x0, y0, 0], transformMatrix);
+        twgl.m4.rotateZ(transformMatrix, lineAngle, transformMatrix);
+        twgl.m4.translate(transformMatrix, [-expandedRadius, -expandedRadius, 0], transformMatrix);
+        twgl.m4.scale(transformMatrix, [lineLength + (expandedRadius * 2), (expandedRadius * 2), 1], transformMatrix);
 
         // Premultiply pen color by pen transparency
         const penColor = penAttributes.color4f || DefaultPenAttributes.color4f;
@@ -342,9 +329,8 @@ class PenSkin extends Skin {
         const uniforms = {
             u_modelMatrix: transformMatrix,
             u_lineColor: __premultipliedColor,
-            u_lineThickness: penAttributes.diameter,
-            u_p1: [x0, y0],
-            u_p2: [x1, y1],
+            u_lineThickness: diameter,
+            u_penPoints: [x0 + halfWidth, y0 + halfHeight, x1 + halfWidth, y1 + halfHeight],
             u_stageSize: this.size
         };
 
