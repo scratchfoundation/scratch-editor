@@ -159,6 +159,11 @@ ShaderManager.DRAW_MODE = {
     default: 'default',
 
     /**
+     * Un-premultiply alpha. Useful for reading pixels from GL into an ImageData object.
+     */
+    straightAlpha: 'straightAlpha',
+
+    /**
      * Draw a silhouette using a solid color.
      */
     silhouette: 'silhouette',
