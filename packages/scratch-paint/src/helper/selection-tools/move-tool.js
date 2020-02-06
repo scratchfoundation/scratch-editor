@@ -2,14 +2,10 @@ import paper from '@scratch/paper';
 import Modes from '../../lib/modes';
 import {isGroup} from '../group';
 import {isCompoundPathItem, getRootItem} from '../item';
-import {checkPointsClose, snapDeltaToAngle} from '../math';
+import {snapDeltaToAngle} from '../math';
 import {ART_BOARD_WIDTH, ART_BOARD_HEIGHT} from '../view';
 import {clearSelection, cloneSelection, getSelectedLeafItems, getSelectedRootItems, setItemSelection}
     from '../selection';
-import {getDragCrosshairLayer} from '../layer';
-
-/** Snap to align selection center to rotation center within this distance */
-const SNAPPING_THRESHOLD = 4;
 
 /**
  * Tool to handle dragging an item to reposition it in a selection mode.
@@ -27,7 +23,6 @@ class MoveTool {
         this.setSelectedItems = setSelectedItems;
         this.clearSelectedItems = clearSelectedItems;
         this.selectedItems = null;
-        this.selectionCenter = null;
         this.onUpdateImage = onUpdateImage;
         this.switchToTextTool = switchToTextTool;
         this.boundsPath = null;
@@ -71,27 +66,10 @@ class MoveTool {
             this._select(item, true, hitProperties.subselect);
         }
         if (hitProperties.clone) cloneSelection(hitProperties.subselect, this.onUpdateImage);
-
         this.selectedItems = this.mode === Modes.RESHAPE ? getSelectedLeafItems() : getSelectedRootItems();
-        if (this.selectedItems.length === 0) {
-            return;
-        }
-
-        let selectionBounds;
-        for (const selectedItem of this.selectedItems) {
-            if (selectionBounds) {
-                selectionBounds = selectionBounds.unite(selectedItem.bounds);
-            } else {
-                selectionBounds = selectedItem.bounds;
-            }
-        }
-        this.selectionCenter = selectionBounds.center;
-
         if (this.boundsPath) {
             this.selectedItems.push(this.boundsPath);
         }
-
-        
     }
     setBoundsPath (boundsPath) {
         this.boundsPath = boundsPath;
@@ -123,21 +101,7 @@ class MoveTool {
         const point = event.point;
         point.x = Math.max(0, Math.min(point.x, ART_BOARD_WIDTH));
         point.y = Math.max(0, Math.min(point.y, ART_BOARD_HEIGHT));
-        
         const dragVector = point.subtract(event.downPoint);
-        let snapVector;
-
-        // Snapping to align center. Not in reshape mode, because reshape doesn't show center crosshair
-        const center = new paper.Point(ART_BOARD_WIDTH / 2, ART_BOARD_HEIGHT / 2);
-        if (!event.modifiers.shift && this.mode !== Modes.RESHAPE) {
-            if (checkPointsClose(
-                this.selectionCenter.add(dragVector),
-                center,
-                SNAPPING_THRESHOLD / paper.view.zoom /* threshold */)) {
-                
-                snapVector = center.subtract(this.selectionCenter);
-            }
-        }
 
         for (const item of this.selectedItems) {
             // add the position of the item before the drag started
@@ -146,20 +110,12 @@ class MoveTool {
                 item.data.origPos = item.position;
             }
 
-            if (snapVector) {
-                item.position = item.data.origPos.add(snapVector);
-            } else if (event.modifiers.shift) {
+            if (event.modifiers.shift) {
                 item.position = item.data.origPos.add(snapDeltaToAngle(dragVector, Math.PI / 4));
             } else {
                 item.position = item.data.origPos.add(dragVector);
             }
         }
-
-
-        // Show the center crosshair above the selected item while dragging. This makes it easier to center sprites.
-        // Yes, we're calling it once per drag event, but it's better than having the crosshair pop up
-        // for a split second every time you click a sprite.
-        getDragCrosshairLayer().visible = true;
     }
     onMouseUp () {
         let moved = false;
@@ -171,14 +127,10 @@ class MoveTool {
             item.data.origPos = null;
         }
         this.selectedItems = null;
-        this.selectionCenter = null;
 
         if (moved) {
             this.onUpdateImage();
         }
-
-        // Hide the crosshair we showed earlier.
-        getDragCrosshairLayer().visible = false;
     }
 }
 

@@ -3,15 +3,13 @@ import keyMirror from 'keymirror';
 
 import {getSelectedRootItems} from '../selection';
 import {getGuideColor, removeBoundsPath, removeBoundsHandles} from '../guides';
-import {getGuideLayer, setGuideItem} from '../layer';
-import selectionAnchorIcon from '../icons/selection-anchor-expanded.svg';
+import {getGuideLayer} from '../layer';
 
 import Cursors from '../../lib/cursors';
 import ScaleTool from './scale-tool';
 import RotateTool from './rotate-tool';
 import MoveTool from './move-tool';
 
-const SELECTION_ANCHOR_SIZE = 20;
 /** SVG for the rotation icon on the bounding box */
 const ARROW_PATH = 'M19.28,1.09C19.28.28,19,0,18.2,0c-1.67,0-3.34,0-5,0-.34,0-.88.24-1,.47a1.4,1.4,' +
     '0,0,0,.36,1.08,15.27,15.27,0,0,0,1.46,1.36A6.4,6.4,0,0,1,6.52,4,5.85,5.85,0,0,1,5.24,3,15.27,15.27,' +
@@ -25,7 +23,6 @@ const BoundingBoxModes = keyMirror({
     ROTATE: null,
     MOVE: null
 });
-let anchorIcon;
 
 /**
  * Tool that handles transforming the selection and drawing a bounding box with handles.
@@ -80,17 +77,6 @@ class BoundingBoxTool {
      * @return {boolean} True if there was a hit, false otherwise
      */
     onMouseDown (event, clone, multiselect, doubleClicked, hitOptions) {
-        if (!anchorIcon) {
-            paper.project.importSVG(selectionAnchorIcon, {
-                onLoad: function (item) {
-                    anchorIcon = item;
-                    item.visible = false;
-                    item.parent = getGuideLayer();
-                    setGuideItem(item);
-                }
-            });
-        }
-
         if (event.event.button > 0) return; // only first mouse button
         const {hitResult, mode} = this._determineMode(event, multiselect, hitOptions);
         if (!hitResult) {
@@ -218,17 +204,11 @@ class BoundingBoxTool {
         }
 
         if (!this.boundsPath) {
-            this.boundsPath = new paper.Group();
-            this.boundsRect = paper.Path.Rectangle(rect);
-            this.boundsRect.curves[0].divideAtTime(0.5);
-            this.boundsRect.curves[2].divideAtTime(0.5);
-            this.boundsRect.curves[4].divideAtTime(0.5);
-            this.boundsRect.curves[6].divideAtTime(0.5);
-            this.boundsPath.addChild(this.boundsRect);
-            if (anchorIcon) {
-                this.boundsPath.addChild(anchorIcon);
-                this.boundsPath.selectionAnchor = anchorIcon;
-            }
+            this.boundsPath = new paper.Path.Rectangle(rect);
+            this.boundsPath.curves[0].divideAtTime(0.5);
+            this.boundsPath.curves[2].divideAtTime(0.5);
+            this.boundsPath.curves[4].divideAtTime(0.5);
+            this.boundsPath.curves[6].divideAtTime(0.5);
             this._modeMap[BoundingBoxModes.MOVE].setBoundsPath(this.boundsPath);
         }
         this.boundsPath.guide = true;
@@ -238,12 +218,6 @@ class BoundingBoxTool {
         this.boundsPath.parent = getGuideLayer();
         this.boundsPath.strokeWidth = 1 / paper.view.zoom;
         this.boundsPath.strokeColor = getGuideColor();
-
-        if (anchorIcon) {
-            anchorIcon.visible = true;
-            anchorIcon.scale(SELECTION_ANCHOR_SIZE / paper.view.zoom / anchorIcon.bounds.width);
-            anchorIcon.position = rect.center;
-        }
 
         // Make a template to copy
         const boundsScaleCircleShadow =
@@ -273,8 +247,8 @@ class BoundingBoxTool {
         const boundsScaleHandle = new paper.Group([boundsScaleCircleShadow, boundsScaleCircle]);
         boundsScaleHandle.parent = getGuideLayer();
 
-        for (let index = 0; index < this.boundsRect.segments.length; index++) {
-            const segment = this.boundsRect.segments[index];
+        for (let index = 0; index < this.boundsPath.segments.length; index++) {
+            const segment = this.boundsPath.segments[index];
 
             if (index === 7) {
                 const offset = new paper.Point(0, 20);
@@ -321,12 +295,8 @@ class BoundingBoxTool {
     removeBoundsPath () {
         removeBoundsPath();
         this.boundsPath = null;
-        this.boundsRect = null;
         this.boundsScaleHandles.length = 0;
         this.boundsRotHandles.length = 0;
-        if (anchorIcon) {
-            anchorIcon.visible = false;
-        }
     }
     removeBoundsHandles () {
         removeBoundsHandles();

@@ -27,7 +27,7 @@ const performSnapshot = function (dispatchPerformSnapshot, format) {
 const _restore = function (entry, setSelectedItems, onUpdateImage, isBitmapMode) {
     for (let i = paper.project.layers.length - 1; i >= 0; i--) {
         const layer = paper.project.layers[i];
-        if (!layer.data.isBackgroundGuideLayer && !layer.data.isDragCrosshairLayer) {
+        if (!layer.data.isBackgroundGuideLayer) {
             layer.removeChildren();
             layer.remove();
         }

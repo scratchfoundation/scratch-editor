@@ -38,7 +38,6 @@ class ScaleTool {
         this.pivot = boundsPath.bounds[this._getOpposingRectCornerNameByIndex(index)].clone();
         this.origPivot = boundsPath.bounds[this._getOpposingRectCornerNameByIndex(index)].clone();
         this.corner = boundsPath.bounds[this._getRectCornerNameByIndex(index)].clone();
-        this.selectionAnchor = boundsPath.selectionAnchor;
         this.origSize = this.corner.subtract(this.pivot);
         this.origCenter = boundsPath.bounds.center;
         this.isCorner = this._isCorner(index);
@@ -87,9 +86,6 @@ class ScaleTool {
                 // Reset position if we were just in alt
                 this.centered = false;
                 this.itemGroup.scale(1 / this.lastSx, 1 / this.lastSy, this.pivot);
-                if (this.selectionAnchor) {
-                    this.selectionAnchor.scale(this.lastSx, this.lastSy);
-                }
                 this.lastSx = 1;
                 this.lastSy = 1;
             }
@@ -118,9 +114,6 @@ class ScaleTool {
             sy *= signy;
         }
         this.itemGroup.scale(sx / this.lastSx, sy / this.lastSy, this.pivot);
-        if (this.selectionAnchor) {
-            this.selectionAnchor.scale(this.lastSx / sx, this.lastSy / sy);
-        }
         this.lastSx = sx;
         this.lastSy = sy;
     }

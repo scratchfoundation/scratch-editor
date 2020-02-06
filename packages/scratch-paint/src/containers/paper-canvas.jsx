@@ -97,7 +97,7 @@ class PaperCanvas extends React.Component {
         for (const layer of paper.project.layers) {
             if (layer.data.isRasterLayer) {
                 clearRaster();
-            } else if (!layer.data.isBackgroundGuideLayer && !layer.data.isDragCrosshairLayer) {
+            } else if (!layer.data.isBackgroundGuideLayer) {
                 layer.removeChildren();
             }
         }
