@@ -112,6 +112,8 @@ class Drawable {
         this._convexHullDirty = true;
 
         this._skinWasAltered = this._skinWasAltered.bind(this);
+
+        this.isTouching = this._isTouchingNever;
     }
 
     /**
@@ -452,25 +454,33 @@ class Drawable {
     }
 
     /**
+     * @function
+     * @name isTouching
      * Check if the world position touches the skin.
      * The caller is responsible for ensuring this drawable's inverse matrix & its skin's silhouette are up-to-date.
      * @see updateCPURenderAttributes
      * @param {twgl.v3} vec World coordinate vector.
      * @return {boolean} True if the world position touches the skin.
      */
-    isTouching (vec) {
-        if (!this.skin) {
-            return false;
-        }
 
-        const localPosition = getLocalPosition(this, vec);
+    // `updateCPURenderAttributes` sets this Drawable instance's `isTouching` method
+    // to one of the following three functions:
+    // If this drawable has no skin, set it to `_isTouchingNever`.
+    // Otherwise, if this drawable uses nearest-neighbor scaling at its current scale, set it to `_isTouchingNearest`.
+    // Otherwise, set it to `_isTouchingLinear`.
+    // This allows several checks to be moved from the `isTouching` function to `updateCPURenderAttributes`.
 
-        // We're not passing in a scale to useNearest, but that's okay because "touching" queries
-        // happen at the "native" size anyway.
-        if (this.useNearest()) {
-            return this.skin.isTouchingNearest(localPosition);
-        }
-        return this.skin.isTouchingLinear(localPosition);
+    // eslint-disable-next-line no-unused-vars
+    _isTouchingNever (vec) {
+        return false;
+    }
+
+    _isTouchingNearest (vec) {
+        return this.skin.isTouchingNearest(getLocalPosition(this, vec));
+    }
+
+    _isTouchingLinear (vec) {
+        return this.skin.isTouchingLinear(getLocalPosition(this, vec));
     }
 
     /**
@@ -643,8 +653,16 @@ class Drawable {
         // CPU rendering always occurs at the "native" size, so no need to scale up this._scale
         if (this.skin) {
             this.skin.updateSilhouette(this._scale);
+
+            if (this.useNearest()) {
+                this.isTouching = this._isTouchingNearest;
+            } else {
+                this.isTouching = this._isTouchingLinear;
+            }
         } else {
             log.warn(`Could not find skin for drawable with id: ${this._id}`);
+
+            this.isTouching = this._isTouchingNever;
         }
     }
 
