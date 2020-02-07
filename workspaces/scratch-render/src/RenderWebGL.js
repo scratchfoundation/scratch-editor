@@ -763,6 +763,9 @@ class RenderWebGL extends EventEmitter {
         const color = __touchingColor;
         const hasMask = Boolean(mask3b);
 
+        // "touching color" ignores ghost effect
+        const effectMask = ~ShaderManager.EFFECT_INFO.ghost.mask;
+
         // Scratch Space - +y is top
         for (let y = bounds.bottom; y <= bounds.top; y++) {
             if (bounds.width * (y - bounds.bottom) * (candidates.length + 1) >= maxPixelsForCPU) {
@@ -773,7 +776,7 @@ class RenderWebGL extends EventEmitter {
                 point[0] = x;
                 // if we use a mask, check our sample color...
                 if (hasMask ?
-                    maskMatches(Drawable.sampleColor4b(point, drawable, color), mask3b) :
+                    maskMatches(Drawable.sampleColor4b(point, drawable, color, effectMask), mask3b) :
                     drawable.isTouching(point)) {
                     RenderWebGL.sampleColor3b(point, candidates, color);
                     if (debugCanvasContext) {

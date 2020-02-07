@@ -118,16 +118,17 @@ class EffectTransform {
      * Ghost and Color and Brightness effects.
      * @param {Drawable} drawable The drawable to get uniforms from.
      * @param {Uint8ClampedArray} inOutColor The color to transform.
+     * @param {number} [effectMask] A bitmask for which effects to use. Optional.
      * @returns {Uint8ClampedArray} dst filled with the transformed color
      */
-    static transformColor (drawable, inOutColor) {
-
+    static transformColor (drawable, inOutColor, effectMask) {
         // If the color is fully transparent, don't bother attempting any transformations.
         if (inOutColor[3] === 0) {
             return inOutColor;
         }
 
-        const effects = drawable.enabledEffects;
+        let effects = drawable.enabledEffects;
+        if (typeof effectMask === 'number') effects &= effectMask;
         const uniforms = drawable.getUniforms();
 
         const enableColor = (effects & ShaderManager.EFFECT_INFO.color.mask) !== 0;
