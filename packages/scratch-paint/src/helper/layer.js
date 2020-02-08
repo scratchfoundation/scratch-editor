@@ -193,33 +193,33 @@ const _makeCrosshair = function (opacity, parent) {
     const crosshair = new paper.Group();
 
     const vLine2 = new paper.Path.Line(new paper.Point(0, -7), new paper.Point(0, 7));
-    vLine2.strokeWidth = 4;
+    vLine2.strokeWidth = 6;
     vLine2.strokeColor = 'white';
     vLine2.strokeCap = 'round';
     crosshair.addChild(vLine2);
     const hLine2 = new paper.Path.Line(new paper.Point(-7, 0), new paper.Point(7, 0));
-    hLine2.strokeWidth = 4;
+    hLine2.strokeWidth = 6;
     hLine2.strokeColor = 'white';
     hLine2.strokeCap = 'round';
     crosshair.addChild(hLine2);
-    const circle2 = new paper.Shape.Circle(new paper.Point(0, 0), 5);
-    circle2.strokeWidth = 4;
+    const circle2 = new paper.Shape.Circle(new paper.Point(0, 0), 5.5);
+    circle2.strokeWidth = 6;
     circle2.strokeColor = 'white';
     crosshair.addChild(circle2);
 
     const vLine = new paper.Path.Line(new paper.Point(0, -7), new paper.Point(0, 7));
     vLine.strokeWidth = 2;
-    vLine.strokeColor = '#ccc';
+    vLine.strokeColor = 'black';
     vLine.strokeCap = 'round';
     crosshair.addChild(vLine);
     const hLine = new paper.Path.Line(new paper.Point(-7, 0), new paper.Point(7, 0));
     hLine.strokeWidth = 2;
-    hLine.strokeColor = '#ccc';
+    hLine.strokeColor = 'black';
     hLine.strokeCap = 'round';
     crosshair.addChild(hLine);
-    const circle = new paper.Shape.Circle(new paper.Point(0, 0), 5);
+    const circle = new paper.Shape.Circle(new paper.Point(0, 0), 5.5);
     circle.strokeWidth = 2;
-    circle.strokeColor = '#ccc';
+    circle.strokeColor = 'black';
     crosshair.addChild(circle);
 
     setGuideItem(crosshair);
@@ -234,7 +234,7 @@ const _makeCrosshair = function (opacity, parent) {
 
 const _makeDragCrosshairLayer = function () {
     const dragCrosshairLayer = new paper.Layer();
-    _makeCrosshair(1, dragCrosshairLayer);
+    _makeCrosshair(0.65, dragCrosshairLayer);
     dragCrosshairLayer.data.isDragCrosshairLayer = true;
     dragCrosshairLayer.visible = false;
     return dragCrosshairLayer;
@@ -250,7 +250,7 @@ const _makeBackgroundGuideLayer = function () {
     vBackground.guide = true;
     vBackground.locked = true;
 
-    _makeCrosshair(0.25, guideLayer);
+    _makeCrosshair(0.16, guideLayer);
 
     guideLayer.data.isBackgroundGuideLayer = true;
     return guideLayer;
