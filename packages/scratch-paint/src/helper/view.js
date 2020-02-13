@@ -31,7 +31,7 @@ const clampViewBounds = () => {
     }
 };
 
-const _resizeCrosshair = () => {
+const resizeCrosshair = () => {
     if (getDragCrosshairLayer() && getDragCrosshairLayer().dragCrosshair) {
         getDragCrosshairLayer().dragCrosshair.scale(
             CROSSHAIR_SIZE / getDragCrosshairLayer().dragCrosshair.bounds.width / paper.view.zoom);
@@ -55,7 +55,7 @@ const zoomOnFixedPoint = (deltaZoom, fixedPoint) => {
     view.zoom = newZoom;
     view.translate(postZoomOffset.multiply(-1));
     clampViewBounds();
-    _resizeCrosshair();
+    resizeCrosshair();
 };
 
 // Zoom keeping the selection center (if any) fixed.
@@ -80,7 +80,7 @@ const zoomOnSelection = deltaZoom => {
 
 const resetZoom = () => {
     paper.project.view.zoom = .5;
-    _resizeCrosshair();
+    resizeCrosshair();
     clampViewBounds();
 };
 
@@ -106,7 +106,7 @@ const zoomToFit = isBitmap => {
         if (ratio < 1) {
             paper.view.center = bounds.center;
             paper.view.zoom = paper.view.zoom / ratio;
-            _resizeCrosshair();
+            resizeCrosshair();
             clampViewBounds();
         }
     }
@@ -121,6 +121,7 @@ export {
     clampViewBounds,
     pan,
     resetZoom,
+    resizeCrosshair,
     zoomOnSelection,
     zoomOnFixedPoint,
     zoomToFit
