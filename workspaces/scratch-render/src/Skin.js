@@ -212,6 +212,9 @@ class Skin extends EventEmitter {
             this._emptyImageTexture = twgl.createTexture(gl, textureOptions);
         }
 
+        this._rotationCenter[0] = 0;
+        this._rotationCenter[1] = 0;
+
         this._silhouette.update(this._emptyImageData);
         this.emit(Skin.Events.WasAltered);
     }
