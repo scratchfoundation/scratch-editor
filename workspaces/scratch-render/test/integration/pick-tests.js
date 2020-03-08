@@ -13,9 +13,12 @@ const runFile = async (file, action, page, script) => {
     await page.goto(`file://${indexHTML}`);
     const fileInput = await page.$('#file');
     await fileInput.uploadFile(testDir(file));
-    // the index.html handler for file input will add a #loaded element when it
-    // finishes.
-    await page.waitForSelector('#loaded');
+
+    await page.evaluate(() =>
+        // `loadFile` is defined on the page itself.
+        // eslint-disable-next-line no-undef
+        loadFile()
+    );
     return page.evaluate(`(function () {return (${script})(${action});})()`);
 };
 
