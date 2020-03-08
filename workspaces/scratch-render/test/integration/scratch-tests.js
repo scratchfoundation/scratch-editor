@@ -14,9 +14,11 @@ const testFile = (file, page) => test(file, async t => {
     await page.goto(`file://${indexHTML}`);
     const fileInput = await page.$('#file');
     await fileInput.uploadFile(testDir(file));
-    // the index.html handler for file input will add a #loaded element when it
-    // finishes.
-    await page.waitForSelector('#loaded');
+    await page.evaluate(() =>
+        // `loadFile` is defined on the page itself.
+        // eslint-disable-next-line no-undef
+        loadFile()
+    );
     const says = await page.evaluate(() => {
         // This function is run INSIDE the integration chrome browser via some
         // injection and .toString() magic.  We can return some "simple data"
