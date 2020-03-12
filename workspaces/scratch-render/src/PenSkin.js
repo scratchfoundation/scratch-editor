@@ -152,17 +152,16 @@ class PenSkin extends Skin {
     }
 
     /**
-     * @returns {boolean} true for a raster-style skin (like a BitmapSkin), false for vector-style (like SVGSkin).
-     */
-    get isRaster () {
-        return true;
-    }
-
-    /**
      * @return {Array<number>} the "native" size, in texels, of this skin. [width, height]
      */
     get size () {
         return [this._canvas.width, this._canvas.height];
+    }
+
+    useNearest (scale) {
+        // Use nearest-neighbor interpolation when scaling up the pen skin-- this matches Scratch 2.0.
+        // When scaling it down, use linear interpolation to avoid giving pen lines a "dashed" appearance.
+        return Math.max(scale[0], scale[1]) >= 100;
     }
 
     /**
