@@ -763,7 +763,7 @@ class RenderWebGL extends EventEmitter {
         const color = __touchingColor;
         const hasMask = Boolean(mask3b);
 
-        // "touching color" ignores ghost effect
+        // Masked drawable ignores ghost effect
         const effectMask = ~ShaderManager.EFFECT_INFO.ghost.mask;
 
         // Scratch Space - +y is top
