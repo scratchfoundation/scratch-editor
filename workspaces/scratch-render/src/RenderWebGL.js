@@ -1124,7 +1124,8 @@ class RenderWebGL extends EventEmitter {
         gl.clear(gl.COLOR_BUFFER_BIT);
         try {
             gl.disable(gl.BLEND);
-            this._drawThese([drawableID], ShaderManager.DRAW_MODE.default, projection,
+            // ImageData objects store alpha un-premultiplied, so draw with the `straightAlpha` draw mode.
+            this._drawThese([drawableID], ShaderManager.DRAW_MODE.straightAlpha, projection,
                 {effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask});
         } finally {
             gl.enable(gl.BLEND);

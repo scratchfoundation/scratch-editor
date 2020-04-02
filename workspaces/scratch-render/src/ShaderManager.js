@@ -154,9 +154,14 @@ ShaderManager.EFFECTS = Object.keys(ShaderManager.EFFECT_INFO);
  */
 ShaderManager.DRAW_MODE = {
     /**
-     * Draw normally.
+     * Draw normally. Its output will use premultiplied alpha.
      */
     default: 'default',
+
+    /**
+     * Draw with non-premultiplied alpha. Useful for reading pixels from GL into an ImageData object.
+     */
+    straightAlpha: 'straightAlpha',
 
     /**
      * Draw a silhouette using a solid color.
