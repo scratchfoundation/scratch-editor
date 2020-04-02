@@ -104,6 +104,12 @@ class PenSkin extends Skin {
         /** @type {boolean} */
         this._silhouetteDirty = false;
 
+        /** @type {Uint8Array} */
+        this._silhouettePixels = null;
+
+        /** @type {ImageData} */
+        this._silhouetteImageData = null;
+
         /** @type {object} */
         this._lineOnBufferDrawRegionId = {
             enter: () => this._enterDrawLineOnBuffer(),
@@ -514,6 +520,9 @@ class PenSkin extends Skin {
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
+        this._silhouettePixels = new Uint8Array(Math.floor(width * height * 4));
+        this._silhouetteImageData = this._canvas.getContext('2d').createImageData(width, height);
+
         this._silhouetteDirty = true;
     }
 
@@ -551,24 +560,17 @@ class PenSkin extends Skin {
             // Render export texture to another framebuffer
             const gl = this._renderer.gl;
 
-            const bounds = this._bounds;
-
             this._renderer.enterDrawRegion(this._toBufferDrawRegionId);
 
             // Sample the framebuffer's pixels into the silhouette instance
-            const skinPixels = new Uint8Array(Math.floor(this._canvas.width * this._canvas.height * 4));
-            gl.readPixels(0, 0, this._canvas.width, this._canvas.height, gl.RGBA, gl.UNSIGNED_BYTE, skinPixels);
+            gl.readPixels(
+                0, 0,
+                this._canvas.width, this._canvas.height,
+                gl.RGBA, gl.UNSIGNED_BYTE, this._silhouettePixels
+            );
 
-            const skinCanvas = this._canvas;
-            skinCanvas.width = bounds.width;
-            skinCanvas.height = bounds.height;
-
-            const skinContext = skinCanvas.getContext('2d');
-            const skinImageData = skinContext.createImageData(bounds.width, bounds.height);
-            skinImageData.data.set(skinPixels);
-            skinContext.putImageData(skinImageData, 0, 0);
-
-            this._silhouette.update(this._canvas, true /* isPremultiplied */);
+            this._silhouetteImageData.data.set(this._silhouettePixels);
+            this._silhouette.update(this._silhouetteImageData, true /* isPremultiplied */);
 
             this._silhouetteDirty = false;
         }

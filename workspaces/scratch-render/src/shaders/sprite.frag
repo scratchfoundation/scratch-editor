@@ -210,6 +210,11 @@ void main()
 	#endif // DRAW_MODE_colorMask
 	#endif // DRAW_MODE_silhouette
 
+	#ifdef DRAW_MODE_straightAlpha
+	// Un-premultiply alpha.
+	gl_FragColor.rgb /= gl_FragColor.a + epsilon;
+	#endif
+  
 	#else // DRAW_MODE_line
 	// Maaaaagic antialiased-line-with-round-caps shader.
 	// Adapted from Inigo Quilez' 2D distance function cheat sheet
