@@ -16,10 +16,41 @@ class SvgRenderer {
      * @constructor
      */
     constructor (canvas) {
+        /**
+         * The canvas that this SVG renderer will render to.
+         * @type {HTMLCanvasElement}
+         * @private
+         */
         this._canvas = canvas || document.createElement('canvas');
         this._context = this._canvas.getContext('2d');
+
+        /**
+         * A measured SVG "viewbox"
+         * @typedef {object} SvgRenderer#SvgMeasurements
+         * @property {number} x - The left edge of the SVG viewbox.
+         * @property {number} y - The top edge of the SVG viewbox.
+         * @property {number} width - The width of the SVG viewbox.
+         * @property {number} height - The height of the SVG viewbox.
+         */
+
+        /**
+         * The measurement box of the currently loaded SVG.
+         * @type {SvgRenderer#SvgMeasurements}
+         * @private
+         */
         this._measurements = {x: 0, y: 0, width: 0, height: 0};
+
+        /**
+         * The `<img>` element with the contents of the currently loaded SVG.
+         * @type {?HTMLImageElement}
+         * @private
+         */
         this._cachedImage = null;
+
+        /**
+         * True if this renderer's current SVG is loaded and can be rendered to the canvas.
+         * @type {boolean}
+         */
         this.loaded = false;
     }
 
