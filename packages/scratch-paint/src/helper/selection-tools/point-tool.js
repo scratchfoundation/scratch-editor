@@ -1,4 +1,3 @@
-import paper from '@scratch/paper';
 import {HANDLE_RATIO, snapDeltaToAngle} from '../math';
 import {getActionBounds} from '../view';
 import {clearSelection, getSelectedLeafItems, getSelectedSegments} from '../selection';
@@ -59,7 +58,7 @@ class PointTool {
             }
             hitProperties.hitResult.segment.selected = true;
         }
-        
+
         this.selectedItems = getSelectedLeafItems();
     }
     /**
@@ -68,51 +67,16 @@ class PointTool {
      * @param {?boolean} hitProperties.multiselect Whether to multiselect on mouse down (e.g. shift key held)
      */
     addPoint (hitProperties) {
-        // Length of curve from previous point to new point
-        const beforeCurveLength = hitProperties.hitResult.location.curveOffset;
-        const afterCurveLength =
-            hitProperties.hitResult.location.curve.length - hitProperties.hitResult.location.curveOffset;
+        const newSegment = hitProperties.hitResult.item.divideAt(hitProperties.hitResult.location);
 
-        // Handle length based on curve length until next point
-        let handleIn = hitProperties.hitResult.location.tangent.multiply(-beforeCurveLength * HANDLE_RATIO);
-        let handleOut = hitProperties.hitResult.location.tangent.multiply(afterCurveLength * HANDLE_RATIO);
-        // Don't let one handle overwhelm the other (results in path doubling back on itself weirdly)
-        if (handleIn.length > 3 * handleOut.length) {
-            handleIn = handleIn.multiply(3 * handleOut.length / handleIn.length);
-        }
-        if (handleOut.length > 3 * handleIn.length) {
-            handleOut = handleOut.multiply(3 * handleIn.length / handleOut.length);
-        }
+        // If we're adding a point in the middle of a straight line, it won't be smooth by default, so smooth it
+        if (!newSegment.hasHandles()) newSegment.smooth();
 
-        const beforeSegment = hitProperties.hitResult.item.segments[hitProperties.hitResult.location.index];
-        const afterSegment = hitProperties.hitResult.item.segments[hitProperties.hitResult.location.index + 1];
-
-        // Add segment
-        const newSegment = new paper.Segment(hitProperties.hitResult.location.point, handleIn, handleOut);
-        hitProperties.hitResult.item.insert(hitProperties.hitResult.location.index + 1, newSegment);
         hitProperties.hitResult.segment = newSegment;
         if (!hitProperties.multiselect) {
             clearSelection(this.clearSelectedItems);
         }
         newSegment.selected = true;
-
-        // Adjust handles of curve before and curve after to account for new curve length
-        if (beforeSegment && beforeSegment.handleOut) {
-            if (afterSegment) {
-                beforeSegment.handleOut =
-                    beforeSegment.handleOut.multiply(beforeCurveLength * HANDLE_RATIO / beforeSegment.handleOut.length);
-            } else {
-                beforeSegment.handleOut = null;
-            }
-        }
-        if (afterSegment && afterSegment.handleIn) {
-            if (beforeSegment) {
-                afterSegment.handleIn =
-                    afterSegment.handleIn.multiply(afterCurveLength * HANDLE_RATIO / afterSegment.handleIn.length);
-            } else {
-                afterSegment.handleIn = null;
-            }
-        }
     }
     removePoint (hitResult) {
         const index = hitResult.segment.index;
@@ -144,7 +108,7 @@ class PointTool {
         this.deselectOnMouseUp = null;
         this.invertDeselect = false;
         this.deleteOnMouseUp = null;
-        
+
         const point = event.point;
         const bounds = getActionBounds();
         point.x = Math.max(bounds.left, Math.min(point.x, bounds.right));
@@ -154,7 +118,7 @@ class PointTool {
         const dragVector = point.subtract(event.downPoint);
         const delta = point.subtract(this.lastPoint);
         this.lastPoint = point;
-        
+
         const selectedSegments = getSelectedSegments();
         for (const seg of selectedSegments) {
             // add the point of the segment before the drag started
@@ -172,7 +136,7 @@ class PointTool {
     }
     onMouseUp () {
         this.lastPoint = null;
-        
+
         // resetting the items and segments origin points for the next usage
         let moved = false;
         const selectedSegments = getSelectedSegments();
