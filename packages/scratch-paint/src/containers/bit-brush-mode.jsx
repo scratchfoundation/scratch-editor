@@ -5,11 +5,10 @@ import bindAll from 'lodash.bindall';
 import Modes from '../lib/modes';
 import {MIXED} from '../helper/style-path';
 
-import {changeFillColor, DEFAULT_COLOR} from '../reducers/fill-color';
+import {changeFillColor, clearFillGradient, DEFAULT_COLOR} from '../reducers/fill-style';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems} from '../reducers/selected-items';
 import {clearSelection} from '../helper/selection';
-import {clearGradient} from '../reducers/selection-gradient-type';
 
 import BitBrushModeComponent from '../components/bit-brush-mode/bit-brush-mode.jsx';
 import BitBrushTool from '../helper/bit-tools/brush-tool';
@@ -102,7 +101,7 @@ const mapDispatchToProps = dispatch => ({
         dispatch(clearSelectedItems());
     },
     clearGradient: () => {
-        dispatch(clearGradient());
+        dispatch(clearFillGradient());
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.BIT_BRUSH));

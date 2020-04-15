@@ -5,7 +5,7 @@ import {isGroup} from './group';
 import {getItems} from './selection';
 import GradientTypes from '../lib/gradient-types';
 import parseColor from 'parse-color';
-import {DEFAULT_COLOR} from '../reducers/fill-color';
+import {DEFAULT_COLOR} from '../reducers/fill-style';
 import {isCompoundPathChild} from '../helper/compound-path';
 
 const MIXED = 'scratch-paint/style-path/mixed';

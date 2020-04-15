@@ -6,11 +6,10 @@ import bindAll from 'lodash.bindall';
 import Modes from '../lib/modes';
 import {MIXED} from '../helper/style-path';
 
-import {changeFillColor, DEFAULT_COLOR} from '../reducers/fill-color';
+import {changeFillColor, clearFillGradient, DEFAULT_COLOR} from '../reducers/fill-style';
 import {changeStrokeColor} from '../reducers/stroke-color';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
-import {clearGradient} from '../reducers/selection-gradient-type';
 import {setCursor} from '../reducers/cursor';
 
 import {clearSelection, getSelectedLeafItems} from '../helper/selection';
@@ -126,7 +125,7 @@ const mapDispatchToProps = dispatch => ({
         dispatch(clearSelectedItems());
     },
     clearGradient: () => {
-        dispatch(clearGradient());
+        dispatch(clearFillGradient());
     },
     setCursor: cursorString => {
         dispatch(setCursor(cursorString));

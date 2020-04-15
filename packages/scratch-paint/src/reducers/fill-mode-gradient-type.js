@@ -2,14 +2,14 @@
 // and isn't overwritten by changing the selection.
 import GradientTypes from '../lib/gradient-types';
 import log from '../log/log';
+import {CHANGE_FILL_GRADIENT_TYPE} from './fill-style';
 
-const CHANGE_GRADIENT_TYPE = 'scratch-paint/fill-mode-gradient-type/CHANGE_GRADIENT_TYPE';
 const initialState = null;
 
 const reducer = function (state, action) {
     if (typeof state === 'undefined') state = initialState;
     switch (action.type) {
-    case CHANGE_GRADIENT_TYPE:
+    case CHANGE_FILL_GRADIENT_TYPE:
         if (action.gradientType in GradientTypes) {
             return action.gradientType;
         }
@@ -22,16 +22,15 @@ const reducer = function (state, action) {
 
 // Action creators ==================================
 // Use this for user-initiated gradient type selections only.
-// See reducers/selection-gradient-type.js for other ways gradient type changes.
+// See reducers/fill-style.js for other ways gradient type changes.
 const changeGradientType = function (gradientType) {
     return {
-        type: CHANGE_GRADIENT_TYPE,
+        type: CHANGE_FILL_GRADIENT_TYPE,
         gradientType: gradientType
     };
 };
 
 export {
     reducer as default,
-    CHANGE_GRADIENT_TYPE,
     changeGradientType
 };

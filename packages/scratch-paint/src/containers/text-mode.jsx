@@ -8,12 +8,11 @@ import Modes from '../lib/modes';
 import {MIXED} from '../helper/style-path';
 
 import {changeFont} from '../reducers/font';
-import {changeFillColor, DEFAULT_COLOR} from '../reducers/fill-color';
+import {changeFillColor, clearFillGradient, DEFAULT_COLOR} from '../reducers/fill-style';
 import {changeStrokeColor} from '../reducers/stroke-color';
 import {changeMode} from '../reducers/modes';
 import {setTextEditTarget} from '../reducers/text-edit-target';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
-import {clearGradient} from '../reducers/selection-gradient-type';
 import {setCursor} from '../reducers/cursor';
 
 import {clearSelection, getSelectedLeafItems} from '../helper/selection';
@@ -188,7 +187,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
         dispatch(clearSelectedItems());
     },
     clearGradient: () => {
-        dispatch(clearGradient());
+        dispatch(clearFillGradient());
     },
     handleChangeModeBitText: () => {
         dispatch(changeMode(Modes.BIT_TEXT));

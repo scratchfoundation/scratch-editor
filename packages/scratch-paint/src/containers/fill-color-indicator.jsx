@@ -5,7 +5,7 @@ import bindAll from 'lodash.bindall';
 import parseColor from 'parse-color';
 
 import {changeColorIndex} from '../reducers/color-index';
-import {changeFillColor, changeFillColor2} from '../reducers/fill-color';
+import {changeFillColor, changeFillColor2} from '../reducers/fill-style';
 import {changeGradientType} from '../reducers/fill-mode-gradient-type';
 import {openFillColor, closeFillColor} from '../reducers/modals';
 import {getSelectedLeafItems} from '../helper/selection';
@@ -124,7 +124,7 @@ const mapStateToProps = state => ({
     fillColor2: state.scratchPaint.color.fillColor.secondary,
     fillColorModalVisible: state.scratchPaint.modals.fillColor,
     format: state.scratchPaint.format,
-    gradientType: state.scratchPaint.color.gradientType,
+    gradientType: state.scratchPaint.color.fillColor.gradientType,
     isEyeDropping: state.scratchPaint.color.eyeDropper.active,
     mode: state.scratchPaint.mode,
     shouldShowGradientTools: state.scratchPaint.mode === Modes.SELECT ||

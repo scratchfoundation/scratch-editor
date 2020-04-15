@@ -1,6 +1,5 @@
 import log from '../log/log';
 import {CHANGE_SELECTED_ITEMS} from '../reducers/selected-items';
-import {CLEAR_GRADIENT} from '../reducers/selection-gradient-type';
 import {getColorsFromSelection, MIXED} from '../helper/style-path';
 import GradientTypes from './gradient-types';
 
@@ -15,18 +14,32 @@ const isValidHexColor = color => {
     return true;
 };
 
-const makeColorReducer = ({
+const makeColorStyleReducer = ({
+    // Action name for changing the primary color
     changePrimaryColorAction,
+    // Action name for changing the secondary color
     changeSecondaryColorAction,
+    // Action name for changing the gradient type
+    changeGradientTypeAction,
+    // Action name for clearing the gradient
+    clearGradientAction,
+    // Initial color when not set
     defaultColor,
+    // The name of the property read from getColorsFromSelection to get the primary color.
+    // e.g. `fillColor` or `strokeColor`.
     selectionPrimaryColorKey,
+    // The name of the property read from getColorsFromSelection to get the secondary color.
+    // e.g. `fillColor2` or `strokeColor2`.
     selectionSecondaryColorKey,
+    // The name of the property read from getColorsFromSelection to get the gradient type.
+    // e.g. `fillGradientType` or `strokeGradientType`.
     selectionGradientTypeKey
 }) => function colorReducer (state, action) {
     if (typeof state === 'undefined') {
         state = {
             primary: defaultColor,
-            secondary: null
+            secondary: null,
+            gradientType: GradientTypes.SOLID
         };
     }
     switch (action.type) {
@@ -43,7 +56,11 @@ const makeColorReducer = ({
         }
         const colors = getColorsFromSelection(action.selectedItems, action.bitmapMode);
 
-        const newState = {...state, primary: colors[selectionPrimaryColorKey]};
+        const newState = {
+            ...state,
+            primary: colors[selectionPrimaryColorKey],
+            gradientType: colors[selectionGradientTypeKey]
+        };
 
         // Gradient type may be solid when multiple gradient types are selected.
         // In this case, changing the first color should not change the second color.
@@ -52,11 +69,17 @@ const makeColorReducer = ({
         }
         return newState;
     }
-    case CLEAR_GRADIENT:
-        return {...state, secondary: null};
+    case changeGradientTypeAction:
+        if (action.gradientType in GradientTypes) {
+            return {...state, gradientType: action.gradientType};
+        }
+        log.warn(`Gradient type does not exist: ${action.gradientType}`);
+        return state;
+    case clearGradientAction:
+        return {...state, secondary: null, gradientType: GradientTypes.SOLID};
     default:
         return state;
     }
 };
 
-export default makeColorReducer;
+export default makeColorStyleReducer;

@@ -5,9 +5,9 @@ import {connect} from 'react-redux';
 import bindAll from 'lodash.bindall';
 import Modes from '../lib/modes';
 
+import {clearFillGradient} from '../reducers/fill-style';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
-import {clearGradient} from '../reducers/selection-gradient-type';
 import {setCursor} from '../reducers/cursor';
 
 import {getSelectedLeafItems} from '../helper/selection';
@@ -88,7 +88,7 @@ const mapStateToProps = state => ({
 });
 const mapDispatchToProps = dispatch => ({
     clearGradient: () => {
-        dispatch(clearGradient());
+        dispatch(clearFillGradient());
     },
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
