@@ -1762,6 +1762,10 @@ class RenderWebGL extends EventEmitter {
      */
     _getConvexHullPointsForDrawable (drawableID) {
         const drawable = this._allDrawables[drawableID];
+
+        drawable.updateMatrix();
+        drawable.skin.updateSilhouette(this._getDrawableScreenSpaceScale(drawable));
+
         const [width, height] = drawable.skin.size;
         // No points in the hull if invisible or size is 0.
         if (!drawable.getVisible() || width === 0 || height === 0) {
