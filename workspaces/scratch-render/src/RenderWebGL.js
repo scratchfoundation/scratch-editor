@@ -223,6 +223,8 @@ class RenderWebGL extends EventEmitter {
         const pixelRatio = window.devicePixelRatio || 1;
         this._gl.canvas.width = pixelsWide * pixelRatio;
         this._gl.canvas.height = pixelsTall * pixelRatio;
+        // Resizing the canvas can cause it to be cleared, so redraw it.
+        this.draw();
     }
 
     /**
