@@ -272,7 +272,6 @@ class Blobbiness {
         }
 
         for (let i = items.length - 1; i >= 0; i--) {
-            // TODO handle compound paths
             if (items[i] instanceof paper.Path && (!items[i].fillColor || items[i].fillColor._alpha === 0)) {
                 // Gather path segments
                 const subpaths = [];
@@ -305,7 +304,6 @@ class Blobbiness {
 
             // Gather path segments
             const subpaths = [];
-            // TODO: Handle compound path
             if (items[i] instanceof paper.Path && !items[i].closed) {
                 const firstSeg = items[i].clone();
                 const intersections = firstSeg.getIntersections(lastPath);
