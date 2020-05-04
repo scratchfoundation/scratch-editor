@@ -474,13 +474,8 @@ class SvgRenderer {
             this._cachedImage.naturalHeight <= 0
         ) return;
         this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-        this._context.scale(ratio, ratio);
+        this._context.setTransform(ratio, 0, 0, ratio, 0, 0);
         this._context.drawImage(this._cachedImage, 0, 0);
-        // Reset the canvas transform after drawing.
-        this._context.setTransform(1, 0, 0, 1, 0, 0);
-        // Set the CSS style of the canvas to the actual measurements.
-        this._canvas.style.width = bbox.width;
-        this._canvas.style.height = bbox.height;
     }
 }
 
