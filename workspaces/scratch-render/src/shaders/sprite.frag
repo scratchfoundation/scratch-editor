@@ -234,7 +234,8 @@ void main()
 
 	// Avoid division by zero
 	float baDot = dot(ba, ba);
-	baDot = (abs(baDot) < epsilon) ? epsilon : baDot;
+	// the dot product of a vector and itself is always positive
+	baDot = max(baDot, epsilon);
 
 	// Magnitude of vector projection of this fragment onto the line (both relative to the line's start point).
 	// This results in a "linear gradient" which goes from 0.0 at the start point to 1.0 at the end point.
