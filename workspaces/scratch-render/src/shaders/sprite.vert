@@ -40,7 +40,13 @@ void main() {
 	position -= expandedRadius;
 
 	// Rotate quad to line angle
-	vec2 normalized = (u_penPoints.zw - u_penPoints.xy + epsilon) / (lineLength + epsilon);
+	vec2 pointDiff = u_penPoints.zw - u_penPoints.xy;
+	// Ensure line has a nonzero length so it's rendered properly
+	// As long as either component is nonzero, the line length will be nonzero
+	pointDiff.x = abs(pointDiff.x) < epsilon ? epsilon : pointDiff.x;
+	// The `normalized` vector holds rotational values equivalent to sine/cosine
+	// We're applying the standard rotation matrix formula to the position to rotate the quad to the line angle
+	vec2 normalized = pointDiff / max(lineLength, epsilon);
 	position = mat2(normalized.x, normalized.y, -normalized.y, normalized.x) * position;
 	// Translate quad
 	position += u_penPoints.xy;

@@ -214,20 +214,34 @@ void main()
 	// Un-premultiply alpha.
 	gl_FragColor.rgb /= gl_FragColor.a + epsilon;
 	#endif
-  
+
 	#else // DRAW_MODE_line
 	// Maaaaagic antialiased-line-with-round-caps shader.
 	// Adapted from Inigo Quilez' 2D distance function cheat sheet
 	// https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
 
+	// On (some?) devices with 16-bit float precision, sufficiently long lines will overflow the float's range.
+	// Avoid this by scaling these problematic values down to fit within (-1, 1) then scaling them back up later.
+	// TODO: Is this a problem on all drivers with 16-bit mediump floats, or just Mali?
+	vec2 pointDiff = abs(u_penPoints.zw - u_penPoints.xy);
+	float FLOAT_SCALING_INVERSE = max(1.0, max(pointDiff.x, pointDiff.y));
+	float FLOAT_SCALING = 1.0 / FLOAT_SCALING_INVERSE;
+
 	// The xy component of u_penPoints is the first point; the zw is the second point.
 	// This is done to minimize the number of gl.uniform calls, which can add up.
-	vec2 pa = v_texCoord - u_penPoints.xy, ba = u_penPoints.zw - u_penPoints.xy;
+	// vec2 pa = v_texCoord - u_penPoints.xy, ba = u_penPoints.zw - u_penPoints.xy;
+	vec2 pa = (v_texCoord - u_penPoints.xy) * FLOAT_SCALING, ba = (u_penPoints.zw - u_penPoints.xy) * FLOAT_SCALING;
+
+	// Avoid division by zero
+	float baDot = dot(ba, ba);
+	// the dot product of a vector and itself is always positive
+	baDot = max(baDot, epsilon);
+
 	// Magnitude of vector projection of this fragment onto the line (both relative to the line's start point).
 	// This results in a "linear gradient" which goes from 0.0 at the start point to 1.0 at the end point.
-	float projMagnitude = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+	float projMagnitude = clamp(dot(pa, ba) / baDot, 0.0, 1.0);
 
-	float lineDistance = length(pa - (ba * projMagnitude));
+	float lineDistance = length(pa - (ba * projMagnitude)) * FLOAT_SCALING_INVERSE;
 
 	// The distance to the line allows us to create lines of any thickness.
 	// Instead of checking whether this fragment's distance < the line thickness,
