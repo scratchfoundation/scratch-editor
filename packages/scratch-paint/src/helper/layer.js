@@ -4,6 +4,7 @@ import {ART_BOARD_BOUNDS, ART_BOARD_WIDTH, ART_BOARD_HEIGHT, CENTER, MAX_WORKSPA
 import {isGroupItem} from './item';
 import {isBitmap, isVector} from '../lib/format';
 
+const CHECKERBOARD_SIZE = 8;
 const CROSSHAIR_SIZE = 16;
 const CROSSHAIR_FULL_OPACITY = 0.75;
 
@@ -199,7 +200,9 @@ const _makeBackgroundPaper = function (width, height, color, opacity) {
         pathPoints.push(new paper.Point(x, y));
         y--;
     }
-    const vRect = new paper.Shape.Rectangle(new paper.Point(0, 0), new paper.Point(120, 90));
+    const vRect = new paper.Shape.Rectangle(
+        new paper.Point(0, 0),
+        new paper.Point(ART_BOARD_WIDTH / CHECKERBOARD_SIZE, ART_BOARD_HEIGHT / CHECKERBOARD_SIZE));
     vRect.fillColor = '#fff';
     vRect.guide = true;
     vRect.locked = true;
@@ -215,7 +218,7 @@ const _makeBackgroundPaper = function (width, height, color, opacity) {
     mask.position = CENTER;
     mask.guide = true;
     mask.locked = true;
-    mask.scale(1 / 8);
+    mask.scale(1 / CHECKERBOARD_SIZE);
     const vGroup = new paper.Group([vRect, vPath, mask]);
     mask.clipMask = true;
 
@@ -296,9 +299,14 @@ const _makeBackgroundGuideLayer = function (format) {
     vWorkspaceBounds.fillColor = '#ECF1F9';
     vWorkspaceBounds.position = CENTER;
 
-    const vBackground = _makeBackgroundPaper(180, 136, '#0062ff', 0.05);
+    // Add 1 to the height because it's an odd number otherwise, and we want it to be even
+    // so the corner of the checkerboard to line up with the center crosshair
+    const vBackground = _makeBackgroundPaper(
+        (MAX_WORKSPACE_BOUNDS.height / CHECKERBOARD_SIZE) + 1,
+        MAX_WORKSPACE_BOUNDS.width / CHECKERBOARD_SIZE,
+        '#0062ff', 0.05);
     vBackground.position = CENTER;
-    vBackground.scaling = new paper.Point(8, 8);
+    vBackground.scaling = new paper.Point(CHECKERBOARD_SIZE, CHECKERBOARD_SIZE);
 
     const vectorBackground = new paper.Group();
     vectorBackground.addChild(vWorkspaceBounds);
@@ -306,9 +314,12 @@ const _makeBackgroundGuideLayer = function (format) {
     setGuideItem(vectorBackground);
     guideLayer.vectorBackground = vectorBackground;
 
-    const bitmapBackground = _makeBackgroundPaper(120, 90, '#0062ff', 0.05);
+    const bitmapBackground = _makeBackgroundPaper(
+        ART_BOARD_WIDTH / CHECKERBOARD_SIZE,
+        ART_BOARD_HEIGHT / CHECKERBOARD_SIZE,
+        '#0062ff', 0.05);
     bitmapBackground.position = CENTER;
-    bitmapBackground.scaling = new paper.Point(8, 8);
+    bitmapBackground.scaling = new paper.Point(CHECKERBOARD_SIZE, CHECKERBOARD_SIZE);
     bitmapBackground.guide = true;
     bitmapBackground.locked = true;
     guideLayer.bitmapBackground = bitmapBackground;
