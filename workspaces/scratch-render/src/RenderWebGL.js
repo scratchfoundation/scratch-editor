@@ -1803,6 +1803,7 @@ class RenderWebGL extends EventEmitter {
         // The main difference is that instead of sorting the points by x-coordinate, and y-coordinate in case of ties,
         // it goes through them by y-coordinate in the outer loop and x-coordinate in the inner loop.
         // This gives us "left" and "right" hulls, whereas the monotone chain algorithm gives "top" and "bottom" hulls.
+        // Adapted from https://github.com/LLK/scratch-flash/blob/dcbeeb59d44c3be911545dfe54d46a32404f8e69/src/scratch/ScratchCostume.as#L369-L413
 
         const leftHull = [];
         const rightHull = [];
