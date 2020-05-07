@@ -1,9 +1,7 @@
 /* global vm, render, Promise */
-const puppeteer = require('puppeteer-core');
+const {chromium} = require('playwright-chromium');
 const test = require('tap').test;
 const path = require('path');
-
-const downloadChromium = require('../helper/download-chromium');
 
 const indexHTML = path.resolve(__dirname, 'index.html');
 const testDir = (...args) => path.resolve(__dirname, 'pick-tests', ...args);
@@ -12,7 +10,7 @@ const runFile = async (file, action, page, script) => {
     // start each test by going to the index.html, and loading the scratch file
     await page.goto(`file://${indexHTML}`);
     const fileInput = await page.$('#file');
-    await fileInput.uploadFile(testDir(file));
+    await fileInput.setInputFiles(testDir(file));
 
     await page.evaluate(() =>
         // `loadFile` is defined on the page itself.
@@ -24,8 +22,7 @@ const runFile = async (file, action, page, script) => {
 
 // immediately invoked async function to let us wait for each test to finish before starting the next.
 (async () => {
-    await downloadChromium();
-    const browser = await puppeteer.launch();
+    const browser = await chromium.launch();
     const page = await browser.newPage();
 
     const testOperation = async function (name, action, expect) {
