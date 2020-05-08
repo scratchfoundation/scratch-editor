@@ -1,34 +1,29 @@
 /* global vm, render, Promise */
-const {chromium} = require('playwright-chromium');
+const {Chromeless} = require('chromeless');
 const test = require('tap').test;
 const path = require('path');
+const chromeless = new Chromeless();
 
 const indexHTML = path.resolve(__dirname, 'index.html');
 const testDir = (...args) => path.resolve(__dirname, 'pick-tests', ...args);
 
-const runFile = async (file, action, page, script) => {
+const runFile = (file, action, script) =>
     // start each test by going to the index.html, and loading the scratch file
-    await page.goto(`file://${indexHTML}`);
-    const fileInput = await page.$('#file');
-    await fileInput.setInputFiles(testDir(file));
-
-    await page.evaluate(() =>
-        // `loadFile` is defined on the page itself.
-        // eslint-disable-next-line no-undef
-        loadFile()
-    );
-    return page.evaluate(`(function () {return (${script})(${action});})()`);
-};
+    chromeless.goto(`file://${indexHTML}`)
+        .setFileInput('#file', testDir(file))
+        // the index.html handler for file input will add a #loaded element when it
+        // finishes.
+        .wait('#loaded')
+        .evaluate(`function () {return (${script})(${action});}`)
+;
 
 // immediately invoked async function to let us wait for each test to finish before starting the next.
 (async () => {
-    const browser = await chromium.launch();
-    const page = await browser.newPage();
 
     const testOperation = async function (name, action, expect) {
         await test(name, async t => {
 
-            const results = await runFile('test-mouse-touch.sb2', action, page, boundAction => {
+            const results = await runFile('test-mouse-touch.sb2', action, boundAction => {
                 vm.greenFlag();
                 const sendResults = [];
 
@@ -102,5 +97,5 @@ const runFile = async (file, action, page, script) => {
     }
 
     // close the browser window we used
-    await browser.close();
+    await chromeless.end();
 })();

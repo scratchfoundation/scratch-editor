@@ -1,10 +1,14 @@
 language: node_js
 dist: trusty
+addons:
+  chrome: stable
 node_js:
-- 10
+- 8
 - node
 env:
   - NODE_ENV=production
+before_install:
+  - google-chrome-stable --headless --no-sandbox --remote-debugging-port=9222 &
 install:
 - npm --production=false install
 - npm --production=false update
@@ -20,7 +24,7 @@ jobs:
       - npm run docs
       - npm run tap
     - stage: deploy
-      node_js: 10
+      node_js: 8
       script: npm run build
       before_deploy:
       - VPKG=$($(npm bin)/json -f package.json version)
