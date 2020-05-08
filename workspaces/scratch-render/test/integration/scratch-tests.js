@@ -1,56 +1,54 @@
 /* global vm, Promise */
-const {chromium} = require('playwright-chromium');
+const {Chromeless} = require('chromeless');
 const test = require('tap').test;
 const path = require('path');
 const fs = require('fs');
+const chromeless = new Chromeless();
 
 const indexHTML = path.resolve(__dirname, 'index.html');
 const testDir = (...args) => path.resolve(__dirname, 'scratch-tests', ...args);
 
-const testFile = (file, page) => test(file, async t => {
+const testFile = file => test(file, async t => {
     // start each test by going to the index.html, and loading the scratch file
-    await page.goto(`file://${indexHTML}`);
-    const fileInput = await page.$('#file');
-    await fileInput.setInputFiles(testDir(file));
-    await page.evaluate(() =>
-        // `loadFile` is defined on the page itself.
-        // eslint-disable-next-line no-undef
-        loadFile()
-    );
-    const says = await page.evaluate(() => {
-        // This function is run INSIDE the integration chrome browser via some
-        // injection and .toString() magic.  We can return some "simple data"
-        // back across as a promise, so we will just log all the says that happen
-        // for parsing after.
+    const says = await chromeless.goto(`file://${indexHTML}`)
+        .setFileInput('#file', testDir(file))
+        // the index.html handler for file input will add a #loaded element when it
+        // finishes.
+        .wait('#loaded')
+        .evaluate(() => {
+            // This function is run INSIDE the integration chrome browser via some
+            // injection and .toString() magic.  We can return some "simple data"
+            // back across as a promise, so we will just log all the says that happen
+            // for parsing after.
 
-        // this becomes the `says` in the outer scope
-        const messages = [];
-        const TIMEOUT = 5000;
+            // this becomes the `says` in the outer scope
+            const messages = [];
+            const TIMEOUT = 5000;
 
-        vm.runtime.on('SAY', (_, __, message) => {
-            messages.push(message);
-        });
+            vm.runtime.on('SAY', (_, __, message) => {
+                messages.push(message);
+            });
 
-        vm.greenFlag();
-        const startTime = Date.now();
+            vm.greenFlag();
+            const startTime = Date.now();
 
-        return Promise.resolve()
-            .then(async () => {
-                // waiting for all threads to complete, then we return
-                while (vm.runtime.threads.some(thread => vm.runtime.isActiveThread(thread))) {
-                    if ((Date.now() - startTime) >= TIMEOUT) {
-                        // if we push the message after end, the failure from tap is not very useful:
-                        // "not ok test after end() was called"
-                        messages.unshift(`fail Threads still running after ${TIMEOUT}ms`);
-                        break;
+            return Promise.resolve()
+                .then(async () => {
+                    // waiting for all threads to complete, then we return
+                    while (vm.runtime.threads.some(thread => vm.runtime.isActiveThread(thread))) {
+                        if ((Date.now() - startTime) >= TIMEOUT) {
+                            // if we push the message after end, the failure from tap is not very useful:
+                            // "not ok test after end() was called"
+                            messages.unshift(`fail Threads still running after ${TIMEOUT}ms`);
+                            break;
+                        }
+
+                        await new Promise(resolve => setTimeout(resolve, 50));
                     }
 
-                    await new Promise(resolve => setTimeout(resolve, 50));
-                }
-
-                return messages;
-            });
-    });
+                    return messages;
+                });
+        });
 
     // Map string messages to tap reporting methods. This will be used
     // with events from scratch's runtime emitted on block instructions.
@@ -105,16 +103,13 @@ const testFile = (file, page) => test(file, async t => {
 
 // immediately invoked async function to let us wait for each test to finish before starting the next.
 (async () => {
-    const browser = await chromium.launch();
-    const page = await browser.newPage();
-
     const files = fs.readdirSync(testDir())
         .filter(uri => uri.endsWith('.sb2') || uri.endsWith('.sb3'));
 
     for (const file of files) {
-        await testFile(file, page);
+        await testFile(file);
     }
 
     // close the browser window we used
-    await browser.close();
+    await chromeless.end();
 })();
