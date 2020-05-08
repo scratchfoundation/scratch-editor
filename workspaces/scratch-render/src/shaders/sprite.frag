@@ -217,38 +217,23 @@ void main()
 
 	#else // DRAW_MODE_line
 	// Maaaaagic antialiased-line-with-round-caps shader.
-	// Adapted from Inigo Quilez' 2D distance function cheat sheet
-	// https://www.iquilezles.org/www/articles/distfunctions2d/distfunctions2d.htm
 
-	// On (some?) devices with 16-bit float precision, sufficiently long lines will overflow the float's range.
-	// Avoid this by scaling these problematic values down to fit within (-1, 1) then scaling them back up later.
-	// TODO: Is this a problem on all drivers with 16-bit mediump floats, or just Mali?
-	vec2 pointDiff = abs(u_penPoints.zw - u_penPoints.xy);
-	float FLOAT_SCALING_INVERSE = max(1.0, max(pointDiff.x, pointDiff.y));
-	float FLOAT_SCALING = 1.0 / FLOAT_SCALING_INVERSE;
+	float lineLength = length(u_penPoints.zw - u_penPoints.xy);
 
-	// The xy component of u_penPoints is the first point; the zw is the second point.
-	// This is done to minimize the number of gl.uniform calls, which can add up.
-	// vec2 pa = v_texCoord - u_penPoints.xy, ba = u_penPoints.zw - u_penPoints.xy;
-	vec2 pa = (v_texCoord - u_penPoints.xy) * FLOAT_SCALING, ba = (u_penPoints.zw - u_penPoints.xy) * FLOAT_SCALING;
+	// "along-the-lineness". This increases parallel to the line.
+	// It goes from negative before the start point, to 0.5 through the start to the end, then ramps up again
+	// past the end point.
+	float d = ((v_texCoord.x - clamp(v_texCoord.x, 0.0, lineLength)) * 0.5) + 0.5;
 
-	// Avoid division by zero
-	float baDot = dot(ba, ba);
-	// the dot product of a vector and itself is always positive
-	baDot = max(baDot, epsilon);
-
-	// Magnitude of vector projection of this fragment onto the line (both relative to the line's start point).
-	// This results in a "linear gradient" which goes from 0.0 at the start point to 1.0 at the end point.
-	float projMagnitude = clamp(dot(pa, ba) / baDot, 0.0, 1.0);
-
-	float lineDistance = length(pa - (ba * projMagnitude)) * FLOAT_SCALING_INVERSE;
-
-	// The distance to the line allows us to create lines of any thickness.
-	// Instead of checking whether this fragment's distance < the line thickness,
-	// utilize the distance field to get some antialiasing. Fragments far away from the line are 0,
-	// fragments close to the line are 1, and fragments that are within a 1-pixel border of the line are in between.
-	float cappedLine = clamp((u_lineThickness + 1.0) * 0.5 - lineDistance, 0.0, 1.0);
-
-	gl_FragColor = u_lineColor * cappedLine;
+	// Distance from (0.5, 0.5) to (d, the perpendicular coordinate). When we're in the middle of the line,
+	// d will be 0.5, so the distance will be 0 at points close to the line and will grow at points further from it.
+	// For the "caps", d will ramp down/up, giving us rounding.
+	// See https://www.youtube.com/watch?v=PMltMdi1Wzg for a rough outline of the technique used to round the lines.
+	float line = distance(vec2(0.5), vec2(d, v_texCoord.y)) * 2.0;
+	// Expand out the line by its thickness.
+	line -= ((u_lineThickness - 1.0) * 0.5);
+	// Because "distance to the center of the line" decreases the closer we get to the line, but we want more opacity
+	// the closer we are to the line, invert it.
+	gl_FragColor = u_lineColor * clamp(1.0 - line, 0.0, 1.0);
 	#endif // DRAW_MODE_line
 }

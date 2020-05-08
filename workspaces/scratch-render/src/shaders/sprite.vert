@@ -33,6 +33,12 @@ void main() {
 
 	float lineLength = length(u_penPoints.zw - u_penPoints.xy);
 
+	// The X coordinate increases along the length of the line. It's 0 at the center of the origin point
+	// and is in pixel-space (so at n pixels along the line, its value is n).
+	v_texCoord.x = mix(0.0, lineLength + (expandedRadius * 2.0), a_position.x) - expandedRadius;
+	// The Y coordinate is perpendicular to the line. It's also in pixel-space.
+	v_texCoord.y = ((a_position.y - 0.5) * expandedRadius) + 0.5;
+
 	position.x *= lineLength + (2.0 * expandedRadius);
 	position.y *= 2.0 * expandedRadius;
 
@@ -43,7 +49,8 @@ void main() {
 	vec2 pointDiff = u_penPoints.zw - u_penPoints.xy;
 	// Ensure line has a nonzero length so it's rendered properly
 	// As long as either component is nonzero, the line length will be nonzero
-	pointDiff.x = abs(pointDiff.x) < epsilon ? epsilon : pointDiff.x;
+	// If the line is zero-length, give it a bit of horizontal length
+	pointDiff.x = (abs(pointDiff.x) < epsilon && abs(pointDiff.y) < epsilon) ? epsilon : pointDiff.x;
 	// The `normalized` vector holds rotational values equivalent to sine/cosine
 	// We're applying the standard rotation matrix formula to the position to rotate the quad to the line angle
 	vec2 normalized = pointDiff / max(lineLength, epsilon);
@@ -53,9 +60,7 @@ void main() {
 
 	// Apply view transform
 	position *= 2.0 / u_stageSize;
-
 	gl_Position = vec4(position, 0, 1);
-	v_texCoord = position * 0.5 * u_stageSize;
 	#else
 	gl_Position = u_projectionMatrix * u_modelMatrix * vec4(a_position, 0, 1);
 	v_texCoord = a_texCoord;
