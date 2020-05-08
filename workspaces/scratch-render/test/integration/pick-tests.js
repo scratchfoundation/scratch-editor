@@ -103,4 +103,9 @@ const runFile = async (file, action, page, script) => {
 
     // close the browser window we used
     await browser.close();
-})();
+})().catch(err => {
+    // Handle promise rejections by exiting with a nonzero code to ensure that tests don't erroneously pass
+    // eslint-disable-next-line no-console
+    console.error(err);
+    process.exit(1);
+});
