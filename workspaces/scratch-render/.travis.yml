@@ -11,6 +11,7 @@ install:
 sudo: false
 cache:
   directories:
+  - ~/.cache/ms-playwright
   - node_modules
 jobs:
   include:
