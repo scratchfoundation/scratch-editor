@@ -11,8 +11,8 @@ install:
 sudo: false
 cache:
   directories:
+  - node_modules
   - ~/.cache/ms-playwright
-  npm: false
 jobs:
   include:
     - stage: test
