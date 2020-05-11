@@ -679,9 +679,10 @@ class Drawable {
      * @param {twgl.v3} vec The scratch space [x,y] vector
      * @param {Drawable} drawable The drawable to sample the texture from
      * @param {Uint8ClampedArray} dst The "color4b" representation of the texture at point.
+     * @param {number} [effectMask] A bitmask for which effects to use. Optional.
      * @returns {Uint8ClampedArray} The dst object filled with the color4b
      */
-    static sampleColor4b (vec, drawable, dst) {
+    static sampleColor4b (vec, drawable, dst, effectMask) {
         const localPosition = getLocalPosition(drawable, vec);
         if (localPosition[0] < 0 || localPosition[1] < 0 ||
             localPosition[0] > 1 || localPosition[1] > 1) {
@@ -698,7 +699,7 @@ class Drawable {
         // : drawable.skin._silhouette.colorAtLinear(localPosition, dst);
 
         if (drawable.enabledEffects === 0) return textColor;
-        return EffectTransform.transformColor(drawable, textColor);
+        return EffectTransform.transformColor(drawable, textColor, effectMask);
     }
 }
 
