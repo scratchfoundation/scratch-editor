@@ -36,6 +36,7 @@ uniform float u_ghost;
 #ifdef DRAW_MODE_line
 uniform vec4 u_lineColor;
 uniform float u_lineThickness;
+uniform float u_lineLength;
 uniform vec4 u_penPoints;
 #endif // DRAW_MODE_line
 
@@ -218,12 +219,10 @@ void main()
 	#else // DRAW_MODE_line
 	// Maaaaagic antialiased-line-with-round-caps shader.
 
-	float lineLength = length(u_penPoints.zw - u_penPoints.xy);
-
 	// "along-the-lineness". This increases parallel to the line.
 	// It goes from negative before the start point, to 0.5 through the start to the end, then ramps up again
 	// past the end point.
-	float d = ((v_texCoord.x - clamp(v_texCoord.x, 0.0, lineLength)) * 0.5) + 0.5;
+	float d = ((v_texCoord.x - clamp(v_texCoord.x, 0.0, u_lineLength)) * 0.5) + 0.5;
 
 	// Distance from (0.5, 0.5) to (d, the perpendicular coordinate). When we're in the middle of the line,
 	// d will be 0.5, so the distance will be 0 at points close to the line and will grow at points further from it.

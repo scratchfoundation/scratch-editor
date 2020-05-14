@@ -3,6 +3,7 @@ precision mediump float;
 #ifdef DRAW_MODE_line
 uniform vec2 u_stageSize;
 uniform float u_lineThickness;
+uniform float u_lineLength;
 uniform vec4 u_penPoints;
 
 // Add this to divisors to prevent division by 0, which results in NaNs propagating through calculations.
@@ -31,15 +32,13 @@ void main() {
 	vec2 position = a_position;
 	float expandedRadius = (u_lineThickness * 0.5) + 1.4142135623730951;
 
-	float lineLength = length(u_penPoints.zw - u_penPoints.xy);
-
 	// The X coordinate increases along the length of the line. It's 0 at the center of the origin point
 	// and is in pixel-space (so at n pixels along the line, its value is n).
-	v_texCoord.x = mix(0.0, lineLength + (expandedRadius * 2.0), a_position.x) - expandedRadius;
+	v_texCoord.x = mix(0.0, u_lineLength + (expandedRadius * 2.0), a_position.x) - expandedRadius;
 	// The Y coordinate is perpendicular to the line. It's also in pixel-space.
 	v_texCoord.y = ((a_position.y - 0.5) * expandedRadius) + 0.5;
 
-	position.x *= lineLength + (2.0 * expandedRadius);
+	position.x *= u_lineLength + (2.0 * expandedRadius);
 	position.y *= 2.0 * expandedRadius;
 
 	// Center around first pen point
@@ -53,7 +52,7 @@ void main() {
 	pointDiff.x = (abs(pointDiff.x) < epsilon && abs(pointDiff.y) < epsilon) ? epsilon : pointDiff.x;
 	// The `normalized` vector holds rotational values equivalent to sine/cosine
 	// We're applying the standard rotation matrix formula to the position to rotate the quad to the line angle
-	vec2 normalized = pointDiff / max(lineLength, epsilon);
+	vec2 normalized = pointDiff / max(u_lineLength, epsilon);
 	position = mat2(normalized.x, normalized.y, -normalized.y, normalized.x) * position;
 	// Translate quad
 	position += u_penPoints.xy;
