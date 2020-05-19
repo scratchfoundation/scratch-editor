@@ -105,7 +105,7 @@ class SVGSkin extends Skin {
         return mip;
     }
 
-    updateSilhouette (scale = 1) {
+    updateSilhouette (scale = [100, 100]) {
         // Ensure a silhouette exists.
         this.getTexture(scale);
     }

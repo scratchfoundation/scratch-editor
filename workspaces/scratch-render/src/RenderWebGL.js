@@ -985,12 +985,7 @@ class RenderWebGL extends EventEmitter {
         const bounds = this.clientSpaceToScratchBounds(centerX, centerY, touchWidth, touchHeight);
         const worldPos = twgl.v3.create();
 
-        drawable.updateMatrix();
-        if (drawable.skin) {
-            drawable.skin.updateSilhouette(this._getDrawableScreenSpaceScale(drawable));
-        } else {
-            log.warn(`Could not find skin for drawable with id: ${drawableID}`);
-        }
+        drawable.updateCPURenderAttributes();
 
         for (worldPos[1] = bounds.bottom; worldPos[1] <= bounds.top; worldPos[1]++) {
             for (worldPos[0] = bounds.left; worldPos[0] <= bounds.right; worldPos[0]++) {
@@ -1021,12 +1016,7 @@ class RenderWebGL extends EventEmitter {
             const drawable = this._allDrawables[id];
             // default pick list ignores visible and ghosted sprites.
             if (drawable.getVisible() && drawable.getUniforms().u_ghost !== 0) {
-                drawable.updateMatrix();
-                if (drawable.skin) {
-                    drawable.skin.updateSilhouette(this._getDrawableScreenSpaceScale(drawable));
-                } else {
-                    log.warn(`Could not find skin for drawable with id: ${id}`);
-                }
+                drawable.updateCPURenderAttributes();
                 return true;
             }
             return false;
@@ -1258,8 +1248,8 @@ class RenderWebGL extends EventEmitter {
         /** @todo remove this once URL-based skin setting is removed. */
         if (!drawable.skin || !drawable.skin.getTexture([100, 100])) return null;
 
-        drawable.updateMatrix();
-        drawable.skin.updateSilhouette(this._getDrawableScreenSpaceScale(drawable));
+
+        drawable.updateCPURenderAttributes();
         const bounds = drawable.getFastBounds();
 
         // Limit queries to the stage size.
@@ -1296,8 +1286,7 @@ class RenderWebGL extends EventEmitter {
                 const drawable = this._allDrawables[id];
                 if (drawable.skin && drawable._visible) {
                     // Update the CPU position data
-                    drawable.updateMatrix();
-                    drawable.skin.updateSilhouette(this._getDrawableScreenSpaceScale(drawable));
+                    drawable.updateCPURenderAttributes();
                     const candidateBounds = drawable.getFastBounds();
                     if (bounds.intersects(candidateBounds)) {
                         result.push({
@@ -1775,8 +1764,7 @@ class RenderWebGL extends EventEmitter {
     _getConvexHullPointsForDrawable (drawableID) {
         const drawable = this._allDrawables[drawableID];
 
-        drawable.updateMatrix();
-        drawable.skin.updateSilhouette(this._getDrawableScreenSpaceScale(drawable));
+        drawable.updateCPURenderAttributes();
 
         const [width, height] = drawable.skin.size;
         // No points in the hull if invisible or size is 0.
