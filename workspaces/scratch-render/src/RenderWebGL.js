@@ -769,6 +769,8 @@ class RenderWebGL extends EventEmitter {
         const color = __touchingColor;
         const hasMask = Boolean(mask3b);
 
+        drawable.updateCPURenderAttributes();
+
         // Masked drawable ignores ghost effect
         const effectMask = ~ShaderManager.EFFECT_INFO.ghost.mask;
 
@@ -914,6 +916,8 @@ class RenderWebGL extends EventEmitter {
 
         const drawable = this._allDrawables[drawableID];
         const point = __isTouchingDrawablesPoint;
+
+        drawable.updateCPURenderAttributes();
 
         // This is an EXTREMELY brute force collision detector, but it is
         // still faster than asking the GPU to give us the pixels.
@@ -1369,8 +1373,6 @@ class RenderWebGL extends EventEmitter {
         /** @todo remove this once URL-based skin setting is removed. */
         if (!drawable.skin || !drawable.skin.getTexture([100, 100])) return null;
 
-
-        drawable.updateCPURenderAttributes();
         const bounds = drawable.getFastBounds();
 
         // Limit queries to the stage size.
@@ -1856,13 +1858,13 @@ class RenderWebGL extends EventEmitter {
     _getConvexHullPointsForDrawable (drawableID) {
         const drawable = this._allDrawables[drawableID];
 
-        drawable.updateCPURenderAttributes();
-
         const [width, height] = drawable.skin.size;
         // No points in the hull if invisible or size is 0.
         if (!drawable.getVisible() || width === 0 || height === 0) {
             return [];
         }
+
+        drawable.updateCPURenderAttributes();
 
         /**
          * Return the determinant of two vectors, the vector from A to B and the vector from A to C.
