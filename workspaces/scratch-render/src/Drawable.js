@@ -5,6 +5,7 @@ const RenderConstants = require('./RenderConstants');
 const ShaderManager = require('./ShaderManager');
 const Skin = require('./Skin');
 const EffectTransform = require('./EffectTransform');
+const log = require('./util/log');
 
 /**
  * An internal workspace for calculating texture locations from world vectors
@@ -640,7 +641,11 @@ class Drawable {
     updateCPURenderAttributes () {
         this.updateMatrix();
         // CPU rendering always occurs at the "native" size, so no need to scale up this._scale
-        if (this.skin) this.skin.updateSilhouette(this._scale);
+        if (this.skin) {
+            this.skin.updateSilhouette(this._scale);
+        } else {
+            log.warn(`Could not find skin for drawable with id: ${this._id}`);
+        }
     }
 
     /**
