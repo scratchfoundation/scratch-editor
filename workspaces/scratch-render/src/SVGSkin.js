@@ -119,7 +119,11 @@ class SVGSkin extends Skin {
         const scaleMax = scale ? Math.max(Math.abs(scale[0]), Math.abs(scale[1])) : 100;
         const requestedScale = Math.min(scaleMax / 100, this._maxTextureScale);
 
-        const mipLevel = Math.max(Math.round(Math.log2(requestedScale)) + INDEX_OFFSET, 0);
+        // Math.ceil(Math.log2(scale)) means we use the "1x" texture at (0.5, 1] scale,
+        // the "2x" texture at (1, 2] scale, the "4x" texture at (2, 4] scale, etc.
+        // This means that one texture pixel will always be between 0.5x and 1x the size of one rendered pixel,
+        // but never bigger than one rendered pixel--this prevents blurriness from blowing up the texture too much.
+        const mipLevel = Math.max(Math.ceil(Math.log2(requestedScale)) + INDEX_OFFSET, 0);
         // Can't use bitwise stuff here because we need to handle negative exponents
         const mipScale = Math.pow(2, mipLevel - INDEX_OFFSET);
 
