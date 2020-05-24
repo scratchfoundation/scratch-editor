@@ -4,7 +4,7 @@ body {
     margin: 0px;
 }
 
-body, html {
+body, html, .wrapper {
 	height: 100%
 }
 
@@ -12,4 +12,12 @@ body, html {
 	height: 90%;
 	width: 90%;
 	margin: auto;
+}
+
+#fileInput {
+	display: none;
+}
+
+.playgroundButton {
+	margin: 4px;
 }

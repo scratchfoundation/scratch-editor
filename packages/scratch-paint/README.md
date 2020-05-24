@@ -96,9 +96,9 @@ SVGs of up to size 480 x 360 will fit into the view window of the paint editor, 
 
 `imageFormat`: 'svg', 'png', or 'jpg'. Other formats are currently not supported.
 
-`rotationCenterX`: x coordinate relative to the top left corner of the sprite of the point that should be centered.
+`rotationCenterX`: x coordinate relative to the top left corner of the sprite of the point that should be centered. If left undefined, image will be horizontally centered.
 
-`rotationCenterY`: y coordinate relative to the top left corner of the sprite of the point that should be centered.
+`rotationCenterY`: y coordinate relative to the top left corner of the sprite of the point that should be centered. If left undefined, image will be vertcally centered.
 
 `rtl`: True if the paint editor should be laid out right to left (meant for right to left languages)
 
