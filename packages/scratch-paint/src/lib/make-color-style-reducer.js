@@ -56,15 +56,25 @@ const makeColorStyleReducer = ({
         }
         const colors = getColorsFromSelection(action.selectedItems, action.bitmapMode);
 
-        const newState = {
-            ...state,
-            primary: colors[selectionPrimaryColorKey],
-            gradientType: colors[selectionGradientTypeKey]
-        };
+        // Only set the primary color + gradient type if they exist in what getColorsFromSelection gave us.
+        // E.g. in bitmap mode, getColorsFromSelection will not return stroke color/gradient type. This allows us to
+        // preserve stroke swatch state across bitmap mode-- if getColorsFromSelection set them to null, then selecting
+        // anything in bitmap mode would overwrite the stroke state.
+        const newState = {...state};
+        if (selectionPrimaryColorKey in colors) {
+            newState.primary = colors[selectionPrimaryColorKey];
+        }
+        if (selectionGradientTypeKey in colors) {
+            newState.gradientType = colors[selectionGradientTypeKey];
+        }
 
         // Gradient type may be solid when multiple gradient types are selected.
         // In this case, changing the first color should not change the second color.
-        if (colors[selectionGradientTypeKey] !== GradientTypes.SOLID || colors[selectionSecondaryColorKey] === MIXED) {
+        if (
+            selectionSecondaryColorKey in colors &&
+            (colors[selectionGradientTypeKey] !== GradientTypes.SOLID ||
+            colors[selectionSecondaryColorKey] === MIXED)
+        ) {
             newState.secondary = colors[selectionSecondaryColorKey];
         }
         return newState;
