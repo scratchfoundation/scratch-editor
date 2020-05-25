@@ -298,7 +298,7 @@ const _makeBackgroundGuideLayer = function (format) {
     const vBackground = _makeBackgroundPaper(
         MAX_WORKSPACE_BOUNDS.width / CHECKERBOARD_SIZE,
         (MAX_WORKSPACE_BOUNDS.height / CHECKERBOARD_SIZE) + 1,
-        '#0062ff', 0.05);
+        '#0062ff', 0.1);
     vBackground.position = CENTER;
     vBackground.scaling = new paper.Point(CHECKERBOARD_SIZE, CHECKERBOARD_SIZE);
 
@@ -311,7 +311,7 @@ const _makeBackgroundGuideLayer = function (format) {
     const bitmapBackground = _makeBackgroundPaper(
         ART_BOARD_WIDTH / CHECKERBOARD_SIZE,
         ART_BOARD_HEIGHT / CHECKERBOARD_SIZE,
-        '#0062ff', 0.05);
+        '#0062ff', 0.1);
     bitmapBackground.position = CENTER;
     bitmapBackground.scaling = new paper.Point(CHECKERBOARD_SIZE, CHECKERBOARD_SIZE);
     bitmapBackground.guide = true;
