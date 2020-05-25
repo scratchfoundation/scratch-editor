@@ -148,6 +148,13 @@ class PaperCanvas extends React.Component {
                 if (!this.queuedImageToLoad) return;
                 this.queuedImageToLoad = null;
 
+                if (typeof rotationCenterX === 'undefined') {
+                    rotationCenterX = imgElement.width / 2;
+                }
+                if (typeof rotationCenterY === 'undefined') {
+                    rotationCenterY = imgElement.height / 2;
+                }
+
                 getRaster().drawImage(
                     imgElement,
                     (ART_BOARD_WIDTH / 2) - rotationCenterX,
