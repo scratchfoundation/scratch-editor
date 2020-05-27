@@ -372,6 +372,13 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
     const newGradientId = `${gradientId}-${matrixString}`;
     newGradient.setAttribute('id', newGradientId);
 
+    // This gradient already exists and was transformed before. Just reuse the already-transformed one.
+    if (svgTag.getElementById(newGradientId)) {
+        // This is the same code as in the end of the function, but I don't feel like wrapping the next 80 lines
+        // in an `if (!svgTag.getElementById(newGradientId))` block
+        return `url(#${newGradientId})`;
+    }
+
     const scaleToBounds = getValue(newGradient, 'gradientUnits', true) !==
                 'userSpaceOnUse';
     let origin;
