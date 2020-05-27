@@ -1,5 +1,6 @@
 const Matrix = require('transformation-matrix');
 const SvgElement = require('./svg-element');
+const {isPaintableElement, isContainerElement} = require('./element-categories');
 const log = require('./util/log');
 
 /**
@@ -288,14 +289,6 @@ const _transformPath = function (pathString, transform) {
     return result;
 };
 
-const GRAPHICS_ELEMENTS = ['circle', 'ellipse', 'image', 'line', 'path', 'polygon', 'polyline', 'rect', 'text', 'use'];
-const CONTAINER_ELEMENTS = ['a', 'defs', 'g', 'marker', 'glyph', 'missing-glyph', 'pattern', 'svg', 'switch', 'symbol'];
-const _isContainerElement = function (element) {
-    return element.tagName && CONTAINER_ELEMENTS.includes(element.tagName.toLowerCase());
-};
-const _isGraphicsElement = function (element) {
-    return element.tagName && GRAPHICS_ELEMENTS.includes(element.tagName.toLowerCase());
-};
 const _isPathWithTransformAndStroke = function (element, strokeWidth) {
     if (!element.attributes) return false;
     strokeWidth = element.attributes['stroke-width'] ?
@@ -514,7 +507,7 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
     const inherited = Matrix.identity();
 
     const applyTransforms = (element, matrix, strokeWidth, fill, stroke) => {
-        if (_isContainerElement(element)) {
+        if (isContainerElement(element)) {
             // Push fills and stroke width down to leaves
             if (element.attributes['stroke-width']) {
                 strokeWidth = element.attributes['stroke-width'].value;
@@ -601,7 +594,7 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
             element.setAttribute('stroke-width', _quadraticMean(matrixScale.x, matrixScale.y) * strokeWidth);
             if (fill) element.setAttribute('fill', fill);
             if (stroke) element.setAttribute('stroke', stroke);
-        } else if (_isGraphicsElement(element)) {
+        } else if (isPaintableElement(element)) {
             // Push stroke width, fill, and stroke down to leaves
             if (strokeWidth && !element.attributes['stroke-width']) {
                 element.setAttribute('stroke-width', strokeWidth);
