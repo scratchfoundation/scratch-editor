@@ -561,8 +561,8 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
                 } else {
                     try {
                         doc.body.appendChild(svgSpot);
-                        const svg = SvgElement.set(windowRef.document.createElementNS(SvgElement.svg, 'svg'));
-                        const path = SvgElement.set(windowRef.document.createElementNS(SvgElement.svg, 'path'));
+                        const svg = SvgElement.set(doc.createElementNS(SvgElement.svg, 'svg'));
+                        const path = SvgElement.set(doc.createElementNS(SvgElement.svg, 'path'));
                         path.setAttribute('d', element.attributes.d.value);
                         svg.appendChild(path);
                         svgSpot.appendChild(svg);
