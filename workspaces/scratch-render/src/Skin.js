@@ -222,6 +222,9 @@ class Skin extends EventEmitter {
     /**
      * Does this point touch an opaque or translucent point on this skin?
      * Nearest Neighbor version
+     * The caller is responsible for ensuring this skin's silhouette is up-to-date.
+     * @see updateSilhouette
+     * @see Drawable.updateCPURenderAttributes
      * @param {twgl.v3} vec A texture coordinate.
      * @return {boolean} Did it touch?
      */
@@ -232,6 +235,9 @@ class Skin extends EventEmitter {
     /**
      * Does this point touch an opaque or translucent point on this skin?
      * Linear Interpolation version
+     * The caller is responsible for ensuring this skin's silhouette is up-to-date.
+     * @see updateSilhouette
+     * @see Drawable.updateCPURenderAttributes
      * @param {twgl.v3} vec A texture coordinate.
      * @return {boolean} Did it touch?
      */

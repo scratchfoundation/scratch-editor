@@ -5,6 +5,7 @@ const RenderConstants = require('./RenderConstants');
 const ShaderManager = require('./ShaderManager');
 const Skin = require('./Skin');
 const EffectTransform = require('./EffectTransform');
+const log = require('./util/log');
 
 /**
  * An internal workspace for calculating texture locations from world vectors
@@ -452,6 +453,8 @@ class Drawable {
 
     /**
      * Check if the world position touches the skin.
+     * The caller is responsible for ensuring this drawable's inverse matrix & its skin's silhouette are up-to-date.
+     * @see updateCPURenderAttributes
      * @param {twgl.v3} vec World coordinate vector.
      * @return {boolean} True if the world position touches the skin.
      */
@@ -633,6 +636,19 @@ class Drawable {
     }
 
     /**
+     * Update everything necessary to render this drawable on the CPU.
+     */
+    updateCPURenderAttributes () {
+        this.updateMatrix();
+        // CPU rendering always occurs at the "native" size, so no need to scale up this._scale
+        if (this.skin) {
+            this.skin.updateSilhouette(this._scale);
+        } else {
+            log.warn(`Could not find skin for drawable with id: ${this._id}`);
+        }
+    }
+
+    /**
      * Respond to an internal change in the current Skin.
      * @private
      */
@@ -676,6 +692,8 @@ class Drawable {
 
     /**
      * Sample a color from a drawable's texture.
+     * The caller is responsible for ensuring this drawable's inverse matrix & its skin's silhouette are up-to-date.
+     * @see updateCPURenderAttributes
      * @param {twgl.v3} vec The scratch space [x,y] vector
      * @param {Drawable} drawable The drawable to sample the texture from
      * @param {Uint8ClampedArray} dst The "color4b" representation of the texture at point.

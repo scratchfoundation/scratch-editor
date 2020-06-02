@@ -42,8 +42,7 @@
                 if (!(drawable._visible && drawable.skin)) {
                     return;
                 }
-                drawable.updateMatrix();
-                drawable.skin.updateSilhouette();
+                drawable.updateCPURenderAttributes();
                 return { id, drawable };
             }).reverse().filter(Boolean);
             const color = new Uint8ClampedArray(3);
