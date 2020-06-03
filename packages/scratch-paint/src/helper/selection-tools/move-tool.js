@@ -206,10 +206,10 @@ class MoveTool {
         let moved = false;
         // resetting the items origin point for the next usage
         for (const item of this.selectedItems) {
-            if (item.data && item.data.origPos && !item.position.equals(item.data.origPos)) {
-                moved = true;
+            if (item.data.origPos) {
+                if (!item.position.equals(item.data.origPos)) moved = true;
+                delete item.data.origPos;
             }
-            item.data.origPos = null;
         }
         this.selectedItems = null;
         this.selectionCenter = null;
