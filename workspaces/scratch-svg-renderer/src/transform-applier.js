@@ -1,5 +1,6 @@
 const Matrix = require('transformation-matrix');
 const SvgElement = require('./svg-element');
+const {isPaintableElement, isContainerElement} = require('./element-categories');
 const log = require('./util/log');
 
 /**
@@ -288,14 +289,6 @@ const _transformPath = function (pathString, transform) {
     return result;
 };
 
-const GRAPHICS_ELEMENTS = ['circle', 'ellipse', 'image', 'line', 'path', 'polygon', 'polyline', 'rect', 'text', 'use'];
-const CONTAINER_ELEMENTS = ['a', 'defs', 'g', 'marker', 'glyph', 'missing-glyph', 'pattern', 'svg', 'switch', 'symbol'];
-const _isContainerElement = function (element) {
-    return element.tagName && CONTAINER_ELEMENTS.includes(element.tagName.toLowerCase());
-};
-const _isGraphicsElement = function (element) {
-    return element.tagName && GRAPHICS_ELEMENTS.includes(element.tagName.toLowerCase());
-};
 const _isPathWithTransformAndStroke = function (element, strokeWidth) {
     if (!element.attributes) return false;
     strokeWidth = element.attributes['stroke-width'] ?
@@ -371,6 +364,13 @@ const _createGradient = function (gradientId, svgTag, bbox, matrix) {
     matrixString = matrixString.substring(8, matrixString.length - 1);
     const newGradientId = `${gradientId}-${matrixString}`;
     newGradient.setAttribute('id', newGradientId);
+
+    // This gradient already exists and was transformed before. Just reuse the already-transformed one.
+    if (svgTag.getElementById(newGradientId)) {
+        // This is the same code as in the end of the function, but I don't feel like wrapping the next 80 lines
+        // in an `if (!svgTag.getElementById(newGradientId))` block
+        return `url(#${newGradientId})`;
+    }
 
     const scaleToBounds = getValue(newGradient, 'gradientUnits', true) !==
                 'userSpaceOnUse';
@@ -505,14 +505,16 @@ const _parseUrl = (value, windowRef) => {
  */
 const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
     const inherited = Matrix.identity();
-    const applyTransforms = (element, matrix, strokeWidth, fill) => {
-        if (_isContainerElement(element)) {
+
+    const applyTransforms = (element, matrix, strokeWidth, fill, stroke) => {
+        if (isContainerElement(element)) {
             // Push fills and stroke width down to leaves
             if (element.attributes['stroke-width']) {
                 strokeWidth = element.attributes['stroke-width'].value;
             }
-            if (element.attributes && element.attributes.fill) {
-                fill = element.attributes.fill.value;
+            if (element.attributes) {
+                if (element.attributes.fill) fill = element.attributes.fill.value;
+                if (element.attributes.stroke) stroke = element.attributes.stroke.value;
             }
 
             // If any child nodes don't take attributes, leave the attributes
@@ -522,30 +524,34 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
                     element.childNodes[i],
                     Matrix.compose(matrix, _parseTransform(element)),
                     strokeWidth,
-                    fill
+                    fill,
+                    stroke
                 );
             }
             element.removeAttribute('transform');
             element.removeAttribute('stroke-width');
             element.removeAttribute('fill');
+            element.removeAttribute('stroke');
         } else if (_isPathWithTransformAndStroke(element, strokeWidth)) {
             if (element.attributes['stroke-width']) {
                 strokeWidth = element.attributes['stroke-width'].value;
             }
-            if (element.attributes.fill) {
-                fill = element.attributes.fill.value;
-            }
+            if (element.attributes.fill) fill = element.attributes.fill.value;
+            if (element.attributes.stroke) stroke = element.attributes.stroke.value;
             matrix = Matrix.compose(matrix, _parseTransform(element));
             if (Matrix.toString(matrix) === Matrix.toString(Matrix.identity())) {
                 element.removeAttribute('transform');
                 element.setAttribute('stroke-width', strokeWidth);
                 if (fill) element.setAttribute('fill', fill);
+                if (stroke) element.setAttribute('stroke', stroke);
                 return;
             }
 
             // Transform gradient
-            const gradientId = _parseUrl(fill, windowRef);
-            if (gradientId) {
+            const fillGradientId = _parseUrl(fill, windowRef);
+            const strokeGradientId = _parseUrl(stroke, windowRef);
+
+            if (fillGradientId || strokeGradientId) {
                 const doc = windowRef.document;
                 // Need path bounds to transform gradient
                 const svgSpot = doc.createElement('span');
@@ -555,8 +561,8 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
                 } else {
                     try {
                         doc.body.appendChild(svgSpot);
-                        const svg = SvgElement.set(windowRef.document.createElementNS(SvgElement.svg, 'svg'));
-                        const path = SvgElement.set(windowRef.document.createElementNS(SvgElement.svg, 'path'));
+                        const svg = SvgElement.set(doc.createElementNS(SvgElement.svg, 'svg'));
+                        const path = SvgElement.set(doc.createElementNS(SvgElement.svg, 'path'));
                         path.setAttribute('d', element.attributes.d.value);
                         svg.appendChild(path);
                         svgSpot.appendChild(svg);
@@ -568,8 +574,15 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
                     }
                 }
 
-                const newRef = _createGradient(gradientId, svgTag, bbox, matrix);
-                if (newRef) fill = newRef;
+                if (fillGradientId) {
+                    const newFillRef = _createGradient(fillGradientId, svgTag, bbox, matrix);
+                    if (newFillRef) fill = newFillRef;
+                }
+
+                if (strokeGradientId) {
+                    const newStrokeRef = _createGradient(strokeGradientId, svgTag, bbox, matrix);
+                    if (newStrokeRef) stroke = newStrokeRef;
+                }
             }
 
             // Transform path data
@@ -580,13 +593,17 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
             const matrixScale = _getScaleFactor(matrix);
             element.setAttribute('stroke-width', _quadraticMean(matrixScale.x, matrixScale.y) * strokeWidth);
             if (fill) element.setAttribute('fill', fill);
-        } else if (_isGraphicsElement(element)) {
-            // Push stroke width and fill down to leaves
+            if (stroke) element.setAttribute('stroke', stroke);
+        } else if (isPaintableElement(element)) {
+            // Push stroke width, fill, and stroke down to leaves
             if (strokeWidth && !element.attributes['stroke-width']) {
                 element.setAttribute('stroke-width', strokeWidth);
             }
             if (fill && !element.attributes.fill) {
                 element.setAttribute('fill', fill);
+            }
+            if (stroke && !element.attributes.stroke) {
+                element.setAttribute('stroke', stroke);
             }
 
             // Push transform down to leaves
