@@ -1109,62 +1109,66 @@ class RenderWebGL extends EventEmitter {
         ];
         const bufferInfo = twgl.createFramebufferInfo(gl, attachments, clampedWidth, clampedHeight);
 
-        // If the new bufferInfo is invalid, fall back to using the smaller _queryBufferInfo
-        twgl.bindFramebufferInfo(gl, bufferInfo);
-        if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
-            twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
-        }
-
-        // Translate to scratch units relative to the drawable
-        const pickX = scratchX - bounds.left;
-        const pickY = scratchY + bounds.top;
-
-        // Limit size of viewport to the bounds around the target Drawable,
-        // and create the projection matrix for the draw.
-        gl.viewport(0, 0, bounds.width, bounds.height);
-        const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
-
-        gl.clearColor(0, 0, 0, 0);
-        gl.clear(gl.COLOR_BUFFER_BIT);
         try {
-            gl.disable(gl.BLEND);
-            // ImageData objects store alpha un-premultiplied, so draw with the `straightAlpha` draw mode.
-            this._drawThese([drawableID], ShaderManager.DRAW_MODE.straightAlpha, projection,
-                {effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask});
+            // If the new bufferInfo is invalid, fall back to using the smaller _queryBufferInfo
+            twgl.bindFramebufferInfo(gl, bufferInfo);
+            if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
+                twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
+            }
+
+            // Translate to scratch units relative to the drawable
+            const pickX = scratchX - bounds.left;
+            const pickY = scratchY + bounds.top;
+
+            // Limit size of viewport to the bounds around the target Drawable,
+            // and create the projection matrix for the draw.
+            gl.viewport(0, 0, bounds.width, bounds.height);
+            const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
+
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            try {
+                gl.disable(gl.BLEND);
+                // ImageData objects store alpha un-premultiplied, so draw with the `straightAlpha` draw mode.
+                this._drawThese([drawableID], ShaderManager.DRAW_MODE.straightAlpha, projection,
+                    {effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask});
+            } finally {
+                gl.enable(gl.BLEND);
+            }
+
+            const data = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
+            gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
+
+            if (this._debugCanvas) {
+                this._debugCanvas.width = bounds.width;
+                this._debugCanvas.height = bounds.height;
+                const ctx = this._debugCanvas.getContext('2d');
+                const imageData = ctx.createImageData(bounds.width, bounds.height);
+                imageData.data.set(data);
+                ctx.putImageData(imageData, 0, 0);
+                ctx.beginPath();
+                ctx.arc(pickX, pickY, 3, 0, 2 * Math.PI, false);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'black';
+                ctx.stroke();
+            }
+
+            return {
+                data: data,
+                width: bounds.width,
+                height: bounds.height,
+                scratchOffset: [
+                    -scratchX + drawable._position[0],
+                    -scratchY - drawable._position[1]
+                ],
+                x: pickX,
+                y: pickY
+            };
         } finally {
-            gl.enable(gl.BLEND);
+            gl.deleteFramebuffer(bufferInfo.framebuffer);
         }
-
-        const data = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
-        gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
-
-        if (this._debugCanvas) {
-            this._debugCanvas.width = bounds.width;
-            this._debugCanvas.height = bounds.height;
-            const ctx = this._debugCanvas.getContext('2d');
-            const imageData = ctx.createImageData(bounds.width, bounds.height);
-            imageData.data.set(data);
-            ctx.putImageData(imageData, 0, 0);
-            ctx.beginPath();
-            ctx.arc(pickX, pickY, 3, 0, 2 * Math.PI, false);
-            ctx.fillStyle = 'white';
-            ctx.fill();
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = 'black';
-            ctx.stroke();
-        }
-
-        return {
-            data: data,
-            width: bounds.width,
-            height: bounds.height,
-            scratchOffset: [
-                -scratchX + drawable._position[0],
-                -scratchY - drawable._position[1]
-            ],
-            x: pickX,
-            y: pickY
-        };
     }
 
     /**
