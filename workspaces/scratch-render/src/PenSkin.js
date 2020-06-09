@@ -310,9 +310,19 @@ class PenSkin extends Skin {
         __premultipliedColor[2] = penColor[2] * penColor[3];
         __premultipliedColor[3] = penColor[3];
 
+        // Fun fact: Doing this calculation in the shader has the potential to overflow the floating-point range.
+        // 'mediump' precision is only required to have a range up to 2^14 (16384), so any lines longer than 2^7 (128)
+        // can overflow that, because you're squaring the operands, and they could end up as "infinity".
+        // Even GLSL's `length` function won't save us here:
+        // https://asawicki.info/news_1596_watch_out_for_reduced_precision_normalizelength_in_opengl_es
+        const lineDiffX = x1 - x0;
+        const lineDiffY = y1 - y0;
+        const lineLength = Math.sqrt((lineDiffX * lineDiffX) + (lineDiffY * lineDiffY));
+
         const uniforms = {
             u_lineColor: __premultipliedColor,
             u_lineThickness: penAttributes.diameter || DefaultPenAttributes.diameter,
+            u_lineLength: lineLength,
             u_penPoints: [x0, -y0, x1, -y1],
             u_stageSize: this.size
         };
