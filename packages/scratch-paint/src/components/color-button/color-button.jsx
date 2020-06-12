@@ -11,7 +11,7 @@ import GradientTypes from '../../lib/gradient-types';
 import log from '../../log/log';
 
 const colorToBackground = (color, color2, gradientType) => {
-    if (color === MIXED || color2 === MIXED) return 'white';
+    if (color === MIXED || (gradientType !== GradientTypes.SOLID && color2 === MIXED)) return 'white';
     if (color === null) color = 'white';
     if (color2 === null) color2 = 'white';
     switch (gradientType) {
