@@ -871,7 +871,7 @@ class RenderWebGL extends EventEmitter {
         }
 
         try {
-            // Using the stencil buffer, mask out the drawing to either the drawable's bounds
+            // Using the stencil buffer, mask out the drawing to either the drawable's alpha channel
             // or pixels of the drawable which match the mask color, depending on whether a mask color is given.
             // Masked-out pixels will not be checked.
             gl.enable(gl.STENCIL_TEST);
@@ -931,7 +931,7 @@ class RenderWebGL extends EventEmitter {
         }
 
         for (let pixelBase = 0; pixelBase < pixels.length; pixelBase += 4) {
-            // Transparent pixels are masked (either by the drawable's bounds or color mask).
+            // Transparent pixels are masked (either by the drawable's alpha channel or color mask).
             if (pixels[pixelBase + 3] !== 0 && colorMatches(color3b, pixels, pixelBase)) {
                 return true;
             }
