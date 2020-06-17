@@ -192,11 +192,11 @@ class RenderWebGL extends EventEmitter {
         this._snapshotCallbacks = [];
 
         /** @type {Array<number>}
-         * @readonly */
-        this._backgroundColor4f = [0, 0, 0, 0];
+         * Don't set this directly-- use setBackgroundColor so it stays in sync with _backgroundColor3b */
+        this._backgroundColor4f = [0, 0, 0, 1];
 
         /** @type {Uint8ClampedArray}
-         * @readonly */
+         * Don't set this directly-- use setBackgroundColor so it stays in sync with _backgroundColor4f */
         this._backgroundColor3b = new Uint8ClampedArray(3);
 
         this._createGeometry();
@@ -258,7 +258,9 @@ class RenderWebGL extends EventEmitter {
      * @param {number} blue The blue component for the background.
      */
     setBackgroundColor (red, green, blue) {
-        this._backgroundColor4f = [red, green, blue, 1];
+        this._backgroundColor4f[0] = red;
+        this._backgroundColor4f[1] = green;
+        this._backgroundColor4f[2] = blue;
 
         this._backgroundColor3b[0] = red * 255;
         this._backgroundColor3b[1] = green * 255;
