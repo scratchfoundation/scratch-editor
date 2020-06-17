@@ -1345,7 +1345,7 @@ class RenderWebGL extends EventEmitter {
                     drawable.updateCPURenderAttributes();
                     const candidateBounds = drawable.getFastBounds();
 
-                    // Push bounds out to integers. If a drawable extends out into half a pixel, that half-pixel stil
+                    // Push bounds out to integers. If a drawable extends out into half a pixel, that half-pixel still
                     // needs to be tested. Plus, in some areas we construct another rectangle from the union of these,
                     // and iterate over its pixels (width * height). Turns out that doesn't work so well when the
                     // width/height aren't integers.
