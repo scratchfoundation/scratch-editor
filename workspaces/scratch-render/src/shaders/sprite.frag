@@ -46,7 +46,9 @@ uniform vec4 u_backgroundColor;
 
 uniform sampler2D u_skin;
 
+#ifndef DRAW_MODE_background
 varying vec2 v_texCoord;
+#endif
 
 // Add this to divisors to prevent division by 0, which results in NaNs propagating through calculations.
 // Smaller values can cause problems on some mobile devices.

@@ -11,7 +11,7 @@ uniform vec4 u_penPoints;
 const float epsilon = 1e-3;
 #endif
 
-#ifndef DRAW_MODE_line
+#if !(defined(DRAW_MODE_line) || defined(DRAW_MODE_background))
 uniform mat4 u_projectionMatrix;
 uniform mat4 u_modelMatrix;
 attribute vec2 a_texCoord;
@@ -62,7 +62,6 @@ void main() {
 	gl_Position = vec4(position, 0, 1);
 	#elif defined(DRAW_MODE_background)
 	gl_Position = vec4(a_position * 2.0, 0, 1);
-	v_texCoord = a_texCoord;
 	#else
 	gl_Position = u_projectionMatrix * u_modelMatrix * vec4(a_position, 0, 1);
 	v_texCoord = a_texCoord;
