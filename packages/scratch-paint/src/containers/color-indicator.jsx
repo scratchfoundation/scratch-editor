@@ -58,7 +58,6 @@ const makeColorIndicator = (label, isStroke) => {
                 newColor,
                 this.props.colorIndex,
                 this.props.gradientType === GradientTypes.SOLID,
-                formatIsBitmap,
                 // In bitmap mode, only the fill color selector is used, but it applies to stroke if fillBitmapShapes
                 // is set to true via the "Fill"/"Outline" selector button
                 isStroke || (formatIsBitmap && !this.props.fillBitmapShapes),
@@ -71,7 +70,6 @@ const makeColorIndicator = (label, isStroke) => {
             // Apply color and update redux, but do not update svg until picker closes.
             const isDifferent = applyGradientTypeToSelection(
                 gradientType,
-                formatIsBitmap,
                 isStroke || (formatIsBitmap && !this.props.fillBitmapShapes),
                 this.props.textEditTarget);
             this._hasChanged = this._hasChanged || isDifferent;
@@ -106,7 +104,6 @@ const makeColorIndicator = (label, isStroke) => {
             if (getSelectedLeafItems().length) {
                 const formatIsBitmap = isBitmap(this.props.format);
                 const isDifferent = swapColorsInSelection(
-                    formatIsBitmap,
                     isStroke || (formatIsBitmap && !this.props.fillBitmapShapes),
                     this.props.textEditTarget);
                 this.props.setSelectedItems(this.props.format);

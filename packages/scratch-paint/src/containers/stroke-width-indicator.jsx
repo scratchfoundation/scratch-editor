@@ -29,7 +29,6 @@ class StrokeWidthIndicator extends React.Component {
                     '#000',
                     0, // colorIndex,
                     true, // isSolidGradient
-                    isBitmap(this.props.format),
                     true, // applyToStroke
                     this.props.textEditTarget) ||
                     changed;

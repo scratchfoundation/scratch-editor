@@ -100,7 +100,6 @@ const createGradientObject = function (color1, color2, gradientType, bounds, rad
  * @param {boolean} isSolidGradient True if is solid gradient. Sometimes the item has a gradient but the color
  *     picker is set to a solid gradient. This happens when a mix of colors and gradient types is selected.
  *     When changing the color in this case, the solid gradient should override the existing gradient on the item.
- * @param {?boolean} bitmapMode True if the color is being set in bitmap mode
  * @param {?boolean} applyToStroke True if changing the selection's stroke, false if changing its fill.
  * @param {?string} textEditTargetId paper.Item.id of text editing target, if any
  * @return {boolean} Whether the color application actually changed visibly.
@@ -109,7 +108,6 @@ const applyColorToSelection = function (
     colorString,
     colorIndex,
     isSolidGradient,
-    bitmapMode,
     applyToStroke,
     textEditTargetId
 ) {
@@ -159,12 +157,11 @@ const applyColorToSelection = function (
 
 /**
  * Called to swap gradient colors
- * @param {?boolean} bitmapMode True if the fill color is being set in bitmap mode
  * @param {?boolean} applyToStroke True if changing the selection's stroke, false if changing its fill.
  * @param {?string} textEditTargetId paper.Item.id of text editing target, if any
  * @return {boolean} Whether the color application actually changed visibly.
  */
-const swapColorsInSelection = function (bitmapMode, applyToStroke, textEditTargetId) {
+const swapColorsInSelection = function (applyToStroke, textEditTargetId) {
     const items = _getColorStateListeners(textEditTargetId);
     let changed = false;
     for (const item of items) {
@@ -194,12 +191,11 @@ const swapColorsInSelection = function (bitmapMode, applyToStroke, textEditTarge
 /**
  * Called when setting gradient type
  * @param {GradientType} gradientType gradient type
- * @param {?boolean} bitmapMode True if the fill color is being set in bitmap mode
- * @param {boolean} applyToStroke True if changing the selection's stroke, false if changing its fill.
+ * @param {?boolean} applyToStroke True if changing the selection's stroke, false if changing its fill.
  * @param {?string} textEditTargetId paper.Item.id of text editing target, if any
  * @return {boolean} Whether the color application actually changed visibly.
  */
-const applyGradientTypeToSelection = function (gradientType, bitmapMode, applyToStroke, textEditTargetId) {
+const applyGradientTypeToSelection = function (gradientType, applyToStroke, textEditTargetId) {
     const items = _getColorStateListeners(textEditTargetId);
     let changed = false;
     for (let item of items) {
