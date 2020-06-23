@@ -133,21 +133,21 @@ class ReshapeTool extends paper.Tool {
         return hitOptions;
     }
     /**
-     * Returns the hit options for strokes and curves of selected objects, which take precedence over
+     * Returns the hit options for curves of selected objects, which take precedence over
      * unselected things and fills.
      * @return {object} See paper.Item.hitTest for definition of options
      */
     getSelectedStrokeHitOptions () {
         const hitOptions = {
             segments: false,
-            stroke: true,
+            stroke: false,
             curves: true,
             handles: false,
             fill: false,
             guide: false,
             tolerance: ReshapeTool.TOLERANCE / paper.view.zoom,
             match: hitResult => {
-                if (hitResult.type !== 'stroke' || hitResult.type !== 'curve') return false;
+                if (hitResult.type !== 'curve') return false;
                 if (!hitResult.item.selected) return false;
                 if (hitResult.item.data && hitResult.item.data.noHover) return false;
                 return true;
@@ -249,6 +249,7 @@ class ReshapeTool extends paper.Tool {
         // or stroke (since those were invisible), just select the whole thing as if they clicked the fill.
         if (!hitResult.item.selected ||
                 hitResult.type === 'fill' ||
+                hitResult.type === 'stroke' ||
                 (hitResult.type !== 'segment' && doubleClicked)) {
             this.mode = ReshapeModes.FILL;
             this._modeMap[this.mode].onMouseDown(hitProperties);
@@ -256,7 +257,6 @@ class ReshapeTool extends paper.Tool {
             this.mode = ReshapeModes.POINT;
             this._modeMap[this.mode].onMouseDown(hitProperties);
         } else if (
-            hitResult.type === 'stroke' ||
             hitResult.type === 'curve') {
             this.mode = ReshapeModes.POINT;
             this._modeMap[this.mode].addPoint(hitProperties);
