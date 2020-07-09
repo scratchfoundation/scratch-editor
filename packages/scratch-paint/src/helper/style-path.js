@@ -561,7 +561,9 @@ const styleCursorPreview = function (path, options) {
 
 const styleShape = function (path, options) {
     for (const colorKey of ['fillColor', 'strokeColor']) {
-        if (options[colorKey].gradientType === GradientTypes.SOLID) {
+        if (options[colorKey] === null) {
+            path[colorKey] = null;
+        } else if (options[colorKey].gradientType === GradientTypes.SOLID) {
             path[colorKey] = options[colorKey].primary;
         } else {
             const {primary, secondary, gradientType} = options[colorKey];
@@ -569,7 +571,7 @@ const styleShape = function (path, options) {
         }
     }
 
-    path.strokeWidth = options.strokeWidth;
+    if (options.hasOwnProperty('strokeWidth')) path.strokeWidth = options.strokeWidth;
 };
 
 export {
