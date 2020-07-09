@@ -1338,32 +1338,6 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
-     * Update a drawable's skin rotation center.
-     * @param {number} drawableID The drawable's id.
-     * @param {Array.<number>} rotationCenter The rotation center for the skin.
-     */
-    updateDrawableRotationCenter (drawableID, rotationCenter) {
-        const drawable = this._allDrawables[drawableID];
-        // TODO: https://github.com/LLK/scratch-vm/issues/2288
-        if (!drawable) return;
-        drawable.skin.setRotationCenter(rotationCenter[0], rotationCenter[1]);
-    }
-
-    /**
-     * Update a drawable's skin and rotation center together.
-     * @param {number} drawableID The drawable's id.
-     * @param {number} skinId The skin to update to.
-     * @param {Array.<number>} rotationCenter The rotation center for the skin.
-     */
-    updateDrawableSkinIdRotationCenter (drawableID, skinId, rotationCenter) {
-        const drawable = this._allDrawables[drawableID];
-        // TODO: https://github.com/LLK/scratch-vm/issues/2288
-        if (!drawable) return;
-        drawable.skin = this._allSkins[skinId];
-        drawable.skin.setRotationCenter(rotationCenter[0], rotationCenter[1]);
-    }
-
-    /**
      * Update a drawable's position.
      * @param {number} drawableID The drawable's id.
      * @param {Array.<number>} position The new position.
@@ -1455,9 +1429,6 @@ class RenderWebGL extends EventEmitter {
         }
         if ('skinId' in properties) {
             this.updateDrawableSkinId(drawableID, properties.skinId);
-        }
-        if ('rotationCenter' in properties) {
-            this.updateDrawableRotationCenter(drawableID, properties.rotationCenter);
         }
         drawable.updateProperties(properties);
     }

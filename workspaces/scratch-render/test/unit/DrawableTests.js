@@ -48,11 +48,11 @@ test('translate by costume center', t => {
     drawable.skin = new MockSkin();
     drawable.skin.size = [200, 50];
 
-    drawable.skin.setRotationCenter(1, 0);
+    drawable.skin.rotationCenter = [1, 0];
     expected.initFromBounds(-1, 199, -50, 0);
     t.same(snapToNearest(drawable.getAABB()), expected);
 
-    drawable.skin.setRotationCenter(0, -2);
+    drawable.skin.rotationCenter = [0, -2];
     expected.initFromBounds(0, 200, -52, -2);
     t.same(snapToNearest(drawable.getAABB()), expected);
 
@@ -73,7 +73,7 @@ test('translate and rotate', t => {
     expected.initFromBounds(-49, 1, -198, 2);
     t.same(snapToNearest(drawable.getAABB()), expected);
 
-    drawable.skin.setRotationCenter(100, 25);
+    drawable.skin.rotationCenter = [100, 25];
     drawable.updateProperties({direction: 270, position: [0, 0]});
     expected.initFromBounds(-100, 100, -25, 25);
     t.same(snapToNearest(drawable.getAABB()), expected);
@@ -89,7 +89,7 @@ test('rotate by non-right-angles', t => {
     const drawable = new Drawable();
     drawable.skin = new MockSkin();
     drawable.skin.size = [10, 10];
-    drawable.skin.setRotationCenter(5, 5);
+    drawable.skin.rotationCenter = [5, 5];
 
     expected.initFromBounds(-5, 5, -5, 5);
     t.same(snapToNearest(drawable.getAABB()), expected);
@@ -111,11 +111,11 @@ test('scale', t => {
     expected.initFromBounds(0, 200, -25, 0);
     t.same(snapToNearest(drawable.getAABB()), expected);
 
-    drawable.skin.setRotationCenter(0, 25);
+    drawable.skin.rotationCenter = [0, 25];
     expected.initFromBounds(0, 200, -12.5, 12.5);
     t.same(snapToNearest(drawable.getAABB()), expected);
 
-    drawable.skin.setRotationCenter(150, 50);
+    drawable.skin.rotationCenter = [150, 50];
     drawable.updateProperties({scale: [50, 50]});
     expected.initFromBounds(-75, 25, 0, 25);
     t.same(snapToNearest(drawable.getAABB()), expected);
@@ -129,12 +129,12 @@ test('rotate and scale', t => {
     drawable.skin = new MockSkin();
     drawable.skin.size = [100, 1000];
 
-    drawable.skin.setRotationCenter(50, 50);
+    drawable.skin.rotationCenter = [50, 50];
     expected.initFromBounds(-50, 50, -950, 50);
     t.same(snapToNearest(drawable.getAABB()), expected);
 
     drawable.updateProperties({scale: [40, 60]});
-    drawable.skin.setRotationCenter(50, 50);
+    drawable.skin.rotationCenter = [50, 50];
     expected.initFromBounds(-20, 20, -570, 30);
     t.same(snapToNearest(drawable.getAABB()), expected);
 
