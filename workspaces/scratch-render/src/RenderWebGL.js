@@ -1196,8 +1196,11 @@ class RenderWebGL extends EventEmitter {
         const scratchBounds = drawable.getFastBounds();
 
         const canvas = this.canvas;
+        // Ratio of the screen-space scale of the stage's canvas to the "native size" of the stage
         const scaleFactor = canvas.width / this._nativeSize[0];
 
+        // Bounds of the extracted drawable, in "canvas pixel space"
+        // (origin is 0, 0, destination is the canvas width, height).
         const canvasSpaceBounds = new Rectangle();
         canvasSpaceBounds.initFromBounds(
             (scratchBounds.left + nativeCenterX) * scaleFactor,
@@ -1209,6 +1212,8 @@ class RenderWebGL extends EventEmitter {
         canvasSpaceBounds.snapToInt();
 
         // undo the transformation to transform the bounds, snapped to "canvas-pixel space", back to "Scratch space"
+        // We have to transform -> snap -> invert transform so that the "Scratch-space" bounds are snapped in
+        // "canvas-pixel space".
         scratchBounds.initFromBounds(
             (canvasSpaceBounds.left / scaleFactor) - nativeCenterX,
             (canvasSpaceBounds.right / scaleFactor) - nativeCenterX,
@@ -1242,6 +1247,7 @@ class RenderWebGL extends EventEmitter {
 
             gl.clearColor(0, 0, 0, 0);
             gl.clear(gl.COLOR_BUFFER_BIT);
+            // Don't apply the ghost effect. TODO: is this an intentional design decision?
             this._drawThese([drawableID], ShaderManager.DRAW_MODE.straightAlpha, projection,
                 {effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask});
 
@@ -1254,6 +1260,8 @@ class RenderWebGL extends EventEmitter {
             // On high-DPI devices, the canvas' width (in canvas pixels) will be larger than its width in CSS pixels.
             // We want to return the CSS-space bounds,
             // so take into account the ratio between the canvas' pixel dimensions and its layout dimensions.
+            // This is usually the same as 1 / window.devicePixelRatio, but if e.g. you zoom your browser window without
+            // the canvas resizing, then it'll differ.
             const ratio = canvas.getBoundingClientRect().width / canvas.width;
 
             return {
