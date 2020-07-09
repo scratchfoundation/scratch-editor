@@ -1242,7 +1242,8 @@ class RenderWebGL extends EventEmitter {
 
             gl.clearColor(0, 0, 0, 0);
             gl.clear(gl.COLOR_BUFFER_BIT);
-            this._drawThese([drawableID], ShaderManager.DRAW_MODE.straightAlpha, projection);
+            this._drawThese([drawableID], ShaderManager.DRAW_MODE.straightAlpha, projection,
+                {effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask});
 
             const data = new Uint8Array(Math.floor(clampedWidth * clampedHeight * 4));
             gl.readPixels(0, 0, clampedWidth, clampedHeight, gl.RGBA, gl.UNSIGNED_BYTE, data);
