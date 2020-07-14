@@ -39,12 +39,12 @@ const __hsv = [0, 0, 0];
  * @param   {Array<number>} dst   The array to store the RGB values in
  * @return  {Array<number>}       The `dst` array passed in
  */
-const rgbToHsv = ([_r, _g, _b], dst) => {
+const rgbToHsv = ([r, g, b], dst) => {
     let K = 0.0;
 
-    let r = _r / 255;
-    let g = _g / 255;
-    let b = _b / 255;
+    r /= 255;
+    g /= 255;
+    b /= 255;
     let tmp = 0;
 
     if (g < b) {
