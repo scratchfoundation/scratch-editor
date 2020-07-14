@@ -40,9 +40,15 @@ uniform float u_lineLength;
 uniform vec4 u_penPoints;
 #endif // DRAW_MODE_line
 
+#ifdef DRAW_MODE_background
+uniform vec4 u_backgroundColor;
+#endif // DRAW_MODE_background
+
 uniform sampler2D u_skin;
 
+#ifndef DRAW_MODE_background
 varying vec2 v_texCoord;
+#endif
 
 // Add this to divisors to prevent division by 0, which results in NaNs propagating through calculations.
 // Smaller values can cause problems on some mobile devices.
@@ -110,7 +116,7 @@ const vec2 kCenter = vec2(0.5, 0.5);
 
 void main()
 {
-	#ifndef DRAW_MODE_line
+	#if !(defined(DRAW_MODE_line) || defined(DRAW_MODE_background))
 	vec2 texcoord0 = v_texCoord;
 
 	#ifdef ENABLE_mosaic
@@ -216,7 +222,9 @@ void main()
 	gl_FragColor.rgb /= gl_FragColor.a + epsilon;
 	#endif
 
-	#else // DRAW_MODE_line
+	#endif // !(defined(DRAW_MODE_line) || defined(DRAW_MODE_background))
+
+	#ifdef DRAW_MODE_line
 	// Maaaaagic antialiased-line-with-round-caps shader.
 
 	// "along-the-lineness". This increases parallel to the line.
@@ -235,4 +243,8 @@ void main()
 	// the closer we are to the line, invert it.
 	gl_FragColor = u_lineColor * clamp(1.0 - line, 0.0, 1.0);
 	#endif // DRAW_MODE_line
+
+	#ifdef DRAW_MODE_background
+	gl_FragColor = u_backgroundColor;
+	#endif
 }
