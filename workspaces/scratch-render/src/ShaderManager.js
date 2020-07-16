@@ -176,12 +176,7 @@ ShaderManager.DRAW_MODE = {
     /**
      * Draw a line with caps.
      */
-    line: 'line',
-
-    /**
-     * Draw the background in a certain color. Must sometimes be used instead of gl.clear.
-     */
-    background: 'background'
+    line: 'line'
 };
 
 module.exports = ShaderManager;
