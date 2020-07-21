@@ -44,6 +44,12 @@ const MAX_TOUCH_SIZE = [3, 3];
 const MASK_TOUCHING_COLOR_TOLERANCE = 2;
 
 /**
+ * Maximum number of pixels in either dimension of "extracted drawable" data
+ * @type {int}
+ */
+const MAX_EXTRACTED_DRAWABLE_DIMENSION = 2048;
+
+/**
  * Determines if the mask color is "close enough" (only test the 6 top bits for
  * each color).  These bit masks are what scratch 2 used to use, so we do the same.
  * @param {Uint8Array} a A color3b or color4b value.
@@ -1069,7 +1075,7 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
-     * @typedef DrawableExtraction
+     * @typedef DrawableExtractionOld
      * @property {Uint8Array} data Raw pixel data for the drawable
      * @property {int} width Drawable bounding box width
      * @property {int} height Drawable bounding box height
@@ -1084,7 +1090,8 @@ class RenderWebGL extends EventEmitter {
      * @param {int} drawableID The ID of the drawable to get pixel data for
      * @param {int} x The client x coordinate of the picking location.
      * @param {int} y The client y coordinate of the picking location.
-     * @return {?DrawableExtraction} Data about the picked drawable
+     * @return {?DrawableExtractionOld} Data about the picked drawable
+     * @deprecated Use {@link extractDrawableScreenSpace} instead.
      */
     extractDrawable (drawableID, x, y) {
         this._doExitDrawRegion();
@@ -1169,6 +1176,112 @@ class RenderWebGL extends EventEmitter {
                 ],
                 x: pickX,
                 y: pickY
+            };
+        } finally {
+            gl.deleteFramebuffer(bufferInfo.framebuffer);
+        }
+    }
+
+    /**
+     * @typedef DrawableExtraction
+     * @property {ImageData} data Raw pixel data for the drawable
+     * @property {number} x The x coordinate of the drawable's bounding box's top-left corner, in 'CSS pixels'
+     * @property {number} y The y coordinate of the drawable's bounding box's top-left corner, in 'CSS pixels'
+     * @property {number} width The drawable's bounding box width, in 'CSS pixels'
+     * @property {number} height The drawable's bounding box height, in 'CSS pixels'
+     */
+
+    /**
+     * Return a drawable's pixel data and bounds in screen space.
+     * @param {int} drawableID The ID of the drawable to get pixel data for
+     * @return {DrawableExtraction} Data about the picked drawable
+     */
+    extractDrawableScreenSpace (drawableID) {
+        const drawable = this._allDrawables[drawableID];
+        if (!drawable) throw new Error(`Could not extract drawable with ID ${drawableID}; it does not exist`);
+
+        this._doExitDrawRegion();
+
+        const nativeCenterX = this._nativeSize[0] * 0.5;
+        const nativeCenterY = this._nativeSize[1] * 0.5;
+
+        const scratchBounds = drawable.getFastBounds();
+
+        const canvas = this.canvas;
+        // Ratio of the screen-space scale of the stage's canvas to the "native size" of the stage
+        const scaleFactor = canvas.width / this._nativeSize[0];
+
+        // Bounds of the extracted drawable, in "canvas pixel space"
+        // (origin is 0, 0, destination is the canvas width, height).
+        const canvasSpaceBounds = new Rectangle();
+        canvasSpaceBounds.initFromBounds(
+            (scratchBounds.left + nativeCenterX) * scaleFactor,
+            (scratchBounds.right + nativeCenterX) * scaleFactor,
+            // in "canvas space", +y is down, but Rectangle methods assume bottom < top, so swap them
+            (nativeCenterY - scratchBounds.top) * scaleFactor,
+            (nativeCenterY - scratchBounds.bottom) * scaleFactor
+        );
+        canvasSpaceBounds.snapToInt();
+
+        // undo the transformation to transform the bounds, snapped to "canvas-pixel space", back to "Scratch space"
+        // We have to transform -> snap -> invert transform so that the "Scratch-space" bounds are snapped in
+        // "canvas-pixel space".
+        scratchBounds.initFromBounds(
+            (canvasSpaceBounds.left / scaleFactor) - nativeCenterX,
+            (canvasSpaceBounds.right / scaleFactor) - nativeCenterX,
+            nativeCenterY - (canvasSpaceBounds.top / scaleFactor),
+            nativeCenterY - (canvasSpaceBounds.bottom / scaleFactor)
+        );
+
+        const gl = this._gl;
+
+        // Set a reasonable max limit width and height for the bufferInfo bounds
+        const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+        const clampedWidth = Math.min(MAX_EXTRACTED_DRAWABLE_DIMENSION, canvasSpaceBounds.width, maxTextureSize);
+        const clampedHeight = Math.min(MAX_EXTRACTED_DRAWABLE_DIMENSION, canvasSpaceBounds.height, maxTextureSize);
+
+        // Make a new bufferInfo since this._queryBufferInfo is limited to 480x360
+        const bufferInfo = twgl.createFramebufferInfo(gl, [{format: gl.RGBA}], clampedWidth, clampedHeight);
+
+        try {
+            twgl.bindFramebufferInfo(gl, bufferInfo);
+
+            // Limit size of viewport to the bounds around the target Drawable,
+            // and create the projection matrix for the draw.
+            gl.viewport(0, 0, clampedWidth, clampedHeight);
+            const projection = twgl.m4.ortho(
+                scratchBounds.left,
+                scratchBounds.right,
+                scratchBounds.top,
+                scratchBounds.bottom,
+                -1, 1
+            );
+
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            // Don't apply the ghost effect. TODO: is this an intentional design decision?
+            this._drawThese([drawableID], ShaderManager.DRAW_MODE.straightAlpha, projection,
+                {effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask});
+
+            const data = new Uint8Array(Math.floor(clampedWidth * clampedHeight * 4));
+            gl.readPixels(0, 0, clampedWidth, clampedHeight, gl.RGBA, gl.UNSIGNED_BYTE, data);
+            // readPixels can only read into a Uint8Array, but ImageData has to take a Uint8ClampedArray.
+            // We can share the same underlying buffer between them to avoid having to copy any data.
+            const imageData = new ImageData(new Uint8ClampedArray(data.buffer), clampedWidth, clampedHeight);
+
+            // On high-DPI devices, the canvas' width (in canvas pixels) will be larger than its width in CSS pixels.
+            // We want to return the CSS-space bounds,
+            // so take into account the ratio between the canvas' pixel dimensions and its layout dimensions.
+            // This is usually the same as 1 / window.devicePixelRatio, but if e.g. you zoom your browser window without
+            // the canvas resizing, then it'll differ.
+            const ratio = canvas.getBoundingClientRect().width / canvas.width;
+
+            return {
+                imageData,
+                x: canvasSpaceBounds.left * ratio,
+                y: canvasSpaceBounds.bottom * ratio,
+                width: canvasSpaceBounds.width * ratio,
+                height: canvasSpaceBounds.height * ratio
             };
         } finally {
             gl.deleteFramebuffer(bufferInfo.framebuffer);
