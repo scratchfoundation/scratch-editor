@@ -59,8 +59,6 @@ class SVGSkin extends Skin {
         return this._svgRenderer.size;
     }
 
-    // Because SVG skins' bounding boxes are currently not pixel-aligned, the idea here is to hide blurriness
-    // by using nearest-neighbor scaling if one screen-space pixel is "close enough" to one texture pixel.
     useNearest (scale) {
         // If the effect bits for mosaic, pixelate, whirl, or fisheye are set, use linear
         if ((this.enabledEffects & (
@@ -77,8 +75,12 @@ class SVGSkin extends Skin {
             return false;
         }
 
+        // Because SVG skins' bounding boxes are currently not pixel-aligned, the idea here is to hide blurriness
+        // by using nearest-neighbor scaling if one screen-space pixel is "close enough" to one texture pixel.
         // If the scale of the skin is very close to 100 (0.99999 variance is okay I guess)
-        // TODO: Make this check more precise. Mipmaps complicate this somewhat.
+        // TODO: Make this check more precise. We should use nearest if there's less than one pixel's difference
+        // between the screen-space and texture-space sizes of the skin. Mipmaps make this harder because there are
+        // multiple textures (and hence multiple texture spaces) and we need to know which one to choose.
         if (Math.abs(scale[0]) > 99 && Math.abs(scale[0]) < 101 &&
             Math.abs(scale[1]) > 99 && Math.abs(scale[1]) < 101) {
             return true;
