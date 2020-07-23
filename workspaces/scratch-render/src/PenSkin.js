@@ -323,7 +323,7 @@ class PenSkin extends Skin {
             u_lineColor: __premultipliedColor,
             u_lineThickness: penAttributes.diameter || DefaultPenAttributes.diameter,
             u_lineLength: lineLength,
-            u_penPoints: [x0, -y0, x1, -y1],
+            u_penPoints: [x0, -y0, lineDiffX, -lineDiffY],
             u_stageSize: this.size
         };
 

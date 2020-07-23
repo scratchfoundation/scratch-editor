@@ -4,6 +4,9 @@ precision mediump float;
 uniform vec2 u_stageSize;
 uniform float u_lineThickness;
 uniform float u_lineLength;
+// The X and Y components of u_penPoints hold the first pen point. The Z and W components hold the difference between
+// the second pen point and the first. This is done because calculating the difference in the shader leads to floating-
+// point error when both points have large-ish coordinates.
 uniform vec4 u_penPoints;
 
 // Add this to divisors to prevent division by 0, which results in NaNs propagating through calculations.
@@ -41,23 +44,26 @@ void main() {
 	position.x *= u_lineLength + (2.0 * expandedRadius);
 	position.y *= 2.0 * expandedRadius;
 
-	// Center around first pen point
+	// 1. Center around first pen point
 	position -= expandedRadius;
 
-	// Rotate quad to line angle
-	vec2 pointDiff = u_penPoints.zw - u_penPoints.xy;
+	// 2. Rotate quad to line angle
+	vec2 pointDiff = u_penPoints.zw;
 	// Ensure line has a nonzero length so it's rendered properly
 	// As long as either component is nonzero, the line length will be nonzero
 	// If the line is zero-length, give it a bit of horizontal length
 	pointDiff.x = (abs(pointDiff.x) < epsilon && abs(pointDiff.y) < epsilon) ? epsilon : pointDiff.x;
 	// The `normalized` vector holds rotational values equivalent to sine/cosine
 	// We're applying the standard rotation matrix formula to the position to rotate the quad to the line angle
+	// pointDiff can hold large values so we must divide by u_lineLength instead of calling GLSL's normalize function:
+	// https://asawicki.info/news_1596_watch_out_for_reduced_precision_normalizelength_in_opengl_es
 	vec2 normalized = pointDiff / max(u_lineLength, epsilon);
 	position = mat2(normalized.x, normalized.y, -normalized.y, normalized.x) * position;
-	// Translate quad
+
+	// 3. Translate quad
 	position += u_penPoints.xy;
 
-	// Apply view transform
+	// 4. Apply view transform
 	position *= 2.0 / u_stageSize;
 	gl_Position = vec4(position, 0, 1);
 	#elif defined(DRAW_MODE_background)

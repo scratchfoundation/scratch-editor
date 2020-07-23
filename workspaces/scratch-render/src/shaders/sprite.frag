@@ -37,7 +37,6 @@ uniform float u_ghost;
 uniform vec4 u_lineColor;
 uniform float u_lineThickness;
 uniform float u_lineLength;
-uniform vec4 u_penPoints;
 #endif // DRAW_MODE_line
 
 #ifdef DRAW_MODE_background
