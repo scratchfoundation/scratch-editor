@@ -246,7 +246,7 @@ class ReshapeTool extends paper.Tool {
         };
 
         // If item is not yet selected, don't behave differently depending on if they clicked a segment
-        // or stroke (since those were invisible), just select the whole thing as if they clicked the fill.
+        // (since those were invisible), just select the whole thing as if they clicked the fill.
         if (!hitResult.item.selected ||
                 hitResult.type === 'fill' ||
                 hitResult.type === 'stroke' ||
