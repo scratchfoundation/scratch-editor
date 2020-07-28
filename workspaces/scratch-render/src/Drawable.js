@@ -626,7 +626,7 @@ class Drawable {
         if (this.skin) {
             this.skin.updateSilhouette(this._scale);
 
-            if (this.skin.useNearest(this._scale)) {
+            if (this.skin.useNearest(this._scale, this)) {
                 this.isTouching = this._isTouchingNearest;
             } else {
                 this.isTouching = this._isTouchingLinear;
@@ -703,7 +703,7 @@ class Drawable {
 
         const textColor =
         // commenting out to only use nearest for now
-        // drawable.skin.useNearest(drawable._scale) ?
+        // drawable.skin.useNearest(drawable._scale, drawable) ?
              drawable.skin._silhouette.colorAtNearest(localPosition, dst);
         // : drawable.skin._silhouette.colorAtLinear(localPosition, dst);
 

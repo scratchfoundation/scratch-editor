@@ -85,11 +85,12 @@ class Skin extends EventEmitter {
      * Should this skin's texture be filtered with nearest-neighbor or linear interpolation at the given scale?
      * @param {?Array<Number>} scale The screen-space X and Y scaling factors at which this skin's texture will be
      * displayed, as percentages (100 means 1 "native size" unit is 1 screen pixel; 200 means 2 screen pixels, etc).
+     * @param {Drawable} drawable The drawable that this skin's texture will be applied to.
      * @return {boolean} True if this skin's texture, as returned by {@link getTexture}, should be filtered with
      * nearest-neighbor interpolation.
      */
     // eslint-disable-next-line no-unused-vars
-    useNearest (scale) {
+    useNearest (scale, drawable) {
         return true;
     }
 

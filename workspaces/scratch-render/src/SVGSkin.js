@@ -59,9 +59,9 @@ class SVGSkin extends Skin {
         return this._svgRenderer.size;
     }
 
-    useNearest (scale) {
+    useNearest (scale, drawable) {
         // If the effect bits for mosaic, pixelate, whirl, or fisheye are set, use linear
-        if ((this.enabledEffects & (
+        if ((drawable.enabledEffects & (
             ShaderManager.EFFECT_INFO.fisheye.mask |
             ShaderManager.EFFECT_INFO.whirl.mask |
             ShaderManager.EFFECT_INFO.pixelate.mask |
@@ -71,7 +71,7 @@ class SVGSkin extends Skin {
         }
 
         // We can't use nearest neighbor unless we are a multiple of 90 rotation
-        if (this._direction % 90 !== 0) {
+        if (drawable._direction % 90 !== 0) {
             return false;
         }
 
