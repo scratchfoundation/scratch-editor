@@ -64,7 +64,7 @@
     "eslint-config-import": "^0.13.0",
     "eslint-config-scratch": "^5.0.0",
     "eslint-plugin-import": "^2.18.2",
-    "eslint-plugin-react": "^7.2.1",
+    "eslint-plugin-react": "7.20.3",
     "gh-pages": "github:rschamp/gh-pages#publish-branch-to-subfolder",
     "html-webpack-plugin": "3.2.0",
     "jest": "^22.2.2",
