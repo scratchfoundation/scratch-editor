@@ -4,7 +4,7 @@ const Skin = require('./Skin');
 const SvgRenderer = require('scratch-svg-renderer').SVGRenderer;
 
 const MAX_TEXTURE_DIMENSION = 2048;
-const MIN_TEXTURE_SCALE = 1 / 256;
+
 /**
  * All scaled renderings of the SVG are stored in an array. The 1.0 scale of
  * the SVG is stored at the 8th index. The smallest possible 1 / 256 scale
@@ -108,26 +108,20 @@ class SVGSkin extends Skin {
         // The texture only ever gets uniform scale. Take the larger of the two axes.
         const scaleMax = scale ? Math.max(Math.abs(scale[0]), Math.abs(scale[1])) : 100;
         const requestedScale = Math.min(scaleMax / 100, this._maxTextureScale);
-        let newScale = 1;
-        let textureIndex = 0;
 
-        if (requestedScale < 1) {
-            while ((newScale > MIN_TEXTURE_SCALE) && (requestedScale <= newScale * .75)) {
-                newScale /= 2;
-                textureIndex -= 1;
-            }
-        } else {
-            while ((newScale < this._maxTextureScale) && (requestedScale >= 1.5 * newScale)) {
-                newScale *= 2;
-                textureIndex += 1;
-            }
+        // Math.ceil(Math.log2(scale)) means we use the "1x" texture at (0.5, 1] scale,
+        // the "2x" texture at (1, 2] scale, the "4x" texture at (2, 4] scale, etc.
+        // This means that one texture pixel will always be between 0.5x and 1x the size of one rendered pixel,
+        // but never bigger than one rendered pixel--this prevents blurriness from blowing up the texture too much.
+        const mipLevel = Math.max(Math.ceil(Math.log2(requestedScale)) + INDEX_OFFSET, 0);
+        // Can't use bitwise stuff here because we need to handle negative exponents
+        const mipScale = Math.pow(2, mipLevel - INDEX_OFFSET);
+
+        if (this._svgRenderer.loaded && !this._scaledMIPs[mipLevel]) {
+            this._scaledMIPs[mipLevel] = this.createMIP(mipScale);
         }
 
-        if (this._svgRenderer.loaded && !this._scaledMIPs[textureIndex + INDEX_OFFSET]) {
-            this._scaledMIPs[textureIndex + INDEX_OFFSET] = this.createMIP(newScale);
-        }
-
-        return this._scaledMIPs[textureIndex + INDEX_OFFSET] || super.getTexture();
+        return this._scaledMIPs[mipLevel] || super.getTexture();
     }
 
     /**
