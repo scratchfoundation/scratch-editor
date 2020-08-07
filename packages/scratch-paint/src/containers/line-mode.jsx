@@ -9,7 +9,7 @@ import {clearSelection} from '../helper/selection';
 import {endPointHit, touching} from '../helper/snapping';
 import {drawHitPoint, removeHitPoint} from '../helper/guides';
 import {styleShape} from '../helper/style-path';
-import {changeStrokeColor} from '../reducers/stroke-style';
+import {changeStrokeColor, clearStrokeGradient} from '../reducers/stroke-style';
 import {changeStrokeWidth} from '../reducers/stroke-width';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems} from '../reducers/selected-items';
@@ -60,9 +60,15 @@ class LineMode extends React.Component {
     activateTool () {
         clearSelection(this.props.clearSelectedItems);
         // Force the default line color if stroke is MIXED or transparent
-        const strokeColor = this.props.colorState.strokeColor.primary;
-        if (strokeColor === MIXED || strokeColor === null) {
+        const strokeColor1 = this.props.colorState.strokeColor.primary;
+        const strokeColor2 = this.props.colorState.strokeColor.secondary;
+        if (strokeColor1 === MIXED ||
+            (strokeColor1 === null &&
+                (strokeColor2 === null || strokeColor2 === MIXED))) {
             this.props.onChangeStrokeColor(LineMode.DEFAULT_COLOR);
+        }
+        if (strokeColor2 === MIXED) {
+            this.props.clearStrokeGradient();
         }
         // Force a minimum stroke width
         if (!this.props.colorState.strokeWidth) {
@@ -293,6 +299,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     clearSelectedItems: () => {
         dispatch(clearSelectedItems());
+    },
+    clearStrokeGradient: () => {
+        dispatch(clearStrokeGradient());
     },
     handleMouseDown: () => {
         dispatch(changeMode(Modes.LINE));
