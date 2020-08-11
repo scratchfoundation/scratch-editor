@@ -773,6 +773,8 @@ class RenderWebGL extends EventEmitter {
             // candidate drawables' bounds--since the background spans the entire stage, we must check
             // everything that lies inside the drawable.
             bounds = this._touchingBounds(drawableID);
+            // e.g. empty costume, or off the stage
+            if (bounds === null) return false;
         } else if (candidates.length === 0) {
             // If not checking for the background color, we can return early if there are no candidate drawables.
             return false;
