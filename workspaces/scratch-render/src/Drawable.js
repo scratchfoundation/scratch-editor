@@ -712,8 +712,7 @@ class Drawable {
      * Sample a color from a drawable's texture.
      * The caller is responsible for ensuring this drawable's inverse matrix & its skin's silhouette are up-to-date.
      * @see updateCPURenderAttributes
-     * @param {twgl.v3} vec The scratch space [x,y] vector. This will be clamped to the texture space, to match the
-     *     GL code (See https://github.com/LLK/scratch-render/blob/develop/src/BitmapSkin.js#L88)
+     * @param {twgl.v3} vec The scratch space [x,y] vector
      * @param {Drawable} drawable The drawable to sample the texture from
      * @param {Uint8ClampedArray} dst The "color4b" representation of the texture at point.
      * @param {number} [effectMask] A bitmask for which effects to use. Optional.
@@ -721,17 +720,6 @@ class Drawable {
      */
     static sampleColor4b (vec, drawable, dst, effectMask) {
         const localPosition = getLocalPosition(drawable, vec);
-        if (localPosition[0] < 0) {
-            localPosition[0] = 0;
-        } else if (localPosition[0] > 1) {
-            localPosition[0] = 1;
-        }
-
-        if (localPosition[1] < 0) {
-            localPosition[1] = 0;
-        } else if (localPosition[1] > 1) {
-            localPosition[1] = 1;
-        }
         const textColor =
         // commenting out to only use nearest for now
         // drawable.useNearest() ?
