@@ -37,6 +37,8 @@ const getLocalPosition = (drawable, vec) => {
     // localPosition matches that transformation.
     localPosition[0] = 0.5 - (((v0 * m[0]) + (v1 * m[4]) + m[12]) / d);
     localPosition[1] = (((v0 * m[1]) + (v1 * m[5]) + m[13]) / d) + 0.5;
+    // Fix floating point issues near 0.
+    // TODO: Check if this can be removed after render pull 479 is merged
     if (Math.abs(localPosition[0] < 1e-8)) localPosition[0] = 0;
     if (Math.abs(localPosition[1] < 1e-8)) localPosition[1] = 0;
     // Apply texture effect transform if the localPosition is within the drawable's space,
