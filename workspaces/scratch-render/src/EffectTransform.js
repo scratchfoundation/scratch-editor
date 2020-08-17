@@ -233,8 +233,8 @@ class EffectTransform {
         if ((effects & ShaderManager.EFFECT_INFO.pixelate.mask) !== 0) {
             const skinUniforms = drawable.skin.getUniforms();
             // vec2 pixelTexelSize = u_skinSize / u_pixelate;
-            const texelX = skinUniforms.u_skinSize[0] * uniforms.u_pixelate;
-            const texelY = skinUniforms.u_skinSize[1] * uniforms.u_pixelate;
+            const texelX = skinUniforms.u_skinSize[0] / uniforms.u_pixelate;
+            const texelY = skinUniforms.u_skinSize[1] / uniforms.u_pixelate;
             // texcoord0 = (floor(texcoord0 * pixelTexelSize) + kCenter) /
             //   pixelTexelSize;
             dst[0] = (Math.floor(dst[0] * texelX) + CENTER_X) / texelX;
