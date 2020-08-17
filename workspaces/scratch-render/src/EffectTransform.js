@@ -94,6 +94,8 @@ const hsvToRgb = ([h, s, v], dst) => {
         return dst;
     }
 
+    // keep hue in [0,1) so the `switch(i)` below only needs 6 cases (0-5)
+    h %= 1;
     const i = (h * 6) | 0;
     const f = (h * 6) - i;
     const p = v * (1 - s);
@@ -177,7 +179,7 @@ class EffectTransform {
 
                 // hsv.x = mod(hsv.x + u_color, 1.0);
                 // if (hsv.x < 0.0) hsv.x += 1.0;
-                hsv[0] = (uniforms.u_color + hsv[0] + 1) % 1;
+                hsv[0] = (uniforms.u_color + hsv[0] + 1);
 
                 // gl_FragColor.rgb = convertHSV2RGB(hsl);
                 hsvToRgb(hsv, inOutColor);
