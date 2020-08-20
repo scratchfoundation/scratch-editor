@@ -20,95 +20,106 @@ const CENTER_X = 0.5;
  */
 const CENTER_Y = 0.5;
 
-// color conversions grabbed from https://gist.github.com/mjackson/5311256
+/**
+ * Reused memory location for storing an HSV color value.
+ * @type {Array<number>}
+ */
+const __hsv = [0, 0, 0];
 
 /**
- * Converts an RGB color value to HSL. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
- * Assumes r, g, and b are contained in the set [0, 255] and
- * returns h, s, and l in the set [0, 1].
+ * Converts an RGB color value to HSV. Conversion formula
+ * adapted from http://lolengine.net/blog/2013/01/13/fast-rgb-to-hsv.
+ * Assumes r, g, and b are in the range [0, 255] and
+ * returns h, s, and v in the range [0, 1].
  *
- * @param   {number}  r       The red color value
- * @param   {number}  g       The green color value
- * @param   {number}  b       The blue color value
- * @return  {Array}           The HSL representation
+ * @param   {Array<number>} rgb   The RGB color value
+ * @param   {number}        rgb.r The red color value
+ * @param   {number}        rgb.g The green color value
+ * @param   {number}        rgb.b The blue color value
+ * @param   {Array<number>} dst   The array to store the RGB values in
+ * @return  {Array<number>}       The `dst` array passed in
  */
-const rgbToHsl = ([r, g, b]) => {
+const rgbToHsv = ([r, g, b], dst) => {
+    let K = 0.0;
+
     r /= 255;
     g /= 255;
     b /= 255;
+    let tmp = 0;
 
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    let h;
-    let s;
-    const l = (max + min) / 2;
+    if (g < b) {
+        tmp = g;
+        g = b;
+        b = tmp;
 
-    if (max === min) {
-        h = s = 0; // achromatic
-    } else {
-        const d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-        switch (max) {
-        case r: h = ((g - b) / d) + (g < b ? 6 : 0); break;
-        case g: h = ((b - r) / d) + 2; break;
-        case b: h = ((r - g) / d) + 4; break;
-        }
-
-        h /= 6;
+        K = -1;
     }
 
-    return [h, s, l];
+    if (r < g) {
+        tmp = r;
+        r = g;
+        g = tmp;
+
+        K = (-2 / 6) - K;
+    }
+
+    const chroma = r - Math.min(g, b);
+    const h = Math.abs(K + ((g - b) / ((6 * chroma) + Number.EPSILON)));
+    const s = chroma / (r + Number.EPSILON);
+    const v = r;
+
+    dst[0] = h;
+    dst[1] = s;
+    dst[2] = v;
+
+    return dst;
 };
 
 /**
- * Helper function for hslToRgb is called with varying 't' values to get
- * red green and blue values from the p/q/t color space calculations
- * @param {number} p vector coordinates
- * @param {number} q vector coordinates
- * @param {number} t vector coordinates
- * @return {number} amount of r/g/b byte
- */
-const hue2rgb = (p, q, t) => {
-    if (t < 0) t += 1;
-    if (t > 1) t -= 1;
-    if (t < 1 / 6) return p + ((q - p) * 6 * t);
-    if (t < 1 / 2) return q;
-    if (t < 2 / 3) return p + ((q - p) * ((2 / 3) - t) * 6);
-    return p;
-};
-
-
-/**
- * Converts an HSL color value to RGB. Conversion formula
- * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
- * Assumes h, s, and l are contained in the set [0, 1] and
+ * Converts an HSV color value to RGB. Conversion formula
+ * adapted from https://gist.github.com/mjackson/5311256.
+ * Assumes h, s, and v are contained in the set [0, 1] and
  * returns r, g, and b in the set [0, 255].
  *
- * @param   {number}  h       The hue
- * @param   {number}  s       The saturation
- * @param   {number}  l       The lightness
- * @return  {Array}           The RGB representation
+ * @param   {Array<number>}                hsv The HSV color value
+ * @param   {number}                       hsv.h     The hue
+ * @param   {number}                       hsv.s     The saturation
+ * @param   {number}                       hsv.v     The value
+ * @param   {Uint8Array|Uint8ClampedArray} dst The array to store the RGB values in
+ * @return  {Uint8Array|Uint8ClampedArray}     The `dst` array passed in
  */
-const hslToRgb = ([h, s, l]) => {
-    let r;
-    let g;
-    let b;
-
+const hsvToRgb = ([h, s, v], dst) => {
     if (s === 0) {
-        r = g = b = l; // achromatic
-    } else {
-
-        const q = l < 0.5 ? l * (1 + s) : l + s - (l * s);
-        const p = (2 * l) - q;
-
-        r = hue2rgb(p, q, h + (1 / 3));
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - (1 / 3));
+        dst[0] = dst[1] = dst[2] = (v * 255) + 0.5;
+        return dst;
     }
 
-    return [r * 255, g * 255, b * 255];
+    // keep hue in [0,1) so the `switch(i)` below only needs 6 cases (0-5)
+    h %= 1;
+    const i = (h * 6) | 0;
+    const f = (h * 6) - i;
+    const p = v * (1 - s);
+    const q = v * (1 - (s * f));
+    const t = v * (1 - (s * (1 - f)));
+
+    let r = 0;
+    let g = 0;
+    let b = 0;
+
+    switch (i) {
+    case 0: r = v; g = t; b = p; break;
+    case 1: r = q; g = v; b = p; break;
+    case 2: r = p; g = v; b = t; break;
+    case 3: r = p; g = q; b = v; break;
+    case 4: r = t; g = p; b = v; break;
+    case 5: r = v; g = p; b = q; break;
+    }
+
+    // Add 0.5 in order to round. Setting integer TypedArray elements implicitly floors.
+    dst[0] = (r * 255) + 0.5;
+    dst[1] = (g * 255) + 0.5;
+    dst[2] = (b * 255) + 0.5;
+    return dst;
 };
 
 class EffectTransform {
@@ -146,38 +157,43 @@ class EffectTransform {
             inOutColor[1] /= alpha;
             inOutColor[2] /= alpha;
 
-            // vec3 hsl = convertRGB2HSL(gl_FragColor.xyz);
-            const hsl = rgbToHsl(inOutColor);
-
             if (enableColor) {
+                // vec3 hsv = convertRGB2HSV(gl_FragColor.xyz);
+                const hsv = rgbToHsv(inOutColor, __hsv);
+
                 // this code forces grayscale values to be slightly saturated
                 // so that some slight change of hue will be visible
                 // const float minLightness = 0.11 / 2.0;
-                const minL = 0.11 / 2.0;
+                const minV = 0.11 / 2.0;
                 // const float minSaturation = 0.09;
                 const minS = 0.09;
-                // if (hsl.z < minLightness) hsl = vec3(0.0, 1.0, minLightness);
-                if (hsl[2] < minL) {
-                    hsl[0] = 0;
-                    hsl[1] = 1;
-                    hsl[2] = minL;
-                // else if (hsl.y < minSaturation) hsl = vec3(0.0, minSaturation, hsl.z);
-                } else if (hsl[1] < minS) {
-                    hsl[0] = 0;
-                    hsl[1] = minS;
+                // if (hsv.z < minLightness) hsv = vec3(0.0, 1.0, minLightness);
+                if (hsv[2] < minV) {
+                    hsv[0] = 0;
+                    hsv[1] = 1;
+                    hsv[2] = minV;
+                // else if (hsv.y < minSaturation) hsv = vec3(0.0, minSaturation, hsv.z);
+                } else if (hsv[1] < minS) {
+                    hsv[0] = 0;
+                    hsv[1] = minS;
                 }
 
-                // hsl.x = mod(hsl.x + u_color, 1.0);
-                // if (hsl.x < 0.0) hsl.x += 1.0;
-                hsl[0] = (uniforms.u_color + hsl[0] + 1) % 1;
+                // hsv.x = mod(hsv.x + u_color, 1.0);
+                // if (hsv.x < 0.0) hsv.x += 1.0;
+                hsv[0] = (uniforms.u_color + hsv[0] + 1);
+
+                // gl_FragColor.rgb = convertHSV2RGB(hsl);
+                hsvToRgb(hsv, inOutColor);
             }
 
             if (enableBrightness) {
-                // hsl.z = clamp(hsl.z + u_brightness, 0.0, 1.0);
-                hsl[2] = Math.min(1, hsl[2] + uniforms.u_brightness);
+                const brightness = uniforms.u_brightness * 255;
+                // gl_FragColor.rgb = clamp(gl_FragColor.rgb + vec3(u_brightness), vec3(0), vec3(1));
+                // We don't need to clamp because the Uint8ClampedArray does that for us
+                inOutColor[0] += brightness;
+                inOutColor[1] += brightness;
+                inOutColor[2] += brightness;
             }
-            // gl_FragColor.rgb = convertHSL2RGB(hsl);
-            inOutColor.set(hslToRgb(hsl));
 
             // gl_FragColor.rgb *= gl_FragColor.a + epsilon;
             // Now we're doing the reverse, premultiplying by the alpha once again.
@@ -217,8 +233,8 @@ class EffectTransform {
         if ((effects & ShaderManager.EFFECT_INFO.pixelate.mask) !== 0) {
             const skinUniforms = drawable.skin.getUniforms();
             // vec2 pixelTexelSize = u_skinSize / u_pixelate;
-            const texelX = skinUniforms.u_skinSize[0] * uniforms.u_pixelate;
-            const texelY = skinUniforms.u_skinSize[1] * uniforms.u_pixelate;
+            const texelX = skinUniforms.u_skinSize[0] / uniforms.u_pixelate;
+            const texelY = skinUniforms.u_skinSize[1] / uniforms.u_pixelate;
             // texcoord0 = (floor(texcoord0 * pixelTexelSize) + kCenter) /
             //   pixelTexelSize;
             dst[0] = (Math.floor(dst[0] * texelX) + CENTER_X) / texelX;
