@@ -37,6 +37,8 @@ const getLocalPosition = (drawable, vec) => {
     // localPosition matches that transformation.
     localPosition[0] = 0.5 - (((v0 * m[0]) + (v1 * m[4]) + m[12]) / d);
     localPosition[1] = (((v0 * m[1]) + (v1 * m[5]) + m[13]) / d) + 0.5;
+    if (Math.abs(localPosition[0] < 1e-8)) localPosition[0] = 0;
+    if (Math.abs(localPosition[1] < 1e-8)) localPosition[1] = 0;
     // Apply texture effect transform if the localPosition is within the drawable's space,
     // and any effects are currently active.
     if (drawable.enabledEffects !== 0 &&
@@ -720,6 +722,15 @@ class Drawable {
      */
     static sampleColor4b (vec, drawable, dst, effectMask) {
         const localPosition = getLocalPosition(drawable, vec);
+        if (localPosition[0] < 0 || localPosition[1] < 0 ||
+            localPosition[0] > 1 || localPosition[1] > 1) {
+            dst[0] = 0;
+            dst[1] = 0;
+            dst[2] = 0;
+            dst[3] = 0;
+            return dst;
+        }
+        
         const textColor =
         // commenting out to only use nearest for now
         // drawable.useNearest() ?
