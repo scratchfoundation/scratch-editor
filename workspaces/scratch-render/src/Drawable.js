@@ -13,6 +13,7 @@ const log = require('./util/log');
  * @type {twgl.v3}
  */
 const __isTouchingPosition = twgl.v3.create();
+const FLOATING_POINT_ERROR_ALLOWANCE = 1e-6;
 
 /**
  * Convert a scratch space location into a texture space float.  Uses the
@@ -39,8 +40,8 @@ const getLocalPosition = (drawable, vec) => {
     localPosition[1] = (((v0 * m[1]) + (v1 * m[5]) + m[13]) / d) + 0.5;
     // Fix floating point issues near 0.
     // TODO: Check if this can be removed after render pull 479 is merged
-    if (Math.abs(localPosition[0] < 1e-8)) localPosition[0] = 0;
-    if (Math.abs(localPosition[1] < 1e-8)) localPosition[1] = 0;
+    if (Math.abs(localPosition[0]) < FLOATING_POINT_ERROR_ALLOWANCE) localPosition[0] = 0;
+    if (Math.abs(localPosition[1]) < FLOATING_POINT_ERROR_ALLOWANCE) localPosition[1] = 0;
     // Apply texture effect transform if the localPosition is within the drawable's space,
     // and any effects are currently active.
     if (drawable.enabledEffects !== 0 &&
