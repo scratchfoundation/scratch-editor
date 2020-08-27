@@ -10,11 +10,6 @@
  */
 let __SilhouetteUpdateCanvas;
 
-// Optimized Math.min and Math.max for integers;
-// taken from https://web.archive.org/web/20190716181049/http://guihaire.com/code/?p=549
-const intMin = (i, j) => j ^ ((i ^ j) & ((i - j) >> 31));
-const intMax = (i, j) => i ^ ((i ^ j) & ((i - j) >> 31));
-
 /**
  * Internal helper function (in hopes that compiler can inline).  Get a pixel
  * from silhouette data, or 0 if outside it's bounds.
@@ -45,18 +40,13 @@ const __cornerWork = [
 /**
  * Get the color from a given silhouette at an x/y local texture position.
  * Multiply color values by alpha for proper blending.
- * @param {Silhouette} $0 The silhouette to sample.
- * @param {number} x X position of texture [0, width).
- * @param {number} y Y position of texture [0, height).
+ * @param {Silhouette} The silhouette to sample.
+ * @param {number} x X position of texture (0-1).
+ * @param {number} y Y position of texture (0-1).
  * @param {Uint8ClampedArray} dst A color 4b space.
  * @return {Uint8ClampedArray} The dst vector.
  */
 const getColor4b = ({_width: width, _height: height, _colorData: data}, x, y, dst) => {
-    // Clamp coords to edge, matching GL_CLAMP_TO_EDGE.
-    // (See github.com/LLK/scratch-render/blob/954cfff02b08069a082cbedd415c1fecd9b1e4fb/src/BitmapSkin.js#L88)
-    x = intMax(0, intMin(x, width - 1));
-    y = intMax(0, intMin(y, height - 1));
-
     // 0 if outside bounds, otherwise read from data.
     if (x >= width || y >= height || x < 0 || y < 0) {
         return dst.fill(0);
@@ -74,17 +64,17 @@ const getColor4b = ({_width: width, _height: height, _colorData: data}, x, y, ds
 /**
  * Get the color from a given silhouette at an x/y local texture position.
  * Do not multiply color values by alpha, as it has already been done.
- * @param {Silhouette} $0 The silhouette to sample.
- * @param {number} x X position of texture [0, width).
- * @param {number} y Y position of texture [0, height).
+ * @param {Silhouette} The silhouette to sample.
+ * @param {number} x X position of texture (0-1).
+ * @param {number} y Y position of texture (0-1).
  * @param {Uint8ClampedArray} dst A color 4b space.
  * @return {Uint8ClampedArray} The dst vector.
  */
 const getPremultipliedColor4b = ({_width: width, _height: height, _colorData: data}, x, y, dst) => {
-    // Clamp coords to edge, matching GL_CLAMP_TO_EDGE.
-    x = intMax(0, intMin(x, width - 1));
-    y = intMax(0, intMin(y, height - 1));
-
+    // 0 if outside bounds, otherwise read from data.
+    if (x >= width || y >= height || x < 0 || y < 0) {
+        return dst.fill(0);
+    }
     const offset = ((y * width) + x) * 4;
     dst[0] = data[offset];
     dst[1] = data[offset + 1];
