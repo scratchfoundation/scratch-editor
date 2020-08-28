@@ -298,7 +298,11 @@ const applyGradientTypeToSelection = function (gradientType, applyToStroke, text
             continue;
         }
 
-        if (!hasGradient) {
+        // If this is a stroke, we don't display it as having a gradient in the color picker
+        // if there's no stroke width. Then treat it as if it doesn't have a gradient.
+        let hasDisplayGradient = hasGradient;
+        if (applyToStroke) hasDisplayGradient = hasGradient && item.strokeWidth > 0;
+        if (!hasDisplayGradient) {
             const noColorOriginally = !itemColor ||
                 (itemColor.gradient &&
                 itemColor.gradient.stops &&
@@ -329,18 +333,18 @@ const applyGradientTypeToSelection = function (gradientType, applyToStroke, text
         // If the item's gradient type differs from the gradient type we want to apply, then we change it
         switch (gradientType) {
         case GradientTypes.RADIAL: {
-            const hasRadialGradient = hasGradient && itemColor.gradient.radial;
+            const hasRadialGradient = hasDisplayGradient && itemColor.gradient.radial;
             gradientTypeDiffers = !hasRadialGradient;
             break;
         }
         case GradientTypes.HORIZONTAL: {
-            const hasHorizontalGradient = hasGradient && !itemColor.gradient.radial &&
+            const hasHorizontalGradient = hasDisplayGradient && !itemColor.gradient.radial &&
                 Math.abs(itemColor.origin.y - itemColor.destination.y) < 1e-8;
             gradientTypeDiffers = !hasHorizontalGradient;
             break;
         }
         case GradientTypes.VERTICAL: {
-            const hasVerticalGradient = hasGradient && !itemColor.gradient.radial &&
+            const hasVerticalGradient = hasDisplayGradient && !itemColor.gradient.radial &&
                 Math.abs(itemColor.origin.x - itemColor.destination.x) < 1e-8;
             gradientTypeDiffers = !hasVerticalGradient;
             break;
@@ -469,15 +473,6 @@ const getColorsFromSelection = function (selectedItems, bitmapMode) {
                     let strokeColorString = primary;
                     const strokeColor2String = secondary;
                     let strokeGradientType = gradientType;
-
-                    if (strokeGradientType !== GradientTypes.SOLID &&
-                        item.strokeColor.gradient.stops.length === 2 &&
-                        item.strokeColor.gradient.stops[0].color.alpha === 0 &&
-                        item.strokeColor.gradient.stops[1].color.alpha === 0) {
-                        // Clear the gradient if both colors are transparent
-                        item.strokeColor = null;
-                        strokeGradientType = GradientTypes.SOLID;
-                    }
 
                     // If the item's stroke width is 0, pretend the stroke color is null
                     if (!item.strokeWidth) {
