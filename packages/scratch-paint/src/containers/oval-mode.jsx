@@ -98,7 +98,7 @@ class OvalMode extends React.Component {
         const fillColorMissing = fillColor1 === MIXED ||
             (fillGradient === GradientTypes.SOLID && fillColor1 === null) ||
             (fillGradient !== GradientTypes.SOLID && fillColor1 === null && fillColor2 === null);
-         const strokeColorMissing = strokeColor1 === MIXED ||
+        const strokeColorMissing = strokeColor1 === MIXED ||
             strokeWidth === null ||
             strokeWidth === 0 ||
             (strokeGradient === GradientTypes.SOLID && strokeColor1 === null) ||
