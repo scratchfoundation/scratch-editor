@@ -68,6 +68,12 @@ class PenSkin extends Skin {
             exit: () => this._exitDrawLineOnBuffer()
         };
 
+        /** @type {object} */
+        this._usePenBufferDrawRegionId = {
+            enter: () => this._enterUsePenBuffer(),
+            exit: () => this._exitUsePenBuffer()
+        };
+
         /** @type {twgl.BufferInfo} */
         this._lineBufferInfo = twgl.createBufferInfoFromArrays(this._renderer.gl, {
             a_position: {
@@ -130,10 +136,10 @@ class PenSkin extends Skin {
      * Clear the pen layer.
      */
     clear () {
-        const gl = this._renderer.gl;
-        twgl.bindFramebufferInfo(gl, this._framebuffer);
+        this._renderer.enterDrawRegion(this._usePenBufferDrawRegionId);
 
         /* Reset framebuffer to transparent black */
+        const gl = this._renderer.gl;
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
@@ -202,6 +208,20 @@ class PenSkin extends Skin {
         const gl = this._renderer.gl;
 
         twgl.bindFramebufferInfo(gl, null);
+    }
+
+    /**
+     * Prepare to do things with this PenSkin's framebuffer
+     */
+    _enterUsePenBuffer () {
+        twgl.bindFramebufferInfo(this._renderer.gl, this._framebuffer);
+    }
+
+    /**
+     * Return to a base state
+     */
+    _exitUsePenBuffer () {
+        twgl.bindFramebufferInfo(this._renderer.gl, null);
     }
 
     /**
@@ -311,9 +331,9 @@ class PenSkin extends Skin {
      */
     updateSilhouette () {
         if (this._silhouetteDirty) {
+            this._renderer.enterDrawRegion(this._usePenBufferDrawRegionId);
             // Sample the framebuffer's pixels into the silhouette instance
             const gl = this._renderer.gl;
-            twgl.bindFramebufferInfo(gl, this._framebuffer);
             gl.readPixels(
                 0, 0,
                 this._size[0], this._size[1],
