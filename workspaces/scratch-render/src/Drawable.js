@@ -117,6 +117,12 @@ class Drawable {
         this._convexHullPoints = null;
         this._convexHullDirty = true;
 
+        // The precise bounding box will be from the transformed convex hull points,
+        // so initialize the array of transformed hull points in setConvexHullPoints.
+        // Initializing it once per convex hull recalculation avoids unnecessary creation of twgl.v3 objects.
+        this._transformedHullPoints = null;
+        this._transformedHullDirty = true;
+
         this._skinWasAltered = this._skinWasAltered.bind(this);
 
         this.isTouching = this._isTouchingNever;
@@ -137,6 +143,7 @@ class Drawable {
     setTransformDirty () {
         this._transformDirty = true;
         this._inverseTransformDirty = true;
+        this._transformedHullDirty = true;
     }
 
     /**
@@ -457,6 +464,14 @@ class Drawable {
     setConvexHullPoints (points) {
         this._convexHullPoints = points;
         this._convexHullDirty = false;
+
+        // Re-create the "transformed hull points" array.
+        // We only do this when the hull points change to avoid unnecessary allocations and GC.
+        this._transformedHullPoints = [];
+        for (let i = 0; i < points.length; i++) {
+            this._transformedHullPoints.push(twgl.v3.create());
+        }
+        this._transformedHullDirty = true;
     }
 
     /**
@@ -611,23 +626,27 @@ class Drawable {
      * @private
      */
     _getTransformedHullPoints () {
+        if (!this._transformedHullDirty) {
+            return this._transformedHullPoints;
+        }
+
         const projection = twgl.m4.ortho(-1, 1, -1, 1, -1, 1);
         const skinSize = this.skin.size;
         const halfXPixel = 1 / skinSize[0] / 2;
         const halfYPixel = 1 / skinSize[1] / 2;
         const tm = twgl.m4.multiply(this._uniforms.u_modelMatrix, projection);
-        const transformedHullPoints = [];
         for (let i = 0; i < this._convexHullPoints.length; i++) {
             const point = this._convexHullPoints[i];
-            const glPoint = twgl.v3.create(
-                0.5 + (-point[0] / skinSize[0]) - halfXPixel,
-                (point[1] / skinSize[1]) - 0.5 + halfYPixel,
-                0
-            );
-            twgl.m4.transformPoint(tm, glPoint, glPoint);
-            transformedHullPoints.push(glPoint);
+            const dstPoint = this._transformedHullPoints[i];
+
+            dstPoint[0] = 0.5 + (-point[0] / skinSize[0]) - halfXPixel;
+            dstPoint[1] = (point[1] / skinSize[1]) - 0.5 + halfYPixel;
+            twgl.m4.transformPoint(tm, dstPoint, dstPoint);
         }
-        return transformedHullPoints;
+
+        this._transformedHullDirty = false;
+
+        return this._transformedHullPoints;
     }
 
     /**
