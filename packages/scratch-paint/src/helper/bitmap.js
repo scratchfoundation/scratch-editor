@@ -3,8 +3,8 @@ import {createCanvas, clearRaster, getRaster, hideGuideLayers, showGuideLayers} 
 import {getGuideColor} from './guides';
 import {clearSelection} from './selection';
 import {ART_BOARD_WIDTH, ART_BOARD_HEIGHT, CENTER, MAX_WORKSPACE_BOUNDS} from './view';
-import {inlineSvgFonts} from 'scratch-svg-renderer';
 import Formats from '../lib/format';
+import log from '../log/log';
 
 const forEachLinePoint = function (point1, point2, callback) {
     // Bresenham line algorithm
@@ -404,7 +404,7 @@ const getTrimmedRaster = function (shouldInsert) {
     return trimmedRaster;
 };
 
-const convertToBitmap = function (clearSelectedItems, onUpdateImage) {
+const convertToBitmap = function (clearSelectedItems, onUpdateImage, optFontInlineFn) {
     // @todo if the active layer contains only rasters, drawing them directly to the raster layer
     // would be more efficient.
 
@@ -424,7 +424,11 @@ const convertToBitmap = function (clearSelectedItems, onUpdateImage) {
     svg.setAttribute('shape-rendering', 'crispEdges');
 
     let svgString = (new XMLSerializer()).serializeToString(svg);
-    svgString = inlineSvgFonts(svgString);
+    if (optFontInlineFn) {
+        svgString = optFontInlineFn(svgString);
+    } else {
+        log.error('Fonts may be converted to bitmap incorrectly if fontInlineFn prop is not set on PaintEditor.');
+    }
 
     // Put anti-aliased SVG into image, and dump image back into canvas
     const img = new Image();
