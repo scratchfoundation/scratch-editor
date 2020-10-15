@@ -27,6 +27,10 @@
     </p>
     <p>
         <input type="button" id="trigger-render" value="Render">
+        <label for="shouldRenderReference">
+          <input type="checkbox" id="shouldRenderReference" checked />
+          Render Reference?
+        </label>
     </p>
 
     <div class="columns">
@@ -37,6 +41,17 @@
        <div class="column">
             <div>Reference</div>
             <span id="reference"></span>
+       </div>
+     </div>
+    <div class="columns">
+        <div class="column">
+            <div>Rendered Content</div>
+            <textarea id="renderedContent" wrap="off" cols="50" rows="50"></textarea>
+       </div>
+       <div class="column">
+            <div>Reference</div>
+            <span id="reference"></span>
+            <textarea id="referenceContent" wrap="off" cols="50" rows="50"></textarea>
        </div>
      </div>
 
@@ -59,7 +74,8 @@
 
         function renderSVGString(str) {
             renderer.fromString(str);
-            renderer._draw(parseFloat(scaleSlider.value));
+            renderer._draw(parseFloat(scaleSlider.value), ()=>{});
+            renderedContent.value = renderer.toString(true);
         }
 
         function updateReferenceImage() {
@@ -92,7 +108,8 @@
 
         function renderLoadedString() {
             renderSVGString(loadedSVGString);
-            updateReferenceImage();
+            referenceContent.value = loadedSVGString;
+            shouldRenderReference.checked && updateReferenceImage();
         }
 
         function scaleSliderChanged() {
