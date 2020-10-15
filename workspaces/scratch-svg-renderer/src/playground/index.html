@@ -74,7 +74,7 @@
 
         function renderSVGString(str) {
             renderer.fromString(str);
-            renderer._draw(parseFloat(scaleSlider.value));
+            renderer._draw(parseFloat(scaleSlider.value), ()=>{});
             renderedContent.value = renderer.toString(true);
         }
 
