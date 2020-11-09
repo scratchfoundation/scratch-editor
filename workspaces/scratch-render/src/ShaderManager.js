@@ -16,7 +16,7 @@ class ShaderManager {
          */
         this._shaderCache = {};
         for (const modeName in ShaderManager.DRAW_MODE) {
-            if (ShaderManager.DRAW_MODE.hasOwnProperty(modeName)) {
+            if (Object.prototype.hasOwnProperty.call(ShaderManager.DRAW_MODE, modeName)) {
                 this._shaderCache[modeName] = [];
             }
         }

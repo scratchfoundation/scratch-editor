@@ -472,7 +472,7 @@ class RenderWebGL extends EventEmitter {
      * @returns {int} The ID of the new Drawable.
      */
     createDrawable (group) {
-        if (!group || !this._layerGroups.hasOwnProperty(group)) {
+        if (!group || !Object.prototype.hasOwnProperty.call(this._layerGroups, group)) {
             log.warn('Cannot create a drawable without a known layer group');
             return;
         }
@@ -542,7 +542,7 @@ class RenderWebGL extends EventEmitter {
      * @param {string} group Group name that the drawable belongs to
      */
     destroyDrawable (drawableID, group) {
-        if (!group || !this._layerGroups.hasOwnProperty(group)) {
+        if (!group || !Object.prototype.hasOwnProperty.call(this._layerGroups, group)) {
             log.warn('Cannot destroy drawable without known layer group.');
             return;
         }
@@ -596,7 +596,7 @@ class RenderWebGL extends EventEmitter {
      * @return {?number} New order if changed, or null.
      */
     setDrawableOrder (drawableID, order, group, optIsRelative, optMin) {
-        if (!group || !this._layerGroups.hasOwnProperty(group)) {
+        if (!group || !Object.prototype.hasOwnProperty.call(this._layerGroups, group)) {
             log.warn('Cannot set the order of a drawable without a known layer group.');
             return;
         }
@@ -1124,7 +1124,7 @@ class RenderWebGL extends EventEmitter {
 
         let hit = RenderConstants.ID_NONE;
         for (const hitID in hits) {
-            if (hits.hasOwnProperty(hitID) && (hits[hitID] > hits[hit])) {
+            if (Object.prototype.hasOwnProperty.call(hits, hitID) && (hits[hitID] > hits[hit])) {
                 hit = hitID;
             }
         }
@@ -1873,7 +1873,7 @@ class RenderWebGL extends EventEmitter {
             const uniforms = {};
 
             let effectBits = drawable.enabledEffects;
-            effectBits &= opts.hasOwnProperty('effectMask') ? opts.effectMask : effectBits;
+            effectBits &= Object.prototype.hasOwnProperty.call(opts, 'effectMask') ? opts.effectMask : effectBits;
             const newShader = this._shaderManager.getShader(drawMode, effectBits);
 
             // Manually perform region check. Do not create functions inside a
