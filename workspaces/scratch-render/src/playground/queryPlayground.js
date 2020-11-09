@@ -92,9 +92,9 @@ renderCanvas.addEventListener('click', event => {
     }
 });
 
-const rgb2fillStyle = (rgb) => {
-    return `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
-};
+const rgb2fillStyle = rgb => (
+    `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`
+);
 
 const makeCursorImage = () => {
     const canvas = document.createElement('canvas');
