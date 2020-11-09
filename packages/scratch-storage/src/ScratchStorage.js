@@ -145,7 +145,7 @@ class ScratchStorage {
      * @return {?string} The ID of the default asset of the given type, if any.
      */
     getDefaultAssetId (type) {
-        if (this.defaultAssetId.hasOwnProperty(type.name)) {
+        if (Object.prototype.hasOwnProperty.call(this.defaultAssetId, type.name)) {
             return this.defaultAssetId[type.name];
         }
     }

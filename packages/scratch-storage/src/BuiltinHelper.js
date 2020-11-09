@@ -86,7 +86,7 @@ class BuiltinHelper extends Helper {
      */
     get (assetId) {
         let asset = null;
-        if (this.assets.hasOwnProperty(assetId)) {
+        if (Object.prototype.hasOwnProperty.call(this.assets, assetId)) {
             /** @type{BuiltinAssetRecord} */
             const assetRecord = this.assets[assetId];
             asset = new Asset(assetRecord.type, assetRecord.id, assetRecord.format, assetRecord.data);
@@ -133,7 +133,7 @@ class BuiltinHelper extends Helper {
     _store (assetType, dataFormat, data, id) {
         if (!dataFormat) throw new Error('Data cached without specifying its format');
         if (id !== '' && id !== null && typeof id !== 'undefined') {
-            if (this.assets.hasOwnProperty(id) && assetType.immutable) return id;
+            if (Object.prototype.hasOwnProperty.call(this.assets, id) && assetType.immutable) return id;
         } else if (assetType.immutable) {
             id = md5(data);
         } else {

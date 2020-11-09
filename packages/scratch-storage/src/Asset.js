@@ -9,7 +9,6 @@ if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
     _TextDecoder = encoding.TextDecoder;
     _TextEncoder = encoding.TextEncoder;
 } else {
-    /* global TextDecoder TextEncoder */
     _TextDecoder = TextDecoder;
     _TextEncoder = TextEncoder;
 }
@@ -35,7 +34,7 @@ const memoizedToString = (function () {
 
     const strings = {};
     return (assetId, data) => {
-        if (!strings.hasOwnProperty(assetId)) {
+        if (!Object.prototype.hasOwnProperty.call(strings, assetId)) {
             if (typeof btoa === 'undefined') {
                 // Use a library that does not need btoa to run.
                 /* eslint-disable-next-line global-require */
