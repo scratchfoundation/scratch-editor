@@ -36,7 +36,7 @@ const inlineSvgFonts = function (svgString) {
     if (fontsNeeded.size > 0) {
         let str = '<defs><style>';
         for (const font of fontsNeeded) {
-            if (FONTS.hasOwnProperty(font)) {
+            if (Object.prototype.hasOwnProperty.call(FONTS, font)) {
                 str += `${FONTS[font]}`;
             }
         }
