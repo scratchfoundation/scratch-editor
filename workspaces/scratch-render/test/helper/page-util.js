@@ -1,4 +1,4 @@
-/* global window, VirtualMachine, ScratchStorage, ScratchSVGRenderer */
+/* global VirtualMachine, ScratchStorage, ScratchSVGRenderer */
 /* eslint-env browser */
 
 // Wait for all SVG skins to be loaded.

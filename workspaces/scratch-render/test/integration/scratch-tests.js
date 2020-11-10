@@ -1,4 +1,4 @@
-/* global vm, Promise */
+/* global vm */
 const {chromium} = require('playwright-chromium');
 const test = require('tap').test;
 const path = require('path');
