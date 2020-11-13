@@ -1320,9 +1320,15 @@ class RenderWebGL extends EventEmitter {
 
             gl.clearColor(0, 0, 0, 0);
             gl.clear(gl.COLOR_BUFFER_BIT);
-            // Don't apply the ghost effect. TODO: is this an intentional design decision?
             this._drawThese([drawableID], ShaderManager.DRAW_MODE.straightAlpha, projection,
-                {effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask});
+                {
+                    // Don't apply the ghost effect. TODO: is this an intentional design decision?
+                    effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask,
+                    // We're doing this in screen-space, so the framebuffer dimensions should be those of the canvas in
+                    // screen-space. This is used to ensure SVG skins are rendered at the proper resolution.
+                    framebufferWidth: canvas.width,
+                    framebufferHeight: canvas.height
+                });
 
             const data = new Uint8Array(Math.floor(clampedWidth * clampedHeight * 4));
             gl.readPixels(0, 0, clampedWidth, clampedHeight, gl.RGBA, gl.UNSIGNED_BYTE, data);
