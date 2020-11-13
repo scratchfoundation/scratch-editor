@@ -2,6 +2,7 @@ const twgl = require('twgl.js');
 
 const Skin = require('./Skin');
 const SvgRenderer = require('scratch-svg-renderer').SVGRenderer;
+const ShaderManager = require('./ShaderManager');
 
 const MAX_TEXTURE_DIMENSION = 2048;
 
@@ -56,6 +57,35 @@ class SVGSkin extends Skin {
      */
     get size () {
         return this._svgRenderer.size;
+    }
+
+    useNearest (scale, drawable) {
+        // If the effect bits for mosaic, pixelate, whirl, or fisheye are set, use linear
+        if ((drawable.enabledEffects & (
+            ShaderManager.EFFECT_INFO.fisheye.mask |
+            ShaderManager.EFFECT_INFO.whirl.mask |
+            ShaderManager.EFFECT_INFO.pixelate.mask |
+            ShaderManager.EFFECT_INFO.mosaic.mask
+        )) !== 0) {
+            return false;
+        }
+
+        // We can't use nearest neighbor unless we are a multiple of 90 rotation
+        if (drawable._direction % 90 !== 0) {
+            return false;
+        }
+
+        // Because SVG skins' bounding boxes are currently not pixel-aligned, the idea here is to hide blurriness
+        // by using nearest-neighbor scaling if one screen-space pixel is "close enough" to one texture pixel.
+        // If the scale of the skin is very close to 100 (0.99999 variance is okay I guess)
+        // TODO: Make this check more precise. We should use nearest if there's less than one pixel's difference
+        // between the screen-space and texture-space sizes of the skin. Mipmaps make this harder because there are
+        // multiple textures (and hence multiple texture spaces) and we need to know which one to choose.
+        if (Math.abs(scale[0]) > 99 && Math.abs(scale[0]) < 101 &&
+            Math.abs(scale[1]) > 99 && Math.abs(scale[1]) < 101) {
+            return true;
+        }
+        return false;
     }
 
     /**

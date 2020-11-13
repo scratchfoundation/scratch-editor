@@ -505,40 +505,6 @@ class Drawable {
     }
 
     /**
-     * Should the drawable use NEAREST NEIGHBOR or LINEAR INTERPOLATION mode
-     * @param {?Array<Number>} scale Optionally, the screen-space scale of the drawable.
-     * @return {boolean} True if the drawable should use nearest-neighbor interpolation.
-     */
-    useNearest (scale = this.scale) {
-        // Raster skins (bitmaps) should always prefer nearest neighbor
-        if (this.skin.isRaster) {
-            return true;
-        }
-
-        // If the effect bits for mosaic, pixelate, whirl, or fisheye are set, use linear
-        if ((this.enabledEffects & (
-            ShaderManager.EFFECT_INFO.fisheye.mask |
-            ShaderManager.EFFECT_INFO.whirl.mask |
-            ShaderManager.EFFECT_INFO.pixelate.mask |
-            ShaderManager.EFFECT_INFO.mosaic.mask
-        )) !== 0) {
-            return false;
-        }
-
-        // We can't use nearest neighbor unless we are a multiple of 90 rotation
-        if (this._direction % 90 !== 0) {
-            return false;
-        }
-
-        // If the scale of the skin is very close to 100 (0.99999 variance is okay I guess)
-        if (Math.abs(scale[0]) > 99 && Math.abs(scale[0]) < 101 &&
-            Math.abs(scale[1]) > 99 && Math.abs(scale[1]) < 101) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Get the precise bounds for a Drawable.
      * This function applies the transform matrix to the known convex hull,
      * and then finds the minimum box along the axes.
@@ -679,7 +645,7 @@ class Drawable {
         if (this.skin) {
             this.skin.updateSilhouette(this._scale);
 
-            if (this.useNearest()) {
+            if (this.skin.useNearest(this._scale, this)) {
                 this.isTouching = this._isTouchingNearest;
             } else {
                 this.isTouching = this._isTouchingLinear;
@@ -753,10 +719,10 @@ class Drawable {
             dst[3] = 0;
             return dst;
         }
-        
+
         const textColor =
         // commenting out to only use nearest for now
-        // drawable.useNearest() ?
+        // drawable.skin.useNearest(drawable._scale, drawable) ?
              drawable.skin._silhouette.colorAtNearest(localPosition, dst);
         // : drawable.skin._silhouette.colorAtLinear(localPosition, dst);
 

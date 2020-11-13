@@ -34,13 +34,6 @@ class BitmapSkin extends Skin {
     }
 
     /**
-     * @returns {boolean} true for a raster-style skin (like a BitmapSkin), false for vector-style (like SVGSkin).
-     */
-    get isRaster () {
-        return true;
-    }
-
-    /**
      * @return {Array<number>} the "native" size, in texels, of this skin.
      */
     get size () {

@@ -1901,7 +1901,9 @@ class RenderWebGL extends EventEmitter {
 
             if (uniforms.u_skin) {
                 twgl.setTextureParameters(
-                    gl, uniforms.u_skin, {minMag: drawable.useNearest(drawableScale) ? gl.NEAREST : gl.LINEAR}
+                    gl, uniforms.u_skin, {
+                        minMag: drawable.skin.useNearest(drawableScale, drawable) ? gl.NEAREST : gl.LINEAR
+                    }
                 );
             }
 
