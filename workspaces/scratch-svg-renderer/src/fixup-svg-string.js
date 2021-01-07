@@ -33,12 +33,13 @@ module.exports = function (svgString) {
     // This will cause SVG parsing to fail, so replace these with a dummy namespace name.
     // This namespace name is only valid for "xml", and if we bind "xmlns:xml" to the dummy namespace,
     // parsing will fail yet again, so exclude "xmlns:xml" declarations.
-    if (svgString.match(/xmlns:(?!xml=)[^ ]+="http:\/\/www.w3.org\/XML\/1998\/namespace"/) !== null) {
+    const xmlnsRegex = /(<[^>]+?xmlns:(?!xml=)[^ ]+=)"http:\/\/www.w3.org\/XML\/1998\/namespace"/g;
+    if (svgString.match(xmlnsRegex) !== null) {
         svgString = svgString.replace(
             // capture the entire attribute
-            /(xmlns:(?!xml=)[^ ]+)="http:\/\/www.w3.org\/XML\/1998\/namespace"/g,
+            xmlnsRegex,
             // use the captured attribute name; replace only the URL
-            ($0, $1) => `${$1}="http://dummy.namespace"`
+            ($0, $1) => `${$1}"http://dummy.namespace"`
         );
     }
 

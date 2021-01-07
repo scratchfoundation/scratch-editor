@@ -42,6 +42,13 @@ test('fixupSvgString should correct namespace declarations bound to reserved nam
     t.end();
 });
 
+test('fixupSvgString shouldn\'t correct non-attributes', t => {
+    const dontFix = fixupSvgString('<text>xmlns:test="http://www/w3.org/XML/1998/namespace" is not an xmlns attribute</text>');
+
+    t.notEqual(dontFix.indexOf('http://www/w3.org/XML/1998/namespace'), -1);
+    t.end();
+});
+
 test('fixupSvgString should empty script tags', t => {
     const filePath = path.resolve(__dirname, './fixtures/script.svg');
     const svgString = fs.readFileSync(filePath)
