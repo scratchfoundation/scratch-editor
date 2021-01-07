@@ -43,6 +43,12 @@ module.exports = function (svgString) {
         );
     }
 
+    // Strip `svg:` prefix (sometimes added by Inkscape) from all tags. They interfere with DOMPurify (prefixed tag
+    // names are not recognized) and the paint editor.
+    // This matches opening and closing tags--the capture group captures the slash if it exists, and it is reinserted
+    // in the replacement text.
+    svgString = svgString.replace(/<(\/?)\s*svg:/g, '<$1');
+
     // The <metadata> element is not needed for rendering and sometimes contains
     // unparseable garbage from Illustrator :( Empty out the contents.
     // Note: [\s\S] matches everything including newlines, which .* does not
