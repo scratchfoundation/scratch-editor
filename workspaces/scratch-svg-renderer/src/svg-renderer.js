@@ -62,16 +62,6 @@ class SvgRenderer {
     }
 
     /**
-     * Load an SVG from a string and measure it.
-     * @param {string} svgString String of SVG data to draw in quirks-mode.
-     * @return {object} the natural size, in Scratch units, of this SVG.
-     */
-    measure (svgString) {
-        this.loadString(svgString);
-        return this._measurements;
-    }
-
-    /**
      * @return {Array<number>} the natural size, in Scratch units, of this SVG.
      */
     get size () {
