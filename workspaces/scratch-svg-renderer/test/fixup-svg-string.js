@@ -49,6 +49,35 @@ test('fixupSvgString shouldn\'t correct non-attributes', t => {
     t.end();
 });
 
+test('fixupSvgString should strip `svg:` prefix from tag names', t => {
+    const filePath = path.resolve(__dirname, './fixtures/svg-tag-prefixes.svg');
+    const svgString = fs.readFileSync(filePath)
+        .toString();
+    const fixed = fixupSvgString(svgString);
+
+    const checkPrefixes = element => {
+        t.notEqual(element.prefix, 'svg');
+        // JSDOM doesn't have element.children, only element.childNodes
+        if (element.childNodes) {
+            // JSDOM's childNodes is not iterable, so for...of cannot be used here
+            for (let i = 0; i < element.childNodes.length; i++) {
+                const child = element.childNodes[i];
+                if (child.nodeType === 1 /* Node.ELEMENT_NODE */) checkPrefixes(child);
+            }
+        }
+    };
+
+    // Make sure undefineds aren't being written into the file
+    t.equal(fixed.indexOf('undefined'), -1);
+    t.notThrow(() => {
+        domParser.parseFromString(fixed, 'text/xml');
+    });
+
+    checkPrefixes(domParser.parseFromString(fixed, 'text/xml'));
+
+    t.end();
+});
+
 test('fixupSvgString should empty script tags', t => {
     const filePath = path.resolve(__dirname, './fixtures/script.svg');
     const svgString = fs.readFileSync(filePath)
