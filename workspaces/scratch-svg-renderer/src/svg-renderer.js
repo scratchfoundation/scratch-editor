@@ -3,6 +3,7 @@ const serializeSvgToString = require('./serialize-svg-to-string');
 
 /**
  * Main quirks-mode SVG rendering code.
+ * @deprecated Call into individual methods exported from this library instead.
  */
 class SvgRenderer {
     /**
