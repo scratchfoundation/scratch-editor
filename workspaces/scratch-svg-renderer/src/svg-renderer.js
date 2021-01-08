@@ -88,40 +88,42 @@ class SvgRenderer {
         // Parse string into SVG XML.
         const parser = new DOMParser();
         svgString = fixupSvgString(svgString);
-        this._svgDom = parser.parseFromString(svgString, 'text/xml');
-        if (this._svgDom.childNodes.length < 1 ||
-            this._svgDom.documentElement.localName !== 'svg') {
+        const svgDom = parser.parseFromString(svgString, 'text/xml');
+        if (svgDom.childNodes.length < 1 ||
+            svgDom.documentElement.localName !== 'svg') {
             throw new Error('Document does not appear to be SVG.');
         }
-        this._svgTag = this._svgDom.documentElement;
+        const svgTag = svgDom.documentElement;
         if (fromVersion2) {
             // Fix gradients. Scratch 2 exports no x2 when x2 = 0, but
             // SVG default is that x2 is 1. This must be done before
             // transformStrokeWidths since transformStrokeWidths affects
             // gradients.
-            this._transformGradients();
+            this._transformGradients(svgTag);
         }
-        transformStrokeWidths(this._svgTag, window);
-        this._transformImages(this._svgTag);
+        transformStrokeWidths(svgTag, window);
+        this._transformImages(svgTag);
         if (fromVersion2) {
             // Transform all text elements.
-            this._transformText();
+            this._transformText(svgTag);
             // Transform measurements.
-            this._transformMeasurements();
+            this._transformMeasurements(svgTag);
             // Fix stroke roundedness.
-            this._setGradientStrokeRoundedness();
-        } else if (!this._svgTag.getAttribute('viewBox')) {
+            this._setGradientStrokeRoundedness(svgTag);
+        } else if (!svgTag.getAttribute('viewBox')) {
             // Renderer expects a view box.
-            this._transformMeasurements();
-        } else if (!this._svgTag.getAttribute('width') || !this._svgTag.getAttribute('height')) {
-            this._svgTag.setAttribute('width', this._svgTag.viewBox.baseVal.width);
-            this._svgTag.setAttribute('height', this._svgTag.viewBox.baseVal.height);
+            this._transformMeasurements(svgTag);
+        } else if (!svgTag.getAttribute('width') || !svgTag.getAttribute('height')) {
+            svgTag.setAttribute('width', svgTag.viewBox.baseVal.width);
+            svgTag.setAttribute('height', svgTag.viewBox.baseVal.height);
         }
+
+        this._svgDom = svgDom;
         this._measurements = {
-            width: this._svgTag.viewBox.baseVal.width,
-            height: this._svgTag.viewBox.baseVal.height,
-            x: this._svgTag.viewBox.baseVal.x,
-            y: this._svgTag.viewBox.baseVal.y
+            width: svgTag.viewBox.baseVal.width,
+            height: svgTag.viewBox.baseVal.height,
+            x: svgTag.viewBox.baseVal.x,
+            y: svgTag.viewBox.baseVal.y
         };
     }
 
@@ -160,8 +162,9 @@ class SvgRenderer {
      * 2. Alignment is set to `text-before-edge`.
      * 3. Line-breaks are converted to explicit <tspan> elements.
      * 4. Any required fonts are injected.
+     * @param {SVGSVGElement} svgTag the SVG tag to apply the transformation to
      */
-    _transformText () {
+    _transformText (svgTag) {
         // Collect all text elements into a list.
         const textElements = [];
         const collectText = domElement => {
@@ -172,8 +175,8 @@ class SvgRenderer {
                 collectText(domElement.childNodes[i]);
             }
         };
-        collectText(this._svgTag);
-        convertFonts(this._svgTag);
+        collectText(svgTag);
+        convertFonts(svgTag);
         // For each text element, apply quirks.
         for (const textElement of textElements) {
             // Remove x and y attributes - they are not used in Scratch.
@@ -224,7 +227,7 @@ class SvgRenderer {
             }
 
             if (textElement.transform.baseVal.numberOfItems === 0) {
-                const transform = this._svgTag.createSVGTransform();
+                const transform = svgTag.createSVGTransform();
                 textElement.transform.baseVal.appendItem(transform);
             }
 
@@ -250,10 +253,11 @@ class SvgRenderer {
     }
 
     /**
+     * @param {SVGElement} svgTag the tag to search within
      * @param {string} [tagName] svg tag to search for (or collect all elements if not given)
-     * @return {Array} a list of elements with the given tagname in _svgTag
+     * @return {Array} a list of elements with the given tagname
      */
-    _collectElements (tagName) {
+    _collectElements (svgTag, tagName) {
         const elts = [];
         const collectElements = domElement => {
             if ((domElement.localName === tagName || typeof tagName === 'undefined') && domElement.getAttribute) {
@@ -263,16 +267,17 @@ class SvgRenderer {
                 collectElements(domElement.childNodes[i]);
             }
         };
-        collectElements(this._svgTag);
+        collectElements(svgTag);
         return elts;
     }
 
     /**
      * Fix SVGs to comply with SVG spec. Scratch 2 defaults to x2 = 0 when x2 is missing, but
      * SVG defaults to x2 = 1 when missing.
+     * @param {SVGSVGElement} svgTag the SVG tag to apply the transformation to
      */
-    _transformGradients () {
-        const linearGradientElements = this._collectElements('linearGradient');
+    _transformGradients (svgTag) {
+        const linearGradientElements = this._collectElements(svgTag, 'linearGradient');
 
         // For each gradient element, supply x2 if necessary.
         for (const gradientElement of linearGradientElements) {
@@ -285,9 +290,10 @@ class SvgRenderer {
     /**
      * Fix SVGs to match appearance in Scratch 2, which used nearest neighbor scaling for bitmaps
      * within SVGs.
+     * @param {SVGSVGElement} svgTag the SVG tag to apply the transformation to
      */
-    _transformImages () {
-        const imageElements = this._collectElements('image');
+    _transformImages (svgTag) {
+        const imageElements = this._collectElements(svgTag, 'image');
 
         // For each image element, set image rendering to pixelated
         const pixelatedImages = 'image-rendering: optimizespeed; image-rendering: pixelated;';
@@ -335,9 +341,10 @@ class SvgRenderer {
     /**
      * Find all instances of a URL-referenced `stroke` in the svg. In 2.0, all gradient strokes
      * have a round `stroke-linejoin` and `stroke-linecap`... for some reason.
+     * @param {SVGSVGElement} svgTag the SVG tag to apply the transformation to
      */
-    _setGradientStrokeRoundedness () {
-        const elements = this._collectElements();
+    _setGradientStrokeRoundedness (svgTag) {
+        const elements = this._collectElements(svgTag);
 
         for (const elt of elements) {
             if (!elt.style) continue;
@@ -362,8 +369,9 @@ class SvgRenderer {
      * attributes and then drawing (Firefox won't draw anything),
      * or inflating them and then measuring a canvas. But this seems to be
      * a natural and performant way.
+     * @param {SVGSVGElement} svgTag the SVG tag to apply the transformation to
      */
-    _transformMeasurements () {
+    _transformMeasurements (svgTag) {
         // Append the SVG dom to the document.
         // This allows us to use `getBBox` on the page,
         // which returns the full bounding-box of all drawn SVG
@@ -373,8 +381,8 @@ class SvgRenderer {
         // sanitizing is required. This should not affect bounding box calculation.
         // outerHTML is attribute of Element (and not HTMLElement), so use it instead of
         // calling serializer or toString()
-        // NOTE: this._svgTag remains untouched!
-        const rawValue = this._svgTag.outerHTML;
+        // NOTE: svgTag remains untouched!
+        const rawValue = svgTag.outerHTML;
         const sanitizedValue = DOMPurify.sanitize(rawValue, {
             // Use SVG profile (no HTML elements)
             USE_PROFILES: {svg: true},
@@ -405,7 +413,7 @@ class SvgRenderer {
         if (bbox.width === 0 || bbox.height === 0) {
             halfStrokeWidth = 0;
         } else {
-            halfStrokeWidth = this._findLargestStrokeWidth(this._svgTag) / 2;
+            halfStrokeWidth = this._findLargestStrokeWidth(svgTag) / 2;
         }
         const width = bbox.width + (halfStrokeWidth * 2);
         const height = bbox.height + (halfStrokeWidth * 2);
@@ -413,9 +421,9 @@ class SvgRenderer {
         const y = bbox.y - halfStrokeWidth;
 
         // Set the correct measurements on the SVG tag
-        this._svgTag.setAttribute('width', width);
-        this._svgTag.setAttribute('height', height);
-        this._svgTag.setAttribute('viewBox',
+        svgTag.setAttribute('width', width);
+        svgTag.setAttribute('height', height);
+        svgTag.setAttribute('viewBox',
             `${x} ${y} ${width} ${height}`);
     }
 
