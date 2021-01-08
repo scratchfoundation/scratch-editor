@@ -1,5 +1,5 @@
-const inlineSvgFonts = require('./font-inliner');
 const loadSvgString = require('./load-svg-string');
+const serializeSvgToString = require('./serialize-svg-to-string');
 
 /**
  * Main quirks-mode SVG rendering code.
@@ -124,14 +124,10 @@ class SvgRenderer {
      * @param {?boolean} shouldInjectFonts True if fonts should be included in the SVG as
      *     base64 data.
      * @returns {string} String representing current SVG data.
+     * @deprecated Use the standalone `serializeSvgToString` export instead.
      */
     toString (shouldInjectFonts) {
-        const serializer = new XMLSerializer();
-        let string = serializer.serializeToString(this._svgTag);
-        if (shouldInjectFonts) {
-            string = inlineSvgFonts(string);
-        }
-        return string;
+        return serializeSvgToString(this._svgTag, shouldInjectFonts);
     }
 
     /**
