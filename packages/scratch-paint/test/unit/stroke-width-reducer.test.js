@@ -1,6 +1,7 @@
 /* eslint-env jest */
-import strokeWidthReducer from '../../src/reducers/stroke-width';
-import {MAX_STROKE_WIDTH, changeStrokeWidth} from '../../src/reducers/stroke-width';
+import strokeWidthReducer, {
+    MAX_STROKE_WIDTH, changeStrokeWidth
+} from '../../src/reducers/stroke-width';
 import {setSelectedItems} from '../../src/reducers/selected-items';
 import {mockPaperRootItem} from '../__mocks__/paperMocks';
 

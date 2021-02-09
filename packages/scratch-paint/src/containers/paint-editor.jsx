@@ -23,10 +23,8 @@ import {convertToBitmap, convertToVector} from '../helper/bitmap';
 import {resetZoom, zoomOnSelection, OUTERMOST_ZOOM_LEVEL} from '../helper/view';
 import EyeDropperTool from '../helper/tools/eye-dropper';
 
-import Modes from '../lib/modes';
-import {BitmapModes, VectorModes} from '../lib/modes';
-import Formats from '../lib/format';
-import {isBitmap, isVector} from '../lib/format';
+import Modes, {BitmapModes, VectorModes} from '../lib/modes';
+import Formats, {isBitmap, isVector} from '../lib/format';
 import bindAll from 'lodash.bindall';
 
 /**

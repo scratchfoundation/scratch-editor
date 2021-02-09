@@ -1,6 +1,5 @@
 import paper from '@scratch/paper';
-import Modes from '../../lib/modes';
-import {BitmapModes} from '../../lib/modes';
+import Modes, {BitmapModes} from '../../lib/modes';
 import {isGroup} from '../group';
 import {isCompoundPathItem, getRootItem} from '../item';
 import {checkPointsClose, snapDeltaToAngle} from '../math';

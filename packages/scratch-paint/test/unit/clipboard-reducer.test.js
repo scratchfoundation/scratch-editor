@@ -1,6 +1,7 @@
 /* eslint-env jest */
-import clipboardReducer from '../../src/reducers/clipboard';
-import {clearPasteOffset, incrementPasteOffset, setClipboardItems} from '../../src/reducers/clipboard';
+import clipboardReducer, {
+    clearPasteOffset, incrementPasteOffset, setClipboardItems
+} from '../../src/reducers/clipboard';
 
 test('initialState', () => {
     let defaultState;

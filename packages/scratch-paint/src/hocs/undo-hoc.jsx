@@ -6,11 +6,12 @@ import {connect} from 'react-redux';
 
 import {getSelectedLeafItems} from '../helper/selection';
 import {setSelectedItems} from '../reducers/selected-items';
-import {performUndo, performRedo, shouldShowUndo, shouldShowRedo} from '../helper/undo';
+import {
+    performUndo, performRedo, shouldShowUndo, shouldShowRedo
+} from '../helper/undo';
 import {undo, redo} from '../reducers/undo';
 
-import {isBitmap} from '../lib/format';
-import Formats from '../lib/format';
+import Formats, {isBitmap} from '../lib/format';
 
 const UndoHOC = function (WrappedComponent) {
     class UndoWrapper extends React.Component {

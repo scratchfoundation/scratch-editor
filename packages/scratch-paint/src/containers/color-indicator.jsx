@@ -5,8 +5,7 @@ import parseColor from 'parse-color';
 import {injectIntl, intlShape} from 'react-intl';
 
 import {getSelectedLeafItems} from '../helper/selection';
-import Formats from '../lib/format';
-import {isBitmap} from '../lib/format';
+import Formats, {isBitmap} from '../lib/format';
 import GradientTypes from '../lib/gradient-types';
 
 import ColorIndicatorComponent from '../components/color-indicator.jsx';

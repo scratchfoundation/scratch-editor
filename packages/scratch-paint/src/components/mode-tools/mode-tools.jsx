@@ -17,8 +17,7 @@ import Input from '../forms/input.jsx';
 import InputGroup from '../input-group/input-group.jsx';
 import LabeledIconButton from '../labeled-icon-button/labeled-icon-button.jsx';
 import Modes from '../../lib/modes';
-import Formats from '../../lib/format';
-import {isBitmap, isVector} from '../../lib/format';
+import Formats, {isBitmap, isVector} from '../../lib/format';
 import {hideLabel} from '../../lib/hide-label';
 import styles from './mode-tools.css';
 

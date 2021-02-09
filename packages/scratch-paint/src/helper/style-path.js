@@ -1,8 +1,7 @@
 import paper from '@scratch/paper';
-import {getSelectedLeafItems} from './selection';
+import {getSelectedLeafItems, getItems} from './selection';
 import {isPointTextItem} from './item';
 import {isGroup} from './group';
-import {getItems} from './selection';
 import GradientTypes from '../lib/gradient-types';
 import {DEFAULT_COLOR} from '../reducers/fill-style';
 import {isCompoundPathChild} from '../helper/compound-path';

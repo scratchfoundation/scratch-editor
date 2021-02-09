@@ -1,7 +1,6 @@
 /* eslint-env jest */
 import Modes from '../../src/lib/modes';
-import reducer from '../../src/reducers/modes';
-import {changeMode} from '../../src/reducers/modes';
+import reducer, {changeMode} from '../../src/reducers/modes';
 
 test('initialState', () => {
     let defaultState;

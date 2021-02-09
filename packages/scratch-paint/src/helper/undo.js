@@ -3,8 +3,7 @@
 import paper from '@scratch/paper';
 import {hideGuideLayers, showGuideLayers, getRaster} from '../helper/layer';
 import {getSelectedLeafItems} from '../helper/selection';
-import Formats from '../lib/format';
-import {isVector, isBitmap} from '../lib/format';
+import Formats, {isVector, isBitmap} from '../lib/format';
 import log from '../log/log';
 
 /**

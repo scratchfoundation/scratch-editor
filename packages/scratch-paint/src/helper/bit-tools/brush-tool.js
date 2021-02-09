@@ -1,7 +1,6 @@
 import paper from '@scratch/paper';
-import {getRaster} from '../layer';
+import {getRaster, getGuideLayer} from '../layer';
 import {forEachLinePoint, getBrushMark} from '../bitmap';
-import {getGuideLayer} from '../layer';
 
 /**
  * Tool for drawing with the bitmap brush and eraser

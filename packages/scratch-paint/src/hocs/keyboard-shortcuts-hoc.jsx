@@ -13,8 +13,7 @@ import {groupSelection, shouldShowGroup, ungroupSelection, shouldShowUngroup} fr
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';
 import {changeMode} from '../reducers/modes';
 
-import {isBitmap} from '../lib/format';
-import Formats from '../lib/format';
+import Formats, {isBitmap} from '../lib/format';
 import Modes from '../lib/modes';
 
 const KeyboardShortcutsHOC = function (WrappedComponent) {

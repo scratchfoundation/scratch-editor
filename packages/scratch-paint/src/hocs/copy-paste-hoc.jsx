@@ -12,8 +12,7 @@ import {
     getSelectedRootItems
 } from '../helper/selection';
 import {getTrimmedRaster} from '../helper/bitmap';
-import {isBitmap} from '../lib/format';
-import Formats from '../lib/format';
+import Formats, {isBitmap} from '../lib/format';
 import Modes from '../lib/modes';
 
 import {clearSelectedItems, setSelectedItems} from '../reducers/selected-items';

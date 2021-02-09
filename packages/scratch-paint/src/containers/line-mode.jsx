@@ -8,12 +8,11 @@ import ColorStyleProptype from '../lib/color-style-proptype';
 import {clearSelection} from '../helper/selection';
 import {endPointHit, touching} from '../helper/snapping';
 import {drawHitPoint, removeHitPoint} from '../helper/guides';
-import {styleShape} from '../helper/style-path';
+import {styleShape, MIXED} from '../helper/style-path';
 import {changeStrokeColor, clearStrokeGradient} from '../reducers/stroke-style';
 import {changeStrokeWidth} from '../reducers/stroke-width';
 import {changeMode} from '../reducers/modes';
 import {clearSelectedItems} from '../reducers/selected-items';
-import {MIXED} from '../helper/style-path';
 import {snapDeltaToAngle} from '../helper/math';
 
 import LineModeComponent from '../components/line-mode/line-mode.jsx';

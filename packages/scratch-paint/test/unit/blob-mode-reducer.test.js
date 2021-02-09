@@ -1,8 +1,6 @@
 /* eslint-env jest */
-import brushReducer from '../../src/reducers/brush-mode';
-import {changeBrushSize} from '../../src/reducers/brush-mode';
-import eraserReducer from '../../src/reducers/eraser-mode';
-import {changeBrushSize as changeEraserSize} from '../../src/reducers/eraser-mode';
+import brushReducer, {changeBrushSize} from '../../src/reducers/brush-mode';
+import eraserReducer, {changeBrushSize as changeEraserSize} from '../../src/reducers/eraser-mode';
 
 test('initialState', () => {
     let defaultState;

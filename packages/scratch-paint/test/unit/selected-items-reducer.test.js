@@ -1,6 +1,7 @@
 /* eslint-env jest */
-import selectedItemsReducer from '../../src/reducers/selected-items';
-import {setSelectedItems, clearSelectedItems} from '../../src/reducers/selected-items';
+import selectedItemsReducer, {
+    setSelectedItems, clearSelectedItems
+} from '../../src/reducers/selected-items';
 
 test('initialState', () => {
     let defaultState;

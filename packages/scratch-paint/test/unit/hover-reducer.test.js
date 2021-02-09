@@ -1,6 +1,5 @@
 /* eslint-env jest */
-import reducer from '../../src/reducers/hover';
-import {clearHoveredItem, setHoveredItem} from '../../src/reducers/hover';
+import reducer, {clearHoveredItem, setHoveredItem} from '../../src/reducers/hover';
 
 test('initialState', () => {
     let defaultState;

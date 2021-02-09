@@ -11,8 +11,10 @@ import {undoSnapshot, clearUndoState} from '../reducers/undo';
 import {isGroup, ungroupItems} from '../helper/group';
 import {clearRaster, convertBackgroundGuideLayer, getRaster, setupLayers} from '../helper/layer';
 import {clearSelectedItems} from '../reducers/selected-items';
-import {ART_BOARD_WIDTH, ART_BOARD_HEIGHT, CENTER, MAX_WORKSPACE_BOUNDS} from '../helper/view';
-import {clampViewBounds, resetZoom, setWorkspaceBounds, zoomToFit, resizeCrosshair} from '../helper/view';
+import {
+    ART_BOARD_WIDTH, ART_BOARD_HEIGHT, CENTER, MAX_WORKSPACE_BOUNDS,
+    clampViewBounds, resetZoom, setWorkspaceBounds, zoomToFit, resizeCrosshair
+} from '../helper/view';
 import {ensureClockwise, scaleWithStrokes} from '../helper/math';
 import {clearHoveredItem} from '../reducers/hover';
 import {clearPasteOffset} from '../reducers/clipboard';

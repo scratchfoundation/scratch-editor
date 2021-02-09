@@ -34,8 +34,7 @@ import StrokeColorIndicatorComponent from '../../containers/stroke-color-indicat
 import StrokeWidthIndicatorComponent from '../../containers/stroke-width-indicator.jsx';
 import TextMode from '../../containers/text-mode.jsx';
 
-import Formats from '../../lib/format';
-import {isBitmap, isVector} from '../../lib/format';
+import Formats, {isBitmap, isVector} from '../../lib/format';
 import styles from './paint-editor.css';
 
 import bitmapIcon from './icons/bitmap.svg';

@@ -18,8 +18,7 @@ import {
 import {HANDLE_RATIO, ensureClockwise} from '../helper/math';
 import {getRaster} from '../helper/layer';
 import {flipBitmapHorizontal, flipBitmapVertical, selectAllBitmap} from '../helper/bitmap';
-import {isBitmap} from '../lib/format';
-import Formats from '../lib/format';
+import Formats, {isBitmap} from '../lib/format';
 import Modes from '../lib/modes';
 
 class ModeTools extends React.Component {

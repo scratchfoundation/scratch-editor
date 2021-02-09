@@ -1,6 +1,7 @@
 /* eslint-env jest */
-import undoReducer from '../../src/reducers/undo';
-import {undoSnapshot, undo, redo, clearUndoState, MAX_STACK_SIZE} from '../../src/reducers/undo';
+import undoReducer, {
+    undoSnapshot, undo, redo, clearUndoState, MAX_STACK_SIZE
+} from '../../src/reducers/undo';
 
 test('initialState', () => {
     let defaultState;

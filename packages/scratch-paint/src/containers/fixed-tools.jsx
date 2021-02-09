@@ -15,8 +15,7 @@ import {getSelectedLeafItems} from '../helper/selection';
 import {bringToFront, sendBackward, sendToBack, bringForward} from '../helper/order';
 import {groupSelection, ungroupSelection} from '../helper/group';
 
-import Formats from '../lib/format';
-import {isBitmap} from '../lib/format';
+import Formats, {isBitmap} from '../lib/format';
 import bindAll from 'lodash.bindall';
 
 class FixedTools extends React.Component {
