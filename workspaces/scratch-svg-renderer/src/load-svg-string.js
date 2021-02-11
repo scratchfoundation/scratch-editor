@@ -278,10 +278,6 @@ const setGradientStrokeRoundedness = svgTag => {
 
 /**
  * In-place, convert passed SVG to something consistent that will be rendered the way we want them to be.
- * Currently, this will normalize stroke widths (see transform-applier.js) and render all embedded images pixelated.
- * The returned SVG will be guaranteed to always have a `width`, `height` and `viewBox`.
- * In addition, if the `fromVersion2` parameter is `true`, several "quirks-mode" transformations will be applied which
- * mimic Scratch 2.0's SVG rendering.
  * @param {SVGSvgElement} svgTag root SVG node to operate upon
  * @param {boolean} [fromVersion2] True if we should perform conversion from version 2 to version 3 svg.
  */
@@ -313,8 +309,12 @@ const normalizeSvg = (svgTag, fromVersion2) => {
 
 /**
  * Load an SVG string and normalize it. All the steps before drawing/measuring.
+ * Currently, this will normalize stroke widths (see transform-applier.js) and render all embedded images pixelated.
+ * The returned SVG will be guaranteed to always have a `width`, `height` and `viewBox`.
+ * In addition, if the `fromVersion2` parameter is `true`, several "quirks-mode" transformations will be applied which
+ * mimic Scratch 2.0's SVG rendering.
  * @param {!string} svgString String of SVG data to draw in quirks-mode.
- * @param {?boolean} fromVersion2 True if we should perform conversion from version 2 to version 3 svg.
+ * @param {boolean} [fromVersion2] True if we should perform conversion from version 2 to version 3 svg.
  * @return {SVGSVGElement} The normalized SVG element.
  */
 const loadSvgString = (svgString, fromVersion2) => {
