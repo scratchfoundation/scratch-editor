@@ -4,7 +4,6 @@ const inlineSvgFonts = require('./font-inliner');
 const loadSvgString = require('./load-svg-string');
 const serializeSvgToString = require('./serialize-svg-to-string');
 const SvgElement = require('./svg-element');
-const V2SVGAdapter = require('./v2-svg-adapter');
 const convertFonts = require('./font-converter');
 // /**
 //  * Export for NPM & Node.js
@@ -17,6 +16,5 @@ module.exports = {
     loadSvgString: loadSvgString,
     serializeSvgToString: serializeSvgToString,
     SvgElement: SvgElement,
-    SVGRenderer: SVGRenderer,
-    V2SVGAdapter: V2SVGAdapter
+    SVGRenderer: SVGRenderer
 };
