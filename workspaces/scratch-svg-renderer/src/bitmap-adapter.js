@@ -13,10 +13,19 @@ class BitmapAdapter {
         this._makeCanvas = makeCanvas ? makeCanvas : () => document.createElement('canvas');
     }
 
-    // Returns a canvas with the resized image
+    /**
+     * Return a canvas with the resized version of the given image, done using nearest-neighbor interpolation
+     * @param {CanvasImageSource} image The image to resize
+     * @param {int} newWidth The desired post-resize width of the image
+     * @param {int} newHeight The desired post-resize height of the image
+     * @returns {HTMLCanvasElement} A canvas with the resized image drawn on it.
+     */
     resize (image, newWidth, newHeight) {
-        // Resize in a 2 step process, matching width first, then height, in order
-        // to preserve nearest-neighbor sampling.
+        // We want to always resize using nearest-neighbor interpolation. However, canvas implementations are free to
+        // use linear interpolation (or other "smooth" interpolation methods) when downscaling:
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=1360415
+        // It seems we can get around this by resizing in two steps: first width, then height. This will always result
+        // in nearest-neighbor interpolation, even when downscaling.
         const stretchWidthCanvas = this._makeCanvas();
         stretchWidthCanvas.width = newWidth;
         stretchWidthCanvas.height = image.height;
