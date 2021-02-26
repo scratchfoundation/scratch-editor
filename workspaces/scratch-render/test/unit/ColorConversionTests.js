@@ -13,7 +13,8 @@ Test.prototype.addAssert('colorsAlmostEqual', 2, function (found, wanted, messag
     }
 
     for (let i = 0; i < found.length; i++) {
-        if (Math.abs(found[i] - wanted[i]) > 1e-3) {
+        // smallest meaningful difference--detects changes in hue value after rounding
+        if (Math.abs(found[i] - wanted[i]) >= 0.5 / 360) {
             return this.fail(message, extra);
         }
     }
