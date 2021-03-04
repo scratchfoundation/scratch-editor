@@ -156,9 +156,6 @@ class SVGSkin extends Skin {
 
     /**
      * Do a hard reset of the existing MIPs by deleting them.
-     * @param {Array<number>} [rotationCenter] - Optional rotation center for the SVG. If not supplied, it will be
-     * calculated from the bounding box
-     * @fires Skin.event:WasAltered
      */
     resetMIPs () {
         this._scaledMIPs.forEach(oldMIP => this._renderer.gl.deleteTexture(oldMIP));
@@ -169,7 +166,9 @@ class SVGSkin extends Skin {
     /**
      * Set the contents of this skin to a snapshot of the provided SVG data.
      * @param {string} svgData - new SVG to use.
-     * @param {Array<number>} [rotationCenter] - Optional rotation center for the SVG.
+     * @param {Array<number>} [rotationCenter] - Optional rotation center for the SVG. If not supplied, it will be
+     * calculated from the bounding box
+     * @fires Skin.event:WasAltered
      */
     setSVG (svgData, rotationCenter) {
         this._svgRenderer.loadSVG(svgData, false, () => {
