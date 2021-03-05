@@ -186,7 +186,7 @@ canvas.addEventListener('click', event => {
     const pickID = renderer.pick(mousePos.x, mousePos.y);
     console.log(`You clicked on ${(pickID < 0 ? 'nothing' : `ID# ${pickID}`)}`);
     if (pickID >= 0) {
-        console.dir(renderer.extractDrawable(pickID, mousePos.x, mousePos.y));
+        console.dir(renderer.extractDrawableScreenSpace(pickID, mousePos.x, mousePos.y));
     }
 });
 
