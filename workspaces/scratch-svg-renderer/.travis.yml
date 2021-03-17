@@ -1,7 +1,6 @@
 language: node_js
 node_js:
-  - 6
-  - node
+  - lts/*
 env:
   global:
     - NODE_ENV=production
@@ -21,7 +20,6 @@ jobs:
       script:
       - npm run test
     - stage: deploy
-      node_js: 6
       script: npm run build
       before_deploy:
       - >
