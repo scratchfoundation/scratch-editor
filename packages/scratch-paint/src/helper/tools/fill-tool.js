@@ -21,6 +21,7 @@ class FillTool extends paper.Tool {
 
         // We have to set these functions instead of just declaring them because
         // paper.js tools hook up the listeners in the setter functions.
+        this.onMouseDown = this.handleMouseDown;
         this.onMouseMove = this.handleMouseMove;
         this.onMouseUp = this.handleMouseUp;
 
@@ -91,7 +92,7 @@ class FillTool extends paper.Tool {
     setPrevHoveredItemId (prevHoveredItemId) {
         this.prevHoveredItemId = prevHoveredItemId;
     }
-    handleMouseMove (event) {
+    updateFillPreview (event) {
         const hoveredItem = getHoveredItem(event, this.getHitOptions(), true /* subselect */);
         if ((!hoveredItem && this.prevHoveredItemId) || // There is no longer a hovered item
                 (hoveredItem && !this.prevHoveredItemId) || // There is now a hovered item
@@ -151,6 +152,15 @@ class FillTool extends paper.Tool {
             }
             this._setFillItemColor(this.fillColor, this.fillColor2, this.gradientType, event.point);
         }
+    }
+    handleMouseDown (event) {
+        // on touch, the user might touch-and-hold to preview what the fill tool would do
+        // if they don't move their finger at all after the "mouse down" event
+        // then this might be our only chance to give them a good preview
+        this.updateFillPreview(event);
+    }
+    handleMouseMove (event) {
+        this.updateFillPreview(event);
     }
     handleMouseUp (event) {
         if (event.event.button > 0) return; // only first mouse button
