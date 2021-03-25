@@ -19,13 +19,15 @@
     "type": "git",
     "url": "git+ssh://git@github.com/LLK/scratch-svg-renderer.git"
   },
+  "peerDependencies": {
+    "scratch-render-fonts": "^1.0.0-prerelease"
+  },
   "dependencies": {
     "base64-js": "1.2.1",
     "base64-loader": "1.0.0",
     "dompurify": "2.1.1",
     "minilog": "3.1.0",
-    "transformation-matrix": "1.15.0",
-    "scratch-render-fonts": "1.0.0-prerelease.20200507182347"
+    "transformation-matrix": "1.15.0"
   },
   "devDependencies": {
     "babel-core": "6.26.0",
@@ -41,6 +43,7 @@
     "lodash.defaultsdeep": "4.6.1",
     "mkdirp": "^1.0.3",
     "rimraf": "^3.0.1",
+    "scratch-render-fonts": "^1.0.0-prerelease",
     "tap": "^11.0.1",
     "webpack": "^4.8.0",
     "webpack-cli": "^3.1.0",
