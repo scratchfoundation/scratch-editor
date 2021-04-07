@@ -197,6 +197,7 @@ class PaperCanvas extends React.Component {
         const paperCanvas = this;
         // Pre-process SVG to prevent parsing errors (discussion from #213)
         // 1. Remove svg: namespace on elements.
+        // TODO: remove
         svg = svg.split(/<\s*svg:/).join('<');
         svg = svg.split(/<\/\s*svg:/).join('</');
         // 2. Add root svg namespace if it does not exist.

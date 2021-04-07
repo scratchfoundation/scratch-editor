@@ -31,8 +31,7 @@
     "lodash.omit": "4.5.0",
     "minilog": "3.1.0",
     "parse-color": "1.0.0",
-    "prop-types": "^15.5.10",
-    "scratch-render-fonts": "latest"
+    "prop-types": "^15.5.10"
   },
   "peerDependencies": {
     "react": "^16",
@@ -44,7 +43,8 @@
     "react-responsive": "^4",
     "react-style-proptype": "^3",
     "react-tooltip": "^3",
-    "redux": "^3"
+    "redux": "^3",
+    "scratch-render-fonts": "^1.0.0-prerelease.20210401210003"
   },
   "devDependencies": {
     "autoprefixer": "9.7.4",
@@ -92,6 +92,7 @@
     "regenerator-runtime": "^0.13.3",
     "rimraf": "^2.6.1",
     "scratch-l10n": "3.11.20210308031514",
+    "scratch-render-fonts": "^1.0.0-prerelease.20210401210003",
     "style-loader": "^1.0.0",
     "svg-url-loader": "^3.0.0",
     "tap": "^14.4.3",
