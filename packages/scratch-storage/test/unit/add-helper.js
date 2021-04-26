@@ -32,7 +32,7 @@ class LoggingHelper {
         this.logContainer.push(this.label);
         return this.shouldSucceed ?
             Promise.resolve(new this.storage.Asset(assetType, assetId, dataFormat, Buffer.from(this.label))) :
-            Promise.reject(`This is an expected failure from ${this.label}`);
+            Promise.reject(new Error(`This is an expected failure from ${this.label}`));
     }
 }
 

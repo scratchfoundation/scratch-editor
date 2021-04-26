@@ -149,7 +149,7 @@ class WebHelper extends Helper {
 
         const method = create ? 'post' : 'put';
 
-        if (!store) return Promise.reject('No appropriate stores');
+        if (!store) return Promise.reject(new Error('No appropriate stores'));
 
         let tool = this.assetTool;
         if (assetType.name === 'Project') {
