@@ -29,7 +29,10 @@ class SVGSkin extends Skin {
         this._renderer = renderer;
 
         /** @type {HTMLImageElement} */
-        this._svgImage = null;
+        this._svgImage = document.createElement('img');
+
+        /** @type {boolean} */
+        this._svgImageLoaded = false;
 
         /** @type {Array<number>} */
         this._size = [0, 0];
@@ -165,7 +168,7 @@ class SVGSkin extends Skin {
         // Can't use bitwise stuff here because we need to handle negative exponents
         const mipScale = Math.pow(2, mipLevel - INDEX_OFFSET);
 
-        if (this._svgImage.complete && !this._scaledMIPs[mipLevel]) {
+        if (this._svgImageLoaded && !this._scaledMIPs[mipLevel]) {
             this._scaledMIPs[mipLevel] = this.createMIP(mipScale);
         }
 
@@ -191,10 +194,10 @@ class SVGSkin extends Skin {
      */
     setSVG (svgData, rotationCenter) {
         const svgTag = loadSvgString(svgData);
-        this._svgImage = document.createElement('img');
         const svgText = serializeSvgToString(svgTag, true /* shouldInjectFonts */);
+        this._svgImageLoaded = false;
 
-        this._svgImage.addEventListener('load', () => {
+        this._svgImage.onload = () => {
             const {x, y, width, height} = svgTag.viewBox.baseVal;
             this._size[0] = width;
             this._size[1] = height;
@@ -218,8 +221,10 @@ class SVGSkin extends Skin {
             this._rotationCenter[0] = rotationCenter[0] - x;
             this._rotationCenter[1] = rotationCenter[1] - y;
 
+            this._svgImageLoaded = true;
+
             this.emit(Skin.Events.WasAltered);
-        });
+        };
 
         this._svgImage.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
     }
