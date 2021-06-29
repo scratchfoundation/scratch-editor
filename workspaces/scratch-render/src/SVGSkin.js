@@ -197,6 +197,7 @@ class SVGSkin extends Skin {
         const svgText = serializeSvgToString(svgTag, true /* shouldInjectFonts */);
         this._svgImageLoaded = false;
 
+        // If there is another load already in progress, replace the old onload to effectively cancel the old load
         this._svgImage.onload = () => {
             const {x, y, width, height} = svgTag.viewBox.baseVal;
             this._size[0] = width;
