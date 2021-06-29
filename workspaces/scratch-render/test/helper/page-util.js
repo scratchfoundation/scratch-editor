@@ -14,7 +14,7 @@ window.waitForSVGSkinLoad = renderer => new Promise(resolve => {
         for (const skin of renderer._allSkins) {
             if (skin.constructor.name !== 'SVGSkin') continue;
             numSVGSkins++;
-            if (skin._svgRenderer.loaded) numLoadedSVGSkins++;
+            if (skin._svgImage.complete) numLoadedSVGSkins++;
         }
 
         if (numSVGSkins === numLoadedSVGSkins) {
@@ -47,7 +47,7 @@ window.initVM = render => {
 
     vm.attachStorage(storage);
     vm.attachRenderer(render);
-    vm.attachV2SVGAdapter(new ScratchSVGRenderer.SVGRenderer());
+    vm.attachV2SVGAdapter(ScratchSVGRenderer.V2SVGAdapter);
     vm.attachV2BitmapAdapter(new ScratchSVGRenderer.BitmapAdapter());
 
     return vm;
