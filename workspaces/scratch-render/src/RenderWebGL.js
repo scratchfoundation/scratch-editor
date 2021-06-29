@@ -653,7 +653,10 @@ class RenderWebGL extends EventEmitter {
         gl.clearColor(...this._backgroundColor4f);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        this._drawThese(this._drawList, ShaderManager.DRAW_MODE.default, this._projection);
+        this._drawThese(this._drawList, ShaderManager.DRAW_MODE.default, this._projection, {
+            framebufferWidth: gl.canvas.width,
+            framebufferHeight: gl.canvas.height
+        });
         if (this._snapshotCallbacks.length > 0) {
             const snapshot = gl.canvas.toDataURL();
             this._snapshotCallbacks.forEach(cb => cb(snapshot));
@@ -1209,9 +1212,15 @@ class RenderWebGL extends EventEmitter {
 
             gl.clearColor(0, 0, 0, 0);
             gl.clear(gl.COLOR_BUFFER_BIT);
-            // Don't apply the ghost effect. TODO: is this an intentional design decision?
             this._drawThese([drawableID], ShaderManager.DRAW_MODE.straightAlpha, projection,
-                {effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask});
+                {
+                    // Don't apply the ghost effect. TODO: is this an intentional design decision?
+                    effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask,
+                    // We're doing this in screen-space, so the framebuffer dimensions should be those of the canvas in
+                    // screen-space. This is used to ensure SVG skins are rendered at the proper resolution.
+                    framebufferWidth: canvas.width,
+                    framebufferHeight: canvas.height
+                });
 
             const data = new Uint8Array(Math.floor(clampedWidth * clampedHeight * 4));
             gl.readPixels(0, 0, clampedWidth, clampedHeight, gl.RGBA, gl.UNSIGNED_BYTE, data);
@@ -1714,18 +1723,6 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
-     * Get the screen-space scale of a drawable, as percentages of the drawable's "normal" size.
-     * @param {Drawable} drawable The drawable whose screen-space scale we're fetching.
-     * @returns {Array<number>} The screen-space X and Y dimensions of the drawable's scale, as percentages.
-     */
-    _getDrawableScreenSpaceScale (drawable) {
-        return [
-            drawable.scale[0] * this._gl.canvas.width / this._nativeSize[0],
-            drawable.scale[1] * this._gl.canvas.height / this._nativeSize[1]
-        ];
-    }
-
-    /**
      * Draw a set of Drawables, by drawable ID
      * @param {Array<int>} drawables The Drawable IDs to draw, possibly this._drawList.
      * @param {ShaderManager.DRAW_MODE} drawMode Draw normally, silhouette, etc.
@@ -1735,12 +1732,19 @@ class RenderWebGL extends EventEmitter {
      * @param {object.<string,*>} opts.extraUniforms Extra uniforms for the shaders.
      * @param {int} opts.effectMask Bitmask for effects to allow
      * @param {boolean} opts.ignoreVisibility Draw all, despite visibility (e.g. stamping, touching color)
+     * @param {int} opts.framebufferWidth The width of the framebuffer being drawn onto. Defaults to "native" width
+     * @param {int} opts.framebufferHeight The height of the framebuffer being drawn onto. Defaults to "native" height
      * @private
      */
     _drawThese (drawables, drawMode, projection, opts = {}) {
 
         const gl = this._gl;
         let currentShader = null;
+
+        const framebufferSpaceScaleDiffers = (
+            'framebufferWidth' in opts && 'framebufferHeight' in opts &&
+            opts.framebufferWidth !== this._nativeSize[0] && opts.framebufferHeight !== this._nativeSize[1]
+        );
 
         const numDrawables = drawables.length;
         for (let drawableIndex = 0; drawableIndex < numDrawables; ++drawableIndex) {
@@ -1756,8 +1760,13 @@ class RenderWebGL extends EventEmitter {
             // the ignoreVisibility flag is used (e.g. for stamping or touchingColor).
             if (!drawable.getVisible() && !opts.ignoreVisibility) continue;
 
-            // Combine drawable scale with the native vs. backing pixel ratio
-            const drawableScale = this._getDrawableScreenSpaceScale(drawable);
+            // drawableScale is the "framebuffer-pixel-space" scale of the drawable, as percentages of the drawable's
+            // "native size" (so 100 = same as skin's "native size", 200 = twice "native size").
+            // If the framebuffer dimensions are the same as the stage's "native" size, there's no need to calculate it.
+            const drawableScale = framebufferSpaceScaleDiffers ? [
+                drawable.scale[0] * opts.framebufferWidth / this._nativeSize[0],
+                drawable.scale[1] * opts.framebufferHeight / this._nativeSize[1]
+            ] : drawable.scale;
 
             // If the skin or texture isn't ready yet, skip it.
             if (!drawable.skin || !drawable.skin.getTexture(drawableScale)) continue;
