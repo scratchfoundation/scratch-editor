@@ -1133,114 +1133,6 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
-     * @typedef DrawableExtractionOld
-     * @property {Uint8Array} data Raw pixel data for the drawable
-     * @property {int} width Drawable bounding box width
-     * @property {int} height Drawable bounding box height
-     * @property {Array<number>} scratchOffset [x, y] offset in Scratch coordinates
-     * from the drawable position to the client x, y coordinate
-     * @property {int} x The x coordinate relative to drawable bounding box
-     * @property {int} y The y coordinate relative to drawable bounding box
-     */
-
-    /**
-     * Return drawable pixel data and picking coordinates relative to the drawable bounds
-     * @param {int} drawableID The ID of the drawable to get pixel data for
-     * @param {int} x The client x coordinate of the picking location.
-     * @param {int} y The client y coordinate of the picking location.
-     * @return {?DrawableExtractionOld} Data about the picked drawable
-     * @deprecated Use {@link extractDrawableScreenSpace} instead.
-     */
-    extractDrawable (drawableID, x, y) {
-        this._doExitDrawRegion();
-
-        const drawable = this._allDrawables[drawableID];
-        if (!drawable) return null;
-
-        // Convert client coordinates into absolute scratch units
-        const scratchX = this._nativeSize[0] * ((x / this._gl.canvas.clientWidth) - 0.5);
-        const scratchY = this._nativeSize[1] * ((y / this._gl.canvas.clientHeight) - 0.5);
-
-        const gl = this._gl;
-
-        const bounds = drawable.getFastBounds();
-        bounds.snapToInt();
-
-        // Set a reasonable max limit width and height for the bufferInfo bounds
-        const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
-        const clampedWidth = Math.min(2048, bounds.width, maxTextureSize);
-        const clampedHeight = Math.min(2048, bounds.height, maxTextureSize);
-
-        // Make a new bufferInfo since this._queryBufferInfo is limited to 480x360
-        const attachments = [
-            {format: gl.RGBA},
-            {format: gl.DEPTH_STENCIL}
-        ];
-        const bufferInfo = twgl.createFramebufferInfo(gl, attachments, clampedWidth, clampedHeight);
-
-        try {
-            // If the new bufferInfo is invalid, fall back to using the smaller _queryBufferInfo
-            twgl.bindFramebufferInfo(gl, bufferInfo);
-            if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE) {
-                twgl.bindFramebufferInfo(gl, this._queryBufferInfo);
-            }
-
-            // Translate to scratch units relative to the drawable
-            const pickX = scratchX - bounds.left;
-            const pickY = scratchY + bounds.top;
-
-            // Limit size of viewport to the bounds around the target Drawable,
-            // and create the projection matrix for the draw.
-            gl.viewport(0, 0, bounds.width, bounds.height);
-            const projection = twgl.m4.ortho(bounds.left, bounds.right, bounds.top, bounds.bottom, -1, 1);
-
-            gl.clearColor(0, 0, 0, 0);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            try {
-                gl.disable(gl.BLEND);
-                // ImageData objects store alpha un-premultiplied, so draw with the `straightAlpha` draw mode.
-                this._drawThese([drawableID], ShaderManager.DRAW_MODE.straightAlpha, projection,
-                    {effectMask: ~ShaderManager.EFFECT_INFO.ghost.mask});
-            } finally {
-                gl.enable(gl.BLEND);
-            }
-
-            const data = new Uint8Array(Math.floor(bounds.width * bounds.height * 4));
-            gl.readPixels(0, 0, bounds.width, bounds.height, gl.RGBA, gl.UNSIGNED_BYTE, data);
-
-            if (this._debugCanvas) {
-                this._debugCanvas.width = bounds.width;
-                this._debugCanvas.height = bounds.height;
-                const ctx = this._debugCanvas.getContext('2d');
-                const imageData = ctx.createImageData(bounds.width, bounds.height);
-                imageData.data.set(data);
-                ctx.putImageData(imageData, 0, 0);
-                ctx.beginPath();
-                ctx.arc(pickX, pickY, 3, 0, 2 * Math.PI, false);
-                ctx.fillStyle = 'white';
-                ctx.fill();
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = 'black';
-                ctx.stroke();
-            }
-
-            return {
-                data: data,
-                width: bounds.width,
-                height: bounds.height,
-                scratchOffset: [
-                    -scratchX + drawable._position[0],
-                    -scratchY - drawable._position[1]
-                ],
-                x: pickX,
-                y: pickY
-            };
-        } finally {
-            gl.deleteFramebuffer(bufferInfo.framebuffer);
-        }
-    }
-
-    /**
      * @typedef DrawableExtraction
      * @property {ImageData} data Raw pixel data for the drawable
      * @property {number} x The x coordinate of the drawable's bounding box's top-left corner, in 'CSS pixels'
@@ -2097,7 +1989,7 @@ class RenderWebGL extends EventEmitter {
 }
 
 // :3
-RenderWebGL.prototype.canHazPixels = RenderWebGL.prototype.extractDrawable;
+RenderWebGL.prototype.canHazPixels = RenderWebGL.prototype.extractDrawableScreenSpace;
 
 /**
  * Values for setUseGPU()
