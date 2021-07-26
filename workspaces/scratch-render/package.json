@@ -24,11 +24,11 @@
     "watch": "webpack --progress --colors --watch --watch-poll"
   },
   "devDependencies": {
-    "babel-core": "^6.23.1",
-    "babel-eslint": "^10.1.0",
-    "babel-loader": "^7.1.4",
-    "babel-polyfill": "^6.22.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-core": "6.26.3",
+    "babel-eslint": "10.1.0",
+    "babel-loader": "7.1.5",
+    "babel-polyfill": "6.26.0",
+    "babel-preset-env": "1.7.0",
     "copy-webpack-plugin": "^4.5.1",
     "docdash": "^0.4.0",
     "eslint": "^7.13.0",
