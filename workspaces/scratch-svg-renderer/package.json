@@ -39,7 +39,7 @@
     "eslint-config-scratch": "5.1.0",
     "eslint-plugin-import": "2.23.4",
     "jsdom": "13.2.0",
-    "json": "^9.0.6",
+    "json": "9.0.6",
     "lodash.defaultsdeep": "4.6.1",
     "mkdirp": "1.0.4",
     "rimraf": "3.0.2",
