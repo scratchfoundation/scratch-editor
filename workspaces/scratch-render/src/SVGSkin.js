@@ -196,12 +196,17 @@ class SVGSkin extends Skin {
         const svgText = serializeSvgToString(svgTag, true /* shouldInjectFonts */);
         this._svgImageLoaded = false;
 
+        const {x, y, width, height} = svgTag.viewBox.baseVal;
+        // While we're setting the size before the image is loaded, this doesn't cause the skin to appear with the wrong
+        // size for a few frames while the new image is loading, because we don't emit the `WasAltered` event, telling
+        // drawables using this skin to update, until the image is loaded.
+        // We need to do this because the VM reads the skin's `size` directly after calling `setSVG`.
+        // TODO: return a Promise so that the VM can read the skin's `size` after the image is loaded.
+        this._size[0] = width;
+        this._size[1] = height;
+
         // If there is another load already in progress, replace the old onload to effectively cancel the old load
         this._svgImage.onload = () => {
-            const {x, y, width, height} = svgTag.viewBox.baseVal;
-            this._size[0] = width;
-            this._size[1] = height;
-
             if (width === 0 || height === 0) {
                 super.setEmptyImageData();
                 return;
