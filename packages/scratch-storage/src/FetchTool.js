@@ -20,7 +20,10 @@ class FetchTool {
      */
     get ({url, ...options}) {
         return fetch(url, Object.assign({method: 'GET'}, options))
-            .then(result => result.arrayBuffer())
+            .then(result => {
+                if (result.ok) return result.arrayBuffer();
+                return Promise.reject(result.status);
+            })
             .then(body => new Uint8Array(body));
     }
 
