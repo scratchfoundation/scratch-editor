@@ -92,6 +92,17 @@ jobs:
           <<: *deploy-npm
       - run:
           <<: *tag-commit
+  push-translations:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          <<: *setup
+      - run:
+          name: "run i18n script"
+          command: |
+            npm run i18n:src
+            npm run i18n:push
 
 workflows:
   build-test-no-deploy:
@@ -117,3 +128,15 @@ workflows:
                   - master
                   - develop
                   - /^hotfix\/.*/
+  push-translations:
+    triggers:
+      - schedule:
+          cron: 0 0 * * * # daily at 12 UTC, 8 ET
+          filters:
+            branches:
+              only:
+                - develop
+    jobs:
+      - push-translations:
+          context:
+            - dockerhub-credentials
