@@ -48,6 +48,19 @@ test('get success returns Uint8Array.body(response.arrayBuffer())', t => {
     });
 });
 
+test('get with 404 response returns null data', t => {
+    global.fetch = () => Promise.resolve({
+        ok: false,
+        status: 404
+    });
+
+    const tool = new FetchTool();
+
+    return tool.get('url').then(result => {
+        t.equal(result, null);
+    });
+});
+
 test('get failure returns response.status', t => {
     global.fetch = () => Promise.resolve({
         ok: false,
