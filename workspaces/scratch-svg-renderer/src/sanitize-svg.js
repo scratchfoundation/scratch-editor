@@ -5,7 +5,6 @@ const sanitizeSvg = {};
 DOMPurify.addHook(
     'beforeSanitizeAttributes',
     currentNode => {
-        console.log('in the hook!');
         if (currentNode && currentNode.href && currentNode.href.baseVal &&
             currentNode.href.baseVal.replace(/\s/g, '').slice(0, 5) !== 'data:'){
             currentNode.attributes.removeNamedItem('href');
