@@ -26,6 +26,7 @@
     "base64-js": "1.2.1",
     "base64-loader": "1.0.0",
     "dompurify": "2.2.7",
+    "fastestsmallesttextencoderdecoder": "^1.0.22",
     "minilog": "3.1.0",
     "transformation-matrix": "1.15.0"
   },
