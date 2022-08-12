@@ -5,10 +5,18 @@ const sanitizeSvg = {};
 DOMPurify.addHook(
     'beforeSanitizeAttributes',
     currentNode => {
+
         if (currentNode && currentNode.href && currentNode.href.baseVal &&
             currentNode.href.baseVal.replace(/\s/g, '').slice(0, 5) !== 'data:'){
-            currentNode.attributes.removeNamedItem('href');
-            delete currentNode.href;
+
+            if (currentNode.attributes.getNamedItem('xlink:href')){
+                currentNode.attributes.removeNamedItem('xlink:href');
+                delete currentNode['xlink:href'];
+            }
+            if (currentNode.attributes.getNamedItem('href')){
+                currentNode.attributes.removeNamedItem('href');
+                delete currentNode.href;
+            }
         }
         return currentNode;
     }
@@ -28,7 +36,6 @@ if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
 }
 
 sanitizeSvg.sanitizeByteStream = function (data){
-    console.log('calling me!');
     const decoder = new _TextDecoder();
     const encoder = new _TextEncoder();
 
@@ -36,8 +43,6 @@ sanitizeSvg.sanitizeByteStream = function (data){
         USE_PROFILES: {svg: true}
     });
 
-    console.log('before >', decoder.decode(data));
-    console.log('after >', sanitizedValue);
     return encoder.encode(sanitizedValue);
 };
 
