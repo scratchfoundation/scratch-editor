@@ -1,3 +1,8 @@
+/**
+ * @fileOverview Sanitize the content of an SVG aggressively, to make it as safe
+ * as possible
+ */
+const fixupSvgString = require('./fixup-svg-string');
 const DOMPurify = require('dompurify');
 
 const sanitizeSvg = {};
@@ -22,6 +27,8 @@ DOMPurify.addHook(
     }
 );
 
+// Use JS implemented TextDecoder and TextEncoder if it is not provided by the
+// browser.
 let _TextDecoder;
 let _TextEncoder;
 if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
@@ -35,15 +42,39 @@ if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
     _TextEncoder = TextEncoder;
 }
 
-sanitizeSvg.sanitizeByteStream = function (data){
+/**
+ * Load an SVG Uint8Array of bytes and "sanitize" it
+ * @param {!Uint8Array} rawData unsanitized SVG daata
+ * @return {Uint8Array} sanitized SVG data
+ */
+sanitizeSvg.sanitizeByteStream = function (rawData) {
     const decoder = new _TextDecoder();
     const encoder = new _TextEncoder();
+    const sanitizedText = sanitizeSvg.sanitizeSvgText(decoder.decode(rawData));
+    return encoder.encode(sanitizedText);
+};
 
-    const sanitizedValue = DOMPurify.sanitize(decoder.decode(data), {
+/**
+ * Load an SVG string and "sanitize" it. This is more aggressive than the handling in
+ * fixup-svg-string.js, and thus more risky; there are known examples of SVGs that
+ * it will clobber. We use DOMPurify's svg profile, which restricts many types of tag.
+ * @param {!string} rawSvgText unsanitized SVG string
+ * @return {string} sanitized SVG text
+ */
+sanitizeSvg.sanitizeSvgText = function (rawSvgText) {
+    let sanitizedText = DOMPurify.sanitize(rawSvgText, {
         USE_PROFILES: {svg: true}
     });
 
-    return encoder.encode(sanitizedValue);
+    // Remove partial XML comment that is sometimes left in the HTML
+    const badTag = sanitizedText.indexOf(']&gt;');
+    if (badTag >= 0) {
+        sanitizedText = sanitizedText.substring(5, sanitizedText.length);
+    }
+
+    // also use our custom fixup rules
+    sanitizedText = fixupSvgString(sanitizedText);
+    return sanitizedText;
 };
 
 module.exports = sanitizeSvg;
