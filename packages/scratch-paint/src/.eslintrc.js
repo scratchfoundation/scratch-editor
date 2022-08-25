@@ -2,7 +2,7 @@
 module.exports = {
 /* eslint-enable import/no-commonjs */
     root: true,
-    extends: ['scratch', 'scratch/es6', 'scratch/react', 'import'],
+    extends: ['scratch', 'scratch/es6', 'scratch/react', 'plugin:import/recommended'],
     env: {
         browser: true
     },
