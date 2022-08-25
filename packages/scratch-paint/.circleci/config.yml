@@ -1,8 +1,11 @@
 version: 2.1
+orbs:
+    node: circleci/node@5.0.2
+    browser-tools: circleci/browser-tools@1.2.4
 aliases:
   - &defaults
       docker:
-        - image: cimg/node:12.22.11-browsers
+        - image: cimg/node:lts-browsers
           auth:
             username: $DOCKERHUB_USERNAME
             password: $DOCKERHUB_PASSWORD
@@ -10,94 +13,86 @@ aliases:
       environment:
         NODE_ENV: production
   - &setup
-    name: "setup"
-    command: |
-      npm --production=false ci
-      mkdir ./test/results
+    node/install-packages:
+      override-ci-command: npm --production=false ci
   - &lint
-    name: "run lint tests"
-    command: npm run lint -- --format junit -o ./test/results/lint-results.xml
+    run:
+      name: "run lint tests"
+      command: npm run lint -- --format junit -o ./test/results/lint-results.xml
   - &unit
-    name: "run unit tests"
-    command: JEST_JUNIT_OUTPUT_NAME=unit-jest-results.xml npm run unit -- --reporters=jest-junit
+    run:
+      name: "run unit tests"
+      command: JEST_JUNIT_OUTPUT_NAME=unit-jest-results.xml npm run unit -- --reporters=jest-junit
   - &build
-    name: "run npm build"
-    command: |
-      NODE_ENV=production npm run build
+    run:
+      name: "run npm build"
+      command: |
+        NODE_ENV=production npm run build
   - &tag-setup
-    name: "setup tags"
-    command: |
-      RELEASE_TIMESTAMP="$(date +'%Y%m%d%H%M%S')"
-      VPKG=$($(npm bin)/json -f package.json version)
-      echo export RELEASE_VERSION=${VPKG}-prerelease.${RELEASE_TIMESTAMP} >> $BASH_ENV
-      echo export NPM_TAG=latest >> $BASH_ENV
-      if [[ "$CIRCLE_BRANCH" == hotfix/* ]]; then # double brackets are important for matching the wildcard
-        echo export NPM_TAG=hotfix >> $BASH_ENV
-      fi
+    run:
+      name: "setup tags"
+      command: |
+        RELEASE_TIMESTAMP="$(date +'%Y%m%d%H%M%S')"
+        VPKG=$($(npm bin)/json -f package.json version)
+        echo export RELEASE_VERSION=${VPKG}-prerelease.${RELEASE_TIMESTAMP} >> $BASH_ENV
+        echo export NPM_TAG=latest >> $BASH_ENV
+        if [[ "$CIRCLE_BRANCH" == hotfix/* ]]; then # double brackets are important for matching the wildcard
+          echo export NPM_TAG=hotfix >> $BASH_ENV
+        fi
   - &deploy-gh-pages
-    name: "deploy to gh pages"
-    command: |
-      git config --global user.email $(git log --pretty=format:"%ae" -n1)
-      git config --global user.name $(git log --pretty=format:"%an" -n1)
-      npm run deploy -- -e $CIRCLE_BRANCH
+    run:
+      name: "deploy to gh pages"
+      command: |
+        git config --global user.email $(git log --pretty=format:"%ae" -n1)
+        git config --global user.name $(git log --pretty=format:"%an" -n1)
+        npm run deploy -- -e $CIRCLE_BRANCH
   - &deploy-npm
-    name: "deploy to npm"
-    command: |
-      echo "npm tag: $NPM_TAG"
-      echo "release version: $RELEASE_VERSION"
-      npm version --no-git-tag-version $RELEASE_VERSION
-      npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
-      npm publish --tag $NPM_TAG
+    run:
+      name: "deploy to npm"
+      command: |
+        echo "npm tag: $NPM_TAG"
+        echo "release version: $RELEASE_VERSION"
+        npm version --no-git-tag-version $RELEASE_VERSION
+        npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+        npm publish --tag $NPM_TAG
   - &tag-commit
-    name: "tag commit in github"
-    command: |
-      echo $RELEASE_VERSION
-      git tag $RELEASE_VERSION
-      git push $CIRCLE_REPOSITORY_URL $RELEASE_VERSION
+    run:
+      name: "tag commit in github"
+      command: |
+        echo $RELEASE_VERSION
+        git tag $RELEASE_VERSION
+        git push $CIRCLE_REPOSITORY_URL $RELEASE_VERSION
 
 jobs:
   build-test:
     <<: *defaults
     steps:
       - checkout
-      - run:
-          <<: *setup
-      - run:
-          <<: *lint
-      - run:
-          <<: *unit
-      - run:
-          <<: *build
+      - *setup
+      - *lint
+      - *unit
+      - *build
       - store_test_results:
           path: test/results
   build-test-deploy:
     <<: *defaults
     steps:
       - checkout
-      - run:
-          <<: *setup
-      - run:
-          <<: *lint
-      - run:
-          <<: *unit
-      - run:
-          <<: *build
+      - *setup
+      - *lint
+      - *unit
+      - *build
       - store_test_results:
           path: test/results
-      - run:
-          <<: *tag-setup
-      - run:
-          <<: *deploy-gh-pages
-      - run:
-          <<: *deploy-npm
-      - run:
-          <<: *tag-commit
+      - *tag-setup
+      - *deploy-gh-pages
+      - *deploy-npm
+      - *tag-commit
   push-translations:
     <<: *defaults
     steps:
       - checkout
-      - run:
-          <<: *setup
+      - *setup
       - run:
           name: "run i18n script"
           command: |
