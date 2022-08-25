@@ -1,7 +1,8 @@
 version: 2.1
 orbs:
-    node: circleci/node@5.0.2
     browser-tools: circleci/browser-tools@1.2.4
+    node: circleci/node@5.0.2
+    commitlint: conventional-changelog/commitlint@1.0.0
 aliases:
   - &defaults
       docker:
@@ -100,6 +101,10 @@ jobs:
             npm run i18n:push
 
 workflows:
+  commitlint:
+    jobs:
+      - commitlint/lint:
+          target-branch: develop
   build-test-no-deploy:
     jobs:
       - build-test:
