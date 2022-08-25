@@ -1,4 +1,6 @@
+/* eslint-disable import/no-commonjs */
 module.exports = {
+/* eslint-enable import/no-commonjs */
     root: true,
     extends: ['scratch', 'scratch/es6', 'scratch/react', 'import'],
     env: {

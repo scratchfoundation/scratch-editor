@@ -633,8 +633,7 @@ const styleShape = function (path, options) {
             );
         }
     }
-
-    if (options.hasOwnProperty('strokeWidth')) path.strokeWidth = options.strokeWidth;
+    if (Object.prototype.hasOwnProperty.call(options, 'strokeWidth')) path.strokeWidth = options.strokeWidth;
 };
 
 export {

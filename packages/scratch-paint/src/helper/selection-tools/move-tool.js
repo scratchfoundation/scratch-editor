@@ -4,8 +4,9 @@ import {isGroup} from '../group';
 import {isCompoundPathItem, getRootItem} from '../item';
 import {checkPointsClose, snapDeltaToAngle} from '../math';
 import {getActionBounds, CENTER} from '../view';
-import {clearSelection, cloneSelection, getSelectedLeafItems, getSelectedRootItems, setItemSelection}
-    from '../selection';
+import {
+    clearSelection, cloneSelection, getSelectedLeafItems, getSelectedRootItems, setItemSelection
+} from '../selection';
 import {getDragCrosshairLayer, CROSSHAIR_FULL_OPACITY} from '../layer';
 
 /** Snap to align selection center to rotation center within this distance */
@@ -127,7 +128,7 @@ class MoveTool {
 
         point.x = Math.max(actionBounds.left, Math.min(point.x, actionBounds.right));
         point.y = Math.max(actionBounds.top, Math.min(point.y, actionBounds.bottom));
-        
+
         const dragVector = point.subtract(event.downPoint);
         let snapVector;
 
@@ -167,7 +168,7 @@ class MoveTool {
                 bounds = item.bounds;
             }
         }
-        
+
         if (this.firstDrag) {
             // Show the center crosshair above the selected item while dragging.
             getDragCrosshairLayer().visible = true;

@@ -7,8 +7,9 @@ import {changeStrokeColor, changeStrokeColor2, changeStrokeGradientType} from '.
 import {changeStrokeWidth} from '../reducers/stroke-width';
 import StrokeWidthIndicatorComponent from '../components/stroke-width-indicator.jsx';
 import {getSelectedLeafItems} from '../helper/selection';
-import {applyColorToSelection, applyStrokeWidthToSelection, getColorsFromSelection, MIXED}
-    from '../helper/style-path';
+import {
+    applyColorToSelection, applyStrokeWidthToSelection, getColorsFromSelection, MIXED
+} from '../helper/style-path';
 import GradientTypes from '../lib/gradient-types';
 import Modes from '../lib/modes';
 import Formats, {isBitmap} from '../lib/format';
