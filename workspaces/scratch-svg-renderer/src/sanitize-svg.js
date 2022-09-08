@@ -11,22 +11,22 @@ DOMPurify.addHook(
     'beforeSanitizeAttributes',
     currentNode => {
 
-        if (currentNode && currentNode.href && currentNode.href.baseVal){
+        if (currentNode && currentNode.href && currentNode.href.baseVal) {
             const href = currentNode.href.baseVal.replace(/\s/g, '');
             // "data:" and "#" are valid hrefs
-            if ((href.slice(0, 5) !== 'data:') && (href.slice(0, 1) !== '#')){
+            if ((href.slice(0, 5) !== 'data:') && (href.slice(0, 1) !== '#')) {
 
-                if (currentNode.attributes.getNamedItem('xlink:href')){
+                if (currentNode.attributes.getNamedItem('xlink:href')) {
                     currentNode.attributes.removeNamedItem('xlink:href');
                     delete currentNode['xlink:href'];
                 }
-                if (currentNode.attributes.getNamedItem('href')){
+                if (currentNode.attributes.getNamedItem('href')) {
                     currentNode.attributes.removeNamedItem('href');
                     delete currentNode.href;
                 }
             }
-            return currentNode;
         }
+        return currentNode;
     }
 );
 
