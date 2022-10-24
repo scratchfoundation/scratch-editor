@@ -1,0 +1,99 @@
+version: 2.1
+
+executors:
+  default-executor:
+    docker:
+      - image: "cimg/node:lts"
+    working_directory: ~/project
+    resource_class: large
+commands:
+  restore_test_cache:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-deps-{{ checksum "package-lock.json" }}
+            - v1-deps-
+  save_test_cache:
+    steps:
+      - save_cache:
+          key: v1-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+  setup:
+    steps:
+      - run:
+          name: Setup
+          command: |
+            npm --production=false install
+            npm --production=false update
+            npm --production=false prune
+  test:
+    steps:
+      - run:
+          name: Test
+          command: |
+            npm run test
+  setup_deploy:
+    steps:
+      - run:
+          name: Setup Deploy
+          command: |
+            echo "export NPM_TAG=test" >> $BASH_ENV
+            echo "export NODE_ENV=production" >> $BASH_ENV
+            echo "export RELEASE_TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $BASH_ENV
+            npm run build
+            sudo chmod +x .circleci/before_deploy.sh
+            .circleci/before_deploy.sh
+  deploy:
+    steps:
+      - run:
+          name: Deploy
+          command: |
+            echo $RELEASE_VERSION
+            npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+            npm publish
+            if npm info | grep -q $RELEASE_VERSION; then git tag $RELEASE_VERSION && git push https://${GH_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $RELEASE_VERSION -y; fi
+
+jobs:
+  build-and-test:
+    executor: default-executor
+    steps:
+      - checkout
+      - restore_test_cache
+      - setup
+      - save_test_cache
+      - test
+      - persist_to_workspace:
+          root: ~/project
+          paths: .
+  deploy:
+    executor: default-executor
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - setup_deploy
+      - deploy
+workflows:
+  build-and-test-workflow:
+    when:
+      not:
+        and:
+          - equal: [ tsm/circleci, <<pipeline.git.branch>> ]
+    jobs:
+      - build-and-test
+
+  deploy-workflow:
+    when:
+      or:
+        - equal: [ master, <<pipeline.git.branch>> ]
+        - equal: [ develop, <<pipeline.git.branch>> ]
+        - equal: [ hotfix/*, <<pipeline.git.branch>> ]
+        - equal: [ tsm/circleci, <<pipeline.git.branch>> ]
+
+    jobs:
+      - build-and-test
+      - deploy:
+          context:
+            - scratch-npm-creds
+          requires:
+            - build-and-test
