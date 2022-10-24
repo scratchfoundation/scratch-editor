@@ -77,8 +77,10 @@ workflows:
   build-and-test-workflow:
     when:
       not:
-        and:
-          - equal: [ tsm/circleci, <<pipeline.git.branch>> ]
+        or:
+          - equal: [ master, <<pipeline.git.branch>> ]
+          - equal: [ develop, <<pipeline.git.branch>> ]
+          - equal: [ hotfix/*, <<pipeline.git.branch>> ]
     jobs:
       - build-and-test
 
@@ -88,7 +90,6 @@ workflows:
         - equal: [ master, <<pipeline.git.branch>> ]
         - equal: [ develop, <<pipeline.git.branch>> ]
         - equal: [ hotfix/*, <<pipeline.git.branch>> ]
-        - equal: [ tsm/circleci, <<pipeline.git.branch>> ]
 
     jobs:
       - build-and-test
