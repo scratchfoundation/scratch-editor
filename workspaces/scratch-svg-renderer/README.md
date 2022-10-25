@@ -1,4 +1,5 @@
 # scratch-svg-renderer
+[![CircleCI](https://circleci.com/gh/LLK/scratch-svg-renderer/tree/develop.svg?style=shield&circle-token=239172a1b9275ee1e8f949489e6e36ea57b7fc86)](https://circleci.com/gh/LLK/scratch-svg-renderer?branch=develop)
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/LLK/scratch-svg-renderer.svg)](https://greenkeeper.io/)
 A class built for importing SVGs into [Scratch](https://github.com/LLK/scratch-gui). Imports an SVG string to a DOM element or an HTML canvas. Handles some of the quirks with Scratch 2.0 SVGs, which sometimes misreport their width, height and view box.
