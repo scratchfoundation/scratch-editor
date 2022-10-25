@@ -5,7 +5,7 @@ executors:
     docker:
       - image: "cimg/node:lts"
     working_directory: ~/project
-    resource_class: large
+    resource_class: medium
 commands:
   restore_test_cache:
     steps:
