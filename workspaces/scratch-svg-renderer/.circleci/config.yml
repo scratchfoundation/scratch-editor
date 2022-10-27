@@ -73,6 +73,7 @@ jobs:
           at: ~/project
       - setup_deploy
       - deploy
+      
 workflows:
   build-and-test-workflow:
     when:
@@ -80,7 +81,8 @@ workflows:
         or:
           - equal: [ master, <<pipeline.git.branch>> ]
           - equal: [ develop, <<pipeline.git.branch>> ]
-          - equal: [ hotfix/*, <<pipeline.git.branch>> ]
+          - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
+          - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
     jobs:
       - build-and-test
 
@@ -89,7 +91,8 @@ workflows:
       or:
         - equal: [ master, <<pipeline.git.branch>> ]
         - equal: [ develop, <<pipeline.git.branch>> ]
-        - equal: [ hotfix/*, <<pipeline.git.branch>> ]
+        - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
+        - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
 
     jobs:
       - build-and-test
