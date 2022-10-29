@@ -28,6 +28,7 @@ commands:
           command: |
             npm --production=false install
             npm --production=false update
+            npx playwright install 
 
   test:
     steps:
