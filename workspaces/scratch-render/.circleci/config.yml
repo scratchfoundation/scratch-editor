@@ -2,7 +2,7 @@ version: 2.1
 executors:
   default-executor:
     docker:
-      - image: "cimg/node:12.22.11-browsers"
+      - image: "cimg/node:lts-browsers"
     working_directory: ~/project
     resource_class: medium
 
