@@ -35,13 +35,13 @@ commands:
           name: Test
           command: |
             npm run test
-            
+
   setup_deploy:
     steps:
       - run:
           name: Setup Deploy
           command: |
-            echo "export NPM_TAG=test" >> $BASH_ENV
+            echo "export NPM_TAG=latest" >> $BASH_ENV
             echo "export NODE_ENV=production" >> $BASH_ENV
             echo "export RELEASE_TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $BASH_ENV
             npm run build
@@ -96,6 +96,7 @@ workflows:
           - equal: [ develop, <<pipeline.git.branch>> ]
           - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
           - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
+          - matches: { pattern: "^tsm.*", value: <<pipeline.git.branch>> }
     jobs:
       - build-and-test
 
@@ -106,6 +107,7 @@ workflows:
         - equal: [ develop, <<pipeline.git.branch>> ]
         - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
         - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
+        - matches: { pattern: "^tsm.*", value: <<pipeline.git.branch>> }
 
     jobs:
       - build-and-test
