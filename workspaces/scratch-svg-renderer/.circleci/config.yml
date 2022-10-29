@@ -41,7 +41,7 @@ commands:
       - run:
           name: Setup Deploy
           command: |
-            echo "export NPM_TAG=latest" >> $BASH_ENV
+            echo "export NPM_TAG=test" >> $BASH_ENV
             echo "export NODE_ENV=production" >> $BASH_ENV
             echo "export RELEASE_TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $BASH_ENV
             npm run build
@@ -63,6 +63,7 @@ commands:
       - run:
           name: Deploy
           command: |
+            echo "Deploying version $RELEASE_VERSION to $NPM_TAG"
             npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
             npm publish --tag $NPM_TAG
             if npm info | grep -q $RELEASE_VERSION; then git tag $RELEASE_VERSION && git push https://${GH_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $RELEASE_VERSION; fi
