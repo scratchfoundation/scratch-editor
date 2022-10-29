@@ -43,7 +43,7 @@ commands:
           command: |
             export NODE_ENV=production
             export RELEASE_TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-            echo "export NPM_TAG=test" >> $BASH_ENV
+            echo "export NPM_TAG=latest" >> $BASH_ENV
             npm run build
             if [ -z "$BEFORE_DEPLOY_RAN" ]; then
                 VPKG=$($(npm bin)/json -f package.json version)
@@ -97,7 +97,6 @@ workflows:
           - equal: [ develop, <<pipeline.git.branch>> ]
           - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
           - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
-          - matches: { pattern: "^tsm.*", value: <<pipeline.git.branch>> }
     jobs:
       - build-and-test
 
@@ -108,7 +107,6 @@ workflows:
         - equal: [ develop, <<pipeline.git.branch>> ]
         - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
         - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
-        - matches: { pattern: "^tsm.*", value: <<pipeline.git.branch>> }
 
     jobs:
       - build-and-test
