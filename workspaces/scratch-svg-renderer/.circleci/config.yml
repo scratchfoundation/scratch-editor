@@ -41,9 +41,9 @@ commands:
       - run:
           name: Setup Deploy
           command: |
+            export NODE_ENV=production
+            export RELEASE_TIMESTAMP=$(date +'%Y%m%d%H%M%S')
             echo "export NPM_TAG=test" >> $BASH_ENV
-            echo "export NODE_ENV=production" >> $BASH_ENV
-            echo "export RELEASE_TIMESTAMP=$(date +'%Y%m%d%H%M%S')" >> $BASH_ENV
             npm run build
             if [ -z "$BEFORE_DEPLOY_RAN" ]; then
                 VPKG=$($(npm bin)/json -f package.json version)
