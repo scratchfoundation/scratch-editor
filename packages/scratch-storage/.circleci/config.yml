@@ -1,0 +1,106 @@
+
+version: 2.1
+orbs:
+  commitlint: conventional-changelog/commitlint@1.0.0
+  
+executors:
+  default-executor:
+    docker:
+      - image: "cimg/node:10.22.0"
+    working_directory: ~/project
+    resource_class: medium
+
+commands:
+  restore_test_cache:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-deps-{{ checksum "package-lock.json" }}
+            - v1-deps-
+  save_test_cache:
+    steps:
+      - save_cache:
+          key: v1-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+  setup:
+    steps:
+      - run:
+          name: Setup
+          command: |
+            npm install
+            npm update
+            npm prune
+
+  test:
+    steps:
+      - run:
+          name: Test
+          command: |
+            npm run build
+            npm run test
+  deploy:
+    steps:
+      - run:
+          name: Deploy
+          command: |
+            npm run semantic-release
+
+jobs:
+  build-and-test:
+    executor: default-executor
+    steps:
+      - checkout
+      - restore_test_cache
+      - setup
+      - save_test_cache
+      - test
+      - persist_to_workspace:
+          root: ~/project
+          paths: .
+  deploy:
+    executor: default-executor
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - deploy
+
+workflows:
+  commitlint:
+    when:
+      not:
+        or:
+          - equal: [ master, <<pipeline.git.branch>> ]
+          - equal: [ develop, <<pipeline.git.branch>> ]
+          - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
+          - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
+    jobs:
+      - commitlint/lint:
+          target-branch: develop
+
+  build-and-test-workflow:
+    when:
+      not:
+        or:
+          - equal: [ master, <<pipeline.git.branch>> ]
+          - equal: [ develop, <<pipeline.git.branch>> ]
+          - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
+          - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
+    jobs:
+      - build-and-test
+
+  deploy-workflow:
+    when:
+      or:
+        - equal: [ master, <<pipeline.git.branch>> ]
+        - equal: [ develop, <<pipeline.git.branch>> ]
+        - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
+        - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
+
+    jobs:
+      - build-and-test
+      - deploy:
+          context:
+            - scratch-npm-creds
+          requires:
+            - build-and-test
