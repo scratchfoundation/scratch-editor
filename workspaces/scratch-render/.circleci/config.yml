@@ -1,0 +1,118 @@
+version: 2.1
+executors:
+  default-executor:
+    docker:
+      - image: "cimg/node:16.16.0-browsers"
+    working_directory: ~/project
+    resource_class: medium
+
+commands:
+  restore_test_cache:
+    steps:
+      - restore_cache:
+          keys:
+            - v1-deps-{{ checksum "package-lock.json" }}
+            - v1-deps-
+  save_test_cache:
+    steps:
+      - save_cache:
+          key: v1-deps-{{ checksum "package-lock.json" }}
+          paths:
+            - node_modules
+            - ~/.cache/ms-playwright
+
+  setup:
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            npm --production=false install
+            npm --production=false update
+            npx playwright install
+
+  test:
+    steps:
+      - run:
+          name: Test
+          command: |
+            npm run test
+
+  setup_deploy:
+    steps:
+      - run:
+          name: Setup Deploy
+          command: |
+            export NODE_ENV=production
+            export RELEASE_TIMESTAMP=$(date +'%Y%m%d%H%M%S')
+            echo "export NPM_TAG=latest" >> $BASH_ENV
+            npm run build
+            if [ -z "$BEFORE_DEPLOY_RAN" ]; then
+                VPKG=$($(npm bin)/json -f package.json version)
+                VERSION=${VPKG}-prerelease.${RELEASE_TIMESTAMP}
+                echo "export RELEASE_VERSION=${VPKG}-prerelease.${RELEASE_TIMESTAMP}" >> $BASH_ENV
+                npm --no-git-tag-version version $VERSION
+                if [[ "$CIRCLE_BRANCH" == hotfix/* ]]; then # double brackets are important for matching the wildcard
+                    echo "export NPM_TAG=hotfix" >> $BASH_ENV
+                fi
+                git config --global user.email "$(git log --pretty=format:"%ae" -n1)"
+                git config --global user.name "$(git log --pretty=format:"%an" -n1)"
+                echo "export BEFORE_DEPLOY_RAN=true" >> $BASH_ENV
+            fi
+
+  deploy:
+    steps:
+      - run:
+          name: Deploy
+          command: |
+            echo "Deploying version $RELEASE_VERSION to $NPM_TAG"
+            npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
+            npm publish --tag $NPM_TAG
+            if npm info | grep -q $RELEASE_VERSION; then git tag $RELEASE_VERSION && git push https://${GH_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git $RELEASE_VERSION; fi
+
+jobs:
+  build-and-test:
+    executor: default-executor
+    steps:
+      - checkout
+      - restore_test_cache
+      - setup
+      - save_test_cache
+      - test
+      - persist_to_workspace:
+          root: ~/project
+          paths: .
+  deploy:
+    executor: default-executor
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - setup_deploy
+      - deploy
+      - save_test_cache
+
+workflows:
+  build-and-test-workflow:
+    when:
+      not:
+        or:
+          - equal: [ master, <<pipeline.git.branch>> ]
+          - equal: [ develop, <<pipeline.git.branch>> ]
+          - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
+          - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
+    jobs:
+      - build-and-test
+
+  deploy-workflow:
+    when:
+      or:
+        - equal: [ master, <<pipeline.git.branch>> ]
+        - equal: [ develop, <<pipeline.git.branch>> ]
+        - matches: { pattern: "^hotfix.*", value: <<pipeline.git.branch>> }
+        - matches: { pattern: "^release.*", value: <<pipeline.git.branch>> }
+    jobs:
+      - build-and-test
+      - deploy:
+          context:
+            - scratch-npm-creds
+          requires:
+            - build-and-test
