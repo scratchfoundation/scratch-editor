@@ -1,4 +1,4 @@
-/* eslint-env browser */
+const fetch = require('cross-fetch').default;
 
 /**
  * Get and send assets with the fetch standard web api.

@@ -1,5 +1,4 @@
 const path = require('path');
-const {ProvidePlugin} = require('webpack');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const base = {
@@ -65,11 +64,6 @@ module.exports = [
             'js-md5': true,
             'localforage': true,
             'text-encoding': true
-        },
-        plugins: [
-            new ProvidePlugin({
-                fetch: ['node-fetch', 'default']
-            })
-        ]
+        }
     })
 ];
