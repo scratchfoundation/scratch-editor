@@ -78,6 +78,7 @@ const unsetMetadata = name => {
 module.exports = {
     default: scratchFetch,
 
+    Headers,
     RequestMetadata,
     applyMetadata,
     scratchFetch,

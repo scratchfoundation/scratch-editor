@@ -1,4 +1,4 @@
-const {applyMetadata} = require('./scratchFetch');
+const {Headers, applyMetadata} = require('./scratchFetch');
 
 /**
  * Get and send assets with a worker that uses fetch.
@@ -92,6 +92,13 @@ class PrivateFetchWorkerTool {
             const augmentedOptions = applyMetadata(
                 Object.assign({method: 'GET'}, options)
             );
+            // the Fetch spec says options.headers could be:
+            // "A Headers object, an object literal, or an array of two-item arrays to set request's headers."
+            // structured clone (postMessage) doesn't support Headers objects
+            // so turn it into an array of two-item arrays to make it to the worker intact
+            if (augmentedOptions && augmentedOptions.headers instanceof Headers) {
+                augmentedOptions.headers = Array.from(augmentedOptions.headers.entries());
+            }
             this.worker.postMessage({
                 id,
                 url,
