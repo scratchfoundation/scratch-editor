@@ -85,3 +85,15 @@ module.exports = {
     setMetadata,
     unsetMetadata
 };
+
+if (process.env.NODE_ENV === 'development') {
+    /**
+     * Retrieve a named request metadata item.
+     * Only for use in tests.
+     * @param {RequestMetadata} name The name of the metadata item to retrieve.
+     * @returns {any} value The value of the metadata item, or `undefined` if it was not found.
+     */
+    const getMetadata = name => metadata.get(name);
+
+    module.exports.getMetadata = getMetadata;
+}

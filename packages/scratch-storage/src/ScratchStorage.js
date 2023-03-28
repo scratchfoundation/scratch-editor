@@ -6,6 +6,7 @@ const WebHelper = require('./WebHelper');
 const _Asset = require('./Asset');
 const _AssetType = require('./AssetType');
 const _DataFormat = require('./DataFormat');
+const _scratchFetch = require('./scratchFetch');
 
 class ScratchStorage {
     constructor () {
@@ -49,6 +50,14 @@ class ScratchStorage {
      */
     get DataFormat () {
         return _DataFormat;
+    }
+
+    /**
+     * Access the `scratchFetch` module within this library.
+     * @return {module} the scratchFetch module, with properties for `scratchFetch`, `setMetadata`, etc.
+     */
+    get scratchFetch () {
+        return _scratchFetch;
     }
 
     /**
