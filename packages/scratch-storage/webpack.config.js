@@ -24,6 +24,10 @@ const base = {
                     // @babel/plugin-transform-runtime with CommonJS files.
                     sourceType: 'unambiguous'
                 }
+            },
+            {
+                test: /\.(png|svg|wav)$/,
+                loader: 'arraybuffer-loader'
             }
         ]
     },
