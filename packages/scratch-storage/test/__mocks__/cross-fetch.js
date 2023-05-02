@@ -1,5 +1,5 @@
 const TextEncoder = require('util').TextEncoder;
-const crossFetch = require('cross-fetch');
+const crossFetch = jest.requireActual('cross-fetch');
 
 const Headers = crossFetch.Headers;
 const successText = 'successful response';

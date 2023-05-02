@@ -1,25 +1,26 @@
 const md5 = require('js-md5');
-const test = require('tap').test;
 
-const ScratchStorage = require('../../dist/node/scratch-storage');
+jest.dontMock('cross-fetch'); // TODO: actually we should mock this...
+const ScratchStorage = require('../../src/index.js');
 
-let storage;
-test('constructor', t => {
-    storage = new ScratchStorage();
-    t.type(storage, ScratchStorage);
-    t.end();
+test('constructor', () => {
+    const storage = new ScratchStorage();
+    expect(storage).toBeInstanceOf(ScratchStorage);
 });
 
 /**
- *
- * @type {AssetTestInfo[]}
  * @typedef {object} AssetTestInfo
  * @property {AssetType} type - The type of the asset.
  * @property {string} id - The asset's unique ID.
  * @property {string} md5 - The asset's MD5 hash.
  * @property {DataFormat} [ext] - Optional: the asset's data format / file extension.
  */
-const testAssets = [
+
+/**
+ * @param {ScratchStorage} storage The storage module.
+ * @returns {AssetTestInfo[]} an array of asset info objects.
+ */
+const getTestAssets = storage => [
     // TODO: mock project download, since we can no longer download projects directly
     // {
     //     type: storage.AssetType.Project,
@@ -66,44 +67,51 @@ const testAssets = [
     }
 ];
 
-test('addWebStore', t => {
-    t.doesNotThrow(() => {
-        storage.addWebStore(
-            [storage.AssetType.Project],
-            asset => {
-                const idParts = asset.assetId.split('.');
-                return idParts[1] ?
-                    `https://cdn.projects.scratch.mit.edu/internalapi/project/${idParts[0]}/get/${idParts[1]}` :
-                    `https://cdn.projects.scratch.mit.edu/internalapi/project/${idParts[0]}/get/`;
-            });
-    });
-    t.doesNotThrow(() => {
-        storage.addWebStore(
-            [storage.AssetType.ImageVector, storage.AssetType.ImageBitmap, storage.AssetType.Sound],
-            asset => `https://cdn.assets.scratch.mit.edu/internalapi/asset/${asset.assetId}.${asset.dataFormat}/get/`
-        );
-    });
-    t.end();
+const addWebStores = storage => {
+    storage.addWebStore(
+        [storage.AssetType.Project],
+        asset => {
+            const idParts = asset.assetId.split('.');
+            return idParts[1] ?
+                `https://cdn.projects.scratch.mit.edu/internalapi/project/${idParts[0]}/get/${idParts[1]}` :
+                `https://cdn.projects.scratch.mit.edu/internalapi/project/${idParts[0]}/get/`;
+        },
+        null, null);
+    storage.addWebStore(
+        [storage.AssetType.ImageVector, storage.AssetType.ImageBitmap, storage.AssetType.Sound],
+        asset => `https://cdn.assets.scratch.mit.edu/internalapi/asset/${asset.assetId}.${asset.dataFormat}/get/`,
+        null, null
+    );
+};
+
+test('addWebStore', () => {
+    const storage = new ScratchStorage();
+    addWebStores(storage);
+    expect(storage.webHelper.stores.length).toBe(2);
 });
 
-test('load', t => {
+test('load', () => {
+    const storage = new ScratchStorage();
+    addWebStores(storage);
+    const testAssets = getTestAssets(storage);
     const assetChecks = testAssets.map(async assetInfo => {
         const asset = await storage.load(assetInfo.type, assetInfo.id, assetInfo.ext)
             .catch(e => {
-                // tap's output isn't great if we just let it catch the unhandled promise rejection
+                // test output isn't great if we just let it catch the unhandled promise rejection
                 // wrapping it like this makes a failure much easier to read in the test output
                 throw new Error(`failed to load ${assetInfo.type.name} asset with id=${assetInfo.id} (e=${e})`);
             });
-        t.type(asset, storage.Asset);
-        t.equal(asset.assetId, assetInfo.id);
-        t.equal(asset.assetType, assetInfo.type);
-        t.ok(asset.data.length);
+        expect(asset).toBeInstanceOf(storage.Asset);
+        expect(asset.assetId).toBe(assetInfo.id);
+        expect(asset.assetType).toBe(assetInfo.type);
+        expect(asset.data.length).toBeGreaterThan(0);
 
         // Web assets should come back as clean
-        t.ok(asset.clean);
+        expect(asset.clean).toBeTruthy();
 
         if (assetInfo.md5) {
-            t.equal(md5(asset.data), assetInfo.md5);
+            // eslint-disable-next-line jest/no-conditional-expect
+            expect(md5(asset.data)).toBe(assetInfo.md5);
         }
     });
 

@@ -1,6 +1,4 @@
-const test = require('tap').test;
-
-const ScratchStorage = require('../../dist/node/scratch-storage');
+const ScratchStorage = require('../../src');
 
 /**
  * Simulate a storage helper, adding log messages when "load" is called rather than actually loading anything.
@@ -36,20 +34,18 @@ class LoggingHelper {
     }
 }
 
-test('ScratchStorage constructor', t => {
+test('ScratchStorage constructor', () => {
     const storage = new ScratchStorage();
-    t.type(storage, ScratchStorage);
-    t.end();
+    expect(storage).toBeInstanceOf(ScratchStorage);
 });
 
-test('LoggingHelper constructor', t => {
+test('LoggingHelper constructor', () => {
     const storage = new ScratchStorage();
     const loggingHelper = new LoggingHelper(storage, 'constructor test', true, []);
-    t.type(loggingHelper, LoggingHelper);
-    t.end();
+    expect(loggingHelper).toBeInstanceOf(LoggingHelper);
 });
 
-test('addHelper', t => {
+test('addHelper', async () => {
     const logContainer = [];
     const storage = new ScratchStorage();
 
@@ -69,17 +65,17 @@ test('addHelper', t => {
     storage.addHelper(loggingHelpers[1], 0);
 
     // Did they all get added?
-    t.equal(storage._helpers.length, initialHelperCount + loggingHelpers.length);
+    expect(storage._helpers.length).toBe(initialHelperCount + loggingHelpers.length);
 
     // We shouldn't have any log entries yet
-    t.deepEqual(logContainer, []);
+    expect(logContainer).toStrictEqual([]);
 
-    return storage.load(storage.AssetType.Project, '0').then(() => {
-        // Verify that all helpers were consulted, and in the correct order
-        t.deepEqual(logContainer, [
-            'first',
-            'second',
-            'third'
-        ]);
-    });
+    await storage.load(storage.AssetType.Project, '0');
+
+    // Verify that all helpers were consulted, and in the correct order
+    expect(logContainer).toStrictEqual([
+        'first',
+        'second',
+        'third'
+    ]);
 });
