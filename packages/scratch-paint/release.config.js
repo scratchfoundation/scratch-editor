@@ -8,6 +8,11 @@ module.exports = {
         {
             name: 'hotfix/*',
             channel: 'hotfix'
+        },
+        {
+            name: 'beta',
+            channel: 'beta',
+            prerelease: true
         }
     ]
 };

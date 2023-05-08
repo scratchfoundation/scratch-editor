@@ -16,7 +16,7 @@ $border-radius: .25rem;
 }
 
 .mod-tool-select.is-selected {
-    background-color: $motion-primary;
+    background-color: $looks-secondary;
 }
 
 .mod-tool-select:focus {

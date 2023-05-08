@@ -1,3 +1,4 @@
+@import "../../css/colors";
 @import "../../css/units";
 
 /* Popover styles */
@@ -79,8 +80,8 @@
 }
 
 .active-swatch {
-    border: 1px solid #4C97FF;
-    box-shadow: 0px 0px 0px 3px hsla(215, 100%, 65%, 0.2);
+    border: 1px solid $looks-secondary;
+    box-shadow: 0px 0px 0px 3px $looks-transparent;
 }
 
 .swatch-icon {

@@ -40,8 +40,8 @@ Edited to add input-range-small
 }
 
 .input-form:focus {
-    border-color: $motion-primary;
-    box-shadow: 0 0 0 $grid-unit $motion-transparent;
+    border-color: $looks-secondary;
+    box-shadow: 0 0 0 $grid-unit $looks-transparent;
 }
 
 .input-small {

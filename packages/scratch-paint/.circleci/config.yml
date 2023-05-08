@@ -82,6 +82,7 @@ workflows:
                 ignore:
                   - master
                   - develop
+                  - beta
                   - /^hotfix\/.*/
   build-test-no-deploy:
     jobs:
@@ -93,6 +94,7 @@ workflows:
                 ignore:
                   - master
                   - develop
+                  - beta
                   - /^hotfix\/.*/
                   - gh-pages
   build-test-deploy:
@@ -106,6 +108,7 @@ workflows:
                 only:
                   - master
                   - develop
+                  - beta
                   - /^hotfix\/.*/
   push-translations:
     triggers:

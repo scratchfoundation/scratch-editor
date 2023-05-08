@@ -6,10 +6,10 @@
     user-select: none;
 }
 .button:active {
-    background-color: $motion-transparent; 
+    background-color: $looks-transparent;
 }
 .highlighted.button {
-    background-color: $motion-transparent; 
+    background-color: $looks-transparent;
 }
 .mod-disabled {
     cursor: auto;

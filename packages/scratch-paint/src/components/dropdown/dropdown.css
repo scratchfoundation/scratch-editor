@@ -7,7 +7,7 @@ $arrow-border-width: 14px;
     border-radius: 5px;
     overflow: visible;
     min-width: 3.5rem;
-    color: $motion-primary;
+    color: $looks-secondary;
     padding: .5rem;
 }
 
