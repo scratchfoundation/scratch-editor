@@ -15,6 +15,111 @@ All notable changes to this project will be documented in this file. See
 
 * use purple theme ([a0f6a55](https://github.com/LLK/scratch-paint/commit/a0f6a55a34c98e5a192cc7b5ec96f7ce3e716e14))
 
+## [1.1.68](https://github.com/LLK/scratch-paint/compare/v1.1.67...v1.1.68) (2023-05-27)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230527032201 ([#2178](https://github.com/LLK/scratch-paint/issues/2178)) ([70ba4fd](https://github.com/LLK/scratch-paint/commit/70ba4fd2bffca637ecdfee81b1d5720b9b4d62ae))
+
+## [1.1.67](https://github.com/LLK/scratch-paint/compare/v1.1.66...v1.1.67) (2023-05-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230526032224 ([#2177](https://github.com/LLK/scratch-paint/issues/2177)) ([9dd917f](https://github.com/LLK/scratch-paint/commit/9dd917f935fc77b010469577e1dfb50b52fd793a))
+
+## [1.1.66](https://github.com/LLK/scratch-paint/compare/v1.1.65...v1.1.66) (2023-05-24)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230524032205 ([#2176](https://github.com/LLK/scratch-paint/issues/2176)) ([039379a](https://github.com/LLK/scratch-paint/commit/039379a1f8e3b79c9a8ef518454a58a54a0bb836))
+
+## [1.1.65](https://github.com/LLK/scratch-paint/compare/v1.1.64...v1.1.65) (2023-05-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230523032203 ([#2175](https://github.com/LLK/scratch-paint/issues/2175)) ([c7ae8ee](https://github.com/LLK/scratch-paint/commit/c7ae8eee2da4179d37ccc23c67bbc21b13b8d301))
+
+## [1.1.64](https://github.com/LLK/scratch-paint/compare/v1.1.63...v1.1.64) (2023-05-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230521032145 ([#2174](https://github.com/LLK/scratch-paint/issues/2174)) ([c039727](https://github.com/LLK/scratch-paint/commit/c039727e3427bb30f022cfdc3c050f0c2e1d9e60))
+
+## [1.1.63](https://github.com/LLK/scratch-paint/compare/v1.1.62...v1.1.63) (2023-05-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230520032146 ([#2173](https://github.com/LLK/scratch-paint/issues/2173)) ([ec11fe2](https://github.com/LLK/scratch-paint/commit/ec11fe21ce23c387352da18b7b308f0f4d2d7e84))
+
+## [1.1.62](https://github.com/LLK/scratch-paint/compare/v1.1.61...v1.1.62) (2023-05-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230519032230 ([#2172](https://github.com/LLK/scratch-paint/issues/2172)) ([66fa237](https://github.com/LLK/scratch-paint/commit/66fa237d724de9599ac569e61d4806a4544d62f8))
+
+## [1.1.61](https://github.com/LLK/scratch-paint/compare/v1.1.60...v1.1.61) (2023-05-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230518032217 ([#2171](https://github.com/LLK/scratch-paint/issues/2171)) ([eb54dd5](https://github.com/LLK/scratch-paint/commit/eb54dd581807c468bbd61160c1e43eef7ae0c8e5))
+
+## [1.1.60](https://github.com/LLK/scratch-paint/compare/v1.1.59...v1.1.60) (2023-05-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230517032217 ([#2170](https://github.com/LLK/scratch-paint/issues/2170)) ([91e821a](https://github.com/LLK/scratch-paint/commit/91e821a8457604669c63be90ed24ef9b3cbd98ea))
+
+## [1.1.59](https://github.com/LLK/scratch-paint/compare/v1.1.58...v1.1.59) (2023-05-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230516032248 ([#2169](https://github.com/LLK/scratch-paint/issues/2169)) ([662dcfd](https://github.com/LLK/scratch-paint/commit/662dcfd19e0b78ef54077a9aaedeee728e000525))
+
+## [1.1.58](https://github.com/LLK/scratch-paint/compare/v1.1.57...v1.1.58) (2023-05-15)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230515032159 ([#2168](https://github.com/LLK/scratch-paint/issues/2168)) ([459d82a](https://github.com/LLK/scratch-paint/commit/459d82a977099dfa728bd60f1622f1760c63b250))
+
+## [1.1.57](https://github.com/LLK/scratch-paint/compare/v1.1.56...v1.1.57) (2023-05-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230514032149 ([#2167](https://github.com/LLK/scratch-paint/issues/2167)) ([85adacf](https://github.com/LLK/scratch-paint/commit/85adacf833b9bf2a677294cc39f70c6c59c3bbf6))
+
+## [1.1.56](https://github.com/LLK/scratch-paint/compare/v1.1.55...v1.1.56) (2023-05-13)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230513032248 ([#2166](https://github.com/LLK/scratch-paint/issues/2166)) ([dd85ed7](https://github.com/LLK/scratch-paint/commit/dd85ed758a1302e89dd0c09b4855a950c6187924))
+
+## [1.1.55](https://github.com/LLK/scratch-paint/compare/v1.1.54...v1.1.55) (2023-05-10)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230510032150 ([#2165](https://github.com/LLK/scratch-paint/issues/2165)) ([8452c11](https://github.com/LLK/scratch-paint/commit/8452c1160388a753f13b83fd0225394aa30cc02d))
+
+## [1.1.54](https://github.com/LLK/scratch-paint/compare/v1.1.53...v1.1.54) (2023-05-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v3.15.20230507032520 ([#2163](https://github.com/LLK/scratch-paint/issues/2163)) ([a249cb2](https://github.com/LLK/scratch-paint/commit/a249cb241684f329723c857204a6a442ad0c3f6d))
+
 ## [1.1.53](https://github.com/LLK/scratch-paint/compare/v1.1.52...v1.1.53) (2023-05-03)
 
 
