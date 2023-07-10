@@ -3,6 +3,7 @@
  * as possible
  */
 const fixupSvgString = require('./fixup-svg-string');
+const {generate, parse, walk} = require('css-tree');
 const DOMPurify = require('dompurify');
 
 const sanitizeSvg = {};
@@ -27,6 +28,26 @@ DOMPurify.addHook(
             }
         }
         return currentNode;
+    }
+);
+
+DOMPurify.addHook(
+    'uponSanitizeElement',
+    (node, data) => {
+        if (data.tagName === 'style') {
+            const ast = parse(node.textContent);
+            let isModified = false;
+            // Remove any @import rules as it could leak HTTP requests
+            walk(ast, (astNode, item, list) => {
+                if (astNode.type === 'Atrule' && astNode.name === 'import') {
+                    list.remove(item);
+                    isModified = true;
+                }
+            });
+            if (isModified) {
+                node.textContent = generate(ast);
+            }
+        }
     }
 );
 
