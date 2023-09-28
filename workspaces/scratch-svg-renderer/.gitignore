@@ -12,3 +12,6 @@ dist/*
 # Editors
 /#*
 *~
+
+# Act
+.secrets
