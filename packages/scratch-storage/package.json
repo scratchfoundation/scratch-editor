@@ -9,7 +9,7 @@
     "url": "https://github.com/LLK/scratch-storage.git"
   },
   "main": "./dist/node/scratch-storage.js",
-  "browser": "./src/index.js",
+  "browser": "./dist/web/scratch-storage.js",
   "scripts": {
     "build": "webpack --progress --colors --bail",
     "coverage": "tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
