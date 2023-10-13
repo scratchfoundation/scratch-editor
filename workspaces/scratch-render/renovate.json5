@@ -10,6 +10,7 @@
     // since that will cause a never-ending cycle of dependency updates.
     {
       "description": "don't bump scratch-render version when updating scratch-vm",
+      "automerge": false, // disable this once scratch-render uses semantic-release instead of date-based versioning
       "matchPackageNames": ["scratch-vm"],
       "semanticCommitType": "test" // scratch-vm is a dependency of scratch-render tests only
     }
