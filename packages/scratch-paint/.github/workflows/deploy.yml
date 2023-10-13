@@ -1,0 +1,64 @@
+name: Scratch Paint CI-CD
+
+on:
+  pull_request: # Runs whenever a pull request is created or updated
+  push: # Runs whenever a commit is pushed to the repository...
+    branches: [master, develop, beta, hotfix/*] # ...on any of these branches
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
+permissions: 
+  contents: write
+  pages: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
+    env:
+        TRIGGER_DEPLOY: ${{ startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/heads/hotfix') || startsWith(github.ref, 'refs/heads/develop') || startsWith(github.ref, 'refs/heads/beta') }}
+    steps: 
+        - uses: actions/checkout@v4
+        - uses: wagoid/commitlint-github-action@v5
+          if: github.event_name == 'pull_request'
+        - uses: actions/setup-node@v3
+          with:
+            cache: "npm"
+            node-version-file: ".nvmrc"
+        - name: Info
+          run: |
+            cat <<EOF
+            Node version: $(node --version)
+            NPM version: $(npm --version)
+            GitHub ref: ${{ github.ref }}
+            GitHub head ref: ${{ github.head_ref }}
+            EOF
+        - name: Install NPM Dependencies
+          run: |
+            npm ci
+            mkdir -p ./test/results
+        - name: Lint and Test
+          run: npm run test
+        - name: Build
+          run: npm run build
+          env:
+            NODE_ENV: production
+        - name: Deploy playground to GitHub Pages
+          if: ${{ env.TRIGGER_DEPLOY == 'true'}}
+          uses: peaceiris/actions-gh-pages@v3
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_dir: playground
+            full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
+        - name: Semantic Release
+          if: ${{ env.TRIGGER_DEPLOY == 'true'}}
+          env:
+            NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          run: npx --no -- semantic-release
+
+  
