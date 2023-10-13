@@ -2,15 +2,16 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
 
   "extends": [
-    "github>LLK/scratch-renovate-config:conservative"
+    "github>LLK/scratch-renovate-config"
   ],
 
   "packageRules": [
-    // Don't auto-merge scratch-vm since that will cause a never-ending cycle of dependency updates. Ideally, updating
-    // scratch-vm in scratch-render shouldn't make a scratch-render release. Once that's true we can remove this rule.
+    // Don't bump scratch-render's version number when merging a scratch-vm update
+    // since that will cause a never-ending cycle of dependency updates.
     {
+      "description": "don't bump scratch-render version when updating scratch-vm",
       "matchPackageNames": ["scratch-vm"],
-      "automerge": false
+      "semanticCommitType": "test" // scratch-vm is a dependency of scratch-render tests only
     }
   ]
 }
