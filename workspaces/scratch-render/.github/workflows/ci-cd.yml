@@ -67,7 +67,7 @@ jobs:
             - name: Build
               run: |
                   npm run build
-                  npm --no-git-tag-version version $VERSION
+                  npm --no-git-tag-version version $RELEASE_VERSION
 
             - name: Deploy to NPM (do a dry-run if not on master, develop, or hotfix/*)
               env:
