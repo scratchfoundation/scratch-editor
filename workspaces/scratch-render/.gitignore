@@ -15,3 +15,6 @@ npm-*
 # Build
 /dist
 /playground
+
+# Act
+.secrets
