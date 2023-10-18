@@ -37,7 +37,7 @@
     "jsdoc": "3.6.7",
     "json": "9.0.6",
     "playwright-chromium": "1.13.0",
-    "scratch-render-fonts": "1.0.0-prerelease.20221102164332",
+    "scratch-render-fonts": "1.0.0-prerelease.20231017225105",
     "scratch-vm": "0.2.0-prerelease.20201125065300",
     "tap": "11.1.5",
     "travis-after-all": "1.4.5",
