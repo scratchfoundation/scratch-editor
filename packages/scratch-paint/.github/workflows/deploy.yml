@@ -4,7 +4,6 @@ on:
   pull_request: # Runs whenever a pull request is created or updated
   push: # Runs whenever a commit is pushed to the repository...
     branches: [master, develop, beta, hotfix/*] # ...on any of these branches
-  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 
 concurrency:
   group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
@@ -41,7 +40,9 @@ jobs:
           run: |
             npm ci
             mkdir -p ./test/results
-        - name: Lint and Test
+        - name: Run Lint
+          run: npm run lint
+        - name: Run Tests
           run: npm run test
         - name: Build
           run: npm run build

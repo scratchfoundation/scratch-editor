@@ -11,7 +11,7 @@
     "i18n:src": "rimraf ./translations/messages && babel src > tmp.js && rimraf tmp.js && ./scripts/build-i18n-source.js ./translations/messages/ ./translations/",
     "lint": "eslint . --ext .js,.jsx",
     "start": "webpack-dev-server",
-    "test": "npm run lint && npm run unit",
+    "test": "npm run unit",
     "unit": "jest --reporters=default",
     "watch": "webpack --progress --colors --watch"
   },
@@ -23,7 +23,7 @@
     "url": "https://github.com/LLK/scratch-paint.git"
   },
   "dependencies": {
-    "@scratch/paper": "0.11.20200728195508",
+    "@scratch/paper": "0.11.20221201200345",
     "classnames": "2.2.5",
     "keymirror": "0.1.1",
     "lodash.bindall": "4.4.0",
@@ -55,10 +55,11 @@
     "@commitlint/config-conventional": "17.0.3",
     "autoprefixer": "9.7.4",
     "babel-eslint": "10.1.0",
-    "babel-jest": "23.6.0",
+    "babel-jest": "29.7.0",
     "babel-loader": "8.2.5",
     "babel-plugin-react-intl": "3.0.1",
     "babel-plugin-transform-object-rest-spread": "6.26.0",
+    "canvas": "^2.11.2",
     "css-loader": "3.4.0",
     "enzyme": "3.11.0",
     "enzyme-adapter-react-16": "1.15.6",
@@ -69,8 +70,7 @@
     "gh-pages": "3.2.3",
     "html-webpack-plugin": "3.2.0",
     "husky": "8.0.1",
-    "jest": "22.4.4",
-    "jest-canvas-mock": "2.3.1",
+    "jest": "^27.0.5",
     "jest-junit": "13.0.0",
     "json": "9.0.6",
     "lodash.defaultsdeep": "4.6.1",
@@ -115,8 +115,7 @@
   "jest": {
     "setupFiles": [
       "raf/polyfill",
-      "<rootDir>/test/helpers/enzyme-setup.js",
-      "jest-canvas-mock"
+      "<rootDir>/test/helpers/enzyme-setup.js"
     ],
     "testURL": "http://localhost",
     "moduleNameMapper": {
