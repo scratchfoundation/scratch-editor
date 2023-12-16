@@ -45,7 +45,7 @@
     "lodash.defaultsdeep": "4.6.1",
     "mkdirp": "2.0.0",
     "rimraf": "3.0.2",
-    "scratch-render-fonts": "1.0.0-prerelease.20221102164332",
+    "scratch-render-fonts": "1.0.0-prerelease.20231017225105",
     "tap": "11.1.5",
     "webpack": "4.46.0",
     "webpack-cli": "3.3.12",
