@@ -6,6 +6,7 @@
   "scripts": {
     "build": "npm run clean && webpack --progress --colors --bail",
     "clean": "rimraf ./dist",
+    "prepare": "husky install",
     "start": "webpack-dev-server",
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "eslint . --ext .js",
@@ -42,6 +43,7 @@
     "eslint": "8.55.0",
     "eslint-config-scratch": "9.0.3",
     "eslint-plugin-import": "2.29.0",
+    "husky": "8.0.3",
     "jsdom": "13.2.0",
     "json": "9.0.6",
     "lodash.defaultsdeep": "4.6.1",
