@@ -63,5 +63,10 @@
     "scratch-storage": "^1.0.0",
     "scratch-svg-renderer": "0.2.0",
     "twgl.js": "4.4.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   }
 }
