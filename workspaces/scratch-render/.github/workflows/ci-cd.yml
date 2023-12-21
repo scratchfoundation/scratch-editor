@@ -2,9 +2,7 @@ name: CI/CD
 
 on:
     workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
-    pull_request: # Runs whenever a pull request is created or updated
     push: # Runs whenever a commit is pushed to the repository
-        branches: [master, develop, hotfix/*]
 
 concurrency:
     group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -50,38 +48,14 @@ jobs:
                   mkdir -p ./test/results
                   npm test
 
-            - name: Generate release version
-              run: |
-                  export RELEASE_TIMESTAMP=$(date +'%Y%m%d%H%M%S')
-                  export VPKG=$($(npm bin)/json -f package.json version)
-                  export VERSION=${VPKG}-prerelease.${RELEASE_TIMESTAMP}
+            - run: npm run build
 
-                  echo "RELEASE_VERSION=${VERSION}" >> $GITHUB_ENV
-
-                  if [[ "${GITHUB_REF##*/}" == hotfix/* ]]; then
-                    echo "NPM_TAG=hotfix" >> $GITHUB_ENV
-                  else
-                    echo "NPM_TAG=latest" >> $GITHUB_ENV
-                  fi
-
-            - name: Build
-              run: |
-                  npm run build
-                  npm --no-git-tag-version version $RELEASE_VERSION
-
-            - name: Deploy to NPM (do a dry-run if not on master, develop, or hotfix/*)
+            - name: Run semantic-release
               env:
                   NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-                  NPM_TAG: ${{ env.NPM_TAG }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                  message=$([[ "$TRIGGER_DEPLOY" == "false" ]] && echo "DRY RUN of" || echo "Deploying")
-                  echo "$message version $RELEASE_VERSION to $NPM_TAG"
-                  npm set //registry.npmjs.org/:_authToken=$NPM_TOKEN
-                  npm publish --tag $NPM_TAG $([[ "$TRIGGER_DEPLOY" == "false" ]] && echo "--dry-run")
-
-            - name: Check Release Version and Create Tag
-              run: |
-                  if npm info | grep -q $RELEASE_VERSION; then 
-                    git tag $RELEASE_VERSION 
-                    git push origin $RELEASE_VERSION
+                  if [[ ${{contains(github.ref, 'hotfix/')}} ]]; then
+                      sed -e "s|hotfix/REPLACE|${{ github.ref_name }}|" --in-place release.config.js
                   fi
+                  npx --no -- semantic-release
