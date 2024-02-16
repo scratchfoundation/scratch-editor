@@ -57,15 +57,15 @@
     "scratch-render-fonts": "^1.0.0-prerelease"
   },
   "dependencies": {
-    "grapheme-breaker": "0.3.2",
-    "hull.js": "0.2.10",
-    "ify-loader": "1.0.4",
-    "linebreak": "0.3.0",
-    "minilog": "3.1.0",
+    "grapheme-breaker": "^0.3.2",
+    "hull.js": "^0.2.10",
+    "ify-loader": "^1.0.4",
+    "linebreak": "^0.3.0",
+    "minilog": "^3.1.0",
     "raw-loader": "^0.5.1",
     "scratch-storage": "^1.0.0",
-    "scratch-svg-renderer": "0.2.0",
-    "twgl.js": "4.4.0"
+    "scratch-svg-renderer": "^0.2.0",
+    "twgl.js": "^4.4.0"
   },
   "config": {
     "commitizen": {
