@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.1](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v1.0.0...v1.0.1) (2024-02-16)
+
+
+### Bug Fixes
+
+* **deps:** unpin non-dev dependencies ([fca6a63](https://github.com/scratchfoundation/scratch-svg-renderer/commit/fca6a631112f2b7097f65c8049531ccbead130e6))
+
 # 1.0.0 (2023-12-20)
 
 
