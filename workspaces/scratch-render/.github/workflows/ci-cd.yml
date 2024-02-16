@@ -20,10 +20,10 @@ jobs:
         env:
             TRIGGER_DEPLOY: ${{ startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/heads/hotfix') || startsWith(github.ref, 'refs/heads/develop') || startsWith(github.ref, 'refs/heads/beta') }}
         steps:
-            - uses: actions/checkout@v4
-            - uses: wagoid/commitlint-github-action@v5
+            - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - uses: wagoid/commitlint-github-action@5ce82f5d814d4010519d15f0552aec4f17a1e1fe # v5
               if: github.event_name == 'pull_request'
-            - uses: actions/setup-node@v3
+            - uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3
               with:
                   cache: "npm"
                   node-version-file: ".nvmrc"
