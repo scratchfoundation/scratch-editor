@@ -39,7 +39,7 @@
     "eslint-config-scratch": "9.0.3",
     "gh-pages": "1.2.0",
     "husky": "8.0.3",
-    "jsdoc": "3.6.7",
+    "jsdoc": "3.6.11",
     "json": "9.0.6",
     "playwright-chromium": "1.13.0",
     "scratch-render-fonts": "1.0.0-prerelease.20231017225105",
