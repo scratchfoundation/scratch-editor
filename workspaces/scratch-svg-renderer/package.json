@@ -21,7 +21,7 @@
     "url": "https://github.com/scratchfoundation/scratch-svg-renderer.git"
   },
   "peerDependencies": {
-    "scratch-render-fonts": "^1.0.0-prerelease"
+    "scratch-render-fonts": "^1.0.0"
   },
   "dependencies": {
     "base64-js": "^1.2.1",
