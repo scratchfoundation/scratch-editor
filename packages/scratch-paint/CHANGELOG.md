@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.6](https://github.com/LLK/scratch-paint/compare/v2.2.5...v2.2.6) (2024-02-21)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([#2332](https://github.com/LLK/scratch-paint/issues/2332)) ([de597ca](https://github.com/LLK/scratch-paint/commit/de597caaa2a2769ccfe1601747e0f0f710a0a923))
+* **deps:** update dependency scratch-render-fonts to v1.0.2 ([#2334](https://github.com/LLK/scratch-paint/issues/2334)) ([bffa01f](https://github.com/LLK/scratch-paint/commit/bffa01fdc090899e425f69ce2f9596c6693a43b3))
+
 ## [2.2.5](https://github.com/LLK/scratch-paint/compare/v2.2.4...v2.2.5) (2024-02-21)
 
 
