@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.12](https://github.com/scratchfoundation/scratch-render/compare/v1.0.11...v1.0.12) (2024-02-22)
+
+
+### Bug Fixes
+
+* **deps:** move build-time dependencies out of 'dependencies' list ([219f958](https://github.com/scratchfoundation/scratch-render/commit/219f95865a9f88c372081a7634d9092c4c040be4))
+
 ## [1.0.11](https://github.com/scratchfoundation/scratch-render/compare/v1.0.10...v1.0.11) (2024-02-22)
 
 
