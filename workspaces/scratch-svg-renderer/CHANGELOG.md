@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.9](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v1.0.8...v1.0.9) (2024-02-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency eslint-config-scratch to v9.0.6 ([ec5f5be](https://github.com/scratchfoundation/scratch-svg-renderer/commit/ec5f5be23c341c9cf1c21fb3912af9f691dad65d))
+
 ## [1.0.8](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v1.0.7...v1.0.8) (2024-02-22)
 
 
