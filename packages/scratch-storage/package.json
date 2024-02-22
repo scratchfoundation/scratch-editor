@@ -60,7 +60,7 @@
     "scratch-semantic-release-config": "1.0.12",
     "semantic-release": "19.0.5",
     "uglifyjs-webpack-plugin": "2.2.0",
-    "webpack": "4.46.0",
+    "webpack": "4.47.0",
     "webpack-cli": "3.1.2"
   },
   "config": {
