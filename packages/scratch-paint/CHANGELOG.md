@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.14](https://github.com/LLK/scratch-paint/compare/v2.2.13...v2.2.14) (2024-02-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.5 ([#2337](https://github.com/LLK/scratch-paint/issues/2337)) ([fc432bf](https://github.com/LLK/scratch-paint/commit/fc432bffd8d5b0ab4c314521b9380be9acb9c774))
+
 ## [2.2.13](https://github.com/LLK/scratch-paint/compare/v2.2.12...v2.2.13) (2024-02-22)
 
 
