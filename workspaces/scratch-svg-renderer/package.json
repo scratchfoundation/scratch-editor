@@ -49,7 +49,7 @@
     "lodash.defaultsdeep": "4.6.1",
     "mkdirp": "2.1.6",
     "rimraf": "3.0.2",
-    "scratch-render-fonts": "1.0.2",
+    "scratch-render-fonts": "1.0.5",
     "scratch-semantic-release-config": "1.0.12",
     "semantic-release": "19.0.5",
     "tap": "11.1.5",
