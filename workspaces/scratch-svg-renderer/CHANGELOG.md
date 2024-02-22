@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.8](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v1.0.7...v1.0.8) (2024-02-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-semantic-release-config to v1.0.12 ([4bc5204](https://github.com/scratchfoundation/scratch-svg-renderer/commit/4bc52046575ec8eb99b21c578384a276af2346da))
+
 ## [1.0.7](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v1.0.6...v1.0.7) (2024-02-22)
 
 
