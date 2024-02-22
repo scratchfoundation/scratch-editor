@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.17](https://github.com/LLK/scratch-paint/compare/v2.2.16...v2.2.17) (2024-02-22)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([#2344](https://github.com/LLK/scratch-paint/issues/2344)) ([7774421](https://github.com/LLK/scratch-paint/commit/77744214bb530a961aa97d19a22982e7abbcef67))
+* **deps:** update dependency scratch-semantic-release-config to v1.0.13 ([#2342](https://github.com/LLK/scratch-paint/issues/2342)) ([ea397ba](https://github.com/LLK/scratch-paint/commit/ea397ba39e8e8718a2175c12a25d48067d501260))
+
 ## [2.2.16](https://github.com/LLK/scratch-paint/compare/v2.2.15...v2.2.16) (2024-02-22)
 
 
