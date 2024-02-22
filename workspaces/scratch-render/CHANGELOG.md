@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.8](https://github.com/scratchfoundation/scratch-render/compare/v1.0.7...v1.0.8) (2024-02-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-semantic-release-config to v1.0.12 ([58ef747](https://github.com/scratchfoundation/scratch-render/commit/58ef74753f620668f27a722111891bdf48ca37ce))
+
 ## [1.0.7](https://github.com/scratchfoundation/scratch-render/compare/v1.0.6...v1.0.7) (2024-02-22)
 
 
