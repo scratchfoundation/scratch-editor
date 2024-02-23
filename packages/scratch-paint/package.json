@@ -17,10 +17,10 @@
   },
   "author": "Massachusetts Institute of Technology",
   "license": "BSD-3-Clause",
-  "homepage": "https://github.com/LLK/scratch-paint#readme",
+  "homepage": "https://github.com/scratchfoundation/scratch-paint#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LLK/scratch-paint.git"
+    "url": "https://github.com/scratchfoundation/scratch-paint.git"
   },
   "dependencies": {
     "@scratch/paper": "^0.11.20221201200345",
