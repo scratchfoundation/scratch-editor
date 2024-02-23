@@ -7,7 +7,7 @@
 
 ## Installation
 ```bash
-npm install https://github.com/LLK/scratch-render.git
+npm install https://github.com/scratchfoundation/scratch-render.git
 ```
 
 ## Setup
