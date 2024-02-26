@@ -1,13 +1,13 @@
 {
   "name": "scratch-storage",
-  "version": "2.3.6",
+  "version": "2.3.7",
   "description": "Load and store project and asset files for Scratch 3.0",
   "license": "BSD-3-Clause",
   "homepage": "https://github.com/scratchfoundation/scratch-storage#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/scratchfoundation/scratch-storage.git",
-    "sha": "1c39a3a964b1521e0298a0ee756826d6adbdde99"
+    "sha": "da99ca57f707271d669396ec27aab9b1575db9d1"
   },
   "main": "./dist/node/scratch-storage.js",
   "browser": "./dist/web/scratch-storage.js",
