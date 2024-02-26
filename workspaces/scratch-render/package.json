@@ -48,7 +48,7 @@
     "babel-preset-env": "1.7.0",
     "copy-webpack-plugin": "4.6.0",
     "docdash": "0.4.0",
-    "eslint": "8.56.0",
+    "eslint": "8.57.0",
     "eslint-config-scratch": "9.0.8",
     "gh-pages": "1.2.0",
     "husky": "8.0.3",
