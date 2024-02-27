@@ -55,7 +55,7 @@
     "tap": "11.1.5",
     "webpack": "4.47.0",
     "webpack-cli": "3.3.12",
-    "webpack-dev-server": "3.11.2",
+    "webpack-dev-server": "3.11.3",
     "xmldom": "0.1.31"
   },
   "config": {
