@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v1.0.20...v2.0.0) (2024-02-27)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([3fcb12c](https://github.com/scratchfoundation/scratch-svg-renderer/commit/3fcb12ce5226b2d31c02a2e2330325a32819dff3))
+
+
+### Features
+
+* use isomorphic wrapper for dompurify ([079607a](https://github.com/scratchfoundation/scratch-svg-renderer/commit/079607a4af9fc006885145afd1105bdd07db73c6))
+
+
+### BREAKING CHANGES
+
+* may affect compatibility
+
 ## [1.0.20](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v1.0.19...v1.0.20) (2024-02-27)
 
 
