@@ -1,4 +1,4 @@
-const DOMPurify = require('dompurify');
+const DOMPurify = require('isomorphic-dompurify');
 const SvgElement = require('./svg-element');
 const convertFonts = require('./font-converter');
 const fixupSvgString = require('./fixup-svg-string');

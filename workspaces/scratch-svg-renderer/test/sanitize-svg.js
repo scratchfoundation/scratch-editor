@@ -2,16 +2,6 @@ const test = require('tap').test;
 const fs = require('fs');
 const path = require('path');
 
-// important: tests run outside of a browser context, so dompurify won't have the
-// DOM it needs to mount the content you give it, and iterate through elements.
-// So before we require sanitize-svg (which requires dompurify), we need to create
-// a jsdom object and put it into global.window where dompurify can find it.
-// This approach is cribbed from the library isomorphic-dompurify.
-const jsdom = require('jsdom');
-const {JSDOM} = jsdom;
-const {window} = new JSDOM('<!DOCTYPE html>');
-global.window = window;
-// now we're in the clear to require sanitize-svg
 const sanitizeSvg = require('../src/sanitize-svg');
 
 // find all svg fixtures with filenames ending '.sanitized.svg', and compare their

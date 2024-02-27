@@ -4,7 +4,7 @@
  */
 const fixupSvgString = require('./fixup-svg-string');
 const {generate, parse, walk} = require('css-tree');
-const DOMPurify = require('dompurify');
+const DOMPurify = require('isomorphic-dompurify');
 
 const sanitizeSvg = {};
 
