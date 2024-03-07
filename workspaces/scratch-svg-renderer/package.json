@@ -46,11 +46,11 @@
     "husky": "8.0.3",
     "jsdom": "13.2.0",
     "json": "9.0.6",
-    "lodash.defaultsdeep": "4.6.1",
     "mkdirp": "2.1.6",
     "rimraf": "3.0.2",
     "scratch-render-fonts": "1.0.20",
     "scratch-semantic-release-config": "1.0.14",
+    "scratch-webpack-configuration": "1.0.0",
     "semantic-release": "19.0.5",
     "tap": "11.1.5",
     "webpack": "5.90.3",
@@ -58,6 +58,12 @@
     "webpack-dev-server": "3.11.3",
     "xmldom": "0.1.31"
   },
+  "browserslist": [
+    "Chrome >= 63",
+    "Edge >= 15",
+    "Firefox >= 57",
+    "Safari >= 11"
+  ],
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"

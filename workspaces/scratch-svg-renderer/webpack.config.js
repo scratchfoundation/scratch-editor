@@ -1,68 +1,52 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const defaultsDeep = require('lodash.defaultsdeep');
 const path = require('path');
+const ScratchWebpackConfigBuilder = require('scratch-webpack-configuration');
 
-const base = {
-    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-    devServer: {
-        contentBase: false,
-        host: '0.0.0.0',
-        port: process.env.PORT || 8576
-    },
-    devtool: 'cheap-module-source-map',
-    entry: {
-        'scratch-svg-renderer': './src/index.js'
-    },
-    module: {
-        rules: [{
-            include: [
-                path.resolve('src'),
-                path.resolve('node_modules', 'scratch-render-fonts')
-            ],
-            test: /\.js$/,
-            loader: 'babel-loader',
-            options: {
-                presets: [['@babel/preset-env', {targets: {}}]]
-            }
-        }]
-    },
-    plugins: []
+const common = {
+    libraryName: 'ScratchSVGRenderer',
+    rootPath: path.resolve(__dirname)
 };
 
-module.exports = [
-    defaultsDeep({}, base, {
-        target: 'web',
+/**
+ * @type {import('webpack').Configuration}
+ */
+const nodeConfig = new ScratchWebpackConfigBuilder(common)
+    .setTarget('node')
+    .get();
+
+/**
+ * @type {import('webpack').Configuration}
+ */
+const webConfig = new ScratchWebpackConfigBuilder(common)
+    .setTarget('browserslist')
+    .get();
+
+/**
+ * @type {import('webpack').Configuration}
+ */
+const playgroundConfig = new ScratchWebpackConfigBuilder(common)
+    .setTarget('browserslist')
+    .merge({
+        devServer: {
+            contentBase: false,
+            port: process.env.PORT || 8576
+        },
         output: {
-            library: 'ScratchSVGRenderer',
-            libraryTarget: 'umd',
-            path: path.resolve('playground'),
-            publicPath: '/',
-            filename: '[name].js'
-        },
-        plugins: base.plugins.concat([
-            new CopyWebpackPlugin([
-                {
-                    from: 'src/playground'
-                }
-            ])
-        ])
-    }),
-    defaultsDeep({}, base, {
-        output: {
-            library: 'ScratchSVGRenderer',
-            libraryTarget: 'umd',
-            path: path.resolve('dist', 'web'),
-            filename: '[name].js'
-        },
-        module: {
-            rules: [{
-                options: {
-                    presets: [['env', {targets: {browsers: ['last 3 versions', 'Safari >= 8', 'iOS >= 8']}}]]
-                }
-            }]
-        },
-        optimization: {
-            minimize: process.env.NODE_ENV === 'production'
+            path: path.resolve(__dirname, 'playground'),
+            publicPath: '/'
         }
     })
+    .addPlugin(
+        new CopyWebpackPlugin([
+            {
+                from: 'src/playground'
+            }
+        ])
+    )
+    .get();
+
+module.exports = [
+    nodeConfig,
+    webConfig,
+    playgroundConfig
 ];
