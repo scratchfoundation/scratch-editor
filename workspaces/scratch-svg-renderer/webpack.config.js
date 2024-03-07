@@ -22,7 +22,7 @@ const base = {
             test: /\.js$/,
             loader: 'babel-loader',
             options: {
-                presets: [['env', {targets: {}}]]
+                presets: [['@babel/preset-env', {targets: {}}]]
             }
         }]
     },
