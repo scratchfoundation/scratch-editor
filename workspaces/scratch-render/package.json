@@ -58,7 +58,7 @@
     "scratch-render-fonts": "1.0.19",
     "scratch-semantic-release-config": "1.0.14",
     "scratch-storage": "2.3.33",
-    "scratch-vm": "3.0.14",
+    "scratch-vm": "3.0.15",
     "semantic-release": "19.0.5",
     "tap": "11.1.5",
     "travis-after-all": "1.4.5",
