@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.19](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v2.0.18...v2.0.19) (2024-03-09)
+
+
+### Bug Fixes
+
+* **docs:** reformat README, fix build badge, trigger release ([5677dd0](https://github.com/scratchfoundation/scratch-svg-renderer/commit/5677dd0a878636b7e41dac1c95d9f5e44bace7f2))
+
 ## [2.0.18](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v2.0.17...v2.0.18) (2024-03-08)
 
 
