@@ -2,7 +2,11 @@
   "name": "scratch-svg-renderer",
   "version": "2.0.19",
   "description": "SVG renderer for Scratch",
-  "main": "./src/index.js",
+  "exports": {
+    "webpack": "./src/index.js",
+    "browser": "./dist/web/ScratchSVGRenderer.js",
+    "node": "./dist/node/ScratchSVGRenderer.js"
+  },
   "scripts": {
     "build": "npm run clean && webpack",
     "clean": "rimraf ./dist",
