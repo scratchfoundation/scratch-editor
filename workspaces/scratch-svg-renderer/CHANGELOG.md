@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.20](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v2.0.19...v2.0.20) (2024-03-09)
+
+
+### Bug Fixes
+
+* **build:** separate node, browser, and webpack exports ([6904a2a](https://github.com/scratchfoundation/scratch-svg-renderer/commit/6904a2a9e12091aa7fe4a0ac928a0190b33a44e5))
+
 ## [2.0.19](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v2.0.18...v2.0.19) (2024-03-09)
 
 
