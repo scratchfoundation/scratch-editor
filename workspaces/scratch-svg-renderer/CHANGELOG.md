@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.5](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v2.1.4...v2.1.5) (2024-03-13)
+
+
+### Bug Fixes
+
+* add a default export for tool compatibility ([ae69174](https://github.com/scratchfoundation/scratch-svg-renderer/commit/ae6917423d7f56c89fc96a1ba8097f439458446c))
+
 ## [2.1.4](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v2.1.3...v2.1.4) (2024-03-13)
 
 
