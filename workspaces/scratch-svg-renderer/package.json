@@ -5,7 +5,8 @@
   "exports": {
     "webpack": "./src/index.js",
     "browser": "./dist/web/ScratchSVGRenderer.js",
-    "node": "./dist/node/ScratchSVGRenderer.js"
+    "node": "./dist/node/ScratchSVGRenderer.js",
+    "default": "./src/index.js"
   },
   "scripts": {
     "build": "npm run clean && webpack",
