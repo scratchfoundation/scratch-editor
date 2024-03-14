@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v2.1.6...v2.2.0) (2024-03-14)
+
+
+### Features
+
+* **deps:** update dependency scratch-webpack-configuration to v1.2.0 ([1950541](https://github.com/scratchfoundation/scratch-svg-renderer/commit/1950541797418d73e3eb73dbd613e82b63fb208f))
+
 ## [2.1.6](https://github.com/scratchfoundation/scratch-svg-renderer/compare/v2.1.5...v2.1.6) (2024-03-14)
 
 
