@@ -47,9 +47,9 @@
   },
   "devDependencies": {
     "@babel/cli": "7.24.1",
-    "@babel/core": "7.24.1",
+    "@babel/core": "7.24.3",
     "@babel/node": "7.23.9",
-    "@babel/preset-env": "7.24.1",
+    "@babel/preset-env": "7.24.3",
     "@babel/preset-react": "7.24.1",
     "@commitlint/cli": "17.8.1",
     "@commitlint/config-conventional": "17.8.1",
