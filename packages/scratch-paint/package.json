@@ -1,6 +1,6 @@
 {
   "name": "scratch-paint",
-  "version": "2.2.183",
+  "version": "2.2.184",
   "description": "Graphical User Interface for the Scratch 3.0 paint editor, which is used to make and edit sprites for use in projects.",
   "main": "./dist/scratch-paint.js",
   "browser": "./src/index.js",
