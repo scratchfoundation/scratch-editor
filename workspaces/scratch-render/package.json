@@ -54,7 +54,7 @@
     "husky": "8.0.3",
     "jsdoc": "3.6.11",
     "json": "9.0.6",
-    "playwright-chromium": "1.44.0",
+    "playwright-chromium": "1.44.1",
     "scratch-render-fonts": "1.0.51",
     "scratch-semantic-release-config": "1.0.14",
     "scratch-storage": "2.3.125",
