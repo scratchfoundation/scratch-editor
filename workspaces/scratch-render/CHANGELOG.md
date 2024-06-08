@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.167](https://github.com/scratchfoundation/scratch-render/compare/v1.0.166...v1.0.167) (2024-06-08)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.140 ([31fd97e](https://github.com/scratchfoundation/scratch-render/commit/31fd97eba6414fc204c0f020125699c2f02e353c))
+
 ## [1.0.166](https://github.com/scratchfoundation/scratch-render/compare/v1.0.165...v1.0.166) (2024-06-08)
 
 
