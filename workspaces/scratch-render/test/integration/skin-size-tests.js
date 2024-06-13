@@ -3,7 +3,7 @@ const {chromium} = require('playwright-chromium');
 const test = require('tap').test;
 const path = require('path');
 
-const indexHTML = path.resolve(__dirname, 'index.html');
+const indexHTML = path.resolve(__dirname, '../../dist/web/index.html');
 
 // immediately invoked async function to let us wait for each test to finish before starting the next.
 (async () => {
