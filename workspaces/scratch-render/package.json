@@ -11,7 +11,7 @@
     "sha": "721bcc0b8412e8e4d43cccfe9d086c01359f4b61"
   },
   "main": "./dist/node/scratch-render.js",
-  "browser": "./src/index.js",
+  "browser": "./dist/web/scratch-render.js",
   "exports": {
     "webpack": "./src/index.js",
     "browser": "./dist/web/scratch-render.js",
