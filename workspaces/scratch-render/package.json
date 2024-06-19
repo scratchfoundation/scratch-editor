@@ -57,7 +57,7 @@
     "playwright-chromium": "1.44.1",
     "scratch-render-fonts": "1.0.61",
     "scratch-semantic-release-config": "1.0.14",
-    "scratch-storage": "2.3.152",
+    "scratch-storage": "2.3.153",
     "scratch-vm": "3.0.21",
     "semantic-release": "19.0.5",
     "tap": "11.1.5",
