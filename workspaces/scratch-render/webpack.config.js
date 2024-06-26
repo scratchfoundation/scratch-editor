@@ -3,7 +3,6 @@ const webpack = require('webpack');
 
 const TerserPlugin = require('terser-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const ScratchWebpackConfigBuilder = require('scratch-webpack-configuration');
 
@@ -41,19 +40,7 @@ const webConfig = baseConfig.clone()
                 name: 'ScratchRender'
             }
         }
-    })
-    .addPlugin(new HtmlWebpackPlugin({
-        chunks: 'all',
-        filename: 'index.html',
-        template: 'test/integration/index.ejs',
-        scriptLoading: 'blocking'
-    }))
-    .addPlugin(new HtmlWebpackPlugin({
-        chunks: 'all',
-        filename: 'cpu-render.html',
-        template: 'test/integration/cpu-render.ejs',
-        scriptLoading: 'blocking'
-    }));
+    });
 
 const playgroundConfig = baseConfig.clone()
     .setTarget('browserslist')

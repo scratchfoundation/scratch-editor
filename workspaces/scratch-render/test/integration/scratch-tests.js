@@ -6,7 +6,7 @@ const fs = require('fs');
 
 const allGpuModes = ['ForceCPU', 'ForceGPU', 'Automatic'];
 
-const indexHTML = path.resolve(__dirname, '../../dist/web/index.html');
+const indexHTML = path.resolve(__dirname, 'index.html');
 const testDir = (...args) => path.resolve(__dirname, 'scratch-tests', ...args);
 
 const checkOneGpuMode = (t, says) => {

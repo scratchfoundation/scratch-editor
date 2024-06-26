@@ -3,7 +3,7 @@ const {chromium} = require('playwright-chromium');
 const test = require('tap').test;
 const path = require('path');
 
-const indexHTML = path.resolve(__dirname, '../../dist/web/index.html');
+const indexHTML = path.resolve(__dirname, 'index.html');
 const testDir = (...args) => path.resolve(__dirname, 'pick-tests', ...args);
 
 const runFile = async (file, action, page, script) => {
