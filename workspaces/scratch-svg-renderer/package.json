@@ -2,12 +2,12 @@
   "name": "scratch-svg-renderer",
   "version": "2.3.74",
   "description": "SVG renderer for Scratch",
-  "main": "./dist/node/ScratchSVGRenderer.js",
-  "browser": "./dist/web/ScratchSVGRenderer.js",
+  "main": "./dist/node/scratch-svg-renderer.js",
+  "browser": "./dist/web/scratch-svg-renderer.js",
   "exports": {
     "webpack": "./src/index.js",
-    "browser": "./dist/web/ScratchSVGRenderer.js",
-    "node": "./dist/node/ScratchSVGRenderer.js",
+    "browser": "./dist/web/scratch-svg-renderer.js",
+    "node": "./dist/node/scratch-svg-renderer.js",
     "default": "./src/index.js"
   },
   "scripts": {
