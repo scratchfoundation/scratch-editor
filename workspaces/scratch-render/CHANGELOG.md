@@ -3,6 +3,265 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.189](https://github.com/scratchfoundation/scratch-render/compare/v1.0.188...v1.0.189) (2024-06-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.160 ([9d8ad66](https://github.com/scratchfoundation/scratch-render/commit/9d8ad66c668d4886017052589a2d29847ceba7e3))
+
+## [1.0.188](https://github.com/scratchfoundation/scratch-render/compare/v1.0.187...v1.0.188) (2024-06-25)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.64 ([12e4f33](https://github.com/scratchfoundation/scratch-render/commit/12e4f3375249559d3d989a79b08e86e960914b50))
+
+## [1.0.187](https://github.com/scratchfoundation/scratch-render/compare/v1.0.186...v1.0.187) (2024-06-23)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.159 ([f98faf5](https://github.com/scratchfoundation/scratch-render/commit/f98faf50a1c46b01aec778fa9ceed8d0c3cc49de))
+
+## [1.0.186](https://github.com/scratchfoundation/scratch-render/compare/v1.0.185...v1.0.186) (2024-06-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.158 ([07b5b55](https://github.com/scratchfoundation/scratch-render/commit/07b5b55419e983fb730da5d1d83f39409aaf94d2))
+
+## [1.0.185](https://github.com/scratchfoundation/scratch-render/compare/v1.0.184...v1.0.185) (2024-06-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.63 ([847cc92](https://github.com/scratchfoundation/scratch-render/commit/847cc926f929f0fbfa000728211c809c3e50b44e))
+
+## [1.0.184](https://github.com/scratchfoundation/scratch-render/compare/v1.0.183...v1.0.184) (2024-06-21)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.155 ([dff985c](https://github.com/scratchfoundation/scratch-render/commit/dff985c35c20b00e7ec1c52ecc074e500fe5bbea))
+
+## [1.0.183](https://github.com/scratchfoundation/scratch-render/compare/v1.0.182...v1.0.183) (2024-06-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.62 ([3355948](https://github.com/scratchfoundation/scratch-render/commit/33559480e082792a757acdcd4ffc9c9f90d9ca42))
+
+## [1.0.182](https://github.com/scratchfoundation/scratch-render/compare/v1.0.181...v1.0.182) (2024-06-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.154 ([821446b](https://github.com/scratchfoundation/scratch-render/commit/821446b8986faac17593f12d2e1e5bfd806077c4))
+
+## [1.0.181](https://github.com/scratchfoundation/scratch-render/compare/v1.0.180...v1.0.181) (2024-06-19)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.153 ([6d577c7](https://github.com/scratchfoundation/scratch-render/commit/6d577c7533a66aef13ad6d35f685b665e4529046))
+
+## [1.0.180](https://github.com/scratchfoundation/scratch-render/compare/v1.0.179...v1.0.180) (2024-06-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.152 ([a717ef6](https://github.com/scratchfoundation/scratch-render/commit/a717ef60ca768f7a645b7ffd433da4ea204240e3))
+
+## [1.0.179](https://github.com/scratchfoundation/scratch-render/compare/v1.0.178...v1.0.179) (2024-06-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.61 ([07b1d0c](https://github.com/scratchfoundation/scratch-render/commit/07b1d0cfa6dad7610fc514341e8d419e88f4be73))
+
+## [1.0.178](https://github.com/scratchfoundation/scratch-render/compare/v1.0.177...v1.0.178) (2024-06-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.151 ([11ac00a](https://github.com/scratchfoundation/scratch-render/commit/11ac00ae78db56fb9f8d64491bcebcbd469b26fe))
+
+## [1.0.177](https://github.com/scratchfoundation/scratch-render/compare/v1.0.176...v1.0.177) (2024-06-16)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.60 ([7067091](https://github.com/scratchfoundation/scratch-render/commit/7067091cd0b5ab92792b62dbf873af9e79902c62))
+
+## [1.0.176](https://github.com/scratchfoundation/scratch-render/compare/v1.0.175...v1.0.176) (2024-06-15)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.150 ([d36e168](https://github.com/scratchfoundation/scratch-render/commit/d36e168c6455bce1046acb901f9f9085bd61cdc4))
+
+## [1.0.175](https://github.com/scratchfoundation/scratch-render/compare/v1.0.174...v1.0.175) (2024-06-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.149 ([7e095fd](https://github.com/scratchfoundation/scratch-render/commit/7e095fd594e338cf2193880228a60c6c45d9ac91))
+
+## [1.0.174](https://github.com/scratchfoundation/scratch-render/compare/v1.0.173...v1.0.174) (2024-06-13)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.147 ([8d74fec](https://github.com/scratchfoundation/scratch-render/commit/8d74fec3bbe1a2f4bf0d28c19dedef1ab02512ab))
+
+## [1.0.173](https://github.com/scratchfoundation/scratch-render/compare/v1.0.172...v1.0.173) (2024-06-13)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.59 ([6d2d368](https://github.com/scratchfoundation/scratch-render/commit/6d2d36849f267b7786d333be0ba0b9d789e24b90))
+
+## [1.0.172](https://github.com/scratchfoundation/scratch-render/compare/v1.0.171...v1.0.172) (2024-06-12)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.145 ([d9b9139](https://github.com/scratchfoundation/scratch-render/commit/d9b913931f068b529e8247299402946e4c9ee297))
+
+## [1.0.171](https://github.com/scratchfoundation/scratch-render/compare/v1.0.170...v1.0.171) (2024-06-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.144 ([1342af0](https://github.com/scratchfoundation/scratch-render/commit/1342af0e33330595d74c446d72414de711e197e5))
+
+## [1.0.170](https://github.com/scratchfoundation/scratch-render/compare/v1.0.169...v1.0.170) (2024-06-11)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.58 ([6e7b83c](https://github.com/scratchfoundation/scratch-render/commit/6e7b83c238dab7c96f33d51989184cb891c62c5c))
+
+## [1.0.169](https://github.com/scratchfoundation/scratch-render/compare/v1.0.168...v1.0.169) (2024-06-10)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.143 ([92a653f](https://github.com/scratchfoundation/scratch-render/commit/92a653f2b1b3c33ca6de3a107ba2ef6bf4145077))
+
+## [1.0.168](https://github.com/scratchfoundation/scratch-render/compare/v1.0.167...v1.0.168) (2024-06-09)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.141 ([09e86c7](https://github.com/scratchfoundation/scratch-render/commit/09e86c7f63ad884187dd03751478878e81777578))
+
+## [1.0.167](https://github.com/scratchfoundation/scratch-render/compare/v1.0.166...v1.0.167) (2024-06-08)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.140 ([31fd97e](https://github.com/scratchfoundation/scratch-render/commit/31fd97eba6414fc204c0f020125699c2f02e353c))
+
+## [1.0.166](https://github.com/scratchfoundation/scratch-render/compare/v1.0.165...v1.0.166) (2024-06-08)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.57 ([c1e4d0a](https://github.com/scratchfoundation/scratch-render/commit/c1e4d0a1bea1a2249a20bc0697b4c5daf03f8918))
+
+## [1.0.165](https://github.com/scratchfoundation/scratch-render/compare/v1.0.164...v1.0.165) (2024-06-07)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.139 ([e670e72](https://github.com/scratchfoundation/scratch-render/commit/e670e72612f1ffa903f0f3c161694b70ae066622))
+
+## [1.0.164](https://github.com/scratchfoundation/scratch-render/compare/v1.0.163...v1.0.164) (2024-06-06)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.137 ([1a9133d](https://github.com/scratchfoundation/scratch-render/commit/1a9133d7b344ee765da58e238e4669f2e462e7a1))
+
+## [1.0.163](https://github.com/scratchfoundation/scratch-render/compare/v1.0.162...v1.0.163) (2024-06-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.136 ([67a7c03](https://github.com/scratchfoundation/scratch-render/commit/67a7c034f7d6cce6b5f8b63f609ec7ba7ff00286))
+
+## [1.0.162](https://github.com/scratchfoundation/scratch-render/compare/v1.0.161...v1.0.162) (2024-06-05)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.56 ([f54582d](https://github.com/scratchfoundation/scratch-render/commit/f54582deb39dab1fc10aff0d9a56d2ffe395ac94))
+
+## [1.0.161](https://github.com/scratchfoundation/scratch-render/compare/v1.0.160...v1.0.161) (2024-06-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.135 ([ea5a639](https://github.com/scratchfoundation/scratch-render/commit/ea5a639284cf97e769a967832e3a658234ebe862))
+
+## [1.0.160](https://github.com/scratchfoundation/scratch-render/compare/v1.0.159...v1.0.160) (2024-06-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.134 ([4cd3f2e](https://github.com/scratchfoundation/scratch-render/commit/4cd3f2eb963e35f07d551c912266aa7acc0892f7))
+
+## [1.0.159](https://github.com/scratchfoundation/scratch-render/compare/v1.0.158...v1.0.159) (2024-06-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.55 ([d7f8ac4](https://github.com/scratchfoundation/scratch-render/commit/d7f8ac42a6a99de3834e7939140239eb39fceb65))
+
+## [1.0.158](https://github.com/scratchfoundation/scratch-render/compare/v1.0.157...v1.0.158) (2024-06-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.133 ([ac2b405](https://github.com/scratchfoundation/scratch-render/commit/ac2b4052e57569eaf410f3ad3e90a4f362ed513e))
+
+## [1.0.157](https://github.com/scratchfoundation/scratch-render/compare/v1.0.156...v1.0.157) (2024-06-02)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.132 ([426a002](https://github.com/scratchfoundation/scratch-render/commit/426a0024d39bd4056891c57775a950a020d213ee))
+
+## [1.0.156](https://github.com/scratchfoundation/scratch-render/compare/v1.0.155...v1.0.156) (2024-06-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.131 ([2858f10](https://github.com/scratchfoundation/scratch-render/commit/2858f103ab27a361270e165ac1c786efeb473686))
+
+## [1.0.155](https://github.com/scratchfoundation/scratch-render/compare/v1.0.154...v1.0.155) (2024-06-01)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.54 ([36a4a56](https://github.com/scratchfoundation/scratch-render/commit/36a4a56b6aa3eac64d3a1066ddaa2a4f583a93d5))
+
+## [1.0.154](https://github.com/scratchfoundation/scratch-render/compare/v1.0.153...v1.0.154) (2024-05-31)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.130 ([bc27599](https://github.com/scratchfoundation/scratch-render/commit/bc27599109d4dc0d356d3c799105221796116b55))
+
+## [1.0.153](https://github.com/scratchfoundation/scratch-render/compare/v1.0.152...v1.0.153) (2024-05-30)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-storage to v2.3.128 ([c366b8e](https://github.com/scratchfoundation/scratch-render/commit/c366b8ed63e88cb85228e9510413ed465c9d2dbd))
+
 ## [1.0.152](https://github.com/scratchfoundation/scratch-render/compare/v1.0.151...v1.0.152) (2024-05-29)
 
 
