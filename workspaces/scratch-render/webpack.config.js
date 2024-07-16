@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
 
-const TerserPlugin = require('terser-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const ScratchWebpackConfigBuilder = require('scratch-webpack-configuration');
@@ -11,13 +10,6 @@ const baseConfig = new ScratchWebpackConfigBuilder({
 })
     .enableDevServer(process.env.PORT || 8361)
     .merge({
-        optimization: {
-            minimizer: [
-                new TerserPlugin({
-                    include: /\.min\.js$/
-                })
-            ]
-        },
         resolve: {
             fallback: {
                 Buffer: require.resolve('buffer/')
