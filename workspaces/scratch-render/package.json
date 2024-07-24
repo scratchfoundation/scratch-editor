@@ -1,6 +1,6 @@
 {
   "name": "scratch-render",
-  "version": "1.0.189",
+  "version": "1.0.225",
   "description": "WebGL Renderer for Scratch 3.0",
   "author": "Massachusetts Institute of Technology",
   "license": "BSD-3-Clause",
@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/scratchfoundation/scratch-render.git",
-    "sha": "279f00526bbfd757c531579e23ee72b7c9b419cc"
+    "sha": "3aed1c7c28512bf1d9f54a1d13d2b12eecb79b53"
   },
   "exports": {
     "webpack": "./src/index.js",
@@ -67,10 +67,10 @@
     "husky": "8.0.3",
     "jsdoc": "3.6.11",
     "json": "9.0.6",
-    "playwright-chromium": "1.44.1",
-    "scratch-render-fonts": "1.0.64",
+    "playwright-chromium": "1.45.2",
+    "scratch-render-fonts": "1.0.76",
     "scratch-semantic-release-config": "1.0.14",
-    "scratch-storage": "2.3.160",
+    "scratch-storage": "2.3.190",
     "scratch-vm": "^4.5.280",
     "scratch-webpack-configuration": "^1.3.0",
     "semantic-release": "19.0.5",
