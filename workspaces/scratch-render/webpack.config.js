@@ -1,5 +1,4 @@
 const path = require('path');
-const webpack = require('webpack');
 
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -15,10 +14,7 @@ const baseConfig = new ScratchWebpackConfigBuilder({
                 Buffer: require.resolve('buffer/')
             }
         }
-    })
-    .addPlugin(new webpack.ProvidePlugin({
-        Buffer: ['buffer', 'Buffer']
-    }));
+    });
 
 const webConfig = baseConfig.clone()
     .setTarget('browserslist')
