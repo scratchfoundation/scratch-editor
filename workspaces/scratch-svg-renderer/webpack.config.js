@@ -3,7 +3,7 @@ const path = require('path');
 const ScratchWebpackConfigBuilder = require('scratch-webpack-configuration');
 
 const common = {
-    libraryName: 'ScratchSVGRenderer',
+    libraryName: 'scratch-svg-renderer',
     rootPath: path.resolve(__dirname)
 };
 
@@ -12,6 +12,14 @@ const common = {
  */
 const nodeConfig = new ScratchWebpackConfigBuilder(common)
     .setTarget('node')
+    .merge({
+        output: {
+            library: {
+                name: 'ScratchSVGRenderer',
+                type: 'umd'
+            }
+        }
+    })
     .get();
 
 /**
@@ -19,6 +27,14 @@ const nodeConfig = new ScratchWebpackConfigBuilder(common)
  */
 const webConfig = new ScratchWebpackConfigBuilder(common)
     .setTarget('browserslist')
+    .merge({
+        output: {
+            library: {
+                name: 'ScratchSVGRenderer',
+                type: 'umd'
+            }
+        }
+    })
     .get();
 
 /**
@@ -33,6 +49,10 @@ const playgroundConfig = new ScratchWebpackConfigBuilder(common)
         },
         output: {
             path: path.resolve(__dirname, 'playground'),
+            library: {
+                name: 'ScratchSVGRenderer',
+                type: 'umd'
+            },
             publicPath: '/'
         }
     })
