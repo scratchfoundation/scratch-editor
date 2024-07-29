@@ -1,86 +1,64 @@
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const base = {
-    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-    devServer: {
-        contentBase: false,
-        host: '0.0.0.0',
-        port: process.env.PORT || 8361
-    },
-    devtool: 'cheap-module-source-map',
-    module: {
-        rules: [
-            {
-                include: [
-                    path.resolve('src')
-                ],
-                test: /\.js$/,
-                loader: 'babel-loader',
-                options: {
-                    presets: [['env', {targets: {browsers: ['last 3 versions', 'Safari >= 8', 'iOS >= 8']}}]]
-                }
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const ScratchWebpackConfigBuilder = require('scratch-webpack-configuration');
+
+const baseConfig = new ScratchWebpackConfigBuilder({
+    rootPath: path.resolve(__dirname)
+})
+    .enableDevServer(process.env.PORT || 8361)
+    .merge({
+        resolve: {
+            fallback: {
+                Buffer: require.resolve('buffer/')
             }
-        ]
-    },
-    optimization: {
-        minimizer: [
-            new UglifyJsPlugin({
-                include: /\.min\.js$/
-            })
-        ]
-    },
-    plugins: []
-};
-
-module.exports = [
-    // Playground
-    Object.assign({}, base, {
-        target: 'web',
-        entry: {
-            playground: './src/playground/playground.js',
-            queryPlayground: './src/playground/queryPlayground.js'
-        },
-        output: {
-            libraryTarget: 'umd',
-            path: path.resolve('playground'),
-            filename: '[name].js'
-        },
-        plugins: base.plugins.concat([
-            new CopyWebpackPlugin([
-                {
-                    context: 'src/playground',
-                    from: '*.+(html|css)'
-                }
-            ])
-        ])
-    }),
-    // Web-compatible
-    Object.assign({}, base, {
-        target: 'web',
-        entry: {
-            'scratch-render': './src/index.js',
-            'scratch-render.min': './src/index.js'
-        },
-        output: {
-            library: 'ScratchRender',
-            libraryTarget: 'umd',
-            path: path.resolve('dist', 'web'),
-            filename: '[name].js'
         }
-    }),
-    // Node-compatible
-    Object.assign({}, base, {
-        target: 'node',
+    });
+
+const webConfig = baseConfig.clone()
+    .setTarget('browserslist')
+    .merge({
         entry: {
-            'scratch-render': './src/index.js'
+            'scratch-render': path.join(__dirname, 'src/index.js'),
+            'scratch-render.min': path.join(__dirname, 'src/index.js')
         },
         output: {
-            library: 'ScratchRender',
-            libraryTarget: 'commonjs2',
-            path: path.resolve('dist', 'node'),
-            filename: '[name].js'
+            library: {
+                name: 'ScratchRender'
+            }
+        }
+    });
+
+const playgroundConfig = baseConfig.clone()
+    .setTarget('browserslist')
+    .merge({
+        entry: {
+            playground: path.join(__dirname, 'src/playground/playground.js'),
+            queryPlayground: path.join(__dirname, 'src/playground/queryPlayground.js')
+        },
+        output: {
+            path: path.resolve('playground')
+        }
+    })
+    .addPlugin(new CopyWebpackPlugin([
+        {
+            context: 'src/playground',
+            from: '*.+(html|css)'
+        }
+    ]));
+
+const nodeConfig = baseConfig.clone()
+    .setTarget('node')
+    .merge({
+        entry: {
+            'scratch-render': path.join(__dirname, 'src/index.js')
+        },
+        output: {
+            library: {
+                name: 'ScratchRender',
+                type: 'commonjs2'
+            }
         },
         externals: {
             '!ify-loader!grapheme-breaker': 'grapheme-breaker',
@@ -90,5 +68,15 @@ module.exports = [
             'twgl.js': true,
             'xml-escape': true
         }
-    })
+    });
+
+module.exports = [
+    // Playground
+    playgroundConfig.get(),
+
+    // Web-compatible
+    webConfig.get(),
+
+    // Node-compatible
+    nodeConfig.get()
 ];
