@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.311](https://github.com/scratchfoundation/scratch-paint/compare/v2.2.310...v2.2.311) (2024-07-29)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.79 ([#2697](https://github.com/scratchfoundation/scratch-paint/issues/2697)) ([483f663](https://github.com/scratchfoundation/scratch-paint/commit/483f6630051d4fefe00504173e71eb0b276d7622))
+
 ## [2.2.310](https://github.com/scratchfoundation/scratch-paint/compare/v2.2.309...v2.2.310) (2024-07-29)
 
 
