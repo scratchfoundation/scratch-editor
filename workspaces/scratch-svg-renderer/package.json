@@ -1,6 +1,6 @@
 {
   "name": "scratch-svg-renderer",
-  "version": "2.3.97",
+  "version": "2.3.101",
   "description": "SVG renderer for Scratch",
   "main": "./dist/node/scratch-svg-renderer.js",
   "browser": "./dist/web/scratch-svg-renderer.js",
@@ -55,7 +55,7 @@
     "json": "9.0.6",
     "mkdirp": "2.1.6",
     "rimraf": "3.0.2",
-    "scratch-render-fonts": "1.0.76",
+    "scratch-render-fonts": "1.0.78",
     "scratch-semantic-release-config": "1.0.14",
     "scratch-webpack-configuration": "1.3.0",
     "semantic-release": "19.0.5",
