@@ -39,7 +39,7 @@
   ],
   "dependencies": {
     "grapheme-breaker": "^0.3.2",
-    "hull.js": "^0.2.10",
+    "hull.js": "0.2.10",
     "ify-loader": "^1.0.4",
     "linebreak": "^0.3.0",
     "minilog": "^3.1.0",
