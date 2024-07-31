@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.237](https://github.com/scratchfoundation/scratch-render/compare/v1.0.236...v1.0.237) (2024-07-31)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([89cf430](https://github.com/scratchfoundation/scratch-render/commit/89cf430ac7904f8af19224ecbb4ebe3df007bb97))
+* fixed hull.js version to 0.2.10 because of breaking changes ([d3000e7](https://github.com/scratchfoundation/scratch-render/commit/d3000e7a8fc110e50ed576b247ff206f9cf85ee4))
+
 ## [1.0.236](https://github.com/scratchfoundation/scratch-render/compare/v1.0.235...v1.0.236) (2024-07-30)
 
 
