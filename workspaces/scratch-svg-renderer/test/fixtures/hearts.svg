@@ -1,0 +1,31 @@
+<svg version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 480 360" enable-background="new 0 0 480 360" xml:space="preserve" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <metadata>
+      <sfw xmlns="&ns_sfw;">
+        <slices/>
+        <sliceSourceBounds height="70.4" width="85" bottomLeftOrigin="true" y="-315.2" x="437.5"/>
+        <optimizationSettings>
+          <targetSettings targetSettingsID="0" fileFormat="PNG24Format">
+            <PNG24Format transparency="false" matteColor="#FFFFFF" filtered="false" noMatteColor="false" interlaced="false"/>
+          </targetSettings>
+        </optimizationSettings>
+      </sfw>
+    </metadata>
+    <g/>
+    <g/>
+    <g/>
+    <g/>
+    <g/>
+    <g/>
+    <g>
+      <rect x="197.5" y="144.8" fill="none" width="85" height="70.4"/>
+      <g>
+        <rect x="197.5" y="144.8" fill="#481022" width="85" height="70.4"/>
+      </g>
+      <path fill="#C91E4F" d="M214.2,148.4c0.9-1.2,1.8-2.4,2.8-3.6h-5.5C212.4,145.5,214.8,147.6,214.2,148.4z"/>
+      <path fill="#C91E4F" d="M279.3,190.9c-1.6,4.6,0.4,8.4,3.2,11.6v-15.7C281,187.8,279.8,189.3,279.3,190.9z"/>
+      <path fill="#C91E4F" d="M229.3,193.5c-0.5-4.8-5.3-10.1-10.5-9.5c-2.8,0.3-4.7,2.6-5.9,5c-0.1,0.2-1.3,2.2-1.2,2.3&#xD;&#xA;&#x9;&#x9;c0,0-4.3-6.3-9.4-6.3c-1.7,0-3.4,0.7-4.9,1.8v15.7c0.9,1,1.9,2,2.9,3c3.6,3.3,7.4,6.2,10.9,9.6c0,0,0.1,0.1,0.2,0.2h5.5&#xD;&#xA;&#x9;&#x9;c4-4.7,8.7-8.9,11-14.7C229,198.3,229.5,195.9,229.3,193.5z"/>
+      <path fill="#861539" d="M260.5,161.4c-3.9,0-7.2,4.8-7.2,4.8c0.1-0.1-0.8-1.6-0.9-1.8c-0.9-1.8-2.4-3.6-4.5-3.8&#xD;&#xA;&#x9;&#x9;c-3.9-0.4-7.6,3.6-8,7.3c-0.2,1.9,0.2,3.7,0.9,5.4c2.2,5.5,7.2,9.2,10.6,14c-0.4-0.6,1.9-2.6,2.2-2.9c2.7-2.6,5.7-4.8,8.4-7.3&#xD;&#xA;&#x9;&#x9;c3.2-2.9,6.3-6.5,4.7-11.1C265.8,163.6,263.1,161.4,260.5,161.4z"/>
+    </g>
+  </g>
+</svg>
