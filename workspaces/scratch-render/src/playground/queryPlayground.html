@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scratch WebGL Query Playground</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <style>
+        input[type=range][orient=vertical] {
+            writing-mode: bt-lr; /* IE */
+            -webkit-appearance: slider-vertical;
+            width: 1rem;
+            padding: 0 0.5rem;
+        }
+        canvas {
+            /* https://stackoverflow.com/a/7665647 */
+            image-rendering: optimizeSpeed; /* Older versions of FF */
+            image-rendering: -moz-crisp-edges; /* FF 6.0+ */
+            image-rendering: -webkit-optimize-contrast; /* Safari */
+            image-rendering: -o-crisp-edges; /* OS X & Windows Opera (12.02+) */
+            image-rendering: pixelated; /* Awesome future-browsers */
+            -ms-interpolation-mode: nearest-neighbor; /* IE */
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <fieldset>
+            <legend>Query Canvases</legend>
+            <table>
+                <tr>
+                    <td>
+                        <fieldset>
+                            <legend>GPU</legend>
+                            <div>Touching color A? <span id="gpuTouchingA">maybe</span></div>
+                            <div>Touching color B? <span id="gpuTouchingB">maybe</span></div>
+                            <canvas id="gpuQueryCanvas" width="480" height="360" style="height: 20rem"></canvas>
+                        </fieldset>
+                    </td>
+                    <td>
+                        <fieldset>
+                            <legend>CPU</legend>
+                            <div>Touching color A? <span id="cpuTouchingA">maybe</span></div>
+                            <div>Touching color B? <span id="cpuTouchingB">maybe</span></div>
+                            <canvas id="cpuQueryCanvas" width="480" height="360" style="height: 20rem"></canvas>
+                        </fieldset>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+        <fieldset>
+            <legend>Render Canvas</legend>
+            <div>Cursor Position: <span id="cursorPosition">somewhere</span></div>
+            <table>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input id="cursorX" type="range" step="0.25" value="0" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input id="cursorY" type="range" orient="vertical" step="0.25" value="0" />
+                    </td>
+                    <td>
+                        <canvas id="renderCanvas" width="480" height="360"></canvas>
+                    </td>
+                </tr>
+            </table>
+        </fieldset>
+    </div>
+</body>
+<script src="queryPlayground.js"></script>
+</html>
