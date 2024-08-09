@@ -1,0 +1,64 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  scratch-svg-renderer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - name: Publish package to npm
+        use: "./.github/actions/publish-package"
+        with:
+          working-directory: "./workspaces/scratch-svg-renderer"
+  scratch-render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - name: Publish package to npm
+        use: "./.github/actions/publish-package"
+        with:
+          working-directory: "./workspaces/scratch-render"
+      - needs:
+        - scratch-svg-renderer
+  scratch-vm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - name: Publish package to npm
+        use: "./.github/actions/publish-package"
+        with:
+          working-directory: "./workspaces/vm"
+      - needs:
+        - scratch-svg-renderer
+        - scratch-render
+  scratch-gui:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - name: Publish package to npm
+        use: "./.github/actions/publish-package"
+        with:
+          working-directory: "./workspaces/gui"
+      - needs:
+        - scratch-svg-renderer
+        - scratch-render
+        - scratch-gui

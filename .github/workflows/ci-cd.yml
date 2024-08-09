@@ -1,0 +1,80 @@
+name: CI/CD
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Detect affected workspaces
+    runs-on: ubuntu-latest
+    outputs:
+      scratch-svg-renderer: ${{ steps.filter.outputs.scratch-svg-renderer }}
+      scratch-render: ${{ steps.filter.outputs.scratch-render }}
+      scratch-vm: ${{ steps.filter.outputs.scratch-vm }}
+      scratch-gui: ${{ steps.filter.outputs.scratch-gui }}
+    steps:
+      - uses: actions/checkout@v4 # TODO: skip this for PRs
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            any-workspace:
+              - ".github/workflows/workspace-*.yml"
+              - "workspaces/**"
+            scratch-svg-renderer:
+              - ".github/workflows/workspace-scratch-svg-renderer.yml"
+              - "workspaces/scratch-svg-renderer/**"
+            scratch-render:
+              - ".github/workflows/workspace-scratch-render.yml"
+              - "workspaces/scratch-render/**"
+              - "workspaces/scratch-svg-renderer/**"
+            scratch-vm:
+              - ".github/workflows/workspace-scratch-vm.yml"
+              - "workspaces/scratch-render/**"
+              - "workspaces/scratch-svg-renderer/**"
+              - "workspaces/scratch-vm/**"
+            scratch-gui:
+              - ".github/workflows/workspace-scratch-gui.yml"
+              - "workspaces/scratch-gui/**"
+              - "workspaces/scratch-render/**"
+              - "workspaces/scratch-svg-renderer/**"
+              - "workspaces/scratch-vm/**"
+      - if: ${{ steps.filter.outputs.any-workspace == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          cache: npm
+          node-version-file: .nvmrc
+      - if: ${{ steps.filter.outputs.any-workspace == 'true' }}
+        uses: ./.github/actions/install-dependencies
+  scratch-svg-renderer:
+    uses: ./.github/workflows/workspace-scratch-svg-renderer.yml
+    if: ${{ !failure() && !cancelled() && needs.changes.outputs.scratch-svg-renderer == 'true' }}
+    needs:
+      - changes
+  scratch-render:
+    uses: ./.github/workflows/workspace-scratch-render.yml
+    if: ${{ !failure() && !cancelled() && needs.changes.outputs.scratch-render == 'true' }}
+    needs:
+      - changes
+      - scratch-svg-renderer
+  scratch-vm:
+    uses: ./.github/workflows/workspace-scratch-vm.yml
+    if: ${{ !failure() && !cancelled() && needs.changes.outputs.scratch-vm == 'true' }}
+    needs:
+      - changes
+      - scratch-render
+      - scratch-svg-renderer
+  scratch-gui:
+    uses: ./.github/workflows/workspace-scratch-gui.yml
+    if: ${{ !failure() && !cancelled() && needs.changes.outputs.scratch-gui == 'true' }}
+    needs:
+      - changes
+      - scratch-render
+      - scratch-svg-renderer
+      - scratch-vm

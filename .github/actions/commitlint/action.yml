@@ -1,0 +1,7 @@
+name: Lint commit messages
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+    - uses: wagoid/commitlint-github-action@v5
