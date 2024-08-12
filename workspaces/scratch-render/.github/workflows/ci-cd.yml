@@ -1,0 +1,61 @@
+name: CI/CD
+
+on:
+    workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+    push: # Runs whenever a commit is pushed to the repository
+
+concurrency:
+    group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+    cancel-in-progress: true
+
+permissions:
+    contents: write # publish a GitHub release
+    pages: write # deploy to GitHub Pages
+    issues: write # comment on released issues
+    pull-requests: write # comment on released pull requests
+
+jobs:
+    ci-cd:
+        runs-on: ubuntu-latest
+        env:
+            TRIGGER_DEPLOY: ${{ startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/heads/hotfix') || startsWith(github.ref, 'refs/heads/develop') || startsWith(github.ref, 'refs/heads/beta') }}
+        steps:
+            - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+            - uses: wagoid/commitlint-github-action@5ce82f5d814d4010519d15f0552aec4f17a1e1fe # v5
+              if: github.event_name == 'pull_request'
+            - uses: actions/setup-node@26961cf329f22f6837d5f54c3efd76b480300ace # v4
+              with:
+                  cache: "npm"
+                  node-version-file: ".nvmrc"
+
+            - name: Info
+              run: |
+                  cat <<EOF
+                  Node version: $(node --version)
+                  NPM version: $(npm --version)
+                  GitHub ref: ${{ github.ref }}
+                  GitHub head ref: ${{ github.head_ref }}
+                  EOF
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Install Playwright browsers
+              run: npx playwright install-deps
+
+            - name: Setup & Test
+              run: |
+                  mkdir -p ./test/results
+                  npm test
+
+            - run: npm run build
+
+            - name: Run semantic-release
+              env:
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  if [[ ${{contains(github.ref, 'hotfix/')}} ]]; then
+                      sed -e "s|hotfix/REPLACE|${{ github.ref_name }}|" --in-place release.config.js
+                  fi
+                  npx --no -- semantic-release

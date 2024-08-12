@@ -1,0 +1,18 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  "extends": [
+    "github>scratchfoundation/scratch-renovate-config:js-lib-bundled"
+  ],
+
+  "packageRules": [
+    // Don't bump scratch-render's version number when merging a scratch-vm update
+    // since that will cause a never-ending cycle of dependency updates.
+    {
+      "description": "don't bump scratch-render version when updating scratch-vm",
+      "automerge": true,
+      "matchPackageNames": ["scratch-vm"],
+      "semanticCommitType": "test" // scratch-vm is a dependency of scratch-render tests only
+    }
+  ]
+}
