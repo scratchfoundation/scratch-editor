@@ -1,0 +1,69 @@
+name: "Workspace: @scratch/scratch-gui"
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+concurrency:
+  group: '@scratch/scratch-gui @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+
+permissions:
+  contents: write # publish a GitHub release
+  pages: write # deploy to GitHub Pages
+  issues: write # comment on released issues
+  pull-requests: write # comment on released pull requests
+
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "workspaces/scratch-gui"
+    environment: >-
+      ${{
+        (
+          (
+            (github.ref == 'refs/heads/main') ||
+            (github.ref == 'refs/heads/master')
+          ) && 'production'
+        ) ||
+        (
+          (
+            (github.ref == 'refs/heads/beta') ||
+            (github.ref == 'refs/heads/develop') ||
+            startsWith(github.ref, 'refs/heads/hotfix/') ||
+            startsWith(github.ref, 'refs/heads/release/')
+          ) && 'staging'
+        ) ||
+        ''
+      }}
+    env:
+      SCRATCH_SHOULD_DEPLOY: ${{ vars.SCRATCH_ENV != '' }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - name: Debug info
+        run: |
+          cat <<EOF
+          Scratch environment: ${{ vars.SCRATCH_ENV || '<none>' }}
+          Node version: $(node --version)
+          NPM version: $(npm --version)
+          GitHub ref: ${{ github.ref }}
+          GitHub head ref: ${{ github.head_ref }}
+          Working directory: $(pwd)
+          EOF
+      - uses: ./.github/actions/install-dependencies
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm run test
+      - name: Release
+        if: ${{ env.SCRATCH_SHOULD_DEPLOY == 'true' }}
+        env:
+            NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            npx --no -- semantic-release
