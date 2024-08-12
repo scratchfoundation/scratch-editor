@@ -1,0 +1,17 @@
+# Mac OS
+.DS_Store
+
+# NPM
+/node_modules
+npm-*
+
+# Build
+dist/*
+/playground
+
+# Editors
+/#*
+*~
+
+# Act
+.secrets
