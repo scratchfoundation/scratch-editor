@@ -1,5 +1,5 @@
 {
-  "name": "scratch-svg-renderer",
+  "name": "@scratch/scratch-svg-renderer",
   "version": "2.3.112",
   "description": "SVG renderer for Scratch",
   "main": "./dist/node/scratch-svg-renderer.js",
@@ -13,7 +13,6 @@
   "scripts": {
     "build": "npm run clean && webpack",
     "clean": "rimraf ./dist",
-    "prepare": "husky install",
     "start": "webpack-dev-server",
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "eslint . --ext .js",
@@ -43,14 +42,11 @@
     "@babel/core": "7.25.2",
     "@babel/eslint-parser": "7.25.1",
     "@babel/preset-env": "7.25.3",
-    "@commitlint/cli": "18.6.1",
-    "@commitlint/config-conventional": "18.6.3",
     "babel-loader": "9.1.3",
     "copy-webpack-plugin": "4.6.0",
     "eslint": "8.57.0",
     "eslint-config-scratch": "9.0.8",
     "eslint-plugin-import": "2.29.1",
-    "husky": "8.0.3",
     "jsdom": "13.2.0",
     "json": "9.0.6",
     "mkdirp": "2.1.6",
@@ -70,10 +66,5 @@
     "Edge >= 15",
     "Firefox >= 57",
     "Safari >= 11"
-  ],
-  "config": {
-    "commitizen": {
-      "path": "cz-conventional-changelog"
-    }
-  }
+  ]
 }
