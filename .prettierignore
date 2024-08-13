@@ -1,3 +1,9 @@
+package.json
+
+##
+# The ignores below are copied from .gitignore - please keep them in sync
+##
+
 # build-monorepo.sh
 /monorepo.out
 /monorepo.tmp
