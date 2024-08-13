@@ -1,5 +1,8 @@
 package.json
 
+packages/*
+!packages/scratch-web
+
 ##
 # The ignores below are copied from .gitignore - please keep them in sync
 ##
