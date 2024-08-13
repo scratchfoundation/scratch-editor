@@ -27,6 +27,7 @@
     "@commitlint/config-conventional": "17.6.5",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "husky": "8.0.3",
+    "lint-staged": "^15.2.9",
     "prettier-plugin-tailwindcss": "^0.6.6",
     "ts-node": "10.9.1"
   }

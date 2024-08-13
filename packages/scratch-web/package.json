@@ -9,6 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,md,html,css}": "prettier --check"
+  },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
