@@ -4,6 +4,10 @@
     "source.organizeImports": "never"
   },
 
+  "files.associations": {
+    "*.css": "postcss"
+  },
+
   "[css][typescript][javascript][javascriptreact][typescriptreact][html][json][markdown]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"

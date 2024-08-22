@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Button } from '@scratch/web-shared/ui-components/button.js';
-import './App.css';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 
@@ -27,7 +26,9 @@ export function App() {
                     count is {count}
                 </Button>
                 <p>
-                    Edit <code>src/App.tsx</code> and save to test HMR
+                    Edit{' '}
+                    <code className="text-xl text-red-600">src/App.tsx</code>{' '}
+                    and save to test HMR
                 </p>
             </div>
             <p className="read-the-docs">

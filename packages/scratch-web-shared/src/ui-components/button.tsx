@@ -21,6 +21,7 @@ export function Button({
     return (
         <button
             type={submits ? 'submit' : 'button'}
+            className="text-xl text-red-600"
             onClick={
                 loading || disabled
                     ? undefined
