@@ -1,0 +1,21 @@
+# Mac OS
+.DS_Store
+
+# NPM
+/node_modules
+npm-*
+
+# Double copies of all the static assets and tutorial gifs
+/src
+
+# Testing
+/.nyc_output
+/coverage
+/test
+
+# Build
+/.opt-in
+/build
+
+# generated translation files
+/translations
