@@ -1,0 +1,28 @@
+<body>
+    <script src="../../node_modules/scratch-vm/dist/web/scratch-vm.js"></script>
+    <script src="../../node_modules/scratch-storage/dist/web/scratch-storage.js"></script>
+    <script src="../../node_modules/scratch-svg-renderer/dist/web/scratch-svg-renderer.js"></script>
+    <script src="../helper/page-util.js"></script>
+    <!-- note: this uses the BUILT version of scratch-render!  make sure to npm run build -->
+    <script src="../../dist/web/scratch-render.js"></script>
+
+    <canvas id="test" width="480" height="360" style="width: 480px"></canvas>
+    <input type="file" id="file" name="file">
+
+    <script>
+        // These variables are going to be available in the "window global" intentionally.
+        // Allows you easy access to debug with `vm.greenFlag()` etc.
+        window.devicePixelRatio = 1;
+
+        var canvas = document.getElementById('test');
+        var render = new ScratchRender(canvas);
+        var vm = initVM(render);
+        var mockMouse = data => vm.runtime.postIOData('mouse', {
+            canvasWidth: canvas.width,
+            canvasHeight: canvas.height,
+            ...data,
+        });
+
+        const loadFile = loadFileInputIntoVM.bind(null, document.getElementById('file'), vm, render);
+    </script>
+</body>

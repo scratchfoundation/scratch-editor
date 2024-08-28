@@ -1,0 +1,16 @@
+# Development files
+.eslintrc.js
+/.editorconfig
+/.eslintignore
+/.gitattributes
+/.github
+/.jsdoc.json
+/.travis.yml
+/test
+/webpack.config.js
+
+# Build created files
+/playground
+
+# Exclude already built packages from testing with npm pack
+/scratch-render-*.{tar,tgz}
