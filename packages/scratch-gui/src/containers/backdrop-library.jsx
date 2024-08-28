@@ -2,7 +2,7 @@ import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {defineMessages, injectIntl, intlShape} from 'react-intl';
-import VM from 'scratch-vm';
+import VM from '@scratch/scratch-vm';
 
 import backdropLibraryContent from '../lib/libraries/backdrops.json';
 import backdropTags from '../lib/libraries/backdrop-tags';
