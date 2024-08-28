@@ -110,7 +110,7 @@ const playgroundBuilder = webBuilder.clone()
         }
     })
     .addModuleRule({
-        test: require.resolve('scratch-render'),
+        test: require.resolve('@scratch/scratch-render'),
         loader: 'expose-loader',
         options: {
             exposes: 'ScratchRender'
@@ -118,17 +118,17 @@ const playgroundBuilder = webBuilder.clone()
     })
     .addPlugin(new CopyWebpackPlugin([
         {
-            from: 'node_modules/scratch-blocks/media',
+            from: '../../node_modules/scratch-blocks/media',
             to: 'media'
         },
         {
-            from: 'node_modules/scratch-storage/dist/web'
+            from: '../../node_modules/scratch-storage/dist/web'
         },
         {
-            from: 'node_modules/scratch-render/dist/web'
+            from: '../../node_modules/@scratch/scratch-render/dist/web'
         },
         {
-            from: 'node_modules/scratch-svg-renderer/dist/web'
+            from: '../../node_modules/@scratch/scratch-svg-renderer/dist/web'
         },
         {
             from: 'src/playground'

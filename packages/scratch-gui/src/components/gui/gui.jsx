@@ -7,8 +7,8 @@ import {connect} from 'react-redux';
 import MediaQuery from 'react-responsive';
 import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
 import tabStyles from 'react-tabs/style/react-tabs.css';
-import VM from 'scratch-vm';
-import Renderer from 'scratch-render';
+import VM from '@scratch/scratch-vm';
+import Renderer from '@scratch/scratch-render';
 
 import Blocks from '../../containers/blocks.jsx';
 import CostumeTab from '../../containers/costume-tab.jsx';

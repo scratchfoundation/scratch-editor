@@ -1,7 +1,7 @@
 const twgl = require('twgl.js');
 
 const Skin = require('./Skin');
-const {loadSvgString, serializeSvgToString} = require('scratch-svg-renderer');
+const {loadSvgString, serializeSvgToString} = require('@scratch/scratch-svg-renderer');
 const ShaderManager = require('./ShaderManager');
 
 const MAX_TEXTURE_DIMENSION = 2048;

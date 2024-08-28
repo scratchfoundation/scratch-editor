@@ -50,7 +50,7 @@ npm run build
 ## How to include in a Node.js App
 For an extended setup example, check out the /src/playground directory, which includes a fully running VM instance.
 ```js
-var VirtualMachine = require('scratch-vm');
+var VirtualMachine = require('@scratch/scratch-vm');
 var vm = new VirtualMachine();
 
 // Block events

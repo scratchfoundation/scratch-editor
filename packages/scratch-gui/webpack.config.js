@@ -45,11 +45,11 @@ const baseConfig = new ScratchWebpackConfigBuilder(
     .addPlugin(new CopyWebpackPlugin({
         patterns: [
             {
-                from: 'node_modules/scratch-blocks/media',
+                from: '../../node_modules/scratch-blocks/media',
                 to: 'static/blocks-media/default'
             },
             {
-                from: 'node_modules/scratch-blocks/media',
+                from: '../../node_modules/scratch-blocks/media',
                 to: 'static/blocks-media/high-contrast'
             },
             {
@@ -60,7 +60,7 @@ const baseConfig = new ScratchWebpackConfigBuilder(
                 force: true
             },
             {
-                context: 'node_modules/scratch-vm/dist/web',
+                context: '../../node_modules/@scratch/scratch-vm/dist/web',
                 from: 'extension-worker.{js,js.map}',
                 noErrorOnMissing: true
             }
