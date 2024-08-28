@@ -1,0 +1,20 @@
+# Mac OS
+.DS_Store
+
+# NPM
+/node_modules
+npm-*
+
+# Testing
+/.nyc_output
+/coverage
+
+# IDEA
+/.idea
+
+# Build
+/dist
+/playground
+
+# Act
+.secrets
