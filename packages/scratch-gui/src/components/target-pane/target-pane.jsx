@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import VM from 'scratch-vm';
+import VM from '@scratch/scratch-vm';
 import storage from '../../lib/storage';
 
 import SpriteLibrary from '../../containers/sprite-library.jsx';

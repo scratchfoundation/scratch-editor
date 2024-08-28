@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import bindAll from 'lodash.bindall';
 import ScanningStepComponent, {PHASES} from '../components/connection-modal/auto-scanning-step.jsx';
-import VM from 'scratch-vm';
+import VM from '@scratch/scratch-vm';
 
 /**
  * Scan for a peripheral and automatically connect to the first one found.
