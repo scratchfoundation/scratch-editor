@@ -1,50 +1,16 @@
-# React + TypeScript + Vite
+# Scratch Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Environment Variables
 
-Currently, two official plugins are available:
+Environment variables do not follow the regular convention where they are statically defined in the output JS bundle. Instead, they are served through a `config.js` file that is expected to be available on the root of the (sub)domain where the application is served. A plugin in [vite-config-js-plugin.ts] adds a reference to `/config.js?v=<random-string>` to be loaded before the JS bundle. The random string changes on each build and is there to bust any caches when a new version of the code is deployed.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+The goal is to be able to deploy a build artifact (the JS/asset bundle) to multiple environments instead of having to rebuild for each one (as normally env variables are statically inserted into the bundle).
 
-## Expanding the ESLint configuration
+Effectively we've created two types of environment variables:
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+1. Environment (as in dev, staging, prod) configuration - env variables that are prefixed with `SCRATCH_WEB_`.
+2. Build-time configuration - env variables that are inserted into the bundle and cannot be changed later. These are prefixed with `VITE_BUILD_TIME_STATIC_`
 
-- Configure the top-level `parserOptions` property like this:
+Use the first type unless you need some sort of code elimination (like a `VITE_BUILD_TIME_STATIC_DEBUG` option that enables or disables some code that shouldn't be included in the final bundle at all).
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+For development, env variables (both types) are loaded from either the shell environment or `scratch-editor/.env`.
