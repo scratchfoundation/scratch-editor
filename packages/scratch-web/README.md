@@ -1,5 +1,11 @@
 # Scratch Web
 
+## Running Locally
+
+1. You need to have the services in the `scratch-platform` monorepo running first.
+1. Copy `.env.example` to `.env` (in the root of `scratch-editor`) and configure as necessary
+1. Run `npm run dev` in this folder
+
 ## Environment Variables
 
 Environment variables do not follow the regular convention where they are statically defined in the output JS bundle. Instead, they are served through a `config.js` file that is expected to be available on the root of the (sub)domain where the application is served. A plugin in [vite-config-js-plugin.ts] adds a reference to `/config.js?v=<random-string>` to be loaded before the JS bundle. The random string changes on each build and is there to bust any caches when a new version of the code is deployed.
