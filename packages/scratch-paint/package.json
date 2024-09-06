@@ -65,7 +65,7 @@
     "enzyme-adapter-react-16": "1.15.8",
     "eslint": "8.57.0",
     "eslint-config-scratch": "9.0.8",
-    "eslint-plugin-import": "2.29.1",
+    "eslint-plugin-import": "2.30.0",
     "eslint-plugin-react": "7.35.1",
     "gh-pages": "3.2.3",
     "html-webpack-plugin": "3.2.0",
