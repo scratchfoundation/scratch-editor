@@ -59,7 +59,6 @@ const BuiltinAssets = DefaultAssets.concat([
 ]);
 
 export default class BuiltinHelper extends Helper {
-    // TODO: Typing
     public assets: Record<string, BuiltinAssetRecord>;
 
     constructor (parent) {

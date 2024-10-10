@@ -133,7 +133,6 @@ class PrivateFetchWorkerTool implements Tool {
                 reject
             };
         })
-            // TODO: Typing
             /* eslint no-confusing-arrow: ["error", {"allowParens": true}] */
             .then(body => (body ? new Uint8Array(body) : null));
     }
