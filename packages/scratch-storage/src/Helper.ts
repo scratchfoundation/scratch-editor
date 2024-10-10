@@ -1,4 +1,6 @@
 import Asset from "./Asset";
+import { AssetType } from "./AssetType";
+import { DataFormat } from "./DataFormat";
 import {ScratchStorage} from "./ScratchStorage";
 
 /**
@@ -8,7 +10,7 @@ import {ScratchStorage} from "./ScratchStorage";
 export default class Helper {
     public parent!: ScratchStorage;
 
-    constructor (parent) {
+    constructor (parent: ScratchStorage) {
         this.parent = parent;
     }
 
@@ -19,7 +21,7 @@ export default class Helper {
      * @param {DataFormat} dataFormat - The file format / file extension of the asset to fetch: PNG, JPG, etc.
      * @return {Promise.<Asset>} A promise for the contents of the asset.
      */
-    load (assetType, assetId, dataFormat): null | Asset | Promise<Asset | null> {
+    load (assetType: AssetType, assetId: string, dataFormat: DataFormat): null | Asset | Promise<Asset | null> {
         return Promise.reject(new Error(`No asset of type ${assetType} for ID ${assetId} with format ${dataFormat}`));
     }
 }

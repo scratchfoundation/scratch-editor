@@ -2,7 +2,7 @@
  * Enumeration of the supported data formats.
  * @enum {string}
  */
-const DataFormat = {
+export const DataFormat = {
     JPG: 'jpg',
     JSON: 'json',
     MP3: 'mp3',
@@ -13,4 +13,4 @@ const DataFormat = {
     WAV: 'wav'
 } as const;
 
-export default DataFormat;
+export type DataFormat = typeof DataFormat[keyof typeof DataFormat];

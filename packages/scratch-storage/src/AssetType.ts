@@ -1,4 +1,11 @@
-import DataFormat from './DataFormat';
+import { DataFormat } from './DataFormat';
+
+export interface AssetType {
+    contentType: string,
+    name: string,
+    runtimeFormat: DataFormat,
+    immutable: boolean
+}
 
 /**
  * Enumeration of the supported asset types.
@@ -10,7 +17,7 @@ import DataFormat from './DataFormat';
  *     example, a project stored in SB2 format on disk will be returned as JSON when loaded into memory.
  * @property {boolean} immutable - Indicates if the asset id is determined by the asset content.
  */
-const AssetType = {
+export const AssetType = {
     ImageBitmap: {
         contentType: 'image/png',
         name: 'ImageBitmap',
@@ -42,5 +49,3 @@ const AssetType = {
         immutable: true
     }
 } as const;
-
-export default AssetType;

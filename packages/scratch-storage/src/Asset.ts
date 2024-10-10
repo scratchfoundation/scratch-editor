@@ -1,13 +1,15 @@
 import md5 from 'js-md5';
 import {memoizedToString, _TextEncoder, _TextDecoder} from './memoizedToString';
+import { AssetType } from './AssetType';
+import { Buffer } from 'buffer';
+import { DataFormat } from './DataFormat';
 
 export default class Asset {
-    // TODO: Typing
-    public assetType: any;
-    public assetId: any;
-    public data: any;
-    public dataFormat: any;
-    public dependencies: any;
+    public assetType: AssetType;
+    public assetId?: string;
+    public data!: Buffer;
+    public dataFormat!: DataFormat;
+    public dependencies: Asset[];
     public clean?: boolean;
 
     /**
@@ -18,7 +20,7 @@ export default class Asset {
      * @param {Buffer} [data] - The in-memory data for this asset; optional.
      * @param {bool} [generateId] - Whether to create id from an md5 hash of data
      */
-    constructor (assetType, assetId, dataFormat, data?, generateId?) {
+    constructor (assetType: AssetType, assetId?: string, dataFormat?: DataFormat, data?: Buffer, generateId?: boolean) {
         /** @type {AssetType} */
         this.assetType = assetType;
 
@@ -52,7 +54,7 @@ export default class Asset {
     /**
      * @returns {string} - This asset's data, decoded as text.
      */
-    decodeText () {
+    decodeText (): string {
         const decoder = new _TextDecoder();
         return decoder.decode(this.data);
     }
@@ -63,7 +65,7 @@ export default class Asset {
      * @param {DataFormat} dataFormat - the format of the data (DataFormat.SVG for example).
      * @param {bool} generateId - after setting data, set the id to an md5 of the data?
      */
-    encodeTextData (data, dataFormat, generateId) {
+    encodeTextData (data: string, dataFormat: DataFormat, generateId: boolean): void {
         const encoder = new _TextEncoder();
         this.setData(encoder.encode(data), dataFormat, generateId);
     }
@@ -72,7 +74,7 @@ export default class Asset {
      * @param {string} [contentType] - Optionally override the content type to be included in the data URI.
      * @returns {string} - A data URI representing the asset's data.
      */
-    encodeDataURI (contentType) {
+    encodeDataURI (contentType: string): string {
         contentType = contentType || this.assetType.contentType;
         return `data:${contentType};base64,${memoizedToString(this.assetId, this.data)}`;
     }

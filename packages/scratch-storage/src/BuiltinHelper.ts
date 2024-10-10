@@ -3,8 +3,8 @@ import md5 from 'js-md5';
 import log from './log';
 
 import Asset from './Asset';
-import AssetType from './AssetType';
-import DataFormat from './DataFormat';
+import {AssetType} from './AssetType';
+import {DataFormat} from './DataFormat';
 import Helper from './Helper';
 
 import defaultImageBitmap from './builtins/defaultBitmap.png?arrayBuffer';
@@ -21,10 +21,17 @@ import {Buffer} from 'buffer/';
  * @property {Buffer} data - The asset's data.
  */
 
+interface BuiltinAssetRecord {
+    type: AssetType,
+    format: DataFormat,
+    id: string | null,
+    data: Buffer
+}
+
 /**
  * @type {BuiltinAssetRecord[]}
  */
-const DefaultAssets = [
+const DefaultAssets: BuiltinAssetRecord[] = [
     {
         type: AssetType.ImageBitmap,
         format: DataFormat.PNG,
@@ -53,7 +60,7 @@ const BuiltinAssets = DefaultAssets.concat([
 
 export default class BuiltinHelper extends Helper {
     // TODO: Typing
-    public assets: any;
+    public assets: Record<string, BuiltinAssetRecord>;
 
     constructor (parent) {
         super(parent);
@@ -73,11 +80,11 @@ export default class BuiltinHelper extends Helper {
     /**
      * Call `setDefaultAssetId` on the parent `ScratchStorage` instance to register all built-in default assets.
      */
-    registerDefaultAssets () {
+    registerDefaultAssets (): void {
         const numAssets = DefaultAssets.length;
         for (let assetIndex = 0; assetIndex < numAssets; ++assetIndex) {
             const assetRecord = DefaultAssets[assetIndex];
-            this.parent.setDefaultAssetId(assetRecord.type, assetRecord.id);
+            this.parent.setDefaultAssetId(assetRecord.type, assetRecord.id!);
         }
     }
 
@@ -87,12 +94,12 @@ export default class BuiltinHelper extends Helper {
      * @param {string} assetId - The id for the asset to fetch.
      * @returns {?Asset} The asset for assetId, if it exists.
      */
-    get (assetId) {
+    get (assetId: string): Asset | null {
         let asset: Asset | null = null;
         if (Object.prototype.hasOwnProperty.call(this.assets, assetId)) {
             /** @type{BuiltinAssetRecord} */
             const assetRecord = this.assets[assetId];
-            asset = new Asset(assetRecord.type, assetRecord.id, assetRecord.format, assetRecord.data);
+            asset = new Asset(assetRecord.type, assetRecord.id!, assetRecord.format, assetRecord.data);
         }
         return asset;
     }
@@ -106,7 +113,7 @@ export default class BuiltinHelper extends Helper {
      * @param {string} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    cache (assetType, dataFormat, data, id) {
+    cache (assetType: AssetType, dataFormat: DataFormat, data: Buffer, id: string): string {
         log.warn('Deprecation: BuiltinHelper.cache has been replaced with BuiltinHelper.store.');
         return this.store(assetType, dataFormat, data, id);
     }
@@ -120,7 +127,7 @@ export default class BuiltinHelper extends Helper {
      * @param {(string|number)} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    store (assetType, dataFormat, data, id) {
+    store (assetType: AssetType, dataFormat: DataFormat, data: Buffer, id: string): string {
         log.warn('Deprecation: use Storage.createAsset. BuiltinHelper is for internal use only.');
         return this._store(assetType, dataFormat, data, id);
     }
@@ -133,7 +140,8 @@ export default class BuiltinHelper extends Helper {
      * @param {(string|number)} id - The id for the cached asset.
      * @returns {string} The calculated id of the cached asset, or the supplied id if the asset is mutable.
      */
-    _store (assetType, dataFormat, data, id) {
+    _store (assetType: AssetType, dataFormat: DataFormat, data: Buffer, originalId?: string | null): string {
+        let id = originalId;
         if (!dataFormat) throw new Error('Data cached without specifying its format');
         if (id !== '' && id !== null && typeof id !== 'undefined') {
             if (Object.prototype.hasOwnProperty.call(this.assets, id) && assetType.immutable) return id;
@@ -142,13 +150,13 @@ export default class BuiltinHelper extends Helper {
         } else {
             throw new Error('Tried to cache data without an id');
         }
-        this.assets[id] = {
+        this.assets[id!] = {
             type: assetType,
             format: dataFormat,
-            id: id,
+            id: id!,
             data: data
         };
-        return id;
+        return id!;
     }
 
     /**
@@ -157,7 +165,7 @@ export default class BuiltinHelper extends Helper {
      * @param {string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @return {?Promise.<Asset>} A promise for the contents of the asset.
      */
-    load (assetType, assetId) {
+    load (assetType: AssetType, assetId: string): Promise<Asset | null> | null {
         if (!this.get(assetId)) {
             // Return null immediately so Storage can quickly move to trying the
             // next helper.
