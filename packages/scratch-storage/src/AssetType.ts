@@ -1,4 +1,4 @@
-const DataFormat = require('./DataFormat');
+import DataFormat from './DataFormat';
 
 /**
  * Enumeration of the supported asset types.
@@ -41,6 +41,6 @@ const AssetType = {
         runtimeFormat: DataFormat.JSON,
         immutable: true
     }
-};
+} as const;
 
-module.exports = AssetType;
+export default AssetType;

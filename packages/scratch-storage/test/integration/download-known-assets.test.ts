@@ -1,6 +1,6 @@
-const md5 = require('js-md5');
+import md5 from 'js-md5';
 
-const ScratchStorage = require('../../src/index.js');
+import ScratchStorage from '../../src/index';
 
 test('constructor', () => {
     const storage = new ScratchStorage();

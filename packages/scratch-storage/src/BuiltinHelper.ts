@@ -1,11 +1,17 @@
-const md5 = require('js-md5');
+import md5 from 'js-md5';
 
-const log = require('./log');
+import log from './log';
 
-const Asset = require('./Asset');
-const AssetType = require('./AssetType');
-const DataFormat = require('./DataFormat');
-const Helper = require('./Helper');
+import Asset from './Asset';
+import AssetType from './AssetType';
+import DataFormat from './DataFormat';
+import Helper from './Helper';
+
+import defaultImageBitmap from './builtins/defaultBitmap.png?arrayBuffer';
+import defaultSound from './builtins/defaultSound.wav?arrayBuffer';
+import defaultImageVector from './builtins/defaultVector.svg?arrayBuffer';
+
+import {Buffer} from 'buffer/';
 
 /**
  * @typedef {object} BuiltinAssetRecord
@@ -23,25 +29,19 @@ const DefaultAssets = [
         type: AssetType.ImageBitmap,
         format: DataFormat.PNG,
         id: null,
-        data: Buffer.from(
-            require('./builtins/defaultBitmap.png') // eslint-disable-line global-require
-        )
+        data: Buffer.from(defaultImageBitmap)
     },
     {
         type: AssetType.Sound,
         format: DataFormat.WAV,
         id: null,
-        data: Buffer.from(
-            require('./builtins/defaultSound.wav') // eslint-disable-line global-require
-        )
+        data: Buffer.from(defaultSound)
     },
     {
         type: AssetType.ImageVector,
         format: DataFormat.SVG,
         id: null,
-        data: Buffer.from(
-            require('./builtins/defaultVector.svg') // eslint-disable-line global-require
-        )
+        data: Buffer.from(defaultImageVector)
     }
 ];
 
@@ -51,7 +51,10 @@ const DefaultAssets = [
 const BuiltinAssets = DefaultAssets.concat([
 ]);
 
-class BuiltinHelper extends Helper {
+export default class BuiltinHelper extends Helper {
+    // TODO: Typing
+    public assets: any;
+
     constructor (parent) {
         super(parent);
 
@@ -85,7 +88,7 @@ class BuiltinHelper extends Helper {
      * @returns {?Asset} The asset for assetId, if it exists.
      */
     get (assetId) {
-        let asset = null;
+        let asset: Asset | null = null;
         if (Object.prototype.hasOwnProperty.call(this.assets, assetId)) {
             /** @type{BuiltinAssetRecord} */
             const assetRecord = this.assets[assetId];
@@ -163,5 +166,3 @@ class BuiltinHelper extends Helper {
         return Promise.resolve(this.get(assetId));
     }
 }
-
-module.exports = BuiltinHelper;

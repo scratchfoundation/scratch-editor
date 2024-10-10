@@ -1,8 +1,13 @@
+import Asset from "./Asset";
+import {ScratchStorage} from "./ScratchStorage";
+
 /**
  * Base class for asset load/save helpers.
  * @abstract
  */
-class Helper {
+export default class Helper {
+    public parent!: ScratchStorage;
+
     constructor (parent) {
         this.parent = parent;
     }
@@ -14,9 +19,7 @@ class Helper {
      * @param {DataFormat} dataFormat - The file format / file extension of the asset to fetch: PNG, JPG, etc.
      * @return {Promise.<Asset>} A promise for the contents of the asset.
      */
-    load (assetType, assetId, dataFormat) {
+    load (assetType, assetId, dataFormat): null | Asset | Promise<Asset | null> {
         return Promise.reject(new Error(`No asset of type ${assetType} for ID ${assetId} with format ${dataFormat}`));
     }
 }
-
-module.exports = Helper;

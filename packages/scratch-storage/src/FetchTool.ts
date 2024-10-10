@@ -1,4 +1,4 @@
-const {scratchFetch} = require('./scratchFetch');
+import {scratchFetch} from './scratchFetch';
 
 /**
  * @typedef {Request & {withCredentials: boolean}} ScratchSendRequest
@@ -7,7 +7,7 @@ const {scratchFetch} = require('./scratchFetch');
 /**
  * Get and send assets with the fetch standard web api.
  */
-class FetchTool {
+export class FetchTool {
     /**
      * Is get supported?
      * Always true for `FetchTool` because `scratchFetch` ponyfills `fetch` if necessary.
@@ -55,5 +55,3 @@ class FetchTool {
             });
     }
 }
-
-module.exports = FetchTool;

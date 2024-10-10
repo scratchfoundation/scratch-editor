@@ -2,7 +2,7 @@ const TextDecoder = require('util').TextDecoder;
 
 jest.mock('cross-fetch');
 const mockFetch = require('cross-fetch');
-const FetchTool = require('../../src/FetchTool.js');
+const {FetchTool} = require('../../src/FetchTool');
 
 test('send success returns response.text()', async () => {
     const tool = new FetchTool();

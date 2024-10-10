@@ -1,4 +1,4 @@
-const ScratchStorage = require('../../src');
+const {ScratchStorage} = require('../../src/ScratchStorage');
 
 /**
  * Simulate a storage helper, adding log messages when "load" is called rather than actually loading anything.

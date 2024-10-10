@@ -14,7 +14,7 @@ beforeEach(() => {
 });
 
 test('get without metadata', async () => {
-    const FetchTool = require('../../src/FetchTool.js');
+    const {FetchTool} = require('../../src/FetchTool');
     const tool = new FetchTool();
 
     const mockFetchTestData = {};
@@ -26,7 +26,7 @@ test('get without metadata', async () => {
 });
 
 test('get with metadata', async () => {
-    const FetchTool = require('../../src/FetchTool.js');
+    const {FetchTool} = require('../../src/FetchTool');
     const ScratchFetch = require('../../src/scratchFetch');
     const {RequestMetadata, setMetadata} = ScratchFetch;
 
@@ -46,7 +46,7 @@ test('get with metadata', async () => {
 });
 
 test('send without metadata', async () => {
-    const FetchTool = require('../../src/FetchTool.js');
+    const {FetchTool} = require('../../src/FetchTool');
     const tool = new FetchTool();
 
     const mockFetchTestData = {};
@@ -58,7 +58,7 @@ test('send without metadata', async () => {
 });
 
 test('send with metadata', async () => {
-    const FetchTool = require('../../src/FetchTool.js');
+    const {FetchTool} = require('../../src/FetchTool');
     const ScratchFetch = require('../../src/scratchFetch');
     const {RequestMetadata, setMetadata} = ScratchFetch;
 
@@ -78,7 +78,7 @@ test('send with metadata', async () => {
 });
 
 test('selectively delete metadata', async () => {
-    const FetchTool = require('../../src/FetchTool.js');
+    const {FetchTool} = require('../../src/FetchTool');
     const ScratchFetch = require('../../src/scratchFetch');
     const {RequestMetadata, setMetadata, unsetMetadata} = ScratchFetch;
 
@@ -111,7 +111,7 @@ test('selectively delete metadata', async () => {
 });
 
 test('metadata has case-insensitive keys', async () => {
-    const FetchTool = require('../../src/FetchTool.js');
+    const {FetchTool} = require('../../src/FetchTool');
     const ScratchFetch = require('../../src/scratchFetch');
     const {setMetadata} = ScratchFetch;
 

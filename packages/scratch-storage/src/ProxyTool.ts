@@ -1,5 +1,5 @@
-const FetchWorkerTool = require('./FetchWorkerTool');
-const FetchTool = require('./FetchTool');
+import FetchWorkerTool from './FetchWorkerTool';
+import {FetchTool} from './FetchTool';
 
 /**
  * @typedef {object} Request
@@ -12,7 +12,26 @@ const FetchTool = require('./FetchTool');
 /**
  * Get and send assets with other tools in sequence.
  */
-class ProxyTool {
+export default class ProxyTool {
+    // TODO: Typing
+    public tools: any[];
+
+    /**
+     * Constant values that filter the set of tools in a ProxyTool instance.
+     * @enum {string}
+     */
+    public static TOOL_FILTER = {
+        /**
+         * Use all tools.
+         */
+        ALL: 'all',
+
+        /**
+         * Use tools that are ready right now.
+         */
+        READY: 'ready'
+    };
+
     constructor (filter = ProxyTool.TOOL_FILTER.ALL) {
         let tools;
         if (filter === ProxyTool.TOOL_FILTER.READY) {
@@ -43,7 +62,7 @@ class ProxyTool {
      */
     get (reqConfig) {
         let toolIndex = 0;
-        const nextTool = err => {
+        const nextTool = (err?) => {
             const tool = this.tools[toolIndex++];
             if (!tool) {
                 throw err;
@@ -71,7 +90,7 @@ class ProxyTool {
      */
     send (reqConfig) {
         let toolIndex = 0;
-        const nextTool = err => {
+        const nextTool = (err?) => {
             const tool = this.tools[toolIndex++];
             if (!tool) {
                 throw err;
@@ -84,21 +103,3 @@ class ProxyTool {
         return nextTool();
     }
 }
-
-/**
- * Constant values that filter the set of tools in a ProxyTool instance.
- * @enum {string}
- */
-ProxyTool.TOOL_FILTER = {
-    /**
-     * Use all tools.
-     */
-    ALL: 'all',
-
-    /**
-     * Use tools that are ready right now.
-     */
-    READY: 'ready'
-};
-
-module.exports = ProxyTool;

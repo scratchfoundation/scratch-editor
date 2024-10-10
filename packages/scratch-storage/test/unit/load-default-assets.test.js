@@ -1,6 +1,6 @@
 const md5 = require('js-md5');
 
-const ScratchStorage = require('../../dist/node/scratch-storage');
+const {ScratchStorage} = require('../../src/ScratchStorage');
 
 // Hash and file size of each default asset
 const knownSizes = {

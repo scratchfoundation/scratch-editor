@@ -1,9 +1,15 @@
-const {Headers, applyMetadata} = require('./scratchFetch');
+import {Headers, applyMetadata} from './scratchFetch';
 
 /**
  * Get and send assets with a worker that uses fetch.
  */
 class PrivateFetchWorkerTool {
+    // TODO: Typing
+    private _workerSupport: any;
+    private _supportError: any;
+    private worker: any;
+    private jobs: any;
+
     constructor () {
         /**
          * What does the worker support of the APIs we need?
@@ -33,10 +39,11 @@ class PrivateFetchWorkerTool {
 
         try {
             if (this.isGetSupported) {
-                // eslint-disable-next-line global-require
-                const FetchWorker = require('worker-loader?{"inline":true,"fallback":true}!./FetchWorkerTool.worker');
-
-                const worker = new FetchWorker();
+                // Yes, this is a browser API and we've specified `browser: false` in the eslint env,
+                // but `isGetSupported` checks for the presence of Worker and uses it only if present.
+                // Also see https://webpack.js.org/guides/web-workers/
+                // eslint-disable-next-line no-undef
+                const worker = new Worker(new URL('./FetchWorkerTool.worker', import.meta.url));
 
                 worker.addEventListener('message', ({data}) => {
                     if (data.support) {
@@ -110,8 +117,9 @@ class PrivateFetchWorkerTool {
                 reject
             };
         })
+            // TODO: Typing
             /* eslint no-confusing-arrow: ["error", {"allowParens": true}] */
-            .then(body => (body ? new Uint8Array(body) : null));
+            .then((body: any) => (body ? new Uint8Array(body) : null));
     }
 
     /**
@@ -130,6 +138,8 @@ class PrivateFetchWorkerTool {
         throw new Error('Not implemented.');
     }
 
+    private static _instance?: PrivateFetchWorkerTool;
+
     /**
      * Return a static PrivateFetchWorkerTool instance on demand.
      * @returns {PrivateFetchWorkerTool} A static PrivateFetchWorkerTool
@@ -146,7 +156,10 @@ class PrivateFetchWorkerTool {
 /**
  * Get and send assets with a worker that uses fetch.
  */
-class PublicFetchWorkerTool {
+export default class PublicFetchWorkerTool {
+    // TODO: Typing
+    private inner: any;
+
     constructor () {
         /**
          * Shared instance of an internal worker. PublicFetchWorkerTool proxies
@@ -189,5 +202,3 @@ class PublicFetchWorkerTool {
         throw new Error('Not implemented.');
     }
 }
-
-module.exports = PublicFetchWorkerTool;

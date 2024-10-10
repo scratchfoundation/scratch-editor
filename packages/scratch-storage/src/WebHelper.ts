@@ -1,8 +1,8 @@
-const log = require('./log');
+import log from './log';
 
-const Asset = require('./Asset');
-const Helper = require('./Helper');
-const ProxyTool = require('./ProxyTool');
+import Asset from './Asset';
+import Helper from './Helper';
+import ProxyTool from './ProxyTool';
 
 const ensureRequestConfig = reqConfig => {
     if (typeof reqConfig === 'string') {
@@ -20,7 +20,12 @@ const ensureRequestConfig = reqConfig => {
  *                              the underlying fetch call (necessary for configuring e.g. authentication)
  */
 
-class WebHelper extends Helper {
+export default class WebHelper extends Helper {
+    // TODO: Typing
+    public stores: any[];
+    public assetTool: any;
+    public projectTool: any;
+
     constructor (parent) {
         super(parent);
 
@@ -68,7 +73,7 @@ class WebHelper extends Helper {
      * @param {UrlFunction} createFunction - A function which computes a POST URL for an Asset
      * @param {UrlFunction} updateFunction - A function which computes a PUT URL for an Asset
      */
-    addStore (types, getFunction, createFunction, updateFunction) {
+    addStore (types, getFunction, createFunction?, updateFunction?) {
         this.stores.push({
             types: types.map(assetType => assetType.name),
             get: getFunction,
@@ -86,11 +91,12 @@ class WebHelper extends Helper {
      */
     load (assetType, assetId, dataFormat) {
 
+        // TODO: Typing
         /** @type {Array.<{url:string, result:*}>} List of URLs attempted & errors encountered. */
-        const errors = [];
+        const errors: any = [];
         const stores = this.stores.slice()
             .filter(store => store.types.indexOf(assetType.name) >= 0);
-        
+
         // New empty asset but it doesn't have data yet
         const asset = new Asset(assetType, assetId, dataFormat);
 
@@ -100,7 +106,7 @@ class WebHelper extends Helper {
         }
 
         let storeIndex = 0;
-        const tryNextSource = err => {
+        const tryNextSource = (err?) => {
             if (err) {
                 errors.push(err);
             }
@@ -191,5 +197,3 @@ class WebHelper extends Helper {
             });
     }
 }
-
-module.exports = WebHelper;

@@ -11,6 +11,6 @@ const DataFormat = {
     SB3: 'sb3',
     SVG: 'svg',
     WAV: 'wav'
-};
+} as const;
 
-module.exports = DataFormat;
+export default DataFormat;

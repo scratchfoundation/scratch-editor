@@ -1,14 +1,21 @@
-const log = require('./log');
+import log from './log';
 
-const BuiltinHelper = require('./BuiltinHelper');
-const WebHelper = require('./WebHelper');
+import BuiltinHelper from './BuiltinHelper';
+import WebHelper from './WebHelper';
 
-const _Asset = require('./Asset');
-const _AssetType = require('./AssetType');
-const _DataFormat = require('./DataFormat');
-const _scratchFetch = require('./scratchFetch');
+import _Asset from './Asset';
+import _AssetType from './AssetType';
+import _DataFormat from './DataFormat';
+import _scratchFetch from './scratchFetch';
 
-class ScratchStorage {
+export class ScratchStorage {
+    // TODO: Typing
+    public defaultAssetId: any;
+    public builtinHelper: any;
+    public webHelper: any;
+
+    private _helpers: any;
+
     constructor () {
         this.defaultAssetId = {};
 
@@ -133,7 +140,7 @@ class ScratchStorage {
      * @param {UrlFunction} createFunction - A function which computes a POST URL for asset data.
      * @param {UrlFunction} updateFunction - A function which computes a PUT URL for asset data.
      */
-    addWebStore (types, getFunction, createFunction, updateFunction) {
+    addWebStore (types, getFunction, createFunction?, updateFunction?) {
         this.webHelper.addStore(types, getFunction, createFunction, updateFunction);
     }
 
@@ -185,12 +192,12 @@ class ScratchStorage {
     load (assetType, assetId, dataFormat) {
         /** @type {Helper[]} */
         const helpers = this._helpers.map(x => x.helper);
-        const errors = [];
+        const errors: any[] = [];
         dataFormat = dataFormat || assetType.runtimeFormat;
 
         let helperIndex = 0;
         let helper;
-        const tryNextHelper = err => {
+        const tryNextHelper = (err?) => {
             if (err) { // Track the error, but continue looking
                 errors.push(err);
             }
@@ -231,6 +238,7 @@ class ScratchStorage {
         dataFormat = dataFormat || assetType.runtimeFormat;
         return new Promise(
             (resolve, reject) =>
+                // TODO: Iterate this.helpers
                 this.webHelper.store(assetType, dataFormat, data, assetId)
                     .then(body => {
                         this.builtinHelper._store(assetType, dataFormat, data, body.id);
@@ -240,5 +248,3 @@ class ScratchStorage {
         );
     }
 }
-
-module.exports = ScratchStorage;

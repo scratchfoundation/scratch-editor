@@ -103,8 +103,6 @@ const unsetMetadata = name => {
 };
 
 module.exports = {
-    default: scratchFetch,
-
     Headers: crossFetch.Headers,
     RequestMetadata,
     applyMetadata,
