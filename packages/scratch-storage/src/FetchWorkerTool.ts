@@ -43,7 +43,9 @@ class PrivateFetchWorkerTool {
                 // but `isGetSupported` checks for the presence of Worker and uses it only if present.
                 // Also see https://webpack.js.org/guides/web-workers/
                 // eslint-disable-next-line no-undef
-                const worker = new Worker(new URL('./FetchWorkerTool.worker', import.meta.url));
+                const worker = new Worker(
+                    /* webpackChunkName: "fetch-worker" */ new URL('./FetchWorkerTool.worker', import.meta.url)
+                );
 
                 worker.addEventListener('message', ({data}) => {
                     if (data.support) {
