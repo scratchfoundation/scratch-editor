@@ -4,13 +4,13 @@ import {AssetType} from './AssetType';
 import {DataFormat} from './DataFormat';
 import Helper from './Helper';
 
-/**
- * Export for use with NPM & Node.js.
- * @type {ScratchStorage}
- */
-export default ScratchStorage;
-
 export {
+    /**
+     * Export for use with NPM & Node.js.
+     * @type {ScratchStorage}
+     */
+    ScratchStorage,
+
     Asset,
     AssetId,
     AssetType,

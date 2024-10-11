@@ -62,7 +62,6 @@ const nodeConfig = baseConfig.clone()
             'scratch-storage': path.join(__dirname, './src/index.ts')
         },
         output: {
-            library: 'ScratchStorage',
             libraryTarget: 'commonjs2',
             path: path.resolve(__dirname, 'dist', 'node'),
             filename: '[name].js',
