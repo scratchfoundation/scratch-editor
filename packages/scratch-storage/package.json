@@ -13,7 +13,7 @@
   "browser": "./dist/web/scratch-storage.js",
   "types": "./dist/types/index.d.ts",
   "scripts": {
-    "build": "rm -rf dist && webpack",
+    "build": "rimraf dist && webpack --mode=production",
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "coverage": "tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
     "prepare": "husky install",
@@ -58,6 +58,7 @@
     "husky": "8.0.3",
     "jest": "29.7.0",
     "json": "^9.0.4",
+    "rimraf": "^6.0.1",
     "scratch-semantic-release-config": "1.0.14",
     "scratch-webpack-configuration": "1.6.0",
     "semantic-release": "19.0.5",
