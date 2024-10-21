@@ -13,6 +13,10 @@ module.exports = {
     {
       name: 'beta',
       prerelease: true
+    },
+    {
+      name: 'spork',
+      prerelease: true
     }
   ]
 };
