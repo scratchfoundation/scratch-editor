@@ -65,7 +65,7 @@
     "ts-jest": "29.2.5",
     "ts-jest-mock-import-meta": "1.2.0",
     "ts-loader": "9.5.1",
-    "webpack": "5.94.0",
+    "webpack": "5.95.0",
     "webpack-cli": "5.1.4"
   },
   "config": {
