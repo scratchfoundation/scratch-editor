@@ -95,7 +95,7 @@
     "regenerator-runtime": "0.13.9",
     "rimraf": "2.7.1",
     "scratch-l10n": "3.18.350",
-    "scratch-render-fonts": "1.0.114",
+    "scratch-render-fonts": "1.0.115",
     "scratch-semantic-release-config": "1.0.16",
     "semantic-release": "19.0.5",
     "style-loader": "1.3.0",
