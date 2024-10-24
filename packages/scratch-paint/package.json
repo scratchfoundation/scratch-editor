@@ -90,7 +90,7 @@
     "react-test-renderer": "16.14.0",
     "react-tooltip": "4.5.1",
     "redux": "3.7.2",
-    "redux-mock-store": "1.5.4",
+    "redux-mock-store": "1.5.5",
     "redux-throttle": "0.1.1",
     "regenerator-runtime": "0.13.9",
     "rimraf": "2.7.1",
