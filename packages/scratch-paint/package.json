@@ -46,11 +46,11 @@
     "scratch-render-fonts": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.25.7",
-    "@babel/core": "7.25.8",
-    "@babel/node": "7.25.7",
-    "@babel/preset-env": "7.25.8",
-    "@babel/preset-react": "7.25.7",
+    "@babel/cli": "7.25.9",
+    "@babel/core": "7.25.9",
+    "@babel/node": "7.25.9",
+    "@babel/preset-env": "7.25.9",
+    "@babel/preset-react": "7.25.9",
     "@commitlint/cli": "17.8.1",
     "@commitlint/config-conventional": "17.8.1",
     "autoprefixer": "9.8.8",
