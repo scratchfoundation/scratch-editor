@@ -6,8 +6,8 @@
 
 import * as Blockly from "blockly/core";
 import { ContinuousFlyout } from "@blockly/continuous-toolbox";
-import { RecyclableBlockFlyoutInflater } from "./recyclable_block_flyout_inflater.js";
-import { StatusIndicatorLabel } from "./status_indicator_label.js";
+import { RecyclableBlockFlyoutInflater } from "./recyclable_block_flyout_inflater";
+import { StatusIndicatorLabel } from "./status_indicator_label";
 
 export class CheckableContinuousFlyout extends ContinuousFlyout {
   /**

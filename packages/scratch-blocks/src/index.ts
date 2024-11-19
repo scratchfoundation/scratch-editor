@@ -5,94 +5,93 @@
  */
 
 import * as Blockly from "blockly/core";
-import "./blocks/colour.js";
-import "./blocks/math.js";
-import "./blocks/matrix.js";
-import "./blocks/note.js";
-import "./blocks/text.js";
-import "./blocks/vertical_extensions.js";
-import "./blocks/control.js";
-import "./blocks/data.js";
-import "./blocks/event.js";
-import "./blocks/looks.js";
-import "./blocks/motion.js";
-import "./blocks/operators.js";
-import "./blocks/procedures.js";
-import "./blocks/sensing.js";
-import "./blocks/sound.js";
-import * as scratchBlocksUtils from "./scratch_blocks_utils.js";
-import * as ScratchVariables from "./variables.js";
-import "./css.js";
-import "./renderer/renderer.js";
-import * as contextMenuItems from "./context_menu_items.js";
+import "./blocks/colour";
+import "./blocks/math";
+import "./blocks/matrix";
+import "./blocks/note";
+import "./blocks/text";
+import "./blocks/vertical_extensions";
+import "./blocks/control";
+import "./blocks/data";
+import "./blocks/event";
+import "./blocks/looks";
+import "./blocks/motion";
+import "./blocks/operators";
+import "./blocks/procedures";
+import "./blocks/sensing";
+import "./blocks/sound";
+import * as scratchBlocksUtils from "./scratch_blocks_utils";
+import * as ScratchVariables from "./variables";
+import "./css";
+import "./renderer/renderer";
+import * as contextMenuItems from "./context_menu_items";
 import {
   ContinuousToolbox,
   ContinuousFlyout,
   ContinuousMetrics,
 } from "@blockly/continuous-toolbox";
 import { CheckableContinuousFlyout } from "./checkable_continuous_flyout.js";
-import { buildGlowFilter, glowStack } from "./glows.js";
-import { ScratchContinuousToolbox } from "./scratch_continuous_toolbox.js";
-import "./scratch_comment_icon.js";
-import "./scratch_dragger.js";
-import "./scratch_variable_map.js";
-import "./scratch_variable_model.js";
-import "./scratch_connection_checker.js";
-import "./flyout_checkbox_icon.js";
-import "./events/events_block_comment_change.js";
-import "./events/events_block_comment_collapse.js";
-import "./events/events_block_comment_create.js";
-import "./events/events_block_comment_delete.js";
-import "./events/events_block_comment_move.js";
-import "./events/events_block_comment_resize.js";
-import "./events/events_scratch_variable_create.js";
-import { buildShadowFilter } from "./shadows.js";
-import { registerFieldAngle } from "./fields/field_angle.js";
+import { buildGlowFilter, glowStack } from "./glows";
+import { ScratchContinuousToolbox } from "./scratch_continuous_toolbox";
+import "./scratch_comment_icon";
+import "./scratch_dragger";
+import "./scratch_variable_map";
+import "./scratch_variable_model";
+import "./scratch_connection_checker";
+import "./flyout_checkbox_icon";
+import "./events/events_block_comment_change";
+import "./events/events_block_comment_collapse";
+import "./events/events_block_comment_create";
+import "./events/events_block_comment_delete";
+import "./events/events_block_comment_move";
+import "./events/events_block_comment_resize";
+import "./events/events_scratch_variable_create";
+import { buildShadowFilter } from "./shadows";
+import { registerScratchFieldAngle } from "./fields/scratch_field_angle";
 import {
   registerFieldColourSlider,
   FieldColourSlider,
-} from "./fields/field_colour_slider.js";
-import { registerFieldDropdown } from "./fields/field_dropdown.js";
-import { registerFieldMatrix } from "./fields/field_matrix.js";
-import { registerFieldNote, FieldNote } from "./fields/field_note.js";
-import { registerFieldNumber } from "./fields/field_number.js";
-import { registerFieldTextInputRemovable } from "./fields/field_textinput_removable.js";
-import { registerFieldVariableGetter } from "./fields/field_variable_getter.js";
-import { registerFieldVariable } from "./fields/field_variable.js";
-import { registerFieldVerticalSeparator } from "./fields/field_vertical_separator.js";
-import { registerRecyclableBlockFlyoutInflater } from "./recyclable_block_flyout_inflater.js";
-import { registerScratchBlockPaster } from "./scratch_block_paster.js";
-import { registerStatusIndicatorLabelFlyoutInflater } from "./status_indicator_label_flyout_inflater.js";
-import { registerScratchContinuousCategory } from "./scratch_continuous_category.js";
+} from "./fields/field_colour_slider";
+import { registerScratchFieldDropdown } from "./fields/scratch_field_dropdown";
+import { registerFieldMatrix } from "./fields/field_matrix";
+import { registerFieldNote, FieldNote } from "./fields/field_note";
+import { registerScratchFieldNumber } from "./fields/scratch_field_number";
+import { registerFieldTextInputRemovable } from "./fields/field_textinput_removable";
+import { registerFieldVariableGetter } from "./fields/field_variable_getter";
+import { registerScratchFieldVariable } from "./fields/scratch_field_variable";
+import { registerFieldVerticalSeparator } from "./fields/field_vertical_separator";
+import { registerRecyclableBlockFlyoutInflater } from "./recyclable_block_flyout_inflater";
+import { registerScratchBlockPaster } from "./scratch_block_paster";
+import { registerStatusIndicatorLabelFlyoutInflater } from "./status_indicator_label_flyout_inflater";
+import { registerScratchContinuousCategory } from "./scratch_continuous_category";
 
 export * from "blockly/core";
-export * from "./block_reporting.js";
-export * from "./categories.js";
-export * from "./procedures.js";
+export * from "./block_reporting";
+export * from "./procedures";
 export * from "../msg/scratch_msgs.js";
-export * from "./constants.js";
+export * from "./constants";
 export { glowStack };
 export { scratchBlocksUtils };
 export { CheckableContinuousFlyout };
 export { ScratchVariables };
 export { contextMenuItems };
 export { FieldColourSlider, FieldNote };
-export { CheckboxBubble } from "./checkbox_bubble.js";
+export { CheckboxBubble } from "./checkbox_bubble";
 export {
   StatusIndicatorLabel,
   StatusButtonState,
-} from "./status_indicator_label.js";
+} from "./status_indicator_label";
 
 export function inject(container: Element, options: Blockly.BlocklyOptions) {
-  registerFieldAngle();
+  registerScratchFieldAngle();
   registerFieldColourSlider();
-  registerFieldDropdown();
+  registerScratchFieldDropdown();
   registerFieldMatrix();
   registerFieldNote();
-  registerFieldNumber();
+  registerScratchFieldNumber();
   registerFieldTextInputRemovable();
   registerFieldVariableGetter();
-  registerFieldVariable();
+  registerScratchFieldVariable();
   registerFieldVerticalSeparator();
   registerRecyclableBlockFlyoutInflater();
   registerScratchBlockPaster();
