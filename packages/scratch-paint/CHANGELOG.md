@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.512](https://github.com/scratchfoundation/scratch-paint/compare/v2.2.511...v2.2.512) (2024-11-22)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-l10n to v4.0.40 ([#2940](https://github.com/scratchfoundation/scratch-paint/issues/2940)) ([e0735a3](https://github.com/scratchfoundation/scratch-paint/commit/e0735a3f05e71a434dfc8b5db4fc6c7175b26d8b))
+
 ## [2.2.511](https://github.com/scratchfoundation/scratch-paint/compare/v2.2.510...v2.2.511) (2024-11-22)
 
 
