@@ -16,7 +16,7 @@
     "watch": "webpack --progress --colors --watch"
   },
   "author": "Massachusetts Institute of Technology",
-  "license": "BSD-3-Clause",
+  "license": "AGPL-3.0-only",
   "homepage": "https://github.com/scratchfoundation/scratch-paint#readme",
   "repository": {
     "type": "git",
