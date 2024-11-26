@@ -60,7 +60,7 @@
     "json": "^9.0.4",
     "rimraf": "6.0.1",
     "scratch-semantic-release-config": "1.0.16",
-    "scratch-webpack-configuration": "1.6.0",
+    "scratch-webpack-configuration": "3.0.0",
     "semantic-release": "19.0.5",
     "ts-jest": "29.2.5",
     "ts-jest-mock-import-meta": "1.2.1",
