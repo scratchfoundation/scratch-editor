@@ -21,7 +21,9 @@ jobs:
             node-version-file: '.nvmrc'
         # TODO: tests
         - name: Install Node Dependencies
-          run: npm ci
+          # The --legacy-peer-deps flag is a TEMPORARY fix during the Blockly 12 beta.
+          # It should be removed once the @blockly/* packages support Blockly 12.
+          run: npm ci --legacy-peer-deps
         - name: Build
           run: npm run build
         # - name: Deploy playground to GitHub Pages

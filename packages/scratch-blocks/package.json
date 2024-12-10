@@ -13,7 +13,6 @@
   "scripts": {
     "build": "webpack --mode production",
     "prepare": "husky || true",
-    "prepublish": "./temp-use-blockly-v12-rc.sh",
     "start": "webpack serve --open --mode development",
     "test": "echo \"Error: no test specified\" && exit 1",
     "test:lint": "eslint ."
@@ -35,7 +34,7 @@
   "dependencies": {
     "@blockly/continuous-toolbox": "^6.0.9",
     "@blockly/field-colour": "^5.0.9",
-    "blockly": "^11.0.0"
+    "blockly": "^12.0.0-beta.0"
   },
   "config": {
     "commitizen": {
