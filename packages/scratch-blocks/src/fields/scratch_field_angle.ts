@@ -51,7 +51,7 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
   /**
    * Opaque identifier used to unbind event listener in dispose().
    */
-  private mouseDownWrapper: Blockly.browserEvents.Data;
+  private mouseDownWrapper_: Blockly.browserEvents.Data;
 
   /**
    * Opaque identifier used to unbind event listener in dispose().
@@ -142,8 +142,8 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
   dispose() {
     super.dispose();
     this.gauge = null;
-    if (this.mouseDownWrapper) {
-      Blockly.browserEvents.unbind(this.mouseDownWrapper);
+    if (this.mouseDownWrapper_) {
+      Blockly.browserEvents.unbind(this.mouseDownWrapper_);
     }
     if (this.mouseUpWrapper) {
       Blockly.browserEvents.unbind(this.mouseUpWrapper);
@@ -286,7 +286,7 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
       this.getSourceBlock() as Blockly.BlockSvg
     );
 
-    this.mouseDownWrapper = Blockly.browserEvents.bind(
+    this.mouseDownWrapper_ = Blockly.browserEvents.bind(
       this.handle,
       "mousedown",
       this,
