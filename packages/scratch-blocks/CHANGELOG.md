@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-spork.3](https://github.com/scratchfoundation/scratch-blocks/compare/v2.0.0-spork.2...v2.0.0-spork.3) (2024-12-10)
+
+
+### Bug Fixes
+
+* rename mouseDownWrapper fields for Blockly v12 compatibility ([adaf531](https://github.com/scratchfoundation/scratch-blocks/commit/adaf531cadf51f797cf6c33050df2380bb3cf372))
+
 # [2.0.0-spork.2](https://github.com/scratchfoundation/scratch-blocks/compare/v2.0.0-spork.1...v2.0.0-spork.2) (2024-12-10)
 
 
