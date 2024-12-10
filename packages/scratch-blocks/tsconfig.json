@@ -1,4 +1,9 @@
 {
+  "include": [
+    "./src/",
+    "./tests/",
+    "./types/"
+  ],
   "compilerOptions": {
     "outDir": "./dist/",
     "noImplicitAny": true,
