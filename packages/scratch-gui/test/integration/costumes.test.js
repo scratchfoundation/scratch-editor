@@ -32,12 +32,32 @@ describe('Working with costumes', () => {
     test('Adding a costume through the library', async () => {
         await loadUri(uri);
         await driver.sleep(500);
+        let curr = Date.now();
+        let newt = Date.now();
         await clickText('Costumes');
+        newt = Date.now();
+        console.log(newt - curr);
+        curr = newt;
         await clickXpath('//button[@aria-label="Choose a Costume"]');
+        newt = Date.now();
+        console.log(newt - curr);
+        curr = newt;
         const el = await findByXpath("//input[@placeholder='Search']");
+        newt = Date.now();
+        console.log(newt - curr);
+        curr = newt;
         await el.sendKeys('abb');
+        newt = Date.now();
+        console.log(newt - curr);
+        curr = newt;
         await clickText('Abby-a'); // Should close the modal, then click the costumes in the selector
+        newt = Date.now();
+        console.log(newt - curr);
+        curr = newt;
         await findByXpath("//input[@value='Abby-a']"); // Should show editor for new costume
+        newt = Date.now();
+        console.log(newt - curr);
+        curr = newt;
         const logs = await getLogs();
         await expect(logs).toEqual([]);
     });
