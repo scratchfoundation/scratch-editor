@@ -1,0 +1,35 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+
+  "packageRules": [
+    {
+      // JS packages we want to treat as apps
+      "matchCategories": ["js"],
+      "matchPackageNames": [
+        // scratch-gui is kind of a lib (wrapped by www, desktop, etc.) but kind of an app (esp. standalone)
+        // treating it as an app is slightly safer, so let's do that
+        "@scratch/scratch-gui"
+      ],
+      "extends": [
+        "github>scratchfoundation/scratch-renovate-config:js-app"
+      ]
+    },
+    {
+      // JS packages we want to treat as libs (should cover all JS except apps handled above)
+      "matchCategories": ["js"],
+      "matchPackageNames": [
+        "!@scratch/scratch-gui"
+      ],
+      "extends": [
+        "github>scratchfoundation/scratch-renovate-config:js-lib"
+      ]
+    },
+    {
+      // Non-JS updates use default Scratch config
+      "matchCategories": ["!js"],
+      "extends": [
+        "github>scratchfoundation/scratch-renovate-config"
+      ]
+    }
+  ]
+}
