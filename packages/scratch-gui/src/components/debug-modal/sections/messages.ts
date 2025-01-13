@@ -81,7 +81,7 @@ export const messages = defineMessages({
         id: 'gui.debugModal.addSoundCheckpoints.description1',
         defaultMessage:
             // eslint-disable-next-line max-len
-            'Similar to the Slow It Down strategy, you can add  different sounds with the “play until done” block at key points to test your sequence.',
+            'Similar to the Slow It Down strategy, you can add different sounds with the “play until done” block at key points to test your sequence.',
         description: 'description for the "add sound checkpoints" section of the debug modal'
     },
     addSoundCheckpointsDescription2: {

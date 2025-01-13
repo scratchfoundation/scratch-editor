@@ -102,7 +102,7 @@ export const sections = [
         description: <div>
             <p><FormattedMessage {...messages.checkTheValuesDescription1} /></p>
             <ul>
-                <li><FormattedMessage {...messages.checkCodeSequenceDescription2} /></li>
+                <li><FormattedMessage {...messages.checkTheValuesDescription2} /></li>
                 <li><FormattedMessage {...messages.checkTheValuesDescription3} /></li>
             </ul>
         </div>,

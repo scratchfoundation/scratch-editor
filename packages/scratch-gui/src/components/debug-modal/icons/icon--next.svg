@@ -1,18 +1,5 @@
 <svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_d_1997_8721)">
-<rect x="4" y="4" width="44" height="44" rx="22" fill="#0FBD8C"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M36.4651 27.3478L29.4961 34.452C28.9235 35.0018 28.12 35.1488 27.4298 34.8434C26.7396 34.5402 26.3134 33.8705 26.3134 33.0945L26.3134 30.3999L16.6145 29.0265C15.1297 28.8297 14 27.5129 14 25.9631C14 25.8297 14.0089 25.6939 14.0244 25.5604C14.2397 24.1622 15.3095 23.083 16.6256 22.9133L26.3134 21.5038L26.3134 18.9268C26.3134 18.1417 26.7662 17.4426 27.4653 17.1462C28.1689 16.8498 28.9479 17.0105 29.4961 17.5693L36.4651 24.6735C36.8091 25.0265 37 25.5016 37 26.0107C37 26.5197 36.8091 26.9948 36.4651 27.3478Z" fill="white"/>
-</g>
-<defs>
-<filter id="filter0_d_1997_8721" x="0" y="0" width="52" height="52" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feMorphology radius="4" operator="dilate" in="SourceAlpha" result="effect1_dropShadow_1997_8721"/>
-<feOffset/>
-<feComposite in2="hardAlpha" operator="out"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0.0588235 0 0 0 0 0.741176 0 0 0 0 0.54902 0 0 0 0.25 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1997_8721"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1997_8721" result="shape"/>
-</filter>
-</defs>
+<circle cx="26" cy="26" r="26" transform="rotate(180 26 26)" fill="#0FBD8C" fill-opacity="0.25"/>
+<circle cx="26" cy="26" r="22" transform="rotate(180 26 26)" fill="#0FBD8C"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M36.4651 24.6522L29.4961 17.548C28.9235 16.9982 28.12 16.8512 27.4298 17.1566C26.7396 17.4598 26.3134 18.1295 26.3134 18.9055L26.3134 21.6001L16.6145 22.9735C15.1297 23.1703 14 24.4871 14 26.0369C14 26.1703 14.0089 26.3061 14.0244 26.4396C14.2397 27.8378 15.3095 28.917 16.6256 29.0867L26.3134 30.4962L26.3134 33.0732C26.3134 33.8583 26.7662 34.5574 27.4653 34.8538C28.1689 35.1502 28.9479 34.9895 29.4961 34.4307L36.4651 27.3265C36.8091 26.9735 37 26.4984 37 25.9893C37 25.4803 36.8091 25.0052 36.4651 24.6522Z" fill="white"/>
 </svg>

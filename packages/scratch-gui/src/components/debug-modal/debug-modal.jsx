@@ -31,6 +31,13 @@ const logTopicChange = topicIndex => {
 const DebugModal = ({isOpen, onClose = () => {}}) => {
     const [selectedTopicIndex, setSelectedTopicIndex] = useState(0);
 
+    // Preload images
+    useEffect(() => {
+        sections.forEach(section => {
+            new Image().src = section.image;
+        });
+    }, []);
+
     const handleNext = useCallback(() => {
         if (selectedTopicIndex < sections.length - 1) {
             setSelectedTopicIndex(selectedTopicIndex + 1);
@@ -72,8 +79,8 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
         <ReactModal
             isOpen={isOpen}
             onRequestClose={handleClose}
-            className={styles.modalContainer}
-            overlayClassName={styles.modalOverlay}
+            className={styles.debugModalContainer}
+            overlayClassName={styles.debugModalOverlay}
         >
             <div className={styles.modalHeader}>
                 <div className={styles.headerTitle}>
@@ -140,7 +147,7 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
                             src={prevIcon}
                             alt="Previous"
                             onClick={handlePrevious}
-                            className={classNames(styles.navigationIcon, styles.previousIcon, {
+                            className={classNames(styles.previousIcon, {
                                 [styles.hidden]: selectedTopicIndex === 0
                             })}
                         />
@@ -148,7 +155,7 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
                             src={nextIcon}
                             alt="Next"
                             onClick={handleNext}
-                            className={classNames(styles.navigationIcon, styles.nextIcon, {
+                            className={classNames(styles.nextIcon, {
                                 [styles.hidden]: selectedTopicIndex === sections.length - 1
                             })}
                         />

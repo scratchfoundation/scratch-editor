@@ -53,6 +53,7 @@
 
 .menu-bar-item {
     display: flex;
+    padding: 0 0.25rem;
     text-decoration: none;
     color: $ui-white;
     user-select: none;
