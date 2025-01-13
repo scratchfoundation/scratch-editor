@@ -93,7 +93,7 @@
     "scratch-l10n": "^3.18.3",
     "scratch-paint": "^2.2.151",
     "scratch-render-fonts": "^1.0.2",
-    "scratch-storage": "^3.0.1",
+    "scratch-storage": "^4.0.24",
     "startaudiocontext": "^1.2.1",
     "style-loader": "4.0.0",
     "text-encoding": "^0.7.0",

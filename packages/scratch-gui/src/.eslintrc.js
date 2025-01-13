@@ -40,7 +40,10 @@ module.exports = {
             files: ['**/*.ts', '**/*.tsx'],
             extends: ['plugin:@typescript-eslint/recommended'],
             rules: {
-                'react/jsx-filename-extension': ['error', {extensions: ['.tsx']}]
+                'react/jsx-filename-extension': ['error', {extensions: ['.tsx']}],
+
+                // This is handled by TypeScript
+                'import/named': 'off'
             }
         }
     ],

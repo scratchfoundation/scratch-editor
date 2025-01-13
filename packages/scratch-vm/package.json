@@ -64,7 +64,7 @@
     "scratch-audio": "^1.0.6",
     "scratch-parser": "^5.1.1",
     "scratch-sb1-converter": "^1.0.0",
-    "scratch-storage": "^3.0.1",
+    "scratch-storage": "^4.0.24",
     "scratch-translate-extension-languages": "^1.0.0",
     "text-encoding": "^0.7.0",
     "uuid": "^8.3.2",

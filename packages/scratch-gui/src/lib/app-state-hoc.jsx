@@ -1,17 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Provider} from 'react-redux';
-import {createStore, combineReducers, compose} from 'redux';
-import ConnectedIntlProvider from './connected-intl-provider.jsx';
 
-import localesReducer, {initLocale, localesInitialState} from '../reducers/locales';
-
-import {setPlayer, setFullScreen} from '../reducers/mode.js';
-
-import locales from 'scratch-l10n';
-import {detectLocale} from './detect-locale';
-
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+import {EditorState} from './editor-state';
+import {AppStateProviderHOC} from './app-state-provider-hoc';
 
 /**
  * Higher Order Component to provide redux state. If an `intl` prop is provided
@@ -26,95 +17,22 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
  * @returns {React.Component} component with redux and intl state provided
  */
 const AppStateHOC = function (WrappedComponent, localesOnly, configFactory) {
+    const AppStateProvider = AppStateProviderHOC(WrappedComponent);
+
     class AppStateWrapper extends React.Component {
         constructor (props) {
             super(props);
-            let initialState = {};
-            let reducers = {};
-            let enhancer;
 
-            let initializedLocales = localesInitialState;
-            const locale = detectLocale(Object.keys(locales));
-            if (locale !== 'en') {
-                initializedLocales = initLocale(initializedLocales, locale);
-            }
-            if (localesOnly) {
-                // Used for instantiating minimal state for the unsupported
-                // browser modal
-                reducers = {locales: localesReducer};
-                initialState = {locales: initializedLocales};
-                enhancer = composeEnhancers();
-            } else {
-                // You are right, this is gross. But it's necessary to avoid
-                // importing unneeded code that will crash unsupported browsers.
-                const guiRedux = require('../reducers/gui');
-                const guiReducer = guiRedux.default;
-                const {
-                    buildInitialState,
-                    guiMiddleware,
-                    initFullScreen,
-                    initPlayer,
-                    initTelemetryModal
-                } = guiRedux;
-                const {ScratchPaintReducer} = require('scratch-paint');
-
-                const configOrLegacy = configFactory ?
-                    configFactory() :
-                    require('../legacy-config').legacyConfig;
-
-                let initializedGui = buildInitialState(configOrLegacy);
-                if (props.isFullScreen || props.isPlayerOnly) {
-                    if (props.isFullScreen) {
-                        initializedGui = initFullScreen(initializedGui);
-                    }
-                    if (props.isPlayerOnly) {
-                        initializedGui = initPlayer(initializedGui);
-                    }
-                } else if (props.showTelemetryModal) {
-                    initializedGui = initTelemetryModal(initializedGui);
-                }
-                reducers = {
-                    locales: localesReducer,
-                    scratchGui: guiReducer,
-                    scratchPaint: ScratchPaintReducer
-                };
-                initialState = {
-                    locales: initializedLocales,
-                    scratchGui: initializedGui
-                };
-                enhancer = composeEnhancers(guiMiddleware);
-            }
-            const reducer = combineReducers(reducers);
-            this.store = createStore(
-                reducer,
-                initialState,
-                enhancer
-            );
+            this.appState = new EditorState(localesOnly, configFactory);
         }
-        componentDidUpdate (prevProps) {
-            if (localesOnly) return;
-            if (prevProps.isPlayerOnly !== this.props.isPlayerOnly) {
-                this.store.dispatch(setPlayer(this.props.isPlayerOnly));
-            }
-            if (prevProps.isFullScreen !== this.props.isFullScreen) {
-                this.store.dispatch(setFullScreen(this.props.isFullScreen));
-            }
-        }
+
         render () {
-            const {
-                isFullScreen, // eslint-disable-line no-unused-vars
-                isPlayerOnly, // eslint-disable-line no-unused-vars
-                showTelemetryModal, // eslint-disable-line no-unused-vars
-                ...componentProps
-            } = this.props;
             return (
-                <Provider store={this.store}>
-                    <ConnectedIntlProvider>
-                        <WrappedComponent
-                            {...componentProps}
-                        />
-                    </ConnectedIntlProvider>
-                </Provider>
+                <AppStateProvider
+                    appState={this.appState}
+                    localesOnly={localesOnly}
+                    {...this.props}
+                />
             );
         }
     }

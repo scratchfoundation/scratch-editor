@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {setAppElement} from 'react-modal';
 import GUI from './containers/gui';
-import {GUIConfig} from './gui-config';
-import AppStateHOC from './lib/app-state-hoc';
+import {AppStateProviderHOC} from './lib/app-state-hoc';
+import {EditorState} from './lib/editor-state';
+
+export {EditorState, EditorStateParams} from './lib/editor-state';
 
 export {setAppElement} from 'react-modal';
 
@@ -21,24 +22,26 @@ export type GUIProps = any; // ComponentPropsWithoutRef<typeof ScratchGUI>;
 /**
  * Creates a "root" for the editor to be hosted in.
  *
- * @param {GUIConfig} config The configuration for the editor.
- * @param {HTMLElement} rootAppElement The main app element, set to ReactModal.setAppElement.
+ * @param {EditorState} state The editor state. Create by new-ing EditorState.
  * @param {HTMLElement} container The container the editor should be hosted under.
  *
  * @returns {{ render: function(props: GUIProps): void, unmount: function(): void }} The mounted root.
  */
 export const createStandaloneRoot = (
-    config: GUIConfig,
-    rootAppElement: HTMLElement,
+    state: EditorState,
     container: HTMLElement
 ) => {
-    setAppElement(rootAppElement);
-
-    const GUIWithState = AppStateHOC(GUI, false, () => config);
+    const GUIWithState = AppStateProviderHOC(GUI);
 
     return {
         render (props: GUIProps) {
-            ReactDOM.render(<GUIWithState {...props} />, container);
+            ReactDOM.render(
+                <GUIWithState
+                    appState={state}
+                    {...props}
+                />,
+                container
+            );
         },
 
         unmount () {
