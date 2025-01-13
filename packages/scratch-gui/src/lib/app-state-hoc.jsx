@@ -23,7 +23,12 @@ const AppStateHOC = function (WrappedComponent, localesOnly, configFactory) {
         constructor (props) {
             super(props);
 
-            this.appState = new EditorState(localesOnly, configFactory);
+            this.appState = new EditorState(configFactory, {
+                localesOnly,
+                isFullScreen: props.isFullScreen,
+                isPlayerOnly: props.isPlayerOnly,
+                showTelemetryModal: props.showTelemetryModal
+            });
         }
 
         render () {
