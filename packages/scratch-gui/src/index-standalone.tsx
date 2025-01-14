@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import GUI from './containers/gui';
-import {AppStateProviderHOC} from './lib/app-state-hoc';
+import {AppStateProviderHOC} from './lib/app-state-provider-hoc';
 import {EditorState} from './lib/editor-state';
 
 export {EditorState, EditorStateParams} from './lib/editor-state';
