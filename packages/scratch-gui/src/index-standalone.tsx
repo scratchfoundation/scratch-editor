@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 import GUI from './containers/gui';
 import {AppStateProviderHOC} from './lib/app-state-provider-hoc';
 import {EditorState} from './lib/editor-state';
-import { ReactComponentLike } from 'prop-types';
-import { compose } from 'redux';
+import {ReactComponentLike} from 'prop-types';
+import {compose} from 'redux';
 
 export {EditorState, EditorStateParams} from './lib/editor-state';
 
@@ -34,7 +34,7 @@ export type HigherOrderComponent = (component: ReactComponentLike) => ReactCompo
 export const createStandaloneRoot = (
     state: EditorState,
     container: HTMLElement,
-    { wrappers }: { wrappers?: HigherOrderComponent[] } = {}
+    {wrappers}: {wrappers?: HigherOrderComponent[]} = {}
 ) => {
     // note that redux's 'compose' function is just being used as a general utility to make
     // the hierarchy of HOC constructor calls clearer here; it has nothing to do with redux's

@@ -135,7 +135,7 @@ const buildConfig = baseConfig.clone()
             guistandalone: './src/playground/standalone.jsx',
             blocksonly: './src/playground/blocks-only.jsx',
             compatibilitytesting: './src/playground/compatibility-testing.jsx',
-            player: './src/playground/player.jsx',
+            player: './src/playground/player.jsx'
         },
         output: {
             path: path.resolve(__dirname, 'build'),
