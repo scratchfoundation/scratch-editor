@@ -33,7 +33,7 @@ export class EditorState {
      */
     public readonly store: Store<unknown>;
 
-    constructor (configFactory: () => GUIConfig, params: EditorStateParams) {
+    constructor (params: EditorStateParams, configFactory: () => GUIConfig) {
         let initialState = {};
         let reducers = {};
         let enhancer;

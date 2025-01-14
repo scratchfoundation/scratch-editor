@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom';
 import GUI from './containers/gui';
 import {AppStateProviderHOC} from './lib/app-state-provider-hoc';
 import {EditorState} from './lib/editor-state';
+import { ReactComponentLike } from 'prop-types';
+import { compose } from 'redux';
 
 export {EditorState, EditorStateParams} from './lib/editor-state';
 
@@ -19,6 +21,8 @@ export {default as buildDefaultProject} from './lib/default-project';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type GUIProps = any; // ComponentPropsWithoutRef<typeof ScratchGUI>;
 
+export type HigherOrderComponent = (component: ReactComponentLike) => ReactComponentLike;
+
 /**
  * Creates a "root" for the editor to be hosted in.
  *
@@ -29,14 +33,21 @@ export type GUIProps = any; // ComponentPropsWithoutRef<typeof ScratchGUI>;
  */
 export const createStandaloneRoot = (
     state: EditorState,
-    container: HTMLElement
+    container: HTMLElement,
+    { wrappers }: { wrappers?: HigherOrderComponent[] } = {}
 ) => {
-    const GUIWithState = AppStateProviderHOC(GUI);
+    // note that redux's 'compose' function is just being used as a general utility to make
+    // the hierarchy of HOC constructor calls clearer here; it has nothing to do with redux's
+    // ability to compose reducers.
+    const WrappedGui = compose(
+        AppStateProviderHOC,
+        ...(wrappers ?? [])
+    )(GUI) as ReactComponentLike;
 
     return {
         render (props: GUIProps) {
             ReactDOM.render(
-                <GUIWithState
+                <WrappedGui
                     appState={state}
                     {...props}
                 />,
