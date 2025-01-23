@@ -18,7 +18,7 @@ return /******/ (() => { // webpackBootstrap
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var ___EXPOSE_LOADER_IMPORT___ = __webpack_require__(/*! -!./debug.js */ "./src/extensions/scratch3_video_sensing/debug.js");
-var ___EXPOSE_LOADER_GET_GLOBAL_THIS___ = __webpack_require__(/*! ../../../node_modules/expose-loader/dist/runtime/getGlobalThis.js */ "./node_modules/expose-loader/dist/runtime/getGlobalThis.js");
+var ___EXPOSE_LOADER_GET_GLOBAL_THIS___ = __webpack_require__(/*! ../../../../../node_modules/expose-loader/dist/runtime/getGlobalThis.js */ "../../node_modules/expose-loader/dist/runtime/getGlobalThis.js");
 var ___EXPOSE_LOADER_GLOBAL_THIS___ = ___EXPOSE_LOADER_GET_GLOBAL_THIS___;
 if (typeof ___EXPOSE_LOADER_GLOBAL_THIS___["Scratch3VideoSensingDebug"] === 'undefined') ___EXPOSE_LOADER_GLOBAL_THIS___["Scratch3VideoSensingDebug"] = ___EXPOSE_LOADER_IMPORT___;else throw new Error('[exposes-loader] The "Scratch3VideoSensingDebug" value exists in the global scope, it may not be safe to overwrite it, use the "override" option');
 module.exports = ___EXPOSE_LOADER_IMPORT___;
@@ -1011,10 +1011,10 @@ module.exports = VideoMotionView;
 
 /***/ }),
 
-/***/ "./node_modules/expose-loader/dist/runtime/getGlobalThis.js":
-/*!******************************************************************!*\
-  !*** ./node_modules/expose-loader/dist/runtime/getGlobalThis.js ***!
-  \******************************************************************/
+/***/ "../../node_modules/expose-loader/dist/runtime/getGlobalThis.js":
+/*!**********************************************************************!*\
+  !*** ../../node_modules/expose-loader/dist/runtime/getGlobalThis.js ***!
+  \**********************************************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
