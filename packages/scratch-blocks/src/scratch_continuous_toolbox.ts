@@ -7,6 +7,7 @@
 import * as Blockly from "blockly/core";
 import { ContinuousToolbox } from "@blockly/continuous-toolbox";
 import { ScratchContinuousCategory } from "./scratch_continuous_category";
+import { STATUS_INDICATOR_LABEL_TYPE } from "./status_indicator_label_flyout_inflater";
 
 /**
  * A toolbox that displays items from all categories in one scrolling list.
@@ -23,36 +24,25 @@ export class ScratchContinuousToolbox extends ContinuousToolbox {
   }
 
   /**
-   * Gets the contents that should be shown in the flyout.
+   * Converts the given toolbox item to a corresponding array of items that
+   * should appear in the flyout.
    *
-   * @returns Flyout contents.
+   * @param toolboxItem The toolbox item to convert.
+   * @returns An array of flyout item definitions.
    */
-  getInitialFlyoutContents_(): Blockly.utils.toolbox.FlyoutItemInfoArray {
-    // TODO(#211) Clean this up when the continuous toolbox plugin is updated.
-    let contents: Blockly.utils.toolbox.FlyoutItemInfoArray = [];
-    for (const toolboxItem of this.getToolboxItems()) {
-      if (toolboxItem instanceof ScratchContinuousCategory) {
-        if (toolboxItem.shouldShowStatusButton()) {
-          contents.push({
-            kind: "STATUS_INDICATOR_LABEL",
-            id: toolboxItem.getId(),
-            text: toolboxItem.getName(),
-          });
-        } else {
-          // Create a label node to go at the top of the category
-          contents.push({ kind: "LABEL", text: toolboxItem.getName() });
-        }
-        let itemContents = toolboxItem.getContents();
-
-        // Handle custom categories (e.g. variables and functions)
-        if (typeof itemContents === "string") {
-          itemContents = {
-            custom: itemContents,
-            kind: "CATEGORY",
-          };
-        }
-        contents = contents.concat(itemContents);
-      }
+  protected convertToolboxItemToFlyoutItems(
+    toolboxItem: Blockly.IToolboxItem
+  ): Blockly.utils.toolbox.FlyoutItemInfoArray {
+    const contents = super.convertToolboxItemToFlyoutItems(toolboxItem);
+    if (
+      toolboxItem instanceof ScratchContinuousCategory &&
+      toolboxItem.shouldShowStatusButton()
+    ) {
+      contents.splice(0, 1, {
+        kind: STATUS_INDICATOR_LABEL_TYPE,
+        id: toolboxItem.getId(),
+        text: toolboxItem.getName(),
+      });
     }
     return contents;
   }
@@ -62,12 +52,12 @@ export class ScratchContinuousToolbox extends ContinuousToolbox {
    */
   forceRerender() {
     const selectedCategoryName = this.selectedItem_?.getName();
-    super.refreshSelection();
+    this.getFlyout().show(this.getInitialFlyoutContents());
+    this.selectCategoryByName(selectedCategoryName);
     let callback;
     while ((callback = this.postRenderCallbacks.shift())) {
       callback();
     }
-    this.selectCategoryByName(selectedCategoryName);
   }
 
   /**

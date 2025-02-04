@@ -26,11 +26,10 @@ import "./css";
 import "./renderer/renderer";
 import * as contextMenuItems from "./context_menu_items";
 import {
-  ContinuousToolbox,
-  ContinuousFlyout,
+  registerContinuousToolbox,
   ContinuousMetrics,
 } from "@blockly/continuous-toolbox";
-import { CheckableContinuousFlyout } from "./checkable_continuous_flyout.js";
+import { CheckableContinuousFlyout } from "./checkable_continuous_flyout";
 import { buildGlowFilter, glowStack } from "./glows";
 import { ScratchContinuousToolbox } from "./scratch_continuous_toolbox";
 import "./scratch_comment_icon";
@@ -120,6 +119,7 @@ export function inject(container: Element, options: Blockly.BlocklyOptions) {
   return workspace;
 }
 
+registerContinuousToolbox();
 Blockly.Scrollbar.scrollbarThickness = Blockly.Touch.TOUCH_ENABLED ? 14 : 11;
 Blockly.FlyoutButton.TEXT_MARGIN_X = 40;
 Blockly.FlyoutButton.TEXT_MARGIN_Y = 10;

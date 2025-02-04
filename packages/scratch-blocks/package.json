@@ -29,8 +29,8 @@
     "webpack-dev-server": "^4.11.1"
   },
   "dependencies": {
-    "@blockly/continuous-toolbox": "^5.0.15",
+    "@blockly/continuous-toolbox": "^7.0.0-beta.1",
     "@blockly/field-colour": "^4.0.2",
-    "blockly": "^11.0.0"
+    "blockly": "^12.0.0-beta.1"
   }
 }

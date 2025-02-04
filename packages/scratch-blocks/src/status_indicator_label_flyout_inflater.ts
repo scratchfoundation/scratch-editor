@@ -7,6 +7,8 @@
 import * as Blockly from "blockly/core";
 import { StatusIndicatorLabel } from "./status_indicator_label";
 
+export const STATUS_INDICATOR_LABEL_TYPE = "status_indicator_label";
+
 /**
  * Flyout inflater responsible for creating status indicator labels.
  */
@@ -21,14 +23,14 @@ class StatusIndicatorLabelFlyoutInflater extends Blockly.LabelFlyoutInflater {
   load(
     state: Blockly.utils.toolbox.LabelInfo,
     flyoutWorkspace: Blockly.WorkspaceSvg
-  ): StatusIndicatorLabel {
+  ): Blockly.FlyoutItem {
     const label = new StatusIndicatorLabel(
       flyoutWorkspace,
       flyoutWorkspace.targetWorkspace,
       state
     );
     label.show();
-    return label;
+    return new Blockly.FlyoutItem(label, STATUS_INDICATOR_LABEL_TYPE, true);
   }
 }
 
@@ -38,7 +40,7 @@ class StatusIndicatorLabelFlyoutInflater extends Blockly.LabelFlyoutInflater {
 export function registerStatusIndicatorLabelFlyoutInflater() {
   Blockly.registry.register(
     Blockly.registry.Type.FLYOUT_INFLATER,
-    "status_indicator_label",
+    STATUS_INDICATOR_LABEL_TYPE,
     StatusIndicatorLabelFlyoutInflater
   );
 }

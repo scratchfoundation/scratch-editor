@@ -70,7 +70,7 @@ class FieldMatrix extends Blockly.Field<string> {
    * Touch event wrapper.
    * Runs when the field is selected.
    */
-  private mouseDownWrapper: Blockly.browserEvents.Data | null = null;
+  private mouseDownWrapper_: Blockly.browserEvents.Data | null = null;
 
   /**
    * Touch event wrapper.
@@ -558,8 +558,8 @@ class FieldMatrix extends Blockly.Field<string> {
   dispose() {
     super.dispose();
     this.matrixStage_ = null;
-    if (this.mouseDownWrapper) {
-      Blockly.browserEvents.unbind(this.mouseDownWrapper);
+    if (this.mouseDownWrapper_) {
+      Blockly.browserEvents.unbind(this.mouseDownWrapper_);
     }
     if (this.matrixTouchWrapper_) {
       Blockly.browserEvents.unbind(this.matrixTouchWrapper_);
