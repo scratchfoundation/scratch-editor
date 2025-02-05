@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ALL_PACKAGES="
     scratch-gui \
     scratch-render \

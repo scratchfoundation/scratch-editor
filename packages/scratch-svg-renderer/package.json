@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-svg-renderer",
-  "version": "2.3.126",
+  "version": "11.0.0-beta.2",
   "description": "SVG renderer for Scratch",
   "main": "./dist/node/scratch-svg-renderer.js",
   "browser": "./dist/web/scratch-svg-renderer.js",
@@ -10,6 +10,10 @@
     "node": "./dist/node/scratch-svg-renderer.js",
     "default": "./src/index.js"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "npm run clean && webpack",
     "clean": "rimraf ./dist",
@@ -20,7 +24,7 @@
     "watch": "webpack --watch"
   },
   "author": "Massachusetts Institute of Technology",
-  "license": "BSD-3-Clause",
+  "license": "AGPL-3.0-only",
   "homepage": "https://github.com/scratchfoundation/scratch-svg-renderer#readme",
   "repository": {
     "type": "git",
@@ -28,6 +32,12 @@
   },
   "peerDependencies": {
     "scratch-render-fonts": "^1.0.0"
+  },
+  "tap": {
+    "branches": 70,
+    "functions": 50,
+    "lines": 70,
+    "statements": 70
   },
   "dependencies": {
     "base64-js": "^1.2.1",
@@ -53,9 +63,9 @@
     "rimraf": "3.0.2",
     "scratch-render-fonts": "1.0.92",
     "scratch-semantic-release-config": "1.0.14",
-    "scratch-webpack-configuration": "1.5.0",
+    "scratch-webpack-configuration": "1.6.0",
     "semantic-release": "19.0.5",
-    "tap": "11.1.5",
+    "tap": "16.3.10",
     "webpack": "5.94.0",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "3.11.3",

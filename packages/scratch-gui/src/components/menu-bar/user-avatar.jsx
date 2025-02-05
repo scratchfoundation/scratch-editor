@@ -14,6 +14,7 @@ const UserAvatar = ({
             styles.userThumbnail
         )}
         src={imageUrl}
+        referrerPolicy="no-referrer"
     />
 );
 

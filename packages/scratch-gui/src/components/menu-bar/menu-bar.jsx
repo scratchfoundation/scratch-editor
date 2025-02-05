@@ -30,7 +30,7 @@ import TurboMode from '../../containers/turbo-mode.jsx';
 import MenuBarHOC from '../../containers/menu-bar-hoc.jsx';
 import SettingsMenu from './settings-menu.jsx';
 
-import {openTipsLibrary} from '../../reducers/modals';
+import {openTipsLibrary, openDebugModal} from '../../reducers/modals';
 import {setPlayer} from '../../reducers/mode';
 import {
     isTimeTravel220022BC,
@@ -85,6 +85,7 @@ import dropdownCaret from './dropdown-caret.svg';
 import aboutIcon from './icon--about.svg';
 import fileIcon from './icon--file.svg';
 import editIcon from './icon--edit.svg';
+import debugIcon from '../debug-modal/icons/icon--debug.svg';
 
 import scratchLogo from './scratch-logo.svg';
 import ninetiesLogo from './nineties_logo.svg';
@@ -99,6 +100,11 @@ const ariaMessages = defineMessages({
         id: 'gui.menuBar.tutorialsLibrary',
         defaultMessage: 'Tutorials',
         description: 'accessibility text for the tutorials button'
+    },
+    debug: {
+        id: 'gui.menuBar.debug',
+        defaultMessage: 'Debug',
+        description: 'accessibility text for the debug button'
     }
 });
 
@@ -691,7 +697,9 @@ class MenuBar extends React.Component {
                     <div className={styles.fileGroup}>
                         <div
                             aria-label={this.props.intl.formatMessage(ariaMessages.tutorials)}
-                            className={classNames(styles.menuBarItem, styles.hoverable)}
+                            className={
+                                classNames(styles.menuBarItem, styles.noOffset, styles.hoverable, 'tutorials-button')
+                            }
                             onClick={this.props.onOpenTipLibrary}
                         >
                             <img
@@ -700,6 +708,19 @@ class MenuBar extends React.Component {
                             />
                             <span className={styles.tutorialsLabel}>
                                 <FormattedMessage {...ariaMessages.tutorials} />
+                            </span>
+                        </div>
+                        <div
+                            aria-label={this.props.intl.formatMessage(ariaMessages.debug)}
+                            className={classNames(styles.menuBarItem, styles.noOffset, styles.hoverable)}
+                            onClick={this.props.onOpenDebugModal}
+                        >
+                            <img
+                                className={styles.helpIcon}
+                                src={debugIcon}
+                            />
+                            <span className={styles.debugLabel}>
+                                <FormattedMessage {...ariaMessages.debug} />
                             </span>
                         </div>
                     </div>
@@ -901,6 +922,7 @@ MenuBar.propTypes = {
     onLogOut: PropTypes.func,
     onOpenRegistration: PropTypes.func,
     onOpenTipLibrary: PropTypes.func,
+    onOpenDebugModal: PropTypes.func,
     onProjectTelemetryEvent: PropTypes.func,
     onRequestCloseAbout: PropTypes.func,
     onRequestCloseAccount: PropTypes.func,
@@ -965,6 +987,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => ({
     autoUpdateProject: () => dispatch(autoUpdateProject()),
     onOpenTipLibrary: () => dispatch(openTipsLibrary()),
+    onOpenDebugModal: () => dispatch(openDebugModal()),
     onClickAccount: () => dispatch(openAccountMenu()),
     onRequestCloseAccount: () => dispatch(closeAccountMenu()),
     onClickFile: () => dispatch(openFileMenu()),

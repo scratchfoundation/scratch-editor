@@ -5,6 +5,7 @@ import configureStore from 'redux-mock-store';
 import {mount} from 'enzyme';
 import {LoadingState} from '../../../src/reducers/project-state';
 import VM from '@scratch/scratch-vm';
+import {legacyConfig} from '../../../src/legacy-config';
 
 import projectSaverHOC from '../../../src/lib/project-saver-hoc.jsx';
 
@@ -16,6 +17,7 @@ describe('projectSaverHOC', () => {
     beforeEach(() => {
         store = mockStore({
             scratchGui: {
+                config: legacyConfig,
                 projectChanged: false,
                 projectState: {},
                 projectTitle: 'Scratch Project',

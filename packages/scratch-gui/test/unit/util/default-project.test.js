@@ -1,4 +1,4 @@
-import defaultProjectGenerator from '../../../src/lib/default-project/index.js';
+import defaultProjectGenerator from '../../../src/lib/default-project/index';
 
 describe('defaultProject', () => {
     // This test ensures that the assets referenced in the default project JSON

@@ -9,10 +9,23 @@ const ScratchWebpackConfigBuilder = require('scratch-webpack-configuration');
 
 // const STATIC_PATH = process.env.STATIC_PATH || '/static';
 
+const commonHtmlWebpackPluginOptions = {
+    // Google Tag Manager ID
+    // Looks like 'GTM-XXXXXXX'
+    gtm_id: process.env.GTM_ID || '',
+
+    // Google Tag Manager env & auth info for alterative GTM environments
+    // Looks like '&gtm_auth=0123456789abcdefghijklm&gtm_preview=env-00&gtm_cookies_win=x'
+    // Taken from the middle of: GTM -> Admin -> Environments -> (environment) -> Get Snippet
+    // Blank for production
+    gtm_env_auth: process.env.GTM_ENV_AUTH || ''
+};
+
 const baseConfig = new ScratchWebpackConfigBuilder(
     {
         rootPath: path.resolve(__dirname),
         enableReact: true,
+        enableTs: true,
         shouldSplitChunks: false
     })
     .setTarget('browserslist')
@@ -22,7 +35,10 @@ const baseConfig = new ScratchWebpackConfigBuilder(
             library: {
                 name: 'GUI',
                 type: 'umd2'
-            }
+            },
+            // Do not clean the JS files before building as we have two outputs to the same
+            // dist directory (the regular and the standalone version)
+            clean: false
         },
         resolve: {
             fallback: {
@@ -63,6 +79,11 @@ const baseConfig = new ScratchWebpackConfigBuilder(
                 context: '../../node_modules/@scratch/scratch-vm/dist/web',
                 from: 'extension-worker.{js,js.map}',
                 noErrorOnMissing: true
+            },
+            {
+                context: '../../node_modules/scratch-storage/dist/web',
+                from: 'chunks/fetch-worker.*.{js,js.map}',
+                noErrorOnMissing: true
             }
         ]
     }));
@@ -75,12 +96,13 @@ if (!process.env.CI) {
 const distConfig = baseConfig.clone()
     .merge({
         entry: {
-            'scratch-gui': path.join(__dirname, 'src/index.js')
+            'scratch-gui': path.join(__dirname, 'src/index.ts')
         },
         output: {
             path: path.resolve(__dirname, 'dist')
         }
     })
+    .addExternals(['react', 'react-dom', 'redux', 'react-redux'])
     .addPlugin(
         new CopyWebpackPlugin({
             patterns: [
@@ -93,43 +115,67 @@ const distConfig = baseConfig.clone()
         })
     );
 
+// build the shipping library in `dist/` bundled with react, react-dom, redux, etc.
+const distStandaloneConfig = baseConfig.clone()
+    .merge({
+        entry: {
+            'scratch-gui-standalone': path.join(__dirname, 'src/index-standalone.tsx')
+        },
+        output: {
+            path: path.resolve(__dirname, 'dist')
+        }
+    });
+
 // build the examples and debugging tools in `build/`
 const buildConfig = baseConfig.clone()
     .enableDevServer(process.env.PORT || 8601)
     .merge({
         entry: {
             gui: './src/playground/index.jsx',
+            guistandalone: './src/playground/standalone.jsx',
             blocksonly: './src/playground/blocks-only.jsx',
             compatibilitytesting: './src/playground/compatibility-testing.jsx',
             player: './src/playground/player.jsx'
         },
         output: {
-            path: path.resolve(__dirname, 'build')
-        },
-        resolve: {
-            alias: {
-                'react-dom': require.resolve(path.join(__dirname, '../../node_modules/react-dom'))
-            }
+            path: path.resolve(__dirname, 'build'),
+
+            // This output is loaded using a file:// scheme from the local file system.
+            // Having `publicPath: '/'` (the default) means the `gui.js` file in `build/index.html`
+            // would be looked for at the root of the filesystem, which is incorrect.
+            // Hence, we're resetting the public path to be relative.
+            publicPath: ''
         }
     })
     .addPlugin(new HtmlWebpackPlugin({
+        ...commonHtmlWebpackPluginOptions,
         chunks: ['gui'],
         template: 'src/playground/index.ejs',
         title: 'Scratch 3.0 GUI'
     }))
     .addPlugin(new HtmlWebpackPlugin({
+        ...commonHtmlWebpackPluginOptions,
+        chunks: ['guistandalone'],
+        filename: 'standalone.html',
+        template: 'src/playground/index.ejs',
+        title: 'Scratch 3.0 GUI: Standalone Mode'
+    }))
+    .addPlugin(new HtmlWebpackPlugin({
+        ...commonHtmlWebpackPluginOptions,
         chunks: ['blocksonly'],
         filename: 'blocks-only.html',
         template: 'src/playground/index.ejs',
         title: 'Scratch 3.0 GUI: Blocks Only Example'
     }))
     .addPlugin(new HtmlWebpackPlugin({
+        ...commonHtmlWebpackPluginOptions,
         chunks: ['compatibilitytesting'],
         filename: 'compatibility-testing.html',
         template: 'src/playground/index.ejs',
         title: 'Scratch 3.0 GUI: Compatibility Testing'
     }))
     .addPlugin(new HtmlWebpackPlugin({
+        ...commonHtmlWebpackPluginOptions,
         chunks: ['player'],
         filename: 'player.html',
         template: 'src/playground/index.ejs',
@@ -155,6 +201,11 @@ const buildConfig = baseConfig.clone()
 // `BUILD_MODE=dist npm run build`
 const buildDist = process.env.NODE_ENV === 'production' || process.env.BUILD_MODE === 'dist';
 
-module.exports = buildDist ?
-    [buildConfig.get(), distConfig.get()] :
-    buildConfig.get();
+let config;
+switch (process.env.BUILD_TYPE) {
+case 'dist': config = distConfig.get(); break;
+case 'dist-standalone': config = distStandaloneConfig.get(); break;
+default: config = buildConfig.get(); break;
+}
+
+module.exports = buildDist ? config : buildConfig.get();

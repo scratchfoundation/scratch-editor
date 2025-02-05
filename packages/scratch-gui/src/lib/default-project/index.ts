@@ -1,4 +1,5 @@
 import projectData from './project-data';
+import {TranslatorFunction} from '../../gui-config';
 
 /* eslint-disable import/no-unresolved */
 import popWav from '!arraybuffer-loader!./83a9787d4cb6f3b7632b4ddfebf74367.wav?';
@@ -8,8 +9,10 @@ import costume1 from '!raw-loader!./bcf454acf82e4504149f7ffe07081dbc.svg?';
 import costume2 from '!raw-loader!./0fb9be3e8397c983338cb71dc84d0b25.svg?';
 /* eslint-enable import/no-unresolved */
 
-const defaultProject = translator => {
-    let _TextEncoder;
+declare function require(path: 'text-encoding'): { TextEncoder: typeof TextEncoder };
+
+const defaultProject = (translator?: TranslatorFunction) => {
+    let _TextEncoder: typeof TextEncoder;
     if (typeof TextEncoder === 'undefined') {
         _TextEncoder = require('text-encoding').TextEncoder;
     } else {
@@ -19,6 +22,9 @@ const defaultProject = translator => {
 
     const projectJson = projectData(translator);
     return [{
+        // TODO: This is weird - the ids are annotated by scratch-storage to be strigns, but
+        //       this one is an int. May have implications on checking with `!` and in conditions,
+        //       so leaving it as is for now.
         id: 0,
         assetType: 'Project',
         dataFormat: 'JSON',

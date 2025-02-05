@@ -6,9 +6,7 @@ import VM from '@scratch/scratch-vm';
 
 import collectMetadata from '../lib/collect-metadata';
 import log from '../lib/log';
-import storage from '../lib/storage';
 import dataURItoBlob from '../lib/data-uri-to-blob';
-import saveProjectToServer from '../lib/save-project-to-server';
 
 import {
     showAlertWithTimeout,
@@ -33,6 +31,7 @@ import {
     getIsUpdating,
     projectError
 } from '../reducers/project-state';
+import {GUIStoragePropType} from '../gui-config';
 
 /**
  * Higher Order Component to provide behavior for saving projects.
@@ -226,10 +225,15 @@ const ProjectSaverHOC = function (WrappedComponent) {
             // serialized project refers to a newer asset than what
             // we just finished saving).
             const savedVMState = this.props.vm.toJSON();
+            const scratchStorage = this.props.storage.scratchStorage;
+
+            const saveProject = this.props.onUpdateProjectData ||
+                ((id, vmState, params) => this.props.storage.saveProject(id, vmState, params));
+
             return Promise.all(this.props.vm.assets
                 .filter(asset => !asset.clean)
                 .map(
-                    asset => storage.store(
+                    asset => scratchStorage.store(
                         asset.assetType,
                         asset.dataFormat,
                         asset.data,
@@ -244,7 +248,7 @@ const ProjectSaverHOC = function (WrappedComponent) {
                     })
                 )
             )
-                .then(() => this.props.onUpdateProjectData(projectId, savedVMState, requestParams))
+                .then(() => saveProject(projectId, savedVMState, requestParams))
                 .then(response => {
                     this.props.onSetProjectUnchanged();
                     const id = response.id.toString();
@@ -388,12 +392,13 @@ const ProjectSaverHOC = function (WrappedComponent) {
         onShowRemixSuccessAlert: PropTypes.func,
         onShowSaveSuccessAlert: PropTypes.func,
         onShowSavingAlert: PropTypes.func,
-        onUpdateProjectData: PropTypes.func.isRequired,
+        onUpdateProjectData: PropTypes.func,
         onUpdateProjectThumbnail: PropTypes.func,
         onUpdatedProject: PropTypes.func,
         projectChanged: PropTypes.bool,
         reduxProjectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         reduxProjectTitle: PropTypes.string,
+        storage: GUIStoragePropType,
         setAutoSaveTimeoutId: PropTypes.func.isRequired,
         vm: PropTypes.instanceOf(VM).isRequired
     };
@@ -401,13 +406,14 @@ const ProjectSaverHOC = function (WrappedComponent) {
         autoSaveIntervalSecs: 600, // 10 minutes = 600 seconds
         onRemixing: () => {},
         onSetProjectThumbnailer: () => {},
-        onSetProjectSaver: () => {},
-        onUpdateProjectData: saveProjectToServer
+        onSetProjectSaver: () => {}
     };
     const mapStateToProps = (state, ownProps) => {
         const loadingState = state.scratchGui.projectState.loadingState;
         const isShowingWithId = getIsShowingWithId(loadingState);
+        const storage = state.scratchGui.config.storage;
         return {
+            storage,
             autoSaveTimeoutId: state.scratchGui.timeout.autoSaveTimeoutId,
             isAnyCreatingNewState: getIsAnyCreatingNewState(loadingState),
             isLoading: getIsLoading(loadingState),
@@ -421,6 +427,7 @@ const ProjectSaverHOC = function (WrappedComponent) {
             isManualUpdating: getIsManualUpdating(loadingState),
             loadingState: loadingState,
             locale: state.locales.locale,
+            onUpdateProjectThumbnail: ownProps.onUpdateProjectThumbnail ?? storage.saveProjectThumbnail,
             projectChanged: state.scratchGui.projectChanged,
             reduxProjectId: state.scratchGui.projectState.projectId,
             reduxProjectTitle: state.scratchGui.projectTitle,

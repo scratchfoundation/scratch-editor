@@ -7,7 +7,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import crossFetch from 'cross-fetch';
 import yauzl from 'yauzl';
 import {fileURLToPath} from 'url';
 
@@ -79,7 +78,7 @@ const extractFirstMatchingFile = (filter, relativeDestDir, zipBuffer) => new Pro
 const downloadMicrobitHex = async () => {
     const url = 'https://downloads.scratch.mit.edu/microbit/scratch-microbit.hex.zip';
     console.info(`Downloading ${url}`);
-    const response = await crossFetch(url);
+    const response = await fetch(url);
     const zipBuffer = Buffer.from(await response.arrayBuffer());
     const relativeHexDir = path.join('static', 'microbit');
     const hexFileName = await extractFirstMatchingFile(

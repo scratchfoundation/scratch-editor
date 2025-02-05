@@ -95,10 +95,10 @@ const playgroundBuilder = webBuilder.clone()
         }
     })
     .addModuleRule({
-        test: require.resolve('scratch-storage/src/index.js'),
+        test: require.resolve('scratch-storage'),
         loader: 'expose-loader',
         options: {
-            exposes: 'ScratchStorage'
+            exposes: 'ScratchStorage ScratchStorage'
         }
     })
     .addModuleRule({

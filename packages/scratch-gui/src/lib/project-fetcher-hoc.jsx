@@ -22,7 +22,7 @@ import {
 } from '../reducers/editor-tab';
 
 import log from './log';
-import storage from './storage';
+import {GUIStoragePropType} from '../gui-config';
 
 /* Higher Order Component to provide behavior for loading projects by id. If
  * there's no id, the default project is loaded.
@@ -36,10 +36,14 @@ const ProjectFetcherHOC = function (WrappedComponent) {
             bindAll(this, [
                 'fetchProject'
             ]);
-            storage.setProjectHost(props.projectHost);
-            storage.setProjectToken(props.projectToken);
-            storage.setAssetHost(props.assetHost);
-            storage.setTranslatorFunction(props.intl.formatMessage);
+
+            const storage = this.props.storage;
+
+            storage.setProjectHost?.(props.projectHost);
+            storage.setProjectToken?.(props.projectToken);
+            storage.setAssetHost?.(props.assetHost);
+            storage.setTranslatorFunction?.(props.intl.formatMessage);
+
             // props.projectId might be unset, in which case we use our default;
             // or it may be set by an even higher HOC, and passed to us.
             // Either way, we now know what the initial projectId should be, so
@@ -53,14 +57,16 @@ const ProjectFetcherHOC = function (WrappedComponent) {
             }
         }
         componentDidUpdate (prevProps) {
+            const storage = this.props.storage;
+
             if (prevProps.projectHost !== this.props.projectHost) {
-                storage.setProjectHost(this.props.projectHost);
+                storage.setProjectHost?.(this.props.projectHost);
             }
             if (prevProps.projectToken !== this.props.projectToken) {
-                storage.setProjectToken(this.props.projectToken);
+                storage.setProjectToken?.(this.props.projectToken);
             }
             if (prevProps.assetHost !== this.props.assetHost) {
-                storage.setAssetHost(this.props.assetHost);
+                storage.setAssetHost?.(this.props.assetHost);
             }
             if (this.props.isFetchingWithId && !prevProps.isFetchingWithId) {
                 this.fetchProject(this.props.reduxProjectId, this.props.loadingState);
@@ -73,6 +79,8 @@ const ProjectFetcherHOC = function (WrappedComponent) {
             }
         }
         fetchProject (projectId, loadingState) {
+            const storage = this.props.storage.scratchStorage;
+
             return storage
                 .load(storage.AssetType.Project, projectId, storage.DataFormat.JSON)
                 .then(projectAsset => {
@@ -102,6 +110,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
                 onProjectUnchanged,
                 projectHost,
                 projectId,
+                projectToken,
                 reduxProjectId,
                 setProjectId: setProjectIdProp,
                 /* eslint-enable no-unused-vars */
@@ -117,6 +126,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
         }
     }
     ProjectFetcherComponent.propTypes = {
+        storage: GUIStoragePropType,
         assetHost: PropTypes.string,
         canSave: PropTypes.bool,
         intl: intlShape.isRequired,
@@ -141,6 +151,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
     };
 
     const mapStateToProps = state => ({
+        storage: state.scratchGui.config.storage,
         isCreatingNew: getIsCreatingNew(state.scratchGui.projectState.loadingState),
         isFetchingWithId: getIsFetchingWithId(state.scratchGui.projectState.loadingState),
         isLoadingProject: getIsLoading(state.scratchGui.projectState.loadingState),

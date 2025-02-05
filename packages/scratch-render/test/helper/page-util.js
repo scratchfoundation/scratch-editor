@@ -43,7 +43,7 @@ window.loadFileInputIntoVM = (fileInput, vm, render) => {
 
 window.initVM = render => {
     const vm = new VirtualMachine();
-    const storage = new ScratchStorage();
+    const storage = new ScratchStorage.ScratchStorage();
 
     vm.attachStorage(storage);
     vm.attachRenderer(render);

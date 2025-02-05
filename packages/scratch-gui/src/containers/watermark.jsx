@@ -7,8 +7,8 @@ import {connect} from 'react-redux';
 import ThrottledPropertyHOC from '../lib/throttled-property-hoc.jsx';
 
 import VM from '@scratch/scratch-vm';
-import storage from '../lib/storage';
 import getCostumeUrl from '../lib/get-costume-url';
+import {GUIStoragePropType} from '../gui-config';
 
 import WatermarkComponent from '../components/watermark/watermark.jsx';
 
@@ -23,7 +23,7 @@ class Watermark extends React.Component {
     getCostumeData () {
         if (!this.props.asset) return null;
 
-        return getCostumeUrl(this.props.asset);
+        return getCostumeUrl(this.props.storage.scratchStorage, this.props.asset);
     }
 
     render () {
@@ -38,7 +38,8 @@ class Watermark extends React.Component {
 }
 
 Watermark.propTypes = {
-    asset: PropTypes.instanceOf(storage.Asset),
+    storage: GUIStoragePropType,
+    asset: PropTypes.object,
     vm: PropTypes.instanceOf(VM).isRequired
 };
 
@@ -57,6 +58,7 @@ const mapStateToProps = state => {
     }
 
     return {
+        storage: state.scratchGui.config.storage,
         vm: state.scratchGui.vm,
         asset: asset
     };

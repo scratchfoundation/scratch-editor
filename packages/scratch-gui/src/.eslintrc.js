@@ -1,6 +1,8 @@
 const path = require('path');
 module.exports = {
     root: true,
+    parser: '@typescript-eslint/parser',
+    plugins: ['@typescript-eslint'],
     extends: ['scratch', 'scratch/es6', 'scratch/react', 'plugin:import/errors'],
     env: {
         browser: true
@@ -21,7 +23,8 @@ module.exports = {
         'react/jsx-no-literals': 'error',
         'no-confusing-arrow': ['error', {
             allowParens: true
-        }]
+        }],
+        'no-use-before-define': 'off'
     },
     overrides: [
         {
@@ -31,6 +34,16 @@ module.exports = {
             },
             rules: {
                 'import/no-commonjs': 'off'
+            }
+        },
+        {
+            files: ['**/*.ts', '**/*.tsx'],
+            extends: ['plugin:@typescript-eslint/recommended'],
+            rules: {
+                'react/jsx-filename-extension': ['error', {extensions: ['.tsx']}],
+
+                // This is handled by TypeScript
+                'import/named': 'off'
             }
         }
     ],

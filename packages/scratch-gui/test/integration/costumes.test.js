@@ -196,7 +196,9 @@ describe('Working with costumes', () => {
         await expect(logs).toEqual([]);
     });
 
-    test('Costumes animate on mouseover', async () => {
+    // TODO: This sometimes results in a stack overflow error in the GitHub Actions workflow - flaky test.
+    //       Seems like at random another costume is shown. Need to debug
+    test.skip('Costumes animate on mouseover', async () => {
         await loadUri(uri);
         await clickXpath('//button[@aria-label="Choose a Sprite"]');
         const searchElement = await findByXpath("//input[@placeholder='Search']");

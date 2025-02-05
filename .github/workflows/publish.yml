@@ -15,6 +15,7 @@ jobs:
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Config GitHub user
         shell: bash

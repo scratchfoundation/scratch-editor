@@ -3,7 +3,7 @@
   "private": "true",
   "description": "Scratch editor mono-repository",
   "author": "Scratch Foundation",
-  "license": "BSD-3-Clause",
+  "license": "AGPL-3.0-only",
   "homepage": "https://github.com/scratchfoundation/scratch-editor#readme",
   "repository": {
     "type": "git",

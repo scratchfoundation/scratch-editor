@@ -2,8 +2,13 @@
 // allow time for that so we get a more specific error message
 jest.setTimeout(95000); // eslint-disable-line no-undef
 
+import {promises as fs} from 'fs';
+import path from 'path';
+
 import bindAll from 'lodash.bindall';
 import webdriver from 'selenium-webdriver';
+
+import packageJson from '../../package.json';
 
 const {Button, By, until} = webdriver;
 
@@ -13,6 +18,31 @@ const USE_HEADLESS = process.env.USE_HEADLESS !== 'no';
 // if we hit the Jasmine default timeout then we get a terse message that we can't control.
 // The Jasmine default timeout is 30 seconds so make sure this is lower.
 const DEFAULT_TIMEOUT_MILLISECONDS = 20 * 1000;
+
+// There doesn't seem to be a way to ask Jest (or jest-junit) for its output directory. The idea here is that if we
+// change the way we define the output directory in package.json, move it to a separate config file, etc.,
+// a helpful error is better than a confusing error or silently dropping error output from CI.
+const testResultsDir = packageJson.jest.reporters
+    .map(r => r[1].outputDirectory)
+    .filter(x => x)[0];
+if (!testResultsDir) {
+    throw new Error('Could not determine Jest test results directory');
+}
+
+/**
+ * Recursively check if this error or any errors in its causal chain have been "enhanced" by `enhanceError`.
+ * @param {Error} error The error to check.
+ * @returns {boolean} True if the error or any of its causes have been enhanced.
+ */
+const isEnhancedError = error => {
+    while (error) {
+        if (error.scratchEnhancedError) {
+            return true;
+        }
+        error = error.cause;
+    }
+    return false;
+};
 
 /**
  * Add more debug information to an error:
@@ -26,6 +56,7 @@ const DEFAULT_TIMEOUT_MILLISECONDS = 20 * 1000;
  * @returns {Promise<Error>} The outerError, with the cause embedded.
  */
 const enhanceError = async (outerError, cause, driver) => {
+    outerError.scratchEnhancedError = true;
     if (cause) {
         // This is the official way to nest errors in modern Node.js, but Jest ignores this field.
         // It's here in case a future version uses it, or in case the caller does.
@@ -36,18 +67,27 @@ const enhanceError = async (outerError, cause, driver) => {
     } else {
         outerError.message += '\nCause: unknown';
     }
-    if (driver) {
-        const url = await driver.getCurrentUrl();
-        const title = await driver.getTitle();
-        const pageSource = await driver.getPageSource();
+    // Don't make a second copy of this debug info if an inner error has already done it,
+    // especially since retrieving the browser log is a destructive operation.
+    if (driver && !isEnhancedError(cause)) {
+        await fs.mkdir(testResultsDir, {recursive: true});
+        const errorInfoDir = await fs.mkdtemp(`${testResultsDir}/selenium-error-`);
+        outerError.message += `\nDebug info stored in: ${errorInfoDir}`;
+
+        const pageInfoPath = path.join(errorInfoDir, 'info.json');
+        await fs.writeFile(pageInfoPath, JSON.stringify({
+            currentUrl: await driver.getCurrentUrl(),
+            pageTitle: await driver.getTitle()
+        }, null, 2));
+
+        const pageSourcePath = path.join(errorInfoDir, 'page.html');
+        await fs.writeFile(pageSourcePath, await driver.getPageSource());
+
+        const browserLogPath = path.join(errorInfoDir, 'browser-log.txt');
         const browserLogEntries = await driver.manage()
             .logs()
             .get('browser');
-        const browserLogText = browserLogEntries.map(entry => entry.message).join('\n');
-        outerError.message += `\nBrowser URL: ${url}`;
-        outerError.message += `\nBrowser title: ${title}`;
-        outerError.message += `\nBrowser logs:\n*****\n${browserLogText}\n*****\n`;
-        outerError.message += `\nBrowser page source:\n*****\n${pageSource}\n*****\n`;
+        await fs.writeFile(browserLogPath, JSON.stringify(browserLogEntries, null, 2));
     }
     return outerError;
 };

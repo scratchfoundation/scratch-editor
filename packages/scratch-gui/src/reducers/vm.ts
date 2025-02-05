@@ -1,13 +1,16 @@
 import VM from '@scratch/scratch-vm';
-import storage from '../lib/storage';
+import {GUIConfig} from '../gui-config';
 
 const SET_VM = 'scratch-gui/vm/SET_VM';
-const defaultVM = new VM();
-defaultVM.attachStorage(storage);
-const initialState = defaultVM;
+
+const createVM = function (config: GUIConfig) {
+    const defaultVM = new VM();
+    defaultVM.attachStorage(config.storage.scratchStorage);
+    return defaultVM;
+};
 
 const reducer = function (state, action) {
-    if (typeof state === 'undefined') state = initialState;
+    if (typeof state === 'undefined') state = null;
     switch (action.type) {
     case SET_VM:
         return action.vm;
@@ -24,6 +27,6 @@ const setVM = function (vm) {
 
 export {
     reducer as default,
-    initialState as vmInitialState,
+    createVM as vmInitialState,
     setVM
 };

@@ -1,0 +1,162 @@
+@import "../../css/colors.css";
+
+.debug-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: 'transparent';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 510;
+}
+
+.debug-modal-container {
+    background: white;
+    border-radius: 8px;
+    width: 1000px;
+    max-height: 90%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow-x: visible;
+    box-shadow: 0 4px 4px 0 $ui-black-transparent-10;
+    outline: none;
+    margin: 0 40px;
+
+    .modal-header {
+        display: flex;
+        border-radius: 8px 8px 0 0;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px;
+        padding-left: 12px;
+        padding-right: 12px;
+        background-color: $ui-green-2;
+    }
+
+    .header-title {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 1rem;
+        line-height: 1.25rem;
+        font-weight: 700;
+        color: white; 
+    }
+    .debug-icon {
+        height: 22px;
+        width: 22px;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .close-button {
+        display: flex;
+        background: none;
+        border: none;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+    }
+
+    .modal-content {
+        display: flex;
+        width: 100%;
+        flex-grow: 1;
+        overflow-y: scroll;
+    }
+
+    .modal-content::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .modal-content::-webkit-scrollbar {
+    width: 8px; 
+    }
+
+    .previousIcon {
+        position: absolute;
+        cursor: pointer;
+        top: 50%;
+    }
+
+    .nextIcon {
+        position: absolute;
+        cursor: pointer;
+        right: -24px;
+        top: 50%;
+    }
+
+    .topic-list {
+        width: 30%;
+        border-right: 1px solid $ui-green;;
+    }
+
+    .topic-item {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px;
+        padding-left: 12px;
+        font-size: 1rem;
+        line-height: 1.5rem;
+        color: $ui-green;;
+        cursor: pointer;
+    }
+
+    .topic-item.active {
+        background-color: #D1FAEE;
+        font-weight: bold;
+    }
+
+    .info-container {
+        flex-direction: column;
+        width: 70%;
+        display: flex;
+        padding: 20px;
+        color: $text-primary;
+    }
+
+    .text-container {
+        flex: 1;
+        margin-left: 70px;
+    }
+
+    .title-text {
+        font-size: 24px;
+        line-height: 32px;
+        font-weight: 700;
+    }
+
+    .description {
+        font-size: 16px;
+        line-height: 28px;
+    }
+
+    .imageContainer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+    .topicImage {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain; /* Ensures image scales proportionally */
+    }
+
+    .navigation-buttons {
+        margin-top: 20px;
+    }
+
+    button {
+        margin: 5px;
+    }
+}

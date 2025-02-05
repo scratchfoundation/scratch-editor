@@ -94,6 +94,11 @@
     padding: 0 0.75rem;
 }
 
+.file-group .no-offset {
+    margin: 0 .25rem;
+    padding: 0 0.25rem;
+}
+
 .menu-bar-menu {
     margin-top: $menu-bar-height;
     z-index: $z-index-menu-bar;
@@ -223,7 +228,7 @@
 }
 
 @media only screen and (max-width: 1024px) {
-    .tutorials-label, .collapsible-label {
+    .tutorials-label, .collapsible-label, .debug-label{
         display: none;
     }
 
