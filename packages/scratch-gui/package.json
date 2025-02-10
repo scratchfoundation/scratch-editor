@@ -92,7 +92,7 @@
     "react-tooltip": "^4.5.1",
     "react-virtualized": "^9.20.1",
     "redux-throttle": "^0.1.1",
-    "scratch-audio": "^1.0.254",
+    "scratch-audio": "^2.0.0",
     "scratch-blocks": "^1.1.6",
     "scratch-l10n": "^3.18.286",
     "scratch-paint": "^2.2.400",
