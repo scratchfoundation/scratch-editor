@@ -28,6 +28,6 @@
     "@commitlint/config-conventional": "17.6.5",
     "husky": "8.0.3",
     "npm": "10.6.0",
-    "ts-node": "10.9.1"
+    "ts-node": "10.9.2"
   }
 }
