@@ -751,8 +751,9 @@ const styles = `
   }
 
   /* Category tree in Toolbox. */
-  .blocklyToolboxDiv {
+  .blocklyToolbox {
     background-color: var(--colour-toolbox);
+    border-right: 1px solid #ddd;
     color: var(--colour-toolboxText);
     overflow-x: visible;
     overflow-y: auto;
@@ -763,6 +764,11 @@ const styles = `
     padding: 0;
   }
 
+  .blocklyToolbox[dir="RTL"] {
+    border-right: none;
+    border-left: 1px solid #ddd;
+  }
+
   .blocklyTreeRoot {
     padding: 4px 0;
   }
@@ -771,7 +777,7 @@ const styles = `
     outline: none;
   }
 
-  .blocklyToolboxDiv .blocklyTreeRow {
+  .blocklyToolbox .blocklyToolboxCategory {
     line-height: 22px;
     margin: 0;
     padding: 0.375rem 0px;
@@ -789,11 +795,11 @@ const styles = `
     margin: 1px 0 8px 5px;
   }
 
-  .blocklyToolboxDiv[dir="RTL"] .blocklyTreeRow {
-    margin-left: 8px;
+  .blocklyToolbox[dir="RTL"] .blocklyToolboxCategory {
+    margin-left: 0px;
   }
 
-  .blocklyTreeRow:hover {
+  .blocklyToolboxCategory:hover {
     color: var(--colour-toolboxHover);
   }
 
@@ -844,7 +850,7 @@ const styles = `
     background-position: -48px -1px;
   }
 
-  .blocklyTreeLabel {
+  .blocklyToolboxCategoryLabel {
     cursor: default;
     font-family: "Helvetica Neue", Helvetica, sans-serif;
     font-size: .65rem;
@@ -855,7 +861,7 @@ const styles = `
     text-wrap: wrap;
   }
 
-  .blocklyTreeSelected .blocklyTreeLabel {
+  .blocklyToolboxSelected .blocklyToolboxCategoryLabel {
     color: inherit;
   }
 

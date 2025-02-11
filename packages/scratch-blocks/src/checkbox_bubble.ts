@@ -203,15 +203,14 @@ export class CheckboxBubble
    * Recalculates this bubble's location, keeping it adjacent to its block.
    */
   updateLocation() {
-    const blockLocation = this.sourceBlock.getRelativeToSurfaceXY();
-    const blockBounds = this.sourceBlock.getHeightWidth();
+    const bounds = this.sourceBlock.getBoundingRectangle();
     const x = this.sourceBlock.workspace.RTL
-      ? blockLocation.x + blockBounds.width + CheckboxBubble.CHECKBOX_MARGIN
-      : blockLocation.x -
+      ? bounds.right + CheckboxBubble.CHECKBOX_MARGIN
+      : bounds.left -
         CheckboxBubble.CHECKBOX_MARGIN -
         CheckboxBubble.CHECKBOX_SIZE;
     const y =
-      blockLocation.y + (blockBounds.height - CheckboxBubble.CHECKBOX_SIZE) / 2;
+      bounds.top + (bounds.getHeight() - CheckboxBubble.CHECKBOX_SIZE) / 2;
     this.moveTo(x, y);
   }
 

@@ -29,7 +29,7 @@ import {
 } from "./constants";
 import { ScratchVariableModel } from "./scratch_variable_model";
 import { ScratchContinuousToolbox } from "./scratch_continuous_toolbox";
-import { CheckableContinuousFlyout } from "./checkable_continuous_flyout.js";
+import { CheckableContinuousFlyout } from "./checkable_continuous_flyout";
 
 /**
  * Constant prefix to differentiate cloud variable names from other types of
