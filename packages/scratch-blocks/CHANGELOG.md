@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-spork.4](https://github.com/scratchfoundation/scratch-blocks/compare/v2.0.0-spork.3...v2.0.0-spork.4) (2025-02-11)
+
+
+### Bug Fixes
+
+* new beta release for better Blockly v12 beta compatibility ([127ac8b](https://github.com/scratchfoundation/scratch-blocks/commit/127ac8b7b14e3ee86e4c6d038cb1759495f93001))
+
 # [2.0.0-spork.3](https://github.com/scratchfoundation/scratch-blocks/compare/v2.0.0-spork.2...v2.0.0-spork.3) (2024-12-10)
 
 
