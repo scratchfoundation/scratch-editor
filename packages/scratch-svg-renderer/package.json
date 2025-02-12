@@ -46,7 +46,7 @@
     "fastestsmallesttextencoderdecoder": "^1.0.22",
     "isomorphic-dompurify": "^2.4.0",
     "minilog": "^3.1.0",
-    "transformation-matrix": "^1.15.0"
+    "transformation-matrix": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.25.2",
