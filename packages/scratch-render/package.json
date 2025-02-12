@@ -70,7 +70,7 @@
     "eslint": "8.57.1",
     "eslint-config-scratch": "9.0.9",
     "gh-pages": "1.2.0",
-    "html-webpack-plugin": "5.6.0",
+    "html-webpack-plugin": "5.6.3",
     "jsdoc": "3.6.11",
     "json": "9.0.6",
     "playwright-chromium": "1.46.1",
