@@ -32,7 +32,7 @@ const messages = defineMessages({
         id: 'gui.projectLoader.faceSensingError',
         defaultMessage: 'This project uses features (Face Sensing) that are not supported in your current version' +
         ' of the Scratch editor. Try updating to latest editor version or opening it in Scratch Lab.',
-        description: 'An error that displays when a local project file fails to load.'
+        description: 'An error that displays when a local project file fails to load because it has face sensing.'
     }
 });
 
