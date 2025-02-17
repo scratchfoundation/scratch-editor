@@ -27,6 +27,12 @@ const messages = defineMessages({
         id: 'gui.projectLoader.loadError',
         defaultMessage: 'The project file that was selected failed to load.',
         description: 'An error that displays when a local project file fails to load.'
+    },
+    faceSensingError: {
+        id: 'gui.projectLoader.faceSensingError',
+        defaultMessage: 'This project uses features (Face Sensing) that are not supported in your current version' +
+        ' of the Scratch editor. Try updating to latest editor version or opening it in Scratch Lab.',
+        description: 'An error that displays when a local project file fails to load.'
     }
 });
 
@@ -159,7 +165,13 @@ const SBFileUploaderHOC = function (WrappedComponent) {
                     })
                     .catch(error => {
                         log.warn(error);
-                        alert(this.props.intl.formatMessage(messages.loadError)); // eslint-disable-line no-alert
+                        if (error.message.includes('faceSensing')) {
+                            alert( // eslint-disable-line no-alert
+                                this.props.intl.formatMessage(messages.faceSensingError)
+                            );
+                        } else {
+                            alert(this.props.intl.formatMessage(messages.loadError)); // eslint-disable-line no-alert
+                        }
                     })
                     .then(() => {
                         this.props.onLoadingFinished(this.props.loadingState, loadingSuccess);
