@@ -211,6 +211,7 @@ const soundUpload = function (fileData, fileType, storage, handleSound, handleEr
 const spriteUpload = function (fileData, fileType, spriteName, storage, handleSprite, handleError = () => {}) {
     switch (fileType) {
     case '':
+    case 'application/x-scratch3-sprite': // from AUR packages
     case 'application/zip': { // We think this is a .sprite2 or .sprite3 file
         handleSprite(new Uint8Array(fileData));
         return;
