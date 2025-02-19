@@ -149,7 +149,7 @@
     "rimraf": "2.7.1",
     "scratch-semantic-release-config": "3.0.0",
     "scratch-webpack-configuration": "3.0.0",
-    "selenium-webdriver": "3.6.0",
+    "selenium-webdriver": "4.28.1",
     "semantic-release": "19.0.5",
     "stream-browserify": "3.0.0",
     "ts-jest": "^21.2.4",
