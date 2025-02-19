@@ -10,8 +10,8 @@ jobs:
   cd:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
@@ -80,7 +80,7 @@ jobs:
           git push -f origin "refs/tags/${{github.event.release.tag_name}}"
 
       - name: Deploy scratch-svg-renderer to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./packages/scratch-svg-renderer/playground
@@ -88,7 +88,7 @@ jobs:
           full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
 
       - name: Deploy scratch-render to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./packages/scratch-render/playground
@@ -96,7 +96,7 @@ jobs:
           full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
 
       - name: Deploy scratch-vm to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./packages/scratch-vm/playground
@@ -104,7 +104,7 @@ jobs:
           full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
 
       - name: Deploy scratch-gui to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./packages/scratch-gui/build

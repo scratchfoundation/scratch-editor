@@ -25,7 +25,7 @@ runs:
         fi
     # When the main workflow calls many workspace workflows, we can reuse this cache for all of them.
     # Since this is caching the node_modules directory, DO NOT add partial-match restore keys!
-    - uses: actions/cache/restore@v4
+    - uses: actions/cache/restore@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
       id: restore-node-modules-cache
       with:
         path: |
@@ -39,7 +39,7 @@ runs:
       working-directory: .
       shell: bash
       run: NODE_ENV=development npm ci
-    - uses: actions/cache/save@v4
+    - uses: actions/cache/save@0c907a75c2c80ebcb7f088228285e798b750cf8f # v4
       if: steps.restore-node-modules-cache.outputs.cache-hit != 'true'
       with:
         path: |
