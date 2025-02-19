@@ -86,7 +86,7 @@
     "react-intl": "2.9.0",
     "react-modal": "3.16.1",
     "react-popover": "0.5.10",
-    "react-responsive": "5.0.0",
+    "react-responsive": "10.0.0",
     "react-style-proptype": "3.2.2",
     "react-tabs": "2.3.1",
     "react-tooltip": "4.5.1",
