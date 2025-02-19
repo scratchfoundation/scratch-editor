@@ -59,7 +59,7 @@
     "decode-html": "2.0.0",
     "diff-match-patch": "1.0.5",
     "format-message": "6.2.4",
-    "htmlparser2": "3.10.1",
+    "htmlparser2": "10.0.0",
     "immutable": "3.8.2",
     "jszip": "3.10.1",
     "minilog": "3.1.0",
