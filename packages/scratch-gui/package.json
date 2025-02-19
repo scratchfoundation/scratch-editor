@@ -81,7 +81,7 @@
     "query-string": "5.1.1",
     "raw-loader": "4.0.2",
     "react-contextmenu": "2.14.0",
-    "react-draggable": "3.3.2",
+    "react-draggable": "4.4.6",
     "react-ga": "2.7.0",
     "react-intl": "2.9.0",
     "react-modal": "3.16.1",
