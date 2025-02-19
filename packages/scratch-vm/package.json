@@ -87,7 +87,7 @@
     "file-loader": "6.2.0",
     "format-message-cli": "6.2.4",
     "in-publish": "2.0.1",
-    "js-md5": "0.7.3",
+    "js-md5": "0.8.3",
     "jsdoc": "3.6.11",
     "json": "^9.0.4",
     "pngjs": "3.4.0",
