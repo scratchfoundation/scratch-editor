@@ -35,53 +35,54 @@ jobs:
       - uses: dorny/paths-filter@v3
         id: filter
         with:
+          # Files in the `global` filter affect all workspaces, even if workspace-specific files have not changed.
           filters: |
-            any-workspace:
+            global:
               - ".github/workflows/ci.yml"
+              - "package.json"
+              - "package-lock.json"
+              - "scripts/**"
+            any-workspace:
               - "packages/**"
             scratch-svg-renderer:
-              - ".github/workflows/ci.yml"
               - "packages/scratch-svg-renderer/**"
             scratch-render:
-              - ".github/workflows/ci.yml"
               - "packages/scratch-render/**"
               - "packages/scratch-svg-renderer/**"
             scratch-vm:
-              - ".github/workflows/ci.yml"
               - "packages/scratch-render/**"
               - "packages/scratch-svg-renderer/**"
               - "packages/scratch-vm/**"
             scratch-gui:
-              - ".github/workflows/ci.yml"
               - "packages/scratch-gui/**"
               - "packages/scratch-render/**"
               - "packages/scratch-svg-renderer/**"
               - "packages/scratch-vm/**"
 
-      - if: ${{ steps.filter.outputs.any-workspace == 'true' }}
+      - if: ${{ steps.filter.outputs.global == 'true' || steps.filter.outputs.any-workspace == 'true' }}
         uses: ./.github/actions/install-dependencies
 
       - name: Build packages
-        if: ${{ steps.filter.outputs.any-workspace == 'true' }}
+        if: ${{ steps.filter.outputs.global == 'true' || steps.filter.outputs.any-workspace == 'true' }}
         run: npm run build
 
       - name: Test scratch-svg-renderer
-        if: ${{ !cancelled() && steps.filter.outputs.scratch-svg-renderer == 'true' }}
+        if: ${{ !cancelled() && (steps.filter.outputs.global == 'true' || steps.filter.outputs.scratch-svg-renderer == 'true') }}
         uses: ./.github/actions/test-package
         with:
           package_name: scratch-svg-renderer
       - name: Test scratch-render
-        if: ${{ !cancelled() && steps.filter.outputs.scratch-render == 'true' }}
+        if: ${{ !cancelled() && (steps.filter.outputs.global == 'true' || steps.filter.outputs.scratch-render == 'true') }}
         uses: ./.github/actions/test-package
         with:
           package_name: scratch-render
       - name: Test scratch-vm
-        if: ${{ !cancelled() && steps.filter.outputs.scratch-vm == 'true' }}
+        if: ${{ !cancelled() && (steps.filter.outputs.global == 'true' || steps.filter.outputs.scratch-vm == 'true') }}
         uses: ./.github/actions/test-package
         with:
           package_name: scratch-vm
       - name: Test scratch-gui
-        if: ${{ !cancelled() && steps.filter.outputs.scratch-gui == 'true' }}
+        if: ${{ !cancelled() && (steps.filter.outputs.global == 'true' || steps.filter.outputs.scratch-gui == 'true') }}
         uses: ./.github/actions/test-package
         with:
           package_name: scratch-gui
