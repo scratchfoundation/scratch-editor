@@ -78,7 +78,7 @@
     "postcss-loader": "4.3.0",
     "postcss-simple-vars": "5.0.2",
     "prop-types": "15.8.1",
-    "query-string": "5.1.1",
+    "query-string": "9.1.1",
     "raw-loader": "4.0.2",
     "react-contextmenu": "2.14.0",
     "react-draggable": "3.3.2",
