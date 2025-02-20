@@ -120,7 +120,7 @@
     "@babel/plugin-transform-async-to-generator": "7.24.7",
     "@babel/preset-env": "7.25.4",
     "@babel/preset-react": "7.24.7",
-    "@types/prop-types": "15.7.13",
+    "@types/prop-types": "15.7.14",
     "@types/react-modal": "3.16.3",
     "@typescript-eslint/eslint-plugin": "8.7.0",
     "@typescript-eslint/parser": "8.7.0",
