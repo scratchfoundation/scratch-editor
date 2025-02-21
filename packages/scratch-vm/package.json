@@ -73,9 +73,9 @@
     "web-worker": "1.3.0"
   },
   "devDependencies": {
-    "@babel/core": "7.25.2",
-    "@babel/eslint-parser": "7.25.1",
-    "@babel/preset-env": "7.25.4",
+    "@babel/core": "7.26.9",
+    "@babel/eslint-parser": "7.26.8",
+    "@babel/preset-env": "7.26.9",
     "adm-zip": "0.4.11",
     "babel-loader": "9.1.3",
     "callsite": "1.0.0",
