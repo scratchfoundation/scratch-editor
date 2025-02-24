@@ -19,7 +19,7 @@ interface CommentState {
 /**
  * Custom comment icon that draws no icon indicator, used for block comments.
  */
-class ScratchCommentIcon
+export class ScratchCommentIcon
   extends Blockly.icons.Icon
   implements Blockly.ISerializable, Blockly.IHasBubble
 {
@@ -34,9 +34,7 @@ class ScratchCommentIcon
   constructor(protected sourceBlock: Blockly.BlockSvg) {
     super(sourceBlock);
     this.commentBubble = new ScratchCommentBubble(this.sourceBlock);
-    Blockly.Events.fire(
-      new (Blockly.Events.get("block_comment_create"))(this.commentBubble)
-    );
+    this.fireCreateEvent();
     this.onTextChangedListener = this.onTextChanged.bind(this);
     this.onSizeChangedListener = this.onSizeChanged.bind(this);
     this.onCollapseListener = this.onCollapsed.bind(this);
@@ -201,6 +199,15 @@ class ScratchCommentIcon
   dispose() {
     this.commentBubble.dispose();
     super.dispose();
+  }
+
+  /**
+   * Fires a block comment create event corresponding to this icon's comment.
+   */
+  fireCreateEvent() {
+    Blockly.Events.fire(
+      new (Blockly.Events.get("block_comment_create"))(this.commentBubble)
+    );
   }
 }
 

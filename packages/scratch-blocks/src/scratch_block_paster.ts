@@ -5,6 +5,7 @@
  */
 
 import * as Blockly from "blockly/core";
+import type { ScratchCommentIcon } from "./scratch_comment_icon";
 
 /**
  * Class responsible for handling the pasting of copied blocks.
@@ -29,6 +30,15 @@ class ScratchBlockPaster extends Blockly.clipboard.BlockPaster {
       block?.type === "argument_reporter_string_number"
     ) {
       block.setDragStrategy(new Blockly.dragging.BlockDragStrategy(block));
+    }
+
+    // Deserialization of blocks suppresses events, so even though this gets
+    // fired for blocks with comments, the VM will never receive it, causing its
+    // state to get out of sync. Manually fire it here (after suppression has
+    // been turned off) if needed.
+    const commentIcon = block.getIcon(Blockly.icons.IconType.COMMENT);
+    if (commentIcon) {
+      (commentIcon as ScratchCommentIcon).fireCreateEvent();
     }
 
     return block;
