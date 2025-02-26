@@ -62,7 +62,7 @@
     "scratch-semantic-release-config": "3.0.0",
     "scratch-webpack-configuration": "3.0.0",
     "semantic-release": "19.0.5",
-    "ts-jest": "29.2.5",
+    "ts-jest": "29.2.6",
     "ts-jest-mock-import-meta": "1.2.1",
     "ts-loader": "9.5.2",
     "webpack": "5.98.0",
