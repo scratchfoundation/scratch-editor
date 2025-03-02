@@ -125,7 +125,7 @@
     "@typescript-eslint/eslint-plugin": "8.7.0",
     "@typescript-eslint/parser": "8.7.0",
     "babel-core": "7.0.0-bridge.0",
-    "babel-loader": "9.2.1",
+    "babel-loader": "10.0.0",
     "cheerio": "1.0.0-rc.3",
     "cross-env": "7.0.3",
     "enzyme": "3.11.0",
