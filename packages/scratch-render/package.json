@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-render",
-  "version": "11.0.0",
+  "version": "11.1.0-spork.15",
   "description": "WebGL Renderer for Scratch 3.0",
   "author": "Massachusetts Institute of Technology",
   "license": "AGPL-3.0-only",
@@ -47,7 +47,7 @@
     "iOS >= 8"
   ],
   "dependencies": {
-    "@scratch/scratch-svg-renderer": "11.0.0",
+    "@scratch/scratch-svg-renderer": "11.1.0-spork.15",
     "grapheme-breaker": "0.3.2",
     "hull.js": "0.2.10",
     "ify-loader": "1.1.0",
@@ -64,7 +64,7 @@
     "@babel/eslint-parser": "7.26.8",
     "@babel/polyfill": "7.12.1",
     "@babel/preset-env": "7.26.9",
-    "@scratch/scratch-vm": "11.0.0",
+    "@scratch/scratch-vm": "11.1.0-spork.15",
     "babel-loader": "9.2.1",
     "copy-webpack-plugin": "4.6.0",
     "docdash": "0.4.0",
