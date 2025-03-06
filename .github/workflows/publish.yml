@@ -76,22 +76,22 @@ jobs:
         run: npm run build
 
       - name: Publish scratch-svg-renderer
-        run: npm publish --access=public --workspace=@scratch/scratch-svg-renderer
+        run: npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/scratch-svg-renderer
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
       - name: Publish scratch-render
-        run: npm publish --access=public --workspace=@scratch/scratch-render
+        run: npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/scratch-render
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
       - name: Publish scratch-vm
-        run: npm publish --access=public --workspace=@scratch/scratch-vm
+        run: npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/scratch-vm
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
       - name: Publish scratch-gui
-        run: npm publish --access=public --workspace=@scratch/scratch-gui
+        run: npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/scratch-gui
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
