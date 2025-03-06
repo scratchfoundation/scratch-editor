@@ -5,9 +5,11 @@ on:
     types: [published]
 
 jobs:
-  ci:
-    uses: ./.github/workflows/ci.yml
+  # ci:
+  #   uses: ./.github/workflows/ci.yml
   cd:
+  #   needs:
+  #     - ci
     runs-on: ubuntu-latest
     steps:
       - name: Config GitHub user
@@ -113,5 +115,3 @@ jobs:
           publish_dir: ./packages/scratch-gui/build
           destination_dir: scratch-gui
           full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
-    needs:
-      - ci
