@@ -12,6 +12,39 @@ jobs:
   #     - ci
     runs-on: ubuntu-latest
     steps:
+      - name: Debug info
+        run: |
+          cat <<EOF
+          Release tag name: ${{ github.event.release.tag_name }}
+          Release target commit-ish: ${{ github.event.release.target_commitish }}
+          EOF
+
+      - name: Determine NPM tag
+        id: npm_tag
+        shell: bash
+        run: |
+          case ${{ github.event.release.target_commitish }} in
+            develop | main | master)
+              if [[ ${{ github.event.release.prerelease }} == true ]]; then
+                npm_tag=beta
+              else
+                npm_tag=latest
+              fi
+              ;;
+            *)
+              # use the branch name
+              npm_tag="${{ github.event.release.target_commitish }}"
+              ;;
+          esac
+          echo "Determined NPM tag: [$npm_tag]"
+          echo "npm_tag=${npm_tag}" >> "$GITHUB_OUTPUT"
+      - name: Check NPM tag
+        run: |
+          if [ -z "${{ steps.npm_tag.outputs.npm_tag }}" ]; then
+            echo "Refusing to publish with empty NPM tag."
+            exit 1
+          fi
+
       - name: Config GitHub user
         shell: bash
         run: |
