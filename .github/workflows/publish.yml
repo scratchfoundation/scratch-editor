@@ -5,11 +5,11 @@ on:
     types: [published]
 
 jobs:
-  # ci:
-  #   uses: ./.github/workflows/ci.yml
+  ci:
+    uses: ./.github/workflows/ci.yml
   cd:
-  #   needs:
-  #     - ci
+    needs:
+      - ci
     runs-on: ubuntu-latest
     steps:
       - name: Debug info
@@ -75,25 +75,25 @@ jobs:
       - name: Build packages
         run: npm run build
 
-      # - name: Publish scratch-svg-renderer
-      #   run: npm publish --access=public --workspace=@scratch/scratch-svg-renderer
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Publish scratch-svg-renderer
+        run: npm publish --access=public --workspace=@scratch/scratch-svg-renderer
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
-      # - name: Publish scratch-render
-      #   run: npm publish --access=public --workspace=@scratch/scratch-render
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Publish scratch-render
+        run: npm publish --access=public --workspace=@scratch/scratch-render
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
-      # - name: Publish scratch-vm
-      #   run: npm publish --access=public --workspace=@scratch/scratch-vm
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Publish scratch-vm
+        run: npm publish --access=public --workspace=@scratch/scratch-vm
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
-      # - name: Publish scratch-gui
-      #   run: npm publish --access=public --workspace=@scratch/scratch-gui
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - name: Publish scratch-gui
+        run: npm publish --access=public --workspace=@scratch/scratch-gui
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
       - name: Push to develop
         shell: bash
