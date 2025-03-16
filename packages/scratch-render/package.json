@@ -75,7 +75,7 @@
     "jsdoc": "3.6.11",
     "json": "9.0.6",
     "playwright-chromium": "1.51.0",
-    "scratch-render-fonts": "1.0.173",
+    "scratch-render-fonts": "1.0.174",
     "scratch-semantic-release-config": "3.0.0",
     "scratch-storage": "4.0.81",
     "scratch-webpack-configuration": "3.0.0",
