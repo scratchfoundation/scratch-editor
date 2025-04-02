@@ -55,7 +55,7 @@
     "babel-loader": "9.2.1",
     "copy-webpack-plugin": "4.6.0",
     "eslint": "8.57.1",
-    "eslint-config-scratch": "9.0.9",
+    "eslint-config-scratch": "10.0.0",
     "eslint-plugin-import": "2.31.0",
     "jsdom": "13.2.0",
     "json": "9.0.6",
