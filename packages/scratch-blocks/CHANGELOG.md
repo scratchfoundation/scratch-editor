@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.208](https://github.com/scratchfoundation/scratch-blocks/compare/v1.1.207...v1.1.208) (2025-04-08)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-semantic-release-config to v1.0.16 ([170f890](https://github.com/scratchfoundation/scratch-blocks/commit/170f89007839b745aa14c31cc04d00689b089717))
+
 ## [1.1.207](https://github.com/scratchfoundation/scratch-blocks/compare/v1.1.206...v1.1.207) (2025-04-08)
 
 
