@@ -23,8 +23,6 @@ https://github.com/nodeca/pako/blob/main/LICENSE
 
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
-/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
-
 /**
  * [js-md5]{@link https://github.com/emn178/js-md5}
  *
