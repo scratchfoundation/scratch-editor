@@ -10,7 +10,7 @@ import getCostumeUrl from '../lib/get-costume-url';
 import DragRecognizer from '../lib/drag-recognizer';
 import {getEventXY} from '../lib/touch-utils';
 import {GUIStoragePropType} from '../gui-config';
-import DeleteConfirmationPrompt from '../components/delete-confirmation-prompt/delete-confirmation-prompt.jsx';
+import DeleteConfirmationPrompt from './delete-confirmation-prompt';
 
 import SpriteSelectorItemComponent from '../components/sprite-selector-item/sprite-selector-item.jsx';
 
@@ -155,6 +155,7 @@ class SpriteSelectorItem extends React.PureComponent {
                 relativeElemRef={this.ref}
                 entityType={this.props.dragType}
                 modalPosition={deleteConfirmationModalPosition}
+                isRtl={this.props.isRtl}
             /> : null}
             <SpriteSelectorItemComponent
                 componentRef={this.setRef}
@@ -194,7 +195,8 @@ SpriteSelectorItem.propTypes = {
     selected: PropTypes.bool,
     withDeleteConfirmation: PropTypes.bool,
     deleteConfirmationModalPosition: PropTypes.string,
-    vm: PropTypes.instanceOf(VM).isRequired
+    vm: PropTypes.instanceOf(VM).isRequired,
+    isRtl: PropTypes.bool
 };
 
 const mapStateToProps = (state, {id}) => ({
@@ -202,7 +204,8 @@ const mapStateToProps = (state, {id}) => ({
     dragging: state.scratchGui.assetDrag.dragging,
     receivedBlocks: state.scratchGui.hoveredTarget.receivedBlocks &&
             state.scratchGui.hoveredTarget.sprite === id,
-    vm: state.scratchGui.vm
+    vm: state.scratchGui.vm,
+    isRtl: state.locales.isRtl
 });
 const mapDispatchToProps = dispatch => ({
     dispatchSetHoveredSprite: spriteId => {

@@ -111,6 +111,7 @@ const SpriteSelectorComponent = function (props) {
                 onDuplicateSprite={onDuplicateSprite}
                 onExportSprite={onExportSprite}
                 onSelectSprite={onSelectSprite}
+                isRtl={isRtl(intl.locale)}
             />
             <ActionMenu
                 className={styles.addButton}

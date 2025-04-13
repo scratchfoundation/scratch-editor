@@ -7,7 +7,7 @@ import VM from '@scratch/scratch-vm';
 import SpriteSelectorItemContainer from '../../../src/containers/sprite-selector-item';
 import DeleteButton from '../../../src/components/delete-button/delete-button';
 import {legacyConfig} from '../../../src/legacy-config';
-import DeleteConfirmationPrompt from '../../../src/components/delete-confirmation-prompt/delete-confirmation-prompt.jsx';
+import DeleteConfirmationPrompt from '../../../src/containers/delete-confirmation-prompt';
 
 jest.mock('../../../src/components/delete-confirmation-prompt/delete-confirmation-prompt.jsx', () => jest.fn(() => null));
 describe('SpriteSelectorItem Container', () => {
