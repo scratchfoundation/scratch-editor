@@ -105,6 +105,8 @@ and limitations under the License.
 
 /*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
 
+/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
 /**
     * CSS Vendor prefix detection and property feature testing.
     *
