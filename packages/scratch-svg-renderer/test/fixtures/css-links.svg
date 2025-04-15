@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <path mask="url(https://example.com/using-path-mask-attribute)"></path>
+
+        <mask id="myMask">
+            <rect fill="white" />
+        </mask>
+
+        <pattern id="dataPattern">
+            <image href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCI+PHJlY3Qgd2lkdGg9IjEwMCIgaGVpZ2h0PSIxMDAiIGZpbGw9InJlZCIvPjwvc3ZnPg=="/>
+        </pattern>
+    </defs>
+    
+
+    <circle fill="url(https://example.com/using-circle-fill-attribute)" />
+    <circle style="fill: url(https://example.com/using-circle-fill-inline-style)" />
+
+    <rect stroke="url(https://example.com/using-rect-stroke-attribute)" />
+    <rect style="stroke: url(https://example.com/using-rect-fill-inline-style)" />
+
+    <circle mask="url(#myMask)" />
+
+    <style>
+        .url {
+            fill: url(#dataPattern);
+
+            stroke: url(https://example.com/using-stroke-stylesheet);
+            shape-outside: url(https://example.com/using-shape-outside-stylesheet);
+            filter: url(https://example.com/using-filter-stylesheet);
+            mask-image: url(https://example.com/using-mask-image-stylesheet);
+
+            background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAFWWSDA");
+        }
+    </style>
+    <rect class="url" />
+
+    <style>
+        @font-face {
+            font-family: 'Test Font';
+            src: url(https://example.com/using-font-face.woff) format(woff), url(https://example.com/using-font-face.woff2) format(woff2);
+        }
+        text {
+            font-family: 'Test Font';
+        }
+    </style>
+    <text>Use developer tools to observe several requests to example.com</text>
+</svg>

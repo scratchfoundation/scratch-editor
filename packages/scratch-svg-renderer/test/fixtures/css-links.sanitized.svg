@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <path></path>
+    </defs>
+
+    <circle></circle>
+    <circle></circle>
+
+    <rect></rect>
+    <rect></rect>
+
+    <style>.url{}</style>
+    <rect class="url"></rect>
+
+    <style>@font-face{font-family:'Test Font'}text{font-family:'Test Font'}</style>
+    <text>Use developer tools to observe several requests to example.com</text>
+</svg>
