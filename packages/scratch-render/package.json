@@ -74,7 +74,7 @@
     "html-webpack-plugin": "5.6.3",
     "jsdoc": "3.6.11",
     "json": "9.0.6",
-    "playwright-chromium": "1.51.1",
+    "playwright-chromium": "1.52.0",
     "scratch-render-fonts": "1.0.189",
     "scratch-semantic-release-config": "3.0.0",
     "scratch-storage": "4.0.126",
