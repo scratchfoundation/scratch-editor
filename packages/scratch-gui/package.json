@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-gui",
-  "version": "11.2.0-feature-parity.2",
+  "version": "11.2.0-svg-sanitization",
   "description": "Graphical User Interface for creating and running Scratch 3.0 projects",
   "author": "Massachusetts Institute of Technology",
   "license": "AGPL-3.0-only",
@@ -55,9 +55,9 @@
   },
   "dependencies": {
     "@microbit/microbit-universal-hex": "0.2.2",
-    "@scratch/scratch-render": "11.2.0-feature-parity.2",
-    "@scratch/scratch-svg-renderer": "11.2.0-feature-parity.2",
-    "@scratch/scratch-vm": "11.2.0-feature-parity.2",
+    "@scratch/scratch-render": "11.2.0-svg-sanitization",
+    "@scratch/scratch-svg-renderer": "11.2.0-svg-sanitization",
+    "@scratch/scratch-vm": "11.2.0-svg-sanitization",
     "arraybuffer-loader": "1.0.8",
     "autoprefixer": "9.8.8",
     "balance-text": "3.3.1",
