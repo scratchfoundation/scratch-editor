@@ -9,7 +9,7 @@ import log from '../lib/log.js';
 import {PLATFORM} from '../lib/platform.js';
 
 const onClickLogo = () => {
-    window.location = 'https://scratch.mit.edu';
+    window.open('https://scratch.mit.edu', '_blank', 'noopener,noreferrer');
 };
 
 const handleTelemetryModalCancel = () => {

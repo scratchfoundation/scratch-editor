@@ -1,0 +1,20 @@
+{
+  "projects": [
+    {
+      "src": "packages/scratch-gui/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "packages/scratch-gui/build"
+      }
+    }
+  ],
+  "builds": [
+    {
+      "src": "packages/scratch-gui/package.json",
+      "use": "@vercel/static-build"
+    }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}

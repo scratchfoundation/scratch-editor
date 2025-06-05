@@ -839,7 +839,7 @@ class MenuBar extends React.Component {
                     ) : (
                         // ******** no login session is available, so don't show login stuff
                         <React.Fragment>
-                            {this.props.showComingSoon ? (
+                            {/* {this.props.showComingSoon ? (
                                 <React.Fragment>
                                     <MenuBarItemTooltip id="mystuff">
                                         <div
@@ -880,7 +880,7 @@ class MenuBar extends React.Component {
                                         </div>
                                     </MenuBarItemTooltip>
                                 </React.Fragment>
-                            ) : []}
+                            ) : []} */}
                         </React.Fragment>
                     )}
                 </div>
