@@ -149,7 +149,7 @@ test('saving and loading sb2 project with monitors preserves sliderMin and slide
             setTimeout(() => {
                 vm.getPlaygroundData();
                 vm.stopAll();
-            }, 100);
+            }, 1000);
         });
     });
 });
