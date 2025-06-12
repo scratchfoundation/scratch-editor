@@ -5,7 +5,7 @@
  */
 
 import * as Blockly from "blockly/core";
-import { ScratchCommentBubble } from "./scratch_comment_bubble.js";
+import { ScratchCommentBubble } from "./scratch_comment_bubble";
 
 interface CommentState {
   text: string;
@@ -196,9 +196,17 @@ export class ScratchCommentIcon
     this.commentBubble.setCollapsed(!visible);
   }
 
+  getBubble() {
+    return this.commentBubble;
+  }
+
   dispose() {
     this.commentBubble.dispose();
     super.dispose();
+  }
+
+  canBeFocused() {
+    return false;
   }
 
   /**

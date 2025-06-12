@@ -94,7 +94,7 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
    * @returns Array of variable names.
    */
   static dropdownCreate(this: ScratchFieldVariable): Blockly.MenuOption[] {
-    const options = super.dropdownCreate();
+    let options = super.dropdownCreate();
     const type = this.getDefaultType();
     if (type === Constants.BROADCAST_MESSAGE_VARIABLE_TYPE) {
       options.splice(-2, 2, [
@@ -102,16 +102,17 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
         Constants.NEW_BROADCAST_MESSAGE_ID,
       ]);
     } else if (type === Constants.LIST_VARIABLE_TYPE) {
-      for (const option of options) {
+      options = options.map((option) => {
         if (option[1] === Blockly.RENAME_VARIABLE_ID) {
-          option[0] = ScratchMsgs.translate("RENAME_LIST");
+          return [ScratchMsgs.translate("RENAME_LIST"), option[1]];
         } else if (option[1] === Blockly.DELETE_VARIABLE_ID) {
-          option[0] = ScratchMsgs.translate("DELETE_LIST").replace(
-            "%1",
-            this.getText()
-          );
+          return [
+            ScratchMsgs.translate("DELETE_LIST").replace("%1", this.getText()),
+            option[1],
+          ];
         }
-      }
+        return option;
+      });
     }
 
     return options;
