@@ -6,6 +6,23 @@ Scratch project by pressing "Create" on that website or by visiting <https://scr
 This is a source code repository for the packages that make up the Scratch editor and a few additional support
 packages. Use this if you'd like to learn about how the Scratch editor works or to contribute to its development.
 
+## How did we create the experience-cs fork of scratch-editor/packages/scratch-gui?
+
+We have based our fork off of the version used by https://scratch.mit.edu [1]
+
+Here are the steps used for creating our `experience-cs-base` branch:
+
+```
+git clone git@github.com:RaspberryPiFoundation/scratch-editor.git
+git remote add mit https://github.com/scratchfoundation/scratch-editor.git
+git fetch mit
+git checkout mit/develop -b experience-cs-base
+git reset --hard 11.2.0-svg-sanitization.3
+git push origin HEAD
+```
+
+[1] https://github.com/scratchfoundation/scratch-www/blob/develop/package.json#L77
+
 ## What's in this repository?
 
 The `packages` directory in this repository contains:
