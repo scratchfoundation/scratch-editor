@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@blockly/continuous-toolbox": "^7.0.1",
-    "@blockly/field-colour": "^6.0.1",
-    "blockly": "^12.1.0"
+    "@blockly/field-colour": "^6.0.3",
+    "blockly": "^12.2.0"
   }
 }

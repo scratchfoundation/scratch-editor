@@ -22,10 +22,11 @@ export class ScratchCommentBubble
   private dragStartLocation?: Blockly.utils.Coordinate;
 
   constructor(sourceBlock: Blockly.BlockSvg) {
-    super(sourceBlock.workspace);
+    const commentId = `${sourceBlock.id}_comment`;
+    super(sourceBlock.workspace, commentId);
     this.sourceBlock = sourceBlock;
     this.disposing = false;
-    this.id = `${sourceBlock.id}_comment`;
+    this.id = commentId;
     this.setPlaceholderText(Blockly.Msg.WORKSPACE_COMMENT_DEFAULT_TEXT);
     this.getSvgRoot().setAttribute(
       "style",
