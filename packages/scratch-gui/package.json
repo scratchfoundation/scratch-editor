@@ -122,7 +122,7 @@
   "peerDependencies": {
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "react-redux": "^5.0.7",
+    "react-redux": "^5.0.7 || ^9.0.0",
     "redux": "^3.7.2"
   },
   "devDependencies": {
