@@ -157,7 +157,15 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
    * Show the inline free-text editor on top of the text.
    */
   showEditor_(event: PointerEvent) {
-    super.showEditor_(event);
+    // Mobile browsers have issues with in-line textareas (focus & keyboards).
+    // Also, don't let the parent take ephemeral focus since the drop-down div
+    // below will handle it, instead.
+    const noFocus =
+      Blockly.utils.userAgent.MOBILE ||
+      Blockly.utils.userAgent.ANDROID ||
+      Blockly.utils.userAgent.IPAD;
+    super.showEditor_(event, noFocus, false);
+
     // If there is an existing drop-down someone else owns, hide it immediately and clear it.
     Blockly.DropDownDiv.hideWithoutAnimation();
     Blockly.DropDownDiv.clearContent();
