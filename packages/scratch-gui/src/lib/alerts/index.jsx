@@ -212,6 +212,20 @@ const alerts = [
         ),
         iconSpinner: true,
         level: AlertLevels.SUCCESS
+    },
+    {
+        alertId: 'loadingExtensionData',
+        alertType: AlertTypes.STANDARD,
+        clearList: [],
+        content: (
+            <FormattedMessage
+                defaultMessage="Loading extension..."
+                description="Message indicating that extension is in process of loading"
+                id="gui.alerts.loadingExtensionData"
+            />
+        ),
+        iconSpinner: true,
+        level: AlertLevels.SUCCESS
     }
 ];
 

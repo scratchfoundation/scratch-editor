@@ -395,7 +395,7 @@ class RenderedTarget extends Target {
      * @param {!number} value Numerical magnitude of effect.
      */
     setEffect (effectName, value) {
-        if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) return;
+        if (!this.effects.hasOwnProperty(effectName)) return;
         this.effects[effectName] = value;
         if (this.renderer) {
             this.renderer.updateDrawableEffect(this.drawableID, effectName, value);
@@ -411,12 +411,12 @@ class RenderedTarget extends Target {
      */
     clearEffects () {
         for (const effectName in this.effects) {
-            if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) continue;
+            if (!this.effects.hasOwnProperty(effectName)) continue;
             this.effects[effectName] = 0;
         }
         if (this.renderer) {
             for (const effectName in this.effects) {
-                if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) continue;
+                if (!this.effects.hasOwnProperty(effectName)) continue;
                 this.renderer.updateDrawableEffect(this.drawableID, effectName, 0);
             }
             if (this.visible) {
@@ -682,7 +682,7 @@ class RenderedTarget extends Target {
             this.renderer.updateDrawableSkinId(this.drawableID, costume.skinId);
 
             for (const effectName in this.effects) {
-                if (!Object.prototype.hasOwnProperty.call(this.effects, effectName)) continue;
+                if (!this.effects.hasOwnProperty(effectName)) continue;
                 this.renderer.updateDrawableEffect(this.drawableID, effectName, this.effects[effectName]);
             }
 
@@ -761,6 +761,20 @@ class RenderedTarget extends Target {
     isTouchingPoint (x, y) {
         if (this.renderer) {
             return this.renderer.drawableTouching(this.drawableID, x, y);
+        }
+        return false;
+    }
+
+    isTouchingRect (left, top, right, bottom) {
+        if (this.renderer) {
+            return this.renderer.drawableTouchingScratchRect(this.drawableID, left, top, right, bottom);
+        }
+        return false;
+    }
+
+    isTouchingScratchPoint (x, y) {
+        if (this.renderer) {
+            return this.renderer.drawableTouchingScratchPoint(this.drawableID, x, y);
         }
         return false;
     }
@@ -1020,25 +1034,25 @@ class RenderedTarget extends Target {
      * @param {object} data An object with sprite info data to set.
      */
     postSpriteInfo (data) {
-        const force = Object.prototype.hasOwnProperty.call(data, 'force') ? data.force : null;
-        const isXChanged = Object.prototype.hasOwnProperty.call(data, 'x');
-        const isYChanged = Object.prototype.hasOwnProperty.call(data, 'y');
+        const force = data.hasOwnProperty('force') ? data.force : null;
+        const isXChanged = data.hasOwnProperty('x');
+        const isYChanged = data.hasOwnProperty('y');
         if (isXChanged || isYChanged) {
             this.setXY(isXChanged ? data.x : this.x, isYChanged ? data.y : this.y, force);
         }
-        if (Object.prototype.hasOwnProperty.call(data, 'direction')) {
+        if (data.hasOwnProperty('direction')) {
             this.setDirection(data.direction);
         }
-        if (Object.prototype.hasOwnProperty.call(data, 'draggable')) {
+        if (data.hasOwnProperty('draggable')) {
             this.setDraggable(data.draggable);
         }
-        if (Object.prototype.hasOwnProperty.call(data, 'rotationStyle')) {
+        if (data.hasOwnProperty('rotationStyle')) {
             this.setRotationStyle(data.rotationStyle);
         }
-        if (Object.prototype.hasOwnProperty.call(data, 'visible')) {
+        if (data.hasOwnProperty('visible')) {
             this.setVisible(data.visible);
         }
-        if (Object.prototype.hasOwnProperty.call(data, 'size')) {
+        if (data.hasOwnProperty('size')) {
             this.setSize(data.size);
         }
     }

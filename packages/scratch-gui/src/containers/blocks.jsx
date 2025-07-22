@@ -144,6 +144,14 @@ class Blocks extends React.Component {
         if (this.props.isVisible) {
             this.setLocale();
         }
+
+        let extensionLoaded = false;
+        window.addEventListener('load-extension', () => {
+            extensionLoaded = true;
+            this.props.vm.extensionManager.loadExtensionURL('faceSensing').then(() => {
+                this.handleCategorySelected('faceSensing');
+            })
+        });
     }
     shouldComponentUpdate (nextProps, nextState) {
         return (

@@ -1069,6 +1069,36 @@ class RenderWebGL extends EventEmitter {
         return false;
     }
 
+    drawableTouchingScratchRect (drawableID, left, top, right, bottom) {
+        const drawable = this._allDrawables[drawableID];
+        if (!drawable) {
+            return false;
+        }
+        const bounds = new Rectangle();
+        bounds.initFromBounds(left, right, bottom, top);
+        const worldPos = twgl.v3.create();
+
+        drawable.updateCPURenderAttributes();
+
+        for (worldPos[1] = bounds.bottom; worldPos[1] <= bounds.top; worldPos[1]++) {
+            for (worldPos[0] = bounds.left; worldPos[0] <= bounds.right; worldPos[0]++) {
+                if (drawable.isTouching(worldPos)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    drawableTouchingScratchPoint (drawableID, x, y) {
+        const drawable = this._allDrawables[drawableID];
+        if (!drawable) {
+            return false;
+        }
+        drawable.updateCPURenderAttributes();
+        return drawable.isTouching([x, y]);
+    }
+
     /**
      * Detect which sprite, if any, is at the given location.
      * This function will pick all drawables that are visible, unless specific
