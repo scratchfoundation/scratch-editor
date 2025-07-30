@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.339](https://github.com/scratchfoundation/scratch-paint/compare/v3.0.338...v3.0.339) (2025-07-28)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([#3336](https://github.com/scratchfoundation/scratch-paint/issues/3336)) ([571b50b](https://github.com/scratchfoundation/scratch-paint/commit/571b50b345ac895aff46eb7ff195e4e21a682bba))
+
+## [3.0.338](https://github.com/scratchfoundation/scratch-paint/compare/v3.0.337...v3.0.338) (2025-07-26)
+
+
+### Bug Fixes
+
+* **deps:** update dependency scratch-render-fonts to v1.0.218 ([#3335](https://github.com/scratchfoundation/scratch-paint/issues/3335)) ([b7a985d](https://github.com/scratchfoundation/scratch-paint/commit/b7a985d090c521601cec4ecfb53ce37e1bda2ee4))
+
+## [3.0.337](https://github.com/scratchfoundation/scratch-paint/compare/v3.0.336...v3.0.337) (2025-07-24)
+
+
+### Bug Fixes
+
+* **deps:** lock file maintenance ([#3333](https://github.com/scratchfoundation/scratch-paint/issues/3333)) ([eb9d898](https://github.com/scratchfoundation/scratch-paint/commit/eb9d898cbdc2a15619a8db090c622cd859b2bc4d))
+
 ## [3.0.336](https://github.com/scratchfoundation/scratch-paint/compare/v3.0.335...v3.0.336) (2025-07-23)
 
 
