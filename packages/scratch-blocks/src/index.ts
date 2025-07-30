@@ -80,6 +80,7 @@ export {
   StatusIndicatorLabel,
   StatusButtonState,
 } from "./status_indicator_label";
+export * from "./xml";
 
 export function inject(container: Element, options: Blockly.BlocklyOptions) {
   registerScratchFieldAngle();
