@@ -67,4 +67,20 @@ export class ScratchContinuousToolbox extends ContinuousToolbox {
   runAfterRerender(callback: () => void) {
     this.postRenderCallbacks.push(callback);
   }
+
+  /**
+   * Returns whether or not the given item should be deselected.
+   * Prevents items from being deselected without a replacement.
+   *
+   * @param oldItem The item that was previously selected.
+   * @param newItem The item that is proposed to be selected instead.
+   * @returns True if the old item should be allowed to be deselected.
+   */
+  shouldDeselectItem_(
+    oldItem: Blockly.ISelectableToolboxItem | null,
+    newItem: Blockly.ISelectableToolboxItem | null
+  ) {
+    if (!newItem) return false;
+    return super.shouldDeselectItem_(oldItem, newItem);
+  }
 }
