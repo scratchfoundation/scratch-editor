@@ -224,7 +224,7 @@ function disconnectOldBlocks_(this: ProcedureBlock): ConnectionMap {
     if (input.connection) {
       const target = input.connection.targetBlock() as Blockly.BlockSvg;
       const saveInfo = {
-        shadow: input.connection.getShadowDom(),
+        shadow: input.connection.getShadowDom(true),
         block: target,
       };
       connectionMap[input.name] = saveInfo;
