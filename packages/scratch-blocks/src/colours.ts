@@ -53,6 +53,7 @@ const Colours = {
   valueReportBackground: "#FFFFFF",
   valueReportBorder: "#AAAAAA",
   contextualMenuHover: "rgba(77, 151, 255, .25)",
+  menuHover: "rgba(0, 0, 0, .2)",
 };
 
 /**
