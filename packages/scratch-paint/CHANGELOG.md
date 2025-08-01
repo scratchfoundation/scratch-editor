@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/scratchfoundation/scratch-paint/compare/v3.0.339...v3.1.0) (2025-08-01)
+
+
+### Features
+
+* trigger semantic release ([8a14645](https://github.com/scratchfoundation/scratch-paint/commit/8a14645362c4c8d74dc6e231f8f593c2c8006b0d))
+
 ## [3.0.339](https://github.com/scratchfoundation/scratch-paint/compare/v3.0.338...v3.0.339) (2025-07-28)
 
 
