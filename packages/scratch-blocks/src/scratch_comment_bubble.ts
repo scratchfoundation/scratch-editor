@@ -32,6 +32,7 @@ export class ScratchCommentBubble
       "style",
       `--colour-commentBorder: ${sourceBlock.getColourTertiary()};`
     );
+    this.getSvgRoot().setAttribute("id", this.id);
 
     Blockly.browserEvents.conditionalBind(
       this.getSvgRoot(),
