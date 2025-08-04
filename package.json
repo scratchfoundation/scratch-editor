@@ -1,6 +1,6 @@
 {
   "name": "scratch-editor",
-  "version": "11.6.0-gui-standalone",
+  "version": "11.6.0-face-sensing",
   "private": "true",
   "description": "Scratch editor mono-repository",
   "author": "Scratch Foundation",
