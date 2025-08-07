@@ -37,6 +37,7 @@ import "./scratch_dragger";
 import "./scratch_variable_map";
 import "./scratch_variable_model";
 import "./scratch_connection_checker";
+import "./scratch_insertion_marker_previewer";
 import "./flyout_checkbox_icon";
 import "./events/events_block_comment_change";
 import "./events/events_block_comment_collapse";

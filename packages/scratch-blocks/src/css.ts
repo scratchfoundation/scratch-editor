@@ -1197,6 +1197,10 @@ const styles = `
     stroke: revert-layer;
     stroke-width: 1;
   }
+
+  .blocklyInsertionMarker > g:not(:last-child) {
+    visibility: hidden;
+  }
 `;
 
 Blockly.Css.register(styles);
