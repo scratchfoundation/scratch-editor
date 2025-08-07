@@ -154,3 +154,27 @@ function deleteNext(deleteList: Blockly.BlockSvg[], eventGroup?: string) {
   }
   Blockly.Events.setGroup(false);
 }
+
+/**
+ * Registers a block duplicate option that duplicates the selected block and
+ * all subsequent blocks in the stack.
+ */
+export function registerDuplicateBlock() {
+  const original =
+    Blockly.ContextMenuRegistry.registry.getItem("blockDuplicate");
+  const duplicateOption = {
+    displayText: original.displayText,
+    preconditionFn: original.preconditionFn,
+    callback(scope: Blockly.ContextMenuRegistry.Scope) {
+      if (!scope.block) return;
+      const data = scope.block.toCopyData(true);
+      if (!data) return;
+      Blockly.clipboard.paste(data, scope.block.workspace);
+    },
+    scopeType: original.scopeType,
+    id: original.id,
+    weight: original.weight,
+  };
+  Blockly.ContextMenuRegistry.registry.unregister(duplicateOption.id);
+  Blockly.ContextMenuRegistry.registry.register(duplicateOption);
+}
