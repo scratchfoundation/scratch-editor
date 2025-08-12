@@ -286,7 +286,7 @@ export class FieldNote extends Blockly.FieldTextInput {
    * Show a field with piano keys.
    */
   showEditor_(event: PointerEvent, quietInput = false) {
-    super.showEditor_(event, quietInput);
+    super.showEditor_(event, quietInput, false);
 
     // Build the SVG DOM.
     const div = Blockly.DropDownDiv.getContentDiv();

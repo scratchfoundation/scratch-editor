@@ -109,4 +109,8 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
       }
     }
   }
+
+  scrollTo(position: number) {
+    super.scrollTo(Math.ceil(position));
+  }
 }

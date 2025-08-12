@@ -37,6 +37,7 @@ import "./scratch_dragger";
 import "./scratch_variable_map";
 import "./scratch_variable_model";
 import "./scratch_connection_checker";
+import "./scratch_insertion_marker_previewer";
 import "./flyout_checkbox_icon";
 import "./events/events_block_comment_change";
 import "./events/events_block_comment_collapse";
@@ -80,6 +81,7 @@ export {
   StatusIndicatorLabel,
   StatusButtonState,
 } from "./status_indicator_label";
+export * from "./xml";
 
 export function inject(container: Element, options: Blockly.BlocklyOptions) {
   registerScratchFieldAngle();
@@ -128,6 +130,7 @@ Blockly.ContextMenuRegistry.registry.unregister("blockInline");
 Blockly.ContextMenuItems.registerCommentOptions();
 Blockly.ContextMenuRegistry.registry.unregister("blockDelete");
 contextMenuItems.registerDeleteBlock();
+contextMenuItems.registerDuplicateBlock();
 Blockly.ContextMenuRegistry.registry.unregister("workspaceDelete");
 contextMenuItems.registerDeleteAll();
 Blockly.comments.CommentView.defaultCommentSize = new Blockly.utils.Size(

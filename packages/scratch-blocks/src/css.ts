@@ -702,16 +702,16 @@ const styles = `
   }
 
   .blocklyAngleCenterPoint {
-    stroke: #fff;
+    stroke: var(--colour-text);
     stroke-width: 1;
-    fill: #fff;
+    fill: var(--colour-text);
   }
 
   .blocklyAngleDragHandle {
-    stroke: #fff;
+    stroke: var(--colour-text);
     stroke-width: 5;
     stroke-opacity: 0.25;
-    fill: #fff;
+    fill: var(--colour-text);
     cursor: pointer;
   }
 
@@ -720,18 +720,18 @@ const styles = `
   }
 
   .blocklyAngleMarks {
-    stroke: #fff;
+    stroke: var(--colour-text);
     stroke-width: 1;
     stroke-opacity: 0.5;
   }
 
   .blocklyAngleGauge {
-    fill: #fff;
+    fill: var(--colour-text);
     fill-opacity: 0.20;
   }
 
   .blocklyAngleLine {
-    stroke: #fff;
+    stroke: var(--colour-text);
     stroke-width: 1;
     stroke-linecap: round;
     pointer-events: none;
@@ -1011,12 +1011,12 @@ const styles = `
     z-index: 20000;  /* Arbitrary, but some apps depend on it... */
   }
 
-  .blocklyDropDownDiv .blocklyMenu .blocklyMenuItem:hover {
-    background: var(--colour-menuHover);
+  .blocklyDropDownDiv .blocklyMenu .blocklyMenuItem.blocklyMenuItemHighlight {
+    background-color: var(--colour-menuHover);
   }
 
-  .blocklyWidgetDiv .blocklyMenu .blocklyMenuItem:hover {
-    background: var(--colour-contextualMenuHover);
+  .blocklyWidgetDiv .blocklyMenu .blocklyMenuItem.blocklyMenuItemHighlight {
+    background-color: var(--colour-contextualMenuHover);
   }
 
   .blocklyWidgetDiv .blocklyMenu .blocklyMenuItemDisabled.blocklyMenuItem:hover {
@@ -1168,13 +1168,12 @@ const styles = `
     color: #4c97ff;
   }
   .blocklyDropDownDiv .blocklyMenuItem {
-    color: #fff;
     font-weight: bold;
     min-height: 32px;
     padding: 4px 7em 4px 28px;
   }
-  .high-contrast-theme.blocklyDropDownDiv .blocklyMenuItem {
-    color: #000;
+  .scratch-renderer.blocklyDropDownDiv .blocklyMenuItem .blocklyMenuItemContent {
+    color: var(--colour-text);
   }
   .blocklyToolboxSelected .blocklyTreeLabel {
     color: var(--colour-toolboxText);
@@ -1197,6 +1196,10 @@ const styles = `
   .scratch-renderer.high-contrast-theme .blocklyDraggable:not(.blocklyDisabled) .blocklyEditableField:not(.blocklyEditing):hover>.blocklyPath {
     stroke: revert-layer;
     stroke-width: 1;
+  }
+
+  .blocklyInsertionMarker > g:not(:last-child) {
+    visibility: hidden;
   }
 `;
 

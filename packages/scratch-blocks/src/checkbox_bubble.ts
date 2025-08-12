@@ -243,6 +243,27 @@ export class CheckboxBubble
     Blockly.browserEvents.unbind(this.clickListener);
   }
 
+  /** See IFocusableNode.getFocusableElement. */
+  getFocusableElement(): HTMLElement | SVGElement {
+    return this.svgRoot;
+  }
+
+  /** See IFocusableNode.getFocusableTree. */
+  getFocusableTree(): Blockly.IFocusableTree {
+    return this.sourceBlock.workspace;
+  }
+
+  /** See IFocusableNode.onNodeFocus. */
+  onNodeFocus(): void {}
+
+  /** See IFocusableNode.onNodeBlur. */
+  onNodeBlur(): void {}
+
+  /** See IFocusableNode.canBeFocused. */
+  canBeFocused(): boolean {
+    return true;
+  }
+
   // These methods are required by the interfaces, but intentionally have no
   // implementation, largely because this bubble's location is fixed relative
   // to its block and is not draggable by the user.
