@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-vm",
-  "version": "11.6.0-gui-standalone",
+  "version": "11.6.0-react-18",
   "description": "Virtual Machine for Scratch 3.0",
   "author": "Massachusetts Institute of Technology",
   "license": "AGPL-3.0-only",
@@ -50,8 +50,8 @@
     "statements": 70
   },
   "dependencies": {
-    "@scratch/scratch-render": "11.6.0-gui-standalone",
-    "@scratch/scratch-svg-renderer": "11.6.0-gui-standalone",
+    "@scratch/scratch-render": "11.6.0-react-18",
+    "@scratch/scratch-svg-renderer": "11.6.0-react-18",
     "@vernier/godirect": "1.8.3",
     "arraybuffer-loader": "1.0.8",
     "atob": "2.1.2",
