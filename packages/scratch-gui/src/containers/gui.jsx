@@ -39,6 +39,7 @@ import vmListenerHOC from '../lib/vm-listener-hoc.jsx';
 import vmManagerHOC from '../lib/vm-manager-hoc.jsx';
 import cloudManagerHOC from '../lib/cloud-manager-hoc.jsx';
 import systemPreferencesHOC from '../lib/system-preferences-hoc.jsx';
+import withAuthentication from '../lib/auth-hoc.jsx';
 import {PLATFORM} from '../lib/platform.js';
 
 import GUIComponent from '../components/gui/gui.jsx';
@@ -203,6 +204,7 @@ const ConnectedGUI = injectIntl(connect(
 // the hierarchy of HOC constructor calls clearer here; it has nothing to do with redux's
 // ability to compose reducers.
 const WrappedGui = compose(
+    withAuthentication,
     LocalizationHOC,
     ErrorBoundaryHOC('Top Level App'),
     FontLoaderHOC,
