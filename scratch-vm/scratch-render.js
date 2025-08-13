@@ -34507,6 +34507,36 @@ var RenderWebGL = /*#__PURE__*/function (_EventEmitter) {
       }
       return false;
     }
+  }, {
+    key: "drawableTouchingScratchRect",
+    value: function drawableTouchingScratchRect(drawableID, left, top, right, bottom) {
+      var drawable = this._allDrawables[drawableID];
+      if (!drawable) {
+        return false;
+      }
+      var bounds = new Rectangle();
+      bounds.initFromBounds(left, right, bottom, top);
+      var worldPos = twgl.v3.create();
+      drawable.updateCPURenderAttributes();
+      for (worldPos[1] = bounds.bottom; worldPos[1] <= bounds.top; worldPos[1]++) {
+        for (worldPos[0] = bounds.left; worldPos[0] <= bounds.right; worldPos[0]++) {
+          if (drawable.isTouching(worldPos)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+  }, {
+    key: "drawableTouchingScratchPoint",
+    value: function drawableTouchingScratchPoint(drawableID, x, y) {
+      var drawable = this._allDrawables[drawableID];
+      if (!drawable) {
+        return false;
+      }
+      drawable.updateCPURenderAttributes();
+      return drawable.isTouching([x, y]);
+    }
 
     /**
      * Detect which sprite, if any, is at the given location.
