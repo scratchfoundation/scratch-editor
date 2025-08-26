@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0-spork.5](https://github.com/scratchfoundation/scratch-blocks/compare/v2.0.0-spork.4...v2.0.0-spork.5) (2025-08-26)
+
+
+### Bug Fixes
+
+* **deps:** use blockly 12.3 beta ([76981e1](https://github.com/scratchfoundation/scratch-blocks/commit/76981e1bc22ba3de6e234885bfcee97ca202b7f5))
+* fix bug that could cause the wrong toolbox category to appear selected ([#232](https://github.com/scratchfoundation/scratch-blocks/issues/232)) ([ec918e2](https://github.com/scratchfoundation/scratch-blocks/commit/ec918e2b7c1f8ac05cfe1c93bf37b458bb4767b1))
+* fix bug that could clear the values of procedure block caller arguments ([#247](https://github.com/scratchfoundation/scratch-blocks/issues/247)) ([611e440](https://github.com/scratchfoundation/scratch-blocks/commit/611e44066daa3e2a1201856503b868ced6a2bb1f))
+* fix bug that prevented moving block comments ([#248](https://github.com/scratchfoundation/scratch-blocks/issues/248)) ([dc17159](https://github.com/scratchfoundation/scratch-blocks/commit/dc171596aed0b248086d9110ec08370ed026bf4a))
+* fix deserialization of local/cloud variables ([#245](https://github.com/scratchfoundation/scratch-blocks/issues/245)) ([09bb237](https://github.com/scratchfoundation/scratch-blocks/commit/09bb2379318d107ca473bf7f3cdb797b69c5c42c))
+* fix ephemeral focus handling for `FieldAngle` and `FieldNote` ([#244](https://github.com/scratchfoundation/scratch-blocks/issues/244)) ([8b758db](https://github.com/scratchfoundation/scratch-blocks/commit/8b758db2c4cde80dd977bec05207f855a9d2f742))
+* fix positioning of block comments in RTL mode ([#249](https://github.com/scratchfoundation/scratch-blocks/issues/249)) ([9f1da96](https://github.com/scratchfoundation/scratch-blocks/commit/9f1da96cb250374a367ae4005512b7717a292e9a))
+* improve styling, especially in high contrast mode ([#246](https://github.com/scratchfoundation/scratch-blocks/issues/246)) ([abd9a40](https://github.com/scratchfoundation/scratch-blocks/commit/abd9a40709f615e1a737bddb3906cdf4744b4389))
+* make Duplicate context menu item duplicate subsequent blocks ([#250](https://github.com/scratchfoundation/scratch-blocks/issues/250)) ([3a43e6b](https://github.com/scratchfoundation/scratch-blocks/commit/3a43e6b47b8f7d3cfe99a02eb0e3a6b5d6f59503))
+* make insertion markers reflect the actual size of the block ([#251](https://github.com/scratchfoundation/scratch-blocks/issues/251)) ([c824cc1](https://github.com/scratchfoundation/scratch-blocks/commit/c824cc12617337680d40214c89bf622089da46ac))
+* prevent toolbox categories from becoming unselected ([#233](https://github.com/scratchfoundation/scratch-blocks/issues/233)) ([af66069](https://github.com/scratchfoundation/scratch-blocks/commit/af66069493bea8b17658cf1221d42c71fb2531b3))
+
 # [2.0.0-spork.4](https://github.com/scratchfoundation/scratch-blocks/compare/v2.0.0-spork.3...v2.0.0-spork.4) (2025-02-11)
 
 
