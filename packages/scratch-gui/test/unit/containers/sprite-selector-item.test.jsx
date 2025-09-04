@@ -9,7 +9,7 @@ import DeleteButton from '../../../src/components/delete-button/delete-button';
 import {legacyConfig} from '../../../src/legacy-config';
 import DeleteConfirmationPrompt from '../../../src/containers/delete-confirmation-prompt';
 
-jest.mock('../../../src/components/delete-confirmation-prompt/delete-confirmation-prompt.jsx', () => jest.fn(() => null));
+jest.mock('../../../src/containers/delete-confirmation-prompt', () => jest.fn(() => null));
 describe('SpriteSelectorItem Container', () => {
     const mockStore = configureStore();
     let className;
@@ -52,12 +52,18 @@ describe('SpriteSelectorItem Container', () => {
         dispatchSetHoveredSprite = jest.fn();
         selected = true;
         vm = new VM();
-        store = mockStore({scratchGui: {
-            config: legacyConfig,
-            hoveredTarget: {receivedBlocks: false, sprite: null},
-            assetDrag: {dragging: false},
-            vm
-        }});
+        store = mockStore({
+            scratchGui: {
+                config: legacyConfig,
+                hoveredTarget: {receivedBlocks: false, sprite: null},
+                assetDrag: {dragging: false},
+                vm
+            },
+            locales: {
+                isRtl: false,
+                locale: 'en-US'
+            }
+        });
     });
 
     test('should delete the sprite, when called without `withDeleteConfirmation`', () => {
