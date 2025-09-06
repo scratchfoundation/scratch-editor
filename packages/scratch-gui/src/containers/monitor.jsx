@@ -104,8 +104,8 @@ class Monitor extends React.Component {
         this.props.removeMonitorRect(this.props.id);
     }
     handleDragEnd (e, {x, y}) {
-        const newX = parseInt(this.element.style.left, 10) + x;
-        const newY = parseInt(this.element.style.top, 10) + y;
+        const newX = parseInt(this.element.style.left, 10) + Math.round(x);
+        const newY = parseInt(this.element.style.top, 10) + Math.round(y);
         this.props.onDragEnd(
             this.props.id,
             newX,

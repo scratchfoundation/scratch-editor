@@ -53,6 +53,7 @@ const MonitorComponent = props => (
             disabled={!props.draggable}
             onStop={props.onDragEnd}
             scale={props.scale}
+            grid={[1*props.scale,1*props.scale]} // Prevent going to fractional coordinates
         >
             <Box
                 className={styles.monitorContainer}
