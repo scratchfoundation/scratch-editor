@@ -208,6 +208,7 @@ class Monitor extends React.Component {
                     componentRef={this.setElement}
                     {...monitorProps}
                     draggable={this.props.draggable}
+                    scale={this.props.scale}
                     height={this.props.height}
                     isDiscrete={this.props.isDiscrete}
                     max={this.props.max}
@@ -234,6 +235,7 @@ class Monitor extends React.Component {
 Monitor.propTypes = {
     addMonitorRect: PropTypes.func.isRequired,
     draggable: PropTypes.bool,
+    scale: PropTypes.number,
     height: PropTypes.number,
     id: PropTypes.string.isRequired,
     intl: intlShape,

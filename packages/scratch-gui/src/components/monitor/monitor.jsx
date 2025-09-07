@@ -52,6 +52,7 @@ const MonitorComponent = props => (
             defaultClassNameDragging={styles.dragging}
             disabled={!props.draggable}
             onStop={props.onDragEnd}
+            scale={props.scale} // Used for moving the monitor at the correct speed
         >
             <Box
                 className={styles.monitorContainer}
@@ -138,6 +139,7 @@ MonitorComponent.propTypes = {
     category: PropTypes.oneOf(Object.keys(categoryColorMap)),
     componentRef: PropTypes.func.isRequired,
     draggable: PropTypes.bool.isRequired,
+    scale: PropTypes.number,
     label: PropTypes.string.isRequired,
     mode: PropTypes.oneOf(monitorModes),
     onDragEnd: PropTypes.func.isRequired,
