@@ -11,15 +11,14 @@ import styles from './monitor-list.css';
 const MonitorList = props => (
     <Box
         // Use static `monitor-overlay` class for bounds of draggables
-        className={classNames(styles.monitorList, 'monitor-overlay')}
+        className={classNames(styles.monitorList, styles.monitorListScaler, 'monitor-overlay')}
         style={{
-            width: props.stageSize.width,
-            height: props.stageSize.height
+            width: props.stageSize.widthDefault,
+            height: props.stageSize.heightDefault,
+            ...stageSizeToTransform(props.stageSize)
         }}
     >
         <Box
-            className={styles.monitorListScaler}
-            style={stageSizeToTransform(props.stageSize)}
         >
             {props.monitors.valueSeq().filter(m => m.visible)
                 .map(monitorData => (
