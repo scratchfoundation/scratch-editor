@@ -104,6 +104,13 @@ class Monitor extends React.Component {
         this.props.removeMonitorRect(this.props.id);
     }
     handleDragEnd (e, {x, y}) {
+        // The old version of <Draggable> that Scratch uses doesn't round the coordinates when
+        // it passes them to the event handler, only when it sets the CSS transform.
+        // Newer versions of <Draggable> would round the coordinates, but with floating point errors
+        // so it would still need the manual rounding
+        x = Math.round(x);
+        y = Math.round(y);
+        
         const newX = parseInt(this.element.style.left, 10) + x;
         const newY = parseInt(this.element.style.top, 10) + y;
         this.props.onDragEnd(
