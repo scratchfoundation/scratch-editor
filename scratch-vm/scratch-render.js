@@ -29666,53 +29666,66 @@ module.exports = UnicodeTrie;
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/bitmap-adapter.js":
-/*!**************************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/bitmap-adapter.js ***!
-  \**************************************************************************/
+/***/ "../scratch-svg-renderer/src/bitmap-adapter.js":
+/*!*****************************************************!*\
+  !*** ../scratch-svg-renderer/src/bitmap-adapter.js ***!
+  \*****************************************************/
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-const base64js = __webpack_require__(/*! base64-js */ "../../node_modules/base64-js/index.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var base64js = __webpack_require__(/*! base64-js */ "../../node_modules/base64-js/index.js");
 
 /**
  * Adapts Scratch 2.0 bitmaps for use in scratch 3.0
  */
-class BitmapAdapter {
-    /**
-     * @param {?function} makeImage HTML image constructor. Tests can provide this.
-     * @param {?function} makeCanvas HTML canvas constructor. Tests can provide this.
-     */
-    constructor (makeImage, makeCanvas) {
-        this._makeImage = makeImage ? makeImage : () => new Image();
-        this._makeCanvas = makeCanvas ? makeCanvas : () => document.createElement('canvas');
-    }
+var BitmapAdapter = /*#__PURE__*/function () {
+  /**
+   * @param {?function} makeImage HTML image constructor. Tests can provide this.
+   * @param {?function} makeCanvas HTML canvas constructor. Tests can provide this.
+   */
+  function BitmapAdapter(makeImage, makeCanvas) {
+    _classCallCheck(this, BitmapAdapter);
+    this._makeImage = makeImage ? makeImage : function () {
+      return new Image();
+    };
+    this._makeCanvas = makeCanvas ? makeCanvas : function () {
+      return document.createElement('canvas');
+    };
+  }
 
-    /**
-     * Return a canvas with the resized version of the given image, done using nearest-neighbor interpolation
-     * @param {CanvasImageSource} image The image to resize
-     * @param {int} newWidth The desired post-resize width of the image
-     * @param {int} newHeight The desired post-resize height of the image
-     * @returns {HTMLCanvasElement} A canvas with the resized image drawn on it.
-     */
-    resize (image, newWidth, newHeight) {
-        // We want to always resize using nearest-neighbor interpolation. However, canvas implementations are free to
-        // use linear interpolation (or other "smooth" interpolation methods) when downscaling:
-        // https://bugzilla.mozilla.org/show_bug.cgi?id=1360415
-        // It seems we can get around this by resizing in two steps: first width, then height. This will always result
-        // in nearest-neighbor interpolation, even when downscaling.
-        const stretchWidthCanvas = this._makeCanvas();
-        stretchWidthCanvas.width = newWidth;
-        stretchWidthCanvas.height = image.height;
-        let context = stretchWidthCanvas.getContext('2d');
-        context.imageSmoothingEnabled = false;
-        context.drawImage(image, 0, 0, stretchWidthCanvas.width, stretchWidthCanvas.height);
-        const stretchHeightCanvas = this._makeCanvas();
-        stretchHeightCanvas.width = newWidth;
-        stretchHeightCanvas.height = newHeight;
-        context = stretchHeightCanvas.getContext('2d');
-        context.imageSmoothingEnabled = false;
-        context.drawImage(stretchWidthCanvas, 0, 0, stretchHeightCanvas.width, stretchHeightCanvas.height);
-        return stretchHeightCanvas;
+  /**
+   * Return a canvas with the resized version of the given image, done using nearest-neighbor interpolation
+   * @param {CanvasImageSource} image The image to resize
+   * @param {int} newWidth The desired post-resize width of the image
+   * @param {int} newHeight The desired post-resize height of the image
+   * @returns {HTMLCanvasElement} A canvas with the resized image drawn on it.
+   */
+  return _createClass(BitmapAdapter, [{
+    key: "resize",
+    value: function resize(image, newWidth, newHeight) {
+      // We want to always resize using nearest-neighbor interpolation. However, canvas implementations are free to
+      // use linear interpolation (or other "smooth" interpolation methods) when downscaling:
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=1360415
+      // It seems we can get around this by resizing in two steps: first width, then height. This will always result
+      // in nearest-neighbor interpolation, even when downscaling.
+      var stretchWidthCanvas = this._makeCanvas();
+      stretchWidthCanvas.width = newWidth;
+      stretchWidthCanvas.height = image.height;
+      var context = stretchWidthCanvas.getContext('2d');
+      context.imageSmoothingEnabled = false;
+      context.drawImage(image, 0, 0, stretchWidthCanvas.width, stretchWidthCanvas.height);
+      var stretchHeightCanvas = this._makeCanvas();
+      stretchHeightCanvas.width = newWidth;
+      stretchHeightCanvas.height = newHeight;
+      context = stretchHeightCanvas.getContext('2d');
+      context.imageSmoothingEnabled = false;
+      context.drawImage(stretchWidthCanvas, 0, 0, stretchHeightCanvas.width, stretchHeightCanvas.height);
+      return stretchHeightCanvas;
     }
 
     /**
@@ -29722,15 +29735,18 @@ class BitmapAdapter {
      * @param {!string} dataURI Base 64 encoded image data of the bitmap
      * @param {!function} callback Node-style callback that returns updated dataURI if conversion succeeded
      */
-    convertResolution1Bitmap (dataURI, callback) {
-        const image = this._makeImage();
-        image.src = dataURI;
-        image.onload = () => {
-            callback(null, this.resize(image, image.width * 2, image.height * 2).toDataURL());
-        };
-        image.onerror = () => {
-            callback('Image load failed');
-        };
+  }, {
+    key: "convertResolution1Bitmap",
+    value: function convertResolution1Bitmap(dataURI, callback) {
+      var _this = this;
+      var image = this._makeImage();
+      image.src = dataURI;
+      image.onload = function () {
+        callback(null, _this.resize(image, image.width * 2, image.height * 2).toDataURL());
+      };
+      image.onerror = function () {
+        callback('Image load failed');
+      };
     }
 
     /**
@@ -29740,38 +29756,51 @@ class BitmapAdapter {
      * @param {!number} oldHeight original height
      * @return {object} Array of new width, new height
      */
-    getResizedWidthHeight (oldWidth, oldHeight) {
-        const STAGE_WIDTH = 480;
-        const STAGE_HEIGHT = 360;
-        const STAGE_RATIO = STAGE_WIDTH / STAGE_HEIGHT;
+  }, {
+    key: "getResizedWidthHeight",
+    value: function getResizedWidthHeight(oldWidth, oldHeight) {
+      var STAGE_WIDTH = 480;
+      var STAGE_HEIGHT = 360;
+      var STAGE_RATIO = STAGE_WIDTH / STAGE_HEIGHT;
 
-        // If both dimensions are smaller than or equal to corresponding stage dimension,
-        // double both dimensions
-        if ((oldWidth <= STAGE_WIDTH) && (oldHeight <= STAGE_HEIGHT)) {
-            return {width: oldWidth * 2, height: oldHeight * 2};
-        }
+      // If both dimensions are smaller than or equal to corresponding stage dimension,
+      // double both dimensions
+      if (oldWidth <= STAGE_WIDTH && oldHeight <= STAGE_HEIGHT) {
+        return {
+          width: oldWidth * 2,
+          height: oldHeight * 2
+        };
+      }
 
-        // If neither dimension is larger than 2x corresponding stage dimension,
-        // this is an in-between image, return it as is
-        if ((oldWidth <= STAGE_WIDTH * 2) && (oldHeight <= STAGE_HEIGHT * 2)) {
-            return {width: oldWidth, height: oldHeight};
-        }
-
-        const imageRatio = oldWidth / oldHeight;
-        // Otherwise, figure out how to resize
-        if (imageRatio >= STAGE_RATIO) {
-            // Wide Image
-            return {width: STAGE_WIDTH * 2, height: STAGE_WIDTH * 2 / imageRatio};
-        }
-        // In this case we have either:
-        // - A wide image, but not with as big a ratio between width and height,
-        // making it so that fitting the width to double stage size would leave
-        // the height too big to fit in double the stage height
-        // - A square image that's still larger than the double at least
-        // one of the stage dimensions, so pick the smaller of the two dimensions (to fit)
-        // - A tall image
-        // In any of these cases, resize the image to fit the height to double the stage height
-        return {width: STAGE_HEIGHT * 2 * imageRatio, height: STAGE_HEIGHT * 2};
+      // If neither dimension is larger than 2x corresponding stage dimension,
+      // this is an in-between image, return it as is
+      if (oldWidth <= STAGE_WIDTH * 2 && oldHeight <= STAGE_HEIGHT * 2) {
+        return {
+          width: oldWidth,
+          height: oldHeight
+        };
+      }
+      var imageRatio = oldWidth / oldHeight;
+      // Otherwise, figure out how to resize
+      if (imageRatio >= STAGE_RATIO) {
+        // Wide Image
+        return {
+          width: STAGE_WIDTH * 2,
+          height: STAGE_WIDTH * 2 / imageRatio
+        };
+      }
+      // In this case we have either:
+      // - A wide image, but not with as big a ratio between width and height,
+      // making it so that fitting the width to double stage size would leave
+      // the height too big to fit in double the stage height
+      // - A square image that's still larger than the double at least
+      // one of the stage dimensions, so pick the smaller of the two dimensions (to fit)
+      // - A tall image
+      // In any of these cases, resize the image to fit the height to double the stage height
+      return {
+        width: STAGE_HEIGHT * 2 * imageRatio,
+        height: STAGE_HEIGHT * 2
+      };
     }
 
     /**
@@ -29780,62 +29809,66 @@ class BitmapAdapter {
      * @param {string} fileType The MIME type of this file
      * @returns {Promise} Resolves to resized image data Uint8Array
      */
-    importBitmap (fileData, fileType) {
-        let dataURI = fileData;
-        if (fileData instanceof ArrayBuffer) {
-            dataURI = this.convertBinaryToDataURI(fileData, fileType);
-        }
-        return new Promise((resolve, reject) => {
-            const image = this._makeImage();
-            image.src = dataURI;
-            image.onload = () => {
-                const newSize = this.getResizedWidthHeight(image.width, image.height);
-                if (newSize.width === image.width && newSize.height === image.height) {
-                    // No change
-                    resolve(this.convertDataURIToBinary(dataURI));
-                } else {
-                    const resizedDataURI = this.resize(image, newSize.width, newSize.height).toDataURL();
-                    resolve(this.convertDataURIToBinary(resizedDataURI));
-                }
-            };
-            image.onerror = () => {
-                // TODO: reject with an Error (breaking API change!)
-                // eslint-disable-next-line prefer-promise-reject-errors
-                reject('Image load failed');
-            };
-        });
+  }, {
+    key: "importBitmap",
+    value: function importBitmap(fileData, fileType) {
+      var _this2 = this;
+      var dataURI = fileData;
+      if (fileData instanceof ArrayBuffer) {
+        dataURI = this.convertBinaryToDataURI(fileData, fileType);
+      }
+      return new Promise(function (resolve, reject) {
+        var image = _this2._makeImage();
+        image.src = dataURI;
+        image.onload = function () {
+          var newSize = _this2.getResizedWidthHeight(image.width, image.height);
+          if (newSize.width === image.width && newSize.height === image.height) {
+            // No change
+            resolve(_this2.convertDataURIToBinary(dataURI));
+          } else {
+            var resizedDataURI = _this2.resize(image, newSize.width, newSize.height).toDataURL();
+            resolve(_this2.convertDataURIToBinary(resizedDataURI));
+          }
+        };
+        image.onerror = function () {
+          // TODO: reject with an Error (breaking API change!)
+          // eslint-disable-next-line prefer-promise-reject-errors
+          reject('Image load failed');
+        };
+      });
     }
 
     // TODO consolidate with scratch-vm/src/util/base64-util.js
     // From https://gist.github.com/borismus/1032746
-    convertDataURIToBinary (dataURI) {
-        const BASE64_MARKER = ';base64,';
-        const base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
-        const base64 = dataURI.substring(base64Index);
-        const raw = window.atob(base64);
-        const rawLength = raw.length;
-        const array = new Uint8Array(new ArrayBuffer(rawLength));
-
-        for (let i = 0; i < rawLength; i++) {
-            array[i] = raw.charCodeAt(i);
-        }
-        return array;
+  }, {
+    key: "convertDataURIToBinary",
+    value: function convertDataURIToBinary(dataURI) {
+      var BASE64_MARKER = ';base64,';
+      var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+      var base64 = dataURI.substring(base64Index);
+      var raw = window.atob(base64);
+      var rawLength = raw.length;
+      var array = new Uint8Array(new ArrayBuffer(rawLength));
+      for (var i = 0; i < rawLength; i++) {
+        array[i] = raw.charCodeAt(i);
+      }
+      return array;
     }
-
-    convertBinaryToDataURI (arrayBuffer, contentType) {
-        return `data:${contentType};base64,${base64js.fromByteArray(new Uint8Array(arrayBuffer))}`;
+  }, {
+    key: "convertBinaryToDataURI",
+    value: function convertBinaryToDataURI(arrayBuffer, contentType) {
+      return "data:".concat(contentType, ";base64,").concat(base64js.fromByteArray(new Uint8Array(arrayBuffer)));
     }
-}
-
+  }]);
+}();
 module.exports = BitmapAdapter;
-
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/fixup-svg-string.js":
-/*!****************************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/fixup-svg-string.js ***!
-  \****************************************************************************/
+/***/ "../scratch-svg-renderer/src/fixup-svg-string.js":
+/*!*******************************************************!*\
+  !*** ../scratch-svg-renderer/src/fixup-svg-string.js ***!
+  \*******************************************************/
 /***/ (function(module) {
 
 /**
@@ -29844,69 +29877,68 @@ module.exports = BitmapAdapter;
  * @returns {!string} fixed svg that should be parseable.
  */
 module.exports = function (svgString) {
-    // Add root svg namespace if it does not exist.
-    const svgAttrs = svgString.match(/<svg [^>]*>/);
-    if (svgAttrs && svgAttrs[0].indexOf('xmlns=') === -1) {
-        svgString = svgString.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
-    }
+  // Add root svg namespace if it does not exist.
+  var svgAttrs = svgString.match(/<svg [^>]*>/);
+  if (svgAttrs && svgAttrs[0].indexOf('xmlns=') === -1) {
+    svgString = svgString.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+  }
 
-    // There are some SVGs from Illustrator that use undeclared entities.
-    // Just replace those entities with fake namespace references to prevent
-    // DOMParser from crashing
-    if (svgAttrs && svgAttrs[0].indexOf('&ns_') !== -1 && svgString.indexOf('<!DOCTYPE') === -1) {
-        svgString = svgString.replace(svgAttrs[0],
-            svgAttrs[0].replace(/&ns_[^;]+;/g, 'http://ns.adobe.com/Extensibility/1.0/'));
-    }
+  // There are some SVGs from Illustrator that use undeclared entities.
+  // Just replace those entities with fake namespace references to prevent
+  // DOMParser from crashing
+  if (svgAttrs && svgAttrs[0].indexOf('&ns_') !== -1 && svgString.indexOf('<!DOCTYPE') === -1) {
+    svgString = svgString.replace(svgAttrs[0], svgAttrs[0].replace(/&ns_[^;]+;/g, 'http://ns.adobe.com/Extensibility/1.0/'));
+  }
 
-    // Some SVGs exported from Photoshop have been found to have an invalid mime type
-    // Chrome and Safari won't render these SVGs, so we correct it here
-    if (svgString.includes('data:img/png')) {
-        svgString = svgString.replace(
-            // capture entire image tag with xlink:href=and the quote - dont capture data: bit
-            /(<image[^>]+?xlink:href=["'])data:img\/png/g,
-            // use the captured <image ..... xlink:href=" then append the right data uri mime type
-            ($0, $1) => `${$1}data:image/png`
-        );
-    }
+  // Some SVGs exported from Photoshop have been found to have an invalid mime type
+  // Chrome and Safari won't render these SVGs, so we correct it here
+  if (svgString.includes('data:img/png')) {
+    svgString = svgString.replace(
+    // capture entire image tag with xlink:href=and the quote - dont capture data: bit
+    /(<image[^>]+?xlink:href=["'])data:img\/png/g,
+    // use the captured <image ..... xlink:href=" then append the right data uri mime type
+    function ($0, $1) {
+      return "".concat($1, "data:image/png");
+    });
+  }
 
-    // Some SVGs from Inkscape attempt to bind a prefix to a reserved namespace name.
-    // This will cause SVG parsing to fail, so replace these with a dummy namespace name.
-    // This namespace name is only valid for "xml", and if we bind "xmlns:xml" to the dummy namespace,
-    // parsing will fail yet again, so exclude "xmlns:xml" declarations.
-    const xmlnsRegex = /(<[^>]+?xmlns:(?!xml=)[^ ]+=)"http:\/\/www.w3.org\/XML\/1998\/namespace"/g;
-    if (svgString.match(xmlnsRegex) !== null) {
-        svgString = svgString.replace(
-            // capture the entire attribute
-            xmlnsRegex,
-            // use the captured attribute name; replace only the URL
-            ($0, $1) => `${$1}"http://dummy.namespace"`
-        );
-    }
+  // Some SVGs from Inkscape attempt to bind a prefix to a reserved namespace name.
+  // This will cause SVG parsing to fail, so replace these with a dummy namespace name.
+  // This namespace name is only valid for "xml", and if we bind "xmlns:xml" to the dummy namespace,
+  // parsing will fail yet again, so exclude "xmlns:xml" declarations.
+  var xmlnsRegex = /(<[^>]+?xmlns:(?!xml=)[^ ]+=)"http:\/\/www.w3.org\/XML\/1998\/namespace"/g;
+  if (svgString.match(xmlnsRegex) !== null) {
+    svgString = svgString.replace(
+    // capture the entire attribute
+    xmlnsRegex,
+    // use the captured attribute name; replace only the URL
+    function ($0, $1) {
+      return "".concat($1, "\"http://dummy.namespace\"");
+    });
+  }
 
-    // Strip `svg:` prefix (sometimes added by Inkscape) from all tags. They interfere with DOMPurify (prefixed tag
-    // names are not recognized) and the paint editor.
-    // This matches opening and closing tags--the capture group captures the slash if it exists, and it is reinserted
-    // in the replacement text.
-    svgString = svgString.replace(/<(\/?)\s*svg:/g, '<$1');
+  // Strip `svg:` prefix (sometimes added by Inkscape) from all tags. They interfere with DOMPurify (prefixed tag
+  // names are not recognized) and the paint editor.
+  // This matches opening and closing tags--the capture group captures the slash if it exists, and it is reinserted
+  // in the replacement text.
+  svgString = svgString.replace(/<(\/?)\s*svg:/g, '<$1');
 
-    // The <metadata> element is not needed for rendering and sometimes contains
-    // unparseable garbage from Illustrator :( Empty out the contents.
-    // Note: [\s\S] matches everything including newlines, which .* does not
-    svgString = svgString.replace(/<metadata>[\s\S]*<\/metadata>/, '<metadata></metadata>');
+  // The <metadata> element is not needed for rendering and sometimes contains
+  // unparseable garbage from Illustrator :( Empty out the contents.
+  // Note: [\s\S] matches everything including newlines, which .* does not
+  svgString = svgString.replace(/<metadata>[\s\S]*<\/metadata>/, '<metadata></metadata>');
 
-    // Empty script tags and javascript executing
-    svgString = svgString.replace(/<script[\s\S]*>[\s\S]*<\/script>/, '<script></script>');
-
-    return svgString;
+  // Empty script tags and javascript executing
+  svgString = svgString.replace(/<script[\s\S]*>[\s\S]*<\/script>/, '<script></script>');
+  return svgString;
 };
-
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/font-converter.js":
-/*!**************************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/font-converter.js ***!
-  \**************************************************************************/
+/***/ "../scratch-svg-renderer/src/font-converter.js":
+/*!*****************************************************!*\
+  !*** ../scratch-svg-renderer/src/font-converter.js ***!
+  \*****************************************************/
 /***/ (function(module) {
 
 /**
@@ -29918,49 +29950,50 @@ module.exports = function (svgString) {
  * @param {SVGElement} svgTag The SVG dom object
  * @return {void}
  */
-const convertFonts = function (svgTag) {
-    // Collect all text elements into a list.
-    const textElements = [];
-    const collectText = domElement => {
-        if (domElement.localName === 'text') {
-            textElements.push(domElement);
-        }
-        for (let i = 0; i < domElement.childNodes.length; i++) {
-            collectText(domElement.childNodes[i]);
-        }
-    };
-    collectText(svgTag);
-    // If there's an old font-family, switch to the new one.
-    for (const textElement of textElements) {
-        // If there's no font-family provided, provide one.
-        if (!textElement.getAttribute('font-family') ||
-            textElement.getAttribute('font-family') === 'Helvetica') {
-            textElement.setAttribute('font-family', 'Sans Serif');
-        } else if (textElement.getAttribute('font-family') === 'Mystery') {
-            textElement.setAttribute('font-family', 'Curly');
-        } else if (textElement.getAttribute('font-family') === 'Gloria') {
-            textElement.setAttribute('font-family', 'Handwriting');
-        } else if (textElement.getAttribute('font-family') === 'Donegal') {
-            textElement.setAttribute('font-family', 'Serif');
-        }
+var convertFonts = function convertFonts(svgTag) {
+  // Collect all text elements into a list.
+  var textElements = [];
+  var _collectText = function collectText(domElement) {
+    if (domElement.localName === 'text') {
+      textElements.push(domElement);
     }
+    for (var i = 0; i < domElement.childNodes.length; i++) {
+      _collectText(domElement.childNodes[i]);
+    }
+  };
+  _collectText(svgTag);
+  // If there's an old font-family, switch to the new one.
+  for (var _i = 0, _textElements = textElements; _i < _textElements.length; _i++) {
+    var textElement = _textElements[_i];
+    // If there's no font-family provided, provide one.
+    if (!textElement.getAttribute('font-family') || textElement.getAttribute('font-family') === 'Helvetica') {
+      textElement.setAttribute('font-family', 'Sans Serif');
+    } else if (textElement.getAttribute('font-family') === 'Mystery') {
+      textElement.setAttribute('font-family', 'Curly');
+    } else if (textElement.getAttribute('font-family') === 'Gloria') {
+      textElement.setAttribute('font-family', 'Handwriting');
+    } else if (textElement.getAttribute('font-family') === 'Donegal') {
+      textElement.setAttribute('font-family', 'Serif');
+    }
+  }
 };
-
 module.exports = convertFonts;
-
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/font-inliner.js":
-/*!************************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/font-inliner.js ***!
-  \************************************************************************/
+/***/ "../scratch-svg-renderer/src/font-inliner.js":
+/*!***************************************************!*\
+  !*** ../scratch-svg-renderer/src/font-inliner.js ***!
+  \***************************************************/
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 /**
  * @fileOverview Import bitmap data into Scratch 3.0, resizing image as necessary.
  */
-const getFonts = __webpack_require__(/*! scratch-render-fonts */ "../../node_modules/scratch-render-fonts/src/index.js");
+var getFonts = __webpack_require__(/*! scratch-render-fonts */ "../../node_modules/scratch-render-fonts/src/index.js");
 
 /**
  * Given SVG data, inline the fonts. This allows them to be rendered correctly when set
@@ -29976,101 +30009,111 @@ const getFonts = __webpack_require__(/*! scratch-render-fonts */ "../../node_mod
  * @param {string} svgString The string representation of the svg to modify
  * @return {string} The svg with any needed fonts inlined
  */
-const inlineSvgFonts = function (svgString) {
-    const FONTS = getFonts();
-    // Make it clear that this function only operates on strings.
-    // If we don't explicitly throw this here, the function silently fails.
-    if (typeof svgString !== 'string') {
-        throw new Error('SVG to be inlined is not a string');
-    }
+var inlineSvgFonts = function inlineSvgFonts(svgString) {
+  var FONTS = getFonts();
+  // Make it clear that this function only operates on strings.
+  // If we don't explicitly throw this here, the function silently fails.
+  if (typeof svgString !== 'string') {
+    throw new Error('SVG to be inlined is not a string');
+  }
 
-    // Collect fonts that need injection.
-    const fontsNeeded = new Set();
-    const fontRegex = /font-family="([^"]*)"/g;
-    let matches = fontRegex.exec(svgString);
-    while (matches) {
-        fontsNeeded.add(matches[1]);
-        matches = fontRegex.exec(svgString);
-    }
-    if (fontsNeeded.size > 0) {
-        let str = '<defs><style>';
-        for (const font of fontsNeeded) {
-            if (Object.prototype.hasOwnProperty.call(FONTS, font)) {
-                str += `${FONTS[font]}`;
-            }
+  // Collect fonts that need injection.
+  var fontsNeeded = new Set();
+  var fontRegex = /font-family="([^"]*)"/g;
+  var matches = fontRegex.exec(svgString);
+  while (matches) {
+    fontsNeeded.add(matches[1]);
+    matches = fontRegex.exec(svgString);
+  }
+  if (fontsNeeded.size > 0) {
+    var str = '<defs><style>';
+    var _iterator = _createForOfIteratorHelper(fontsNeeded),
+      _step;
+    try {
+      for (_iterator.s(); !(_step = _iterator.n()).done;) {
+        var font = _step.value;
+        if (Object.prototype.hasOwnProperty.call(FONTS, font)) {
+          str += "".concat(FONTS[font]);
         }
-        str += '</style></defs>';
-        svgString = svgString.replace(/<svg[^>]*>/, `$&${str}`);
-        return svgString;
+      }
+    } catch (err) {
+      _iterator.e(err);
+    } finally {
+      _iterator.f();
     }
+    str += '</style></defs>';
+    svgString = svgString.replace(/<svg[^>]*>/, "$&".concat(str));
     return svgString;
+  }
+  return svgString;
 };
-
 module.exports = inlineSvgFonts;
-
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/index.js":
-/*!*****************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/index.js ***!
-  \*****************************************************************/
+/***/ "../scratch-svg-renderer/src/index.js":
+/*!********************************************!*\
+  !*** ../scratch-svg-renderer/src/index.js ***!
+  \********************************************/
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-const SVGRenderer = __webpack_require__(/*! ./svg-renderer */ "./node_modules/@scratch/scratch-svg-renderer/src/svg-renderer.js");
-const BitmapAdapter = __webpack_require__(/*! ./bitmap-adapter */ "./node_modules/@scratch/scratch-svg-renderer/src/bitmap-adapter.js");
-const inlineSvgFonts = __webpack_require__(/*! ./font-inliner */ "./node_modules/@scratch/scratch-svg-renderer/src/font-inliner.js");
-const loadSvgString = __webpack_require__(/*! ./load-svg-string */ "./node_modules/@scratch/scratch-svg-renderer/src/load-svg-string.js");
-const sanitizeSvg = __webpack_require__(/*! ./sanitize-svg */ "./node_modules/@scratch/scratch-svg-renderer/src/sanitize-svg.js");
-const serializeSvgToString = __webpack_require__(/*! ./serialize-svg-to-string */ "./node_modules/@scratch/scratch-svg-renderer/src/serialize-svg-to-string.js");
-const SvgElement = __webpack_require__(/*! ./svg-element */ "./node_modules/@scratch/scratch-svg-renderer/src/svg-element.js");
-const convertFonts = __webpack_require__(/*! ./font-converter */ "./node_modules/@scratch/scratch-svg-renderer/src/font-converter.js");
+var SVGRenderer = __webpack_require__(/*! ./svg-renderer */ "../scratch-svg-renderer/src/svg-renderer.js");
+var BitmapAdapter = __webpack_require__(/*! ./bitmap-adapter */ "../scratch-svg-renderer/src/bitmap-adapter.js");
+var inlineSvgFonts = __webpack_require__(/*! ./font-inliner */ "../scratch-svg-renderer/src/font-inliner.js");
+var loadSvgString = __webpack_require__(/*! ./load-svg-string */ "../scratch-svg-renderer/src/load-svg-string.js");
+var sanitizeSvg = __webpack_require__(/*! ./sanitize-svg */ "../scratch-svg-renderer/src/sanitize-svg.js");
+var serializeSvgToString = __webpack_require__(/*! ./serialize-svg-to-string */ "../scratch-svg-renderer/src/serialize-svg-to-string.js");
+var SvgElement = __webpack_require__(/*! ./svg-element */ "../scratch-svg-renderer/src/svg-element.js");
+var convertFonts = __webpack_require__(/*! ./font-converter */ "../scratch-svg-renderer/src/font-converter.js");
 // /**
 //  * Export for NPM & Node.js
 //  * @type {RenderWebGL}
 //  */
 module.exports = {
-    BitmapAdapter: BitmapAdapter,
-    convertFonts: convertFonts,
-    inlineSvgFonts: inlineSvgFonts,
-    loadSvgString: loadSvgString,
-    sanitizeSvg: sanitizeSvg,
-    serializeSvgToString: serializeSvgToString,
-    SvgElement: SvgElement,
-    SVGRenderer: SVGRenderer
+  BitmapAdapter: BitmapAdapter,
+  convertFonts: convertFonts,
+  inlineSvgFonts: inlineSvgFonts,
+  loadSvgString: loadSvgString,
+  sanitizeSvg: sanitizeSvg,
+  serializeSvgToString: serializeSvgToString,
+  SvgElement: SvgElement,
+  SVGRenderer: SVGRenderer
 };
-
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/load-svg-string.js":
-/*!***************************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/load-svg-string.js ***!
-  \***************************************************************************/
+/***/ "../scratch-svg-renderer/src/load-svg-string.js":
+/*!******************************************************!*\
+  !*** ../scratch-svg-renderer/src/load-svg-string.js ***!
+  \******************************************************/
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-const SvgElement = __webpack_require__(/*! ./svg-element */ "./node_modules/@scratch/scratch-svg-renderer/src/svg-element.js");
-const convertFonts = __webpack_require__(/*! ./font-converter */ "./node_modules/@scratch/scratch-svg-renderer/src/font-converter.js");
-const transformStrokeWidths = __webpack_require__(/*! ./transform-applier */ "./node_modules/@scratch/scratch-svg-renderer/src/transform-applier.js");
-const {sanitizeSvgText} = __webpack_require__(/*! ./sanitize-svg */ "./node_modules/@scratch/scratch-svg-renderer/src/sanitize-svg.js");
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+var SvgElement = __webpack_require__(/*! ./svg-element */ "../scratch-svg-renderer/src/svg-element.js");
+var convertFonts = __webpack_require__(/*! ./font-converter */ "../scratch-svg-renderer/src/font-converter.js");
+var transformStrokeWidths = __webpack_require__(/*! ./transform-applier */ "../scratch-svg-renderer/src/transform-applier.js");
+var _require = __webpack_require__(/*! ./sanitize-svg */ "../scratch-svg-renderer/src/sanitize-svg.js"),
+  sanitizeSvgText = _require.sanitizeSvgText;
 
 /**
  * @param {SVGElement} svgTag the tag to search within
  * @param {string} [tagName] svg tag to search for (or collect all elements if not given)
  * @return {Array} a list of elements with the given tagname
  */
-const collectElements = (svgTag, tagName) => {
-    const elts = [];
-    const collectElementsInner = domElement => {
-        if ((domElement.localName === tagName || typeof tagName === 'undefined') && domElement.getAttribute) {
-            elts.push(domElement);
-        }
-        for (let i = 0; i < domElement.childNodes.length; i++) {
-            collectElementsInner(domElement.childNodes[i]);
-        }
-    };
-    collectElementsInner(svgTag);
-    return elts;
+var collectElements = function collectElements(svgTag, tagName) {
+  var elts = [];
+  var _collectElementsInner = function collectElementsInner(domElement) {
+    if ((domElement.localName === tagName || typeof tagName === 'undefined') && domElement.getAttribute) {
+      elts.push(domElement);
+    }
+    for (var i = 0; i < domElement.childNodes.length; i++) {
+      _collectElementsInner(domElement.childNodes[i]);
+    }
+  };
+  _collectElementsInner(svgTag);
+  return elts;
 };
 
 /**
@@ -30078,15 +30121,24 @@ const collectElements = (svgTag, tagName) => {
  * SVG defaults to x2 = 1 when missing.
  * @param {SVGSVGElement} svgTag the SVG tag to apply the transformation to
  */
-const transformGradients = svgTag => {
-    const linearGradientElements = collectElements(svgTag, 'linearGradient');
+var transformGradients = function transformGradients(svgTag) {
+  var linearGradientElements = collectElements(svgTag, 'linearGradient');
 
-    // For each gradient element, supply x2 if necessary.
-    for (const gradientElement of linearGradientElements) {
-        if (!gradientElement.getAttribute('x2')) {
-            gradientElement.setAttribute('x2', '0');
-        }
+  // For each gradient element, supply x2 if necessary.
+  var _iterator = _createForOfIteratorHelper(linearGradientElements),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var gradientElement = _step.value;
+      if (!gradientElement.getAttribute('x2')) {
+        gradientElement.setAttribute('x2', '0');
+      }
     }
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
 };
 
 /**
@@ -30094,19 +30146,27 @@ const transformGradients = svgTag => {
  * within SVGs.
  * @param {SVGSVGElement} svgTag the SVG tag to apply the transformation to
  */
-const transformImages = svgTag => {
-    const imageElements = collectElements(svgTag, 'image');
+var transformImages = function transformImages(svgTag) {
+  var imageElements = collectElements(svgTag, 'image');
 
-    // For each image element, set image rendering to pixelated
-    const pixelatedImages = 'image-rendering: optimizespeed; image-rendering: pixelated;';
-    for (const elt of imageElements) {
-        if (elt.getAttribute('style')) {
-            elt.setAttribute('style',
-                `${pixelatedImages} ${elt.getAttribute('style')}`);
-        } else {
-            elt.setAttribute('style', pixelatedImages);
-        }
+  // For each image element, set image rendering to pixelated
+  var pixelatedImages = 'image-rendering: optimizespeed; image-rendering: pixelated;';
+  var _iterator2 = _createForOfIteratorHelper(imageElements),
+    _step2;
+  try {
+    for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+      var elt = _step2.value;
+      if (elt.getAttribute('style')) {
+        elt.setAttribute('style', "".concat(pixelatedImages, " ").concat(elt.getAttribute('style')));
+      } else {
+        elt.setAttribute('style', pixelatedImages);
+      }
     }
+  } catch (err) {
+    _iterator2.e(err);
+  } finally {
+    _iterator2.f();
+  }
 };
 
 /**
@@ -30118,92 +30178,100 @@ const transformImages = svgTag => {
  * 4. Any required fonts are injected.
  * @param {SVGSVGElement} svgTag the SVG tag to apply the transformation to
  */
-const transformText = svgTag => {
-    // Collect all text elements into a list.
-    const textElements = [];
-    const collectText = domElement => {
-        if (domElement.localName === 'text') {
-            textElements.push(domElement);
-        }
-        for (let i = 0; i < domElement.childNodes.length; i++) {
-            collectText(domElement.childNodes[i]);
-        }
-    };
-    collectText(svgTag);
-    convertFonts(svgTag);
-    // For each text element, apply quirks.
-    for (const textElement of textElements) {
-        // Remove x and y attributes - they are not used in Scratch.
-        textElement.removeAttribute('x');
-        textElement.removeAttribute('y');
-        // Set text-before-edge alignment:
-        // Scratch renders all text like this.
-        textElement.setAttribute('alignment-baseline', 'text-before-edge');
-        textElement.setAttribute('xml:space', 'preserve');
-        // If there's no font size provided, provide one.
-        if (!textElement.getAttribute('font-size')) {
-            textElement.setAttribute('font-size', '18');
-        }
-        let text = textElement.textContent;
-
-        // Fix line breaks in text, which are not natively supported by SVG.
-        // Only fix if text does not have child tspans.
-        // @todo this will not work for font sizes with units such as em, percent
-        // However, text made in scratch 2 should only ever export size 22 font.
-        const fontSize = parseFloat(textElement.getAttribute('font-size'));
-        const tx = 2;
-        let ty = 0;
-        let spacing = 1.2;
-        // Try to match the position and spacing of Scratch 2.0's fonts.
-        // Different fonts seem to use different line spacing.
-        // Scratch 2 always uses alignment-baseline=text-before-edge
-        // However, most SVG readers don't support this attribute
-        // or don't support it alongside use of tspan, so the translations
-        // here are to make up for that.
-        if (textElement.getAttribute('font-family') === 'Handwriting') {
-            spacing = 2;
-            ty = -11 * fontSize / 22;
-        } else if (textElement.getAttribute('font-family') === 'Scratch') {
-            spacing = 0.89;
-            ty = -3 * fontSize / 22;
-        } else if (textElement.getAttribute('font-family') === 'Curly') {
-            spacing = 1.38;
-            ty = -6 * fontSize / 22;
-        } else if (textElement.getAttribute('font-family') === 'Marker') {
-            spacing = 1.45;
-            ty = -6 * fontSize / 22;
-        } else if (textElement.getAttribute('font-family') === 'Sans Serif') {
-            spacing = 1.13;
-            ty = -3 * fontSize / 22;
-        } else if (textElement.getAttribute('font-family') === 'Serif') {
-            spacing = 1.25;
-            ty = -4 * fontSize / 22;
-        }
-
-        if (textElement.transform.baseVal.numberOfItems === 0) {
-            const transform = svgTag.createSVGTransform();
-            textElement.transform.baseVal.appendItem(transform);
-        }
-
-        // Right multiply matrix by a translation of (tx, ty)
-        const mtx = textElement.transform.baseVal.getItem(0).matrix;
-        mtx.e += (mtx.a * tx) + (mtx.c * ty);
-        mtx.f += (mtx.b * tx) + (mtx.d * ty);
-
-        if (text && textElement.childElementCount === 0) {
-            textElement.textContent = '';
-            const lines = text.split('\n');
-            text = '';
-            for (const line of lines) {
-                const tspanNode = SvgElement.create('tspan');
-                tspanNode.setAttribute('x', '0');
-                tspanNode.setAttribute('style', 'white-space: pre');
-                tspanNode.setAttribute('dy', `${spacing}em`);
-                tspanNode.textContent = line ? line : ' ';
-                textElement.appendChild(tspanNode);
-            }
-        }
+var transformText = function transformText(svgTag) {
+  // Collect all text elements into a list.
+  var textElements = [];
+  var _collectText = function collectText(domElement) {
+    if (domElement.localName === 'text') {
+      textElements.push(domElement);
     }
+    for (var i = 0; i < domElement.childNodes.length; i++) {
+      _collectText(domElement.childNodes[i]);
+    }
+  };
+  _collectText(svgTag);
+  convertFonts(svgTag);
+  // For each text element, apply quirks.
+  for (var _i = 0, _textElements = textElements; _i < _textElements.length; _i++) {
+    var textElement = _textElements[_i];
+    // Remove x and y attributes - they are not used in Scratch.
+    textElement.removeAttribute('x');
+    textElement.removeAttribute('y');
+    // Set text-before-edge alignment:
+    // Scratch renders all text like this.
+    textElement.setAttribute('alignment-baseline', 'text-before-edge');
+    textElement.setAttribute('xml:space', 'preserve');
+    // If there's no font size provided, provide one.
+    if (!textElement.getAttribute('font-size')) {
+      textElement.setAttribute('font-size', '18');
+    }
+    var text = textElement.textContent;
+
+    // Fix line breaks in text, which are not natively supported by SVG.
+    // Only fix if text does not have child tspans.
+    // @todo this will not work for font sizes with units such as em, percent
+    // However, text made in scratch 2 should only ever export size 22 font.
+    var fontSize = parseFloat(textElement.getAttribute('font-size'));
+    var tx = 2;
+    var ty = 0;
+    var spacing = 1.2;
+    // Try to match the position and spacing of Scratch 2.0's fonts.
+    // Different fonts seem to use different line spacing.
+    // Scratch 2 always uses alignment-baseline=text-before-edge
+    // However, most SVG readers don't support this attribute
+    // or don't support it alongside use of tspan, so the translations
+    // here are to make up for that.
+    if (textElement.getAttribute('font-family') === 'Handwriting') {
+      spacing = 2;
+      ty = -11 * fontSize / 22;
+    } else if (textElement.getAttribute('font-family') === 'Scratch') {
+      spacing = 0.89;
+      ty = -3 * fontSize / 22;
+    } else if (textElement.getAttribute('font-family') === 'Curly') {
+      spacing = 1.38;
+      ty = -6 * fontSize / 22;
+    } else if (textElement.getAttribute('font-family') === 'Marker') {
+      spacing = 1.45;
+      ty = -6 * fontSize / 22;
+    } else if (textElement.getAttribute('font-family') === 'Sans Serif') {
+      spacing = 1.13;
+      ty = -3 * fontSize / 22;
+    } else if (textElement.getAttribute('font-family') === 'Serif') {
+      spacing = 1.25;
+      ty = -4 * fontSize / 22;
+    }
+    if (textElement.transform.baseVal.numberOfItems === 0) {
+      var transform = svgTag.createSVGTransform();
+      textElement.transform.baseVal.appendItem(transform);
+    }
+
+    // Right multiply matrix by a translation of (tx, ty)
+    var mtx = textElement.transform.baseVal.getItem(0).matrix;
+    mtx.e += mtx.a * tx + mtx.c * ty;
+    mtx.f += mtx.b * tx + mtx.d * ty;
+    if (text && textElement.childElementCount === 0) {
+      textElement.textContent = '';
+      var lines = text.split('\n');
+      text = '';
+      var _iterator3 = _createForOfIteratorHelper(lines),
+        _step3;
+      try {
+        for (_iterator3.s(); !(_step3 = _iterator3.n()).done;) {
+          var line = _step3.value;
+          var tspanNode = SvgElement.create('tspan');
+          tspanNode.setAttribute('x', '0');
+          tspanNode.setAttribute('style', 'white-space: pre');
+          tspanNode.setAttribute('dy', "".concat(spacing, "em"));
+          tspanNode.textContent = line ? line : ' ';
+          textElement.appendChild(tspanNode);
+        }
+      } catch (err) {
+        _iterator3.e(err);
+      } finally {
+        _iterator3.f();
+      }
+    }
+  }
 };
 
 /**
@@ -30215,26 +30283,23 @@ const transformText = svgTag => {
  * @param {SVGSVGElement} rootNode The root SVG node to traverse.
  * @return {number} The largest stroke width in the SVG.
  */
-const findLargestStrokeWidth = rootNode => {
-    let largestStrokeWidth = 0;
-    const collectStrokeWidths = domElement => {
-        if (domElement.getAttribute) {
-            if (domElement.getAttribute('stroke')) {
-                largestStrokeWidth = Math.max(largestStrokeWidth, 1);
-            }
-            if (domElement.getAttribute('stroke-width')) {
-                largestStrokeWidth = Math.max(
-                    largestStrokeWidth,
-                    Number(domElement.getAttribute('stroke-width')) || 0
-                );
-            }
-        }
-        for (let i = 0; i < domElement.childNodes.length; i++) {
-            collectStrokeWidths(domElement.childNodes[i]);
-        }
-    };
-    collectStrokeWidths(rootNode);
-    return largestStrokeWidth;
+var findLargestStrokeWidth = function findLargestStrokeWidth(rootNode) {
+  var largestStrokeWidth = 0;
+  var _collectStrokeWidths = function collectStrokeWidths(domElement) {
+    if (domElement.getAttribute) {
+      if (domElement.getAttribute('stroke')) {
+        largestStrokeWidth = Math.max(largestStrokeWidth, 1);
+      }
+      if (domElement.getAttribute('stroke-width')) {
+        largestStrokeWidth = Math.max(largestStrokeWidth, Number(domElement.getAttribute('stroke-width')) || 0);
+      }
+    }
+    for (var i = 0; i < domElement.childNodes.length; i++) {
+      _collectStrokeWidths(domElement.childNodes[i]);
+    }
+  };
+  _collectStrokeWidths(rootNode);
+  return largestStrokeWidth;
 };
 
 /**
@@ -30252,46 +30317,45 @@ const findLargestStrokeWidth = rootNode => {
  * a natural and performant way.
  * @param {SVGSVGElement} svgTag the SVG tag to apply the transformation to
  */
-const transformMeasurements = svgTag => {
-    // Append the SVG dom to the document.
-    // This allows us to use `getBBox` on the page,
-    // which returns the full bounding-box of all drawn SVG
-    // elements, similar to how Scratch 2.0 did measurement.
-    const svgSpot = document.createElement('span');
-    let bbox;
-    try {
-        // Insert sanitized value.
-        svgSpot.innerHTML = svgTag.outerHTML;
-        document.body.appendChild(svgSpot);
-        // Take the bounding box. We have to get elements via svgSpot
-        // because we added it via innerHTML.
-        bbox = svgSpot.children[0].getBBox();
-    } finally {
-        // Always destroy the element, even if, for example, getBBox throws.
-        document.body.removeChild(svgSpot);
-    }
+var transformMeasurements = function transformMeasurements(svgTag) {
+  // Append the SVG dom to the document.
+  // This allows us to use `getBBox` on the page,
+  // which returns the full bounding-box of all drawn SVG
+  // elements, similar to how Scratch 2.0 did measurement.
+  var svgSpot = document.createElement('span');
+  var bbox;
+  try {
+    // Insert sanitized value.
+    svgSpot.innerHTML = svgTag.outerHTML;
+    document.body.appendChild(svgSpot);
+    // Take the bounding box. We have to get elements via svgSpot
+    // because we added it via innerHTML.
+    bbox = svgSpot.children[0].getBBox();
+  } finally {
+    // Always destroy the element, even if, for example, getBBox throws.
+    document.body.removeChild(svgSpot);
+  }
 
-    // Enlarge the bbox from the largest found stroke width
-    // This may have false-positives, but at least the bbox will always
-    // contain the full graphic including strokes.
-    // If the width or height is zero however, don't enlarge since
-    // they won't have a stroke width that needs to be enlarged.
-    let halfStrokeWidth;
-    if (bbox.width === 0 || bbox.height === 0) {
-        halfStrokeWidth = 0;
-    } else {
-        halfStrokeWidth = findLargestStrokeWidth(svgTag) / 2;
-    }
-    const width = bbox.width + (halfStrokeWidth * 2);
-    const height = bbox.height + (halfStrokeWidth * 2);
-    const x = bbox.x - halfStrokeWidth;
-    const y = bbox.y - halfStrokeWidth;
+  // Enlarge the bbox from the largest found stroke width
+  // This may have false-positives, but at least the bbox will always
+  // contain the full graphic including strokes.
+  // If the width or height is zero however, don't enlarge since
+  // they won't have a stroke width that needs to be enlarged.
+  var halfStrokeWidth;
+  if (bbox.width === 0 || bbox.height === 0) {
+    halfStrokeWidth = 0;
+  } else {
+    halfStrokeWidth = findLargestStrokeWidth(svgTag) / 2;
+  }
+  var width = bbox.width + halfStrokeWidth * 2;
+  var height = bbox.height + halfStrokeWidth * 2;
+  var x = bbox.x - halfStrokeWidth;
+  var y = bbox.y - halfStrokeWidth;
 
-    // Set the correct measurements on the SVG tag
-    svgTag.setAttribute('width', width);
-    svgTag.setAttribute('height', height);
-    svgTag.setAttribute('viewBox',
-        `${x} ${y} ${width} ${height}`);
+  // Set the correct measurements on the SVG tag
+  svgTag.setAttribute('width', width);
+  svgTag.setAttribute('height', height);
+  svgTag.setAttribute('viewBox', "".concat(x, " ").concat(y, " ").concat(width, " ").concat(height));
 };
 
 /**
@@ -30299,17 +30363,25 @@ const transformMeasurements = svgTag => {
  * have a round `stroke-linejoin` and `stroke-linecap`... for some reason.
  * @param {SVGSVGElement} svgTag the SVG tag to apply the transformation to
  */
-const setGradientStrokeRoundedness = svgTag => {
-    const elements = collectElements(svgTag);
-
-    for (const elt of elements) {
-        if (!elt.style) continue;
-        const stroke = elt.style.stroke || elt.getAttribute('stroke');
-        if (stroke && stroke.match(/^url\(#.*\)$/)) {
-            elt.style['stroke-linejoin'] = 'round';
-            elt.style['stroke-linecap'] = 'round';
-        }
+var setGradientStrokeRoundedness = function setGradientStrokeRoundedness(svgTag) {
+  var elements = collectElements(svgTag);
+  var _iterator4 = _createForOfIteratorHelper(elements),
+    _step4;
+  try {
+    for (_iterator4.s(); !(_step4 = _iterator4.n()).done;) {
+      var elt = _step4.value;
+      if (!elt.style) continue;
+      var stroke = elt.style.stroke || elt.getAttribute('stroke');
+      if (stroke && stroke.match(/^url\(#.*\)$/)) {
+        elt.style['stroke-linejoin'] = 'round';
+        elt.style['stroke-linecap'] = 'round';
+      }
     }
+  } catch (err) {
+    _iterator4.e(err);
+  } finally {
+    _iterator4.f();
+  }
 };
 
 /**
@@ -30317,30 +30389,30 @@ const setGradientStrokeRoundedness = svgTag => {
  * @param {SVGSvgElement} svgTag root SVG node to operate upon
  * @param {boolean} [fromVersion2] True if we should perform conversion from version 2 to version 3 svg.
  */
-const normalizeSvg = (svgTag, fromVersion2) => {
-    if (fromVersion2) {
-        // Fix gradients. Scratch 2 exports no x2 when x2 = 0, but
-        // SVG default is that x2 is 1. This must be done before
-        // transformStrokeWidths since transformStrokeWidths affects
-        // gradients.
-        transformGradients(svgTag);
-    }
-    transformStrokeWidths(svgTag, window);
-    transformImages(svgTag);
-    if (fromVersion2) {
-        // Transform all text elements.
-        transformText(svgTag);
-        // Transform measurements.
-        transformMeasurements(svgTag);
-        // Fix stroke roundedness.
-        setGradientStrokeRoundedness(svgTag);
-    } else if (!svgTag.getAttribute('viewBox')) {
-        // Renderer expects a view box.
-        transformMeasurements(svgTag);
-    } else if (!svgTag.getAttribute('width') || !svgTag.getAttribute('height')) {
-        svgTag.setAttribute('width', svgTag.viewBox.baseVal.width);
-        svgTag.setAttribute('height', svgTag.viewBox.baseVal.height);
-    }
+var normalizeSvg = function normalizeSvg(svgTag, fromVersion2) {
+  if (fromVersion2) {
+    // Fix gradients. Scratch 2 exports no x2 when x2 = 0, but
+    // SVG default is that x2 is 1. This must be done before
+    // transformStrokeWidths since transformStrokeWidths affects
+    // gradients.
+    transformGradients(svgTag);
+  }
+  transformStrokeWidths(svgTag, window);
+  transformImages(svgTag);
+  if (fromVersion2) {
+    // Transform all text elements.
+    transformText(svgTag);
+    // Transform measurements.
+    transformMeasurements(svgTag);
+    // Fix stroke roundedness.
+    setGradientStrokeRoundedness(svgTag);
+  } else if (!svgTag.getAttribute('viewBox')) {
+    // Renderer expects a view box.
+    transformMeasurements(svgTag);
+  } else if (!svgTag.getAttribute('width') || !svgTag.getAttribute('height')) {
+    svgTag.setAttribute('width', svgTag.viewBox.baseVal.width);
+    svgTag.setAttribute('height', svgTag.viewBox.baseVal.height);
+  }
 };
 
 /**
@@ -30353,141 +30425,126 @@ const normalizeSvg = (svgTag, fromVersion2) => {
  * @param {boolean} [fromVersion2] True if we should perform conversion from version 2 to version 3 svg.
  * @return {SVGSVGElement} The normalized SVG element.
  */
-const loadSvgString = (svgString, fromVersion2) => {
-    // Parse string into SVG XML.
-    const parser = new DOMParser();
+var loadSvgString = function loadSvgString(svgString, fromVersion2) {
+  // Parse string into SVG XML.
+  var parser = new DOMParser();
 
-    // Since we're adding user-provided SVG to document.body as part of normalization,
-    // sanitization is required. This should not affect bounding box calculation.
-    const sanitizedSvgString = sanitizeSvgText(svgString);
-    const svgDom = parser.parseFromString(sanitizedSvgString, 'text/xml');
-    if (svgDom.childNodes.length < 1 ||
-        svgDom.documentElement.localName !== 'svg') {
-        throw new Error('Document does not appear to be SVG.');
-    }
-    const svgTag = svgDom.documentElement;
-    normalizeSvg(svgTag, fromVersion2);
-    return svgTag;
+  // Since we're adding user-provided SVG to document.body as part of normalization,
+  // sanitization is required. This should not affect bounding box calculation.
+  var sanitizedSvgString = sanitizeSvgText(svgString);
+  var svgDom = parser.parseFromString(sanitizedSvgString, 'text/xml');
+  if (svgDom.childNodes.length < 1 || svgDom.documentElement.localName !== 'svg') {
+    throw new Error('Document does not appear to be SVG.');
+  }
+  var svgTag = svgDom.documentElement;
+  normalizeSvg(svgTag, fromVersion2);
+  return svgTag;
 };
-
 module.exports = loadSvgString;
-
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/sanitize-svg.js":
-/*!************************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/sanitize-svg.js ***!
-  \************************************************************************/
+/***/ "../scratch-svg-renderer/src/sanitize-svg.js":
+/*!***************************************************!*\
+  !*** ../scratch-svg-renderer/src/sanitize-svg.js ***!
+  \***************************************************/
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 /**
  * @fileOverview Sanitize the content of an SVG aggressively, to make it as safe
  * as possible
  */
-const fixupSvgString = __webpack_require__(/*! ./fixup-svg-string */ "./node_modules/@scratch/scratch-svg-renderer/src/fixup-svg-string.js");
-const {generate, parse, walk} = __webpack_require__(/*! css-tree */ "../../node_modules/css-tree/lib/index.js");
-const DOMPurify = __webpack_require__(/*! isomorphic-dompurify */ "../../node_modules/isomorphic-dompurify/browser.js");
-
-const sanitizeSvg = {};
-
-const isInternalRef = ref => ref.startsWith('#') || ref.startsWith('data:');
-
-DOMPurify.addHook(
-    'beforeSanitizeAttributes',
-    currentNode => {
-
-        if (currentNode && currentNode.href && currentNode.href.baseVal) {
-            const href = currentNode.href.baseVal.replace(/\s/g, '');
-            // "data:" and "#" are valid hrefs
-            if (!isInternalRef(href)) {
-                // TODO: Those can be in different namespaces than `xlink:`
-                if (currentNode.attributes.getNamedItem('xlink:href')) {
-                    currentNode.attributes.removeNamedItem('xlink:href');
-                    delete currentNode['xlink:href'];
-                }
-                if (currentNode.attributes.getNamedItem('href')) {
-                    currentNode.attributes.removeNamedItem('href');
-                    delete currentNode.href;
-                }
-            }
-        }
-
-        // Remove url(...) usages with external references
-        if (currentNode && currentNode.attributes) {
-            for (let i = currentNode.attributes.length - 1; i >= 0; i--) {
-                const attr = currentNode.attributes[i];
-                const rawValue = attr.value || '';
-                const value = rawValue.toLowerCase().replace(/\s/g, '');
-        
-                const urlMatch = value.match(/url\((.+?)\)/);
-                if (urlMatch) {
-                    const ref = urlMatch[1].replace(/['"]/g, '');
-                    if (!isInternalRef(ref)) {
-                        currentNode.removeAttribute(attr.name);
-                    }
-                }
-            }
-        }
-    
-        return currentNode;
+var fixupSvgString = __webpack_require__(/*! ./fixup-svg-string */ "../scratch-svg-renderer/src/fixup-svg-string.js");
+var _require = __webpack_require__(/*! css-tree */ "../../node_modules/css-tree/lib/index.js"),
+  generate = _require.generate,
+  parse = _require.parse,
+  walk = _require.walk;
+var DOMPurify = __webpack_require__(/*! isomorphic-dompurify */ "../../node_modules/isomorphic-dompurify/browser.js");
+var sanitizeSvg = {};
+var isInternalRef = function isInternalRef(ref) {
+  return ref.startsWith('#') || ref.startsWith('data:');
+};
+DOMPurify.addHook('beforeSanitizeAttributes', function (currentNode) {
+  if (currentNode && currentNode.href && currentNode.href.baseVal) {
+    var href = currentNode.href.baseVal.replace(/\s/g, '');
+    // "data:" and "#" are valid hrefs
+    if (!isInternalRef(href)) {
+      // TODO: Those can be in different namespaces than `xlink:`
+      if (currentNode.attributes.getNamedItem('xlink:href')) {
+        currentNode.attributes.removeNamedItem('xlink:href');
+        delete currentNode['xlink:href'];
+      }
+      if (currentNode.attributes.getNamedItem('href')) {
+        currentNode.attributes.removeNamedItem('href');
+        delete currentNode.href;
+      }
     }
-);
+  }
 
-DOMPurify.addHook(
-    'uponSanitizeElement',
-    (node, data) => {
-        if (data.tagName === 'style') {
-            const ast = parse(node.textContent);
-            let isModified = false;
-
-            walk(ast, (astNode, item, list) => {
-                // @import rules
-                if (astNode.type === 'Atrule' && astNode.name.toLowerCase() === 'import') {
-                    list.remove(item);
-                    isModified = true;
-                }
-                
-                // Elements using url(...) for external resources
-                if (astNode.type === 'Declaration' && astNode.value) {
-                    let shouldRemove = false;
-                    walk(astNode.value, valueNode => {
-                        if (valueNode.type === 'Url') {
-                            const urlValue = (valueNode.value.value || '').trim().replace(/['"]/g, '');
-    
-                            if (!isInternalRef(urlValue)) {
-                                shouldRemove = true;
-                            }
-                        }
-                    });
-
-                    if (shouldRemove) {
-                        list.remove(item);
-                        isModified = true;
-                    }
-                }
-            });
-
-            if (isModified) {
-                node.textContent = generate(ast);
-            }
+  // Remove url(...) usages with external references
+  if (currentNode && currentNode.attributes) {
+    for (var i = currentNode.attributes.length - 1; i >= 0; i--) {
+      var attr = currentNode.attributes[i];
+      var rawValue = attr.value || '';
+      var value = rawValue.toLowerCase().replace(/\s/g, '');
+      var urlMatch = value.match(/url\((.+?)\)/);
+      if (urlMatch) {
+        var ref = urlMatch[1].replace(/['"]/g, '');
+        if (!isInternalRef(ref)) {
+          currentNode.removeAttribute(attr.name);
         }
+      }
     }
-);
+  }
+  return currentNode;
+});
+DOMPurify.addHook('uponSanitizeElement', function (node, data) {
+  if (data.tagName === 'style') {
+    var ast = parse(node.textContent);
+    var isModified = false;
+    walk(ast, function (astNode, item, list) {
+      // @import rules
+      if (astNode.type === 'Atrule' && astNode.name.toLowerCase() === 'import') {
+        list.remove(item);
+        isModified = true;
+      }
+
+      // Elements using url(...) for external resources
+      if (astNode.type === 'Declaration' && astNode.value) {
+        var shouldRemove = false;
+        walk(astNode.value, function (valueNode) {
+          if (valueNode.type === 'Url') {
+            var urlValue = (valueNode.value.value || '').trim().replace(/['"]/g, '');
+            if (!isInternalRef(urlValue)) {
+              shouldRemove = true;
+            }
+          }
+        });
+        if (shouldRemove) {
+          list.remove(item);
+          isModified = true;
+        }
+      }
+    });
+    if (isModified) {
+      node.textContent = generate(ast);
+    }
+  }
+});
 
 // Use JS implemented TextDecoder and TextEncoder if it is not provided by the
 // browser.
-let _TextDecoder;
-let _TextEncoder;
+var _TextDecoder;
+var _TextEncoder;
 if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
-    // Wait to require the text encoding polyfill until we know it's needed.
-    // eslint-disable-next-line global-require
-    const encoding = __webpack_require__(/*! fastestsmallesttextencoderdecoder */ "../../node_modules/fastestsmallesttextencoderdecoder/EncoderDecoderTogether.min.js");
-    _TextDecoder = encoding.TextDecoder;
-    _TextEncoder = encoding.TextEncoder;
+  // Wait to require the text encoding polyfill until we know it's needed.
+  // eslint-disable-next-line global-require
+  var encoding = __webpack_require__(/*! fastestsmallesttextencoderdecoder */ "../../node_modules/fastestsmallesttextencoderdecoder/EncoderDecoderTogether.min.js");
+  _TextDecoder = encoding.TextDecoder;
+  _TextEncoder = encoding.TextEncoder;
 } else {
-    _TextDecoder = TextDecoder;
-    _TextEncoder = TextEncoder;
+  _TextDecoder = TextDecoder;
+  _TextEncoder = TextEncoder;
 }
 
 /**
@@ -30496,10 +30553,10 @@ if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
  * @return {Uint8Array} sanitized SVG data
  */
 sanitizeSvg.sanitizeByteStream = function (rawData) {
-    const decoder = new _TextDecoder();
-    const encoder = new _TextEncoder();
-    const sanitizedText = sanitizeSvg.sanitizeSvgText(decoder.decode(rawData));
-    return encoder.encode(sanitizedText);
+  var decoder = new _TextDecoder();
+  var encoder = new _TextEncoder();
+  var sanitizedText = sanitizeSvg.sanitizeSvgText(decoder.decode(rawData));
+  return encoder.encode(sanitizedText);
 };
 
 /**
@@ -30510,36 +30567,36 @@ sanitizeSvg.sanitizeByteStream = function (rawData) {
  * @return {string} sanitized SVG text
  */
 sanitizeSvg.sanitizeSvgText = function (rawSvgText) {
-    let sanitizedText = DOMPurify.sanitize(rawSvgText, {
-        USE_PROFILES: {svg: true},
-        FORBID_TAGS: ['a', 'audio', 'canvas', 'video'],
-        // Allow data URI in image tags (e.g. SVGs converted from bitmap)
-        ADD_DATA_URI_TAGS: ['image']
-    });
+  var sanitizedText = DOMPurify.sanitize(rawSvgText, {
+    USE_PROFILES: {
+      svg: true
+    },
+    FORBID_TAGS: ['a', 'audio', 'canvas', 'video'],
+    // Allow data URI in image tags (e.g. SVGs converted from bitmap)
+    ADD_DATA_URI_TAGS: ['image']
+  });
 
-    // Remove partial XML comment that is sometimes left in the HTML
-    const badTag = sanitizedText.indexOf(']&gt;');
-    if (badTag >= 0) {
-        sanitizedText = sanitizedText.substring(5, sanitizedText.length);
-    }
+  // Remove partial XML comment that is sometimes left in the HTML
+  var badTag = sanitizedText.indexOf(']&gt;');
+  if (badTag >= 0) {
+    sanitizedText = sanitizedText.substring(5, sanitizedText.length);
+  }
 
-    // also use our custom fixup rules
-    sanitizedText = fixupSvgString(sanitizedText);
-    return sanitizedText;
+  // also use our custom fixup rules
+  sanitizedText = fixupSvgString(sanitizedText);
+  return sanitizedText;
 };
-
 module.exports = sanitizeSvg;
-
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/serialize-svg-to-string.js":
-/*!***********************************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/serialize-svg-to-string.js ***!
-  \***********************************************************************************/
+/***/ "../scratch-svg-renderer/src/serialize-svg-to-string.js":
+/*!**************************************************************!*\
+  !*** ../scratch-svg-renderer/src/serialize-svg-to-string.js ***!
+  \**************************************************************/
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-const inlineSvgFonts = __webpack_require__(/*! ./font-inliner */ "./node_modules/@scratch/scratch-svg-renderer/src/font-inliner.js");
+var inlineSvgFonts = __webpack_require__(/*! ./font-inliner */ "../scratch-svg-renderer/src/font-inliner.js");
 
 /**
  * Serialize a given SVG DOM to a string.
@@ -30548,26 +30605,30 @@ const inlineSvgFonts = __webpack_require__(/*! ./font-inliner */ "./node_modules
  *     base64 data.
  * @returns {string} String representing current SVG data.
  */
-const serializeSvgToString = (svgTag, shouldInjectFonts) => {
-    const serializer = new XMLSerializer();
-    let string = serializer.serializeToString(svgTag);
-    if (shouldInjectFonts) {
-        string = inlineSvgFonts(string);
-    }
-    return string;
+var serializeSvgToString = function serializeSvgToString(svgTag, shouldInjectFonts) {
+  var serializer = new XMLSerializer();
+  var string = serializer.serializeToString(svgTag);
+  if (shouldInjectFonts) {
+    string = inlineSvgFonts(string);
+  }
+  return string;
 };
-
 module.exports = serializeSvgToString;
-
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/svg-element.js":
-/*!***********************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/svg-element.js ***!
-  \***********************************************************************/
+/***/ "../scratch-svg-renderer/src/svg-element.js":
+/*!**************************************************!*\
+  !*** ../scratch-svg-renderer/src/svg-element.js ***!
+  \**************************************************/
 /***/ (function(module) {
 
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
 /* Adapted from
  * Paper.js - The Swiss Army Knife of Vector Graphics Scripting.
  * http://paperjs.org/
@@ -30579,148 +30640,177 @@ module.exports = serializeSvgToString;
  *
  * All rights reserved.
  */
-
 /**
  * @name SvgElement
  * @namespace
  * @private
  */
-class SvgElement {
+var SvgElement = /*#__PURE__*/function () {
+  function SvgElement() {
+    _classCallCheck(this, SvgElement);
+  }
+  return _createClass(SvgElement, null, [{
+    key: "svg",
+    get:
     // SVG related namespaces
-    static get svg () {
-        return 'http://www.w3.org/2000/svg';
+    function get() {
+      return 'http://www.w3.org/2000/svg';
     }
-    static get xmlns () {
-        return 'http://www.w3.org/2000/xmlns';
+  }, {
+    key: "xmlns",
+    get: function get() {
+      return 'http://www.w3.org/2000/xmlns';
     }
-    static get xlink () {
-        return 'http://www.w3.org/1999/xlink';
+  }, {
+    key: "xlink",
+    get: function get() {
+      return 'http://www.w3.org/1999/xlink';
     }
 
     // Mapping of attribute names to required namespaces:
-    static attributeNamespace () {
-        return {
-            'href': SvgElement.xlink,
-            'xlink': SvgElement.xmlns,
-            // Only the xmlns attribute needs the trailing slash. See #984
-            'xmlns': `${SvgElement.xmlns}/`,
-            // IE needs the xmlns namespace when setting 'xmlns:xlink'. See #984
-            'xmlns:xlink': `${SvgElement.xmlns}/`
-        };
+  }, {
+    key: "attributeNamespace",
+    value: function attributeNamespace() {
+      return {
+        'href': SvgElement.xlink,
+        'xlink': SvgElement.xmlns,
+        // Only the xmlns attribute needs the trailing slash. See #984
+        'xmlns': "".concat(SvgElement.xmlns, "/"),
+        // IE needs the xmlns namespace when setting 'xmlns:xlink'. See #984
+        'xmlns:xlink': "".concat(SvgElement.xmlns, "/")
+      };
     }
-
-    static create (tag, attributes, formatter) {
-        return SvgElement.set(document.createElementNS(SvgElement.svg, tag), attributes, formatter);
+  }, {
+    key: "create",
+    value: function create(tag, attributes, formatter) {
+      return SvgElement.set(document.createElementNS(SvgElement.svg, tag), attributes, formatter);
     }
-
-    static get (node, name) {
-        const namespace = SvgElement.attributeNamespace[name];
-        const value = namespace ?
-            node.getAttributeNS(namespace, name) :
-            node.getAttribute(name);
-        return value === 'null' ? null : value;
+  }, {
+    key: "get",
+    value: function get(node, name) {
+      var namespace = SvgElement.attributeNamespace[name];
+      var value = namespace ? node.getAttributeNS(namespace, name) : node.getAttribute(name);
+      return value === 'null' ? null : value;
     }
-
-    static set (node, attributes, formatter) {
-        for (const name in attributes) {
-            let value = attributes[name];
-            const namespace = SvgElement.attributeNamespace[name];
-            if (typeof value === 'number' && formatter) {
-                value = formatter.number(value);
-            }
-            if (namespace) {
-                node.setAttributeNS(namespace, name, value);
-            } else {
-                node.setAttribute(name, value);
-            }
+  }, {
+    key: "set",
+    value: function set(node, attributes, formatter) {
+      for (var name in attributes) {
+        var value = attributes[name];
+        var namespace = SvgElement.attributeNamespace[name];
+        if (typeof value === 'number' && formatter) {
+          value = formatter.number(value);
         }
-        return node;
+        if (namespace) {
+          node.setAttributeNS(namespace, name, value);
+        } else {
+          node.setAttribute(name, value);
+        }
+      }
+      return node;
     }
-}
-
+  }]);
+}();
 module.exports = SvgElement;
-
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/svg-renderer.js":
-/*!************************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/svg-renderer.js ***!
-  \************************************************************************/
+/***/ "../scratch-svg-renderer/src/svg-renderer.js":
+/*!***************************************************!*\
+  !*** ../scratch-svg-renderer/src/svg-renderer.js ***!
+  \***************************************************/
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-const loadSvgString = __webpack_require__(/*! ./load-svg-string */ "./node_modules/@scratch/scratch-svg-renderer/src/load-svg-string.js");
-const serializeSvgToString = __webpack_require__(/*! ./serialize-svg-to-string */ "./node_modules/@scratch/scratch-svg-renderer/src/serialize-svg-to-string.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _classCallCheck(a, n) { if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function"); }
+function _defineProperties(e, r) { for (var t = 0; t < r.length; t++) { var o = r[t]; o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o); } }
+function _createClass(e, r, t) { return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", { writable: !1 }), e; }
+function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
+function _toPrimitive(t, r) { if ("object" != _typeof(t) || !t) return t; var e = t[Symbol.toPrimitive]; if (void 0 !== e) { var i = e.call(t, r || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === r ? String : Number)(t); }
+var loadSvgString = __webpack_require__(/*! ./load-svg-string */ "../scratch-svg-renderer/src/load-svg-string.js");
+var serializeSvgToString = __webpack_require__(/*! ./serialize-svg-to-string */ "../scratch-svg-renderer/src/serialize-svg-to-string.js");
 
 /**
  * Main quirks-mode SVG rendering code.
  * @deprecated Call into individual methods exported from this library instead.
  */
-class SvgRenderer {
+var SvgRenderer = /*#__PURE__*/function () {
+  /**
+   * Create a quirks-mode SVG renderer for a particular canvas.
+   * @param {HTMLCanvasElement} [canvas] An optional canvas element to draw to. If this is not provided, the renderer
+   * will create a new canvas.
+   * @constructor
+   */
+  function SvgRenderer(canvas) {
+    _classCallCheck(this, SvgRenderer);
     /**
-     * Create a quirks-mode SVG renderer for a particular canvas.
-     * @param {HTMLCanvasElement} [canvas] An optional canvas element to draw to. If this is not provided, the renderer
-     * will create a new canvas.
-     * @constructor
+     * The canvas that this SVG renderer will render to.
+     * @type {HTMLCanvasElement}
+     * @private
      */
-    constructor (canvas) {
-        /**
-         * The canvas that this SVG renderer will render to.
-         * @type {HTMLCanvasElement}
-         * @private
-         */
-        this._canvas = canvas || document.createElement('canvas');
-        this._context = this._canvas.getContext('2d');
-
-        /**
-         * A measured SVG "viewbox"
-         * @typedef {object} SvgRenderer#SvgMeasurements
-         * @property {number} x - The left edge of the SVG viewbox.
-         * @property {number} y - The top edge of the SVG viewbox.
-         * @property {number} width - The width of the SVG viewbox.
-         * @property {number} height - The height of the SVG viewbox.
-         */
-
-        /**
-         * The measurement box of the currently loaded SVG.
-         * @type {SvgRenderer#SvgMeasurements}
-         * @private
-         */
-        this._measurements = {x: 0, y: 0, width: 0, height: 0};
-
-        /**
-         * The `<img>` element with the contents of the currently loaded SVG.
-         * @type {?HTMLImageElement}
-         * @private
-         */
-        this._cachedImage = null;
-
-        /**
-         * True if this renderer's current SVG is loaded and can be rendered to the canvas.
-         * @type {boolean}
-         */
-        this.loaded = false;
-    }
+    this._canvas = canvas || document.createElement('canvas');
+    this._context = this._canvas.getContext('2d');
 
     /**
-     * @returns {!HTMLCanvasElement} this renderer's target canvas.
+     * A measured SVG "viewbox"
+     * @typedef {object} SvgRenderer#SvgMeasurements
+     * @property {number} x - The left edge of the SVG viewbox.
+     * @property {number} y - The top edge of the SVG viewbox.
+     * @property {number} width - The width of the SVG viewbox.
+     * @property {number} height - The height of the SVG viewbox.
      */
-    get canvas () {
-        return this._canvas;
+
+    /**
+     * The measurement box of the currently loaded SVG.
+     * @type {SvgRenderer#SvgMeasurements}
+     * @private
+     */
+    this._measurements = {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0
+    };
+
+    /**
+     * The `<img>` element with the contents of the currently loaded SVG.
+     * @type {?HTMLImageElement}
+     * @private
+     */
+    this._cachedImage = null;
+
+    /**
+     * True if this renderer's current SVG is loaded and can be rendered to the canvas.
+     * @type {boolean}
+     */
+    this.loaded = false;
+  }
+
+  /**
+   * @returns {!HTMLCanvasElement} this renderer's target canvas.
+   */
+  return _createClass(SvgRenderer, [{
+    key: "canvas",
+    get: function get() {
+      return this._canvas;
     }
 
     /**
      * @return {Array<number>} the natural size, in Scratch units, of this SVG.
      */
-    get size () {
-        return [this._measurements.width, this._measurements.height];
+  }, {
+    key: "size",
+    get: function get() {
+      return [this._measurements.width, this._measurements.height];
     }
 
     /**
      * @return {Array<number>} the offset (upper left corner) of the SVG's view box.
      */
-    get viewOffset () {
-        return [this._measurements.x, this._measurements.y];
+  }, {
+    key: "viewOffset",
+    get: function get() {
+      return [this._measurements.x, this._measurements.y];
     }
 
     /**
@@ -30729,18 +30819,19 @@ class SvgRenderer {
      * @param {?boolean} fromVersion2 True if we should perform conversion from
      *     version 2 to version 3 svg.
      */
-    loadString (svgString, fromVersion2) {
-        // New svg string invalidates the cached image
-        this._cachedImage = null;
-        const svgTag = loadSvgString(svgString, fromVersion2);
-
-        this._svgTag = svgTag;
-        this._measurements = {
-            width: svgTag.viewBox.baseVal.width,
-            height: svgTag.viewBox.baseVal.height,
-            x: svgTag.viewBox.baseVal.x,
-            y: svgTag.viewBox.baseVal.y
-        };
+  }, {
+    key: "loadString",
+    value: function loadString(svgString, fromVersion2) {
+      // New svg string invalidates the cached image
+      this._cachedImage = null;
+      var svgTag = loadSvgString(svgString, fromVersion2);
+      this._svgTag = svgTag;
+      this._measurements = {
+        width: svgTag.viewBox.baseVal.width,
+        height: svgTag.viewBox.baseVal.height,
+        x: svgTag.viewBox.baseVal.x,
+        y: svgTag.viewBox.baseVal.y
+      };
     }
 
     /**
@@ -30749,26 +30840,30 @@ class SvgRenderer {
      * @param {?boolean} fromVersion2 True if we should perform conversion from version 2 to version 3 svg.
      * @param {Function} [onFinish] - An optional callback to call when the SVG is loaded and can be rendered.
      */
-    loadSVG (svgString, fromVersion2, onFinish) {
-        this.loadString(svgString, fromVersion2);
-        this._createSVGImage(onFinish);
+  }, {
+    key: "loadSVG",
+    value: function loadSVG(svgString, fromVersion2, onFinish) {
+      this.loadString(svgString, fromVersion2);
+      this._createSVGImage(onFinish);
     }
 
     /**
      * Creates an <img> element for the currently loaded SVG string, then calls the callback once it's loaded.
      * @param {Function} [onFinish] - An optional callback to call when the <img> has loaded.
      */
-    _createSVGImage (onFinish) {
-        if (this._cachedImage === null) this._cachedImage = new Image();
-        const img = this._cachedImage;
-
-        img.onload = () => {
-            this.loaded = true;
-            if (onFinish) onFinish();
-        };
-        const svgText = this.toString(true /* shouldInjectFonts */);
-        img.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
-        this.loaded = false;
+  }, {
+    key: "_createSVGImage",
+    value: function _createSVGImage(onFinish) {
+      var _this = this;
+      if (this._cachedImage === null) this._cachedImage = new Image();
+      var img = this._cachedImage;
+      img.onload = function () {
+        _this.loaded = true;
+        if (onFinish) onFinish();
+      };
+      var svgText = this.toString(true /* shouldInjectFonts */);
+      img.src = "data:image/svg+xml;utf8,".concat(encodeURIComponent(svgText));
+      this.loaded = false;
     }
 
     /**
@@ -30778,543 +30873,584 @@ class SvgRenderer {
      * @returns {string} String representing current SVG data.
      * @deprecated Use the standalone `serializeSvgToString` export instead.
      */
-    toString (shouldInjectFonts) {
-        return serializeSvgToString(this._svgTag, shouldInjectFonts);
+  }, {
+    key: "toString",
+    value: function toString(shouldInjectFonts) {
+      return serializeSvgToString(this._svgTag, shouldInjectFonts);
     }
 
     /**
      * Synchronously draw the loaded SVG to this renderer's `canvas`.
      * @param {number} [scale] - Optionally, also scale the image by this factor.
      */
-    draw (scale) {
-        if (!this.loaded) throw new Error('SVG image has not finished loading');
-        this._drawFromImage(scale);
+  }, {
+    key: "draw",
+    value: function draw(scale) {
+      if (!this.loaded) throw new Error('SVG image has not finished loading');
+      this._drawFromImage(scale);
     }
 
     /**
      * Draw to the canvas from a loaded image element.
      * @param {number} [scale] - Optionally, also scale the image by this factor.
      **/
-    _drawFromImage (scale) {
-        if (this._cachedImage === null) return;
-
-        const ratio = Number.isFinite(scale) ? scale : 1;
-        const bbox = this._measurements;
-        this._canvas.width = bbox.width * ratio;
-        this._canvas.height = bbox.height * ratio;
-        // Even if the canvas at the current scale has a nonzero size, the image's dimensions are floored pre-scaling.
-        // e.g. if an image has a width of 0.4 and is being rendered at 3x scale, the canvas will have a width of 1, but
-        // the image's width will be rounded down to 0 on some browsers (Firefox) prior to being drawn at that scale.
-        if (
-            this._canvas.width <= 0 ||
-            this._canvas.height <= 0 ||
-            this._cachedImage.naturalWidth <= 0 ||
-            this._cachedImage.naturalHeight <= 0
-        ) return;
-        this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
-        this._context.setTransform(ratio, 0, 0, ratio, 0, 0);
-        this._context.drawImage(this._cachedImage, 0, 0);
+  }, {
+    key: "_drawFromImage",
+    value: function _drawFromImage(scale) {
+      if (this._cachedImage === null) return;
+      var ratio = Number.isFinite(scale) ? scale : 1;
+      var bbox = this._measurements;
+      this._canvas.width = bbox.width * ratio;
+      this._canvas.height = bbox.height * ratio;
+      // Even if the canvas at the current scale has a nonzero size, the image's dimensions are floored pre-scaling.
+      // e.g. if an image has a width of 0.4 and is being rendered at 3x scale, the canvas will have a width of 1, but
+      // the image's width will be rounded down to 0 on some browsers (Firefox) prior to being drawn at that scale.
+      if (this._canvas.width <= 0 || this._canvas.height <= 0 || this._cachedImage.naturalWidth <= 0 || this._cachedImage.naturalHeight <= 0) return;
+      this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      this._context.drawImage(this._cachedImage, 0, 0);
     }
-}
-
+  }]);
+}();
 module.exports = SvgRenderer;
-
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/transform-applier.js":
-/*!*****************************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/transform-applier.js ***!
-  \*****************************************************************************/
+/***/ "../scratch-svg-renderer/src/transform-applier.js":
+/*!********************************************************!*\
+  !*** ../scratch-svg-renderer/src/transform-applier.js ***!
+  \********************************************************/
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-const Matrix = __webpack_require__(/*! transformation-matrix */ "../../node_modules/transformation-matrix/build-es/index.js");
-const SvgElement = __webpack_require__(/*! ./svg-element */ "./node_modules/@scratch/scratch-svg-renderer/src/svg-element.js");
-const log = __webpack_require__(/*! ./util/log */ "./node_modules/@scratch/scratch-svg-renderer/src/util/log.js");
+function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e && r && "number" == typeof r.length) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: !0 } : { done: !1, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = !0, u = !1; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = !0, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+var Matrix = __webpack_require__(/*! transformation-matrix */ "../../node_modules/transformation-matrix/build-es/index.js");
+var SvgElement = __webpack_require__(/*! ./svg-element */ "../scratch-svg-renderer/src/svg-element.js");
+var log = __webpack_require__(/*! ./util/log */ "../scratch-svg-renderer/src/util/log.js");
 
 /**
  * @fileOverview Apply transforms to match stroke width appearance in 2.0 and 3.0
  */
 
 // Adapted from paper.js's Path.applyTransform
-const _parseTransform = function (domElement) {
-    let matrix = Matrix.identity();
-    const string = domElement.attributes && domElement.attributes.transform && domElement.attributes.transform.value;
-    if (!string) return matrix;
-    // https://www.w3.org/TR/SVG/types.html#DataTypeTransformList
-    // Parse SVG transform string. First we split at /)\s*/, to separate
-    // commands
-    const transforms = string.split(/\)\s*/g);
-    for (const transform of transforms) {
-        if (!transform) break;
-        // Command come before the '(', values after
-        const parts = transform.split(/\(\s*/);
-        const command = parts[0].trim();
-        const v = parts[1].split(/[\s,]+/g);
-        // Convert values to floats
-        for (let j = 0; j < v.length; j++) {
-            v[j] = parseFloat(v[j]);
-        }
-        switch (command) {
+var _parseTransform = function _parseTransform(domElement) {
+  var matrix = Matrix.identity();
+  var string = domElement.attributes && domElement.attributes.transform && domElement.attributes.transform.value;
+  if (!string) return matrix;
+  // https://www.w3.org/TR/SVG/types.html#DataTypeTransformList
+  // Parse SVG transform string. First we split at /)\s*/, to separate
+  // commands
+  var transforms = string.split(/\)\s*/g);
+  var _iterator = _createForOfIteratorHelper(transforms),
+    _step;
+  try {
+    for (_iterator.s(); !(_step = _iterator.n()).done;) {
+      var transform = _step.value;
+      if (!transform) break;
+      // Command come before the '(', values after
+      var parts = transform.split(/\(\s*/);
+      var command = parts[0].trim();
+      var v = parts[1].split(/[\s,]+/g);
+      // Convert values to floats
+      for (var j = 0; j < v.length; j++) {
+        v[j] = parseFloat(v[j]);
+      }
+      switch (command) {
         case 'matrix':
-            matrix = Matrix.compose(matrix, {a: v[0], b: v[1], c: v[2], d: v[3], e: v[4], f: v[5]});
-            break;
+          matrix = Matrix.compose(matrix, {
+            a: v[0],
+            b: v[1],
+            c: v[2],
+            d: v[3],
+            e: v[4],
+            f: v[5]
+          });
+          break;
         case 'rotate':
-            matrix = Matrix.compose(matrix, Matrix.rotateDEG(v[0], v[1] || 0, v[2] || 0));
-            break;
+          matrix = Matrix.compose(matrix, Matrix.rotateDEG(v[0], v[1] || 0, v[2] || 0));
+          break;
         case 'translate':
-            matrix = Matrix.compose(matrix, Matrix.translate(v[0], v[1] || 0));
-            break;
+          matrix = Matrix.compose(matrix, Matrix.translate(v[0], v[1] || 0));
+          break;
         case 'scale':
-            matrix = Matrix.compose(matrix, Matrix.scale(v[0], v[1] || v[0]));
-            break;
+          matrix = Matrix.compose(matrix, Matrix.scale(v[0], v[1] || v[0]));
+          break;
         case 'skewX':
-            matrix = Matrix.compose(matrix, Matrix.skewDEG(v[0], 0));
-            break;
+          matrix = Matrix.compose(matrix, Matrix.skewDEG(v[0], 0));
+          break;
         case 'skewY':
-            matrix = Matrix.compose(matrix, Matrix.skewDEG(0, v[0]));
-            break;
+          matrix = Matrix.compose(matrix, Matrix.skewDEG(0, v[0]));
+          break;
         default:
-            log.error(`Couldn't parse: ${command}`);
-        }
+          log.error("Couldn't parse: ".concat(command));
+      }
     }
-    return matrix;
+  } catch (err) {
+    _iterator.e(err);
+  } finally {
+    _iterator.f();
+  }
+  return matrix;
 };
 
 // Adapted from paper.js's Matrix.decompose
 // Given a matrix, return the x and y scale factors of the matrix
-const _getScaleFactor = function (matrix) {
-    const a = matrix.a;
-    const b = matrix.b;
-    const c = matrix.c;
-    const d = matrix.d;
-    const det = (a * d) - (b * c);
-
-    if (a !== 0 || b !== 0) {
-        const r = Math.sqrt((a * a) + (b * b));
-        return {x: r, y: det / r};
-    }
-    if (c !== 0 || d !== 0) {
-        const s = Math.sqrt((c * c) + (d * d));
-        return {x: det / s, y: s};
-    }
-    // a = b = c = d = 0
-    return {x: 0, y: 0};
+var _getScaleFactor = function _getScaleFactor(matrix) {
+  var a = matrix.a;
+  var b = matrix.b;
+  var c = matrix.c;
+  var d = matrix.d;
+  var det = a * d - b * c;
+  if (a !== 0 || b !== 0) {
+    var r = Math.sqrt(a * a + b * b);
+    return {
+      x: r,
+      y: det / r
+    };
+  }
+  if (c !== 0 || d !== 0) {
+    var s = Math.sqrt(c * c + d * d);
+    return {
+      x: det / s,
+      y: s
+    };
+  }
+  // a = b = c = d = 0
+  return {
+    x: 0,
+    y: 0
+  };
 };
 
 // Returns null if matrix is not invertible. Otherwise returns given ellipse
 // transformed by transform, an object {radiusX, radiusY, rotation}.
-const _calculateTransformedEllipse = function (radiusX, radiusY, theta, transform) {
-    theta = -theta * Math.PI / 180;
-    const a = transform.a;
-    const b = -transform.c;
-    const c = -transform.b;
-    const d = transform.d;
-    // Since other parameters determine the translation of the ellipse in SVG, we do not need to worry
-    // about what e and f are.
-    const det = (a * d) - (b * c);
-    // Non-invertible matrix
-    if (det === 0) return null;
+var _calculateTransformedEllipse = function _calculateTransformedEllipse(radiusX, radiusY, theta, transform) {
+  theta = -theta * Math.PI / 180;
+  var a = transform.a;
+  var b = -transform.c;
+  var c = -transform.b;
+  var d = transform.d;
+  // Since other parameters determine the translation of the ellipse in SVG, we do not need to worry
+  // about what e and f are.
+  var det = a * d - b * c;
+  // Non-invertible matrix
+  if (det === 0) return null;
 
-    // rotA, rotB, and rotC represent Ax^2 + Bxy + Cy^2 = 1 coefficients for a rotated ellipse formula
-    const sinT = Math.sin(theta);
-    const cosT = Math.cos(theta);
-    const sin2T = Math.sin(2 * theta);
-    const rotA = (cosT * cosT / radiusX / radiusX) + (sinT * sinT / radiusY / radiusY);
-    const rotB = (sin2T / radiusX / radiusX) - (sin2T / radiusY / radiusY);
-    const rotC = (sinT * sinT / radiusX / radiusX) + (cosT * cosT / radiusY / radiusY);
+  // rotA, rotB, and rotC represent Ax^2 + Bxy + Cy^2 = 1 coefficients for a rotated ellipse formula
+  var sinT = Math.sin(theta);
+  var cosT = Math.cos(theta);
+  var sin2T = Math.sin(2 * theta);
+  var rotA = cosT * cosT / radiusX / radiusX + sinT * sinT / radiusY / radiusY;
+  var rotB = sin2T / radiusX / radiusX - sin2T / radiusY / radiusY;
+  var rotC = sinT * sinT / radiusX / radiusX + cosT * cosT / radiusY / radiusY;
 
-    // Calculate the ellipse formula of the transformed ellipse
-    // A, B, and C represent Ax^2 + Bxy + Cy^2 = 1 / det / det coefficients in a transformed ellipse formula
-    // scaled by inverse det squared (to preserve accuracy)
-    const A = ((rotA * d * d) - (rotB * d * c) + (rotC * c * c));
-    const B = ((-2 * rotA * b * d) + (rotB * a * d) + (rotB * b * c) - (2 * rotC * a * c));
-    const C = ((rotA * b * b) - (rotB * a * b) + (rotC * a * a));
+  // Calculate the ellipse formula of the transformed ellipse
+  // A, B, and C represent Ax^2 + Bxy + Cy^2 = 1 / det / det coefficients in a transformed ellipse formula
+  // scaled by inverse det squared (to preserve accuracy)
+  var A = rotA * d * d - rotB * d * c + rotC * c * c;
+  var B = -2 * rotA * b * d + rotB * a * d + rotB * b * c - 2 * rotC * a * c;
+  var C = rotA * b * b - rotB * a * b + rotC * a * a;
 
-    // Derive new radii and theta from the transformed ellipse formula
-    const newRadiusXOverDet = Math.sqrt(2) *
-        Math.sqrt(
-            (A + C - Math.sqrt((A * A) + (B * B) - (2 * A * C) + (C * C))) /
-            ((-B * B) + (4 * A * C))
-        );
-    const newRadiusYOverDet = 1 / Math.sqrt(A + C - (1 / newRadiusXOverDet / newRadiusXOverDet));
-    let temp = (A - (1 / newRadiusXOverDet / newRadiusXOverDet)) /
-        ((1 / newRadiusYOverDet / newRadiusYOverDet) - (1 / newRadiusXOverDet / newRadiusXOverDet));
-    if (temp < 0 && Math.abs(temp) < 1e-8) temp = 0; // Fix floating point issue
-    temp = Math.sqrt(temp);
-    if (Math.abs(1 - temp) < 1e-8) temp = 1; // Fix floating point issue
-    // Solve for which of the two possible thetas is correct
-    let newTheta = Math.asin(temp);
-    temp = (B / (
-        (1 / newRadiusXOverDet / newRadiusXOverDet) -
-        (1 / newRadiusYOverDet / newRadiusYOverDet)));
-    const newTheta2 = -newTheta;
-    if (Math.abs(Math.sin(2 * newTheta2) - temp) <
-        Math.abs(Math.sin(2 * newTheta) - temp)) {
-        newTheta = newTheta2;
-    }
-
-    return {
-        radiusX: newRadiusXOverDet * det,
-        radiusY: newRadiusYOverDet * det,
-        rotation: -newTheta * 180 / Math.PI
-    };
+  // Derive new radii and theta from the transformed ellipse formula
+  var newRadiusXOverDet = Math.sqrt(2) * Math.sqrt((A + C - Math.sqrt(A * A + B * B - 2 * A * C + C * C)) / (-B * B + 4 * A * C));
+  var newRadiusYOverDet = 1 / Math.sqrt(A + C - 1 / newRadiusXOverDet / newRadiusXOverDet);
+  var temp = (A - 1 / newRadiusXOverDet / newRadiusXOverDet) / (1 / newRadiusYOverDet / newRadiusYOverDet - 1 / newRadiusXOverDet / newRadiusXOverDet);
+  if (temp < 0 && Math.abs(temp) < 1e-8) temp = 0; // Fix floating point issue
+  temp = Math.sqrt(temp);
+  if (Math.abs(1 - temp) < 1e-8) temp = 1; // Fix floating point issue
+  // Solve for which of the two possible thetas is correct
+  var newTheta = Math.asin(temp);
+  temp = B / (1 / newRadiusXOverDet / newRadiusXOverDet - 1 / newRadiusYOverDet / newRadiusYOverDet);
+  var newTheta2 = -newTheta;
+  if (Math.abs(Math.sin(2 * newTheta2) - temp) < Math.abs(Math.sin(2 * newTheta) - temp)) {
+    newTheta = newTheta2;
+  }
+  return {
+    radiusX: newRadiusXOverDet * det,
+    radiusY: newRadiusYOverDet * det,
+    rotation: -newTheta * 180 / Math.PI
+  };
 };
 
 // Adapted from paper.js's PathItem.setPathData
-const _transformPath = function (pathString, transform) {
-    if (!transform || Matrix.toString(transform) === Matrix.toString(Matrix.identity())) return pathString;
-    // First split the path data into parts of command-coordinates pairs
-    // Commands are any of these characters: mzlhvcsqta
-    const parts = pathString && pathString.match(/[mlhvcsqtaz][^mlhvcsqtaz]*/ig);
-    let coords;
-    let relative = false;
-    let previous;
-    let control;
-    let current = {x: 0, y: 0};
-    let start = {x: 0, y: 0};
-    let result = '';
-
-    const getCoord = function (index, coord) {
-        let val = +coords[index];
-        if (relative) {
-            val += current[coord];
-        }
-        return val;
+var _transformPath = function _transformPath(pathString, transform) {
+  if (!transform || Matrix.toString(transform) === Matrix.toString(Matrix.identity())) return pathString;
+  // First split the path data into parts of command-coordinates pairs
+  // Commands are any of these characters: mzlhvcsqta
+  var parts = pathString && pathString.match(/[mlhvcsqtaz][^mlhvcsqtaz]*/ig);
+  var coords;
+  var relative = false;
+  var previous;
+  var control;
+  var current = {
+    x: 0,
+    y: 0
+  };
+  var start = {
+    x: 0,
+    y: 0
+  };
+  var result = '';
+  var getCoord = function getCoord(index, coord) {
+    var val = +coords[index];
+    if (relative) {
+      val += current[coord];
+    }
+    return val;
+  };
+  var getPoint = function getPoint(index) {
+    return {
+      x: getCoord(index, 'x'),
+      y: getCoord(index + 1, 'y')
     };
+  };
+  var roundTo4Places = function roundTo4Places(num) {
+    return Number(num.toFixed(4));
+  };
 
-    const getPoint = function (index) {
-        return {x: getCoord(index, 'x'), y: getCoord(index + 1, 'y')};
-    };
-
-    const roundTo4Places = function (num) {
-        return Number(num.toFixed(4));
-    };
-
-    // Returns the transformed point as a string
-    const getString = function (point) {
-        const transformed = Matrix.applyToPoint(transform, point);
-        return `${roundTo4Places(transformed.x)} ${roundTo4Places(transformed.y)} `;
-    };
-
-    for (let i = 0, l = parts && parts.length; i < l; i++) {
-        const part = parts[i];
-        const command = part[0];
-        const lower = command.toLowerCase();
-        // Match all coordinate values
-        coords = part.match(/[+-]?(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?/g);
-        const length = coords && coords.length;
-        relative = command === lower;
-        // Fix issues with z in the middle of SVG path data, not followed by
-        // a m command, see paper.js#413:
-        if (previous === 'z' && !/[mz]/.test(lower)) {
-            result += `M ${current.x} ${current.y} `;
-        }
-        switch (lower) {
-        case 'm': // Move to
-        case 'l': // Line to
+  // Returns the transformed point as a string
+  var getString = function getString(point) {
+    var transformed = Matrix.applyToPoint(transform, point);
+    return "".concat(roundTo4Places(transformed.x), " ").concat(roundTo4Places(transformed.y), " ");
+  };
+  for (var i = 0, l = parts && parts.length; i < l; i++) {
+    var part = parts[i];
+    var command = part[0];
+    var lower = command.toLowerCase();
+    // Match all coordinate values
+    coords = part.match(/[+-]?(?:\d*\.\d+|\d+\.?)(?:[eE][+-]?\d+)?/g);
+    var length = coords && coords.length;
+    relative = command === lower;
+    // Fix issues with z in the middle of SVG path data, not followed by
+    // a m command, see paper.js#413:
+    if (previous === 'z' && !/[mz]/.test(lower)) {
+      result += "M ".concat(current.x, " ").concat(current.y, " ");
+    }
+    switch (lower) {
+      case 'm': // Move to
+      case 'l':
+        // Line to
         {
-            let move = lower === 'm';
-            for (let j = 0; j < length; j += 2) {
-                result += move ? 'M ' : 'L ';
-                current = getPoint(j);
-                result += getString(current);
-                if (move) {
-                    start = current;
-                    move = false;
-                }
+          var move = lower === 'm';
+          for (var j = 0; j < length; j += 2) {
+            result += move ? 'M ' : 'L ';
+            current = getPoint(j);
+            result += getString(current);
+            if (move) {
+              start = current;
+              move = false;
             }
-            control = current;
-            break;
+          }
+          control = current;
+          break;
         }
-        case 'h': // Horizontal line
-        case 'v': // Vertical line
+      case 'h': // Horizontal line
+      case 'v':
+        // Vertical line
         {
-            const coord = lower === 'h' ? 'x' : 'y';
-            current = {x: current.x, y: current.y}; // Clone as we're going to modify it.
-            for (let j = 0; j < length; j++) {
-                current[coord] = getCoord(j, coord);
-                result += `L ${getString(current)}`;
-            }
-            control = current;
-            break;
+          var coord = lower === 'h' ? 'x' : 'y';
+          current = {
+            x: current.x,
+            y: current.y
+          }; // Clone as we're going to modify it.
+          for (var _j = 0; _j < length; _j++) {
+            current[coord] = getCoord(_j, coord);
+            result += "L ".concat(getString(current));
+          }
+          control = current;
+          break;
         }
-        case 'c':
-            // Cubic Bezier curve
-            for (let j = 0; j < length; j += 6) {
-                const handle1 = getPoint(j);
-                control = getPoint(j + 2);
-                current = getPoint(j + 4);
-                result += `C ${getString(handle1)}${getString(control)}${getString(current)}`;
-            }
-            break;
-        case 's':
-            // Smooth cubic Bezier curve
-            for (let j = 0; j < length; j += 4) {
-                const handle1 = /[cs]/.test(previous) ?
-                    {x: (current.x * 2) - control.x, y: (current.y * 2) - control.y} :
-                    current;
-                control = getPoint(j);
-                current = getPoint(j + 2);
-
-                result += `C ${getString(handle1)}${getString(control)}${getString(current)}`;
-                previous = lower;
-            }
-            break;
-        case 'q':
-            // Quadratic Bezier curve
-            for (let j = 0; j < length; j += 4) {
-                control = getPoint(j);
-                current = getPoint(j + 2);
-                result += `Q ${getString(control)}${getString(current)}`;
-            }
-            break;
-        case 't':
-            // Smooth quadratic Bezier curve
-            for (let j = 0; j < length; j += 2) {
-                control = /[qt]/.test(previous) ?
-                    {x: (current.x * 2) - control.x, y: (current.y * 2) - control.y} :
-                    current;
-                current = getPoint(j);
-
-                result += `Q ${getString(control)}${getString(current)}`;
-                previous = lower;
-            }
-            break;
-        case 'a':
-            // Elliptical arc curve
-            for (let j = 0; j < length; j += 7) {
-                current = getPoint(j + 5);
-                const rx = +coords[j];
-                const ry = +coords[j + 1];
-                const rotation = +coords[j + 2];
-                const largeArcFlag = +coords[j + 3];
-                let clockwiseFlag = +coords[j + 4];
-                const newEllipse = _calculateTransformedEllipse(rx, ry, rotation, transform);
-                const matrixScale = _getScaleFactor(transform);
-                if (newEllipse) {
-                    if ((matrixScale.x > 0 && matrixScale.y < 0) ||
-                        (matrixScale.x < 0 && matrixScale.y > 0)) {
-                        clockwiseFlag = clockwiseFlag ^ 1;
-                    }
-                    result += `A ${roundTo4Places(Math.abs(newEllipse.radiusX))} ` +
-                        `${roundTo4Places(Math.abs(newEllipse.radiusY))} ` +
-                        `${roundTo4Places(newEllipse.rotation)} ${largeArcFlag} ` +
-                        `${clockwiseFlag} ${getString(current)}`;
-                } else {
-                    result += `L ${getString(current)}`;
-                }
-            }
-            break;
-        case 'z':
-            // Close path
-            result += `Z `;
-            // Correctly handle relative m commands, see paper.js#1101:
-            current = start;
-            break;
+      case 'c':
+        // Cubic Bezier curve
+        for (var _j2 = 0; _j2 < length; _j2 += 6) {
+          var handle1 = getPoint(_j2);
+          control = getPoint(_j2 + 2);
+          current = getPoint(_j2 + 4);
+          result += "C ".concat(getString(handle1)).concat(getString(control)).concat(getString(current));
         }
-        previous = lower;
+        break;
+      case 's':
+        // Smooth cubic Bezier curve
+        for (var _j3 = 0; _j3 < length; _j3 += 4) {
+          var _handle = /[cs]/.test(previous) ? {
+            x: current.x * 2 - control.x,
+            y: current.y * 2 - control.y
+          } : current;
+          control = getPoint(_j3);
+          current = getPoint(_j3 + 2);
+          result += "C ".concat(getString(_handle)).concat(getString(control)).concat(getString(current));
+          previous = lower;
+        }
+        break;
+      case 'q':
+        // Quadratic Bezier curve
+        for (var _j4 = 0; _j4 < length; _j4 += 4) {
+          control = getPoint(_j4);
+          current = getPoint(_j4 + 2);
+          result += "Q ".concat(getString(control)).concat(getString(current));
+        }
+        break;
+      case 't':
+        // Smooth quadratic Bezier curve
+        for (var _j5 = 0; _j5 < length; _j5 += 2) {
+          control = /[qt]/.test(previous) ? {
+            x: current.x * 2 - control.x,
+            y: current.y * 2 - control.y
+          } : current;
+          current = getPoint(_j5);
+          result += "Q ".concat(getString(control)).concat(getString(current));
+          previous = lower;
+        }
+        break;
+      case 'a':
+        // Elliptical arc curve
+        for (var _j6 = 0; _j6 < length; _j6 += 7) {
+          current = getPoint(_j6 + 5);
+          var rx = +coords[_j6];
+          var ry = +coords[_j6 + 1];
+          var rotation = +coords[_j6 + 2];
+          var largeArcFlag = +coords[_j6 + 3];
+          var clockwiseFlag = +coords[_j6 + 4];
+          var newEllipse = _calculateTransformedEllipse(rx, ry, rotation, transform);
+          var matrixScale = _getScaleFactor(transform);
+          if (newEllipse) {
+            if (matrixScale.x > 0 && matrixScale.y < 0 || matrixScale.x < 0 && matrixScale.y > 0) {
+              clockwiseFlag = clockwiseFlag ^ 1;
+            }
+            result += "A ".concat(roundTo4Places(Math.abs(newEllipse.radiusX)), " ") + "".concat(roundTo4Places(Math.abs(newEllipse.radiusY)), " ") + "".concat(roundTo4Places(newEllipse.rotation), " ").concat(largeArcFlag, " ") + "".concat(clockwiseFlag, " ").concat(getString(current));
+          } else {
+            result += "L ".concat(getString(current));
+          }
+        }
+        break;
+      case 'z':
+        // Close path
+        result += "Z ";
+        // Correctly handle relative m commands, see paper.js#1101:
+        current = start;
+        break;
     }
-    return result;
+    previous = lower;
+  }
+  return result;
 };
-
-const GRAPHICS_ELEMENTS = ['circle', 'ellipse', 'image', 'line', 'path', 'polygon', 'polyline', 'rect', 'text', 'use'];
-const CONTAINER_ELEMENTS = ['a', 'defs', 'g', 'marker', 'glyph', 'missing-glyph', 'pattern', 'svg', 'switch', 'symbol'];
-const _isContainerElement = function (element) {
-    return element.tagName && CONTAINER_ELEMENTS.includes(element.tagName.toLowerCase());
+var GRAPHICS_ELEMENTS = ['circle', 'ellipse', 'image', 'line', 'path', 'polygon', 'polyline', 'rect', 'text', 'use'];
+var CONTAINER_ELEMENTS = ['a', 'defs', 'g', 'marker', 'glyph', 'missing-glyph', 'pattern', 'svg', 'switch', 'symbol'];
+var _isContainerElement = function _isContainerElement(element) {
+  return element.tagName && CONTAINER_ELEMENTS.includes(element.tagName.toLowerCase());
 };
-const _isGraphicsElement = function (element) {
-    return element.tagName && GRAPHICS_ELEMENTS.includes(element.tagName.toLowerCase());
+var _isGraphicsElement = function _isGraphicsElement(element) {
+  return element.tagName && GRAPHICS_ELEMENTS.includes(element.tagName.toLowerCase());
 };
-const _isPathWithTransformAndStroke = function (element, strokeWidth) {
-    if (!element.attributes) return false;
-    strokeWidth = element.attributes['stroke-width'] ?
-        Number(element.attributes['stroke-width'].value) : Number(strokeWidth);
-    return strokeWidth &&
-        element.tagName && element.tagName.toLowerCase() === 'path' &&
-        element.attributes.d && element.attributes.d.value;
+var _isPathWithTransformAndStroke = function _isPathWithTransformAndStroke(element, strokeWidth) {
+  if (!element.attributes) return false;
+  strokeWidth = element.attributes['stroke-width'] ? Number(element.attributes['stroke-width'].value) : Number(strokeWidth);
+  return strokeWidth && element.tagName && element.tagName.toLowerCase() === 'path' && element.attributes.d && element.attributes.d.value;
 };
-const _quadraticMean = function (a, b) {
-    return Math.sqrt(((a * a) + (b * b)) / 2);
+var _quadraticMean = function _quadraticMean(a, b) {
+  return Math.sqrt((a * a + b * b) / 2);
 };
-
-const _createGradient = function (gradientId, svgTag, bbox, matrix) {
-    // Adapted from Paper.js's SvgImport.getValue
-    const getValue = function (node, name, isString, allowNull, allowPercent, defaultValue) {
-        // Interpret value as number. Never return NaN, but 0 instead.
-        // If the value is a sequence of numbers, parseFloat will
-        // return the first occurring number, which is enough for now.
-        let value = SvgElement.get(node, name);
-        let res;
-        if (value === null) {
-            if (defaultValue) {
-                res = defaultValue;
-                if (/%\s*$/.test(res)) {
-                    value = defaultValue;
-                    res = parseFloat(value);
-                }
-            } else if (allowNull) {
-                res = null;
-            } else if (isString) {
-                res = '';
-            } else {
-                res = 0;
-            }
-        } else if (isString) {
-            res = value;
-        } else {
-            res = parseFloat(value);
+var _createGradient = function _createGradient(gradientId, svgTag, bbox, matrix) {
+  // Adapted from Paper.js's SvgImport.getValue
+  var getValue = function getValue(node, name, isString, allowNull, allowPercent, defaultValue) {
+    // Interpret value as number. Never return NaN, but 0 instead.
+    // If the value is a sequence of numbers, parseFloat will
+    // return the first occurring number, which is enough for now.
+    var value = SvgElement.get(node, name);
+    var res;
+    if (value === null) {
+      if (defaultValue) {
+        res = defaultValue;
+        if (/%\s*$/.test(res)) {
+          value = defaultValue;
+          res = parseFloat(value);
         }
-        // Support for dimensions in percentage of the root size. If root-size
-        // is not set (e.g. during <defs>), just scale the percentage value to
-        // 0..1, as required by gradients with gradientUnits="objectBoundingBox"
-        if (/%\s*$/.test(value)) {
-            const size = allowPercent ? 1 : bbox[/x|^width/.test(name) ? 'width' : 'height'];
-            return res / 100 * size;
-        }
-        return res;
-    };
-    const getPoint = function (node, x, y, allowNull, allowPercent, defaultX, defaultY) {
-        x = getValue(node, x || 'x', false, allowNull, allowPercent, defaultX);
-        y = getValue(node, y || 'y', false, allowNull, allowPercent, defaultY);
-        return allowNull && (x === null || y === null) ? null : {x, y};
-    };
-
-    let defs = svgTag.getElementsByTagName('defs');
-    if (defs.length === 0) {
-        defs = SvgElement.create('defs');
-        svgTag.appendChild(defs);
+      } else if (allowNull) {
+        res = null;
+      } else if (isString) {
+        res = '';
+      } else {
+        res = 0;
+      }
+    } else if (isString) {
+      res = value;
     } else {
-        defs = defs[0];
+      res = parseFloat(value);
     }
-
-    // Clone the old gradient. We'll make a new one, since the gradient might be reused elsewhere
-    // with different transform matrix
-    const oldGradient = svgTag.getElementById(gradientId);
-    if (!oldGradient) return;
-
-    const radial = oldGradient.tagName.toLowerCase() === 'radialgradient';
-    const newGradient = svgTag.getElementById(gradientId).cloneNode(true /* deep */);
-
-    // Give the new gradient a new ID
-    let matrixString = Matrix.toString(matrix);
-    matrixString = matrixString.substring(8, matrixString.length - 1);
-    const newGradientId = `${gradientId}-${matrixString}`;
-    newGradient.setAttribute('id', newGradientId);
-
-    // This gradient already exists and was transformed before. Just reuse the already-transformed one.
-    if (svgTag.getElementById(newGradientId)) {
-        // This is the same code as in the end of the function, but I don't feel like wrapping the next 80 lines
-        // in an `if (!svgTag.getElementById(newGradientId))` block
-        return `url(#${newGradientId})`;
+    // Support for dimensions in percentage of the root size. If root-size
+    // is not set (e.g. during <defs>), just scale the percentage value to
+    // 0..1, as required by gradients with gradientUnits="objectBoundingBox"
+    if (/%\s*$/.test(value)) {
+      var size = allowPercent ? 1 : bbox[/x|^width/.test(name) ? 'width' : 'height'];
+      return res / 100 * size;
     }
+    return res;
+  };
+  var getPoint = function getPoint(node, x, y, allowNull, allowPercent, defaultX, defaultY) {
+    x = getValue(node, x || 'x', false, allowNull, allowPercent, defaultX);
+    y = getValue(node, y || 'y', false, allowNull, allowPercent, defaultY);
+    return allowNull && (x === null || y === null) ? null : {
+      x: x,
+      y: y
+    };
+  };
+  var defs = svgTag.getElementsByTagName('defs');
+  if (defs.length === 0) {
+    defs = SvgElement.create('defs');
+    svgTag.appendChild(defs);
+  } else {
+    defs = defs[0];
+  }
 
-    const scaleToBounds = getValue(newGradient, 'gradientUnits', true) !==
-                'userSpaceOnUse';
-    let origin;
-    let destination;
-    let radius;
-    let focal;
-    if (radial) {
-        origin = getPoint(newGradient, 'cx', 'cy', false, scaleToBounds, '50%', '50%');
-        radius = getValue(newGradient, 'r', false, false, scaleToBounds, '50%');
-        focal = getPoint(newGradient, 'fx', 'fy', true, scaleToBounds);
-    } else {
-        origin = getPoint(newGradient, 'x1', 'y1', false, scaleToBounds);
-        destination = getPoint(newGradient, 'x2', 'y2', false, scaleToBounds, '1');
-        if (origin.x === destination.x && origin.y === destination.y) {
-            // If it's degenerate, use the color of the last stop, as described by
-            // https://www.w3.org/TR/SVG/pservers.html#LinearGradientNotes
-            const stops = newGradient.getElementsByTagName('stop');
-            if (!stops.length || !stops[stops.length - 1].attributes ||
-                    !stops[stops.length - 1].attributes['stop-color']) {
-                return null;
-            }
-            return stops[stops.length - 1].attributes['stop-color'].value;
-        }
+  // Clone the old gradient. We'll make a new one, since the gradient might be reused elsewhere
+  // with different transform matrix
+  var oldGradient = svgTag.getElementById(gradientId);
+  if (!oldGradient) return;
+  var radial = oldGradient.tagName.toLowerCase() === 'radialgradient';
+  var newGradient = svgTag.getElementById(gradientId).cloneNode(true /* deep */);
+
+  // Give the new gradient a new ID
+  var matrixString = Matrix.toString(matrix);
+  matrixString = matrixString.substring(8, matrixString.length - 1);
+  var newGradientId = "".concat(gradientId, "-").concat(matrixString);
+  newGradient.setAttribute('id', newGradientId);
+
+  // This gradient already exists and was transformed before. Just reuse the already-transformed one.
+  if (svgTag.getElementById(newGradientId)) {
+    // This is the same code as in the end of the function, but I don't feel like wrapping the next 80 lines
+    // in an `if (!svgTag.getElementById(newGradientId))` block
+    return "url(#".concat(newGradientId, ")");
+  }
+  var scaleToBounds = getValue(newGradient, 'gradientUnits', true) !== 'userSpaceOnUse';
+  var origin;
+  var destination;
+  var radius;
+  var focal;
+  if (radial) {
+    origin = getPoint(newGradient, 'cx', 'cy', false, scaleToBounds, '50%', '50%');
+    radius = getValue(newGradient, 'r', false, false, scaleToBounds, '50%');
+    focal = getPoint(newGradient, 'fx', 'fy', true, scaleToBounds);
+  } else {
+    origin = getPoint(newGradient, 'x1', 'y1', false, scaleToBounds);
+    destination = getPoint(newGradient, 'x2', 'y2', false, scaleToBounds, '1');
+    if (origin.x === destination.x && origin.y === destination.y) {
+      // If it's degenerate, use the color of the last stop, as described by
+      // https://www.w3.org/TR/SVG/pservers.html#LinearGradientNotes
+      var stops = newGradient.getElementsByTagName('stop');
+      if (!stops.length || !stops[stops.length - 1].attributes || !stops[stops.length - 1].attributes['stop-color']) {
+        return null;
+      }
+      return stops[stops.length - 1].attributes['stop-color'].value;
     }
+  }
+
+  // Transform points
+  // Emulate SVG's gradientUnits="objectBoundingBox"
+  if (scaleToBounds) {
+    var boundsMatrix = Matrix.compose(Matrix.translate(bbox.x, bbox.y), Matrix.scale(bbox.width, bbox.height));
+    origin = Matrix.applyToPoint(boundsMatrix, origin);
+    if (destination) destination = Matrix.applyToPoint(boundsMatrix, destination);
+    if (radius) {
+      radius = _quadraticMean(bbox.width, bbox.height) * radius;
+    }
+    if (focal) focal = Matrix.applyToPoint(boundsMatrix, focal);
+  }
+  if (radial) {
+    origin = Matrix.applyToPoint(matrix, origin);
+    var matrixScale = _getScaleFactor(matrix);
+    radius = _quadraticMean(matrixScale.x, matrixScale.y) * radius;
+    if (focal) focal = Matrix.applyToPoint(matrix, focal);
+  } else {
+    var dot = function dot(a, b) {
+      return a.x * b.x + a.y * b.y;
+    };
+    var multiply = function multiply(coefficient, v) {
+      return {
+        x: coefficient * v.x,
+        y: coefficient * v.y
+      };
+    };
+    var add = function add(a, b) {
+      return {
+        x: a.x + b.x,
+        y: a.y + b.y
+      };
+    };
+    var subtract = function subtract(a, b) {
+      return {
+        x: a.x - b.x,
+        y: a.y - b.y
+      };
+    };
+
+    // The line through origin and gradientPerpendicular is the line at which the gradient starts
+    var gradientPerpendicular = Math.abs(origin.x - destination.x) < 1e-8 ? add(origin, {
+      x: 1,
+      y: (origin.x - destination.x) / (destination.y - origin.y)
+    }) : add(origin, {
+      x: (destination.y - origin.y) / (origin.x - destination.x),
+      y: 1
+    });
 
     // Transform points
-    // Emulate SVG's gradientUnits="objectBoundingBox"
-    if (scaleToBounds) {
-        const boundsMatrix = Matrix.compose(Matrix.translate(bbox.x, bbox.y), Matrix.scale(bbox.width, bbox.height));
-        origin = Matrix.applyToPoint(boundsMatrix, origin);
-        if (destination) destination = Matrix.applyToPoint(boundsMatrix, destination);
-        if (radius) {
-            radius = _quadraticMean(bbox.width, bbox.height) * radius;
-        }
-        if (focal) focal = Matrix.applyToPoint(boundsMatrix, focal);
+    gradientPerpendicular = Matrix.applyToPoint(matrix, gradientPerpendicular);
+    origin = Matrix.applyToPoint(matrix, origin);
+    destination = Matrix.applyToPoint(matrix, destination);
+
+    // Calculate the direction that the gradient has changed to
+    var originToPerpendicular = subtract(gradientPerpendicular, origin);
+    var originToDestination = subtract(destination, origin);
+    var gradientDirection = Math.abs(originToPerpendicular.x) < 1e-8 ? {
+      x: 1,
+      y: -originToPerpendicular.x / originToPerpendicular.y
+    } : {
+      x: -originToPerpendicular.y / originToPerpendicular.x,
+      y: 1
+    };
+
+    // Set the destination so that the gradient moves in the correct direction, by projecting the destination vector
+    // onto the gradient direction vector
+    var projectionCoeff = dot(originToDestination, gradientDirection) / dot(gradientDirection, gradientDirection);
+    var projection = multiply(projectionCoeff, gradientDirection);
+    destination = {
+      x: origin.x + projection.x,
+      y: origin.y + projection.y
+    };
+  }
+
+  // Put values back into svg
+  if (radial) {
+    newGradient.setAttribute('cx', Number(origin.x.toFixed(4)));
+    newGradient.setAttribute('cy', Number(origin.y.toFixed(4)));
+    newGradient.setAttribute('r', Number(radius.toFixed(4)));
+    if (focal) {
+      newGradient.setAttribute('fx', Number(focal.x.toFixed(4)));
+      newGradient.setAttribute('fy', Number(focal.y.toFixed(4)));
     }
-
-    if (radial) {
-        origin = Matrix.applyToPoint(matrix, origin);
-        const matrixScale = _getScaleFactor(matrix);
-        radius = _quadraticMean(matrixScale.x, matrixScale.y) * radius;
-        if (focal) focal = Matrix.applyToPoint(matrix, focal);
-    } else {
-        const dot = (a, b) => (a.x * b.x) + (a.y * b.y);
-        const multiply = (coefficient, v) => ({x: coefficient * v.x, y: coefficient * v.y});
-        const add = (a, b) => ({x: a.x + b.x, y: a.y + b.y});
-        const subtract = (a, b) => ({x: a.x - b.x, y: a.y - b.y});
-
-        // The line through origin and gradientPerpendicular is the line at which the gradient starts
-        let gradientPerpendicular = Math.abs(origin.x - destination.x) < 1e-8 ?
-            add(origin, {x: 1, y: (origin.x - destination.x) / (destination.y - origin.y)}) :
-            add(origin, {x: (destination.y - origin.y) / (origin.x - destination.x), y: 1});
-
-        // Transform points
-        gradientPerpendicular = Matrix.applyToPoint(matrix, gradientPerpendicular);
-        origin = Matrix.applyToPoint(matrix, origin);
-        destination = Matrix.applyToPoint(matrix, destination);
-
-        // Calculate the direction that the gradient has changed to
-        const originToPerpendicular = subtract(gradientPerpendicular, origin);
-        const originToDestination = subtract(destination, origin);
-        const gradientDirection = Math.abs(originToPerpendicular.x) < 1e-8 ?
-            {x: 1, y: -originToPerpendicular.x / originToPerpendicular.y} :
-            {x: -originToPerpendicular.y / originToPerpendicular.x, y: 1};
-
-        // Set the destination so that the gradient moves in the correct direction, by projecting the destination vector
-        // onto the gradient direction vector
-        const projectionCoeff = dot(originToDestination, gradientDirection) / dot(gradientDirection, gradientDirection);
-        const projection = multiply(projectionCoeff, gradientDirection);
-        destination = {x: origin.x + projection.x, y: origin.y + projection.y};
-    }
-
-    // Put values back into svg
-    if (radial) {
-        newGradient.setAttribute('cx', Number(origin.x.toFixed(4)));
-        newGradient.setAttribute('cy', Number(origin.y.toFixed(4)));
-        newGradient.setAttribute('r', Number(radius.toFixed(4)));
-        if (focal) {
-            newGradient.setAttribute('fx', Number(focal.x.toFixed(4)));
-            newGradient.setAttribute('fy', Number(focal.y.toFixed(4)));
-        }
-    } else {
-        newGradient.setAttribute('x1', Number(origin.x.toFixed(4)));
-        newGradient.setAttribute('y1', Number(origin.y.toFixed(4)));
-        newGradient.setAttribute('x2', Number(destination.x.toFixed(4)));
-        newGradient.setAttribute('y2', Number(destination.y.toFixed(4)));
-    }
-    newGradient.setAttribute('gradientUnits', 'userSpaceOnUse');
-    defs.appendChild(newGradient);
-
-    return `url(#${newGradientId})`;
+  } else {
+    newGradient.setAttribute('x1', Number(origin.x.toFixed(4)));
+    newGradient.setAttribute('y1', Number(origin.y.toFixed(4)));
+    newGradient.setAttribute('x2', Number(destination.x.toFixed(4)));
+    newGradient.setAttribute('y2', Number(destination.y.toFixed(4)));
+  }
+  newGradient.setAttribute('gradientUnits', 'userSpaceOnUse');
+  defs.appendChild(newGradient);
+  return "url(#".concat(newGradientId, ")");
 };
 
 // Adapted from paper.js's SvgImport.getDefinition
-const _parseUrl = (value, windowRef) => {
-    // When url() comes from a style property, '#'' seems to be missing on
-    // WebKit. We also get variations of quotes or no quotes, single or
-    // double, so handle it all with one regular expression:
-    const match = value && value.match(/\((?:["'#]*)([^"')]+)/);
-    const name = match && match[1];
-    const res = name && windowRef ?
-        // This is required by Firefox, which can produce absolute
-        // urls for local gradients, see paperjs#1001:
-        name.replace(`${windowRef.location.href.split('#')[0]}#`, '') :
-        name;
-    return res;
+var _parseUrl = function _parseUrl(value, windowRef) {
+  // When url() comes from a style property, '#'' seems to be missing on
+  // WebKit. We also get variations of quotes or no quotes, single or
+  // double, so handle it all with one regular expression:
+  var match = value && value.match(/\((?:["'#]*)([^"')]+)/);
+  var name = match && match[1];
+  var res = name && windowRef ?
+  // This is required by Firefox, which can produce absolute
+  // urls for local gradients, see paperjs#1001:
+  name.replace("".concat(windowRef.location.href.split('#')[0], "#"), '') : name;
+  return res;
 };
 
 /**
@@ -31340,137 +31476,123 @@ const _parseUrl = (value, windowRef) => {
  *     be the bounds of the svgTag without including stroke width or transforms.
  * @return {void}
  */
-const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
-    const inherited = Matrix.identity();
+var transformStrokeWidths = function transformStrokeWidths(svgTag, windowRef, bboxForTesting) {
+  var inherited = Matrix.identity();
+  var _applyTransforms = function applyTransforms(element, matrix, strokeWidth, fill, stroke) {
+    if (_isContainerElement(element)) {
+      // Push fills and stroke width down to leaves
+      if (element.attributes['stroke-width']) {
+        strokeWidth = element.attributes['stroke-width'].value;
+      }
+      if (element.attributes) {
+        if (element.attributes.fill) fill = element.attributes.fill.value;
+        if (element.attributes.stroke) stroke = element.attributes.stroke.value;
+      }
 
-    const applyTransforms = (element, matrix, strokeWidth, fill, stroke) => {
-        if (_isContainerElement(element)) {
-            // Push fills and stroke width down to leaves
-            if (element.attributes['stroke-width']) {
-                strokeWidth = element.attributes['stroke-width'].value;
-            }
-            if (element.attributes) {
-                if (element.attributes.fill) fill = element.attributes.fill.value;
-                if (element.attributes.stroke) stroke = element.attributes.stroke.value;
-            }
+      // If any child nodes don't take attributes, leave the attributes
+      // at the parent level.
+      for (var i = 0; i < element.childNodes.length; i++) {
+        _applyTransforms(element.childNodes[i], Matrix.compose(matrix, _parseTransform(element)), strokeWidth, fill, stroke);
+      }
+      element.removeAttribute('transform');
+      element.removeAttribute('stroke-width');
+      element.removeAttribute('fill');
+      element.removeAttribute('stroke');
+    } else if (_isPathWithTransformAndStroke(element, strokeWidth)) {
+      if (element.attributes['stroke-width']) {
+        strokeWidth = element.attributes['stroke-width'].value;
+      }
+      if (element.attributes.fill) fill = element.attributes.fill.value;
+      if (element.attributes.stroke) stroke = element.attributes.stroke.value;
+      matrix = Matrix.compose(matrix, _parseTransform(element));
+      if (Matrix.toString(matrix) === Matrix.toString(Matrix.identity())) {
+        element.removeAttribute('transform');
+        element.setAttribute('stroke-width', strokeWidth);
+        if (fill) element.setAttribute('fill', fill);
+        if (stroke) element.setAttribute('stroke', stroke);
+        return;
+      }
 
-            // If any child nodes don't take attributes, leave the attributes
-            // at the parent level.
-            for (let i = 0; i < element.childNodes.length; i++) {
-                applyTransforms(
-                    element.childNodes[i],
-                    Matrix.compose(matrix, _parseTransform(element)),
-                    strokeWidth,
-                    fill,
-                    stroke
-                );
-            }
-            element.removeAttribute('transform');
-            element.removeAttribute('stroke-width');
-            element.removeAttribute('fill');
-            element.removeAttribute('stroke');
-        } else if (_isPathWithTransformAndStroke(element, strokeWidth)) {
-            if (element.attributes['stroke-width']) {
-                strokeWidth = element.attributes['stroke-width'].value;
-            }
-            if (element.attributes.fill) fill = element.attributes.fill.value;
-            if (element.attributes.stroke) stroke = element.attributes.stroke.value;
-            matrix = Matrix.compose(matrix, _parseTransform(element));
-            if (Matrix.toString(matrix) === Matrix.toString(Matrix.identity())) {
-                element.removeAttribute('transform');
-                element.setAttribute('stroke-width', strokeWidth);
-                if (fill) element.setAttribute('fill', fill);
-                if (stroke) element.setAttribute('stroke', stroke);
-                return;
-            }
-
-            // Transform gradient
-            const fillGradientId = _parseUrl(fill, windowRef);
-            const strokeGradientId = _parseUrl(stroke, windowRef);
-
-            if (fillGradientId || strokeGradientId) {
-                const doc = windowRef.document;
-                // Need path bounds to transform gradient
-                const svgSpot = doc.createElement('span');
-                let bbox;
-                if (bboxForTesting) {
-                    bbox = bboxForTesting;
-                } else {
-                    try {
-                        doc.body.appendChild(svgSpot);
-                        const svg = SvgElement.set(doc.createElementNS(SvgElement.svg, 'svg'));
-                        const path = SvgElement.set(doc.createElementNS(SvgElement.svg, 'path'));
-                        path.setAttribute('d', element.attributes.d.value);
-                        svg.appendChild(path);
-                        svgSpot.appendChild(svg);
-                        // Take the bounding box.
-                        bbox = svg.getBBox();
-                    } finally {
-                        // Always destroy the element, even if, for example, getBBox throws.
-                        doc.body.removeChild(svgSpot);
-                    }
-                }
-
-                if (fillGradientId) {
-                    const newFillRef = _createGradient(fillGradientId, svgTag, bbox, matrix);
-                    if (newFillRef) fill = newFillRef;
-                }
-
-                if (strokeGradientId) {
-                    const newStrokeRef = _createGradient(strokeGradientId, svgTag, bbox, matrix);
-                    if (newStrokeRef) stroke = newStrokeRef;
-                }
-            }
-
-            // Transform path data
-            element.setAttribute('d', _transformPath(element.attributes.d.value, matrix));
-            element.removeAttribute('transform');
-
-            // Transform stroke width
-            const matrixScale = _getScaleFactor(matrix);
-            element.setAttribute('stroke-width', _quadraticMean(matrixScale.x, matrixScale.y) * strokeWidth);
-            if (fill) element.setAttribute('fill', fill);
-            if (stroke) element.setAttribute('stroke', stroke);
-        } else if (_isGraphicsElement(element)) {
-            // Push stroke width, fill, and stroke down to leaves
-            if (strokeWidth && !element.attributes['stroke-width']) {
-                element.setAttribute('stroke-width', strokeWidth);
-            }
-            if (fill && !element.attributes.fill) {
-                element.setAttribute('fill', fill);
-            }
-            if (stroke && !element.attributes.stroke) {
-                element.setAttribute('stroke', stroke);
-            }
-
-            // Push transform down to leaves
-            matrix = Matrix.compose(matrix, _parseTransform(element));
-            if (Matrix.toString(matrix) === Matrix.toString(Matrix.identity())) {
-                element.removeAttribute('transform');
-            } else {
-                element.setAttribute('transform', Matrix.toString(matrix));
-            }
+      // Transform gradient
+      var fillGradientId = _parseUrl(fill, windowRef);
+      var strokeGradientId = _parseUrl(stroke, windowRef);
+      if (fillGradientId || strokeGradientId) {
+        var doc = windowRef.document;
+        // Need path bounds to transform gradient
+        var svgSpot = doc.createElement('span');
+        var bbox;
+        if (bboxForTesting) {
+          bbox = bboxForTesting;
+        } else {
+          try {
+            doc.body.appendChild(svgSpot);
+            var svg = SvgElement.set(doc.createElementNS(SvgElement.svg, 'svg'));
+            var path = SvgElement.set(doc.createElementNS(SvgElement.svg, 'path'));
+            path.setAttribute('d', element.attributes.d.value);
+            svg.appendChild(path);
+            svgSpot.appendChild(svg);
+            // Take the bounding box.
+            bbox = svg.getBBox();
+          } finally {
+            // Always destroy the element, even if, for example, getBBox throws.
+            doc.body.removeChild(svgSpot);
+          }
         }
-    };
-    applyTransforms(svgTag, inherited, 1 /* default SVG stroke width */);
+        if (fillGradientId) {
+          var newFillRef = _createGradient(fillGradientId, svgTag, bbox, matrix);
+          if (newFillRef) fill = newFillRef;
+        }
+        if (strokeGradientId) {
+          var newStrokeRef = _createGradient(strokeGradientId, svgTag, bbox, matrix);
+          if (newStrokeRef) stroke = newStrokeRef;
+        }
+      }
+
+      // Transform path data
+      element.setAttribute('d', _transformPath(element.attributes.d.value, matrix));
+      element.removeAttribute('transform');
+
+      // Transform stroke width
+      var matrixScale = _getScaleFactor(matrix);
+      element.setAttribute('stroke-width', _quadraticMean(matrixScale.x, matrixScale.y) * strokeWidth);
+      if (fill) element.setAttribute('fill', fill);
+      if (stroke) element.setAttribute('stroke', stroke);
+    } else if (_isGraphicsElement(element)) {
+      // Push stroke width, fill, and stroke down to leaves
+      if (strokeWidth && !element.attributes['stroke-width']) {
+        element.setAttribute('stroke-width', strokeWidth);
+      }
+      if (fill && !element.attributes.fill) {
+        element.setAttribute('fill', fill);
+      }
+      if (stroke && !element.attributes.stroke) {
+        element.setAttribute('stroke', stroke);
+      }
+
+      // Push transform down to leaves
+      matrix = Matrix.compose(matrix, _parseTransform(element));
+      if (Matrix.toString(matrix) === Matrix.toString(Matrix.identity())) {
+        element.removeAttribute('transform');
+      } else {
+        element.setAttribute('transform', Matrix.toString(matrix));
+      }
+    }
+  };
+  _applyTransforms(svgTag, inherited, 1 /* default SVG stroke width */);
 };
-
 module.exports = transformStrokeWidths;
-
 
 /***/ }),
 
-/***/ "./node_modules/@scratch/scratch-svg-renderer/src/util/log.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/@scratch/scratch-svg-renderer/src/util/log.js ***!
-  \********************************************************************/
+/***/ "../scratch-svg-renderer/src/util/log.js":
+/*!***********************************************!*\
+  !*** ../scratch-svg-renderer/src/util/log.js ***!
+  \***********************************************/
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
-const minilog = __webpack_require__(/*! minilog */ "../../node_modules/minilog/lib/web/index.js");
+var minilog = __webpack_require__(/*! minilog */ "../../node_modules/minilog/lib/web/index.js");
 minilog.enable();
-
 module.exports = minilog('scratch-svg-render');
-
 
 /***/ }),
 
@@ -34387,6 +34509,56 @@ var RenderWebGL = /*#__PURE__*/function (_EventEmitter) {
     }
 
     /**
+     * Determine if the drawable is touching a rectangle.
+     *
+     * @param {int} drawableID The ID of the drawable to check.
+     * @param {int} left - The left X coordinate of the rectangle.
+     * @param {int} top - The top Y coordinate of the rectangle.
+     * @param {int} right - The right X coordinate of the rectangle.
+     * @param {int} bottom - The bottom Y coordinate of the rectangle.
+     * @returns {boolean} If the drawable has any pixels that would draw in the rectangle area
+     */
+  }, {
+    key: "drawableTouchingScratchRect",
+    value: function drawableTouchingScratchRect(drawableID, left, top, right, bottom) {
+      var drawable = this._allDrawables[drawableID];
+      if (!drawable) {
+        return false;
+      }
+      var bounds = new Rectangle();
+      bounds.initFromBounds(left, right, bottom, top);
+      var worldPos = twgl.v3.create();
+      drawable.updateCPURenderAttributes();
+      for (worldPos[1] = bounds.bottom; worldPos[1] <= bounds.top; worldPos[1]++) {
+        for (worldPos[0] = bounds.left; worldPos[0] <= bounds.right; worldPos[0]++) {
+          if (drawable.isTouching(worldPos)) {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+
+    /**
+     * Determine if the drawable is touching a point in the Scratch coordinate system
+     *
+     * @param {int} drawableID The ID of the drawable to check.
+     * @param {int} x The x coordinate of the point.
+     * @param {int} y The y coordinate of the point.
+     * @returns {boolean} If the drawable is touching the point
+     */
+  }, {
+    key: "drawableTouchingScratchPoint",
+    value: function drawableTouchingScratchPoint(drawableID, x, y) {
+      var drawable = this._allDrawables[drawableID];
+      if (!drawable) {
+        return false;
+      }
+      drawable.updateCPURenderAttributes();
+      return drawable.isTouching([x, y]);
+    }
+
+    /**
      * Detect which sprite, if any, is at the given location.
      * This function will pick all drawables that are visible, unless specific
      * candidate drawable IDs are provided.  Used for determining what is clicked
@@ -35380,7 +35552,7 @@ function _inherits(t, e) { if ("function" != typeof e && null !== e) throw new T
 function _setPrototypeOf(t, e) { return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function (t, e) { return t.__proto__ = e, t; }, _setPrototypeOf(t, e); }
 var twgl = __webpack_require__(/*! twgl.js */ "../../node_modules/twgl.js/dist/4.x/twgl-full.module.js");
 var Skin = __webpack_require__(/*! ./Skin */ "./src/Skin.js");
-var _require = __webpack_require__(/*! @scratch/scratch-svg-renderer */ "./node_modules/@scratch/scratch-svg-renderer/src/index.js"),
+var _require = __webpack_require__(/*! @scratch/scratch-svg-renderer */ "../scratch-svg-renderer/src/index.js"),
   loadSvgString = _require.loadSvgString,
   serializeSvgToString = _require.serializeSvgToString;
 var ShaderManager = __webpack_require__(/*! ./ShaderManager */ "./src/ShaderManager.js");
