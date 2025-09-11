@@ -38,62 +38,62 @@ const rgbSimilar = function (t, actual, expected) {
 };
 
 test('decimalToHex', t => {
-    t.strictEqual(color.decimalToHex(0), '#000000');
-    t.strictEqual(color.decimalToHex(1), '#000001');
-    t.strictEqual(color.decimalToHex(16777215), '#ffffff');
-    t.strictEqual(color.decimalToHex(-16777215), '#000001');
-    t.strictEqual(color.decimalToHex(99999999), '#5f5e0ff');
+    t.equal(color.decimalToHex(0), '#000000');
+    t.equal(color.decimalToHex(1), '#000001');
+    t.equal(color.decimalToHex(16777215), '#ffffff');
+    t.equal(color.decimalToHex(-16777215), '#000001');
+    t.equal(color.decimalToHex(99999999), '#5f5e0ff');
     t.end();
 });
 
 test('decimalToRgb', t => {
-    t.deepEqual(color.decimalToRgb(0), {a: 255, r: 0, g: 0, b: 0});
-    t.deepEqual(color.decimalToRgb(1), {a: 255, r: 0, g: 0, b: 1});
-    t.deepEqual(color.decimalToRgb(16777215), {a: 255, r: 255, g: 255, b: 255});
-    t.deepEqual(color.decimalToRgb(-16777215), {a: 255, r: 0, g: 0, b: 1});
-    t.deepEqual(color.decimalToRgb(99999999), {a: 5, r: 245, g: 224, b: 255});
+    t.same(color.decimalToRgb(0), {a: 255, r: 0, g: 0, b: 0});
+    t.same(color.decimalToRgb(1), {a: 255, r: 0, g: 0, b: 1});
+    t.same(color.decimalToRgb(16777215), {a: 255, r: 255, g: 255, b: 255});
+    t.same(color.decimalToRgb(-16777215), {a: 255, r: 0, g: 0, b: 1});
+    t.same(color.decimalToRgb(99999999), {a: 5, r: 245, g: 224, b: 255});
     t.end();
 });
 
 test('hexToRgb', t => {
-    t.deepEqual(color.hexToRgb('#000'), {r: 0, g: 0, b: 0});
-    t.deepEqual(color.hexToRgb('#000000'), {r: 0, g: 0, b: 0});
-    t.deepEqual(color.hexToRgb('#fff'), {r: 255, g: 255, b: 255});
-    t.deepEqual(color.hexToRgb('#ffffff'), {r: 255, g: 255, b: 255});
-    t.deepEqual(color.hexToRgb('#0fa'), {r: 0, g: 255, b: 170});
-    t.deepEqual(color.hexToRgb('#00ffaa'), {r: 0, g: 255, b: 170});
+    t.same(color.hexToRgb('#000'), {r: 0, g: 0, b: 0});
+    t.same(color.hexToRgb('#000000'), {r: 0, g: 0, b: 0});
+    t.same(color.hexToRgb('#fff'), {r: 255, g: 255, b: 255});
+    t.same(color.hexToRgb('#ffffff'), {r: 255, g: 255, b: 255});
+    t.same(color.hexToRgb('#0fa'), {r: 0, g: 255, b: 170});
+    t.same(color.hexToRgb('#00ffaa'), {r: 0, g: 255, b: 170});
 
-    t.deepEqual(color.hexToRgb('000'), {r: 0, g: 0, b: 0});
-    t.deepEqual(color.hexToRgb('fff'), {r: 255, g: 255, b: 255});
-    t.deepEqual(color.hexToRgb('00ffaa'), {r: 0, g: 255, b: 170});
+    t.same(color.hexToRgb('000'), {r: 0, g: 0, b: 0});
+    t.same(color.hexToRgb('fff'), {r: 255, g: 255, b: 255});
+    t.same(color.hexToRgb('00ffaa'), {r: 0, g: 255, b: 170});
 
-    t.deepEqual(color.hexToRgb('0'), null);
-    t.deepEqual(color.hexToRgb('hello world'), null);
+    t.same(color.hexToRgb('0'), null);
+    t.same(color.hexToRgb('hello world'), null);
 
     t.end();
 });
 
 test('rgbToHex', t => {
-    t.strictEqual(color.rgbToHex({r: 0, g: 0, b: 0}), '#000000');
-    t.strictEqual(color.rgbToHex({r: 255, g: 255, b: 255}), '#ffffff');
-    t.strictEqual(color.rgbToHex({r: 0, g: 255, b: 170}), '#00ffaa');
+    t.equal(color.rgbToHex({r: 0, g: 0, b: 0}), '#000000');
+    t.equal(color.rgbToHex({r: 255, g: 255, b: 255}), '#ffffff');
+    t.equal(color.rgbToHex({r: 0, g: 255, b: 170}), '#00ffaa');
     t.end();
 });
 
 test('rgbToDecimal', t => {
-    t.strictEqual(color.rgbToDecimal({r: 0, g: 0, b: 0}), 0);
-    t.strictEqual(color.rgbToDecimal({r: 255, g: 255, b: 255}), 16777215);
-    t.strictEqual(color.rgbToDecimal({r: 0, g: 255, b: 170}), 65450);
+    t.equal(color.rgbToDecimal({r: 0, g: 0, b: 0}), 0);
+    t.equal(color.rgbToDecimal({r: 255, g: 255, b: 255}), 16777215);
+    t.equal(color.rgbToDecimal({r: 0, g: 255, b: 170}), 65450);
     t.end();
 });
 
 test('hexToDecimal', t => {
-    t.strictEqual(color.hexToDecimal('#000'), 0);
-    t.strictEqual(color.hexToDecimal('#000000'), 0);
-    t.strictEqual(color.hexToDecimal('#fff'), 16777215);
-    t.strictEqual(color.hexToDecimal('#ffffff'), 16777215);
-    t.strictEqual(color.hexToDecimal('#0fa'), 65450);
-    t.strictEqual(color.hexToDecimal('#00ffaa'), 65450);
+    t.equal(color.hexToDecimal('#000'), 0);
+    t.equal(color.hexToDecimal('#000000'), 0);
+    t.equal(color.hexToDecimal('#fff'), 16777215);
+    t.equal(color.hexToDecimal('#ffffff'), 16777215);
+    t.equal(color.hexToDecimal('#0fa'), 65450);
+    t.equal(color.hexToDecimal('#00ffaa'), 65450);
     t.end();
 });
 

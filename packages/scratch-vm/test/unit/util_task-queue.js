@@ -71,7 +71,7 @@ test('run tasks', async t => {
     }
 
     return Promise.all(promises).then(() => {
-        t.deepEqual(taskResults, ['a', 'b', 'c'], 'All tasks must run in correct order');
+        t.same(taskResults, ['a', 'b', 'c'], 'All tasks must run in correct order');
         t.end();
     });
 });
@@ -113,7 +113,7 @@ test('cancel', async t => {
     }
 
     return Promise.all([cancelCheckPromise, keepTaskPromise]).then(() => {
-        t.deepEqual(taskResults, [goodCancelMessage, afterCancelMessage]);
+        t.same(taskResults, [goodCancelMessage, afterCancelMessage]);
         t.end();
     });
 });
@@ -153,7 +153,7 @@ test('cancelAll', async t => {
     await bukkit._timer.advanceMockTimeAsync(10000);
 
     return Promise.all(promises).then(() => {
-        t.deepEqual(taskResults, [goodCancelMessage1, goodCancelMessage2], 'Tasks should cancel in order');
+        t.same(taskResults, [goodCancelMessage1, goodCancelMessage2], 'Tasks should cancel in order');
         t.end();
     });
 });

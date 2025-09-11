@@ -6,8 +6,8 @@ const BitmapAdapter = require('../src/bitmap-adapter');
 test('zero', t => {
     const bitmapAdapter = new BitmapAdapter();
     const size = bitmapAdapter.getResizedWidthHeight(0, 0);
-    t.equals(0, size.width);
-    t.equals(0, size.height);
+    t.equal(0, size.width);
+    t.equal(0, size.height);
     t.end();
 });
 
@@ -15,8 +15,8 @@ test('zero', t => {
 test('smallImg', t => {
     const bitmapAdapter = new BitmapAdapter();
     const size = bitmapAdapter.getResizedWidthHeight(50, 50);
-    t.equals(100, size.width);
-    t.equals(100, size.height);
+    t.equal(100, size.width);
+    t.equal(100, size.height);
     t.end();
 });
 
@@ -24,8 +24,8 @@ test('smallImg', t => {
 test('stageSizeImage', t => {
     const bitmapAdapter = new BitmapAdapter();
     const size = bitmapAdapter.getResizedWidthHeight(480, 360);
-    t.equals(960, size.width);
-    t.equals(720, size.height);
+    t.equal(960, size.width);
+    t.equal(720, size.height);
     t.end();
 });
 
@@ -33,8 +33,8 @@ test('stageSizeImage', t => {
 test('mediumHeightImage', t => {
     const bitmapAdapter = new BitmapAdapter();
     const size = bitmapAdapter.getResizedWidthHeight(50, 700);
-    t.equals(50, size.width);
-    t.equals(700, size.height);
+    t.equal(50, size.width);
+    t.equal(700, size.height);
     t.end();
 });
 
@@ -42,8 +42,8 @@ test('mediumHeightImage', t => {
 test('mediumWidthImage', t => {
     const bitmapAdapter = new BitmapAdapter();
     const size = bitmapAdapter.getResizedWidthHeight(700, 50);
-    t.equals(700, size.width);
-    t.equals(50, size.height);
+    t.equal(700, size.width);
+    t.equal(50, size.height);
     t.end();
 });
 
@@ -51,8 +51,8 @@ test('mediumWidthImage', t => {
 test('mediumImage', t => {
     const bitmapAdapter = new BitmapAdapter();
     const size = bitmapAdapter.getResizedWidthHeight(700, 700);
-    t.equals(700, size.width);
-    t.equals(700, size.height);
+    t.equal(700, size.width);
+    t.equal(700, size.height);
     t.end();
 });
 
@@ -60,8 +60,8 @@ test('mediumImage', t => {
 test('doubleStageSizeImage', t => {
     const bitmapAdapter = new BitmapAdapter();
     const size = bitmapAdapter.getResizedWidthHeight(960, 720);
-    t.equals(960, size.width);
-    t.equals(720, size.height);
+    t.equal(960, size.width);
+    t.equal(720, size.height);
     t.end();
 });
 
@@ -69,8 +69,8 @@ test('doubleStageSizeImage', t => {
 test('wideImage', t => {
     const bitmapAdapter = new BitmapAdapter();
     const size = bitmapAdapter.getResizedWidthHeight(1000, 50);
-    t.equals(960, size.width);
-    t.equals(960 / 1000 * 50, size.height);
+    t.equal(960, size.width);
+    t.equal(960 / 1000 * 50, size.height);
     t.end();
 });
 
@@ -78,8 +78,8 @@ test('wideImage', t => {
 test('tallImage', t => {
     const bitmapAdapter = new BitmapAdapter();
     const size = bitmapAdapter.getResizedWidthHeight(50, 1000);
-    t.equals(720, size.height);
-    t.equals(720 / 1000 * 50, size.width);
+    t.equal(720, size.height);
+    t.equal(720 / 1000 * 50, size.width);
     t.end();
 });
 
@@ -87,8 +87,8 @@ test('tallImage', t => {
 test('largeImageHeightConstraint', t => {
     const bitmapAdapter = new BitmapAdapter();
     const size = bitmapAdapter.getResizedWidthHeight(1000, 1000);
-    t.equals(720, size.height);
-    t.equals(720 / 1000 * 1000, size.width);
+    t.equal(720, size.height);
+    t.equal(720 / 1000 * 1000, size.width);
     t.end();
 });
 
@@ -96,7 +96,7 @@ test('largeImageHeightConstraint', t => {
 test('largeImageWidthConstraint', t => {
     const bitmapAdapter = new BitmapAdapter();
     const size = bitmapAdapter.getResizedWidthHeight(2000, 1000);
-    t.equals(960, size.width);
-    t.equals(960 / 2000 * 1000, size.height);
+    t.equal(960, size.width);
+    t.equal(960 / 2000 * 1000, size.height);
     t.end();
 });

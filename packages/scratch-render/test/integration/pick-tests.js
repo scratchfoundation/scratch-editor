@@ -52,7 +52,7 @@ const runFile = async (file, action, page, script) => {
 
             t.plan(expect.length);
             for (let x = 0; x < expect.length; x++) {
-                t.deepEqual(results[x], expect[x], expect[x][0]);
+                t.same(results[x], expect[x], expect[x][0]);
             }
             t.end();
         });

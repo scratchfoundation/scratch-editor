@@ -275,7 +275,7 @@ test('deserializeBlocks on already deserialized input', t => {
             const serialized = sb3.serializeBlocks(blocks)[0];
             const deserialized = sb3.deserializeBlocks(serialized);
             const deserializedAgain = sb3.deserializeBlocks(deserialized);
-            t.deepEqual(deserialized, deserializedAgain, 'no change from second pass of deserialize');
+            t.same(deserialized, deserializedAgain, 'no change from second pass of deserialize');
             t.end();
         });
 });
@@ -284,13 +284,13 @@ test('getExtensionIdForOpcode', t => {
     t.equal(sb3.getExtensionIdForOpcode('wedo_loopy'), 'wedo');
 
     // does not consider CORE to be extensions
-    t.false(sb3.getExtensionIdForOpcode('control_loopy'));
+    t.notOk(sb3.getExtensionIdForOpcode('control_loopy'));
 
     // only considers things before the first underscore
     t.equal(sb3.getExtensionIdForOpcode('hello_there_loopy'), 'hello');
 
     // does not return anything for opcodes with no extension
-    t.false(sb3.getExtensionIdForOpcode('hello'));
+    t.notOk(sb3.getExtensionIdForOpcode('hello'));
 
     // forbidden characters must be replaced with '-'
     t.equal(sb3.getExtensionIdForOpcode('hi:there/happy_people'), 'hi-there-happy');

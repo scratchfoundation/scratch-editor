@@ -16,17 +16,17 @@ test('rate limiter', t => {
     // Running okayToSend a number of times equal to the max rate
     // uses up all of the tokens
     for (let i = 0; i < rate; i++) {
-        t.true(limiter.okayToSend());
+        t.ok(limiter.okayToSend());
         // Tokens are counting down
         t.equal(limiter._count, rate - (i + 1));
     }
-    t.false(limiter.okayToSend());
+    t.notOk(limiter.okayToSend());
 
     // Advance the timer enough so we get exactly one more token
     // One extra millisecond is required to get over the threshold
     simulatedTime += (1000 / rate) + 1;
-    t.true(limiter.okayToSend());
-    t.false(limiter.okayToSend());
+    t.ok(limiter.okayToSend());
+    t.notOk(limiter.okayToSend());
 
     t.end();
 });

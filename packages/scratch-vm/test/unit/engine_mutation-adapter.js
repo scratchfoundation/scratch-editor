@@ -21,6 +21,6 @@ test('convert DOM to Scratch object', t => {
 
     // TODO: do we want to test passing a DOM node to `mutationAdapter`? Node.js doesn't have built-in DOM support...
     const mutationFromString = mutationAdapter(xml);
-    t.deepEqual(mutationFromString, expectedMutation);
+    t.same(mutationFromString, expectedMutation);
     t.end();
 });

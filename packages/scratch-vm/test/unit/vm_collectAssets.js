@@ -19,6 +19,6 @@ test('collectAssets', t => {
     const assets = vm.assets;
     t.type(assets.length, 'number');
     t.equal(assets.length, 3);
-    t.deepEqual(assets, [soundAsset1, soundAsset2, costumeAsset1]);
+    t.same(assets, [soundAsset1, soundAsset2, costumeAsset1]);
     t.end();
 });

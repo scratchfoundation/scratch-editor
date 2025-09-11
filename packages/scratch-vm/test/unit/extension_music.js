@@ -23,11 +23,11 @@ test('playDrum uses 1-indexing and wrap clamps', t => {
 
     let args = {DRUM: 1};
     blocks.playDrumForBeats(args, util);
-    t.strictEqual(playedDrum, 0);
+    t.equal(playedDrum, 0);
 
     args = {DRUM: blocks.DRUM_INFO.length + 1};
     blocks.playDrumForBeats(args, util);
-    t.strictEqual(playedDrum, 0);
+    t.equal(playedDrum, 0);
 
     t.end();
 });
@@ -39,11 +39,11 @@ test('setInstrument uses 1-indexing and wrap clamps', t => {
 
     let args = {INSTRUMENT: 1};
     blocks.setInstrument(args, util);
-    t.strictEqual(state.currentInstrument, 0);
+    t.equal(state.currentInstrument, 0);
 
     args = {INSTRUMENT: blocks.INSTRUMENT_INFO.length + 1};
     blocks.setInstrument(args, util);
-    t.strictEqual(state.currentInstrument, 0);
+    t.equal(state.currentInstrument, 0);
 
     t.end();
 });

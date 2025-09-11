@@ -23,7 +23,7 @@ test('ask and answer with a hidden target', t => {
     // Test is written out of order because of promises, follow the (#) comments.
     rt.addListener('QUESTION', question => {
         // (2) Assert the question is correct, then emit the answer
-        t.strictEqual(question, expectedQuestion);
+        t.equal(question, expectedQuestion);
         rt.emit('ANSWER', expectedAnswer);
     });
 
@@ -32,7 +32,7 @@ test('ask and answer with a hidden target', t => {
 
     // (3) Ask block resolves after the answer is emitted.
     promise.then(() => {
-        t.strictEqual(s.getAnswer(), expectedAnswer);
+        t.equal(s.getAnswer(), expectedAnswer);
         t.end();
     });
 });
@@ -49,10 +49,10 @@ test('ask and stop all dismisses question', t => {
     rt.addListener('QUESTION', question => {
         if (call === 0) {
             // (2) Assert the question was passed.
-            t.strictEqual(question, expectedQuestion);
+            t.equal(question, expectedQuestion);
         } else if (call === 1) {
             // (4) Assert the question was dismissed.
-            t.strictEqual(question, null);
+            t.equal(question, null);
             t.end();
         }
         call += 1;
@@ -76,10 +76,10 @@ test('ask and stop other scripts dismisses if it is the last question', t => {
     rt.addListener('QUESTION', question => {
         if (call === 0) {
             // (2) Assert the question was passed.
-            t.strictEqual(question, expectedQuestion);
+            t.equal(question, expectedQuestion);
         } else if (call === 1) {
             // (4) Assert the question was dismissed.
-            t.strictEqual(question, null);
+            t.equal(question, null);
             t.end();
         }
         call += 1;
@@ -105,10 +105,10 @@ test('ask and stop other scripts asks next question', t => {
     rt.addListener('QUESTION', question => {
         if (call === 0) {
             // (2) Assert the question was passed.
-            t.strictEqual(question, expectedQuestion);
+            t.equal(question, expectedQuestion);
         } else if (call === 1) {
             // (4) Assert the next question was passed.
-            t.strictEqual(question, nextQuestion);
+            t.equal(question, nextQuestion);
             t.end();
         }
         call += 1;
@@ -133,18 +133,18 @@ test('ask and answer with a visible target', t => {
 
     rt.addListener('SAY', (target, type, question) => {
         // Should emit SAY with the question
-        t.strictEqual(question, expectedQuestion);
+        t.equal(question, expectedQuestion);
     });
 
     rt.addListener('QUESTION', question => {
         // Question should be blank for a visible target
-        t.strictEqual(question, '');
+        t.equal(question, '');
 
         // Remove the say listener and add a new one to assert bubble is cleared
         // by setting say to empty string after answer is received.
         rt.removeAllListeners('SAY');
         rt.addListener('SAY', (target, type, text) => {
-            t.strictEqual(text, '');
+            t.equal(text, '');
             t.end();
         });
         rt.emit('ANSWER', expectedAnswer);
@@ -162,10 +162,10 @@ test('answer gets reset when runtime is disposed', t => {
     rt.addListener('QUESTION', () => rt.emit('ANSWER', expectedAnswer));
     const promise = s.askAndWait({QUESTION: ''}, util);
 
-    promise.then(() => t.strictEqual(s.getAnswer(), expectedAnswer))
+    promise.then(() => t.equal(s.getAnswer(), expectedAnswer))
         .then(() => rt.dispose())
         .then(() => {
-            t.strictEqual(s.getAnswer(), '');
+            t.equal(s.getAnswer(), '');
             t.end();
         });
 });
@@ -178,10 +178,10 @@ test('set drag mode', t => {
     const rt = new RenderedTarget(s, runtime);
 
     sensing.setDragMode({DRAG_MODE: 'not draggable'}, {target: rt});
-    t.strictEqual(rt.draggable, false);
+    t.equal(rt.draggable, false);
 
     sensing.setDragMode({DRAG_MODE: 'draggable'}, {target: rt});
-    t.strictEqual(rt.draggable, true);
+    t.equal(rt.draggable, true);
 
     t.end();
 });
@@ -191,7 +191,7 @@ test('get loudness with caching', t => {
     const sensing = new Sensing(rt);
 
     // It should report -1 when audio engine is not available.
-    t.strictEqual(sensing.getLoudness(), -1);
+    t.equal(sensing.getLoudness(), -1);
 
     // Stub the audio engine with its getLoudness function, and set up different
     // values to simulate it changing over time.
@@ -201,13 +201,13 @@ test('get loudness with caching', t => {
     rt.audioEngine = {getLoudness: () => simulatedLoudness};
 
     // It should report -1 when current step time is null.
-    t.strictEqual(sensing.getLoudness(), -1);
+    t.equal(sensing.getLoudness(), -1);
 
     // Stub the current step time.
     rt.currentStepTime = 1000 / 30;
 
     // The first time it works, it should report the result from the stubbed audio engine.
-    t.strictEqual(sensing.getLoudness(), firstLoudness);
+    t.equal(sensing.getLoudness(), firstLoudness);
 
     // Update the simulated loudness to a new value.
     simulatedLoudness = secondLoudness;
@@ -216,12 +216,12 @@ test('get loudness with caching', t => {
     // After less than a step, it should still report cached loudness.
     let simulatedTime = Date.now() + (rt.currentStepTime / 2);
     sensing._timer = {time: () => simulatedTime};
-    t.strictEqual(sensing.getLoudness(), firstLoudness);
+    t.equal(sensing.getLoudness(), firstLoudness);
 
     // Simulate more than a step passing. It should now request the value
     // from the audio engine again.
     simulatedTime += rt.currentStepTime;
-    t.strictEqual(sensing.getLoudness(), secondLoudness);
+    t.equal(sensing.getLoudness(), secondLoudness);
 
     t.end();
 });
@@ -234,14 +234,14 @@ test('loud? boolean', t => {
     // method, which isLoud uses.
     let simulatedLoudness = 0;
     sensing.getLoudness = () => simulatedLoudness;
-    t.false(sensing.isLoud());
+    t.notOk(sensing.isLoud());
 
     // Check for GREATER than 10, not equal.
     simulatedLoudness = 10;
-    t.false(sensing.isLoud());
+    t.notOk(sensing.isLoud());
 
     simulatedLoudness = 11;
-    t.true(sensing.isLoud());
+    t.ok(sensing.isLoud());
 
     t.end();
 });

@@ -33,10 +33,7 @@
     "watch": "webpack --progress --watch --watch-poll"
   },
   "tap": {
-    "branches": 10,
-    "functions": 20,
-    "lines": 30,
-    "statements": 30
+    "allow-incomplete-coverage": true
   },
   "browserslist": [
     "Chrome >= 63",
@@ -60,8 +57,8 @@
     "scratch-render-fonts": "^1.0.0"
   },
   "devDependencies": {
-    "@babel/core": "7.28.3",
-    "@babel/eslint-parser": "7.28.0",
+    "@babel/core": "7.28.4",
+    "@babel/eslint-parser": "7.28.4",
     "@babel/polyfill": "7.12.1",
     "@babel/preset-env": "7.28.3",
     "@scratch/scratch-vm": "11.6.0",
@@ -75,12 +72,12 @@
     "jsdoc": "3.6.11",
     "json": "9.0.6",
     "playwright-chromium": "1.55.0",
-    "scratch-render-fonts": "1.0.227",
+    "scratch-render-fonts": "1.0.229",
     "scratch-semantic-release-config": "3.0.0",
-    "scratch-storage": "4.0.221",
+    "scratch-storage": "4.0.224",
     "scratch-webpack-configuration": "3.0.0",
     "semantic-release": "19.0.5",
-    "tap": "16.3.10",
+    "tap": "21.1.0",
     "terser-webpack-plugin": "5.3.14",
     "webpack": "5.101.3",
     "webpack-cli": "5.1.4",

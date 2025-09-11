@@ -27,7 +27,7 @@ tap.beforeEach(() => {
 
 test('top-level block IDs have all changed', t => {
     newBlocks.forEach((block, i) => {
-        t.notEqual(block.id, originals[i].id);
+        t.not(block.id, originals[i].id);
     });
     t.end();
 });

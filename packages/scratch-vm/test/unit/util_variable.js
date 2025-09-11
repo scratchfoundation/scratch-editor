@@ -66,8 +66,8 @@ test('merge variable ids', t => {
     // Redo the id for the variable with 'id1'
     VariableUtil.updateVariableIdentifiers(target1.blocks.getAllVariableAndListReferences().id1, 'renamed id');
     const varField = target1.blocks.getBlock('a block').fields.VARIABLE;
-    t.equals(varField.id, 'renamed id');
-    t.equals(varField.value, 'foo');
+    t.equal(varField.id, 'renamed id');
+    t.equal(varField.value, 'foo');
 
     t.end();
 });
@@ -76,8 +76,8 @@ test('merge variable ids but with new name too', t => {
     // Redo the id for the variable with 'id1'
     VariableUtil.updateVariableIdentifiers(target1.blocks.getAllVariableAndListReferences().id1, 'renamed id', 'baz');
     const varField = target1.blocks.getBlock('a block').fields.VARIABLE;
-    t.equals(varField.id, 'renamed id');
-    t.equals(varField.value, 'baz');
+    t.equal(varField.id, 'renamed id');
+    t.equal(varField.value, 'baz');
 
     t.end();
 });

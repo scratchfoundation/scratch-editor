@@ -211,6 +211,7 @@ const soundUpload = function (fileData, fileType, storage, handleSound, handleEr
 const spriteUpload = function (fileData, fileType, spriteName, storage, handleSprite, handleError = () => {}) {
     switch (fileType) {
     case '':
+    case 'application/x-scratch3-sprite': // Some builds, such as from the AUR, cause browsers to report this MIME type
     case 'application/zip': { // We think this is a .sprite2 or .sprite3 file
         handleSprite(new Uint8Array(fileData));
         return;

@@ -40,7 +40,7 @@ test('monitor thread runs every frame', t => {
             t.equal(vm.runtime.threads.length, 0);
             t.equal(doneThreads.length, 1);
             checkMonitorThreadPresent(t, doneThreads);
-            t.assert(doneThreads[0].status === Thread.STATUS_DONE);
+            t.ok(doneThreads[0].status === Thread.STATUS_DONE);
 
             // Check that both are added again when another step is taken
             vm.runtime._step();
@@ -48,7 +48,7 @@ test('monitor thread runs every frame', t => {
             t.equal(vm.runtime.threads.length, 0);
             t.equal(doneThreads.length, 1);
             checkMonitorThreadPresent(t, doneThreads);
-            t.assert(doneThreads[0].status === Thread.STATUS_DONE);
+            t.ok(doneThreads[0].status === Thread.STATUS_DONE);
             t.end();
         });
     });
@@ -79,7 +79,7 @@ test('monitor thread not added twice', t => {
             t.equal(vm.runtime.threads.length, 1);
             t.equal(doneThreads.length, 0);
             checkMonitorThreadPresent(t, vm.runtime.threads);
-            t.assert(vm.runtime.threads[0].status === Thread.STATUS_RUNNING);
+            t.ok(vm.runtime.threads[0].status === Thread.STATUS_RUNNING);
             const prevThread = vm.runtime.threads[0];
 
             // Check that both are added again when another step is taken

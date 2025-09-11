@@ -24,21 +24,21 @@ test('blocks activated by scrolling', t => {
     mw.postData({
         deltaY: -1
     });
-    t.strictEquals(_startHatsArgs[0], 'event_whenkeypressed');
-    t.strictEquals(_startHatsArgs[1].KEY_OPTION, 'up arrow');
+    t.equal(_startHatsArgs[0], 'event_whenkeypressed');
+    t.equal(_startHatsArgs[1].KEY_OPTION, 'up arrow');
 
     _startHatsArgs = null;
     mw.postData({
         deltaY: +1
     });
-    t.strictEquals(_startHatsArgs[0], 'event_whenkeypressed');
-    t.strictEquals(_startHatsArgs[1].KEY_OPTION, 'down arrow');
+    t.equal(_startHatsArgs[0], 'event_whenkeypressed');
+    t.equal(_startHatsArgs[1].KEY_OPTION, 'down arrow');
 
     _startHatsArgs = null;
     mw.postData({
         deltaY: 0
     });
-    t.strictEquals(_startHatsArgs, null);
+    t.equal(_startHatsArgs, null);
 
     t.end();
 });

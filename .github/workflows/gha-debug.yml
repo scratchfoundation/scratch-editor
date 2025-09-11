@@ -1,0 +1,83 @@
+name: GitHub Actions debug info
+
+on:
+  branch_protection_rule:
+  check_run:
+  check_suite:
+  create:
+  delete:
+  deployment:
+  deployment_status:
+  discussion:
+  discussion_comment:
+  fork:
+  gollum: # Wiki page activity
+  issue_comment:
+  issues:
+  label:
+  merge_group:
+  milestone:
+  page_build:
+  public:
+  pull_request:
+  # pull_request_comment: # use issue_comment instead
+  pull_request_review:
+  pull_request_review_comment:
+  pull_request_target:
+  push:
+  registry_package:
+  release:
+  repository_dispatch:
+  schedule:
+    - cron: '37 9 * * 1' # Every Monday at 9:37 UTC = 4:37 AM EST / 5:37 AM EDT
+  status:
+  watch:
+  workflow_call:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["CI"]
+
+jobs:
+  info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output debug info
+        env:
+          github: ${{ toJson(github) }}
+        run: |
+          echo 'GitHub Actions debug info'
+          echo 'See also the `env:` section above'
+          echo "Working directory: $(pwd)"
+          date
+          echo ""
+          (
+            reportVersion() {
+              label="$1"
+              shift
+              # Some tools report their version on stdout, and some on stderr
+              # If the command is not found, stderr will be like "foo: command not found"
+              # This should capture all of these cases
+              version="$($@ 2>&1 | head -n 1)"
+              echo "$label|$version"
+            }
+
+            reportVersion "Tool" echo "Version"
+            reportVersion "---" echo "---"
+            reportVersion "Chrome" google-chrome --version
+            reportVersion "Chromium" chromium-browser --version
+            reportVersion "Chromedriver" chromedriver --version
+            reportVersion "Docker" docker --version
+            reportVersion "Docker Compose" docker compose version
+            reportVersion "GitHub CLI" gh --version
+            reportVersion "Git" git --version
+            reportVersion "Go" go version
+            reportVersion "Java" java -version
+            reportVersion "jq" jq --version
+            reportVersion "Node.js" node --version
+            reportVersion "npm" npm --version
+            reportVersion "pkg-config" pkg-config --version
+            reportVersion "Python" python --version
+            reportVersion "Ruby" ruby --version
+            reportVersion "Rust" rustc --version
+            reportVersion "Yarn" yarn --version
+          ) | column --table --separator="|"

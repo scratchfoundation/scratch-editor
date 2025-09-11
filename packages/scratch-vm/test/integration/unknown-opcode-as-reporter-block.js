@@ -43,9 +43,9 @@ test('unknown opcode', t => {
         const fourthBlockInputId = blocks.getBlock(fourthBlockId).inputs.SOUND_MENU.block;
 
         t.equal(secondBlockInputId, null);
-        t.true(blocks.getBlock(thirdBlockInputId).shadow);
+        t.ok(blocks.getBlock(thirdBlockInputId).shadow);
         t.equal(blocks.getBlock(thirdBlockInputId).opcode, 'math_number');
-        t.true(blocks.getBlock(fourthBlockInputId).shadow);
+        t.ok(blocks.getBlock(fourthBlockInputId).shadow);
         t.equal(blocks.getBlock(fourthBlockInputId).opcode, 'sound_sounds_menu');
 
         vm.quit();

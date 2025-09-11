@@ -47,23 +47,23 @@ test('offline-custom-assets', t => {
         vm.loadProject(project).then(() => {
 
             // Verify initial state
-            t.equals(vm.runtime.targets.length, 2);
+            t.equal(vm.runtime.targets.length, 2);
             const costumes = vm.runtime.targets[1].getCostumes();
-            t.equals(costumes.length, 1);
+            t.equal(costumes.length, 1);
             const customCostume = costumes[0];
-            t.equals(customCostume.name, 'A_Test_Costume');
+            t.equal(customCostume.name, 'A_Test_Costume');
 
             const storedCostume = customCostume.asset;
             t.type(storedCostume, 'object');
             t.same(storedCostume.data, sanitizeByteStream(costumeData));
 
             const sounds = vm.runtime.targets[1].sprite.sounds;
-            t.equals(sounds.length, 1);
+            t.equal(sounds.length, 1);
             const customSound = sounds[0];
-            t.equals(customSound.name, 'A_Test_Recording');
+            t.equal(customSound.name, 'A_Test_Recording');
             const storedSound = customSound.asset;
             t.type(storedSound, 'object');
-            t.deepEquals(storedSound.data, soundData);
+            t.same(storedSound.data, soundData);
 
             vm.greenFlag();
 

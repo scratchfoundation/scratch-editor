@@ -4,7 +4,7 @@ const Operators = require('../../src/blocks/scratch3_operators');
 const blocks = new Operators(null);
 
 test('divide: (1) / (0) = Infinity', t => {
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: '1', NUM2: '0'}), Infinity, '1 / 0 = Infinity'
     );
 
@@ -12,43 +12,43 @@ test('divide: (1) / (0) = Infinity', t => {
 });
 
 test('divide: division with Infinity', t => {
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: 'Infinity', NUM2: 111}), Infinity, '"Infinity" / 111 = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: 'INFINITY', NUM2: 222}), 0, '"INFINITY" / 222 = 0'
     );
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: Infinity, NUM2: 333}), Infinity, 'Infinity / 333 = Infinity'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: 111, NUM2: 'Infinity'}), 0, '111 / "Infinity" = 0'
     );
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: 222, NUM2: 'INFINITY'}), Infinity, '222 / "INFINITY" = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: 333, NUM2: Infinity}), 0, '333 / Infinity = 0'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: '-Infinity', NUM2: 111}), -Infinity, '"-Infinity" / 111 = -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: '-INFINITY', NUM2: 222}), 0, '"-INFINITY" / 222 = 0'
     );
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: -Infinity, NUM2: 333}), -Infinity, '-Infinity / 333 = -Infinity'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: 111, NUM2: '-Infinity'}), 0, '111 / "-Infinity" = 0'
     );
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: 222, NUM2: '-INFINITY'}), Infinity, '222 / "-INFINITY" = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.divide({NUM1: 333, NUM2: -Infinity}), 0, '333 / -Infinity = 0'
     );
 
@@ -56,28 +56,28 @@ test('divide: division with Infinity', t => {
 });
 
 test('multiply: multiply Infinity with numbers', t => {
-    t.strictEqual(
+    t.equal(
         blocks.multiply({NUM1: 'Infinity', NUM2: 111}), Infinity, '"Infinity" * 111 = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.multiply({NUM1: 'INFINITY', NUM2: 222}), 0, '"INFINITY" * 222 = 0'
     );
-    t.strictEqual(
+    t.equal(
         blocks.multiply({NUM1: Infinity, NUM2: 333}), Infinity, 'Infinity * 333 = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.multiply({NUM1: '-Infinity', NUM2: 111}), -Infinity, '"-Infinity" * 111 = -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.multiply({NUM1: '-INFINITY', NUM2: 222}), 0, '"-INFINITY" * 222 = 0'
     );
-    t.strictEqual(
+    t.equal(
         blocks.multiply({NUM1: -Infinity, NUM2: 333}), -Infinity, '-Infinity * 333 = -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.multiply({NUM1: -Infinity, NUM2: Infinity}), -Infinity, '-Infinity * Infinity = -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         Number.isNaN(blocks.multiply({NUM1: Infinity, NUM2: 0})), true, 'Infinity * 0 = NaN'
     );
 
@@ -86,25 +86,25 @@ test('multiply: multiply Infinity with numbers', t => {
 
 test('add: add Infinity to a number', t => {
 
-    t.strictEqual(
+    t.equal(
         blocks.add({NUM1: 'Infinity', NUM2: 111}), Infinity, '"Infinity" + 111 = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.add({NUM1: 'INFINITY', NUM2: 222}), 222, '"INFINITY" + 222 = 222'
     );
-    t.strictEqual(
+    t.equal(
         blocks.add({NUM1: Infinity, NUM2: 333}), Infinity, 'Infinity + 333 = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.add({NUM1: '-Infinity', NUM2: 111}), -Infinity, '"-Infinity" + 111 = -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.add({NUM1: '-INFINITY', NUM2: 222}), 222, '"-INFINITY" + 222 = 222'
     );
-    t.strictEqual(
+    t.equal(
         blocks.add({NUM1: -Infinity, NUM2: 333}), -Infinity, '-Infinity + 333 = -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         Number.isNaN(blocks.add({NUM1: -Infinity, NUM2: Infinity})), true, '-Infinity + Infinity = NaN'
     );
 
@@ -113,25 +113,25 @@ test('add: add Infinity to a number', t => {
 
 test('subtract: subtract Infinity with a number', t => {
 
-    t.strictEqual(
+    t.equal(
         blocks.subtract({NUM1: 'Infinity', NUM2: 111}), Infinity, '"Infinity" - 111 = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.subtract({NUM1: 'INFINITY', NUM2: 222}), -222, '"INFINITY" - 222 = -222'
     );
-    t.strictEqual(
+    t.equal(
         blocks.subtract({NUM1: Infinity, NUM2: 333}), Infinity, 'Infinity - 333 = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.subtract({NUM1: 111, NUM2: 'Infinity'}), -Infinity, '111 - "Infinity" = -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.subtract({NUM1: 222, NUM2: 'INFINITY'}), 222, '222 - "INFINITY" = 222'
     );
-    t.strictEqual(
+    t.equal(
         blocks.subtract({NUM1: 333, NUM2: Infinity}), -Infinity, '333 - Infinity = -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         Number.isNaN(blocks.subtract({NUM1: Infinity, NUM2: Infinity})), true, 'Infinity - Infinity = NaN'
     );
 
@@ -140,35 +140,35 @@ test('subtract: subtract Infinity with a number', t => {
 
 test('equals: compare string infinity and numeric Infinity', t => {
 
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: 'Infinity', OPERAND2: 'INFINITY'}), true, '"Infinity" = "INFINITY"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: 'INFINITY', OPERAND2: 'Infinity'}), true, '"INFINITY" = "Infinity"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: 'Infinity', OPERAND2: 'Infinity'}), true, '"Infinity" = "Infinity"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: 'INFINITY', OPERAND2: 'INFINITY'}), true, '"INFINITY" = "INFINITY"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: 'INFINITY', OPERAND2: 'infinity'}), true, '"INFINITY" = "infinity"'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: Infinity, OPERAND2: Infinity}), true, 'Infinity = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: 'Infinity', OPERAND2: Infinity}), true, '"Infinity" = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: 'INFINITY', OPERAND2: Infinity}), true, '"INFINITY" = Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: Infinity, OPERAND2: 'Infinity'}), true, 'Infinity = "Infinity"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: Infinity, OPERAND2: 'INFINITY'}), true, 'Infinity = "INFINITY'
     );
 
@@ -177,35 +177,35 @@ test('equals: compare string infinity and numeric Infinity', t => {
 
 test('equals: compare string negative infinity and numeric negative Infinity', t => {
 
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-Infinity', OPERAND2: '-INFINITY'}), true, '"-Infinity" = "-INFINITY"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-INFINITY', OPERAND2: '-Infinity'}), true, '"-INFINITY" = "-Infinity"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-Infinity', OPERAND2: '-Infinity'}), true, '"-Infinity" = "-Infinity"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-INFINITY', OPERAND2: '-INFINITY'}), true, '"-INFINITY" = "-INFINITY"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-INFINITY', OPERAND2: '-infinity'}), true, '"-INFINITY" = "-infinity"'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: -Infinity, OPERAND2: -Infinity}), true, '-Infinity = -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-Infinity', OPERAND2: -Infinity}), true, '"-Infinity" = -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-INFINITY', OPERAND2: -Infinity}), true, '"-INFINITY" = -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: -Infinity, OPERAND2: '-Infinity'}), true, '-Infinity = "-Infinity"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: -Infinity, OPERAND2: '-INFINITY'}), true, '-Infinity = "-INFINITY'
     );
 
@@ -214,33 +214,33 @@ test('equals: compare string negative infinity and numeric negative Infinity', t
 
 
 test('equals: compare negative to postive string and numeric Infinity', t => {
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-Infinity', OPERAND2: 'Infinity'}), false, '"-Infinity" != "Infinity"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-Infinity', OPERAND2: 'INFINITY'}), false, '"-infinity" != "INFINITY"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-INFINITY', OPERAND2: 'Infinity'}), false, '"-INFINITY" != "Infinity"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-INFINITY', OPERAND2: 'INFINITY'}), false, '"-INFINITY" != "INFINITY"'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-Infinity', OPERAND2: Infinity}), false, '"-Infinity" != Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: '-INFINITY', OPERAND2: Infinity}), false, '"-INFINITY" != Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: 'Infinity', OPERAND2: -Infinity}), false, '"Infinity" != -Infinity'
     );
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: 'INFINITY', OPERAND2: -Infinity}), false, '"INFINITY" != -Infinity'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.equals({OPERAND1: Infinity, OPERAND2: -Infinity}), false, 'Infinity != -Infinity'
     );
 
@@ -249,38 +249,38 @@ test('equals: compare negative to postive string and numeric Infinity', t => {
 
 test('less than: compare string infinity and numeric Infinity', t => {
 
-    t.strictEqual(
+    t.equal(
         blocks.lt({OPERAND1: 'Infinity', OPERAND2: 'INFINITY'}), false, '"Infinity" !< "INFINITY"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.lt({OPERAND1: 'INFINITY', OPERAND2: Infinity}), false, '"INFINITY" !< "Infinity"'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.lt({OPERAND1: '-INFINITY', OPERAND2: 'INFINITY'}), true, '"-Infinity" < "INFINITY"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.lt({OPERAND1: -Infinity, OPERAND2: 'INFINITY'}), true, '-Infinity < "INFINITY"'
     );
 
 
-    t.strictEqual(
+    t.equal(
         blocks.lt({OPERAND1: 'Infinity', OPERAND2: 111}), false, '"Infinity" !< 111'
     );
-    t.strictEqual(
+    t.equal(
         blocks.lt({OPERAND1: 'INFINITY', OPERAND2: 222}), false, '"INFINITY" !< 222'
     );
-    t.strictEqual(
+    t.equal(
         blocks.lt({OPERAND1: Infinity, OPERAND2: 333}), false, 'Infinity !< 333'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.lt({OPERAND1: 111, OPERAND2: 'Infinity'}), true, '111 < "Infinity"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.lt({OPERAND1: 222, OPERAND2: 'INFINITY'}), true, '222 < "INFINITY"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.lt({OPERAND1: 333, OPERAND2: Infinity}), true, '333 < Infinity'
     );
 
@@ -289,37 +289,37 @@ test('less than: compare string infinity and numeric Infinity', t => {
 
 test('more than: compare string infinity and numeric Infinity', t => {
 
-    t.strictEqual(
+    t.equal(
         blocks.gt({OPERAND1: 'Infinity', OPERAND2: 'INFINITY'}), false, '"Infinity" !> "INFINITY"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.gt({OPERAND1: 'INFINITY', OPERAND2: Infinity}), false, '"INFINITY" !> "Infinity"'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.gt({OPERAND1: 'INFINITY', OPERAND2: '-INFINITY'}), true, '"Infinity" < "-INFINITY"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.gt({OPERAND1: Infinity, OPERAND2: '-INFINITY'}), true, 'Infinity < "-INFINITY"'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.gt({OPERAND1: 'Infinity', OPERAND2: 111}), true, '"Infinity" > 111'
     );
-    t.strictEqual(
+    t.equal(
         blocks.gt({OPERAND1: 'INFINITY', OPERAND2: 222}), true, '"INFINITY" > 222'
     );
-    t.strictEqual(
+    t.equal(
         blocks.gt({OPERAND1: Infinity, OPERAND2: 333}), true, 'Infinity > 333'
     );
 
-    t.strictEqual(
+    t.equal(
         blocks.gt({OPERAND1: 111, OPERAND2: 'Infinity'}), false, '111 !> "Infinity"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.gt({OPERAND1: 222, OPERAND2: 'INFINITY'}), false, '222 !> "INFINITY"'
     );
-    t.strictEqual(
+    t.equal(
         blocks.gt({OPERAND1: 333, OPERAND2: Infinity}), false, '333 !> Infinity'
     );
 

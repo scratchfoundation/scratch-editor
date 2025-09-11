@@ -25,7 +25,7 @@ test('pen', t => {
 
         const catSprite = vm.runtime.targets[1].sprite;
         const [originalCat, cloneCat] = catSprite.clones;
-        t.notStrictEqual(originalCat, cloneCat);
+        t.not(originalCat, cloneCat);
 
         /** @type {PenState} */
         const originalPenState = originalCat.getCustomState(Scratch3PenBlocks.STATE_KEY);
@@ -33,7 +33,7 @@ test('pen', t => {
         /** @type {PenState} */
         const clonePenState = cloneCat.getCustomState(Scratch3PenBlocks.STATE_KEY);
 
-        t.notStrictEqual(originalPenState, clonePenState);
+        t.not(originalPenState, clonePenState);
         t.equal(originalPenState.penAttributes.diameter, 51);
         t.equal(clonePenState.penAttributes.diameter, 42);
 

@@ -18,7 +18,7 @@ test('complex', t => {
 
         const resultKey = Object.keys(vm.runtime.targets[0].variables)[0];
         const results = vm.runtime.targets[0].variables[resultKey].value;
-        t.deepEqual(results, ['3', '2', '1', 'stage']);
+        t.same(results, ['3', '2', '1', 'stage']);
 
         vm.quit();
         t.end();

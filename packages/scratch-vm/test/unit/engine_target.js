@@ -64,7 +64,7 @@ test('createListVariable creates a list', t => {
     t.equal(variable.id, 'foo');
     t.equal(variable.name, 'bar');
     t.equal(variable.type, Variable.LIST_TYPE);
-    t.assert(variable.value instanceof Array, true);
+    t.ok(variable.value instanceof Array, true);
     t.equal(variable.value.length, 0);
     t.equal(variable.isCloud, false);
 
@@ -309,7 +309,7 @@ test('duplicateVariable creates a new variable with a new ID by default', t => {
     // Duplicating a variable should not add the variable to the current target
     t.equal(Object.keys(target.variables).length, 1);
     // Duplicate variable should have a different ID from the original unless specified to keep the original ID.
-    t.notEqual(newVariable.id, 'a var ID');
+    t.not(newVariable.id, 'a var ID');
     t.type(target.variables[newVariable.id], 'undefined');
 
     // Duplicate variable should start out with the same value as the original variable
@@ -317,7 +317,7 @@ test('duplicateVariable creates a new variable with a new ID by default', t => {
 
     // Modifying one variable should not modify the other
     newVariable.value = 15;
-    t.notEqual(newVariable.value, originalVariable.value);
+    t.not(newVariable.value, originalVariable.value);
     t.equal(originalVariable.value, 10);
 
     t.end();
@@ -331,8 +331,8 @@ test('duplicateVariable creates new array reference for list variable.value', t 
     originalVariable.value = arr;
     const newVariable = target.duplicateVariable('a var ID');
     // Values are deeply equal but not the same object
-    t.deepEqual(originalVariable.value, newVariable.value);
-    t.notEqual(originalVariable.value, newVariable.value);
+    t.same(originalVariable.value, newVariable.value);
+    t.not(originalVariable.value, newVariable.value);
     t.end();
 });
 
@@ -353,7 +353,7 @@ test('duplicateVariable creates a new variable with a original ID if specified',
 
     // Modifying one variable should not modify the other
     newVariable.value = 15;
-    t.notEqual(newVariable.value, originalVariable.value);
+    t.not(newVariable.value, originalVariable.value);
     t.equal(originalVariable.value, 10);
     // The target should still have the original variable with the original value
     t.equal(target.variables['a var ID'].value, 10);
@@ -376,7 +376,7 @@ test('duplicateVariable returns null if variable with specified ID does not exis
     t.equal(Object.keys(target.variables).length, 1);
     t.type(target.variables['another var ID'], 'undefined');
     t.type(target.variables['var id'], 'object');
-    t.notEqual(target.variables['var id'], null);
+    t.not(target.variables['var id'], null);
 
     t.end();
 });
@@ -428,7 +428,7 @@ test('duplicateVariables duplicates all variables', t => {
     t.equal(Object.keys(target.variables).length, 1);
     t.equal(Object.keys(duplicateVariables).length, 2);
     t.type(duplicateVariables['var ID 1'], 'object');
-    t.notEqual(duplicateVariables['var ID 1'], null);
+    t.not(duplicateVariables['var ID 1'], null);
 
     t.end();
 });
@@ -468,8 +468,8 @@ test('duplicateVariables re-IDs variables when a block container is provided', t
     const dupes = Object.values(duplicateVariables);
     const dupeVarNames = dupes.map(v => v.name);
 
-    t.notEqual(dupeVarNames.indexOf('a mock variable'), -1);
-    t.notEqual(dupeVarNames.indexOf('var2'), -1);
+    t.not(dupeVarNames.indexOf('a mock variable'), -1);
+    t.not(dupeVarNames.indexOf('var2'), -1);
 
     // Duplicating variables should not change blocks on current target
     t.type(target.blocks.getBlock('a block'), 'object');
@@ -559,7 +559,7 @@ test('createComment adds a comment to the target', t => {
     t.equal(Object.keys(comments).length, 1);
 
     const comment = comments['a comment'];
-    t.notEqual(comment, null);
+    t.not(comment, null);
     t.equal(comment.blockId, null);
     t.equal(comment.text, 'some comment text');
     t.equal(comment.x, 10);
@@ -584,7 +584,7 @@ test('creating comment with id that already exists does not change existing comm
         'some new comment text', 40, 50, 300, 400, false);
 
     const comment = comments['a comment'];
-    t.notEqual(comment, null);
+    t.not(comment, null);
     // All of the comment properties should remain unchanged from the first
     // time createComment was called
     t.equal(comment.blockId, null);

@@ -13,13 +13,13 @@ test('spec', t => {
 test('getUsername returns empty string initially', t => {
     const userData = new UserData();
 
-    t.strictEquals(userData.getUsername(), '');
+    t.equal(userData.getUsername(), '');
     t.end();
 });
 
 test('postData sets the username', t => {
     const userData = new UserData();
     userData.postData({username: 'TEST'});
-    t.strictEquals(userData.getUsername(), 'TEST');
+    t.equal(userData.getUsername(), 'TEST');
     t.end();
 });

@@ -27,8 +27,8 @@ test('repeat', t => {
 
     // Execute test
     c.repeat({TIMES: 10}, util);
-    t.strictEqual(util.stackFrame.loopCounter, -1);
-    t.strictEqual(i, repeat);
+    t.equal(util.stackFrame.loopCounter, -1);
+    t.equal(i, repeat);
     t.end();
 });
 
@@ -49,7 +49,7 @@ test('repeat rounds with round()', t => {
 
         // Execute test
         c.repeat({TIMES: inputForRepeat}, util);
-        t.strictEqual(i, expectedTimes);
+        t.equal(i, expectedTimes);
     };
 
     // Execute tests
@@ -76,7 +76,7 @@ test('repeatUntil', t => {
 
     // Execute test
     c.repeatUntil({CONDITION: (i === repeat)}, util);
-    t.strictEqual(i, repeat);
+    t.equal(i, repeat);
     t.end();
 });
 
@@ -98,7 +98,7 @@ test('repeatWhile', t => {
 
     // Execute test
     c.repeatWhile({CONDITION: (i !== repeat)}, util);
-    t.strictEqual(i, repeat);
+    t.equal(i, repeat);
     t.end();
 });
 
@@ -129,7 +129,7 @@ test('forEach', t => {
     variable.value = 0;
     value = '5';
     c.forEach({VARIABLE: {}, VALUE: value}, util);
-    t.deepEqual(variableValues, [1, 2, 3, 4, 5]);
+    t.same(variableValues, [1, 2, 3, 4, 5]);
 
     // for each (variable) in 4
     // ..should yield variable values 1, 2, 3, 4
@@ -138,7 +138,7 @@ test('forEach', t => {
     variable.value = 0;
     value = 4;
     c.forEach({VARIABLE: {}, VALUE: value}, util);
-    t.deepEqual(variableValues, [1, 2, 3, 4]);
+    t.same(variableValues, [1, 2, 3, 4]);
 
     t.end();
 });
@@ -152,14 +152,14 @@ test('forever', t => {
     const util = {
         startBranch: function (branchNum, isLoop) {
             i++;
-            t.strictEqual(branchNum, 1);
-            t.strictEqual(isLoop, true);
+            t.equal(branchNum, 1);
+            t.equal(isLoop, true);
         }
     };
 
     // Execute test
     c.forever(null, util);
-    t.strictEqual(i, 1);
+    t.equal(i, 1);
     t.end();
 });
 
@@ -177,13 +177,13 @@ test('if / ifElse', t => {
 
     // Execute test
     c.if({CONDITION: true}, util);
-    t.strictEqual(i, 1);
+    t.equal(i, 1);
     c.if({CONDITION: false}, util);
-    t.strictEqual(i, 1);
+    t.equal(i, 1);
     c.ifElse({CONDITION: true}, util);
-    t.strictEqual(i, 2);
+    t.equal(i, 2);
     c.ifElse({CONDITION: false}, util);
-    t.strictEqual(i, 4);
+    t.equal(i, 4);
     t.end();
 });
 
@@ -214,9 +214,9 @@ test('stop', t => {
     c.stop({STOP_OPTION: 'other scripts in sprite'}, util);
     c.stop({STOP_OPTION: 'other scripts in stage'}, util);
     c.stop({STOP_OPTION: 'this script'}, util);
-    t.strictEqual(state.stopAll, 1);
-    t.strictEqual(state.stopOtherTargetThreads, 2);
-    t.strictEqual(state.stopThisScript, 1);
+    t.equal(state.stopAll, 1);
+    t.equal(state.stopOtherTargetThreads, 2);
+    t.equal(state.stopThisScript, 1);
     t.end();
 });
 
@@ -225,14 +225,14 @@ test('counter, incrCounter, clearCounter', t => {
     const c = new Control(rt);
 
     // Default value
-    t.strictEqual(c.getCounter(), 0);
+    t.equal(c.getCounter(), 0);
 
     c.incrCounter();
     c.incrCounter();
-    t.strictEqual(c.getCounter(), 2);
+    t.equal(c.getCounter(), 2);
 
     c.clearCounter();
-    t.strictEqual(c.getCounter(), 0);
+    t.equal(c.getCounter(), 0);
 
     t.end();
 });
@@ -251,7 +251,7 @@ test('allAtOnce', t => {
 
     // Execute test
     c.allAtOnce({}, util);
-    t.true(ran);
+    t.ok(ran);
     t.end();
 });
 

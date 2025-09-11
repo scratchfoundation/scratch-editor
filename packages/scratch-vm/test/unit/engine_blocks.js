@@ -53,7 +53,7 @@ test('getScripts', t => {
     const b = new Blocks(new Runtime());
     let scripts = b.getScripts();
     t.type(scripts, 'object');
-    t.equals(scripts.length, 0);
+    t.equal(scripts.length, 0);
     // Create two top-level blocks and one not.
     b.createBlock({
         id: 'foo',
@@ -82,10 +82,10 @@ test('getScripts', t => {
 
     scripts = b.getScripts();
     t.type(scripts, 'object');
-    t.equals(scripts.length, 2);
+    t.equal(scripts.length, 2);
     t.ok(scripts.indexOf('foo') > -1);
     t.ok(scripts.indexOf('foo2') > -1);
-    t.equals(scripts.indexOf('foo3'), -1);
+    t.equal(scripts.indexOf('foo3'), -1);
     t.end();
 
 });
@@ -102,7 +102,7 @@ test('getNextBlock', t => {
     });
 
     let next = b.getNextBlock('foo');
-    t.equals(next, null);
+    t.equal(next, null);
 
     // Add a block with "foo" as its next.
     b.createBlock({
@@ -115,11 +115,11 @@ test('getNextBlock', t => {
     });
 
     next = b.getNextBlock('foo2');
-    t.equals(next, 'foo');
+    t.equal(next, 'foo');
 
     // Block that doesn't exist.
     const noBlock = b.getNextBlock('?');
-    t.equals(noBlock, null);
+    t.equal(noBlock, null);
 
     t.end();
 });
@@ -151,10 +151,10 @@ test('getBranch', t => {
     });
 
     const branch = b.getBranch('foo');
-    t.equals(branch, 'foo2');
+    t.equal(branch, 'foo2');
 
     const notBranch = b.getBranch('?');
-    t.equals(notBranch, null);
+    t.equal(notBranch, null);
 
     t.end();
 });
@@ -200,8 +200,8 @@ test('getBranch2', t => {
 
     const branch1 = b.getBranch('foo', 1);
     const branch2 = b.getBranch('foo', 2);
-    t.equals(branch1, 'foo2');
-    t.equals(branch2, 'foo3');
+    t.equal(branch1, 'foo2');
+    t.equal(branch2, 'foo3');
 
     t.end();
 });
@@ -217,7 +217,7 @@ test('getBranch with none', t => {
         topLevel: true
     });
     const noBranch = b.getBranch('foo');
-    t.equals(noBranch, null);
+    t.equal(noBranch, null);
     t.end();
 });
 
@@ -233,10 +233,10 @@ test('getOpcode', t => {
     };
     b.createBlock(block);
     const opcode = b.getOpcode(block);
-    t.equals(opcode, 'TEST_BLOCK');
+    t.equal(opcode, 'TEST_BLOCK');
     const undefinedBlock = b.getBlock('?');
     const undefinedOpcode = b.getOpcode(undefinedBlock);
-    t.equals(undefinedOpcode, null);
+    t.equal(undefinedOpcode, null);
     t.end();
 });
 
@@ -252,7 +252,7 @@ test('mutationToXML', t => {
         }
     };
     const xml = b.mutationToXML(mutation);
-    t.equals(
+    t.equal(
         xml,
         `<mutation blockInfo="{&quot;text&quot;:&quot;${testStringEscaped}&quot;}"></mutation>`
     );
@@ -273,7 +273,7 @@ test('create', t => {
 
     t.type(b._blocks.foo, 'object');
     t.equal(b._blocks.foo.opcode, 'TEST_BLOCK');
-    t.notEqual(b._scripts.indexOf('foo'), -1);
+    t.not(b._scripts.indexOf('foo'), -1);
     t.end();
 });
 
@@ -611,9 +611,9 @@ test('updateAssetName function updates name in sound field', t => {
             }
         }
     });
-    t.equals(b.getBlock('foo').fields.SOUND_MENU.value, 'name1');
+    t.equal(b.getBlock('foo').fields.SOUND_MENU.value, 'name1');
     b.updateAssetName('name1', 'name2', 'sound');
-    t.equals(b.getBlock('foo').fields.SOUND_MENU.value, 'name2');
+    t.equal(b.getBlock('foo').fields.SOUND_MENU.value, 'name2');
     t.end();
 });
 
@@ -628,9 +628,9 @@ test('updateAssetName function updates name in costume field', t => {
             }
         }
     });
-    t.equals(b.getBlock('foo').fields.COSTUME.value, 'name1');
+    t.equal(b.getBlock('foo').fields.COSTUME.value, 'name1');
     b.updateAssetName('name1', 'name2', 'costume');
-    t.equals(b.getBlock('foo').fields.COSTUME.value, 'name2');
+    t.equal(b.getBlock('foo').fields.COSTUME.value, 'name2');
     t.end();
 });
 
@@ -645,9 +645,9 @@ test('updateAssetName function updates name in backdrop field', t => {
             }
         }
     });
-    t.equals(b.getBlock('foo').fields.BACKDROP.value, 'name1');
+    t.equal(b.getBlock('foo').fields.BACKDROP.value, 'name1');
     b.updateAssetName('name1', 'name2', 'backdrop');
-    t.equals(b.getBlock('foo').fields.BACKDROP.value, 'name2');
+    t.equal(b.getBlock('foo').fields.BACKDROP.value, 'name2');
     t.end();
 });
 
@@ -716,21 +716,21 @@ test('updateAssetName function updates name in all sprite fields', t => {
             }
         }
     });
-    t.equals(b.getBlock('id1').fields.TOWARDS.value, 'name1');
-    t.equals(b.getBlock('id2').fields.TO.value, 'name1');
-    t.equals(b.getBlock('id3').fields.OBJECT.value, 'name1');
-    t.equals(b.getBlock('id4').fields.VIDEOONMENU2.value, 'name1');
-    t.equals(b.getBlock('id5').fields.DISTANCETOMENU.value, 'name1');
-    t.equals(b.getBlock('id6').fields.TOUCHINGOBJECTMENU.value, 'name1');
-    t.equals(b.getBlock('id7').fields.CLONE_OPTION.value, 'name1');
+    t.equal(b.getBlock('id1').fields.TOWARDS.value, 'name1');
+    t.equal(b.getBlock('id2').fields.TO.value, 'name1');
+    t.equal(b.getBlock('id3').fields.OBJECT.value, 'name1');
+    t.equal(b.getBlock('id4').fields.VIDEOONMENU2.value, 'name1');
+    t.equal(b.getBlock('id5').fields.DISTANCETOMENU.value, 'name1');
+    t.equal(b.getBlock('id6').fields.TOUCHINGOBJECTMENU.value, 'name1');
+    t.equal(b.getBlock('id7').fields.CLONE_OPTION.value, 'name1');
     b.updateAssetName('name1', 'name2', 'sprite');
-    t.equals(b.getBlock('id1').fields.TOWARDS.value, 'name2');
-    t.equals(b.getBlock('id2').fields.TO.value, 'name2');
-    t.equals(b.getBlock('id3').fields.OBJECT.value, 'name2');
-    t.equals(b.getBlock('id4').fields.VIDEOONMENU2.value, 'name2');
-    t.equals(b.getBlock('id5').fields.DISTANCETOMENU.value, 'name2');
-    t.equals(b.getBlock('id6').fields.TOUCHINGOBJECTMENU.value, 'name2');
-    t.equals(b.getBlock('id7').fields.CLONE_OPTION.value, 'name2');
+    t.equal(b.getBlock('id1').fields.TOWARDS.value, 'name2');
+    t.equal(b.getBlock('id2').fields.TO.value, 'name2');
+    t.equal(b.getBlock('id3').fields.OBJECT.value, 'name2');
+    t.equal(b.getBlock('id4').fields.VIDEOONMENU2.value, 'name2');
+    t.equal(b.getBlock('id5').fields.DISTANCETOMENU.value, 'name2');
+    t.equal(b.getBlock('id6').fields.TOUCHINGOBJECTMENU.value, 'name2');
+    t.equal(b.getBlock('id7').fields.CLONE_OPTION.value, 'name2');
     t.end();
 });
 
@@ -754,12 +754,12 @@ test('updateAssetName function updates name according to asset type', t => {
             }
         }
     });
-    t.equals(b.getBlock('id1').fields.SOUND_MENU.value, 'name1');
-    t.equals(b.getBlock('id2').fields.COSTUME.value, 'name1');
+    t.equal(b.getBlock('id1').fields.SOUND_MENU.value, 'name1');
+    t.equal(b.getBlock('id2').fields.COSTUME.value, 'name1');
     b.updateAssetName('name1', 'name2', 'sound');
     // only sound should get renamed
-    t.equals(b.getBlock('id1').fields.SOUND_MENU.value, 'name2');
-    t.equals(b.getBlock('id2').fields.COSTUME.value, 'name1');
+    t.equal(b.getBlock('id1').fields.SOUND_MENU.value, 'name2');
+    t.equal(b.getBlock('id2').fields.COSTUME.value, 'name1');
     t.end();
 });
 
@@ -783,11 +783,11 @@ test('updateAssetName only updates given name', t => {
             }
         }
     });
-    t.equals(b.getBlock('id1').fields.COSTUME.value, 'name1');
-    t.equals(b.getBlock('id2').fields.COSTUME.value, 'foo');
+    t.equal(b.getBlock('id1').fields.COSTUME.value, 'name1');
+    t.equal(b.getBlock('id2').fields.COSTUME.value, 'foo');
     b.updateAssetName('name1', 'name2', 'costume');
-    t.equals(b.getBlock('id1').fields.COSTUME.value, 'name2');
-    t.equals(b.getBlock('id2').fields.COSTUME.value, 'foo');
+    t.equal(b.getBlock('id1').fields.COSTUME.value, 'name2');
+    t.equal(b.getBlock('id2').fields.COSTUME.value, 'foo');
     t.end();
 });
 
@@ -802,9 +802,9 @@ test('updateAssetName doesn\'t update name if name isn\'t being used', t => {
             }
         }
     });
-    t.equals(b.getBlock('id1').fields.BACKDROP.value, 'foo');
+    t.equal(b.getBlock('id1').fields.BACKDROP.value, 'foo');
     b.updateAssetName('name1', 'name2', 'backdrop');
-    t.equals(b.getBlock('id1').fields.BACKDROP.value, 'foo');
+    t.equal(b.getBlock('id1').fields.BACKDROP.value, 'foo');
     t.end();
 });
 
@@ -836,9 +836,9 @@ test('updateSensingOfReference renames variables in sensing_of block', t => {
             }
         }
     });
-    t.equals(b.getBlock('id1').fields.PROPERTY.value, 'foo');
+    t.equal(b.getBlock('id1').fields.PROPERTY.value, 'foo');
     b.updateSensingOfReference('foo', 'bar', '_stage_');
-    t.equals(b.getBlock('id1').fields.PROPERTY.value, 'bar');
+    t.equal(b.getBlock('id1').fields.PROPERTY.value, 'bar');
     t.end();
 });
 
@@ -874,9 +874,9 @@ test('updateSensingOfReference doesn\'t rename if block is inserted', t => {
         id: 'id3',
         opcode: 'answer'
     });
-    t.equals(b.getBlock('id1').fields.PROPERTY.value, 'foo');
+    t.equal(b.getBlock('id1').fields.PROPERTY.value, 'foo');
     b.updateSensingOfReference('foo', 'bar', '_stage_');
-    t.equals(b.getBlock('id1').fields.PROPERTY.value, 'foo');
+    t.equal(b.getBlock('id1').fields.PROPERTY.value, 'foo');
     t.end();
 });
 
@@ -908,9 +908,9 @@ test('updateSensingOfReference doesn\'t rename if name is not being used', t => 
             }
         }
     });
-    t.equals(b.getBlock('id1').fields.PROPERTY.value, 'foo');
+    t.equal(b.getBlock('id1').fields.PROPERTY.value, 'foo');
     b.updateSensingOfReference('meow', 'meow2', '_stage_');
-    t.equals(b.getBlock('id1').fields.PROPERTY.value, 'foo');
+    t.equal(b.getBlock('id1').fields.PROPERTY.value, 'foo');
     t.end();
 });
 
@@ -942,9 +942,9 @@ test('updateSensingOfReference doesn\'t rename other targets\' variables', t => 
             }
         }
     });
-    t.equals(b.getBlock('id1').fields.PROPERTY.value, 'foo');
+    t.equal(b.getBlock('id1').fields.PROPERTY.value, 'foo');
     b.updateSensingOfReference('foo', 'bar', 'Cat');
-    t.equals(b.getBlock('id1').fields.PROPERTY.value, 'foo');
+    t.equal(b.getBlock('id1').fields.PROPERTY.value, 'foo');
     t.end();
 });
 
@@ -961,19 +961,19 @@ test('updateTargetSpecificBlocks changes sprite clicked hat to stage clicked for
 
     // originallySpriteClicked does not update when on a non-stage target
     b.updateTargetSpecificBlocks(false /* isStage */);
-    t.equals(b.getBlock('originallySpriteClicked').opcode, 'event_whenthisspriteclicked');
+    t.equal(b.getBlock('originallySpriteClicked').opcode, 'event_whenthisspriteclicked');
 
     // originallySpriteClicked does update when on a stage target
     b.updateTargetSpecificBlocks(true /* isStage */);
-    t.equals(b.getBlock('originallySpriteClicked').opcode, 'event_whenstageclicked');
+    t.equal(b.getBlock('originallySpriteClicked').opcode, 'event_whenstageclicked');
 
     // originallyStageClicked does not update when on a stage target
     b.updateTargetSpecificBlocks(true /* isStage */);
-    t.equals(b.getBlock('originallyStageClicked').opcode, 'event_whenstageclicked');
+    t.equal(b.getBlock('originallyStageClicked').opcode, 'event_whenstageclicked');
 
     // originallyStageClicked does update when on a non-stage target
     b.updateTargetSpecificBlocks(false/* isStage */);
-    t.equals(b.getBlock('originallyStageClicked').opcode, 'event_whenthisspriteclicked');
+    t.equal(b.getBlock('originallyStageClicked').opcode, 'event_whenthisspriteclicked');
 
     t.end();
 });

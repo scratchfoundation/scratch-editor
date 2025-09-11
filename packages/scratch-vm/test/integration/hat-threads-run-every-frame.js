@@ -15,7 +15,7 @@ const checkIsHatThread = (t, vm, hatThread) => {
     t.equal(hatThread.updateMonitor, false);
     const blockContainer = hatThread.target.blocks;
     const opcode = blockContainer.getOpcode(blockContainer.getBlock(hatThread.topBlock));
-    t.assert(vm.runtime.getIsEdgeActivatedHat(opcode));
+    t.ok(vm.runtime.getIsEdgeActivatedHat(opcode));
 };
 
 const checkIsStackClickThread = (t, vm, stackClickThread) => {
@@ -50,7 +50,7 @@ test('edge activated hat thread runs once every frame', t => {
             t.equal(vm.runtime.threads.length, 0);
             t.equal(threads.length, 1);
             checkIsHatThread(t, vm, threads[0]);
-            t.assert(threads[0].status === Thread.STATUS_DONE);
+            t.ok(threads[0].status === Thread.STATUS_DONE);
 
             // Check that the hat thread is added again when another step is taken
             vm.runtime._step();
@@ -58,7 +58,7 @@ test('edge activated hat thread runs once every frame', t => {
             t.equal(vm.runtime.threads.length, 0);
             t.equal(threads.length, 1);
             checkIsHatThread(t, vm, threads[0]);
-            t.assert(threads[0].status === Thread.STATUS_DONE);
+            t.ok(threads[0].status === Thread.STATUS_DONE);
             t.end();
         });
     });
@@ -88,7 +88,7 @@ test('edge activated hat thread runs after being added to previously executed ta
             t.equal(vm.runtime.threads.length, 0);
             t.equal(threads.length, 1);
             checkIsHatThread(t, vm, threads[0]);
-            t.assert(threads[0].status === Thread.STATUS_DONE);
+            t.ok(threads[0].status === Thread.STATUS_DONE);
 
             // Add a second hat that should create a second thread
             const hatBlock = threads[0].target.blocks.getBlock(threads[0].topBlock);
@@ -103,8 +103,8 @@ test('edge activated hat thread runs after being added to previously executed ta
             t.equal(threads.length, 2);
             checkIsHatThread(t, vm, threads[0]);
             checkIsHatThread(t, vm, threads[1]);
-            t.assert(threads[0].status === Thread.STATUS_DONE);
-            t.assert(threads[1].status === Thread.STATUS_DONE);
+            t.ok(threads[0].status === Thread.STATUS_DONE);
+            t.ok(threads[1].status === Thread.STATUS_DONE);
             t.end();
         });
     });
@@ -135,7 +135,7 @@ test('edge activated hat thread not added twice', t => {
             t.equal(doneThreads.length, 0);
             const prevThread = vm.runtime.threads[0];
             checkIsHatThread(t, vm, vm.runtime.threads[0]);
-            t.assert(vm.runtime.threads[0].status === Thread.STATUS_RUNNING);
+            t.ok(vm.runtime.threads[0].status === Thread.STATUS_RUNNING);
 
             // Check that no new threads are added when another step is taken
             vm.runtime._step();
@@ -144,7 +144,7 @@ test('edge activated hat thread not added twice', t => {
             t.equal(vm.runtime.threads.length, 1);
             t.equal(doneThreads.length, 0);
             checkIsHatThread(t, vm, vm.runtime.threads[0]);
-            t.assert(vm.runtime.threads[0] === prevThread);
+            t.ok(vm.runtime.threads[0] === prevThread);
             t.end();
         });
     });
@@ -179,7 +179,7 @@ test('edge activated hat should trigger for both sprites when sprite is duplicat
             vm.runtime._step();
             t.equal(vm.runtime.threads.length, 1);
             checkIsHatThread(t, vm, vm.runtime.threads[0]);
-            t.assert(vm.runtime.threads[0].status === Thread.STATUS_RUNNING);
+            t.ok(vm.runtime.threads[0].status === Thread.STATUS_RUNNING);
             let numTargetEdgeHats = vm.runtime.targets.reduce((val, target) =>
                 val + Object.keys(target._edgeActivatedHatValues).length, 0);
             t.equal(numTargetEdgeHats, 1);
@@ -226,7 +226,7 @@ test('edge activated hat should trigger for both sprites when sprite is cloned',
             vm.runtime._step();
             t.equal(vm.runtime.threads.length, 1);
             checkIsHatThread(t, vm, vm.runtime.threads[0]);
-            t.assert(vm.runtime.threads[0].status === Thread.STATUS_RUNNING);
+            t.ok(vm.runtime.threads[0].status === Thread.STATUS_RUNNING);
             // Run execute on the thread to populate the runtime's
             // _edgeActivatedHatValues object
             execute(vm.runtime.sequencer, vm.runtime.threads[0]);
@@ -273,7 +273,7 @@ test('edge activated hat thread does not interrupt stack click thread', t => {
             t.equal(vm.runtime.threads.length, 0);
             t.equal(doneThreads.length, 1);
             checkIsHatThread(t, vm, doneThreads[0]);
-            t.assert(doneThreads[0].status === Thread.STATUS_DONE);
+            t.ok(doneThreads[0].status === Thread.STATUS_DONE);
 
             // Add stack click thread on this hat
             vm.runtime.toggleScript(doneThreads[0].topBlock, {stackClick: true});
@@ -294,8 +294,8 @@ test('edge activated hat thread does not interrupt stack click thread', t => {
             }
             checkIsHatThread(t, vm, hatThread);
             checkIsStackClickThread(t, vm, stackClickThread);
-            t.assert(doneThreads[0].status === Thread.STATUS_DONE);
-            t.assert(doneThreads[1].status === Thread.STATUS_DONE);
+            t.ok(doneThreads[0].status === Thread.STATUS_DONE);
+            t.ok(doneThreads[1].status === Thread.STATUS_DONE);
             t.end();
         });
     });
@@ -325,7 +325,7 @@ test('edge activated hat thread does not interrupt stack click thread', t => {
             t.equal(vm.runtime.threads.length, 1);
             t.equal(doneThreads.length, 0);
             checkIsHatThread(t, vm, vm.runtime.threads[0]);
-            t.assert(vm.runtime.threads[0].status === Thread.STATUS_RUNNING);
+            t.ok(vm.runtime.threads[0].status === Thread.STATUS_RUNNING);
 
             vm.runtime.currentStepTime = Runtime.THREAD_STEP_INTERVAL;
 
@@ -348,8 +348,8 @@ test('edge activated hat thread does not interrupt stack click thread', t => {
             }
             checkIsHatThread(t, vm, hatThread);
             checkIsStackClickThread(t, vm, stackClickThread);
-            t.assert(doneThreads[0].status === Thread.STATUS_DONE);
-            t.assert(doneThreads[1].status === Thread.STATUS_DONE);
+            t.ok(doneThreads[0].status === Thread.STATUS_DONE);
+            t.ok(doneThreads[1].status === Thread.STATUS_DONE);
             t.end();
         });
     });

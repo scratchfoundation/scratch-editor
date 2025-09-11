@@ -19,19 +19,19 @@ test('clone-cleanup', t => {
 
     const verifyCounts = (expectedClones, extraThreads) => {
         // stage plus one sprite, plus clones
-        t.strictEqual(vm.runtime.targets.length, 2 + expectedClones,
+        t.equal(vm.runtime.targets.length, 2 + expectedClones,
             `target count at step ${testStep}`);
 
         // the stage should never have any clones
-        t.strictEqual(vm.runtime.targets[0].sprite.clones.length, 1,
+        t.equal(vm.runtime.targets[0].sprite.clones.length, 1,
             `stage clone count at step ${testStep}`);
 
         // check sprite clone count (+1 for original)
-        t.strictEqual(vm.runtime.targets[1].sprite.clones.length, 1 + expectedClones,
+        t.equal(vm.runtime.targets[1].sprite.clones.length, 1 + expectedClones,
             `sprite clone count at step ${testStep}`);
 
         // thread count isn't directly tied to clone count since threads can end
-        t.strictEqual(vm.runtime.threads.length, extraThreads + (2 * expectedClones),
+        t.equal(vm.runtime.threads.length, extraThreads + (2 * expectedClones),
             `thread count at step ${testStep}`);
     };
 

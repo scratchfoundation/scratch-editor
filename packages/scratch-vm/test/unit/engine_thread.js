@@ -39,8 +39,8 @@ test('pushStack', t => {
 test('popStack', t => {
     const th = new Thread('arbitraryString');
     th.pushStack('arbitraryString');
-    t.strictEquals(th.popStack(), 'arbitraryString');
-    t.strictEquals(th.popStack(), undefined);
+    t.equal(th.popStack(), 'arbitraryString');
+    t.equal(th.popStack(), undefined);
 
     t.end();
 });
@@ -49,9 +49,9 @@ test('atStackTop', t => {
     const th = new Thread('arbitraryString');
     th.pushStack('arbitraryString');
     th.pushStack('secondString');
-    t.strictEquals(th.atStackTop(), false);
+    t.equal(th.atStackTop(), false);
     th.popStack();
-    t.strictEquals(th.atStackTop(), true);
+    t.equal(th.atStackTop(), true);
 
     t.end();
 });
@@ -60,7 +60,7 @@ test('reuseStackForNextBlock', t => {
     const th = new Thread('arbitraryString');
     th.pushStack('arbitraryString');
     th.reuseStackForNextBlock('secondString');
-    t.strictEquals(th.popStack(), 'secondString');
+    t.equal(th.popStack(), 'secondString');
 
     t.end();
 });
@@ -68,9 +68,9 @@ test('reuseStackForNextBlock', t => {
 test('peekStackFrame', t => {
     const th = new Thread('arbitraryString');
     th.pushStack('arbitraryString');
-    t.strictEquals(th.peekStackFrame().warpMode, false);
+    t.equal(th.peekStackFrame().warpMode, false);
     th.popStack();
-    t.strictEquals(th.peekStackFrame(), null);
+    t.equal(th.peekStackFrame(), null);
 
     t.end();
 });
@@ -79,9 +79,9 @@ test('peekParentStackFrame', t => {
     const th = new Thread('arbitraryString');
     th.pushStack('arbitraryString');
     th.peekStackFrame().warpMode = true;
-    t.strictEquals(th.peekParentStackFrame(), null);
+    t.equal(th.peekParentStackFrame(), null);
     th.pushStack('secondString');
-    t.strictEquals(th.peekParentStackFrame().warpMode, true);
+    t.equal(th.peekParentStackFrame().warpMode, true);
 
     t.end();
 });
@@ -91,7 +91,7 @@ test('pushReportedValue', t => {
     th.pushStack('arbitraryString');
     th.pushStack('secondString');
     th.pushReportedValue('value');
-    t.strictEquals(th.justReported, 'value');
+    t.equal(th.justReported, 'value');
 
     t.end();
 });
@@ -99,9 +99,9 @@ test('pushReportedValue', t => {
 test('peekStack', t => {
     const th = new Thread('arbitraryString');
     th.pushStack('arbitraryString');
-    t.strictEquals(th.peekStack(), 'arbitraryString');
+    t.equal(th.peekStack(), 'arbitraryString');
     th.popStack();
-    t.strictEquals(th.peekStack(), null);
+    t.equal(th.peekStack(), null);
 
     t.end();
 });
@@ -111,10 +111,10 @@ test('PushGetParam', t => {
     th.pushStack('arbitraryString');
     th.initParams();
     th.pushParam('testParam', 'testValue');
-    t.strictEquals(th.peekStackFrame().params.testParam, 'testValue');
-    t.strictEquals(th.getParam('testParam'), 'testValue');
+    t.equal(th.peekStackFrame().params.testParam, 'testValue');
+    t.equal(th.getParam('testParam'), 'testValue');
     // Params outside of define stack always evaluate to null
-    t.strictEquals(th.getParam('nonExistentParam'), null);
+    t.equal(th.getParam('nonExistentParam'), null);
 
     t.end();
 });
@@ -159,18 +159,18 @@ test('goToNextBlock', t => {
     rt.blocks.createBlock(block2);
     th.target = rt;
 
-    t.strictEquals(th.peekStack(), null);
+    t.equal(th.peekStack(), null);
     th.pushStack('secondString');
-    t.strictEquals(th.peekStack(), 'secondString');
+    t.equal(th.peekStack(), 'secondString');
     th.goToNextBlock();
-    t.strictEquals(th.peekStack(), null);
+    t.equal(th.peekStack(), null);
     th.pushStack('secondString');
     th.pushStack('arbitraryString');
-    t.strictEquals(th.peekStack(), 'arbitraryString');
+    t.equal(th.peekStack(), 'arbitraryString');
     th.goToNextBlock();
-    t.strictEquals(th.peekStack(), 'secondString');
+    t.equal(th.peekStack(), 'secondString');
     th.goToNextBlock();
-    t.strictEquals(th.peekStack(), null);
+    t.equal(th.peekStack(), null);
 
     t.end();
 });
@@ -215,15 +215,15 @@ test('stopThisScript', t => {
     th.target = rt;
 
     th.stopThisScript();
-    t.strictEquals(th.peekStack(), null);
+    t.equal(th.peekStack(), null);
     th.pushStack('arbitraryString');
-    t.strictEquals(th.peekStack(), 'arbitraryString');
+    t.equal(th.peekStack(), 'arbitraryString');
     th.stopThisScript();
-    t.strictEquals(th.peekStack(), null);
+    t.equal(th.peekStack(), null);
     th.pushStack('arbitraryString');
     th.pushStack('secondString');
     th.stopThisScript();
-    t.strictEquals(th.peekStack(), 'secondString');
+    t.equal(th.peekStack(), 'secondString');
 
     t.end();
 });
@@ -267,19 +267,19 @@ test('isRecursiveCall', t => {
     rt.blocks.createBlock(block2);
     th.target = rt;
 
-    t.strictEquals(th.isRecursiveCall('fakeCode'), false);
+    t.equal(th.isRecursiveCall('fakeCode'), false);
     th.pushStack('secondString');
-    t.strictEquals(th.isRecursiveCall('fakeCode'), false);
+    t.equal(th.isRecursiveCall('fakeCode'), false);
     th.pushStack('arbitraryString');
-    t.strictEquals(th.isRecursiveCall('fakeCode'), true);
+    t.equal(th.isRecursiveCall('fakeCode'), true);
     th.pushStack('arbitraryString');
-    t.strictEquals(th.isRecursiveCall('fakeCode'), true);
+    t.equal(th.isRecursiveCall('fakeCode'), true);
     th.popStack();
-    t.strictEquals(th.isRecursiveCall('fakeCode'), true);
+    t.equal(th.isRecursiveCall('fakeCode'), true);
     th.popStack();
-    t.strictEquals(th.isRecursiveCall('fakeCode'), false);
+    t.equal(th.isRecursiveCall('fakeCode'), false);
     th.popStack();
-    t.strictEquals(th.isRecursiveCall('fakeCode'), false);
+    t.equal(th.isRecursiveCall('fakeCode'), false);
 
     t.end();
 });

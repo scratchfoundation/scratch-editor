@@ -34,10 +34,7 @@
     "scratch-render-fonts": "^1.0.0"
   },
   "tap": {
-    "branches": 70,
-    "functions": 50,
-    "lines": 70,
-    "statements": 70
+    "allow-incomplete-coverage": true
   },
   "dependencies": {
     "base64-js": "1.5.1",
@@ -49,8 +46,8 @@
     "transformation-matrix": "1.15.3"
   },
   "devDependencies": {
-    "@babel/core": "7.28.3",
-    "@babel/eslint-parser": "7.28.0",
+    "@babel/core": "7.28.4",
+    "@babel/eslint-parser": "7.28.4",
     "@babel/preset-env": "7.28.3",
     "babel-loader": "9.2.1",
     "copy-webpack-plugin": "6.4.1",
@@ -61,11 +58,11 @@
     "json": "9.0.6",
     "mkdirp": "2.1.6",
     "rimraf": "3.0.2",
-    "scratch-render-fonts": "1.0.227",
+    "scratch-render-fonts": "1.0.229",
     "scratch-semantic-release-config": "3.0.0",
     "scratch-webpack-configuration": "3.0.0",
     "semantic-release": "19.0.5",
-    "tap": "16.3.10",
+    "tap": "21.1.0",
     "webpack": "5.101.3",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.2.2",

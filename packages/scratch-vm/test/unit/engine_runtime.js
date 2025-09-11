@@ -40,8 +40,8 @@ test('monitorStateEquals', t => {
     r.requestAddMonitor(prevMonitorState);
     r.requestUpdateMonitor(newMonitorDelta);
 
-    t.equals(true, prevMonitorState === r._monitorState.get(id));
-    t.equals(String(25), r._monitorState.get(id).get('value'));
+    t.equal(true, prevMonitorState === r._monitorState.get(id));
+    t.equal(String(25), r._monitorState.get(id).get('value'));
     t.end();
 });
 
@@ -63,8 +63,8 @@ test('monitorStateDoesNotEqual', t => {
     r.requestAddMonitor(prevMonitorState);
     r.requestUpdateMonitor(newMonitorDelta);
 
-    t.equals(false, prevMonitorState.equals(r._monitorState.get(id)));
-    t.equals(String(24), r._monitorState.get(id).get('value'));
+    t.equal(false, prevMonitorState.equals(r._monitorState.get(id)));
+    t.equal(String(24), r._monitorState.get(id).get('value'));
 
     // Prop change
     newMonitorDelta = Map({
@@ -73,9 +73,9 @@ test('monitorStateDoesNotEqual', t => {
     });
     r.requestUpdateMonitor(newMonitorDelta);
 
-    t.equals(false, prevMonitorState.equals(r._monitorState.get(id)));
-    t.equals(String(24), r._monitorState.get(id).value);
-    t.equals(params, r._monitorState.get(id).params);
+    t.equal(false, prevMonitorState.equals(r._monitorState.get(id)));
+    t.equal(String(24), r._monitorState.get(id).value);
+    t.equal(params, r._monitorState.get(id).params);
 
     t.end();
 });
@@ -111,12 +111,12 @@ test('getLabelForOpcode', t => {
     const result1 = r.getLabelForOpcode('fakeExtension_foo');
     t.type(result1.category, 'string');
     t.type(result1.label, 'string');
-    t.equals(result1.label, 'Fake Extension: Foo');
+    t.equal(result1.label, 'Fake Extension: Foo');
 
     const result2 = r.getLabelForOpcode('fakeExtension_foo_2');
     t.type(result2.category, 'string');
     t.type(result2.label, 'string');
-    t.equals(result2.label, 'Fake Extension: Foo 2');
+    t.equal(result2.label, 'Fake Extension: Foo 2');
 
     t.end();
 });

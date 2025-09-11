@@ -479,19 +479,19 @@ test('reorderTarget', t => {
     vm.runtime.targets = ['a', 'b', 'c', 'd'];
 
     t.equal(vm.reorderTarget(2, 2), false);
-    t.deepEqual(vm.runtime.targets, ['a', 'b', 'c', 'd']);
+    t.same(vm.runtime.targets, ['a', 'b', 'c', 'd']);
 
     // Make sure clamping works
     t.equal(vm.reorderTarget(-100, -5), false);
-    t.deepEqual(vm.runtime.targets, ['a', 'b', 'c', 'd']);
+    t.same(vm.runtime.targets, ['a', 'b', 'c', 'd']);
 
     // Reorder upwards
     t.equal(vm.reorderTarget(0, 2), true);
-    t.deepEqual(vm.runtime.targets, ['b', 'c', 'a', 'd']);
+    t.same(vm.runtime.targets, ['b', 'c', 'a', 'd']);
 
     // Reorder downwards
     t.equal(vm.reorderTarget(3, 1), true);
-    t.deepEqual(vm.runtime.targets, ['b', 'd', 'c', 'a']);
+    t.same(vm.runtime.targets, ['b', 'd', 'c', 'a']);
 
     t.end();
 });
@@ -567,14 +567,14 @@ test('emitWorkspaceUpdate', t => {
     let xml = null;
     vm.emit = (event, data) => (xml = data.xml);
     vm.emitWorkspaceUpdate();
-    t.notEqual(xml.indexOf('global'), -1);
-    t.notEqual(xml.indexOf('local'), -1);
+    t.not(xml.indexOf('global'), -1);
+    t.not(xml.indexOf('local'), -1);
     t.equal(xml.indexOf('unused'), -1);
-    t.notEqual(xml.indexOf('blocks'), -1);
+    t.not(xml.indexOf('blocks'), -1);
     t.equal(xml.indexOf('aStageComment'), -1);
     t.equal(xml.indexOf('someBlockComment'), -1);
-    t.notEqual(xml.indexOf('someOtherComment'), -1);
-    t.notEqual(xml.indexOf('A Block Comment: aBlockComment'), -1);
+    t.not(xml.indexOf('someOtherComment'), -1);
+    t.not(xml.indexOf('A Block Comment: aBlockComment'), -1);
     t.end();
 });
 
@@ -791,7 +791,7 @@ test('shareBlocksToTarget shares global variables without any name changes', t =
         t.equal(stage.blocks.getBlock(newBlockId).fields.VARIABLE.id, 'mock var id');
 
         // Verify the shared block id is different
-        t.notEqual(newBlockId, 'a block');
+        t.not(newBlockId, 'a block');
 
         // Verify that the variables haven't changed, the variable still exists on the
         // stage, it should still have the same name and value, and there should be
@@ -866,8 +866,8 @@ test('shareBlocksToTarget shares a local variable to the stage, creating a globa
         const newGlobalVar = Object.values(stage.variables)[0];
         t.equal(newGlobalVar.name, 'Stage: a mock variable');
         const newId = newGlobalVar.id;
-        t.notEqual(newId, 'mock var id');
-        t.equals(vm.getVariableValue(stage.id, newId), 0);
+        t.not(newId, 'mock var id');
+        t.equal(vm.getVariableValue(stage.id, newId), 0);
 
         t.end();
     });
@@ -941,8 +941,8 @@ test('shareBlocksToTarget chooses a fresh name for a new global variable checkin
         const newGlobalVar = Object.values(stage.variables)[0];
         t.equal(newGlobalVar.name, 'Stage: a mock variable2');
         const newId = newGlobalVar.id;
-        t.notEqual(newId, 'mock var id');
-        t.equals(vm.getVariableValue(stage.id, newId), 0);
+        t.not(newId, 'mock var id');
+        t.equal(vm.getVariableValue(stage.id, newId), 0);
 
         t.end();
     });
@@ -972,7 +972,7 @@ test('shareBlocksToTarget loads extensions that have not yet been loaded', t => 
 
     vm.shareBlocksToTarget(fakeBlocks, stage.id).then(() => {
         // Verify that only the not-loaded extension gets loaded
-        t.deepEqual(loadedIds, ['notloaded']);
+        t.same(loadedIds, ['notloaded']);
         t.end();
     });
 });

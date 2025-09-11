@@ -76,8 +76,8 @@ test('noTransformPath', t => {
     transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'noTransformPath');
 
-    t.equals(d, svgElement.getElementById('path').attributes.d.value);
-    t.false(svgElement.getElementById('path').attributes.transform);
+    t.equal(d, svgElement.getElementById('path').attributes.d.value);
+    t.notOk(svgElement.getElementById('path').attributes.transform);
     t.end();
 });
 
@@ -91,7 +91,7 @@ test('transformedNoStrokeWidthPath', t => {
     transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'noStrokeWidthPath');
 
-    t.equals('2', svgElement.getElementById('path').attributes['stroke-width'].value);
+    t.equal('2', svgElement.getElementById('path').attributes['stroke-width'].value);
     t.end();
 });
 
@@ -105,8 +105,8 @@ test('identityTransformPath', t => {
     transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'identityTransformPath');
 
-    t.equals(d, svgElement.getElementById('path').attributes.d.value);
-    t.false(svgElement.getElementById('path').attributes.transform);
+    t.equal(d, svgElement.getElementById('path').attributes.d.value);
+    t.notOk(svgElement.getElementById('path').attributes.transform);
     t.end();
 });
 
@@ -122,11 +122,11 @@ test('transformBox', t => {
     comparisonFileAppend(svgString, svgElement, 'transformBox');
 
     const transformed = `M 45 45 L 245 45 L 245 145 L 45 145 Z `;
-    t.equals(transformed, svgElement.getElementById('path').attributes.d.value);
+    t.equal(transformed, svgElement.getElementById('path').attributes.d.value);
     // Transform is integrated into path, so the attribute should be gone
-    t.false(svgElement.getElementById('path').attributes.transform);
+    t.notOk(svgElement.getElementById('path').attributes.transform);
     const quadraticMean = Math.sqrt(((20 * 20) + (10 * 10)) / 2);
-    t.equals(`${quadraticMean}`, svgElement.getElementById('path').attributes['stroke-width'].value);
+    t.equal(`${quadraticMean}`, svgElement.getElementById('path').attributes['stroke-width'].value);
     t.end();
 });
 
@@ -142,10 +142,10 @@ test('transformPath', t => {
 
     const doubled = 'M 5 5 L 45 65 L 55 55 L 65 55 L 65 65 C 65 65 85 65 75 95 C 65 125 75 105 75 125 ' +
     'Q 85 145 105 165 Q 125 185 105 185 Q 85 185 85 205 M 45 45 A 80 100 0 1 1 45 245 Z ';
-    t.equals(doubled, svgElement.getElementById('path').attributes.d.value);
+    t.equal(doubled, svgElement.getElementById('path').attributes.d.value);
     // Transform is integrated into path, so the attribute should be gone
-    t.false(svgElement.getElementById('path').attributes.transform);
-    t.equals('2', svgElement.getElementById('path').attributes['stroke-width'].value);
+    t.notOk(svgElement.getElementById('path').attributes.transform);
+    t.equal('2', svgElement.getElementById('path').attributes['stroke-width'].value);
     t.end();
 });
 
@@ -160,8 +160,8 @@ test('composedTransformPathIdentity', t => {
     transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'composedTransformPathIdentity');
 
-    t.equals(d, svgElement.getElementById('path').attributes.d.value);
-    t.false(svgElement.getElementById('path').attributes.transform);
+    t.equal(d, svgElement.getElementById('path').attributes.d.value);
+    t.notOk(svgElement.getElementById('path').attributes.transform);
     t.end();
 });
 
@@ -179,7 +179,7 @@ test('composedTransformPath', t => {
     const transformedPath = 'M -29.5 -29 L 0.5 16 L 8 8.5 L 15.5 8.5 L 15.5 16 C 15.5 16 30.5 16 23 38.5 ' +
     'C 15.5 61 23 46 23 61 Q 30.5 76 45.5 91 Q 60.5 106 45.5 106 Q 30.5 106 30.5 121 M 0.5 1 ' +
     'A 60 75 0 1 1 0.5 151 Z ';
-    t.equals(transformedPath, svgElement.getElementById('path').attributes.d.value);
+    t.equal(transformedPath, svgElement.getElementById('path').attributes.d.value);
     t.end();
 });
 
@@ -197,11 +197,11 @@ test('parentTransformPath', t => {
 
     const doubled = 'M -40 -40 L 0 20 L 10 10 L 20 10 L 20 20 C 20 20 40 20 30 50 C 20 80 30 60 30 80 ' +
     'Q 40 100 60 120 Q 80 140 60 140 Q 40 140 40 160 M 0 0 A 80 100 0 1 1 0 200 Z ';
-    t.equals(doubled, svgElement.getElementById('path').attributes.d.value);
+    t.equal(doubled, svgElement.getElementById('path').attributes.d.value);
     // Transform should be gone from both child and parent
-    t.false(svgElement.getElementById('group').attributes.transform);
-    t.false(svgElement.getElementById('path').attributes.transform);
-    t.equals('2', svgElement.getElementById('path').attributes['stroke-width'].value);
+    t.notOk(svgElement.getElementById('group').attributes.transform);
+    t.notOk(svgElement.getElementById('path').attributes.transform);
+    t.equal('2', svgElement.getElementById('path').attributes['stroke-width'].value);
     t.end();
 });
 
@@ -217,7 +217,7 @@ test('nestedNoTransformPath', t => {
     transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'nestedNoTransformPath');
 
-    t.equals(d, svgElement.getElementById('path').attributes.d.value);
+    t.equal(d, svgElement.getElementById('path').attributes.d.value);
     t.end();
 });
 
@@ -239,7 +239,7 @@ test('nestedTransformPath', t => {
     const quartered = 'M -45 -45 L 0 22.5 L 11.25 11.25 L 22.5 11.25 L 22.5 22.5 C 22.5 22.5 45 22.5 33.75 56.25 ' +
     'C 22.5 90 33.75 67.5 33.75 90 Q 45 112.5 67.5 135 Q 90 157.5 67.5 157.5 Q 45 157.5 45 180 M 0 0 ' +
     'A 90 112.5 0 1 1 0 225 Z ';
-    t.equals(quartered, svgElement.getElementById('path').attributes.d.value);
+    t.equal(quartered, svgElement.getElementById('path').attributes.d.value);
     t.end();
 });
 
@@ -260,8 +260,8 @@ test('variousTransformsPath', t => {
     'C 129.4685 225.4837 151.7058 224.2028 141.7664 235.568 Q 144.1249 257.0175 158.7814 288.5514 ' +
     'Q 173.4379 320.0852 148.842 299.9166 Q 124.2462 279.7479 114.3068 291.1131 M 144.6301 159.8543 ' +
     'A 75.4328 127.2656 -51.6345 1 1 45.2364 273.5062 Z ';
-    t.equals(transformedPath, svgElement.getElementById('path').attributes.d.value);
-    t.false(svgElement.getElementById('path').attributes.transform);
+    t.equal(transformedPath, svgElement.getElementById('path').attributes.d.value);
+    t.notOk(svgElement.getElementById('path').attributes.transform);
     t.end();
 });
 
@@ -284,9 +284,9 @@ test('siblingsTransformPath', t => {
     transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'siblingsTransformPath');
 
-    t.equals('matrix(0.5,0,0,0.5,5,10)', svgElement.getElementById('sibling').attributes.transform.value);
-    t.equals('matrix(0.5,0,0,0.5,-0.25,-0.25)', svgElement.getElementById('distantCousin1').attributes.transform.value);
-    t.equals('matrix(0.5,0,0,0.5,0,0)', svgElement.getElementById('distantCousin2').attributes.transform.value);
+    t.equal('matrix(0.5,0,0,0.5,5,10)', svgElement.getElementById('sibling').attributes.transform.value);
+    t.equal('matrix(0.5,0,0,0.5,-0.25,-0.25)', svgElement.getElementById('distantCousin1').attributes.transform.value);
+    t.equal('matrix(0.5,0,0,0.5,0,0)', svgElement.getElementById('distantCousin2').attributes.transform.value);
     t.end();
 });
 
@@ -309,9 +309,9 @@ test('siblingsStroke', t => {
     transformStrokeWidths(svgElement, window);
     comparisonFileAppend(svgString, svgElement, 'siblingsStroke');
 
-    t.equals('10', svgElement.getElementById('sibling').attributes['stroke-width'].value);
-    t.equals('15', svgElement.getElementById('distantCousin1').attributes['stroke-width'].value);
-    t.equals('5', svgElement.getElementById('distantCousin2').attributes['stroke-width'].value);
+    t.equal('10', svgElement.getElementById('sibling').attributes['stroke-width'].value);
+    t.equal('15', svgElement.getElementById('distantCousin1').attributes['stroke-width'].value);
+    t.equal('5', svgElement.getElementById('distantCousin2').attributes['stroke-width'].value);
     t.end();
 });
 
@@ -328,7 +328,7 @@ test('transformedNestedStroke', t => {
     comparisonFileAppend(svgString, svgElement, 'transformedNestedStroke');
 
     const quadraticMean = Math.sqrt(((5 / 2 * 5 / 2) + (2 / 2 * 2 / 2)) / 2);
-    t.equals(`${quadraticMean}`, svgElement.getElementById('path').attributes['stroke-width'].value);
+    t.equal(`${quadraticMean}`, svgElement.getElementById('path').attributes['stroke-width'].value);
     t.end();
 });
 
@@ -350,7 +350,7 @@ test('variousTransformsRelativePath', t => {
     'C 5.4144 51.3493 17.8912 45.01 23.7155 54.0731 Q 46.1755 54.6838 43.6819 67.9731 ' +
     'Q 41.1882 81.2623 66.1419 68.5838 Q 91.0955 55.9052 88.6019 69.1945 ' +
     'A 9.8314 30.5145 -83.9007 1 1 89.1843 70.1008 ';
-    t.equals(transformed, svgElement.getElementById('path').attributes.d.value);
+    t.equal(transformed, svgElement.getElementById('path').attributes.d.value);
     t.end();
 });
 
@@ -369,7 +369,7 @@ test('scaleTransformEllipticalPath', t => {
     'L 130 87.5 A 12.5 37.5 -30 0 1 155 75 L 180 62.5 A 12.5 50 -15 0 1 205 50 L 230 37.5 L 230 62.5 L 205 75 ' +
     'A 12.5 12.5 -50.7685 1 1 180 87.5 L 155 100 A 12.5 25 45 1 1 130 112.5 L 105 125 A 12.5 37.5 30 1 1 80 137.5 ' +
     'L 55 150 A 12.5 50 15 1 1 30 162.5 L 5 175 ';
-    t.equals(scaled, svgElement.getElementById('path').attributes.d.value);
+    t.equal(scaled, svgElement.getElementById('path').attributes.d.value);
     t.end();
 });
 
@@ -388,7 +388,7 @@ test('invertTransformEllipticalPath', t => {
     'L 175 260 A 25 75 -60 0 0 150 310 L 125 360 A 25 100 -75 0 0 100 410 L 75 460 L 125 460 L 150 410 ' +
     'A 25 25 -50.7685 1 0 175 360 L 200 310 A 25 50 45 1 0 225 260 L 250 210 A 25 75 60 1 0 275 160 L 300 110 ' +
     'A 25 100 75 1 0 325 60 L 350 10 ';
-    t.equals(inverted, svgElement.getElementById('path').attributes.d.value);
+    t.equal(inverted, svgElement.getElementById('path').attributes.d.value);
     t.end();
 });
 
@@ -409,7 +409,7 @@ test('rotateTransformEllipticalPath', t => {
     'L 231.9582 486.6163 A 25 25 -50.7685 1 1 220.751 431.8495 L 209.5438 377.0827 ' +
     'A 25 50 -30 1 1 198.3367 322.316 L 187.1295 267.5492 A 25 75 -45 1 1 175.9223 212.7824 L 164.7151 158.0156 ' +
     'A 25 100 -60 1 1 153.5079 103.2489 L 142.3007 48.4821 ';
-    t.equals(rotated, svgElement.getElementById('path').attributes.d.value);
+    t.equal(rotated, svgElement.getElementById('path').attributes.d.value);
     t.end();
 });
 
@@ -430,7 +430,7 @@ test('skewXTransformEllipticalPath', t => {
     'A 20.861 29.9602 50.1571 1 1 296.3052 175 L 237.206 200 A 20.8982 59.8139 53.2248 1 1 178.1067 225 ' +
     'L 119.0074 250 A 21.0102 89.2423 43.6881 1 1 59.9082 275 L 0.8089 300 ' +
     'A 21.8464 114.4351 32.9028 1 1 -58.2903 325 L -117.3896 350 ';
-    t.equals(skewed, svgElement.getElementById('path').attributes.d.value);
+    t.equal(skewed, svgElement.getElementById('path').attributes.d.value);
     t.end();
 });
 
@@ -451,7 +451,7 @@ test('skewYTransformEllipticalPath', t => {
     'A 20.861 29.9602 39.8429 1 1 360 43.9707 L 310 87.1692 A 20.8982 59.8139 36.7752 1 1 260 130.3677 ' +
     'L 210 173.5663 A 21.4899 87.2503 26.3947 1 1 160 216.7648 L 110 259.9633 ' +
     'A 22.8454 109.4312 14.6345 1 1 60 303.1618 L 10 346.3603 ';
-    t.equals(skewed, svgElement.getElementById('path').attributes.d.value);
+    t.equal(skewed, svgElement.getElementById('path').attributes.d.value);
     t.end();
 });
 
@@ -474,7 +474,7 @@ test('variousTransformsEllipticalPath', t => {
     'A 26.0319 48.0181 7.1283 1 1 189.2363 -66.0921 L 162.2074 -22.3035 ' +
     'A 24.9487 75.1544 -6.3334 1 1 135.1786 21.4851 L 108.1498 65.2737 ' +
     'A 23.9235 104.4996 -19.9344 1 1 81.121 109.0623 L 54.0922 152.8509 ';
-    t.equals(transformed, svgElement.getElementById('path').attributes.d.value);
+    t.equal(transformed, svgElement.getElementById('path').attributes.d.value);
     t.end();
 });
 
@@ -493,10 +493,10 @@ test('linearGradientTransformSquareSkewY', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, {width: 100, height: 100, x: 0, y: 0});
     comparisonFileAppend(svgString, svgElement, 'linearGradientTransformSquareSkewY');
-    t.equals('-50', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.x1.value);
-    t.equals('-81.6826', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.x2.value);
-    t.equals('50', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.y1.value);
-    t.equals('138.6809', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.y2.value);
+    t.equal('-50', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.x1.value);
+    t.equal('-81.6826', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.x2.value);
+    t.equal('50', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.y1.value);
+    t.equal('138.6809', svgElement.getElementById('grad_a-0.75,-0.2679491924311227,0,1,-50,50').attributes.y2.value);
 
     t.end();
 });
@@ -516,10 +516,10 @@ test('linearGradientTransformSquareSkewX', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, {width: 100, height: 100, x: 0, y: 0});
     comparisonFileAppend(svgString, svgElement, 'linearGradientTransformSquareSkewX');
-    t.equals('-50', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.x1.value);
-    t.equals('-50', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.x2.value);
-    t.equals('50', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.y1.value);
-    t.equals('150', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.y2.value);
+    t.equal('-50', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.x1.value);
+    t.equal('-50', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.x2.value);
+    t.equal('50', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.y1.value);
+    t.equal('150', svgElement.getElementById('grad_b-0.75,0,0.20096189432334202,1,-50,50').attributes.y2.value);
 
     t.end();
 });
@@ -539,10 +539,10 @@ test('linearGradientTransform', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'linearGradientTransform');
-    t.equals('26.9399', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
-    t.equals('84.6436', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
-    t.equals('0.9571', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
-    t.equals('16.4187', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+    t.equal('26.9399', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
+    t.equal('84.6436', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equal('0.9571', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
+    t.equal('16.4187', svgElement.getElementById('grad_c-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
 
     t.end();
 });
@@ -566,17 +566,17 @@ test('reusedLinearGradientTransform', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'reusedLinearGradientTransform');
-    t.equals('26.9399', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
-    t.equals('84.6436', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
-    t.equals('0.9571', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
-    t.equals('16.4187', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
-    t.equals('113.7382', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
+    t.equal('26.9399', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
+    t.equal('84.6436', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equal('0.9571', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
+    t.equal('16.4187', svgElement.getElementById('grad_1-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+    t.equal('113.7382', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
         .attributes.x1.value);
-    t.equals('31.2761', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
+    t.equal('31.2761', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
         .attributes.x2.value);
-    t.equals('148.7239', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
+    t.equal('148.7239', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
         .attributes.y1.value);
-    t.equals('148.7239', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
+    t.equal('148.7239', svgElement.getElementById('grad_1-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,150,150')
         .attributes.y2.value);
 
     t.end();
@@ -598,10 +598,10 @@ test('nestedLinearGradientTransform', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'nestedLinearGradientTransform');
-    t.equals('26.9399', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
-    t.equals('26.9399', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
-    t.equals('0.9571', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
-    t.equals('62.8036', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+    t.equal('26.9399', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
+    t.equal('26.9399', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equal('0.9571', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
+    t.equal('62.8036', svgElement.getElementById('grad_2-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
 
     t.end();
 });
@@ -621,10 +621,10 @@ test('percentLinearGradientTransform', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'percentLinearGradientTransform');
-    t.equals('26.9399', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
-    t.equals('50.6569', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
-    t.equals('0.9571', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
-    t.equals('31.029', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+    t.equal('26.9399', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
+    t.equal('50.6569', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equal('0.9571', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
+    t.equal('31.029', svgElement.getElementById('grad_3-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
 
     t.end();
 });
@@ -644,10 +644,10 @@ test('userSpaceLinearGradientTransform', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'userSpaceLinearGradientTransform');
-    t.equals('10.9808', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
-    t.equals('45.494', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
-    t.equals('15', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
-    t.equals('58.761', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
+    t.equal('10.9808', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.x1.value);
+    t.equal('45.494', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.x2.value);
+    t.equal('15', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.y1.value);
+    t.equal('58.761', svgElement.getElementById('grad_4-.75,0,-0.20096189432334202,0.75,0,0').attributes.y2.value);
 
     t.end();
 });
@@ -688,9 +688,9 @@ test('nestedRadialGradientTransform', t => {
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement,
         'nestedRadialGradientTransform. Note that radial gradients are not expected to match exactly.');
-    t.equals('49.5773', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
-    t.equals('31.8804', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
-    t.equals('30.9233', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+    t.equal('49.5773', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
+    t.equal('31.8804', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
+    t.equal('30.9233', svgElement.getElementById('grad_5-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
 
     t.end();
 });
@@ -711,11 +711,11 @@ test('focalRadialGradientTransform', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'focalRadialGradientTransform');
-    t.equals('49.5773', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
-    t.equals('31.8804', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
-    t.equals('30.9233', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
-    t.equals('60.896', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.fx.value);
-    t.equals('47.342', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.fy.value);
+    t.equal('49.5773', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
+    t.equal('31.8804', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
+    t.equal('30.9233', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+    t.equal('60.896', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.fx.value);
+    t.equal('47.342', svgElement.getElementById('grad_6-.75,0,-0.20096189432334202,0.75,0,0').attributes.fy.value);
 
     t.end();
 });
@@ -736,11 +736,11 @@ test('percentRadialGradientTransform', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'percentRadialGradientTransform');
-    t.equals('50.7905', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
-    t.equals('50.4343', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
-    t.equals('30.9233', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
-    t.equals('59.2389', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.fx.value);
-    t.equals('53.5267', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.fy.value);
+    t.equal('50.7905', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
+    t.equal('50.4343', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
+    t.equal('30.9233', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+    t.equal('59.2389', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.fx.value);
+    t.equal('53.5267', svgElement.getElementById('grad_7-.75,0,-0.20096189432334202,0.75,0,0').attributes.fy.value);
 
     t.end();
 });
@@ -760,9 +760,9 @@ test('userSpaceRadialGradientTransform', t => {
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'userSpaceRadialGradientTransform');
-    t.equals('47.9423', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
-    t.equals('45', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
-    t.equals('7.5', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
+    t.equal('47.9423', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.cx.value);
+    t.equal('45', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.cy.value);
+    t.equal('7.5', svgElement.getElementById('grad_8-.75,0,-0.20096189432334202,0.75,0,0').attributes.r.value);
 
     t.end();
 });
@@ -787,8 +787,8 @@ test('blackFillsBugFix', t => {
             y: 0.75
         });
     comparisonFileAppend(svgString, svgElement, 'blackFillsBugFix');
-    t.equals('none', svgElement.getElementById('Shape').attributes.fill.value);
-    t.equals('5', svgElement.getElementById('Shape').attributes['stroke-width'].value);
+    t.equal('none', svgElement.getElementById('Shape').attributes.fill.value);
+    t.equal('5', svgElement.getElementById('Shape').attributes['stroke-width'].value);
 
     t.end();
 });

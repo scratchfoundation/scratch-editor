@@ -79,7 +79,7 @@ test('internal extension', t => {
         terminal: false,
         text: 'go'
     };
-    t.deepEqual(goBlockInfo, expectedBlockInfo);
+    t.same(goBlockInfo, expectedBlockInfo);
 
     // There should be 2 menus - one is an array, one is the function to call.
     t.equal(vm.runtime._blockInfo[0].menus.length, 2);

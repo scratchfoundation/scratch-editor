@@ -50,7 +50,7 @@ const whenThreadsComplete = (t, vm, uri, timeLimit = 5000) =>
 
         // Clear the interval to allow the process to exit
         // naturally.
-        t.tearDown(() => {
+        t.teardown(() => {
             clearInterval(intervalId);
             clearTimeout(timeoutId);
         });
@@ -64,10 +64,10 @@ const fileFilter = /\.sb[23]?$/i;
 fs.readdirSync(executeDir)
     .filter(uri => fileFilter.test(uri))
     .forEach(uri => {
-        test(uri, t => {
+        test(uri, async t => {
             // Disable logging during this test.
             log.suggest.deny('vm', 'error');
-            t.tearDown(() => log.suggest.clear());
+            t.teardown(() => log.suggest.clear());
 
             const vm = new VirtualMachine();
 
@@ -86,13 +86,20 @@ fs.readdirSync(executeDir)
                     t.fail(reason);
                 },
                 plan (count) {
+                    if (didPlan) {
+                        t.fail('tried to set plan more than once');
+                    }
                     didPlan = true;
-                    t.plan(Number(count));
+                    // +1 for t.ok(didEnd) below
+                    t.plan(Number(count) + 1);
                 },
                 end () {
+                    if (didEnd) {
+                        t.fail('tried to end more than once');
+                    }
                     didEnd = true;
                     vm.quit();
-                    t.end();
+                    // don't t.end() here: wait for the t.ok(didEnd) below
                 }
             };
             const reportVmResult = text => {
@@ -117,7 +124,7 @@ fs.readdirSync(executeDir)
 
             // Stop the runtime interval once the test is complete so the test
             // process may naturally exit.
-            t.tearDown(() => {
+            t.teardown(() => {
                 clearInterval(vm.runtime._steppingInterval);
             });
 
@@ -128,24 +135,23 @@ fs.readdirSync(executeDir)
 
             // Load the project and once all threads are complete ensure that
             // the scratch project sent us a "end" message.
-            return vm.loadProject(project)
-                .then(() => vm.greenFlag())
-                .then(() => whenThreadsComplete(t, vm, uri))
-                .then(() => {
-                    // Setting a plan is not required but is a good idea.
-                    if (!didPlan) {
-                        t.comment('did not say "plan NUMBER_OF_TESTS"');
-                    }
+            await vm.loadProject(project);
+            vm.greenFlag();
+            await whenThreadsComplete(t, vm, uri);
 
-                    // End must be called so that tap knows the test is done. If
-                    // the test has an SAY "end" block but that block did not
-                    // execute, this explicit failure will raise that issue so
-                    // it can be resolved.
-                    if (!didEnd) {
-                        t.fail('did not say "end"');
-                        vm.quit();
-                        t.end();
-                    }
-                });
+            // Setting a plan is not required but is a good idea.
+            if (!didPlan) {
+                t.comment('did not say "plan NUMBER_OF_TESTS"');
+            }
+
+            // End must be called so that tap knows the test is done. If
+            // the test has an SAY "end" block but that block did not
+            // execute, this explicit failure will raise that issue so
+            // it can be resolved.
+            if (!didEnd) {
+                vm.quit();
+            }
+            t.ok(didEnd, 'did say "end"');
+            t.end();
         });
     });

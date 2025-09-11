@@ -74,93 +74,93 @@ const testBackdrop = (backdrops, arg, currentCostume = 1) => testCostume(backdro
 
 test('switch costume block runs correctly', t => {
     // Non-existant costumes do nothing
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], 'e', 3), 3);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], 'e', 3), 3);
 
     // Numeric arguments are always the costume index
     // String arguments are treated as costume names, and coerced to
     // a costume index as a fallback
-    t.strictEqual(testCostume(['a', 'b', 'c', '2'], 2), 2);
-    t.strictEqual(testCostume(['a', 'b', 'c', '2'], '2'), 4);
-    t.strictEqual(testCostume(['a', 'b', 'c'], '2'), 2);
+    t.equal(testCostume(['a', 'b', 'c', '2'], 2), 2);
+    t.equal(testCostume(['a', 'b', 'c', '2'], '2'), 4);
+    t.equal(testCostume(['a', 'b', 'c'], '2'), 2);
 
     // 'previous costume' and 'next costume' increment/decrement
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], 'previous costume', 3), 2);
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], 'next costume', 2), 3);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], 'previous costume', 3), 2);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], 'next costume', 2), 3);
 
     // 'previous costume' and 'next costume' can be overriden
-    t.strictEqual(testCostume(['a', 'previous costume', 'c', 'd'], 'previous costume'), 2);
-    t.strictEqual(testCostume(['next costume', 'b', 'c', 'd'], 'next costume'), 1);
+    t.equal(testCostume(['a', 'previous costume', 'c', 'd'], 'previous costume'), 2);
+    t.equal(testCostume(['next costume', 'b', 'c', 'd'], 'next costume'), 1);
 
     // NaN, Infinity, and true are the first costume
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], NaN, 2), 1);
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], true, 2), 1);
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], Infinity, 2), 1);
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], -Infinity, 2), 1);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], NaN, 2), 1);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], true, 2), 1);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], Infinity, 2), 1);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], -Infinity, 2), 1);
 
     // 'previous backdrop' and 'next backdrop' have no effect
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], 'previous backdrop', 3), 3);
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], 'next backdrop', 3), 3);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], 'previous backdrop', 3), 3);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], 'next backdrop', 3), 3);
 
     // Strings with no digits are not numeric
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], '    ', 2), 2);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], '    ', 2), 2);
 
     // False is 0 (the last costume)
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], false), 4);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], false), 4);
 
     // Booleans are costume names where possible.
-    t.strictEqual(testCostume(['a', 'true', 'false', 'd'], false), 3);
-    t.strictEqual(testCostume(['a', 'true', 'false', 'd'], true), 2);
+    t.equal(testCostume(['a', 'true', 'false', 'd'], false), 3);
+    t.equal(testCostume(['a', 'true', 'false', 'd'], true), 2);
 
     // Costume indices should wrap around.
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], -1), 3);
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], -4), 4);
-    t.strictEqual(testCostume(['a', 'b', 'c', 'd'], 10), 2);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], -1), 3);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], -4), 4);
+    t.equal(testCostume(['a', 'b', 'c', 'd'], 10), 2);
 
     t.end();
 });
 
 test('switch backdrop block runs correctly', t => {
     // Non-existant backdrops do nothing
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], 'e', 3), 3);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], 'e', 3), 3);
 
     // Difference between string and numeric arguments
-    t.strictEqual(testBackdrop(['a', 'b', 'c', '2'], 2), 2);
-    t.strictEqual(testBackdrop(['a', 'b', 'c', '2'], '2'), 4);
+    t.equal(testBackdrop(['a', 'b', 'c', '2'], 2), 2);
+    t.equal(testBackdrop(['a', 'b', 'c', '2'], '2'), 4);
 
     // 'previous backdrop' and 'next backdrop' increment/decrement
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], 'previous backdrop', 3), 2);
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], 'next backdrop', 2), 3);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], 'previous backdrop', 3), 2);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], 'next backdrop', 2), 3);
 
     // 'previous backdrop', 'previous backdrop', 'random backdrop' can be overriden
     // Test is deterministic since 'random backdrop' will not pick the same backdrop as currently selected
-    t.strictEqual(testBackdrop(['a', 'previous backdrop', 'c', 'd'], 'previous backdrop', 4), 2);
-    t.strictEqual(testBackdrop(['next backdrop', 'b', 'c', 'd'], 'next backdrop', 3), 1);
-    t.strictEqual(testBackdrop(['random backdrop', 'b', 'c', 'd'], 'random backdrop'), 1);
+    t.equal(testBackdrop(['a', 'previous backdrop', 'c', 'd'], 'previous backdrop', 4), 2);
+    t.equal(testBackdrop(['next backdrop', 'b', 'c', 'd'], 'next backdrop', 3), 1);
+    t.equal(testBackdrop(['random backdrop', 'b', 'c', 'd'], 'random backdrop'), 1);
 
     // NaN, Infinity, and true are the first costume
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], NaN, 2), 1);
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], true, 2), 1);
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], Infinity, 2), 1);
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], -Infinity, 2), 1);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], NaN, 2), 1);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], true, 2), 1);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], Infinity, 2), 1);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], -Infinity, 2), 1);
 
     // 'previous costume' and 'next costume' have no effect
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], 'previous costume', 3), 3);
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], 'next costume', 3), 3);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], 'previous costume', 3), 3);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], 'next costume', 3), 3);
 
     // Strings with no digits are not numeric
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], '    ', 2), 2);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], '    ', 2), 2);
 
     // False is 0 (the last costume)
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], false), 4);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], false), 4);
 
     // Booleans are backdrop names where possible.
-    t.strictEqual(testBackdrop(['a', 'true', 'false', 'd'], false), 3);
-    t.strictEqual(testBackdrop(['a', 'true', 'false', 'd'], true), 2);
+    t.equal(testBackdrop(['a', 'true', 'false', 'd'], false), 3);
+    t.equal(testBackdrop(['a', 'true', 'false', 'd'], true), 2);
 
     // Backdrop indices should wrap around.
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], -1), 3);
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], -4), 4);
-    t.strictEqual(testBackdrop(['a', 'b', 'c', 'd'], 10), 2);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], -1), 3);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], -4), 4);
+    t.equal(testBackdrop(['a', 'b', 'c', 'd'], 10), 2);
 
     t.end();
 });
@@ -169,7 +169,7 @@ test('getCostumeNumberName returns 1-indexed costume number', t => {
     util.target.currentCostume = 0; // This is 0-indexed.
     const args = {NUMBER_NAME: 'number'};
     const number = blocks.getCostumeNumberName(args, util);
-    t.strictEqual(number, 1);
+    t.equal(number, 1);
     t.end();
 });
 
@@ -177,7 +177,7 @@ test('getCostumeNumberName can return costume name', t => {
     util.target.currentCostume = 0; // This is 0-indexed.
     const args = {NUMBER_NAME: 'name'};
     const name = blocks.getCostumeNumberName(args, util);
-    t.strictEqual(name, 'first name');
+    t.equal(name, 'first name');
     t.end();
 });
 
@@ -185,7 +185,7 @@ test('getBackdropNumberName returns 1-indexed costume number', t => {
     util.target.currentCostume = 2; // This is 0-indexed.
     const args = {NUMBER_NAME: 'number'};
     const number = blocks.getBackdropNumberName(args, util);
-    t.strictEqual(number, 3);
+    t.equal(number, 3);
     t.end();
 });
 
@@ -193,7 +193,7 @@ test('getBackdropNumberName can return costume name', t => {
     util.target.currentCostume = 2; // This is 0-indexed.
     const args = {NUMBER_NAME: 'name'};
     const number = blocks.getBackdropNumberName(args, util);
-    t.strictEqual(number, 'third name');
+    t.equal(number, 'third name');
     t.end();
 });
 
@@ -205,7 +205,7 @@ test('numbers should be rounded properly in say/think', t => {
 
     rt.addListener('SAY', () => {
         const bubbleState = util.target.getCustomState(Looks.STATE_KEY);
-        t.strictEqual(bubbleState.text, expectedSayString);
+        t.equal(bubbleState.text, expectedSayString);
     });
 
     expectedSayString = '3.14';
@@ -268,7 +268,7 @@ test('clamp graphic effects', t => {
     for (const arg of args) {
         rt.addListener(arg.EFFECT + arg.CLAMP, (effectName, actualValue) => {
             const expected = expectedValues[arg.EFFECT][arg.CLAMP];
-            t.strictEqual(actualValue, expected);
+            t.equal(actualValue, expected);
         });
 
         looks.setEffect(arg, util);
