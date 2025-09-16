@@ -51,7 +51,7 @@
     "@babel/preset-env": "7.28.3",
     "babel-loader": "9.2.1",
     "copy-webpack-plugin": "6.4.1",
-    "eslint": "8.57.1",
+    "eslint": "9.35.0",
     "eslint-config-scratch": "9.0.9",
     "eslint-plugin-import": "2.32.0",
     "jsdom": "13.2.0",
