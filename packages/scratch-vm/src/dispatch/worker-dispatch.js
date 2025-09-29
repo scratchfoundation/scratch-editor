@@ -1,6 +1,13 @@
+// eslint-disable-next-line spaced-comment
+/// <reference lib="WebWorker" />
+
 const SharedDispatch = require('./shared-dispatch');
 
 const log = require('../util/log');
+
+/**
+ * @import {DispatchCallMessage, DispatchLocalServiceProvider, DispatchServiceRecord} from './shared-dispatch'
+ */
 
 /**
  * This class provides a Worker with the means to participate in the message dispatch system managed by CentralDispatch.
@@ -15,7 +22,7 @@ class WorkerDispatch extends SharedDispatch {
 
         /**
          * This promise will be resolved when we have successfully connected to central dispatch.
-         * @type {Promise}
+         * @type {Promise<void>}
          * @see {waitForConnection}
          * @private
          */
@@ -28,19 +35,17 @@ class WorkerDispatch extends SharedDispatch {
          * If a service is not listed here, it is assumed to be provided by another context (another Worker or the main
          * thread).
          * @see {setService}
-         * @type {object}
+         * @type {Record<string, DispatchLocalServiceProvider>}
          */
         this.services = {};
 
-        this._onMessage = this._onMessage.bind(this, self);
-        if (typeof self !== 'undefined') {
-            self.onmessage = this._onMessage;
-        }
+        // Receive messages across the worker boundary
+        self.onmessage = this._onMessage.bind(this, self);
     }
 
     /**
-     * @returns {Promise} a promise which will resolve upon connection to central dispatch. If you need to make a call
-     * immediately on "startup" you can attach a 'then' to this promise.
+     * @returns {Promise<void>} a promise which will resolve upon connection to central dispatch. If you need to
+     * make a call immediately on "startup" you can attach a 'then' to this promise.
      * @example
      *      dispatch.waitForConnection.then(() => {
      *          dispatch.call('myService', 'hello');
@@ -54,8 +59,8 @@ class WorkerDispatch extends SharedDispatch {
      * Set a local object as the global provider of the specified service.
      * WARNING: Any method on the provider can be called from any worker within the dispatch system.
      * @param {string} service - a globally unique string identifying this service. Examples: 'vm', 'gui', 'extension9'.
-     * @param {object} provider - a local object which provides this service.
-     * @returns {Promise} - a promise which will resolve once the service is registered.
+     * @param {DispatchLocalServiceProvider} provider - a local object which provides this service.
+     * @returns {Promise<unknown>} - a promise which will resolve once the service is registered.
      */
     setService (service, provider) {
         if (Object.prototype.hasOwnProperty.call(this.services, service)) {
@@ -69,7 +74,7 @@ class WorkerDispatch extends SharedDispatch {
      * Fetch the service provider object for a particular service name.
      * @override
      * @param {string} service - the name of the service to look up
-     * @returns {{provider:(object|Worker), isRemote:boolean}} - the means to contact the service, if found
+     * @returns {DispatchServiceRecord} - the means to contact the service, if found
      * @protected
      */
     _getServiceProvider (service) {
@@ -86,7 +91,7 @@ class WorkerDispatch extends SharedDispatch {
      * @override
      * @param {Worker} worker - the worker which sent the message.
      * @param {DispatchCallMessage} message - the message to be handled.
-     * @returns {Promise|undefined} - a promise for the results of this operation, if appropriate
+     * @returns {Promise<void>|void} - a promise for the results of this operation, if appropriate
      * @protected
      */
     _onDispatchMessage (worker, message) {
