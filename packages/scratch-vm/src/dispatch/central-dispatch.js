@@ -23,12 +23,6 @@ class CentralDispatch extends SharedDispatch {
         this.services = {};
 
         /**
-         * The constructor we will use to recognize workers.
-         * @type {Function}
-         */
-        this.workerClass = (typeof Worker === 'undefined' ? null : Worker);
-
-        /**
          * List of workers attached to this dispatcher.
          * @type {Array}
          */
@@ -115,7 +109,7 @@ class CentralDispatch extends SharedDispatch {
         const provider = this.services[service];
         return provider && {
             provider,
-            isRemote: Boolean(this.workerClass && provider instanceof this.workerClass)
+            isRemote: provider instanceof Worker
         };
     }
 

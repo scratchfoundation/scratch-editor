@@ -1,5 +1,10 @@
 const path = require('path');
-const test = require('tap').test;
+const tap = require('tap');
+
+// make Worker available globally before requiring VM/dispatch code
+const Worker = require('web-worker');
+tap.intercept(global, 'Worker', {value: Worker});
+
 const makeTestStorage = require('../fixtures/make-test-storage');
 const readFileToBuffer = require('../fixtures/readProjectFile').readFileToBuffer;
 const VirtualMachine = require('../../src/index');
@@ -7,6 +12,8 @@ const Variable = require('../../src/engine/variable');
 
 const projectUri = path.resolve(__dirname, '../fixtures/monitors.sb3');
 const project = readFileToBuffer(projectUri);
+
+const {test} = tap;
 
 test('importing sb3 project with monitors', t => {
     const vm = new VirtualMachine();

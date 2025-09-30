@@ -1,13 +1,15 @@
-const DispatchTestService = require('../fixtures/dispatch-test-service');
+const path = require('path');
+const tap = require('tap');
+
+// make Worker available globally before requiring VM/dispatch code
 const Worker = require('web-worker');
+tap.intercept(global, 'Worker', {value: Worker});
 
 const dispatch = require('../../src/dispatch/central-dispatch');
-const path = require('path');
-const test = require('tap').test;
 
+const DispatchTestService = require('../fixtures/dispatch-test-service');
 
-// By default Central Dispatch works with the Worker class built into the browser. Tell it to use TinyWorker instead.
-dispatch.workerClass = Worker;
+const {test} = tap;
 
 const runServiceTest = function (serviceName, t) {
     const promises = [];

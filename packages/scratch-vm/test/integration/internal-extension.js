@@ -1,16 +1,15 @@
-const test = require('tap').test;
+const tap = require('tap');
+
+// make Worker available globally before requiring VM/dispatch code
 const Worker = require('web-worker');
+tap.intercept(global, 'Worker', {value: Worker});
 
 const BlockType = require('../../src/extension-support/block-type');
-
-const dispatch = require('../../src/dispatch/central-dispatch');
+const RenderedTarget = require('../../src/sprites/rendered-target');
+const Sprite = require('../../src/sprites/sprite');
 const VirtualMachine = require('../../src/virtual-machine');
 
-const Sprite = require('../../src/sprites/sprite');
-const RenderedTarget = require('../../src/sprites/rendered-target');
-
-// By default Central Dispatch works with the Worker class built into the browser. Tell it to use TinyWorker instead.
-dispatch.workerClass = Worker;
+const {test} = tap;
 
 class TestInternalExtension {
     constructor () {

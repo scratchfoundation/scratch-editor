@@ -1,10 +1,16 @@
 const path = require('path');
 const tap = require('tap');
-const test = tap.test;
+
+// make Worker available globally before requiring VM/dispatch code
+const Worker = require('web-worker');
+tap.intercept(global, 'Worker', {value: Worker});
+
 const makeTestStorage = require('../fixtures/make-test-storage');
 const {readFileToBuffer, extractProjectJson} = require('../fixtures/readProjectFile');
 const VirtualMachine = require('../../src/index');
 const sb2 = require('../../src/serialization/sb2');
+
+const {test} = tap;
 
 const invisibleVideoMonitorProjectUri = path.resolve(__dirname, '../fixtures/invisible-video-monitor.sb2');
 const invisibleVideoMonitorProject = readFileToBuffer(invisibleVideoMonitorProjectUri);

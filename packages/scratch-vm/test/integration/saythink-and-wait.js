@@ -1,16 +1,18 @@
-const Worker = require('web-worker');
 const path = require('path');
-const test = require('tap').test;
+const tap = require('tap');
+
+// make Worker available globally before requiring VM/dispatch code
+const Worker = require('web-worker');
+tap.intercept(global, 'Worker', {value: Worker});
+
 const makeTestStorage = require('../fixtures/make-test-storage');
 const readFileToBuffer = require('../fixtures/readProjectFile').readFileToBuffer;
 const VirtualMachine = require('../../src/index');
-const dispatch = require('../../src/dispatch/central-dispatch');
 
 const uri = path.resolve(__dirname, '../fixtures/saythink-and-wait.sb2');
 const project = readFileToBuffer(uri);
 
-// By default Central Dispatch works with the Worker class built into the browser. Tell it to use TinyWorker instead.
-dispatch.workerClass = Worker;
+const {test} = tap;
 
 test('say/think and wait', t => {
     const vm = new VirtualMachine();

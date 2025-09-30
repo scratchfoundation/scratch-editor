@@ -1,10 +1,16 @@
+const fs = require('fs');
 const path = require('path');
 const tap = require('tap');
-const {test} = tap;
-const fs = require('fs');
+
+// make Worker available globally before requiring VM/dispatch code
+const Worker = require('web-worker');
+tap.intercept(global, 'Worker', {value: Worker});
+
 const readFileToBuffer = require('../fixtures/readProjectFile').readFileToBuffer;
 const dispatch = require('../../src/dispatch/central-dispatch');
 const VirtualMachine = require('../../src/index');
+
+const {test} = tap;
 
 /**
  * Call _stopLoop() on the Video Sensing extension.

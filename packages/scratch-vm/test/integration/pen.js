@@ -1,10 +1,12 @@
-const Worker = require('web-worker');
 const path = require('path');
-const test = require('tap').test;
+const tap = require('tap');
+
+// make Worker available globally before requiring VM/dispatch code
+const Worker = require('web-worker');
+tap.intercept(global, 'Worker', {value: Worker});
 
 const Scratch3PenBlocks = require('../../src/extensions/scratch3_pen/index.js');
 const VirtualMachine = require('../../src/index');
-const dispatch = require('../../src/dispatch/central-dispatch');
 
 const makeTestStorage = require('../fixtures/make-test-storage');
 const readFileToBuffer = require('../fixtures/readProjectFile').readFileToBuffer;
@@ -12,8 +14,7 @@ const readFileToBuffer = require('../fixtures/readProjectFile').readFileToBuffer
 const uri = path.resolve(__dirname, '../fixtures/pen.sb2');
 const project = readFileToBuffer(uri);
 
-// By default Central Dispatch works with the Worker class built into the browser. Tell it to use TinyWorker instead.
-dispatch.workerClass = Worker;
+const {test} = tap;
 
 test('pen', t => {
     const vm = new VirtualMachine();
