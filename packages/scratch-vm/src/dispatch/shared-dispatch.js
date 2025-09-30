@@ -200,7 +200,7 @@ class SharedDispatch {
             }
 
             if (transfer) {
-                provider.postMessage({service, method, responseId, args}, transfer);
+                provider.postMessage({service, method, responseId, args}, {transfer});
             } else {
                 provider.postMessage({service, method, responseId, args});
             }
