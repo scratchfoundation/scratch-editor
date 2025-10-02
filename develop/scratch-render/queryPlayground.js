@@ -34509,56 +34509,6 @@ var RenderWebGL = /*#__PURE__*/function (_EventEmitter) {
     }
 
     /**
-     * Determine if the drawable is touching a rectangle.
-     *
-     * @param {int} drawableID The ID of the drawable to check.
-     * @param {int} left - The left X coordinate of the rectangle.
-     * @param {int} top - The top Y coordinate of the rectangle.
-     * @param {int} right - The right X coordinate of the rectangle.
-     * @param {int} bottom - The bottom Y coordinate of the rectangle.
-     * @returns {boolean} If the drawable has any pixels that would draw in the rectangle area
-     */
-  }, {
-    key: "drawableTouchingScratchRect",
-    value: function drawableTouchingScratchRect(drawableID, left, top, right, bottom) {
-      var drawable = this._allDrawables[drawableID];
-      if (!drawable) {
-        return false;
-      }
-      var bounds = new Rectangle();
-      bounds.initFromBounds(left, right, bottom, top);
-      var worldPos = twgl.v3.create();
-      drawable.updateCPURenderAttributes();
-      for (worldPos[1] = bounds.bottom; worldPos[1] <= bounds.top; worldPos[1]++) {
-        for (worldPos[0] = bounds.left; worldPos[0] <= bounds.right; worldPos[0]++) {
-          if (drawable.isTouching(worldPos)) {
-            return true;
-          }
-        }
-      }
-      return false;
-    }
-
-    /**
-     * Determine if the drawable is touching a point in the Scratch coordinate system
-     *
-     * @param {int} drawableID The ID of the drawable to check.
-     * @param {int} x The x coordinate of the point.
-     * @param {int} y The y coordinate of the point.
-     * @returns {boolean} If the drawable is touching the point
-     */
-  }, {
-    key: "drawableTouchingScratchPoint",
-    value: function drawableTouchingScratchPoint(drawableID, x, y) {
-      var drawable = this._allDrawables[drawableID];
-      if (!drawable) {
-        return false;
-      }
-      drawable.updateCPURenderAttributes();
-      return drawable.isTouching([x, y]);
-    }
-
-    /**
      * Detect which sprite, if any, is at the given location.
      * This function will pick all drawables that are visible, unless specific
      * candidate drawable IDs are provided.  Used for determining what is clicked
