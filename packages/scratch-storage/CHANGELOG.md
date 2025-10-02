@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.1.0](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.241...v4.1.0) (2025-10-02)
+
+
+### Features
+
+* **deps:** update dependency scratch-webpack-configuration to v3.1.0 ([3a951e3](https://github.com/scratchfoundation/scratch-storage/commit/3a951e30cf6aafca0719d23b43a6c369600d03e6))
+
 ## [4.0.241](https://github.com/scratchfoundation/scratch-storage/compare/v4.0.240...v4.0.241) (2025-09-30)
 
 
