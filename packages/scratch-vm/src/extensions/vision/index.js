@@ -4,7 +4,7 @@ const BlockType = require('../../extension-support/block-type');
 class Vision {
     constructor (runtime) {
         this.runtime = runtime;
-        this.serverUrl = 'http://127.0.0.1:8001';
+        this.baseURL = 'http://127.0.0.1:8001';
         this.lastDataURL = null;
         this.prevFrame = null; // para optical flow (futuro)
     }
@@ -22,6 +22,11 @@ class Vision {
                     arguments: {
                         URL: {type: ArgumentType.STRING, defaultValue: 'https://picsum.photos/480/360'}
                     }
+                },
+                {
+                    opcode: 'setImageFile',
+                    blockType: BlockType.COMMAND,
+                    text: 'cargar imagen desde archivo local'
                 },
                 // ----- Nivel Básico -----
                 {
@@ -123,7 +128,58 @@ class Vision {
         });
         this.runtime.emit('VISION_IMAGE', this.lastDataURL);
     }
+    setImageFile () {
+        return new Promise(resolve => {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
 
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+
+                reader.onload = () => {
+                    this.lastDataURL = reader.result;
+
+                    // 🔹 Mostrar la imagen cargada localmente de inmediato
+                    this.runtime.emit('VISION_IMAGE', this.lastDataURL);
+
+                    // 🔹 Luego intentar enviar al servidor si está activo
+                    (async () => {
+                        try {
+                            const resp = await fetch(`${this.baseURL}/process`, {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({
+                                    image_b64: this.lastDataURL,
+                                    op: 'none', // operación vacía
+                                    params: {}
+                                })
+                            });
+
+                            const data = await resp.json();
+
+                            // Si el servidor devuelve una imagen procesada
+                            if (data && data.image_b64) {
+                                this.lastDataURL = data.image_b64;
+                                this.runtime.emit('VISION_IMAGE', this.lastDataURL);
+                            }
+                        } catch (err) {
+                            console.warn('⚠️ No se pudo conectar al servidor, mostrando imagen local.');
+                        }
+
+                        resolve();
+                    })();
+                };
+
+                reader.readAsDataURL(file);
+            };
+
+            input.click();
+        });
+    }
     async _call (op, params = {}) {
         if (!this.lastDataURL) throw new Error('Primero usa "cargar imagen desde URL".');
         const body = {image_b64: this.lastDataURL, op, params};
@@ -137,8 +193,6 @@ class Vision {
             this.lastDataURL = data.image_b64;
             this.runtime.emit('VISION_IMAGE', this.lastDataURL);
         }
-
-
     }
 
     // ----- Básico -----
