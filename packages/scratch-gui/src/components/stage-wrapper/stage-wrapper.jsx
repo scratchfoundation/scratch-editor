@@ -10,6 +10,9 @@ import Stage from '../../containers/stage.jsx';
 import Loader from '../loader/loader.jsx';
 
 import styles from './stage-wrapper.css';
+import VisionViewer from '../../lib/vision-viewer';
+import VisionStageInjector from '../../lib/vision-stage-injector.jsx';
+
 
 const StageWrapperComponent = function (props) {
     const {
@@ -31,6 +34,24 @@ const StageWrapperComponent = function (props) {
             )}
             dir={isRtl ? 'rtl' : 'ltr'}
         >
+            {/* Escenario de Scratch */}
+            <div className={styles.stageCanvas}>
+                {isRendererSupported ? (
+                    <Stage
+                        stageSize={stageSize}
+                        vm={vm}
+                    />
+                ) : null}
+                {/* Inyector que pone el backdrop al recibir VISION_IMAGE */}
+                <VisionStageInjector vm={vm} />
+                {props.children}
+            </div>
+
+            {/* Vision Kit - resultados */}
+            <div className={styles.visionViewer}>
+                <VisionViewer runtime={vm.runtime} />
+            </div>
+
             <Box className={styles.stageMenuWrapper}>
                 <StageHeader
                     manuallySaveThumbnails={manuallySaveThumbnails}
@@ -38,16 +59,6 @@ const StageWrapperComponent = function (props) {
                     stageSize={stageSize}
                     vm={vm}
                 />
-            </Box>
-            <Box className={styles.stageCanvasWrapper}>
-                {
-                    isRendererSupported ?
-                        <Stage
-                            stageSize={stageSize}
-                            vm={vm}
-                        /> :
-                        null
-                }
             </Box>
             {loading ? (
                 <Loader isFullScreen={isFullScreen} />
@@ -64,7 +75,8 @@ StageWrapperComponent.propTypes = {
     manuallySaveThumbnails: PropTypes.bool,
     onUpdateProjectThumbnail: PropTypes.func,
     stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired,
-    vm: PropTypes.instanceOf(VM).isRequired
+    vm: PropTypes.instanceOf(VM).isRequired,
+    children: PropTypes.node // ✅ agregado para validar props.children
 };
 
 export default StageWrapperComponent;

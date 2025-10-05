@@ -1,0 +1,7 @@
+fastapi==0.115.4
+uvicorn[standard]==0.32.0
+opencv-python==4.10.0.84
+numpy==2.1.2
+scikit-image==0.24.0
+scikit-learn==1.5.2
+pydantic==2.9.2

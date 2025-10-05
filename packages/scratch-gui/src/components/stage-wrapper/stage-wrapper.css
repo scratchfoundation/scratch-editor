@@ -13,18 +13,24 @@
 
 .stage-wrapper.full-screen {
     position: fixed;
-    top: $stage-menu-height;
+    top: stage-menu-height;
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: $z-index-stage-wrapper-overlay;
-    background-color: $ui-white;
+    z-index: z-index-stage-wrapper-overlay;
+    background-color: ui-white;
     /* spacing between stage and control bar (on the top), or between
     stage and window edges (on left/right/bottom) */
-    padding: $stage-full-screen-stage-padding;
+    padding: stage-full-screen-stage-padding;
 
     /* this centers the stage */
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.vision-viewer {
+    margin-top: 10px;
+    height: 240px;   /* ajusta según necesites */
+    background: #fff;
 }

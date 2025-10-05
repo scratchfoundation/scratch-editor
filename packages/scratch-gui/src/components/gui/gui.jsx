@@ -44,6 +44,8 @@ import soundsIcon from './icon--sounds.svg';
 import DebugModal from '../debug-modal/debug-modal.jsx';
 import {setPlatform} from '../../reducers/platform.js';
 import {PLATFORM} from '../../lib/platform.js';
+import VisionPreview from '../../containers/vision-preview.jsx';
+
 
 const messages = defineMessages({
     addExtension: {
@@ -398,7 +400,6 @@ const GUIComponent = props => {
                                 <Backpack host={backpackHost} />
                             ) : null}
                         </Box>
-
                         <Box className={classNames(styles.stageAndTargetWrapper, styles[stageSize])}>
                             <StageWrapper
                                 isFullScreen={isFullScreen}
@@ -415,6 +416,7 @@ const GUIComponent = props => {
                                     onNewBackdropClick={onNewLibraryBackdropClick}
                                 />
                             </Box>
+                            <VisionPreview vm={vm} />
                         </Box>
                     </Box>
                 </Box>
