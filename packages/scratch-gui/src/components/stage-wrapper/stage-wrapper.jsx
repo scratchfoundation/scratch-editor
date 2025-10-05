@@ -4,28 +4,28 @@ import classNames from 'classnames';
 import VM from '@scratch/scratch-vm';
 
 import Box from '../box/box.jsx';
-import {STAGE_DISPLAY_SIZES} from '../../lib/layout-constants.js';
-import StageHeader from '../../containers/stage-header.jsx';
-import Stage from '../../containers/stage.jsx';
 import Loader from '../loader/loader.jsx';
-
-import styles from './stage-wrapper.css';
 import VisionViewer from '../../lib/vision-viewer';
-import VisionStageInjector from '../../lib/vision-stage-injector.jsx';
+import styles from './stage-wrapper.css';
 
-
-const StageWrapperComponent = function (props) {
-    const {
-        isFullScreen,
-        isRtl,
-        isRendererSupported,
-        loading,
-        manuallySaveThumbnails,
-        onUpdateProjectThumbnail,
-        stageSize,
-        vm
-    } = props;
-
+/**
+ * StageWrapperComponent
+ *
+ * Componente que reemplaza el escenario estándar de Scratch por la vista del Vision Kit.
+ *
+ * @param {object} props - Propiedades del componente.
+ * @param {boolean} props.isFullScreen - Indica si está en modo pantalla completa.
+ * @param {boolean} props.isRtl - Define la orientación del texto (derecha a izquierda).
+ * @param {boolean} props.loading - Muestra el loader si está cargando.
+ * @param {VM} props.vm - Instancia del Virtual Machine (VM) de Scratch.
+ * @returns {JSX.Element} El componente visual del escenario Vision Kit.
+ */
+const StageWrapperComponent = function ({
+    isFullScreen,
+    isRtl,
+    loading,
+    vm
+}) {
     return (
         <Box
             className={classNames(
@@ -34,49 +34,21 @@ const StageWrapperComponent = function (props) {
             )}
             dir={isRtl ? 'rtl' : 'ltr'}
         >
-            {/* Escenario de Scratch */}
-            <div className={styles.stageCanvas}>
-                {isRendererSupported ? (
-                    <Stage
-                        stageSize={stageSize}
-                        vm={vm}
-                    />
-                ) : null}
-                {/* Inyector que pone el backdrop al recibir VISION_IMAGE */}
-                <VisionStageInjector vm={vm} />
-                {props.children}
-            </div>
-
-            {/* Vision Kit - resultados */}
-            <div className={styles.visionViewer}>
+            {/* 🔹 Reemplazamos el escenario normal por la vista de Vision Kit */}
+            <div className={styles.visionFullScreen}>
                 <VisionViewer runtime={vm.runtime} />
             </div>
 
-            <Box className={styles.stageMenuWrapper}>
-                <StageHeader
-                    manuallySaveThumbnails={manuallySaveThumbnails}
-                    onUpdateProjectThumbnail={onUpdateProjectThumbnail}
-                    stageSize={stageSize}
-                    vm={vm}
-                />
-            </Box>
-            {loading ? (
-                <Loader isFullScreen={isFullScreen} />
-            ) : null}
+            {loading ? <Loader isFullScreen={isFullScreen} /> : null}
         </Box>
     );
 };
 
 StageWrapperComponent.propTypes = {
     isFullScreen: PropTypes.bool,
-    isRendererSupported: PropTypes.bool.isRequired,
     isRtl: PropTypes.bool.isRequired,
     loading: PropTypes.bool,
-    manuallySaveThumbnails: PropTypes.bool,
-    onUpdateProjectThumbnail: PropTypes.func,
-    stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired,
-    vm: PropTypes.instanceOf(VM).isRequired,
-    children: PropTypes.node // ✅ agregado para validar props.children
+    vm: PropTypes.instanceOf(VM).isRequired
 };
 
 export default StageWrapperComponent;

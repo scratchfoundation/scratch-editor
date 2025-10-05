@@ -4,7 +4,7 @@ const BlockType = require('../../extension-support/block-type');
 class Vision {
     constructor (runtime) {
         this.runtime = runtime;
-        this.baseURL = 'http://127.0.0.1:8001';
+        this.serverUrl = 'http://127.0.0.1:8001';
         this.lastDataURL = null;
         this.prevFrame = null; // para optical flow (futuro)
     }
@@ -15,14 +15,6 @@ class Vision {
             color1: '#34D399',
             color2: '#059669',
             blocks: [
-                {
-                    opcode: 'setServer',
-                    blockType: BlockType.COMMAND,
-                    text: 'usar servidor [URL]',
-                    arguments: {
-                        URL: {type: ArgumentType.STRING, defaultValue: this.baseURL}
-                    }
-                },
                 {
                     opcode: 'setImageURL',
                     blockType: BlockType.COMMAND,
@@ -145,6 +137,8 @@ class Vision {
             this.lastDataURL = data.image_b64;
             this.runtime.emit('VISION_IMAGE', this.lastDataURL);
         }
+
+
     }
 
     // ----- Básico -----
