@@ -75,6 +75,61 @@ async def process_image(request: Request):
         temp = cv2.resize(img, (w // factor, h // factor), interpolation=cv2.INTER_LINEAR)
         img = cv2.resize(temp, (w, h), interpolation=cv2.INTER_NEAREST)
 
+    elif op == "circles":
+        print("🔵 Detectando círculos...")
+
+        # Convertir a escala de grises
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = cv2.medianBlur(gray, 5)
+
+        # Detectar círculos con HoughCircles
+        circles = cv2.HoughCircles(
+            gray,
+            cv2.HOUGH_GRADIENT,
+            dp=1.2,          # resolución del acumulador (ajustable)
+            minDist=30,      # distancia mínima entre centros de círculos
+            param1=100,      # umbral superior del detector de bordes Canny
+            param2=30,       # umbral del acumulador de centros
+            minRadius=10,    # radio mínimo
+            maxRadius=200    # radio máximo
+        )
+
+        if circles is not None:
+            circles = np.uint16(np.around(circles))
+            print(f"🔵 Se detectaron {len(circles[0])} círculos")
+            for i in circles[0, :]:
+                center = (i[0], i[1])
+                radius = i[2]
+                # Dibuja el círculo en verde
+                cv2.circle(img, center, radius, (0, 255, 0), 3)
+                # Marca el centro con un punto rojo
+                cv2.circle(img, center, 3, (0, 0, 255), -1)
+                cv2.putText(img, "Circulo", (i[0]-20, i[1]-radius-10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+
+    elif op == "rectangles":
+        # Convertir a escala de grises y aplicar desenfoque
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+        # Detectar bordes
+        edges = cv2.Canny(blurred, 50, 150)
+
+        # Encontrar contornos
+        contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        count_rects = 0
+        for cnt in contours:
+            approx = cv2.approxPolyDP(cnt, 0.02 * cv2.arcLength(cnt, True), True)
+            area = cv2.contourArea(cnt)
+
+            # Un rectángulo tiene 4 vértices y área razonable
+            if len(approx) == 4 and area > 1000:
+                cv2.drawContours(img, [approx], 0, (0, 255, 0), 3)
+                count_rects += 1
+
+        print(f"✅ Rectángulos detectados: {count_rects}")
+
     elif op == "canny":
         t1 = float(params.get("t1", 100))
         t2 = float(params.get("t2", 200))
@@ -105,9 +160,24 @@ async def process_image(request: Request):
         img = cv2.warpAffine(img, M, (w, h))
 
     elif op == "scale":
-        s = float(params.get("s", 1.2))
-        h, w = img.shape[:2]
-        img = cv2.resize(img, (int(w * s), int(h * s)))
+            s = float(params.get("s", 1.0))
+
+            # Evitar valores extremos o negativos
+            if not (0.1 <= s <= 5.0):
+                print(f"⚠️ Valor de escala inválido: {s}. Se usará 1.0 por defecto.")
+                s = 1.0
+
+            h, w = img.shape[:2]
+            new_w = int(w * s)
+            new_h = int(h * s)
+
+            # Limitar tamaño máximo (ej. 4096x4096 píxeles)
+            if new_w > 4096 or new_h > 4096:
+                print(f"⚠️ Imagen demasiado grande ({new_w}x{new_h}), ajustando tamaño máximo.")
+                new_w = min(new_w, 4096)
+                new_h = min(new_h, 4096)
+
+            img = cv2.resize(img, (new_w, new_h))
 
     elif op == "translate":
         dx = int(params.get("dx", 20))
