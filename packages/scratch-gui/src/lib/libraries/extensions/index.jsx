@@ -17,6 +17,18 @@ export default [
                 id="gui.extension.vision.description"
             />
         ),
-        featured: true
+        featured: true,
+
+        // 👇 NUEVO: metadatos visuales para dividir categorías dentro de Vision Kit
+        collaborator: 'OpenCV + Scratch EDU',
+        tags: ['visión', 'imagen', 'procesamiento'],
+
+        // 👇 NUEVO: definición de subcategorías (niveles)
+        categories: [
+            {name: '🧩 Acciones', color: '#2DD4BF'},
+            {name: '💡 Nivel Básico', color: '#34D399'},
+            {name: '⚙️ Nivel Intermedio', color: '#FACC15'},
+            {name: '🚀 Nivel Avanzado', color: '#A78BFA'}
+        ]
     }
 ];

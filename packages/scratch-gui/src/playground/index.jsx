@@ -13,18 +13,23 @@ import supportedBrowser from '../lib/supported-browser';
 
 import styles from './index.css';
 
+import {setupVisionKitDecorator} from '../lib/vision-decorator';
+
+
 const appTarget = document.createElement('div');
 appTarget.className = styles.app;
 document.body.appendChild(appTarget);
 
+
 if (supportedBrowser()) {
-    // require needed here to avoid importing unsupported browser-crashing code
-    // at the top level
     require('./render-gui.jsx').default(appTarget);
 
+    setupVisionKitDecorator();
 } else {
+    // Si el navegador no es compatible, mostramos un modal de advertencia
     BrowserModalComponent.setAppElement(appTarget);
     const WrappedBrowserModalComponent = AppStateHOC(BrowserModalComponent, true /* localesOnly */);
+
     const handleBack = () => {};
     // eslint-disable-next-line react/jsx-no-bind
     ReactDOM.render(<WrappedBrowserModalComponent onBack={handleBack} />, appTarget);

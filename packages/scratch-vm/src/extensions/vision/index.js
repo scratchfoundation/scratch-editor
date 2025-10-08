@@ -41,62 +41,130 @@ class Vision {
         }, 3000);
     }
 
+    /**
+     * Muestra un mensaje de confirmación (verde, estilo moderno).
+     * @param {string} message - Texto a mostrar al usuario.
+     */
+    _showConfirm (message) {
+        const existing = document.getElementById('vision-confirm');
+        if (existing) existing.remove();
+
+        const box = document.createElement('div');
+        box.id = 'vision-confirm';
+        box.innerHTML = `✅ ${message}`;
+
+        Object.assign(box.style, {
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            background: '#16a34a', // Verde de confirmación
+            color: 'white',
+            padding: '10px 20px',
+            borderRadius: '12px',
+            fontFamily: 'sans-serif',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+            fontSize: '15px',
+            zIndex: 9999,
+            opacity: '0',
+            transform: 'translateY(10px)',
+            transition: 'all 0.4s ease'
+        });
+
+        document.body.appendChild(box);
+
+        // Animación de aparición
+        requestAnimationFrame(() => {
+            box.style.opacity = '1';
+            box.style.transform = 'translateY(0)';
+        });
+
+        // Desaparece después de 3 segundos
+        setTimeout(() => {
+            box.style.opacity = '0';
+            box.style.transform = 'translateY(10px)';
+            setTimeout(() => box.remove(), 400);
+        }, 3000);
+    }
+
     getInfo () {
         return {
             id: 'vision',
             name: 'Vision Kit',
-            color1: '#34D399',
-            color2: '#059669',
+            color1: '#2DD4BF',
+            color2: '#0E7490',
+
+            // 🔹 Aquí definimos subcategorías (niveles)
+            menus: {},
+
+            // 🔹 Los bloques se agrupan en categorías por color
             blocks: [
+
+                // ======== 🧩 ACCIONES ========
                 {
                     opcode: 'setImageURL',
                     blockType: BlockType.COMMAND,
                     text: 'cargar imagen desde URL [URL]',
                     arguments: {
                         URL: {type: ArgumentType.STRING, defaultValue: 'https://picsum.photos/480/360'}
-                    }
+                    },
+                    color1: '#2DD4BF'
                 },
                 {
                     opcode: 'setImageFile',
                     blockType: BlockType.COMMAND,
-                    text: 'cargar imagen desde archivo local'
+                    text: 'cargar imagen desde archivo local',
+                    color1: '#2DD4BF'
                 },
                 {
-                    opcode: 'exportPythonCode',
+                    opcode: 'exportProcessedImage',
                     blockType: BlockType.COMMAND,
-                    text: 'exportar código Python'
+                    text: 'exportar imagen procesada',
+                    color1: '#2DD4BF'
+                },
+                {
+                    opcode: 'show',
+                    blockType: BlockType.COMMAND,
+                    text: 'mostrar resultado',
+                    color1: '#2DD4BF'
                 },
 
-                // ----- Nivel Básico -----
+                // ======== 💡 NIVEL BÁSICO ========
                 {
                     opcode: 'brightness',
                     blockType: BlockType.COMMAND,
                     text: 'brillo [BETA]',
-                    arguments: {BETA: {type: ArgumentType.NUMBER, defaultValue: 30}}
+                    arguments: {BETA: {type: ArgumentType.NUMBER, defaultValue: 30}},
+                    color1: '#34D399'
                 },
                 {
                     opcode: 'contrast',
                     blockType: BlockType.COMMAND,
                     text: 'contraste [ALPHA]',
-                    arguments: {ALPHA: {type: ArgumentType.NUMBER, defaultValue: 1.2}}
+                    arguments: {ALPHA: {type: ArgumentType.NUMBER, defaultValue: 1.2}},
+                    color1: '#34D399'
                 },
                 {
                     opcode: 'saturation',
                     blockType: BlockType.COMMAND,
                     text: 'saturación [S]',
-                    arguments: {S: {type: ArgumentType.NUMBER, defaultValue: 1.3}}
+                    arguments: {S: {type: ArgumentType.NUMBER, defaultValue: 1.3}},
+                    color1: '#34D399'
                 },
-                {opcode: 'invert', blockType: BlockType.COMMAND, text: 'invertir colores'},
+                {
+                    opcode: 'invert',
+                    blockType: BlockType.COMMAND,
+                    text: 'invertir colores',
+                    color1: '#34D399'
+                },
                 {
                     opcode: 'pixelate',
                     blockType: BlockType.COMMAND,
                     text: 'pixelar factor [F]',
-                    arguments: {F: {type: ArgumentType.NUMBER, defaultValue: 8}}
+                    arguments: {F: {type: ArgumentType.NUMBER, defaultValue: 8}},
+                    color1: '#34D399'
                 },
-                {opcode: 'circles', blockType: BlockType.COMMAND, text: 'detectar círculos'},
-                {opcode: 'rectangles', blockType: BlockType.COMMAND, text: 'detectar rectángulos'},
 
-                // ----- Intermedio -----
+                // ======== ⚙️ NIVEL INTERMEDIO ========
                 {
                     opcode: 'canny',
                     blockType: BlockType.COMMAND,
@@ -104,51 +172,57 @@ class Vision {
                     arguments: {
                         T1: {type: ArgumentType.NUMBER, defaultValue: 100},
                         T2: {type: ArgumentType.NUMBER, defaultValue: 200}
-                    }
+                    },
+                    color1: '#FACC15'
                 },
-                {opcode: 'sobel', blockType: BlockType.COMMAND, text: 'bordes Sobel'},
+                {
+                    opcode: 'sobel',
+                    blockType: BlockType.COMMAND,
+                    text: 'bordes Sobel',
+                    color1: '#FACC15'
+                },
                 {
                     opcode: 'gaussian',
                     blockType: BlockType.COMMAND,
                     text: 'gaussian blur [K]',
-                    arguments: {K: {type: ArgumentType.NUMBER, defaultValue: 5}}
+                    arguments: {K: {type: ArgumentType.NUMBER, defaultValue: 5}},
+                    color1: '#FACC15'
                 },
-                {opcode: 'sharpen', blockType: BlockType.COMMAND, text: 'sharpen'},
-                {opcode: 'contours', blockType: BlockType.COMMAND, text: 'contornos'},
                 {
                     opcode: 'rotate',
                     blockType: BlockType.COMMAND,
                     text: 'rotar [DEG]',
-                    arguments: {DEG: {type: ArgumentType.NUMBER, defaultValue: 15}}
+                    arguments: {DEG: {type: ArgumentType.NUMBER, defaultValue: 15}},
+                    color1: '#FACC15'
                 },
                 {
                     opcode: 'scale',
                     blockType: BlockType.COMMAND,
                     text: 'escalar [S]',
-                    arguments: {S: {type: ArgumentType.NUMBER, defaultValue: 1.2}}
-                },
-                {
-                    opcode: 'translate',
-                    blockType: BlockType.COMMAND,
-                    text: 'trasladar [DX] [DY]',
-                    arguments: {
-                        DX: {type: ArgumentType.NUMBER, defaultValue: 20},
-                        DY: {type: ArgumentType.NUMBER, defaultValue: 20}
-                    }
+                    arguments: {S: {type: ArgumentType.NUMBER, defaultValue: 1.2}},
+                    color1: '#FACC15'
                 },
 
-                // ----- Avanzado -----
-                {opcode: 'orb', blockType: BlockType.COMMAND, text: 'características ORB'},
-                {opcode: 'watershed', blockType: BlockType.COMMAND, text: 'segmentación Watershed'},
+                // ======== 🚀 NIVEL AVANZADO ========
+                {
+                    opcode: 'orb',
+                    blockType: BlockType.COMMAND,
+                    text: 'características ORB',
+                    color1: '#A78BFA'
+                },
+                {
+                    opcode: 'watershed',
+                    blockType: BlockType.COMMAND,
+                    text: 'segmentación Watershed',
+                    color1: '#A78BFA'
+                },
                 {
                     opcode: 'kmeans',
                     blockType: BlockType.COMMAND,
                     text: 'segmentación K-means [K]',
-                    arguments: {K: {type: ArgumentType.NUMBER, defaultValue: 3}}
-                },
-
-                // Utilidad
-                {opcode: 'show', blockType: BlockType.COMMAND, text: 'mostrar resultado'}
+                    arguments: {K: {type: ArgumentType.NUMBER, defaultValue: 3}},
+                    color1: '#A78BFA'
+                }
             ]
         };
     }
@@ -321,6 +395,26 @@ class Vision {
         if (this.lastDataURL) this.runtime.emit('VISION_IMAGE', this.lastDataURL);
     }
 
+    /**
+     * Descarga la última imagen procesada como archivo local.
+     */
+    exportProcessedImage () {
+        if (!this.lastDataURL) {
+            this._showAlert('⚠️ No hay imagen procesada para exportar.');
+            return;
+        }
+
+        const link = document.createElement('a');
+        link.href = this.lastDataURL;
+        link.download = this.lastFileName ? `procesada_${this.lastFileName.replace(/\.[^/.]+$/, '.png')}` :
+            'imagen_procesada.png';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        this._showConfirm(' Imagen procesada exportada correctamente.', '#22c55e');
+    }
+
     exportPythonCode () {
     // 🔹 Traducción de operaciones a código Python
         const opToPython = {
@@ -391,6 +485,7 @@ class Vision {
         .replace('{t2}', op.params?.T2 || 200)
         .replace('{k}', op.params?.K || 5)
 }`;
+
                     }
                 }
             }
