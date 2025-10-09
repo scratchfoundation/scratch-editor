@@ -14,6 +14,7 @@ const log = require('./util/log');
 const MathUtil = require('./util/math-util');
 const Runtime = require('./engine/runtime');
 const StringUtil = require('./util/string-util');
+const Blocks = require('./engine/blocks');
 const formatMessage = require('format-message');
 
 const Variable = require('./engine/variable');
@@ -165,6 +166,93 @@ class VirtualMachine extends EventEmitter {
         this.flyoutBlockListener = this.flyoutBlockListener.bind(this);
         this.monitorBlockListener = this.monitorBlockListener.bind(this);
         this.variableListener = this.variableListener.bind(this);
+    }
+
+    _convertSb3BlocksToVmModel (blocksJson) {
+        const vmBlocks = {};
+        const scripts = [];
+
+        for (const blockId in blocksJson) {
+            if (!Object.prototype.hasOwnProperty.call(blocksJson, blockId)) continue;
+            const b = blocksJson[blockId];
+
+            // Convert Fields from ["value", id] to {name, value, id}
+            const fields = {};
+            for (const fieldName in b.fields) {
+                const field = b.fields[fieldName];
+                fields[fieldName] = {
+                    name: fieldName,
+                    value: field[0],
+                    id: field[1]
+                };
+            }
+
+            // Convert Inputs from [type, blockId, shadowId] to {name, block, shadow}
+            const inputs = {};
+            for (const inputName in b.inputs) {
+                const input = b.inputs[inputName];
+                const newEntry = { name: inputName };
+                switch (input[0]) { // type: 1=shadow, 2=no shadow, 3=obscured shadow
+                case 1:
+                    newEntry.block = input[1];
+                    newEntry.shadow = input[1];
+                    break;
+                case 2:
+                    newEntry.block = input[1];
+                    newEntry.shadow = null;
+                    break;
+                case 3:
+                    newEntry.block = input[1];
+                    newEntry.shadow = input[2];
+                    break;
+                }
+                inputs[inputName] = newEntry;
+            }
+
+            // Defaulting to a non-null number to add some padding
+            const coordinates = {
+                ...b.x ? {x} : {x: 15},
+                ...b.y ? {y} : {y: 15}
+            }
+
+            // Assemble the new block object in the VM's internal format
+            vmBlocks[blockId] = {
+                id: blockId,
+                opcode: b.opcode,
+                inputs: inputs,
+                fields: fields,
+                next: b.next,
+                parent: b.parent,
+                shadow: b.shadow,
+                topLevel: b.topLevel,
+                mutation: b.mutation,
+                ...coordinates
+            };
+
+            if (b.topLevel) {
+                scripts.push(blockId);
+            }
+        }
+
+        return {
+            blocks: vmBlocks,
+            scripts: scripts
+        };
+    }
+
+    convertStandaloneJsonToXml (json) {
+        if (!json || Object.keys(json).length === 0) {
+            return '';
+        }
+
+        const blocks = new Blocks(this.runtime);
+
+        const vmModel = this._convertSb3BlocksToVmModel(json);
+
+        blocks._blocks = vmModel.blocks;
+        blocks._scripts = vmModel.scripts;
+
+        return blocks.toXML();
     }
 
     /**
