@@ -41,11 +41,18 @@ const baseConfig = new ScratchWebpackConfigBuilder(
             clean: false
         },
         resolve: {
+            alias: {
+                'scratch-vm': path.resolve(__dirname, '../scratch-vm')
+            },
+            extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
             fallback: {
+                fs: false,
+                path: false,
                 Buffer: require.resolve('buffer/'),
                 stream: require.resolve('stream-browserify')
             }
         }
+
     })
     .addModuleRule({
         test: /\.(svg|png|wav|mp3|gif|jpg)$/,

@@ -1,7 +1,6 @@
 const dispatch = require('../dispatch/central-dispatch');
 const log = require('../util/log');
 const maybeFormatMessage = require('../util/maybe-format-message');
-const Vision = require('../extensions/vision/index.js');
 
 const BlockType = require('./block-type');
 
@@ -25,8 +24,11 @@ const builtinExtensions = {
     makeymakey: () => require('../extensions/scratch3_makeymakey'),
     boost: () => require('../extensions/scratch3_boost'),
     gdxfor: () => require('../extensions/scratch3_gdx_for'),
-    vision: () => Vision
 
+    visionactions: () => require('../extensions/vision-actions'),
+    visionbasic: () => require('../extensions/vision-basic'),
+    visionintermediate: () => require('../extensions/vision-intermediate'),
+    visionadvanced: () => require('../extensions/vision-advanced')
 };
 
 /**
@@ -137,34 +139,57 @@ class ExtensionManager {
         this._loadedExtensions.set(extensionId, serviceName);
     }
 
-    /**
-     * Load an extension by URL or internal extension ID
-     * @param {string} extensionURL - the URL for the extension to load OR the ID of an internal extension
-     * @returns {Promise} resolved once the extension is loaded and initialized or rejected on failure
-     */
     loadExtensionURL (extensionURL) {
         if (Object.prototype.hasOwnProperty.call(builtinExtensions, extensionURL)) {
-            /** @TODO dupe handling for non-builtin extensions. See commit 670e51d33580e8a2e852b3b038bb3afc282f81b9 */
             if (this.isExtensionLoaded(extensionURL)) {
                 const message = `Rejecting attempt to load a second extension with ID ${extensionURL}`;
-                log.warn(message);
+                console.warn(message);
                 return Promise.resolve();
             }
 
-            const extension = builtinExtensions[extensionURL]();
-            const extensionInstance = new extension(this.runtime);
-            const serviceName = this._registerInternalExtension(extensionInstance);
-            this._loadedExtensions.set(extensionURL, serviceName);
-            return Promise.resolve();
+            try {
+                const extensionExport = builtinExtensions[extensionURL]();
+
+                let instance;
+                // 🧩 Si exporta una clase con getInfo
+                if (
+                    typeof extensionExport === 'function' &&
+                    extensionExport.prototype &&
+                    typeof extensionExport.prototype.getInfo === 'function'
+                ) {
+                    instance = new extensionExport(this.runtime);
+                } else if (typeof extensionExport === 'function') {
+                    // 🧩 Si exporta una función factory (que devuelve instancia)
+                    instance = extensionExport(this.runtime);
+                } else if (typeof extensionExport === 'object') {
+                    // 🧩 Si ya es un objeto con getInfo
+                    instance = extensionExport;
+                } else {
+                    console.error(`[❌ ExtensionManager] Invalid extension definition for ${extensionURL}:`
+                        , extensionExport);
+                    return Promise.resolve();
+                }
+
+                if (!instance || typeof instance.getInfo !== 'function') {
+                    console.error(`[❌ ExtensionManager] Invalid getInfo() in ${extensionURL}`, instance);
+                    return Promise.resolve();
+                }
+
+                this._loadedExtensions.set(extensionURL, instance);
+                console.log(`[✅ ExtensionManager] Registered instance for ${extensionURL}`);
+                return Promise.resolve();
+            } catch (e) {
+                console.error(`[❌ ExtensionManager] Error loading internal extension (${extensionURL}):`, e);
+                return Promise.reject(e);
+            }
+        } else {
+            // Caso: extensiones externas por URL (no internas)
+            return new Promise((resolve, reject) => {
+                const worker = new Worker('./extension-worker.js');
+                this.pendingExtensions.push({extensionURL, resolve, reject});
+                dispatch.addWorker(worker);
+            });
         }
-
-        return new Promise((resolve, reject) => {
-            // If we `require` this at the global level it breaks non-webpack targets, including tests
-            const worker = new Worker('./extension-worker.js');
-
-            this.pendingExtensions.push({extensionURL, resolve, reject});
-            dispatch.addWorker(worker);
-        });
     }
 
     /**
@@ -226,18 +251,39 @@ class ExtensionManager {
         }
     }
 
-    /**
-     * Register an internal (non-Worker) extension object
-     * @param {object} extensionObject - the extension object to register
-     * @returns {string} The name of the registered extension service
-     */
-    _registerInternalExtension (extensionObject) {
-        const extensionInfo = extensionObject.getInfo();
-        const fakeWorkerId = this.nextExtensionWorker++;
-        const serviceName = `extension_${fakeWorkerId}_${extensionInfo.id}`;
-        dispatch.setServiceSync(serviceName, extensionObject);
-        dispatch.callSync('extensions', 'registerExtensionServiceSync', serviceName);
-        return serviceName;
+    _registerInternalExtension (extensionDefinition, id) {
+        try {
+            let instance;
+
+            // 🧩 Si exporta una clase (con getInfo en el prototype)
+            if (
+                typeof extensionDefinition === 'function' &&
+                extensionDefinition.prototype &&
+                typeof extensionDefinition.prototype.getInfo === 'function'
+            ) {
+                instance = new extensionDefinition(this.runtime);
+            } else if (typeof extensionDefinition === 'function') {
+                // 🧩 Si exporta una función factory que devuelve instancia
+                instance = extensionDefinition(this.runtime);
+            } else if (typeof extensionDefinition === 'object') {
+                // 🧩 Si exporta ya un objeto
+                instance = extensionDefinition;
+            } else {
+                console.error(`[❌ ExtensionManager] Invalid extension definition for ${id}:`, extensionDefinition);
+                return;
+            }
+
+            if (!instance || typeof instance.getInfo !== 'function') {
+                console.error(`[❌ ExtensionManager] ${id} did not provide getInfo().`, instance);
+                return;
+            }
+
+            // ✅ Registrar correctamente
+            this._loadedExtensions.set(id, instance);
+            console.log(`[✅ ExtensionManager] Registered instance for ${id}`);
+        } catch (e) {
+            console.error(`[❌ ExtensionManager] Error registering internal extension (${id}):`, e);
+        }
     }
 
     /**

@@ -1,0 +1,9 @@
+{
+  "name": "Vision Acciones",
+  "extensionId": "visionactions",
+  "iconURL": "vision/vision-actions.png",
+  "insetIconURL": "vision/vision-actions.png",
+  "description": "Carga, visualización y exportación de imágenes.",
+  "featured": true,
+  "collaborator": "OpenCV + Scratch EDU"
+}

@@ -1,36 +1,62 @@
-// Polyfills
+// ============================
+//  Polyfills para compatibilidad
+// ============================
 import 'es6-object-assign/auto';
 import 'core-js/fn/array/includes';
 import 'core-js/fn/promise/finally';
-import 'intl'; // For Safari 9
+import 'intl'; // Para Safari 9
 
+// ============================
+//  Librerías principales
+// ============================
 import React from 'react';
 import ReactDOM from 'react-dom';
+import VM from '../../../scratch-vm/src/index';
 
 import AppStateHOC from '../lib/app-state-hoc.jsx';
 import BrowserModalComponent from '../components/browser-modal/browser-modal.jsx';
 import supportedBrowser from '../lib/supported-browser';
-
 import styles from './index.css';
 
-import {setupVisionKitDecorator} from '../lib/vision-decorator';
+// 🧩 Decorador Vision Kit
+import setupVisionKitDecorator from '../lib/vision-decorator';
 
+/**
+ * Inicializa la aplicación GUI principal de Scratch
+ * y registra automáticamente las extensiones Vision Kit.
+ */
+const initializeApp = function () {
+    // === Crear contenedor base
+    const appTarget = document.createElement('div');
+    appTarget.className = styles.app;
+    document.body.appendChild(appTarget);
 
-const appTarget = document.createElement('div');
-appTarget.className = styles.app;
-document.body.appendChild(appTarget);
+    // === Instancia global de VM
+    const vm = new VM();
+    window.Scratch = {vm};
 
+    if (supportedBrowser()) {
+        // === Renderizar GUI principal
+        const renderGUI = require('./render-gui.jsx').default;
+        renderGUI(appTarget, vm);
 
-if (supportedBrowser()) {
-    require('./render-gui.jsx').default(appTarget);
+        // === Iniciar decorador Vision Kit
+        setupVisionKitDecorator(); // <-- 🔹 SIN pasar vm
+    } else {
+        // === Mostrar aviso de navegador no soportado
+        BrowserModalComponent.setAppElement(appTarget);
+        const WrappedBrowserModalComponent = AppStateHOC(
+            BrowserModalComponent,
+            true /* localesOnly */
+        );
 
-    setupVisionKitDecorator();
-} else {
-    // Si el navegador no es compatible, mostramos un modal de advertencia
-    BrowserModalComponent.setAppElement(appTarget);
-    const WrappedBrowserModalComponent = AppStateHOC(BrowserModalComponent, true /* localesOnly */);
+        const props = {onBack: () => {}};
+        ReactDOM.render(
+            <WrappedBrowserModalComponent {...props} />,
+            appTarget
+        );
+    }
+};
 
-    const handleBack = () => {};
-    // eslint-disable-next-line react/jsx-no-bind
-    ReactDOM.render(<WrappedBrowserModalComponent onBack={handleBack} />, appTarget);
-}
+// 🚀 Ejecutar inicialización principal
+initializeApp();

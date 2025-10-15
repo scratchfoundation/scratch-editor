@@ -1,0 +1,9 @@
+{
+  "name": "Vision Avanzado",
+  "extensionId": "visionadvanced",
+  "iconURL": "vision/vision-advanced.png",
+  "insetIconURL": "vision/vision-advanced.png",
+  "description": "Segmentación y extracción de características.",
+  "featured": true,
+  "collaborator": "OpenCV + Scratch EDU"
+}

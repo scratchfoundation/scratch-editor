@@ -113,7 +113,7 @@ class Vision {
                     opcode: 'setImageFile',
                     blockType: BlockType.COMMAND,
                     text: 'cargar imagen desde archivo local',
-                    color1: '#2DD4BF'
+                    color1: '#FACC15'
                 },
                 {
                     opcode: 'exportProcessedImage',
@@ -134,7 +134,7 @@ class Vision {
                     blockType: BlockType.COMMAND,
                     text: 'brillo [BETA]',
                     arguments: {BETA: {type: ArgumentType.NUMBER, defaultValue: 30}},
-                    color1: '#34D399'
+                    color1: '#FACC15'
                 },
                 {
                     opcode: 'contrast',
@@ -163,7 +163,40 @@ class Vision {
                     arguments: {F: {type: ArgumentType.NUMBER, defaultValue: 8}},
                     color1: '#34D399'
                 },
-
+                {
+                    opcode: 'saturation',
+                    blockType: BlockType.COMMAND,
+                    text: 'saturación [S]',
+                    arguments: {S: {type: ArgumentType.NUMBER, defaultValue: 1.3}},
+                    color1: '#34D399'
+                },
+                {
+                    opcode: 'circles',
+                    blockType: BlockType.COMMAND,
+                    text: 'detectar círculos',
+                    categoryId: 'basico',
+                    color1: '#34D399'},
+                {
+                    opcode: 'rectangles',
+                    blockType: BlockType.COMMAND,
+                    text: 'detectar rectángulos',
+                    categoryId: 'basico',
+                    color1: '#34D399'
+                },
+                {
+                    opcode: 'rectangles',
+                    blockType: BlockType.COMMAND,
+                    text: 'detectar rectángulos',
+                    categoryId: 'basico',
+                    color1: '#34D399'
+                },
+                {
+                    opcode: 'exportPythonCode',
+                    blockType: BlockType.COMMAND,
+                    text: 'exportar código Python',
+                    categoryId: 'acciones',
+                    color1: '#2DD4BF'
+                },
                 // ======== ⚙️ NIVEL INTERMEDIO ========
                 {
                     opcode: 'canny',

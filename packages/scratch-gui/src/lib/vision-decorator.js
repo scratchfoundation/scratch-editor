@@ -1,56 +1,72 @@
 /**
- * @function setupVisionKitDecorator
- * @description Espera a que el panel de bloques de Vision Kit se cargue,
- * y añade encabezados coloridos a cada grupo de bloques.
+ * 🎨 VisionKit Decorator
+ * Registra las extensiones Vision y actualiza el toolbox dinámicamente.
  */
-const setupVisionKitDecorator = () => {
-    console.log('✅ Vision Kit Decorator activo');
 
-    const style = document.createElement('style');
-    style.textContent = `
-    .vision-section-title {
-        font-weight: bold;
-        color: white;
-        padding: 6px 10px;
-        margin: 10px 8px;
-        border-radius: 6px;
-        font-family: 'Inter', sans-serif;
-        font-size: 13px;
-    }
-    .vision-act { background: #2DD4BF; }
-    .vision-basic { background: #34D399; }
-    .vision-inter { background: #FACC15; color: #000; }
-    .vision-adv { background: #A78BFA; }
-    `;
-    document.head.appendChild(style);
-
-    const observer = new MutationObserver(() => {
-        const flyout = document.querySelector('.blocklyFlyout');
-        if (!flyout) return;
-
-        const texts = Array.from(flyout.querySelectorAll('.blocklyText'));
-        if (!texts.some(t => t.textContent.includes('cargar imagen desde URL'))) return;
-        if (flyout.querySelector('.vision-section-title')) return;
-
-        const sections = [
-            {marker: 'cargar imagen desde URL', label: '🧩 ACCIONES', class: 'vision-act'},
-            {marker: 'brillo', label: '💡 NIVEL BÁSICO', class: 'vision-basic'},
-            {marker: 'bordes Canny', label: '⚙️ NIVEL INTERMEDIO', class: 'vision-inter'},
-            {marker: 'características ORB', label: '🚀 NIVEL AVANZADO', class: 'vision-adv'}
-        ];
-
-        for (const sec of sections) {
-            const target = texts.find(t => t.textContent.includes(sec.marker));
-            if (target) {
-                const div = document.createElement('div');
-                div.textContent = sec.label;
-                div.className = `vision-section-title ${sec.class}`;
-                flyout.insertBefore(div, target.closest('g') || target.parentNode);
-            }
+const decorateVisionToolbox = function (vm, gui) {
+    console.log('🟢 [VisionKit] Decorador iniciado, esperando VM...');
+    const waitForVM = setInterval(() => {
+        if (window.vm && window.vm.runtime && window.vm.extensionManager) {
+            clearInterval(waitForVM);
+            console.log('⚙️ [VisionKit] VM detectada, registrando extensiones...');
+            registerExtensions(window.vm, gui);
         }
-    });
-
-    observer.observe(document.body, {childList: true, subtree: true});
+    }, 800);
 };
 
-export {setupVisionKitDecorator};
+/**
+ * 🔧 Registra las extensiones Vision dentro de la VM y actualiza la GUI.
+ */
+
+const registerExtensions = function (vm, gui) {
+    try {
+        const modules = {
+            visionactions: require('scratch-vm/src/extensions/vision-actions'),
+            visionbasic: require('scratch-vm/src/extensions/vision-basic'),
+            visionintermediate: require('scratch-vm/src/extensions/vision-intermediate'),
+            visionadvanced: require('scratch-vm/src/extensions/vision-advanced')
+        };
+
+        // 🔹 Registrar extensiones si no lo están aún
+        Object.entries(modules).forEach(([id, mod]) => {
+            if (!vm.extensionManager.isExtensionLoaded(id)) {
+                vm.extensionManager._registerInternalExtension(mod);
+                console.log(`🧩 [VisionKit] Registrada extensión interna: ${id}`);
+            }
+        });
+
+        // 🔹 Esperar hasta que existan los bloques
+        const waitBlocks = setInterval(() => {
+            const primitives = Object.keys(vm.runtime._primitives || {}).filter(k =>
+                k.includes('vision')
+            );
+            if (primitives.length > 0) {
+                clearInterval(waitBlocks);
+                console.log(`🎨 [VisionKit] Primitivos Vision detectados: ${primitives.length}`);
+
+                // 🔁 Actualizar toolbox
+                if (gui?.props?.vm?.extensionManager) {
+                    gui.props.vm.extensionManager.refreshBlocks();
+                    console.log('🧱 [VisionKit] refreshBlocks ejecutado correctamente.');
+                }
+
+                if (gui?.props?.updateToolbox) {
+                    gui.props.updateToolbox();
+                    console.log('🎨 [VisionKit] Toolbox actualizado desde VisionKit.');
+                } else {
+                    vm.runtime.emit('EXTENSIONS_UPDATED');
+                    console.log('🎨 [VisionKit] Toolbox actualizado (evento fallback).');
+                }
+
+                // 🚀 Disparar evento para actualizar XML dinámico
+                window.dispatchEvent(new Event('refreshToolboxVision'));
+            }
+        }, 1000);
+
+        console.log('✅ [VisionKit] Todas las extensiones Vision registradas manualmente.');
+    } catch (err) {
+        console.error('❌ [VisionKit] Error al registrar extensiones Vision:', err);
+    }
+};
+
+export default decorateVisionToolbox;

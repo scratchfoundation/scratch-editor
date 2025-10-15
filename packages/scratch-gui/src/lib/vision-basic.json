@@ -1,0 +1,9 @@
+{
+  "name": "Vision Básico",
+  "extensionId": "visionbasic",
+  "iconURL": "vision/vision-basic.png",
+  "insetIconURL": "vision/vision-basic.png",
+  "description": "Filtros de color y operaciones simples.",
+  "featured": true,
+  "collaborator": "OpenCV + Scratch EDU"
+}

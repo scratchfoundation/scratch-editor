@@ -1,0 +1,9 @@
+{
+  "name": "Vision Intermedio",
+  "extensionId": "visionintermediate",
+  "iconURL": "vision/vision-intermediate.png",
+  "insetIconURL": "vision/vision-intermediate.png",
+  "description": "Detección de bordes y transformaciones geométricas.",
+  "featured": true,
+  "collaborator": "OpenCV + Scratch EDU"
+}

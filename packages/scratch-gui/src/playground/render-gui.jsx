@@ -8,39 +8,40 @@ import HashParserHOC from '../lib/hash-parser-hoc.jsx';
 import log from '../lib/log.js';
 import {PLATFORM} from '../lib/platform.js';
 
-const onClickLogo = () => {
-    window.location = 'https://scratch.mit.edu';
-};
+import registerVisionBlocks from '../lib/vision-autoregister';
+import registerVisionExtensions from '../lib/vision-register';
+import makeToolboxXML from '../lib/make-toolbox-xml';
 
-const handleTelemetryModalCancel = () => {
-    log('User canceled telemetry modal');
-};
-
-const handleTelemetryModalOptIn = () => {
-    log('User opted into telemetry');
-};
-
-const handleTelemetryModalOptOut = () => {
-    log('User opted out of telemetry');
-};
-
-/*
- * Render the GUI playground. This is a separate function because importing anything
- * that instantiates the VM causes unsupported browsers to crash
- * {object} appTarget - the DOM element to render to
+/**
+ * Renderiza el GUI principal y configura Vision Kit
+ * @param {HTMLElement} appTarget - Elemento donde se monta el GUI
+ * @param {object} vm - Instancia de la máquina virtual (Scratch VM)
  */
-export default appTarget => {
+const renderGUI = function (appTarget, vm) {
     GUI.setAppElement(appTarget);
 
-    // note that redux's 'compose' function is just being used as a general utility to make
-    // the hierarchy of HOC constructor calls clearer here; it has nothing to do with redux's
-    // ability to compose reducers.
-    const WrappedGui = compose(
-        AppStateHOC,
-        HashParserHOC
-    )(GUI);
+    // ==============================
+    // 🧠 Registro base de bloques visuales
+    // ==============================
+    try {
+        registerVisionBlocks();
+        console.log('✅ [VisionKit] AutoRegistro visual activado correctamente.');
+    } catch (err) {
+        console.warn('⚠️ Error al registrar bloques Vision:', err);
+    }
 
-    // TODO a hack for testing the backpack, allow backpack host to be set by url param
+    const WrappedGui = compose(AppStateHOC, HashParserHOC)(GUI);
+
+    // ==============================
+    // 🔗 Eventos GUI y Telemetría
+    // ==============================
+    const handleLogoClick = () => {
+        window.location = 'https://scratch.mit.edu';
+    };
+    const handleTelemetryModalCancel = () => log('User canceled telemetry modal');
+    const handleTelemetryModalOptIn = () => log('User opted into telemetry');
+    const handleTelemetryModalOptOut = () => log('User opted out of telemetry');
+
     const backpackHostMatches = window.location.href.match(/[?&]backpack_host=([^&]*)&?/);
     const backpackHost = backpackHostMatches ? backpackHostMatches[1] : null;
 
@@ -48,39 +49,72 @@ export default appTarget => {
     let simulateScratchDesktop;
     if (scratchDesktopMatches) {
         try {
-            // parse 'true' into `true`, 'false' into `false`, etc.
             simulateScratchDesktop = JSON.parse(scratchDesktopMatches[1]);
         } catch {
-            // it's not JSON so just use the string
-            // note that a typo like "falsy" will be treated as true
             simulateScratchDesktop = scratchDesktopMatches[1];
         }
     }
 
     if (process.env.NODE_ENV === 'production' && typeof window === 'object') {
-        // Warn before navigating away
         window.onbeforeunload = () => true;
     }
 
-    ReactDOM.render(
-        // important: this is checking whether `simulateScratchDesktop` is truthy, not just defined!
-        simulateScratchDesktop ?
-            <WrappedGui
-                canEditTitle
-                platform={PLATFORM.DESKTOP}
-                showTelemetryModal
-                canSave={false}
-                onTelemetryModalCancel={handleTelemetryModalCancel}
-                onTelemetryModalOptIn={handleTelemetryModalOptIn}
-                onTelemetryModalOptOut={handleTelemetryModalOptOut}
-            /> :
-            <WrappedGui
-                canEditTitle
-                backpackVisible
-                showComingSoon
-                backpackHost={backpackHost}
-                canSave={false}
-                onClickLogo={onClickLogo}
-            />,
-        appTarget);
+    // ==============================
+    // 🖼️ Render principal del GUI
+    // ==============================
+    const guiProps = simulateScratchDesktop ? {
+        vm,
+        canEditTitle: true,
+        platform: PLATFORM.DESKTOP,
+        showTelemetryModal: true,
+        canSave: false,
+        onTelemetryModalCancel: handleTelemetryModalCancel,
+        onTelemetryModalOptIn: handleTelemetryModalOptIn,
+        onTelemetryModalOptOut: handleTelemetryModalOptOut
+    } : {
+        vm,
+        canEditTitle: true,
+        backpackVisible: true,
+        showComingSoon: true,
+        backpackHost,
+        canSave: false,
+        onClickLogo: handleLogoClick
+    };
+
+    ReactDOM.render(<WrappedGui {...guiProps} />, appTarget);
+
+    // =======================================================
+    // 🧩 Registro manual de extensiones Vision Kit en la VM
+    // =======================================================
+    setTimeout(async () => {
+        try {
+            const vmInstance = window.Scratch?.vm;
+            if (!vmInstance) {
+                console.warn('⚠️ VM no disponible aún.');
+                return;
+            }
+
+            // ✅ Registrar manualmente todas las extensiones Vision
+            await registerVisionExtensions(vmInstance);
+
+            // 🕓 Esperar y refrescar toolbox dinámico
+            setTimeout(() => {
+                const primitives = Object.keys(vmInstance.runtime._primitives)
+                    .filter(p => p.startsWith('vision'));
+
+                console.log(`[VisionKit] Primitivos Vision detectados: ${primitives.length}`);
+                if (primitives.length > 0) {
+                    const xml = makeToolboxXML();
+                    vmInstance.emit('workspaceUpdate', {toolboxXML: xml});
+                    console.log('🎨 Toolbox Vision actualizado tras registro manual.');
+                } else {
+                    console.warn('⚠️ Aún no hay primitivos Vision registrados.');
+                }
+            }, 1000);
+        } catch (err) {
+            console.error('❌ Error en registro VisionKit:', err);
+        }
+    }, 2500);
 };
+
+export default renderGUI;

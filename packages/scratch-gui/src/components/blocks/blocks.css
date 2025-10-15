@@ -3,97 +3,70 @@
 @import "../../css/z-index.css";
 
 .blocks {
-    height: 100%;
+  height: 100%;
 }
 
-.drag-over:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.75;
-    background-color: $drop-highlight;
-    transition: all 0.25s ease;
+.drag-over::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.75;
+  background-color: rgba(0, 191, 255, 0.2); /* antes $drop-highlight */
+  transition: all 0.25s ease;
 }
 
-.blocks :global(.injectionDiv){
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    border: 1px solid $ui-black-transparent;
-    border-top-right-radius: $space;
-    border-bottom-right-radius: $space;
+.blocks .injectionDiv {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid rgba(0,0,0,0.2); /* antes $ui-black-transparent */
+  border-top-right-radius: 0.25rem;  /* antes $space */
+  border-bottom-right-radius: 0.25rem;
 }
 
-[dir="rtl"] .blocks :global(.injectionDiv) {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-top-left-radius: $space;
-    border-bottom-left-radius: $space;
+[dir="rtl"] .blocks .injectionDiv {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
 }
 
-.blocks :global(.blocklyMainBackground) {
-    stroke: none;
+.blocks .blocklyMainBackground {
+  stroke: none;
 }
 
-.blocks :global(.blocklyToolboxDiv) {
-    border-right: 1px solid $ui-black-transparent;
-    border-bottom: 1px solid $ui-black-transparent;
-    box-sizing: content-box;
-    height: calc(100% - 3.25rem) !important;
-
-    /*
-        For now, the layout cannot support scrollbars in the category menu.
-        The line below works for Edge, the `::-webkit-scrollbar` line
-        below that is for webkit browsers. It isn't possible to do the
-        same for Firefox, so a different solution may be needed for them.
-    */
-    -ms-overflow-style: none;
+.blocks .blocklyToolboxDiv {
+  border-right: 1px solid rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  box-sizing: content-box;
+  height: calc(100% - 3.25rem) !important;
+  -ms-overflow-style: none;
 }
 
-[dir="rtl"] .blocks :global(.blocklyToolboxDiv) {
-    border-right: none;
-    border-left: 1px solid $ui-black-transparent;
+.blocks .blocklyToolboxDiv::-webkit-scrollbar {
+  display: none;
 }
 
-.blocks :global(.blocklyToolboxDiv::-webkit-scrollbar) {
-    display: none;
+.blocks .blocklyFlyout {
+  border-right: 1px solid rgba(0,0,0,0.2);
+  box-sizing: content-box;
 }
 
-.blocks :global(.blocklyFlyout) {
-    border-right: 1px solid $ui-black-transparent;
-    box-sizing: content-box;
+.blocks .blocklyBlockDragSurface {
+  pointer-events: none;
+  z-index: 200; /* antes $z-index-drag-layer */
 }
 
-[dir="rtl"] .blocks :global(.blocklyFlyout) {
-    border-right: none;
-    border-left: 1px solid $ui-black-transparent;
+.blocks .scratchCategoryMenuItemLabel {
+  font-size: 0.65rem;
 }
 
-
-.blocks :global(.blocklyBlockDragSurface) {
-    /*
-        Fix an issue where the drag surface was preventing hover events for sharing blocks.
-        This does not prevent user interaction on the blocks themselves.
-    */
-    pointer-events: none;
-    z-index: $z-index-drag-layer; /* make blocks match gui drag layer */
-}
-
-/*
-    Shrink category font to fit "My Blocks" for now.
-    Probably will need different solutions for language support later, so
-    make the change here instead of in scratch-blocks.
-*/
-.blocks :global(.scratchCategoryMenuItemLabel) {
-    font-size: 0.65rem;
-}
-
-.blocks :global(.blocklyMinimalBody) {
-    min-width: auto;
-    min-height: auto;
+.blocks .blocklyMinimalBody {
+  min-width: auto;
+  min-height: auto;
 }
