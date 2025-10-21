@@ -87,7 +87,7 @@
     "in-publish": "2.0.1",
     "js-md5": "0.7.3",
     "jsdoc": "3.6.11",
-    "json": "^9.0.4",
+    "json": "9.0.6",
     "pngjs": "3.4.0",
     "scratch-blocks": "1.1.225",
     "scratch-l10n": "6.0.67",
