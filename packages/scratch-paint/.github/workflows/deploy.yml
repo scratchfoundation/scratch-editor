@@ -21,7 +21,7 @@ jobs:
     env:
         TRIGGER_DEPLOY: ${{ startsWith(github.ref, 'refs/heads/master') || startsWith(github.ref, 'refs/heads/hotfix') || startsWith(github.ref, 'refs/heads/develop') || startsWith(github.ref, 'refs/heads/beta') }}
     steps: 
-        - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
+        - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         - uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6
           if: github.event_name == 'pull_request'
         - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
