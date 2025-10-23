@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Tutorial: Rectangle-AABB-Matrix - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BitmapSkin.html">BitmapSkin</a><ul class='methods'><li data-type='method'><a href="BitmapSkin.html#._getBitmapSize">_getBitmapSize</a></li><li data-type='method'><a href="BitmapSkin.html#_setTexture">_setTexture</a></li><li data-type='method'><a href="BitmapSkin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="BitmapSkin.html#dispose">dispose</a></li><li data-type='method'><a href="BitmapSkin.html#getFenceBounds">getFenceBounds</a></li><li data-type='method'><a href="BitmapSkin.html#getTexture">getTexture</a></li><li data-type='method'><a href="BitmapSkin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="BitmapSkin.html#isTouchingLinear">isTouchingLinear</a></li><li data-type='method'><a href="BitmapSkin.html#isTouchingNearest">isTouchingNearest</a></li><li data-type='method'><a href="BitmapSkin.html#setBitmap">setBitmap</a></li><li data-type='method'><a href="BitmapSkin.html#setEmptyImageData">setEmptyImageData</a></li><li data-type='method'><a href="BitmapSkin.html#updateSilhouette">updateSilhouette</a></li><li data-type='method'><a href="BitmapSkin.html#useNearest">useNearest</a></li></ul></li><li><a href="CanvasMeasurementProvider.html">CanvasMeasurementProvider</a><ul class='methods'><li data-type='method'><a href="CanvasMeasurementProvider.html#beginMeasurementSession">beginMeasurementSession</a></li><li data-type='method'><a href="CanvasMeasurementProvider.html#endMeasurementSession">endMeasurementSession</a></li><li data-type='method'><a href="CanvasMeasurementProvider.html#measureText">measureText</a></li></ul></li><li><a href="Drawable.html">Drawable</a><ul class='methods'><li data-type='method'><a href="Drawable.html#.color3bToID">color3bToID</a></li><li data-type='method'><a href="Drawable.html#.color4fFromID">color4fFromID</a></li><li data-type='method'><a href="Drawable.html#.sampleColor4b">sampleColor4b</a></li><li data-type='method'><a href="Drawable.html#_calculateTransform">_calculateTransform</a></li><li data-type='method'><a href="Drawable.html#_getTransformedHullPoints">_getTransformedHullPoints</a></li><li data-type='method'><a href="Drawable.html#_skinWasAltered">_skinWasAltered</a></li><li data-type='method'><a href="Drawable.html#dispose">dispose</a></li><li data-type='method'><a href="Drawable.html#getAABB">getAABB</a></li><li data-type='method'><a href="Drawable.html#getBounds">getBounds</a></li><li data-type='method'><a href="Drawable.html#getBoundsForBubble">getBoundsForBubble</a></li><li data-type='method'><a href="Drawable.html#getFastBounds">getFastBounds</a></li><li data-type='method'><a href="Drawable.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="Drawable.html#getVisible">getVisible</a></li><li data-type='method'><a href="Drawable.html#needsConvexHullPoints">needsConvexHullPoints</a></li><li data-type='method'><a href="Drawable.html#setConvexHullDirty">setConvexHullDirty</a></li><li data-type='method'><a href="Drawable.html#setConvexHullPoints">setConvexHullPoints</a></li><li data-type='method'><a href="Drawable.html#setTransformDirty">setTransformDirty</a></li><li data-type='method'><a href="Drawable.html#updateCPURenderAttributes">updateCPURenderAttributes</a></li><li data-type='method'><a href="Drawable.html#updateDirection">updateDirection</a></li><li data-type='method'><a href="Drawable.html#updateEffect">updateEffect</a></li><li data-type='method'><a href="Drawable.html#updateMatrix">updateMatrix</a></li><li data-type='method'><a href="Drawable.html#updatePosition">updatePosition</a></li><li data-type='method'><a href="Drawable.html#updateProperties">updateProperties</a></li><li data-type='method'><a href="Drawable.html#updateScale">updateScale</a></li><li data-type='method'><a href="Drawable.html#updateVisible">updateVisible</a></li></ul></li><li><a href="PenSkin.html">PenSkin</a><ul class='methods'><li data-type='method'><a href="PenSkin.html#_drawLineOnBuffer">_drawLineOnBuffer</a></li><li data-type='method'><a href="PenSkin.html#_enterDrawLineOnBuffer">_enterDrawLineOnBuffer</a></li><li data-type='method'><a href="PenSkin.html#_enterUsePenBuffer">_enterUsePenBuffer</a></li><li data-type='method'><a href="PenSkin.html#_exitDrawLineOnBuffer">_exitDrawLineOnBuffer</a></li><li data-type='method'><a href="PenSkin.html#_exitUsePenBuffer">_exitUsePenBuffer</a></li><li data-type='method'><a href="PenSkin.html#_setCanvasSize">_setCanvasSize</a></li><li data-type='method'><a href="PenSkin.html#_setTexture">_setTexture</a></li><li data-type='method'><a href="PenSkin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="PenSkin.html#clear">clear</a></li><li data-type='method'><a href="PenSkin.html#dispose">dispose</a></li><li data-type='method'><a href="PenSkin.html#drawLine">drawLine</a></li><li data-type='method'><a href="PenSkin.html#drawPoint">drawPoint</a></li><li data-type='method'><a href="PenSkin.html#getFenceBounds">getFenceBounds</a></li><li data-type='method'><a href="PenSkin.html#getTexture">getTexture</a></li><li data-type='method'><a href="PenSkin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="PenSkin.html#isTouchingLinear">isTouchingLinear</a></li><li data-type='method'><a href="PenSkin.html#isTouchingNearest">isTouchingNearest</a></li><li data-type='method'><a href="PenSkin.html#onNativeSizeChanged">onNativeSizeChanged</a></li><li data-type='method'><a href="PenSkin.html#setEmptyImageData">setEmptyImageData</a></li><li data-type='method'><a href="PenSkin.html#updateSilhouette">updateSilhouette</a></li><li data-type='method'><a href="PenSkin.html#useNearest">useNearest</a></li></ul></li><li><a href="Rectangle.html">Rectangle</a><ul class='methods'><li data-type='method'><a href="Rectangle.html#.intersect">intersect</a></li><li data-type='method'><a href="Rectangle.html#.union">union</a></li><li data-type='method'><a href="Rectangle.html#clamp">clamp</a></li><li data-type='method'><a href="Rectangle.html#contains">contains</a></li><li data-type='method'><a href="Rectangle.html#initFromBounds">initFromBounds</a></li><li data-type='method'><a href="Rectangle.html#initFromModelMatrix">initFromModelMatrix</a></li><li data-type='method'><a href="Rectangle.html#initFromPointsAABB">initFromPointsAABB</a></li><li data-type='method'><a href="Rectangle.html#intersects">intersects</a></li><li data-type='method'><a href="Rectangle.html#snapToInt">snapToInt</a></li></ul></li><li><a href="RenderWebGL.html">RenderWebGL</a><ul class='methods'><li data-type='method'><a href="RenderWebGL.html#._getContext">_getContext</a></li><li data-type='method'><a href="RenderWebGL.html#.isSupported">isSupported</a></li><li data-type='method'><a href="RenderWebGL.html#.sampleColor3b">sampleColor3b</a></li><li data-type='method'><a href="RenderWebGL.html#_candidatesBounds">_candidatesBounds</a></li><li data-type='method'><a href="RenderWebGL.html#_candidatesTouching">_candidatesTouching</a></li><li data-type='method'><a href="RenderWebGL.html#_createGeometry">_createGeometry</a></li><li data-type='method'><a href="RenderWebGL.html#_doExitDrawRegion">_doExitDrawRegion</a></li><li data-type='method'><a href="RenderWebGL.html#_drawThese">_drawThese</a></li><li data-type='method'><a href="RenderWebGL.html#_getConvexHullPointsForDrawable">_getConvexHullPointsForDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#_setNativeSize">_setNativeSize</a></li><li data-type='method'><a href="RenderWebGL.html#_touchingBounds">_touchingBounds</a></li><li data-type='method'><a href="RenderWebGL.html#clientSpaceToScratchBounds">clientSpaceToScratchBounds</a></li><li data-type='method'><a href="RenderWebGL.html#createBitmapSkin">createBitmapSkin</a></li><li data-type='method'><a href="RenderWebGL.html#createDrawable">createDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#createPenSkin">createPenSkin</a></li><li data-type='method'><a href="RenderWebGL.html#createSVGSkin">createSVGSkin</a></li><li data-type='method'><a href="RenderWebGL.html#createTextSkin">createTextSkin</a></li><li data-type='method'><a href="RenderWebGL.html#destroyDrawable">destroyDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#destroySkin">destroySkin</a></li><li data-type='method'><a href="RenderWebGL.html#draw">draw</a></li><li data-type='method'><a href="RenderWebGL.html#drawableTouching">drawableTouching</a></li><li data-type='method'><a href="RenderWebGL.html#drawableTouchingScratchPoint">drawableTouchingScratchPoint</a></li><li data-type='method'><a href="RenderWebGL.html#drawableTouchingScratchRect">drawableTouchingScratchRect</a></li><li data-type='method'><a href="RenderWebGL.html#enterDrawRegion">enterDrawRegion</a></li><li data-type='method'><a href="RenderWebGL.html#extractColor">extractColor</a></li><li data-type='method'><a href="RenderWebGL.html#extractDrawableScreenSpace">extractDrawableScreenSpace</a></li><li data-type='method'><a href="RenderWebGL.html#getBounds">getBounds</a></li><li data-type='method'><a href="RenderWebGL.html#getBoundsForBubble">getBoundsForBubble</a></li><li data-type='method'><a href="RenderWebGL.html#getCurrentSkinSize">getCurrentSkinSize</a></li><li data-type='method'><a href="RenderWebGL.html#getDrawableOrder">getDrawableOrder</a></li><li data-type='method'><a href="RenderWebGL.html#getFencedPositionOfDrawable">getFencedPositionOfDrawable</a></li><li data-type='method'><a href="RenderWebGL.html#getNativeSize">getNativeSize</a></li><li data-type='method'><a href="RenderWebGL.html#getSkinRotationCenter">getSkinRotationCenter</a></li><li data-type='method'><a href="RenderWebGL.html#getSkinSize">getSkinSize</a></li><li data-type='method'><a href="RenderWebGL.html#isTouchingColor">isTouchingColor</a></li><li data-type='method'><a href="RenderWebGL.html#isTouchingDrawables">isTouchingDrawables</a></li><li data-type='method'><a href="RenderWebGL.html#onNativeSizeChanged">onNativeSizeChanged</a></li><li data-type='method'><a href="RenderWebGL.html#penClear">penClear</a></li><li data-type='method'><a href="RenderWebGL.html#penLine">penLine</a></li><li data-type='method'><a href="RenderWebGL.html#penPoint">penPoint</a></li><li data-type='method'><a href="RenderWebGL.html#penStamp">penStamp</a></li><li data-type='method'><a href="RenderWebGL.html#pick">pick</a></li><li data-type='method'><a href="RenderWebGL.html#requestSnapshot">requestSnapshot</a></li><li data-type='method'><a href="RenderWebGL.html#resize">resize</a></li><li data-type='method'><a href="RenderWebGL.html#setBackgroundColor">setBackgroundColor</a></li><li data-type='method'><a href="RenderWebGL.html#setDebugCanvas">setDebugCanvas</a></li><li data-type='method'><a href="RenderWebGL.html#setDrawableOrder">setDrawableOrder</a></li><li data-type='method'><a href="RenderWebGL.html#setLayerGroupOrdering">setLayerGroupOrdering</a></li><li data-type='method'><a href="RenderWebGL.html#setStageSize">setStageSize</a></li><li data-type='method'><a href="RenderWebGL.html#setUseGpuMode">setUseGpuMode</a></li><li data-type='method'><a href="RenderWebGL.html#updateBitmapSkin">updateBitmapSkin</a></li><li data-type='method'><a href="RenderWebGL.html#updateDrawableDirection">updateDrawableDirection</a></li><li data-type='method'><a href="RenderWebGL.html#updateDrawableDirectionScale">updateDrawableDirectionScale</a></li><li data-type='method'><a href="RenderWebGL.html#updateDrawableEffect">updateDrawableEffect</a></li><li data-type='method'><a href="RenderWebGL.html#updateDrawablePosition">updateDrawablePosition</a></li><li data-type='method'><a href="RenderWebGL.html#updateDrawableProperties">updateDrawableProperties</a></li><li data-type='method'><a href="RenderWebGL.html#updateDrawableScale">updateDrawableScale</a></li><li data-type='method'><a href="RenderWebGL.html#updateDrawableSkinId">updateDrawableSkinId</a></li><li data-type='method'><a href="RenderWebGL.html#updateDrawableVisible">updateDrawableVisible</a></li><li data-type='method'><a href="RenderWebGL.html#updateSVGSkin">updateSVGSkin</a></li><li data-type='method'><a href="RenderWebGL.html#updateTextSkin">updateTextSkin</a></li></ul></li><li><a href="ShaderManager.html">ShaderManager</a><ul class='methods'><li data-type='method'><a href="ShaderManager.html#_buildShader">_buildShader</a></li><li data-type='method'><a href="ShaderManager.html#getShader">getShader</a></li></ul></li><li><a href="Skin.html">Skin</a><ul class='methods'><li data-type='method'><a href="Skin.html#_setTexture">_setTexture</a></li><li data-type='method'><a href="Skin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="Skin.html#dispose">dispose</a></li><li data-type='method'><a href="Skin.html#getFenceBounds">getFenceBounds</a></li><li data-type='method'><a href="Skin.html#getTexture">getTexture</a></li><li data-type='method'><a href="Skin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="Skin.html#isTouchingLinear">isTouchingLinear</a></li><li data-type='method'><a href="Skin.html#isTouchingNearest">isTouchingNearest</a></li><li data-type='method'><a href="Skin.html#setEmptyImageData">setEmptyImageData</a></li><li data-type='method'><a href="Skin.html#updateSilhouette">updateSilhouette</a></li><li data-type='method'><a href="Skin.html#useNearest">useNearest</a></li></ul></li><li><a href="SVGSkin.html">SVGSkin</a><ul class='methods'><li data-type='method'><a href="SVGSkin.html#_setTexture">_setTexture</a></li><li data-type='method'><a href="SVGSkin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="SVGSkin.html#createMIP">createMIP</a></li><li data-type='method'><a href="SVGSkin.html#dispose">dispose</a></li><li data-type='method'><a href="SVGSkin.html#getFenceBounds">getFenceBounds</a></li><li data-type='method'><a href="SVGSkin.html#getTexture">getTexture</a></li><li data-type='method'><a href="SVGSkin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="SVGSkin.html#isTouchingLinear">isTouchingLinear</a></li><li data-type='method'><a href="SVGSkin.html#isTouchingNearest">isTouchingNearest</a></li><li data-type='method'><a href="SVGSkin.html#resetMIPs">resetMIPs</a></li><li data-type='method'><a href="SVGSkin.html#setEmptyImageData">setEmptyImageData</a></li><li data-type='method'><a href="SVGSkin.html#setSVG">setSVG</a></li><li data-type='method'><a href="SVGSkin.html#updateSilhouette">updateSilhouette</a></li><li data-type='method'><a href="SVGSkin.html#useNearest">useNearest</a></li></ul></li><li><a href="TextBubbleSkin.html">TextBubbleSkin</a><ul class='methods'><li data-type='method'><a href="TextBubbleSkin.html#_reflowLines">_reflowLines</a></li><li data-type='method'><a href="TextBubbleSkin.html#_renderTextBubble">_renderTextBubble</a></li><li data-type='method'><a href="TextBubbleSkin.html#_restyleCanvas">_restyleCanvas</a></li><li data-type='method'><a href="TextBubbleSkin.html#_setTexture">_setTexture</a></li><li data-type='method'><a href="TextBubbleSkin.html#calculateRotationCenter">calculateRotationCenter</a></li><li data-type='method'><a href="TextBubbleSkin.html#dispose">dispose</a></li><li data-type='method'><a href="TextBubbleSkin.html#getFenceBounds">getFenceBounds</a></li><li data-type='method'><a href="TextBubbleSkin.html#getTexture">getTexture</a></li><li data-type='method'><a href="TextBubbleSkin.html#getUniforms">getUniforms</a></li><li data-type='method'><a href="TextBubbleSkin.html#isTouchingLinear">isTouchingLinear</a></li><li data-type='method'><a href="TextBubbleSkin.html#isTouchingNearest">isTouchingNearest</a></li><li data-type='method'><a href="TextBubbleSkin.html#setEmptyImageData">setEmptyImageData</a></li><li data-type='method'><a href="TextBubbleSkin.html#setTextBubble">setTextBubble</a></li><li data-type='method'><a href="TextBubbleSkin.html#updateSilhouette">updateSilhouette</a></li><li data-type='method'><a href="TextBubbleSkin.html#useNearest">useNearest</a></li></ul></li><li><a href="TextWrapper.html">TextWrapper</a><ul class='methods'><li data-type='method'><a href="TextWrapper.html#wrapText">wrapText</a></li></ul></li></ul><h3>Modules</h3><ul><li><a href="module-RenderConstants.html">RenderConstants</a></li></ul><h3>Events</h3><ul><li><a href="RenderWebGL.html#event:event:NativeSizeChanged">event:NativeSizeChanged</a></li><li><a href="Skin.html#.event:event:WasAltered">event:WasAltered</a></li></ul><h3>Tutorials</h3><ul><li><a href="tutorial-Rectangle-AABB-Matrix.html">Rectangle-AABB-Matrix</a></li></ul><h3>Global</h3><ul><li><a href="global.html#__cornerWork">__cornerWork</a></li><li><a href="global.html#__hsv">__hsv</a></li><li><a href="global.html#__isTouchingPosition">__isTouchingPosition</a></li><li><a href="global.html#__premultipliedColor">__premultipliedColor</a></li><li><a href="global.html#__SilhouetteUpdateCanvas">__SilhouetteUpdateCanvas</a></li><li><a href="global.html#CENTER_X">CENTER_X</a></li><li><a href="global.html#CENTER_Y">CENTER_Y</a></li><li><a href="global.html#colorMatches">colorMatches</a></li><li><a href="global.html#FENCE_WIDTH">FENCE_WIDTH</a></li><li><a href="global.html#getColor4b">getColor4b</a></li><li><a href="global.html#getLocalPosition">getLocalPosition</a></li><li><a href="global.html#getPoint">getPoint</a></li><li><a href="global.html#getPremultipliedColor4b">getPremultipliedColor4b</a></li><li><a href="global.html#hsvToRgb">hsvToRgb</a></li><li><a href="global.html#INDEX_OFFSET">INDEX_OFFSET</a></li><li><a href="global.html#isTouchingCheckiftheworldpositiontouchestheskin.Thecallerisresponsibleforensuringthisdrawable'sinversematrix&itsskin'ssilhouetteareup-to-date.">isTouching
+Check if the world position touches the skin.
+The caller is responsible for ensuring this drawable's inverse matrix & its skin's silhouette are up-to-date.</a></li><li><a href="global.html#MASK_TOUCHING_COLOR_TOLERANCE">MASK_TOUCHING_COLOR_TOLERANCE</a></li><li><a href="global.html#maskMatches">maskMatches</a></li><li><a href="global.html#MAX_EXTRACTED_DRAWABLE_DIMENSION">MAX_EXTRACTED_DRAWABLE_DIMENSION</a></li><li><a href="global.html#rgbToHsv">rgbToHsv</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Tutorial: Rectangle-AABB-Matrix</h1>
+    
+
+    <section>
+
+<header>
+    
+
+    <h2>Rectangle-AABB-Matrix</h2>
+</header>
+
+<article>
+    <h1>Rectangle AABB Matrix</h1>
+<p>Initialize a Rectangle to a 1 unit square centered at 0 x 0 transformed by a model matrix.</p>
+<hr>
+<p>Every drawable is a 1 x 1 unit square that is rotated by its direction, scaled by its skin size and scale, and offset by its rotation center and position. The square representation is made up of 4 points that are transformed by the drawable properties. Often we want a shape that simplifies those 4 points into a non-rotated shape, a axis aligned bounding box.</p>
+<p>One approach is to compare the x and y components of each transformed vector and find the minimum and maximum x component and the minimum and maximum y component.</p>
+<p>We can start from this approach and determine an alternative one that prodcues the same output with less work.</p>
+<p>Starting with transforming one point, here is a 3D point, <code>v</code>, transformation by a matrix, <code>m</code>.</p>
+<pre class="prettyprint source lang-js"><code>const v0 = v[0];
+const v1 = v[1];
+const v2 = v[2];
+
+const d = v0 * m[(0 * 4) + 3] + v1 * m[(1 * 4) + 3] + v2 * m[(2 * 4) + 3] + m[(3 * 4) + 3];
+dst[0] = (v0 * m[(0 * 4) + 0] + v1 * m[(1 * 4) + 0] + v2 * m[(2 * 4) + 0] + m[(3 * 4) + 0]) / d;
+dst[1] = (v0 * m[(0 * 4) + 1] + v1 * m[(1 * 4) + 1] + v2 * m[(2 * 4) + 1] + m[(3 * 4) + 1]) / d;
+dst[2] = (v0 * m[(0 * 4) + 2] + v1 * m[(1 * 4) + 2] + v2 * m[(2 * 4) + 2] + m[(3 * 4) + 2]) / d;
+</code></pre>
+<p>As this is a 2D rectangle we can cancel out the third dimension, and the determinant, 'd'.</p>
+<pre class="prettyprint source lang-js"><code>const v0 = v[0];
+const v1 = v[1];
+
+dst = [
+    v0 * m[(0 * 4) + 0] + v1 * m[(1 * 4) + 0] + m[(3 * 4) + 0,
+    v0 * m[(0 * 4) + 1] + v1 * m[(1 * 4) + 1] + m[(3 * 4) + 1
+];
+</code></pre>
+<p>Let's set the matrix points to shorter names for convenience.</p>
+<pre class="prettyprint source lang-js"><code>const m00 = m[(0 * 4) + 0];
+const m01 = m[(0 * 4) + 1];
+const m10 = m[(1 * 4) + 0];
+const m11 = m[(1 * 4) + 1];
+const m30 = m[(3 * 4) + 0];
+const m31 = m[(3 * 4) + 1];
+</code></pre>
+<p>We need 4 points with positive and negative 0.5 values so the square has sides of length 1.</p>
+<pre class="prettyprint source lang-js"><code>let p = [0.5, 0.5];
+let q = [-0.5, 0.5];
+let r = [-0.5, -0.5];
+let s = [0.5, -0.5];
+</code></pre>
+<p>Transform the points by the matrix.</p>
+<pre class="prettyprint source lang-js"><code>p = [
+    0.5 * m00 + 0.5 * m10 + m30,
+    0.5 * m01 + 0.5 * m11 + m31
+];
+q = [
+    -0.5 * m00 + -0.5 * m10 + m30,
+    0.5 * m01 + 0.5 * m11 + m31
+];
+r = [
+    -0.5 * m00 + -0.5 * m10 + m30,
+    -0.5 * m01 + -0.5 * m11 + m31
+];
+s = [
+    0.5 * m00 + 0.5 * m10 + m30,
+    -0.5 * m01 + -0.5 * m11 + m31
+];
+</code></pre>
+<p>With 4 transformed points we can build the left, right, top, and bottom values for the Rectangle. Each will use the minimum or the maximum of one of the components of all points.</p>
+<pre class="prettyprint source lang-js"><code>const left = Math.min(p[0], q[0], r[0], s[0]);
+const right = Math.max(p[0], q[0], r[0], s[0]);
+const top = Math.max(p[1], q[1], r[1], s[1]);
+const bottom = Math.min(p[1], q[1], r[1], s[1]);
+</code></pre>
+<p>Fill those calls with the vector expressions.</p>
+<pre class="prettyprint source lang-js"><code>const left = Math.min(
+    0.5 * m00 + 0.5 * m10 + m30,
+    -0.5 * m00 + 0.5 * m10 + m30,
+    -0.5 * m00 + -0.5 * m10 + m30,
+    0.5 * m00 + -0.5 * m10 + m30
+);
+const right = Math.max(
+    0.5 * m00 + 0.5 * m10 + m30,
+    -0.5 * m00 + 0.5 * m10 + m30,
+    -0.5 * m00 + -0.5 * m10 + m30,
+    0.5 * m00 + -0.5 * m10 + m30
+);
+const top = Math.max(
+    0.5 * m01 + 0.5 * m11 + m31,
+    -0.5 * m01 + 0.5 * m11 + m31,
+    -0.5 * m01 + -0.5 * m11 + m31,
+    0.5 * m01 + -0.5 * m11 + m31
+);
+const bottom = Math.min(
+    0.5 * m01 + 0.5 * m11 + m31,
+    -0.5 * m01 + 0.5 * m11 + m31,
+    -0.5 * m01 + -0.5 * m11 + m31,
+    0.5 * m01 + -0.5 * m11 + m31
+);
+</code></pre>
+<p>Pull out the <code>0.5 * m??</code> patterns.</p>
+<pre class="prettyprint source lang-js"><code>const x0 = 0.5 * m00;
+const x1 = 0.5 * m10;
+const y0 = 0.5 * m01;
+const y1 = 0.5 * m11;
+
+const left = Math.min(x0 + x1 + m30, -x0 + x1 + m30, -x0 + -x1 + m30, x0 + -x1 + m30);
+const right = Math.max(x0 + x1 + m30, -x0 + x1 + m30, -x0 + -x1 + m30, x0 + -x1 + m30);
+const top = Math.max(y0 + y1 + m31, -y0 + y1 + m31, -y0 + -y1 + m31, y0 + -y1 + m31);
+const bottom = Math.min(y0 + y1 + m31, -y0 + y1 + m31, -y0 + -y1 + m31, y0 + -y1 + m31);
+</code></pre>
+<p>Now each argument for the min and max calls take an expression like <code>(a * x0 + b * x1 + m3?)</code>. As each expression has the x0, x1, and m3? variables we can split the min and max calls on the addition operators. Each new call has all the coefficients of that variable.</p>
+<pre class="prettyprint source lang-js"><code>const left = Math.min(x0, -x0) + Math.min(x1, -x1) + Math.min(m30, m30);
+const right = Math.max(x0, -x0) + Math.max(x1, -x1) + Math.max(m30, m30);
+const top = Math.max(y0, -y0) + Math.max(y1, -y1) + Math.max(m31, m31);
+const bottom = Math.min(y0, -y0) + Math.min(y1, -y1) + Math.min(m31, m31);
+</code></pre>
+<p>The min or max of two copies of the same value will just be that value.</p>
+<pre class="prettyprint source lang-js"><code>const left = Math.min(x0, -x0) + Math.min(x1, -x1) + m30;
+const right = Math.max(x0, -x0) + Math.max(x1, -x1) + m30;
+const top = Math.max(y0, -y0) + Math.max(y1, -y1) + m31;
+const bottom = Math.min(y0, -y0) + Math.min(y1, -y1) + m31;
+</code></pre>
+<p>The max of a negative and positive variable will be the absolute value of that variable. The min of a negative and positive variable will the negated absolute value of that variable.</p>
+<pre class="prettyprint source lang-js"><code>const left = -Math.abs(x0) + -Math.abs(x1) + m30;
+const right = Math.abs(x0) + Math.abs(x1) + m30;
+const top = Math.abs(y0) + Math.abs(y1) + m31;
+const bottom = -Math.abs(y0) + -Math.abs(y1) + m31;
+</code></pre>
+<p>Pulling out the negations of the absolute values, left and right as well as top and bottom are the positive or negative sum of the absolute value of the saled and rotated unit value.</p>
+<pre class="prettyprint source lang-js"><code>const left = -(Math.abs(x0) + Math.abs(x1)) + m30;
+const right = Math.abs(x0) + Math.abs(x1) + m30;
+const top = Math.abs(y0) + Math.abs(y1) + m31;
+const bottom = -(Math.abs(y0) + Math.abs(y1)) + m31;
+</code></pre>
+<p>We call pull out those sums and use them twice.</p>
+<pre class="prettyprint source lang-js"><code>const x = Math.abs(x0) + Math.abs(x1);
+const y = Math.abs(y0) + Math.abs(y1);
+
+const left = -x + m30;
+const right = x + m30;
+const top = y + m31;
+const bottom = -y + m31;
+</code></pre>
+<p>This lets us arrive at our goal. Inlining some of our variables we get this block that will initialize a Rectangle to a unit square transformed by a matrix.</p>
+<pre class="prettyprint source lang-js"><code>const m30 = m[(3 * 4) + 0];
+const m31 = m[(3 * 4) + 1];
+
+const x = Math.abs(0.5 * m[(0 * 4) + 0]) + Math.abs(0.5 * m[(1 * 4) + 0]);
+const y = Math.abs(0.5 * m[(0 * 4) + 1]) + Math.abs(0.5 * m[(1 * 4) + 1]);
+
+const left = -x + m30;
+const right = x + m30;
+const top = y + m31;
+const bottom = -y + m31;
+</code></pre>
+</article>
+
+</section>
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.11</a> using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
