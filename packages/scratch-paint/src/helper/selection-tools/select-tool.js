@@ -29,8 +29,8 @@ class SelectTool extends paper.Tool {
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      * @param {function} setCursor Callback to set the visible mouse cursor
-     * @param {!function} onUpdateImage A callback to call when the image visibly changes
-     * @param {!function} switchToTextTool A callback to call to switch to the text tool
+     * @param {!Function} onUpdateImage A callback to call when the image visibly changes
+     * @param {!Function} switchToTextTool A callback to call to switch to the text tool
      */
     constructor (setHoveredItem, clearHoveredItem, setSelectedItems, clearSelectedItems, setCursor, onUpdateImage,
         switchToTextTool) {
@@ -86,7 +86,7 @@ class SelectTool extends paper.Tool {
      * Returns the hit options to use when conducting hit tests.
      * @param {boolean} preselectedOnly True if we should only return results that are already
      *     selected.
-     * @return {object} See paper.Item.hitTest for definition of options
+     * @returns {object} See paper.Item.hitTest for definition of options
      */
     getHitOptions (preselectedOnly) {
         // Tolerance needs to be scaled when the view is zoomed in in order to represent the same

@@ -7,7 +7,7 @@ import {forEachLinePoint, getBrushMark} from '../bitmap';
  */
 class BrushTool extends paper.Tool {
     /**
-     * @param {!function} onUpdateImage A callback to call when the image visibly changes
+     * @param {!Function} onUpdateImage A callback to call when the image visibly changes
      * @param {boolean} isEraser True if brush should erase
      */
     constructor (onUpdateImage, isEraser) {

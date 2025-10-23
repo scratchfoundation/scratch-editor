@@ -24,7 +24,7 @@ const _getPaintingLayer = function () {
  * Creates a canvas with width and height matching the art board size.
  * @param {?number} width Width of the canvas. Defaults to ART_BOARD_WIDTH.
  * @param {?number} height Height of the canvas. Defaults to ART_BOARD_HEIGHT.
- * @return {HTMLCanvasElement} the canvas
+ * @returns {HTMLCanvasElement} the canvas
  */
 const createCanvas = function (width, height) {
     const canvas = document.createElement('canvas');
@@ -37,7 +37,7 @@ const createCanvas = function (width, height) {
 const clearRaster = function () {
     const layer = _getLayer('isRasterLayer');
     layer.removeChildren();
-    
+
     // Generate blank raster
     const raster = new paper.Raster(createCanvas());
     raster.canvas.getContext('2d').imageSmoothingEnabled = false;
@@ -101,7 +101,7 @@ const setGuideItem = function (item) {
 /**
  * Removes the guide layers, e.g. for purposes of exporting the image. Must call showGuideLayers to re-add them.
  * @param {boolean} includeRaster true if the raster layer should also be hidden
- * @return {object} an object of the removed layers, which should be passed to showGuideLayers to re-add them.
+ * @returns {object} an object of the removed layers, which should be passed to showGuideLayers to re-add them.
  */
 const hideGuideLayers = function (includeRaster) {
     const backgroundGuideLayer = getBackgroundGuideLayer();
@@ -288,7 +288,7 @@ const _makeOutlineLayer = function () {
 const _makeBackgroundGuideLayer = function (format) {
     const guideLayer = new paper.Layer();
     guideLayer.locked = true;
-    
+
     const vWorkspaceBounds = new paper.Shape.Rectangle(MAX_WORKSPACE_BOUNDS);
     vWorkspaceBounds.fillColor = '#ECF1F9';
     vWorkspaceBounds.position = CENTER;
@@ -319,7 +319,7 @@ const _makeBackgroundGuideLayer = function (format) {
     guideLayer.bitmapBackground = bitmapBackground;
 
     _convertLayer(guideLayer, format);
-    
+
     _makeCrosshair(0.16, guideLayer);
 
     guideLayer.data.isBackgroundGuideLayer = true;

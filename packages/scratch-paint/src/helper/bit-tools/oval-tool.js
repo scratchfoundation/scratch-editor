@@ -19,7 +19,7 @@ class OvalTool extends paper.Tool {
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      * @param {function} setCursor Callback to set the visible mouse cursor
-     * @param {!function} onUpdateImage A callback to call when the image visibly changes
+     * @param {!Function} onUpdateImage A callback to call when the image visibly changes
      */
     constructor (setSelectedItems, clearSelectedItems, setCursor, onUpdateImage) {
         super();

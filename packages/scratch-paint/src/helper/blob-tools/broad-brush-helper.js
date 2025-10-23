@@ -10,7 +10,6 @@ import log from '../../log/log';
  * Broad brush draws strokes by drawing points equidistant from the mouse event, perpendicular to the
  * direction of motion. Shortcomings are that this path can cross itself, and 180 degree turns result
  * in a flat edge.
- *
  * @param {!Tool} tool paper.js mouse object
  */
 class BroadBrushHelper {
@@ -180,7 +179,7 @@ class BroadBrushHelper {
      * Like paper.Path.unite, but it removes the original 2 paths
      * @param {paper.Path} path1 to merge
      * @param {paper.Path} path2 to merge
-     * @return {paper.Path} merged path. Original paths 1 and 2 will be removed from the view.
+     * @returns {paper.Path} merged path. Original paths 1 and 2 will be removed from the view.
      */
     union (path1, path2) {
         const temp = path1.unite(path2);

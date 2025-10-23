@@ -10,7 +10,7 @@ const TRANSPARENT = 'rgba(0,0,0,0)';
  */
 class FillTool extends paper.Tool {
     /**
-     * @param {!function} onUpdateImage A callback to call when the image visibly changes
+     * @param {!Function} onUpdateImage A callback to call when the image visibly changes
      */
     constructor (onUpdateImage) {
         super();

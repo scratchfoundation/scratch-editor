@@ -137,7 +137,7 @@ const scaleWithStrokes = function (root, factor, pivot) {
  * for shapes like circles ("square ovals"), which fill the same dimensions.)
  * @param {!paper.Point} startPos The point where the user started dragging
  * @param {!paper.Point} eventPoint The point where the user has currently dragged to
- * @return {object} Information about the size and position of how the square should be drawn
+ * @returns {object} Information about the size and position of how the square should be drawn
  */
 const getSquareDimensions = function (startPos, eventPoint) {
     // These variables are used for determining the relative quadrant that the shape will appear in.

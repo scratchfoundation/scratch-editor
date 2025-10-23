@@ -22,7 +22,7 @@ const reducer = function (state, action) {
 /**
  * Set the view bounds, which defines the zoom and scroll of the paper canvas.
  * @param {paper.Matrix} matrix The matrix applied to the view
- * @return {object} Redux action to set the view bounds
+ * @returns {object} Redux action to set the view bounds
  */
 const updateViewBounds = function (matrix) {
     return {

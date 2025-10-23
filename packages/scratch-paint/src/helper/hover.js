@@ -9,7 +9,7 @@ import {sortItemsByZIndex} from './math';
  * @param {?object} hitOptions hit options to use
  * @param {?boolean} subselect Whether items within groups can be hovered. If false, the
  *    entire group should be hovered.
- * @return {paper.Item} the hovered item or null if there is none
+ * @returns {paper.Item} the hovered item or null if there is none
  */
 const getHoveredItem = function (event, hitOptions, subselect) {
     const oldMatch = hitOptions.match;

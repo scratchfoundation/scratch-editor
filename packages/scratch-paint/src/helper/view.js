@@ -31,16 +31,15 @@ let _workspaceBounds = ART_BOARD_BOUNDS;
 const getWorkspaceBounds = () => _workspaceBounds;
 
 /**
-* The workspace bounds define the areas that the scroll bars can access.
-* They include at minimum the artboard, and extend to a bit beyond the
-* farthest item off tne edge in any given direction (so items can't be
-* "lost" off the edge)
-*
-* @param {boolean} clipEmpty Clip empty space from bounds, even if it
-* means discontinuously jumping the viewport. This should probably be
-* false unless the viewport is going to move discontinuously anyway
-* (such as in a zoom button click)
-*/
+ * The workspace bounds define the areas that the scroll bars can access.
+ * They include at minimum the artboard, and extend to a bit beyond the
+ * farthest item off the edge in any given direction (so items can't be
+ * "lost" off the edge)
+ * @param {boolean} clipEmpty Clip empty space from bounds, even if it
+ * means discontinuously jumping the viewport. This should probably be
+ * false unless the viewport is going to move discontinuously anyway
+ * (such as in a zoom button click)
+ */
 const setWorkspaceBounds = clipEmpty => {
     const items = getAllRootItems();
     // Include the artboard and what's visible in the viewport

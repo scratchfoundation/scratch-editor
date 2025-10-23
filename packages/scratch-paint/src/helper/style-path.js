@@ -37,7 +37,7 @@ const _getColorStateListeners = function (textEditTargetId) {
  * in order to form a smooth gradient, otherwise it fades through black. This
  * function gets the transparent color for a given color string.
  * @param {?string} colorToMatch CSS string of other color of gradient, or null for transparent
- * @return {string} CSS string for matching color of transparent
+ * @returns {string} CSS string for matching color of transparent
  */
 const getColorStringForTransparent = function (colorToMatch) {
     const color = new paper.Color(colorToMatch);
@@ -48,7 +48,7 @@ const getColorStringForTransparent = function (colorToMatch) {
 /**
  * Generate a color that contrasts well with the passed-in color.
  * @param {string} firstColor The "primary" color
- * @return {string} CSS string for generated color
+ * @returns {string} CSS string for generated color
  */
 const generateSecondaryColor = function (firstColor) {
     if (firstColor === MIXED) return null;
@@ -83,7 +83,7 @@ const generateSecondaryColor = function (firstColor) {
  * @param {?paper.Point} [radialCenter] Where the center of a radial gradient should be, if the gradient is radial.
  * Defaults to center of bounds.
  * @param {number} [minSize] The minimum width/height of the gradient object.
- * @return {paper.Color} Color object with gradient, may be null or color string if the gradient type is solid
+ * @returns {paper.Color} Color object with gradient, may be null or color string if the gradient type is solid
  */
 const createGradientObject = function (color1, color2, gradientType, bounds, radialCenter, minSize) {
     if (gradientType === GradientTypes.SOLID) return color1;
@@ -156,7 +156,7 @@ const createGradientObject = function (color1, color2, gradientType, bounds, rad
  *     When changing the color in this case, the solid gradient should override the existing gradient on the item.
  * @param {?boolean} applyToStroke True if changing the selection's stroke, false if changing its fill.
  * @param {?string} textEditTargetId paper.Item.id of text editing target, if any
- * @return {boolean} Whether the color application actually changed visibly.
+ * @returns {boolean} Whether the color application actually changed visibly.
  */
 const applyColorToSelection = function (
     colorString,
@@ -213,7 +213,7 @@ const applyColorToSelection = function (
  * Called to swap gradient colors
  * @param {?boolean} applyToStroke True if changing the selection's stroke, false if changing its fill.
  * @param {?string} textEditTargetId paper.Item.id of text editing target, if any
- * @return {boolean} Whether the color application actually changed visibly.
+ * @returns {boolean} Whether the color application actually changed visibly.
  */
 const swapColorsInSelection = function (applyToStroke, textEditTargetId) {
     const items = _getColorStateListeners(textEditTargetId);
@@ -247,7 +247,7 @@ const swapColorsInSelection = function (applyToStroke, textEditTargetId) {
  * @param {GradientType} gradientType gradient type
  * @param {?boolean} applyToStroke True if changing the selection's stroke, false if changing its fill.
  * @param {?string} textEditTargetId paper.Item.id of text editing target, if any
- * @return {boolean} Whether the color application actually changed visibly.
+ * @returns {boolean} Whether the color application actually changed visibly.
  */
 const applyGradientTypeToSelection = function (gradientType, applyToStroke, textEditTargetId) {
     const items = _getColorStateListeners(textEditTargetId);
@@ -367,7 +367,7 @@ const applyGradientTypeToSelection = function (gradientType, applyToStroke, text
  * Called when setting stroke width
  * @param {number} value New stroke width
  * @param {?string} textEditTargetId paper.Item.id of text editing target, if any
- * @return {boolean} Whether the color application actually changed visibly.
+ * @returns {boolean} Whether the color application actually changed visibly.
  */
 const applyStrokeWidthToSelection = function (value, textEditTargetId) {
     let changed = false;
@@ -417,7 +417,7 @@ const _colorStateFromGradient = gradient => {
  * Get state of colors and stroke width for selection
  * @param {!Array<paper.Item>} selectedItems Selected paper items
  * @param {?boolean} bitmapMode True if the item is being selected in bitmap mode
- * @return {?object} Object of strokeColor, strokeWidth, fillColor, thickness of the selection.
+ * @returns {?object} Object of strokeColor, strokeWidth, fillColor, thickness of the selection.
  *     Gives MIXED when there are mixed values for a color, and null for transparent.
  *     Gives null when there are mixed values for stroke width.
  *     Thickness is line thickness, used in the bitmap editor

@@ -8,12 +8,12 @@ import {ART_BOARD_WIDTH, ART_BOARD_HEIGHT} from '../view';
  */
 class LineTool extends paper.Tool {
     /**
-     * @param {!function} onUpdateImage A callback to call when the image visibly changes
+     * @param {!Function} onUpdateImage A callback to call when the image visibly changes
      */
     constructor (onUpdateImage) {
         super();
         this.onUpdateImage = onUpdateImage;
-        
+
         // We have to set these functions instead of just declaring them because
         // paper.js tools hook up the listeners in the setter functions.
         this.onMouseMove = this.handleMouseMove;
@@ -97,7 +97,7 @@ class LineTool extends paper.Tool {
     }
     handleMouseUp (event) {
         if (event.event.button > 0 || !this.active) return; // only first mouse button
-        
+
         this.drawTarget.remove();
         this.drawTarget = getRaster();
         forEachLinePoint(this.startPoint, event.point, this.draw.bind(this));

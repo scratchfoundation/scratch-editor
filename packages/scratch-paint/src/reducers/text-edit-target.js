@@ -25,7 +25,7 @@ const reducer = function (state, action) {
  * Set the currently-being-edited text field to the given item ID
  * @param {?number} textEditTargetId The paper.Item ID of the active text field.
  *     Leave empty if there is no text editing target.
- * @return {object} Redux action to change the text edit target.
+ * @returns {object} Redux action to change the text edit target.
  */
 const setTextEditTarget = function (textEditTargetId) {
     return {

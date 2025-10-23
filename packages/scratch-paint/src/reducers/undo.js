@@ -65,7 +65,7 @@ const undoSnapshot = function (snapshot) {
 };
 /**
  * @param {Format} format Either VECTOR_SKIP_CONVERT or BITMAP_SKIP_CONVERT
- * @return {Action} undo action
+ * @returns {Action} undo action
  */
 const undo = function (format) {
     return {
@@ -75,7 +75,7 @@ const undo = function (format) {
 };
 /**
  * @param {Format} format Either VECTOR_SKIP_CONVERT or BITMAP_SKIP_CONVERT
- * @return {Action} undo action
+ * @returns {Action} undo action
  */
 const redo = function (format) {
     return {

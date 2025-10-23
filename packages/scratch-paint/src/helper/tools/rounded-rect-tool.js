@@ -10,7 +10,7 @@ class RoundedRectTool extends paper.Tool {
      * @param {function} clearHoveredItem Callback to clear the hovered item
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
-     * @param {!function} onUpdateImage A callback to call when the image visibly changes
+     * @param {!Function} onUpdateImage A callback to call when the image visibly changes
      */
     constructor (setHoveredItem, clearHoveredItem, setSelectedItems, clearSelectedItems, onUpdateImage) {
         super();
@@ -20,7 +20,7 @@ class RoundedRectTool extends paper.Tool {
         this.clearSelectedItems = clearSelectedItems;
         this.onUpdateImage = onUpdateImage;
         this.prevHoveredItemId = null;
-        
+
         // We have to set these functions instead of just declaring them because
         // paper.js tools hook up the listeners in the setter functions.
         this.onMouseDown = this.handleMouseDown;

@@ -38,7 +38,7 @@ const forEachLinePoint = function (point1, point2, callback) {
  * @param {!number} a Coefficient in ax^2 + bx + c = 0
  * @param {!number} b Coefficient in ax^2 + bx + c = 0
  * @param {!number} c Coefficient in ax^2 + bx + c = 0
- * @return {Array<number>} Array of 2 solutions, with the larger solution first
+ * @returns {Array<number>} Array of 2 solutions, with the larger solution first
  */
 const solveQuadratic_ = function (a, b, c) {
     const soln1 = (-b + Math.sqrt((b * b) - (4 * a * c))) / 2 / a;
@@ -54,10 +54,10 @@ const solveQuadratic_ = function (a, b, c) {
  * @param {!number} options.radiusY minor radius of ellipse
  * @param {!number} options.shearSlope slope of the sheared x axis
  * @param {?boolean} options.isFilled true if isFilled
- * @param {?function} options.drawFn The function called on each point in the outline, used only
+ * @param {?Function} options.drawFn The function called on each point in the outline, used only
  *     if isFilled is false.
  * @param {!CanvasRenderingContext2D} context for drawing
- * @return {boolean} true if anything was drawn, false if not
+ * @returns {boolean} true if anything was drawn, false if not
  */
 const drawShearedEllipse_ = function (options, context) {
     const centerX = ~~options.centerX;
@@ -83,8 +83,8 @@ const drawShearedEllipse_ = function (options, context) {
     /**
      * Vertical stepping portion of ellipse drawing algorithm
      * @param {!number} startY y to start drawing from
-     * @param {!function} conditionFn function which should become true when we should stop stepping
-     * @return {object} last point drawn to the canvas, or null if no points drawn
+     * @param {!Function} conditionFn function which should become true when we should stop stepping
+     * @returns {object} last point drawn to the canvas, or null if no points drawn
      */
     const drawEllipseStepVertical_ = function (startY, conditionFn) {
         // Points on the ellipse
@@ -114,8 +114,8 @@ const drawShearedEllipse_ = function (options, context) {
     /**
      * Horizontal stepping portion of ellipse drawing algorithm
      * @param {!number} startX x to start drawing from
-     * @param {!function} conditionFn function which should become false when we should stop stepping
-     * @return {object} last point drawn to the canvas, or null if no points drawn
+     * @param {!Function} conditionFn function which should become false when we should stop stepping
+     * @returns {object} last point drawn to the canvas, or null if no points drawn
      */
     const drawEllipseStepHorizontal_ = function (startX, conditionFn) {
         // Points on the ellipse
@@ -198,7 +198,7 @@ const drawShearedEllipse_ = function (options, context) {
  * @param {!number} size The diameter of the brush
  * @param {!string} color The css color of the brush
  * @param {?boolean} isEraser True if we want the brush mark for the eraser
- * @return {HTMLCanvasElement} a canvas with the brush mark printed on it
+ * @returns {HTMLCanvasElement} a canvas with the brush mark printed on it
  */
 const getBrushMark = function (size, color, isEraser) {
     size = ~~size;
@@ -251,7 +251,6 @@ const getBrushMark = function (size, color, isEraser) {
  * Draw an ellipse, given the original axis-aligned radii and
  * an affine transformation. Returns false if the ellipse could
  * not be drawn; for instance, the matrix is non-invertible.
- *
  * @param {!options} options Parameters for the ellipse
  * @param {!paper.Point} options.position Center of ellipse
  * @param {!number} options.radiusX x-aligned radius of ellipse
@@ -260,7 +259,7 @@ const getBrushMark = function (size, color, isEraser) {
  * @param {?boolean} options.isFilled true if isFilled
  * @param {?number} options.thickness Thickness of outline, used only if isFilled is false.
  * @param {!CanvasRenderingContext2D} context for drawing
- * @return {boolean} true if anything was drawn, false if not
+ * @returns {boolean} true if anything was drawn, false if not
  */
 const drawEllipse = function (options, context) {
     const positionX = options.position.x;
@@ -508,7 +507,6 @@ const colorPixel_ = function (x, y, imageData, newColor) {
 /**
  * Flood fill beginning at the given point.
  * Based on http://www.williammalone.com/articles/html5-canvas-javascript-paint-bucket-tool/
- *
  * @param {!int} x The x coordinate on the context at which to begin
  * @param {!int} y The y coordinate on the context at which to begin
  * @param {!ImageData} sourceImageData The image data to sample from. This is edited by the function.
@@ -555,7 +553,7 @@ const floodFillInternal_ = function (x, y, sourceImageData, destImageData, newCo
 /**
  * Given a fill style string, get the color
  * @param {string} fillStyleString the fill style
- * @return {Array<int>} Color, a length 4 array
+ * @returns {Array<int>} Color, a length 4 array
  */
 const fillStyleToColor_ = function (fillStyleString) {
     const tmpCanvas = document.createElement('canvas');
@@ -575,7 +573,7 @@ const fillStyleToColor_ = function (fillStyleString) {
  * @param {!HTMLCanvas2DContext} sourceContext The context from which to sample to determine where to flood fill
  * @param {!HTMLCanvas2DContext} destContext The context to which to draw. May match sourceContext. Should match
  *     the size of sourceContext.
- * @return {boolean} True if image changed, false otherwise
+ * @returns {boolean} True if image changed, false otherwise
  */
 const floodFill = function (x, y, color, sourceContext, destContext) {
     x = ~~x;
@@ -609,7 +607,7 @@ const floodFill = function (x, y, color, sourceContext, destContext) {
  * @param {!string} color A color string, which would go into context.fillStyle
  * @param {!HTMLCanvas2DContext} sourceContext The context from which to sample to determine where to flood fill
  * @param {!HTMLCanvas2DContext} destContext The context to which to draw. May match sourceContext. Should match
- * @return {boolean} True if image changed, false otherwise
+ * @returns {boolean} True if image changed, false otherwise
  */
 const floodFillAll = function (x, y, color, sourceContext, destContext) {
     x = ~~x;
@@ -887,7 +885,7 @@ const _paperColorToCanvasStyle = function (color, context) {
 /**
  * @param {paper.Shape.Ellipse} oval Vector oval to convert
  * @param {paper.Raster} bitmap raster to draw selection
- * @return {bool} true if the oval was drawn
+ * @returns {bool} true if the oval was drawn
  */
 const commitOvalToBitmap = function (oval, bitmap) {
     const radiusX = Math.abs(oval.size.width / 2);

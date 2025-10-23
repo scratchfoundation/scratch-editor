@@ -9,7 +9,7 @@ import {sortItemsByZIndex} from './math';
 /**
  * Wrapper for paper.project.getItems that excludes our helper items
  * @param {?object} options See paper.js docs for paper.Item.getItems
- * @return {Array<paper.Item>} items that match options
+ * @returns {Array<paper.Item>} items that match options
  */
 const getItems = function (options) {
     const newMatcher = function (item) {
@@ -27,7 +27,7 @@ const getItems = function (options) {
 /**
  * @param {boolean} includeGuides True if guide layer items like the bounding box should
  *     be included in the returned items.
- * @return {Array<paper.item>} all top-level (direct descendants of a paper.Layer) items
+ * @returns {Array<paper.item>} all top-level (direct descendants of a paper.Layer) items
  */
 const getAllRootItems = function (includeGuides) {
     includeGuides = includeGuides || false;
@@ -45,7 +45,7 @@ const getAllRootItems = function (includeGuides) {
 };
 
 /**
- * @return {Array<paper.item>} all top-level (direct descendants of a paper.Layer) items
+ * @returns {Array<paper.item>} all top-level (direct descendants of a paper.Layer) items
  *     that aren't guide items or helper items.
  */
 const getAllSelectableRootItems = function () {
@@ -98,7 +98,7 @@ const _setGroupSelection = function (root, selected, fullySelected) {
 const setItemSelection = function (item, state, fullySelected) {
     const parentGroup = getItemsGroup(item);
     const itemsCompoundPath = getItemsCompoundPath(item);
-    
+
     // if selection is in a group, select group
     if (parentGroup) {
         // do it recursive
@@ -111,32 +111,32 @@ const setItemSelection = function (item, state, fullySelected) {
         }
         _setGroupSelection(item, state, fullySelected);
     }
-    
+
 };
 
-/** @return {boolean} true if anything was selected */
+/** @returns {boolean} true if anything was selected */
 const selectAllItems = function () {
     const items = getAllSelectableRootItems();
     if (items.length === 0) return false;
-    
+
     for (let i = 0; i < items.length; i++) {
         setItemSelection(items[i], true);
     }
     return true;
 };
 
-/** @return {boolean} true if anything was selected */
+/** @returns {boolean} true if anything was selected */
 const selectAllSegments = function () {
     const items = getAllSelectableRootItems();
     if (items.length === 0) return false;
-    
+
     for (let i = 0; i < items.length; i++) {
         selectItemSegments(items[i], true);
     }
     return true;
 };
 
-/** @param {!function} dispatchClearSelect Function to update the Redux select state */
+/** @param {!Function} dispatchClearSelect Function to update the Redux select state */
 const clearSelection = function (dispatchClearSelect) {
     paper.project.deselectAll();
     dispatchClearSelect();
@@ -146,7 +146,7 @@ const clearSelection = function (dispatchClearSelect) {
  * This gets all selected non-grouped items and groups
  * (alternative to paper.project.selectedItems, which includes
  * group children in addition to the group)
- * @return {Array<paper.Item>} in increasing Z order.
+ * @returns {Array<paper.Item>} in increasing Z order.
  */
 const getSelectedRootItems = function () {
     const allItems = getAllSelectableRootItems();
@@ -174,7 +174,7 @@ const getSelectedRootItems = function () {
 /**
  * This gets all selected items that are as deeply nested as possible. Does not
  * return the parent groups.
- * @return {Array<paper.Item>} in increasing Z order.
+ * @returns {Array<paper.Item>} in increasing Z order.
  */
 const getSelectedLeafItems = function () {
     const allItems = paper.project.selectedItems;
@@ -192,7 +192,7 @@ const getSelectedLeafItems = function () {
 
 /**
  * This gets all selected path segments.
- * @return {Array<paper.Segment>} selected segments
+ * @returns {Array<paper.Segment>} selected segments
  */
 const getSelectedSegments = function () {
     const selected = getSelectedLeafItems();
@@ -225,7 +225,7 @@ const _deleteItemSelection = function (items, onUpdateImage) {
 // Return true if anything was removed
 const _removeSelectedSegments = function (items, onUpdateImage) {
     const segmentsToRemove = [];
-    
+
     for (let i = 0; i < items.length; i++) {
         if (!items[i].segments) continue;
         const segments = items[i].segments;
@@ -236,7 +236,7 @@ const _removeSelectedSegments = function (items, onUpdateImage) {
             }
         }
     }
-    
+
     let removedSegments = false;
     for (let i = 0; i < segmentsToRemove.length; i++) {
         const seg = segmentsToRemove[i];
@@ -295,7 +295,7 @@ const _checkBoundsItem = function (selectionRect, item, event) {
             }
             itemBounds.remove();
             return true;
-            
+
         }
     }
 
@@ -305,7 +305,7 @@ const _checkBoundsItem = function (selectionRect, item, event) {
 const _handleRectangularSelectionItems = function (item, event, rect, mode, root) {
     if (isPathItem(item)) {
         let segmentMode = false;
-        
+
         // first round checks for segments inside the selectionRect
         for (let j = 0; j < item.segments.length; j++) {
             const seg = item.segments[j];
@@ -373,7 +373,7 @@ const _handleRectangularSelectionItems = function (item, event, rect, mode, root
 const _rectangularSelectionGroupLoop = function (group, rect, root, event, mode) {
     for (let i = 0; i < group.children.length; i++) {
         const child = group.children[i];
-        
+
         if (isGroup(child) || isCompoundPathItem(child)) {
             _rectangularSelectionGroupLoop(child, rect, root, event, mode);
         } else {
@@ -393,7 +393,7 @@ const _rectangularSelectionGroupLoop = function (group, rect, root, event, mode)
  */
 const processRectangularSelection = function (event, rect, mode) {
     const allItems = getAllSelectableRootItems();
-    
+
     for (let i = 0; i < allItems.length; i++) {
         const item = allItems[i];
         if (mode === Modes.RESHAPE && isPGTextItem(getRootItem(item))) {

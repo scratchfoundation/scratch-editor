@@ -22,7 +22,7 @@ const reducer = function (state, action) {
 /**
  * Change the layout to the new layout
  * @param {string} layout either 'ltr' or 'rtl'
- * @return {object} Redux action to change the selected items.
+ * @returns {object} Redux action to change the selected items.
  */
 const setLayout = function (layout) {
     return {

@@ -33,7 +33,7 @@ const reducer = function (state, action) {
  * Set the selected item state to the given array of items
  * @param {Array<paper.Item>} selectedItems from paper.project.selectedItems
  * @param {?boolean} bitmapMode True if the items are being selected in bitmap mode
- * @return {object} Redux action to change the selected items.
+ * @returns {object} Redux action to change the selected items.
  */
 const setSelectedItems = function (selectedItems, bitmapMode) {
     return {

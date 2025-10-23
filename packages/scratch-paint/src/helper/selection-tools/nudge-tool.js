@@ -13,7 +13,7 @@ class NudgeTool {
     /**
      * @param {Mode} mode Paint editor mode
      * @param {function} boundingBoxTool to control the bounding box
-     * @param {!function} onUpdateImage A callback to call when the image visibly changes
+     * @param {!Function} onUpdateImage A callback to call when the image visibly changes
      */
     constructor (mode, boundingBoxTool, onUpdateImage) {
         this.boundingBoxTool = boundingBoxTool;
@@ -31,7 +31,7 @@ class NudgeTool {
 
         const selected = getSelectedRootItems();
         if (selected.length === 0) return;
-        
+
         // Get bounds. Don't let item bounds go out of bounds.
         let rect;
         for (const item of selected) {

@@ -11,7 +11,6 @@ import {styleBlob} from '../../helper/style-path';
  * worse, especially as the number of segments to join increase, and that there are problems in paper.js
  * with union on shapes with curves, so that chunks of the union tend to disappear.
  * (https://github.com/paperjs/paper.js/issues/1321)
- *
  * @param {!Tool} tool paper.js mouse object
  */
 class SegmentBrushHelper {
@@ -25,7 +24,7 @@ class SegmentBrushHelper {
 
         tool.minDistance = 2 / paper.view.zoom;
         tool.maxDistance = options.brushSize;
-        
+
         this.firstCircle = new paper.Path.Circle({
             center: event.point,
             radius: options.brushSize / 2
@@ -34,7 +33,7 @@ class SegmentBrushHelper {
         styleBlob(this.finalPath, options);
         this.lastPoint = event.point;
     }
-    
+
     onSegmentMouseDrag (event, tool, options) {
         if (event.event.button > 0) return; // only first mouse button
 
@@ -44,7 +43,7 @@ class SegmentBrushHelper {
         handleVec.angle += 90;
 
         const path = new paper.Path();
-        
+
         styleBlob(path, options);
 
         // Add handles to round the end caps
@@ -63,7 +62,7 @@ class SegmentBrushHelper {
         // The unite function on curved paths does not always work (sometimes deletes half the path)
         // so we have to flatten.
         path.flatten(Math.min(5, options.brushSize / 5));
-        
+
         this.lastPoint = event.point;
         const newPath = this.finalPath.unite(path);
         path.remove();

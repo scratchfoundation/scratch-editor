@@ -4,7 +4,7 @@
  * @param {string} options.strokeColor Value to return for the item's stroke color
  * @param {string} options.fillColor Value to return for the item's fill color
  * @param {string} options.strokeWidth Value to return for the item's stroke width
- * @return {object} mock item
+ * @returns {object} mock item
  */
 const mockPaperRootItem = function (options) {
     return {

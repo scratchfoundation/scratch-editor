@@ -97,7 +97,7 @@ class ModeTools extends React.Component {
                 // Point is end point
                 // Direction is average of normal at the point and direction to prev point, using the
                 // normal that points out from the convex side
-                // Lenth is curve length * HANDLE_RATIO
+                // Length is curve length * HANDLE_RATIO
                 const convexity = prev.getCurve().getCurvatureAtTime(.5) < 0 ? -1 : 1;
                 point.handleIn = (prev.getCurve().getNormalAtTime(1)
                     .multiply(convexity)
@@ -108,7 +108,7 @@ class ModeTools extends React.Component {
                 // Point is start point
                 // Direction is average of normal at the point and direction to prev point, using the
                 // normal that points out from the convex side
-                // Lenth is curve length * HANDLE_RATIO
+                // Length is curve length * HANDLE_RATIO
                 const convexity = point.getCurve().getCurvatureAtTime(.5) < 0 ? -1 : 1;
                 point.handleOut = (point.getCurve().getNormalAtTime(0)
                     .multiply(convexity)
@@ -236,7 +236,7 @@ ModeTools.propTypes = {
     onUpdateImage: PropTypes.func.isRequired,
     // Listen on selected items to update hasSelectedPoints
     selectedItems:
-        PropTypes.arrayOf(PropTypes.instanceOf(paper.Item)), // eslint-disable-line react/no-unused-prop-types
+        PropTypes.arrayOf(PropTypes.instanceOf(paper.Item)),
     setSelectedItems: PropTypes.func.isRequired
 };
 

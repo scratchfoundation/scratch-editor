@@ -5,7 +5,7 @@ import paper from '@scratch/paper';
  */
 class RotateTool {
     /**
-     * @param {!function} onUpdateImage A callback to call when the image visibly changes
+     * @param {!Function} onUpdateImage A callback to call when the image visibly changes
      */
     constructor (onUpdateImage) {
         this.rotItems = [];

@@ -36,9 +36,9 @@ class TextTool extends paper.Tool {
      * @param {function} setSelectedItems Callback to set the set of selected items in the Redux state
      * @param {function} clearSelectedItems Callback to clear the set of selected items in the Redux state
      * @param {function} setCursor Callback to set the visible mouse cursor
-     * @param {!function} onUpdateImage A callback to call when the image visibly changes
-     * @param {!function} setTextEditTarget Call to set text editing target whenever text editing is active
-     * @param {!function} changeFont Call to change the font in the dropdown
+     * @param {!Function} onUpdateImage A callback to call when the image visibly changes
+     * @param {!Function} setTextEditTarget Call to set text editing target whenever text editing is active
+     * @param {!Function} changeFont Call to change the font in the dropdown
      * @param {?boolean} isBitmap True if text should be rasterized once it's deselected
      */
     constructor (textAreaElement, setSelectedItems, clearSelectedItems, setCursor, onUpdateImage, setTextEditTarget,
@@ -173,7 +173,7 @@ class TextTool extends paper.Tool {
         calculated.append(viewMtx);
         calculated.append(textBoxMtx);
         this.element.style.transform = `matrix(${calculated.a}, ${calculated.b}, ${calculated.c}, ${calculated.d},
-             ${calculated.tx}, ${calculated.ty})`;
+            ${calculated.tx}, ${calculated.ty})`;
     }
     setColorState (colorState) {
         this.colorState = colorState;
