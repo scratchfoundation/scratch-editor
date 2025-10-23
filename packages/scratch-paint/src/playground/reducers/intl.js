@@ -1,5 +1,4 @@
-import {updateIntl as superUpdateIntl} from 'react-intl-redux';
-import {IntlProvider, intlReducer} from 'react-intl-redux';
+import {updateIntl as superUpdateIntl, IntlProvider, intlReducer} from 'react-intl-redux';
 
 import paintMessages from 'scratch-l10n/locales/paint-editor-msgs';
 

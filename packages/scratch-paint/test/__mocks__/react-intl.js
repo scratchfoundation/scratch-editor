@@ -15,7 +15,11 @@ const intl = {
 };
 
 Intl.injectIntl = Node => {
-    const renderWrapped = props => <Node {...props} intl={intl} />;
+    // eslint-disable-next-line react/jsx-filename-extension
+    const renderWrapped = props => (<Node
+        {...props}
+        intl={intl}
+    />);
     renderWrapped.displayName = Node.displayName ||
         Node.name ||
         'Component';
