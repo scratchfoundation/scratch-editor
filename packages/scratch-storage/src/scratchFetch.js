@@ -80,7 +80,7 @@ const applyMetadata = options => {
  */
 const scratchFetch = (resource, options) => {
     const augmentedOptions = applyMetadata(options);
-    return crossFetch(resource, augmentedOptions);
+    return crossFetch.fetch(resource, augmentedOptions);
 };
 
 /**
