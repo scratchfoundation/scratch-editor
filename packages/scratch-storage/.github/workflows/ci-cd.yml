@@ -37,13 +37,18 @@ jobs:
                   GitHub head ref: ${{ github.head_ref }}
                   EOF
 
-            - name: Setup & Test
+            - run: npm ci
+
+            - name: Pre-build tests
               run: |
-                  npm ci
                   npm run clean
-                  npm run test # runs on source files
-                  npm run build
-                  npm run test:build # requires build output
+                  npm run test
+
+            - name: Build
+              run: npm run build
+
+            - name: Post-build tests
+              run: npm run test:build
 
             - name: Semantic release (configured to run dry if branch is other than 'develop')
               env:
