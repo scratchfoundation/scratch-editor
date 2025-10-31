@@ -21,7 +21,7 @@
     "test": "npm run test:lint && jest \"test[\\\\/](unit|integration)\"",
     "test:clearCache": "jest --clearCache",
     "test:integration": "jest \"test[\\\\/]integration\"",
-    "test:lint": "eslint .",
+    "test:lint": "eslint",
     "test:unit": "jest \"test[\\\\/]unit\"",
     "version": "json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\"",
     "watch": "webpack --watch"

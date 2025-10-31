@@ -208,7 +208,7 @@ export default class WebHelper extends Helper {
                 if (typeof body === 'string') {
                     try {
                         body = JSON.parse(body);
-                    } catch (parseError) {
+                    } catch (parseError) { // eslint-disable-line @typescript-eslint/no-unused-vars
                         // If it's not parseable, then we can't add the id even
                         // if we want to, so stop here
                         return body;

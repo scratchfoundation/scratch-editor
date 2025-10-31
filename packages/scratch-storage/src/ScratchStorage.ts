@@ -97,7 +97,7 @@ export class ScratchStorage {
      * @param {Helper} helper - the helper to be added.
      * @param {number} [priority] - the priority for this new helper (default: 0).
      */
-    addHelper (helper: Helper, priority: number = 0) {
+    addHelper (helper: Helper, priority = 0) {
         this._helpers.push({helper, priority});
         this._helpers.sort((a, b) => b.priority - a.priority);
     }
