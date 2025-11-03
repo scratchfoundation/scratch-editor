@@ -10,7 +10,7 @@ class LoggingHelper {
      * @param {string} label - A label for this instance.
      * @param {boolean} shouldSucceed - set to true to make `load` always succeed, or false to make `load` always fail.
      * @param {Array.<string>} logContainer - an array in which log messages will be stored.
-     * @constructor
+     * @class
      */
     constructor (storage, label, shouldSucceed, logContainer) {
         this.storage = storage;
@@ -24,7 +24,7 @@ class LoggingHelper {
      * @param {AssetType} assetType - The type of asset to fetch.
      * @param {string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @param {DataFormat} dataFormat - The file format / file extension of the asset to fetch: PNG, JPG, etc.
-     * @return {Promise.<Asset>} A promise for the contents of the asset.
+     * @returns {Promise.<Asset>} A promise for the contents of the asset.
      */
     load (assetType, assetId, dataFormat) {
         this.logContainer.push(this.label);

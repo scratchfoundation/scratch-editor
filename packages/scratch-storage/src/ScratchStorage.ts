@@ -41,24 +41,24 @@ export class ScratchStorage {
     }
 
     /**
-     * @return {Asset} - the `Asset` class constructor.
-     * @constructor
+     * @returns {Asset} - the `Asset` class constructor.
+     * @class
      */
     get Asset () {
         return _Asset;
     }
 
     /**
-     * @return {AssetType} - the list of supported asset types.
-     * @constructor
+     * @returns {AssetType} - the list of supported asset types.
+     * @class
      */
     get AssetType () {
         return _AssetType;
     }
 
     /**
-     * @return {DataFormat} - the list of supported data formats.
-     * @constructor
+     * @returns {DataFormat} - the list of supported data formats.
+     * @class
      */
     get DataFormat () {
         return _DataFormat;
@@ -66,7 +66,7 @@ export class ScratchStorage {
 
     /**
      * Access the `scratchFetch` module within this library.
-     * @return {module} the scratchFetch module, with properties for `scratchFetch`, `setMetadata`, etc.
+     * @returns {module} the scratchFetch module, with properties for `scratchFetch`, `setMetadata`, etc.
      */
     get scratchFetch () {
         return _scratchFetch;
@@ -74,8 +74,8 @@ export class ScratchStorage {
 
     /**
      * @deprecated Please use the `Asset` member of a storage instance instead.
-     * @return {Asset} - the `Asset` class constructor.
-     * @constructor
+     * @returns {Asset} - the `Asset` class constructor.
+     * @class
      */
     static get Asset () {
         return _Asset;
@@ -83,8 +83,8 @@ export class ScratchStorage {
 
     /**
      * @deprecated Please use the `AssetType` member of a storage instance instead.
-     * @return {AssetType} - the list of supported asset types.
-     * @constructor
+     * @returns {AssetType} - the list of supported asset types.
+     * @class
      */
     static get AssetType () {
         return _AssetType;
@@ -97,7 +97,7 @@ export class ScratchStorage {
      * @param {Helper} helper - the helper to be added.
      * @param {number} [priority] - the priority for this new helper (default: 0).
      */
-    addHelper (helper: Helper, priority: number = 0) {
+    addHelper (helper: Helper, priority = 0) {
         this._helpers.push({helper, priority});
         this._helpers.sort((a, b) => b.priority - a.priority);
     }
@@ -174,7 +174,7 @@ export class ScratchStorage {
     /**
      * TODO: Should this be removed in favor of requesting an asset with `null` as the ID?
      * @param {AssetType} type - Get the default ID for assets of this type.
-     * @return {?string} The ID of the default asset of the given type, if any.
+     * @returns {?string} The ID of the default asset of the given type, if any.
      */
     getDefaultAssetId (type: AssetType): AssetId | undefined {
         if (Object.prototype.hasOwnProperty.call(this.defaultAssetId, type.name)) {
@@ -199,7 +199,7 @@ export class ScratchStorage {
      * @param {AssetType} assetType - The type of asset to fetch. This also determines which asset store to use.
      * @param {string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @param {DataFormat} [dataFormat] - Optional: load this format instead of the AssetType's default.
-     * @return {Promise.<Asset>} A promise for the requested Asset.
+     * @returns {Promise.<Asset>} A promise for the requested Asset.
      *   If the promise is resolved with non-null, the value is the requested asset.
      *   If the promise is resolved with null, the desired asset could not be found with the current asset sources.
      *   If the promise is rejected, there was an error on at least one asset source. HTTP 404 does not count as an
@@ -247,7 +247,7 @@ export class ScratchStorage {
      * @param {?DataFormat} [dataFormat] - Optional: load this format instead of the AssetType's default.
      * @param {Buffer} data - Data to store for the asset
      * @param {?string} [assetId] - The ID of the asset to fetch: a project ID, MD5, etc.
-     * @return {Promise.<object>} A promise for asset metadata
+     * @returns {Promise.<object>} A promise for asset metadata
      */
     store (assetType: AssetType, dataFormat: DataFormat | null | undefined, data: AssetData, assetId?: AssetId) {
         dataFormat = dataFormat || assetType.runtimeFormat;

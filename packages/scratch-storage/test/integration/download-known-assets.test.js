@@ -106,7 +106,6 @@ test('load', () => {
                 }
 
                 if (e instanceof Array) {
-                    /* global AggregateError */
                     // we must have >1 error, so report it as an AggregateError (supported in Node 15+)
                     e = new AggregateError(
                         e.flat(),
@@ -132,7 +131,6 @@ test('load', () => {
         expect(asset.clean).toBeTruthy();
 
         if (assetInfo.md5) {
-            // eslint-disable-next-line jest/no-conditional-expect
             expect(md5(asset.data)).toBe(assetInfo.md5);
         }
     });

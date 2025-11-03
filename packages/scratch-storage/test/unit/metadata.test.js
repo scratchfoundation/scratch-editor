@@ -3,7 +3,6 @@ jest.mock('cross-fetch');
 beforeEach(() => {
     // reset the metadata container to ensure the tests don't interfere with each other
     // but this also means we need to `require` inside the tests
-    /* eslint-disable global-require */
     jest.resetModules();
 
     // temporary: pretend we're running in a browser and the URL has scratchMetadata=1

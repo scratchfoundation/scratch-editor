@@ -5,6 +5,7 @@
 
     /* Language and Environment */
     "target": "ESNext",
+    "allowJs": true,
 
     /* Modules */
     "module": "Preserve",

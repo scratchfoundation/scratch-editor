@@ -103,7 +103,7 @@ export default class WebHelper extends Helper {
      * @param {AssetType} assetType - The type of asset to fetch.
      * @param {string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
      * @param {DataFormat} dataFormat - The file format / file extension of the asset to fetch: PNG, JPG, etc.
-     * @return {Promise.<Asset>} A promise for the contents of the asset.
+     * @returns {Promise.<Asset>} A promise for the contents of the asset.
      */
     load (assetType: AssetType, assetId: AssetId, dataFormat: DataFormat): Promise<Asset | null> {
 
@@ -162,7 +162,7 @@ export default class WebHelper extends Helper {
      * @param {?DataFormat} dataFormat - DataFormat of the data for the stored asset.
      * @param {Buffer} data - The data for the cached asset.
      * @param {?string} assetId - The ID of the asset to fetch: a project ID, MD5, etc.
-     * @return {Promise.<object>} A promise for the response from the create or update request
+     * @returns {Promise.<object>} A promise for the response from the create or update request
      */
     store (
         assetType: AssetType,
@@ -208,7 +208,7 @@ export default class WebHelper extends Helper {
                 if (typeof body === 'string') {
                     try {
                         body = JSON.parse(body);
-                    } catch (parseError) {
+                    } catch (parseError) { // eslint-disable-line @typescript-eslint/no-unused-vars
                         // If it's not parseable, then we can't add the id even
                         // if we want to, so stop here
                         return body;

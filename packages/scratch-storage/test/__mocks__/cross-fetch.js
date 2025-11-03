@@ -20,7 +20,7 @@ const successText = 'successful response';
 /**
  * @typedef MockFetchTestData
  * @property {Headers} [headers] A Headers object initialized with the header info received by mockFetch.
- * @property {Number} [headersCount] The number of headers in the 'headers' property.
+ * @property {number} [headersCount] The number of headers in the 'headers' property.
  */
 
 /**
