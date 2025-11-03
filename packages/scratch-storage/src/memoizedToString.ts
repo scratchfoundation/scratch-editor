@@ -15,7 +15,6 @@ let _TextDecoder: typeof TextDecoder;
 let _TextEncoder: typeof TextEncoder;
 if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
     // Wait to require the text encoding polyfill until we know it's needed.
-    // eslint-disable-next-line global-require
     const encoding = require('fastestsmallesttextencoderdecoder');
     _TextDecoder = encoding.TextDecoder;
     _TextEncoder = encoding.TextEncoder;
@@ -31,13 +30,13 @@ const memoizedToString = (function () {
      * 32766 is a multiple of 3 so btoa does not need to use padding characters
      * except for the final chunk where that is fine. 32766 is also close to
      * 32768 so it is close to a size an memory allocator would prefer.
-     * @const {number}
+     * @constant {number}
      */
     const BTOA_CHUNK_MAX_LENGTH = 32766;
 
     /**
      * An array cache of bytes to characters.
-     * @const {?Array.<string>}
+     * @constant {?Array.<string>}
      */
     let fromCharCode: string[] | null = null;
 
@@ -46,7 +45,6 @@ const memoizedToString = (function () {
         if (!Object.prototype.hasOwnProperty.call(strings, assetId)) {
             if (typeof btoa === 'undefined') {
                 // Use a library that does not need btoa to run.
-                /* eslint-disable-next-line global-require */
                 const base64js = require('base64-js');
                 strings[assetId] = base64js.fromByteArray(data);
             } else {
