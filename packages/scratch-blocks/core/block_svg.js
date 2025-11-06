@@ -323,7 +323,6 @@ Blockly.BlockSvg.prototype.initCatStuff = function() {
     that.ear2Fn = setTimeout(function() {
       that.svgPath_.ear2.setAttribute('fill-opacity','');
       var bodyPath = that.svgPath_.svgBody.getAttribute('d');
-      var bodyPath = that.svgPath_.svgBody.getAttribute('d');
       bodyPath = bodyPath.replace(LEFT_EAR_DOWN, LEFT_EAR_UP);
       bodyPath = bodyPath.replace(DEFINE_HAT_LEFT_EAR_DOWN, DEFINE_HAT_LEFT_EAR_UP);
       that.svgPath_.svgBody.setAttribute('d', bodyPath);

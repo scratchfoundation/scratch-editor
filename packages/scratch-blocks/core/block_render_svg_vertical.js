@@ -139,7 +139,13 @@ Blockly.BlockSvg.STATEMENT_INPUT_INNER_SPACE = 2 * Blockly.BlockSvg.GRID_UNIT;
  * Height of the top hat.
  * @const
  */
-Blockly.BlockSvg.START_HAT_HEIGHT = Blockly.useCatBlocks ? 31 : 16;
+Object.defineProperty(Blockly.BlockSvg, 'START_HAT_HEIGHT', {
+  get: function() {
+    return Blockly.useCatBlocks ? 31 : 16;
+  },
+  enumerable: true,
+  configurable: true
+});
 
 /**
  * Height of the vertical separator line for icons that appear at the left edge
@@ -152,12 +158,18 @@ Blockly.BlockSvg.ICON_SEPARATOR_HEIGHT = 10 * Blockly.BlockSvg.GRID_UNIT;
  * Path of the top hat's curve.
  * @const
  */
-Blockly.BlockSvg.START_HAT_PATH = Blockly.useCatBlocks
-  ? 'c2.6,-2.3 5.5,-4.3 8.5,-6.2' +
-    'c-1,-12.5 5.3,-23.3 8.4,-24.8c3.7,-1.8 16.5,13.1 18.4,15.4' +
-    'c8.4,-1.3 17,-1.3 25.4,0c1.9,-2.3 14.7,-17.2 18.4,-15.4' +
-    'c3.1,1.5 9.4,12.3 8.4,24.8c3,1.8 5.9,3.9 8.5,6.1'
-  : 'c 25,-22 71,-22 96,0';
+Object.defineProperty(Blockly.BlockSvg, 'START_HAT_PATH', {
+  get: function() {
+    return Blockly.useCatBlocks
+      ? 'c2.6,-2.3 5.5,-4.3 8.5,-6.2' +
+        'c-1,-12.5 5.3,-23.3 8.4,-24.8c3.7,-1.8 16.5,13.1 18.4,15.4' +
+        'c8.4,-1.3 17,-1.3 25.4,0c1.9,-2.3 14.7,-17.2 18.4,-15.4' +
+        'c3.1,1.5 9.4,12.3 8.4,24.8c3,1.8 5.9,3.9 8.5,6.1'
+      : 'c 25,-22 71,-22 96,0';
+  },
+  enumerable: true,
+  configurable: true
+});
 
 /**
  * SVG path for drawing next/previous notch from left to right.
@@ -481,14 +493,20 @@ Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS = 5 * Blockly.BlockSvg.GRID_UNIT;
  * SVG path for drawing the rounded top-left corner.
  * @const
  */
-Blockly.BlockSvg.TOP_LEFT_CORNER_DEFINE_HAT = Blockly.useCatBlocks
-  ? 'c0,-7.1 3.7,-13.3 9.3,-16.9c1.7,-7.5 5.4,-13.2 7.6,-14.2' +
-    'c2.6,-1.3 10,6 14.6,11.1h33c4.6,-5.1 11.9,-12.4 14.6,-11.1' +
-    'c1.9,0.9 4.9,5.2 6.8,11.1c2.6,0,5.2,0,7.8,0'
-  : 'a ' + Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ',' +
-    Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ' 0 0,1 ' +
-    Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ',-' +
-    Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS;
+Object.defineProperty(Blockly.BlockSvg, 'TOP_LEFT_CORNER_DEFINE_HAT', {
+  get: function() {
+    return Blockly.useCatBlocks
+      ? 'c0,-7.1 3.7,-13.3 9.3,-16.9c1.7,-7.5 5.4,-13.2 7.6,-14.2' +
+        'c2.6,-1.3 10,6 14.6,11.1h33c4.6,-5.1 11.9,-12.4 14.6,-11.1' +
+        'c1.9,0.9 4.9,5.2 6.8,11.1c2.6,0,5.2,0,7.8,0'
+      : 'a ' + Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ',' +
+        Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ' 0 0,1 ' +
+        Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ',-' +
+        Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS;
+  },
+  enumerable: true,
+  configurable: true
+});
 
 /**
  * SVG path for drawing the rounded top-left corner.
