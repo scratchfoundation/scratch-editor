@@ -63,6 +63,9 @@ describe('SpriteSelectorItem Container', () => {
                 hoveredTarget: {receivedBlocks: false, sprite: null},
                 assetDrag: {dragging: false},
                 vm
+            },
+            locales: {
+                isRtl: false
             }
         });
     });
