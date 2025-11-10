@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import {defineMessages, injectIntl} from 'react-intl';
+import intlShape from './intlShape';
 
 import {
     getIsAnyCreatingNewState,
@@ -54,7 +55,7 @@ const TitledHOC = function (WrappedComponent) {
         }
         render () {
             const {
-                /* eslint-disable no-unused-vars */
+                 
                 intl,
                 isAnyCreatingNewState,
                 isShowingWithoutId,
@@ -65,7 +66,7 @@ const TitledHOC = function (WrappedComponent) {
                 // redux value
                 projectTitle,
                 reduxProjectTitle,
-                /* eslint-enable no-unused-vars */
+                 
                 ...componentProps
             } = this.props;
             return (

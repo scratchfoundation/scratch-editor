@@ -89,7 +89,7 @@ class BLE extends JSONRPC {
     }
 
     /**
-     * @return {bool} whether the peripheral is connected.
+     * @returns {bool} whether the peripheral is connected.
      */
     isConnected () {
         return this._connected;
@@ -100,7 +100,7 @@ class BLE extends JSONRPC {
      * @param {number} serviceId - the ble service to read.
      * @param {number} characteristicId - the ble characteristic to get notifications from.
      * @param {object} onCharacteristicChanged - callback for characteristic change notifications.
-     * @return {Promise} - a promise from the remote startNotifications request.
+     * @returns {Promise} - a promise from the remote startNotifications request.
      */
     startNotifications (serviceId, characteristicId, onCharacteristicChanged = null) {
         const params = {
@@ -120,7 +120,7 @@ class BLE extends JSONRPC {
      * @param {number} characteristicId - the ble characteristic to read.
      * @param {boolean} optStartNotifications - whether to start receiving characteristic change notifications.
      * @param {object} onCharacteristicChanged - callback for characteristic change notifications.
-     * @return {Promise} - a promise from the remote read request.
+     * @returns {Promise} - a promise from the remote read request.
      */
     read (serviceId, characteristicId, optStartNotifications = false, onCharacteristicChanged = null) {
         const params = {
@@ -146,7 +146,7 @@ class BLE extends JSONRPC {
      * @param {string} message - the message to send.
      * @param {string} encoding - the message encoding type.
      * @param {boolean} withResponse - if true, resolve after peripheral's response.
-     * @return {Promise} - a promise from the remote send request.
+     * @returns {Promise} - a promise from the remote send request.
      */
     write (serviceId, characteristicId, message, encoding = null, withResponse = null) {
         const params = {serviceId, characteristicId, message};
@@ -166,7 +166,7 @@ class BLE extends JSONRPC {
      * Handle a received call from the socket.
      * @param {string} method - a received method label.
      * @param {object} params - a received list of parameters.
-     * @return {object} - optional return value.
+     * @returns {object} - optional return value.
      */
     didReceiveCall (method, params) {
         switch (method) {

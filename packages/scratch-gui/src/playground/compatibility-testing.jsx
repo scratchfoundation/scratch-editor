@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDomClient from 'react-dom/client';
 
 import GUI from '../containers/gui.jsx';
 import HashParserHOC from '../lib/hash-parser-hoc.jsx';
@@ -53,4 +53,5 @@ class Player extends React.Component {
 const appTarget = document.createElement('div');
 document.body.appendChild(appTarget);
 
-ReactDOM.render(<Player />, appTarget);
+const root = ReactDomClient.createRoot(appTarget);
+root.render(<Player />);

@@ -27,14 +27,14 @@ FakeRenderer.prototype.createDrawable = function () {
     return true;
 };
 
-FakeRenderer.prototype.getFencedPositionOfDrawable = function (d, p) { // eslint-disable-line no-unused-vars
+FakeRenderer.prototype.getFencedPositionOfDrawable = function (d, p) {
     return [p[0], p[1]];
 };
 
 FakeRenderer.prototype.updateDrawableSkinId = function (d, skinId) { // eslint-disable-line no-unused-vars
 };
 
-FakeRenderer.prototype.updateDrawablePosition = function (d, position) { // eslint-disable-line no-unused-vars
+FakeRenderer.prototype.updateDrawablePosition = function (d, position) {
     this.x = position[0];
     this.y = position[1];
 };
@@ -68,7 +68,7 @@ FakeRenderer.prototype.getBounds = function (d) { // eslint-disable-line no-unus
     return {left: this.x, right: this.x, top: this.y, bottom: this.y};
 };
 
-FakeRenderer.prototype.setDrawableOrder = function (d, a, optG, optA, optB) { // eslint-disable-line no-unused-vars
+FakeRenderer.prototype.setDrawableOrder = function (d, a, optG, optA, optB) {
     if (d === 999) return 1; // fake for test case
     if (optA) {
         a += this.order;
@@ -85,7 +85,7 @@ FakeRenderer.prototype.getDrawableOrder = function (d) { // eslint-disable-line 
     return 'stub';
 };
 
-FakeRenderer.prototype.pick = function (x, y, a, b, c) { // eslint-disable-line no-unused-vars
+FakeRenderer.prototype.pick = function (x, y, a, b, c) {
     return c[0];
 };
 

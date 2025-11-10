@@ -90,7 +90,7 @@ class ListMonitorScroller extends React.Component {
                 rowCount={values.length}
                 rowHeight={24 /* Row size is same for all rows */}
                 rowRenderer={this.rowRenderer}
-                scrollToIndex={scrollToIndex} /* eslint-disable-line no-undefined */
+                scrollToIndex={scrollToIndex}
                 values={values}
                 width={width}
             />

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import {defineMessages, useIntl} from 'react-intl';
 
 import GreenFlag from '../green-flag/green-flag.jsx';
 import StopAll from '../stop-all/stop-all.jsx';
@@ -26,12 +26,12 @@ const Controls = function (props) {
     const {
         active,
         className,
-        intl,
         onGreenFlagClick,
         onStopAllClick,
         turbo,
         ...componentProps
     } = props;
+    const intl = useIntl();
     return (
         <div
             className={classNames(styles.controlsContainer, className)}
@@ -57,7 +57,6 @@ const Controls = function (props) {
 Controls.propTypes = {
     active: PropTypes.bool,
     className: PropTypes.string,
-    intl: intlShape.isRequired,
     onGreenFlagClick: PropTypes.func.isRequired,
     onStopAllClick: PropTypes.func.isRequired,
     turbo: PropTypes.bool
@@ -68,4 +67,4 @@ Controls.defaultProps = {
     turbo: false
 };
 
-export default injectIntl(Controls);
+export default Controls;

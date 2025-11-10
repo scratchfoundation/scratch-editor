@@ -7,6 +7,7 @@ import React from 'react';
 import VMScratchBlocks from '../lib/blocks';
 import VM from '@scratch/scratch-vm';
 
+import analytics from '../lib/analytics';
 import log from '../lib/log.js';
 import Prompt from './prompt.jsx';
 import BlocksComponent from '../components/blocks/blocks.jsx';
@@ -144,6 +145,12 @@ class Blocks extends React.Component {
         if (this.props.isVisible) {
             this.setLocale();
         }
+
+        window.addEventListener('load-extension', () => {
+            this.props.vm.extensionManager.loadExtensionURL('faceSensing').then(() => {
+                this.handleCategorySelected('faceSensing');
+            });
+        });
     }
     shouldComponentUpdate (nextProps, nextState) {
         return (
@@ -434,6 +441,12 @@ class Blocks extends React.Component {
         }
     }
     handleExtensionAdded (categoryInfo) {
+        analytics.event({
+            category: 'extensions',
+            action: 'added',
+            label: categoryInfo.id
+        });
+
         const defineBlocks = blockInfoArray => {
             if (blockInfoArray && blockInfoArray.length > 0) {
                 const staticBlocksJson = [];
@@ -545,7 +558,7 @@ class Blocks extends React.Component {
             });
     }
     render () {
-        /* eslint-disable no-unused-vars */
+         
         const {
             anyModalVisible,
             canUseCloud,
@@ -569,7 +582,7 @@ class Blocks extends React.Component {
             workspaceMetrics,
             ...props
         } = this.props;
-        /* eslint-enable no-unused-vars */
+         
         return (
             <React.Fragment>
                 <DroppableBlocks
@@ -596,6 +609,8 @@ class Blocks extends React.Component {
                         vm={vm}
                         onCategorySelected={this.handleCategorySelected}
                         onRequestClose={onRequestCloseExtensionLibrary}
+                        showNewFeatureCallouts={this.props.showNewFeatureCallouts}
+                        username={this.props.username}
                     />
                 ) : null}
                 {customProceduresVisible ? (
@@ -645,7 +660,9 @@ Blocks.propTypes = {
     vm: PropTypes.instanceOf(VM).isRequired,
     workspaceMetrics: PropTypes.shape({
         targets: PropTypes.objectOf(PropTypes.object)
-    })
+    }),
+    showNewFeatureCallouts: PropTypes.bool,
+    username: PropTypes.string
 };
 
 Blocks.defaultOptions = {

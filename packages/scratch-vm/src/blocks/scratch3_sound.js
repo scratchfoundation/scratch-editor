@@ -4,7 +4,7 @@ const Clone = require('../util/clone');
 
 /**
  * Occluded boolean value to make its use more understandable.
- * @const {boolean}
+ * @constant {boolean}
  */
 const STORE_WAITING = true;
 
@@ -73,14 +73,16 @@ class Scratch3SoundBlocks {
         return {min: 0, max: 100};
     }
 
-    /** The minimum and maximum tempo values, in bpm.
+    /**
+     * The minimum and maximum tempo values, in bpm.
      * @type {{min: number, max: number}}
      */
     static get TEMPO_RANGE () {
         return {min: 20, max: 500};
     }
 
-    /** The minimum and maximum values for each sound effect.
+    /**
+     * The minimum and maximum values for each sound effect.
      * @type {{effect:{min: number, max: number}}}
      */
     static get EFFECT_RANGE () {
@@ -124,7 +126,7 @@ class Scratch3SoundBlocks {
 
     /**
      * Retrieve the block primitives implemented by this package.
-     * @return {object.<string, Function>} Mapping of opcode to Function.
+     * @returns {object.<string, Function>} Mapping of opcode to Function.
      */
     getPrimitives () {
         return {

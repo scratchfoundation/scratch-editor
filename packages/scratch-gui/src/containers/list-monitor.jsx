@@ -159,7 +159,7 @@ class ListMonitor extends React.Component {
 
     render () {
         const {
-            vm, // eslint-disable-line no-unused-vars
+            vm,
             ...props
         } = this.props;
         return (

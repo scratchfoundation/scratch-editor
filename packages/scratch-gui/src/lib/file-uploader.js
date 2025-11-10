@@ -6,7 +6,7 @@ import gifDecoder from './gif-decoder';
 /**
  * Extract the file name given a string of the form fileName + ext
  * @param {string} nameExt File name + extension (e.g. 'my_image.png')
- * @return {string} The name without the extension, or the full name if
+ * @returns {string} The name without the extension, or the full name if
  * there was no '.' in the string (e.g. 'my_image')
  */
 const extractFileName = function (nameExt) {
@@ -65,7 +65,7 @@ const handleFileUpload = function (fileInput, onload, onerror) {
  * asset this is.
  * @param {string} dataFormat The format of this data (typically the file extension)
  * @param {UInt8Array} data The asset data buffer
- * @return {VMAsset} An object representing this asset and relevant information
+ * @returns {VMAsset} An object representing this asset and relevant information
  * which can be used to look up the data in storage
  */
 const createVMAsset = function (storage, assetType, dataFormat, data) {

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactModal from 'react-modal';
 import Box from '../box/box.jsx';
-import {defineMessages, injectIntl, intlShape, FormattedMessage} from 'react-intl';
+import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
 
 import styles from './webgl-modal.css';
 
@@ -14,88 +14,96 @@ const messages = defineMessages({
     }
 });
 
-const WebGlModal = ({intl, ...props}) => (
-    <ReactModal
-        isOpen
-        className={styles.modalContent}
-        contentLabel={intl.formatMessage({...messages.label})}
-        overlayClassName={styles.modalOverlay}
-        onRequestClose={props.onBack}
-    >
-        <div dir={props.isRtl ? 'rtl' : 'ltr'}>
-            <Box className={styles.illustration} />
+const WebGlModal = props => {
+    const intl = useIntl();
+    return (
+        <ReactModal
+            isOpen
+            className={styles.modalContent}
+            contentLabel={intl.formatMessage({...messages.label})}
+            overlayClassName={styles.modalOverlay}
+            onRequestClose={props.onBack}
+        >
+            <div dir={props.isRtl ? 'rtl' : 'ltr'}>
+                <Box className={styles.illustration} />
 
-            <Box className={styles.body}>
-                <h2>
-                    <FormattedMessage {...messages.label} />
-                </h2>
-                <p>
-                    { /* eslint-disable max-len */ }
-                    <FormattedMessage
-                        defaultMessage="Unfortunately it looks like your browser or computer {webGlLink}. This technology is needed for Scratch 3.0 to run."
-                        description="WebGL missing message"
-                        id="gui.webglModal.description"
-                        values={{
-                            webGlLink: (
-                                <a
-                                    className={styles.faqLink}
-                                    href="https://get.webgl.org/"
-                                >
+                <Box className={styles.body}>
+                    <h2>
+                        <FormattedMessage {...messages.label} />
+                    </h2>
+                    <p>
+                        { /* eslint-disable max-len */ }
+                        <FormattedMessage
+                            defaultMessage="Unfortunately it looks like your browser or computer <a>{webGlLink}</a>. This technology is needed for Scratch 3.0 to run."
+                            description="WebGL missing message"
+                            id="gui.webglModal.description"
+                            values={{
+                                webGlLink: (
                                     <FormattedMessage
                                         defaultMessage="does not support WebGL"
                                         description="link part of your browser does not support WebGL message"
                                         id="gui.webglModal.webgllink"
                                     />
-                                </a>
-                            )
-                        }}
-                    />
-                    { /* eslint-enable max-len */ }
-                </p>
-
-                <Box className={styles.buttonRow}>
-                    <button
-                        className={styles.backButton}
-                        onClick={props.onBack}
-                    >
-                        <FormattedMessage
-                            defaultMessage="Back"
-                            description="Label for button go back when browser is unsupported"
-                            id="gui.webglModal.back"
+                                ),
+                                a: webGlLink => (
+                                    <a
+                                        className={styles.faqLink}
+                                        href="https://get.webgl.org/"
+                                    >
+                                        {webGlLink}
+                                    </a>
+                                )
+                            }}
                         />
-                    </button>
+                        { /* eslint-enable max-len */ }
+                    </p>
 
-                </Box>
-                <div className={styles.faqLinkText}>
-                    <FormattedMessage
-                        defaultMessage="To learn more, go to the {previewFaqLink}."
-                        description="Scratch 3.0 FAQ description"
-                        id="gui.webglModal.previewfaq"
-                        values={{
-                            previewFaqLink: (
-                                <a
-                                    className={styles.faqLink}
-                                    href="//scratch.mit.edu/3faq"
-                                >
+                    <Box className={styles.buttonRow}>
+                        <button
+                            className={styles.backButton}
+                            onClick={props.onBack}
+                        >
+                            <FormattedMessage
+                                defaultMessage="Back"
+                                description="Label for button go back when browser is unsupported"
+                                id="gui.webglModal.back"
+                            />
+                        </button>
+
+                    </Box>
+                    <div className={styles.faqLinkText}>
+                        <FormattedMessage
+                            defaultMessage="To learn more, go to the <a>{previewFaqLink}</a>."
+                            description="Scratch 3.0 FAQ description"
+                            id="gui.webglModal.previewfaq"
+                            values={{
+                                previewFaqLink: (
                                     <FormattedMessage
                                         defaultMessage="FAQ"
                                         description="link to Scratch 3.0 FAQ page"
                                         id="gui.webglModal.previewfaqlinktext"
                                     />
-                                </a>
-                            )
-                        }}
-                    />
-                </div>
-            </Box>
-        </div>
-    </ReactModal>
-);
+                                ),
+                                a: previewFaqLink => (
+                                    <a
+                                        className={styles.faqLink}
+                                        href="//scratch.mit.edu/3faq"
+                                    >
+                                        {previewFaqLink}
+                                    </a>
+                                )
+                            }}
+                        />
+                    </div>
+                </Box>
+            </div>
+        </ReactModal>
+    );
+};
 
 WebGlModal.propTypes = {
-    intl: intlShape.isRequired,
     isRtl: PropTypes.bool,
     onBack: PropTypes.func.isRequired
 };
 
-export default injectIntl(WebGlModal);
+export default WebGlModal;

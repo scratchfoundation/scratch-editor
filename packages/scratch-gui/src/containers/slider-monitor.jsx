@@ -30,8 +30,8 @@ class SliderMonitor extends React.Component {
     }
     render () {
         const {
-            vm, // eslint-disable-line no-unused-vars
-            value, // eslint-disable-line no-unused-vars
+            vm,
+            value,
             ...props
         } = this.props;
         return (

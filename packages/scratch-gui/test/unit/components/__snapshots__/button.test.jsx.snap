@@ -2,12 +2,9 @@
 
 exports[`ButtonComponent matches snapshot 1`] = `
 <span
-  className=""
-  onClick={[Function]}
+  class=""
   role="button"
 >
-  <div
-    className={undefined}
-  />
+  <div />
 </span>
 `;

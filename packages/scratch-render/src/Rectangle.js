@@ -3,7 +3,7 @@ class Rectangle {
      * A utility for creating and comparing axis-aligned rectangles.
      * Rectangles are always initialized to the "largest possible rectangle";
      * use one of the init* methods below to set up a particular rectangle.
-     * @constructor
+     * @class
      */
     constructor () {
         this.left = -Infinity;
@@ -84,7 +84,7 @@ class Rectangle {
      * Note that this is a comparison assuming the Rectangle was
      * initialized with Scratch-space bounds or points.
      * @param {!Rectangle} other Rectangle to check if intersecting.
-     * @return {boolean} True if this Rectangle intersects other.
+     * @returns {boolean} True if this Rectangle intersects other.
      */
     intersects (other) {
         return (
@@ -100,7 +100,7 @@ class Rectangle {
      * Note that this is a comparison assuming the Rectangle was
      * initialized with Scratch-space bounds or points.
      * @param {!Rectangle} other Rectangle to check if fully contained.
-     * @return {boolean} True if this Rectangle fully contains other.
+     * @returns {boolean} True if this Rectangle fully contains other.
      */
     contains (other) {
         return (
@@ -177,7 +177,7 @@ class Rectangle {
 
     /**
      * Width of the Rectangle.
-     * @return {number} Width of rectangle.
+     * @returns {number} Width of rectangle.
      */
     get width () {
         return Math.abs(this.left - this.right);
@@ -185,7 +185,7 @@ class Rectangle {
 
     /**
      * Height of the Rectangle.
-     * @return {number} Height of rectangle.
+     * @returns {number} Height of rectangle.
      */
     get height () {
         return Math.abs(this.top - this.bottom);

@@ -2,29 +2,31 @@ import React from 'react';
 import {OrderedMap} from 'immutable';
 import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
-import {mountWithIntl} from '../../helpers/intl-helpers.jsx';
+import {renderWithIntl} from '../../helpers/intl-helpers.jsx';
 import MonitorList from '../../../src/components/monitor-list/monitor-list.jsx';
 import {DEFAULT_THEME} from '../../../src/lib/themes';
 
 describe('MonitorListComponent', () => {
-    const store = configureStore()({scratchGui: {
-        monitorLayout: {
-            monitors: {},
-            savedMonitorPositions: {}
-        },
-        theme: {
-            theme: DEFAULT_THEME
-        },
-        toolbox: {
-            toolboxXML: ''
-        },
-        vm: {
-            runtime: {
-                requestUpdateMonitor: () => {},
-                getLabelForOpcode: () => ''
+    const store = configureStore()({
+        scratchGui: {
+            monitorLayout: {
+                monitors: {},
+                savedMonitorPositions: {}
+            },
+            theme: {
+                theme: DEFAULT_THEME
+            },
+            toolbox: {
+                toolboxXML: ''
+            },
+            vm: {
+                runtime: {
+                    requestUpdateMonitor: () => { },
+                    getLabelForOpcode: () => ''
+                }
             }
         }
-    }});
+    });
     const draggable = false;
     const onMonitorChange = jest.fn();
     const stageSize = {
@@ -58,9 +60,9 @@ describe('MonitorListComponent', () => {
                 isDiscrete: true
             }
         });
-        const wrapper = mountWithIntl(getComponent());
-        const input = wrapper.find('input');
-        expect(input.props().step).toBe(1);
+        const {container} = renderWithIntl(getComponent());
+        
+        expect(container.firstChild).toMatchSnapshot();
     });
 
     test('it renders the correct step size for non-discrete sliders', () => {
@@ -71,8 +73,8 @@ describe('MonitorListComponent', () => {
                 isDiscrete: false
             }
         });
-        const wrapper = mountWithIntl(getComponent());
-        const input = wrapper.find('input');
-        expect(input.props().step).toBe(0.01);
+        const {container} = renderWithIntl(getComponent());
+        
+        expect(container.firstChild).toMatchSnapshot();
     });
 });

@@ -11,7 +11,7 @@ const TagButtonComponent = ({
     active,
     iconClassName,
     className,
-    tag, // eslint-disable-line no-unused-vars
+    tag,
     intlLabel,
     ...props
 }) => (

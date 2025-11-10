@@ -1,19 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`IconButtonComponent matches snapshot 1`] = `
+exports[`IconButtonComponent renders with all props correctly 1`] = `
 <div
-  className="custom-class-name"
-  onClick={[Function]}
+  class="custom-class-name"
   role="button"
 >
   <img
-    className={undefined}
-    draggable={false}
+    draggable="false"
     src="imgSrc"
   />
-  <div
-    className={undefined}
-  >
+  <div>
     <div>
       Text
     </div>

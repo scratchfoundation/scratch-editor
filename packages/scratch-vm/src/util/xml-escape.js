@@ -6,7 +6,7 @@ const log = require('./log');
  * https://stackoverflow.com/questions/7918868/
  * how-to-escape-xml-entities-in-javascript
  * @param {!string | !Array.<string>} unsafe Unsafe string.
- * @return {string} XML-escaped string, for use within an XML tag.
+ * @returns {string} XML-escaped string, for use within an XML tag.
  */
 const xmlEscape = function (unsafe) {
     if (typeof unsafe !== 'string') {

@@ -28,7 +28,7 @@ class Alert extends React.Component {
             closeButton,
             content,
             extensionName,
-            index, // eslint-disable-line no-unused-vars
+            index,
             level,
             iconSpinner,
             iconURL,

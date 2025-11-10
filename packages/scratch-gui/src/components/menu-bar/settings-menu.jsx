@@ -26,7 +26,7 @@ const SettingsMenu = ({
         className={classNames(menuBarStyles.menuBarItem, menuBarStyles.hoverable, menuBarStyles.themeMenu, {
             [menuBarStyles.active]: settingsMenuOpen
         })}
-        onMouseUp={onRequestOpen}
+        onClick={onRequestOpen}
     >
         <img
             src={settingsIcon}

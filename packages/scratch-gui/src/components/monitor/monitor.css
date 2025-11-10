@@ -2,7 +2,7 @@
 @import "../../css/colors.css";
 @import "../../css/z-index.css";
 
-.monitor-container {
+body .monitor-container {
     position: absolute;
     background: $ui-primary;
     z-index: $z-index-monitor;

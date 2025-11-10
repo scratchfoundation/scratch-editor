@@ -38,9 +38,9 @@ const systemPreferencesHOC = function (WrappedComponent) {
 
         render () {
             const {
-                /* eslint-disable no-unused-vars */
+                 
                 onSetTheme,
-                /* eslint-enable no-unused-vars */
+                 
                 ...props
             } = this.props;
             return <WrappedComponent {...props} />;

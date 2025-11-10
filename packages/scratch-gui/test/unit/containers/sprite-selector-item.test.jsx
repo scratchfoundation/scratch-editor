@@ -1,13 +1,18 @@
 import React from 'react';
-import {mountWithIntl} from '../../helpers/intl-helpers.jsx';
+import {renderWithIntl} from '../../helpers/intl-helpers.jsx';
 import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
 import VM from '@scratch/scratch-vm';
 
 import SpriteSelectorItemContainer from '../../../src/containers/sprite-selector-item';
-import DeleteButton from '../../../src/components/delete-button/delete-button';
 import {legacyConfig} from '../../../src/legacy-config';
 import DeleteConfirmationPrompt from '../../../src/containers/delete-confirmation-prompt';
+import {screen, fireEvent, waitFor} from '@testing-library/react';
+
+global.MutationObserver = class {
+    disconnect () { }
+    observe () { }
+};
 
 jest.mock('../../../src/containers/delete-confirmation-prompt', () => jest.fn(() => null));
 describe('SpriteSelectorItem Container', () => {
@@ -58,29 +63,30 @@ describe('SpriteSelectorItem Container', () => {
                 hoveredTarget: {receivedBlocks: false, sprite: null},
                 assetDrag: {dragging: false},
                 vm
-            },
-            locales: {
-                isRtl: false,
-                locale: 'en-US'
             }
         });
     });
 
     test('should delete the sprite, when called without `withDeleteConfirmation`', () => {
-        const wrapper = mountWithIntl(getContainer());
+        onDeleteButtonClick = jest.fn();
 
-        wrapper.find(DeleteButton).simulate('click');
-        expect(DeleteConfirmationPrompt).not.toHaveBeenCalled();
+        renderWithIntl(getContainer());
+
+        const deleteButton = screen.getByRole('button', {name: /delete/i});
+        fireEvent.click(deleteButton);
         expect(onDeleteButtonClick).toHaveBeenCalledWith(1337);
+        expect(DeleteConfirmationPrompt).not.toHaveBeenCalled();
+
     });
 
-    test('should initiate sprite deletion, when called `withDeleteConfirmation`', () => {
-        const wrapper = mountWithIntl(getContainer(true));
+    test('should initiate sprite deletion, when called `withDeleteConfirmation`', async () => {
+        onDeleteButtonClick = jest.fn();
+
+        renderWithIntl(getContainer(true));
 
         expect(DeleteConfirmationPrompt).not.toHaveBeenCalled();
-
-        wrapper.find(DeleteButton).simulate('click');
-
-        expect(DeleteConfirmationPrompt).toHaveBeenCalled();
+        const deleteButton = screen.getByRole('button', {name: /delete/i});
+        fireEvent.click(deleteButton);
+        await waitFor(() => expect(DeleteConfirmationPrompt).toHaveBeenCalled());
     });
 });

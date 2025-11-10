@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import {defineMessages, useIntl} from 'react-intl';
 
 import Box from '../box/box.jsx';
 import SpriteInfo from '../../containers/sprite-info.jsx';
@@ -44,7 +44,6 @@ const SpriteSelectorComponent = function (props) {
     const {
         editingTarget,
         hoveredTarget,
-        intl,
         onChangeSpriteDirection,
         onChangeSpriteName,
         onChangeSpriteRotationStyle,
@@ -69,6 +68,7 @@ const SpriteSelectorComponent = function (props) {
         stageSize,
         ...componentProps
     } = props;
+    const intl = useIntl();
     let selectedSprite = sprites[selectedId];
     let spriteInfoDisabled = false;
     if (typeof selectedSprite === 'undefined') {
@@ -153,7 +153,6 @@ SpriteSelectorComponent.propTypes = {
         hoveredSprite: PropTypes.string,
         receivedBlocks: PropTypes.bool
     }),
-    intl: intlShape.isRequired,
     onChangeSpriteDirection: PropTypes.func,
     onChangeSpriteName: PropTypes.func,
     onChangeSpriteRotationStyle: PropTypes.func,
@@ -190,4 +189,4 @@ SpriteSelectorComponent.propTypes = {
     stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired
 };
 
-export default injectIntl(SpriteSelectorComponent);
+export default SpriteSelectorComponent;

@@ -7,7 +7,7 @@ class RateLimiter {
      * strategy: a counter accumulates tokens at a steady rate, and each send costs
      * a token. If no tokens remain, it's not okay to send.
      * @param {number} maxRate the maximum number of sends allowed per second
-     * @constructor
+     * @class
      */
     constructor (maxRate) {
         /**
@@ -42,7 +42,7 @@ class RateLimiter {
     /**
      * Check if it is okay to send a message, by updating the token count,
      * taking a token and then checking if we are still under the rate limit.
-     * @return {boolean} true if we are under the rate limit
+     * @returns {boolean} true if we are under the rate limit
      */
     okayToSend () {
         // Calculate the number of tokens to refill the bucket with, based on the

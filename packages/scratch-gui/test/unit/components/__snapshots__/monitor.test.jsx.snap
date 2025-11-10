@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Monitor Component it selects the correct colors based on dark mode theme 1`] = `
+<div
+  class="react-draggable"
+  style="transform: translate(0px,0px);"
+>
+  <span
+    class="ContextMenuTrigger"
+    data-state="closed"
+  >
+    <div>
+      <div>
+        <div>
+          My label
+        </div>
+        <div
+          style="background: rgb(170, 170, 170); color: rgb(187, 187, 187);"
+        />
+      </div>
+    </div>
+  </span>
+</div>
+`;
+
+exports[`Monitor Component it selects the correct colors based on default theme 1`] = `
+<div
+  class="react-draggable"
+  style="transform: translate(0px,0px);"
+>
+  <span
+    class="ContextMenuTrigger"
+    data-state="closed"
+  >
+    <div>
+      <div>
+        <div>
+          My label
+        </div>
+        <div
+          style="background: rgb(17, 17, 17); color: rgb(68, 68, 68);"
+        />
+      </div>
+    </div>
+  </span>
+</div>
+`;

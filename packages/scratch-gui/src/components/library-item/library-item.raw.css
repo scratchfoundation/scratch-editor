@@ -1,0 +1,54 @@
+@import "../../css/units.css";
+@import "../../css/colors.css";
+@import "../../css/z-index.css";
+
+/* Make sure driver.js doesn't block interactions with page elements */
+.driver-active * {
+    pointer-events: revert;
+}
+
+.driver-active .driver-overlay {
+    pointer-events: none !important;
+}
+
+.driver-active:has(.tooltip-face-sensing-modal) > .driver-overlay {
+    visibility: hidden;
+}
+
+/* Fallback, if :has is not supported */
+.tooltip-face-sensing-modal ~ .driver-overlay {
+    visibility: hidden;
+}
+
+.driver-popover.tooltip-face-sensing-modal {
+    padding: 1rem;
+    background-color: $looks-secondary;
+    color: $ui-white;
+    z-index: 1000;
+    min-width: 12rem;
+    max-width: 13rem;
+    border-radius: 0.5rem;
+    border: 1px solid $looks-secondary;
+    transform: translate(0, 1.2rem);
+}
+
+.driver-popover.tooltip-face-sensing-modal .driver-popover-description {
+    font-weight: 400;
+    line-height: 1.25rem;
+    font-size: 0.875rem;
+}
+
+.driver-popover.tooltip-face-sensing-modal .driver-popover-arrow-side-right {
+    border-right-color: $looks-secondary;
+    border-width: 0.5rem;
+}
+
+.driver-popover.tooltip-face-sensing-modal .driver-popover-arrow-side-left {
+    border-left-color: $looks-secondary;
+    border-width: 0.5rem;
+}
+
+.driver-popover.tooltip-face-sensing-modal .driver-popover-arrow-side-bottom {
+    border-bottom-color: $looks-secondary;
+    border-width: 0.5rem;
+}

@@ -127,12 +127,11 @@ class SpriteSelectorItem extends React.PureComponent {
         this.setState({isDeletePromptOpen: false});
     }
     setRef (component) {
-        // Access the DOM node using .elem because it is going through ContextMenuTrigger
-        this.ref = component && component.elem;
+        this.ref = component;
     }
     render () {
         const {
-            /* eslint-disable no-unused-vars */
+             
             asset,
             id,
             index,
@@ -145,7 +144,7 @@ class SpriteSelectorItem extends React.PureComponent {
             costumeURL,
             vm,
             deleteConfirmationModalPosition,
-            /* eslint-enable no-unused-vars */
+             
             ...props
         } = this.props;
         return (<>

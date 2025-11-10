@@ -2,7 +2,8 @@ import bindAll from 'lodash.bindall';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import {intlShape, injectIntl} from 'react-intl';
+import {injectIntl} from 'react-intl';
+import intlShape from '../lib/intlShape.js';
 
 import {
     openSpriteLibrary,
@@ -239,20 +240,20 @@ class TargetPane extends React.Component {
         }
     }
     render () {
-        /* eslint-disable no-unused-vars */
+         
         const {
-            dispatchUpdateRestore, // eslint-disable-line no-unused-vars
+            dispatchUpdateRestore,
             isRtl,
-            onActivateTab, // eslint-disable-line no-unused-vars
-            onCloseImporting, // eslint-disable-line no-unused-vars
-            onHighlightTarget, // eslint-disable-line no-unused-vars
-            onNewSpriteClick, // eslint-disable-line no-unused-vars
-            onReceivedBlocks, // eslint-disable-line no-unused-vars
-            onShowImporting, // eslint-disable-line no-unused-vars
+            onActivateTab,
+            onCloseImporting,
+            onHighlightTarget,
+            onNewSpriteClick,
+            onReceivedBlocks,
+            onShowImporting,
             workspaceMetrics,
             ...componentProps
         } = this.props;
-        /* eslint-enable no-unused-vars */
+         
         return (
             <TargetPaneComponent
                 {...componentProps}
@@ -281,8 +282,8 @@ class TargetPane extends React.Component {
 }
 
 const {
-    onSelectSprite, // eslint-disable-line no-unused-vars
-    onActivateBlocksTab, // eslint-disable-line no-unused-vars
+    onSelectSprite,
+    onActivateBlocksTab,
     ...targetPaneProps
 } = TargetPaneComponent.propTypes;
 

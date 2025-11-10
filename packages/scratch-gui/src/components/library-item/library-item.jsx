@@ -7,6 +7,7 @@ import Box from '../box/box.jsx';
 import ScratchImage from '../scratch-image/scratch-image.jsx';
 import PlayButton from '../../containers/play-button.jsx';
 import styles from './library-item.css';
+import './library-item.raw.css';
 import classNames from 'classnames';
 
 import bluetoothIconURL from './bluetooth.svg';
@@ -14,7 +15,7 @@ import internetConnectionIconURL from './internet-connection.svg';
 
 import {PLATFORM} from '../../lib/platform.js';
 
-/* eslint-disable react/prefer-stateless-function */
+ 
 class LibraryItemComponent extends React.PureComponent {
     constructor (props) {
         super(props);
@@ -46,6 +47,7 @@ class LibraryItemComponent extends React.PureComponent {
     render () {
         return this.props.featured ? (
             <div
+                id={this.props.extensionId}
                 className={classNames(
                     styles.libraryItem,
                     styles.featuredItem,
@@ -53,86 +55,90 @@ class LibraryItemComponent extends React.PureComponent {
                         [styles.disabled]: this.props.disabled
                     },
                     this.props.extensionId ? styles.libraryItemExtension : null,
-                    this.props.hidden ? styles.hidden : null
+                    this.props.hidden ? styles.hidden : null,
+                    this.props.showItemCallout ? styles.radiate : null
                 )}
                 onClick={this.props.onClick}
             >
-                <div className={styles.featuredImageContainer}>
-                    {this.props.disabled ? (
-                        <div className={styles.comingSoonText}>
-                            <FormattedMessage
-                                defaultMessage="Coming Soon"
-                                description="Label for extensions that are not yet implemented"
-                                id="gui.extensionLibrary.comingSoon"
+                <div className={styles.contentWrapper}>
+                    <div className={styles.featuredImageContainer}>
+                        {this.props.disabled ? (
+                            <div className={styles.comingSoonText}>
+                                <FormattedMessage
+                                    defaultMessage="Coming Soon"
+                                    description="Label for extensions that are not yet implemented"
+                                    id="gui.extensionLibrary.comingSoon"
+                                />
+                            </div>
+                        ) : null}
+                        {this.props.iconSource ? (
+                            this.renderImage(styles.featuredImage, this.props.iconSource)
+                        ) : null}
+                    </div>
+                    {this.props.insetIconURL ? (
+                        <div className={styles.libraryItemInsetImageContainer}>
+                            <img
+                                className={styles.libraryItemInsetImage}
+                                src={this.props.insetIconURL}
                             />
                         </div>
                     ) : null}
-                    {this.props.iconSource ? (
-                        this.renderImage(styles.featuredImage, this.props.iconSource)
-                    ) : null}
-                </div>
-                {this.props.insetIconURL ? (
-                    <div className={styles.libraryItemInsetImageContainer}>
-                        <img
-                            className={styles.libraryItemInsetImage}
-                            src={this.props.insetIconURL}
-                        />
+                    <div
+                        className={this.props.extensionId ?
+                            classNames(styles.featuredExtensionText, styles.featuredText) : styles.featuredText
+                        }
+                    >
+                        <span className={styles.libraryItemName}>{this.props.name}</span>
+                        <br />
+                        <span className={styles.featuredDescription}>{this.props.description}</span>
                     </div>
-                ) : null}
-                <div
-                    className={this.props.extensionId ?
-                        classNames(styles.featuredExtensionText, styles.featuredText) : styles.featuredText
-                    }
-                >
-                    <span className={styles.libraryItemName}>{this.props.name}</span>
-                    <br />
-                    <span className={styles.featuredDescription}>{this.props.description}</span>
+                    {this.props.bluetoothRequired ||
+                        this.props.internetConnectionRequired || this.props.collaborator ? (
+                            <div className={styles.featuredExtensionMetadata}>
+                                <div className={styles.featuredExtensionRequirement}>
+                                    {this.props.bluetoothRequired || this.props.internetConnectionRequired ? (
+                                        <div>
+                                            <div>
+                                                <FormattedMessage
+                                                    defaultMessage="Requires"
+                                                    description="Label for extension hardware requirements"
+                                                    id="gui.extensionLibrary.requires"
+                                                />
+                                            </div>
+                                            <div
+                                                className={styles.featuredExtensionMetadataDetail}
+                                            >
+                                                {this.props.bluetoothRequired ? (
+                                                    <img src={bluetoothIconURL} />
+                                                ) : null}
+                                                {this.props.internetConnectionRequired ? (
+                                                    <img src={internetConnectionIconURL} />
+                                                ) : null}
+                                            </div>
+                                        </div>
+                                    ) : null}
+                                </div>
+                                <div className={styles.featuredExtensionCollaboration}>
+                                    {this.props.collaborator ? (
+                                        <div>
+                                            <div>
+                                                <FormattedMessage
+                                                    defaultMessage="Collaboration with"
+                                                    description="Label for extension collaboration"
+                                                    id="gui.extensionLibrary.collaboration"
+                                                />
+                                            </div>
+                                            <div
+                                                className={styles.featuredExtensionMetadataDetail}
+                                            >
+                                                {this.props.collaborator}
+                                            </div>
+                                        </div>
+                                    ) : null}
+                                </div>
+                            </div>
+                        ) : null}
                 </div>
-                {this.props.bluetoothRequired || this.props.internetConnectionRequired || this.props.collaborator ? (
-                    <div className={styles.featuredExtensionMetadata}>
-                        <div className={styles.featuredExtensionRequirement}>
-                            {this.props.bluetoothRequired || this.props.internetConnectionRequired ? (
-                                <div>
-                                    <div>
-                                        <FormattedMessage
-                                            defaultMessage="Requires"
-                                            description="Label for extension hardware requirements"
-                                            id="gui.extensionLibrary.requires"
-                                        />
-                                    </div>
-                                    <div
-                                        className={styles.featuredExtensionMetadataDetail}
-                                    >
-                                        {this.props.bluetoothRequired ? (
-                                            <img src={bluetoothIconURL} />
-                                        ) : null}
-                                        {this.props.internetConnectionRequired ? (
-                                            <img src={internetConnectionIconURL} />
-                                        ) : null}
-                                    </div>
-                                </div>
-                            ) : null}
-                        </div>
-                        <div className={styles.featuredExtensionCollaboration}>
-                            {this.props.collaborator ? (
-                                <div>
-                                    <div>
-                                        <FormattedMessage
-                                            defaultMessage="Collaboration with"
-                                            description="Label for extension collaboration"
-                                            id="gui.extensionLibrary.collaboration"
-                                        />
-                                    </div>
-                                    <div
-                                        className={styles.featuredExtensionMetadataDetail}
-                                    >
-                                        {this.props.collaborator}
-                                    </div>
-                                </div>
-                            ) : null}
-                        </div>
-                    </div>
-                ) : null}
             </div>
         ) : (
             <Box
@@ -172,7 +178,6 @@ class LibraryItemComponent extends React.PureComponent {
         );
     }
 }
-/* eslint-enable react/prefer-stateless-function */
 
 
 LibraryItemComponent.propTypes = {
@@ -203,7 +208,8 @@ LibraryItemComponent.propTypes = {
     onPlay: PropTypes.func.isRequired,
     onStop: PropTypes.func.isRequired,
     platform: PropTypes.oneOf(Object.keys(PLATFORM)),
-    showPlayButton: PropTypes.bool
+    showPlayButton: PropTypes.bool,
+    showItemCallout: PropTypes.bool
 };
 
 LibraryItemComponent.defaultProps = {

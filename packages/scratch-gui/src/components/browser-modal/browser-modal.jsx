@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import ReactModal from 'react-modal';
 import Box from '../box/box.jsx';
-import {defineMessages, injectIntl, intlShape, FormattedMessage} from 'react-intl';
+import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
 
 import styles from './browser-modal.css';
 import unhappyBrowser from './unsupported-browser.svg';
@@ -20,8 +20,9 @@ const messages = defineMessages({
     }
 });
 
-const BrowserModal = ({intl, ...props}) => {
+const BrowserModal = props => {
     const label = props.error ? messages.error : messages.label;
+    const intl = useIntl();
     return (
         <ReactModal
             isOpen
@@ -70,20 +71,23 @@ const BrowserModal = ({intl, ...props}) => {
                     </Box>
                     <div className={styles.faqLinkText}>
                         <FormattedMessage
-                            defaultMessage="To learn more, go to the {previewFaqLink}."
+                            defaultMessage="To learn more, go to the <a>{previewFaqLink}</a>."
                             description="Invitation to try 3.0 preview"
                             id="gui.unsupportedBrowser.previewfaq"
                             values={{
                                 previewFaqLink: (
+                                    <FormattedMessage
+                                        defaultMessage="FAQ"
+                                        description="link to Scratch 3.0 FAQ page"
+                                        id="gui.unsupportedBrowser.previewfaqlinktext"
+                                    />
+                                ),
+                                a: previewFaqLink => (
                                     <a
                                         className={styles.faqLink}
                                         href="//scratch.mit.edu/3faq"
                                     >
-                                        <FormattedMessage
-                                            defaultMessage="FAQ"
-                                            description="link to Scratch 3.0 FAQ page"
-                                            id="gui.unsupportedBrowser.previewfaqlinktext"
-                                        />
+                                        {previewFaqLink}
                                     </a>
                                 )
                             }}
@@ -97,7 +101,6 @@ const BrowserModal = ({intl, ...props}) => {
 
 BrowserModal.propTypes = {
     error: PropTypes.bool,
-    intl: intlShape.isRequired,
     isRtl: PropTypes.bool,
     onBack: PropTypes.func.isRequired
 };
@@ -106,7 +109,7 @@ BrowserModal.defaultProps = {
     error: false
 };
 
-const WrappedBrowserModal = injectIntl(BrowserModal);
+const WrappedBrowserModal = BrowserModal;
 
 WrappedBrowserModal.setAppElement = ReactModal.setAppElement;
 

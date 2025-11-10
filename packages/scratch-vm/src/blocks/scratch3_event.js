@@ -20,7 +20,7 @@ class Scratch3EventBlocks {
 
     /**
      * Retrieve the block primitives implemented by this package.
-     * @return {object.<string, Function>} Mapping of opcode to Function.
+     * @returns {object.<string, Function>} Mapping of opcode to Function.
      */
     getPrimitives () {
         return {

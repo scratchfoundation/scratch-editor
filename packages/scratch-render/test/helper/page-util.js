@@ -5,7 +5,7 @@
 // TODO: this is extremely janky and should be removed once vm.loadProject waits for SVG skins to load
 // https://github.com/LLK/scratch-render/issues/563
 window.waitForSVGSkinLoad = renderer => new Promise(resolve => {
-    // eslint-disable-next-line prefer-const
+     
     let interval;
 
     const waitInner = () => {

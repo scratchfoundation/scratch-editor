@@ -12,7 +12,14 @@ const isUndefined = a => typeof a === 'undefined';
  * @param {object} block.params - Extra params to the monitor block
  * @param {string|number|Array} block.value - The monitor value
  * @param {VirtualMachine} block.vm - the VM instance which owns the block
- * @return {object} The adapted monitor with label and category
+ * @param root0
+ * @param root0.id
+ * @param root0.spriteName
+ * @param root0.opcode
+ * @param root0.params
+ * @param root0.value
+ * @param root0.vm
+ * @returns {object} The adapted monitor with label and category
  */
 export default function ({id, spriteName, opcode, params, value, vm}) {
     // Extension monitors get their labels from the Runtime through `getLabelForOpcode`.

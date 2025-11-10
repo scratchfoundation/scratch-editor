@@ -15,6 +15,11 @@
     height: calc(100% - $library-header-height);
 }
 
+/* The selector needs to more specific and marked with !important to override driverjs styles  */
+html body .library-scroll-grid {
+    overflow-y: auto !important;
+}
+
 .library-scroll-grid.withFilterBar {
     height: calc(100% - $library-header-height - $library-filter-bar-height - 2rem);
 }

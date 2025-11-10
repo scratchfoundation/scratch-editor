@@ -1,0 +1,97 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Cards component showVideos=false shows the title image/name instead of video step 1`] = `
+<div
+  style="width: 1824px; height: 977px; top: 48px; left: -400px;"
+>
+  <div
+    class="react-draggable"
+    style="transform: translate(692px,340px);"
+  >
+    <div>
+      <div>
+        <div>
+          <img
+            src="test-file-stub"
+          />
+          Tutorials
+        </div>
+        <div>
+          <div>
+            <img
+              draggable="false"
+              src="test-file-stub"
+            />
+            Shrink
+          </div>
+          <div>
+            <img
+              src="test-file-stub"
+            />
+            Close
+          </div>
+        </div>
+      </div>
+      <div>
+        <div>
+          id1 - name
+        </div>
+        <div>
+          <img
+            draggable="false"
+            src="id1 - img"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`Cards component showVideos=true shows the video step 1`] = `
+<div
+  style="width: 1824px; height: 977px; top: 48px; left: -400px;"
+>
+  <div
+    class="react-draggable"
+    style="transform: translate(692px,340px);"
+  >
+    <div>
+      <div>
+        <div>
+          <img
+            src="test-file-stub"
+          />
+          Tutorials
+        </div>
+        <div>
+          <div>
+            <img
+              draggable="false"
+              src="test-file-stub"
+            />
+            Shrink
+          </div>
+          <div>
+            <img
+              src="test-file-stub"
+            />
+            Close
+          </div>
+        </div>
+      </div>
+      <div>
+        <div>
+          <div
+            class="wistia_embed wistia_async_videoUrl"
+            id="video-div"
+            style="height: 257px; width: 466px;"
+          >
+             
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

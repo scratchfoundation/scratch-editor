@@ -20,8 +20,8 @@ const LocalizationHOC = function (WrappedComponent) {
         }
         render () {
             const {
-                locale, // eslint-disable-line no-unused-vars
-                onSetLanguage, // eslint-disable-line no-unused-vars
+                locale,
+                onSetLanguage,
                 ...componentProps
             } = this.props;
             return (

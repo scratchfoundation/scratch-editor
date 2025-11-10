@@ -485,11 +485,11 @@ const mapStateToProps = (state, {soundIndex}) => {
     const sound = state.scratchGui.vm.editingTarget.sprite.sounds[index];
     const audioBuffer = state.scratchGui.vm.getSoundBuffer(index);
     return {
-        soundId: sound.soundId,
-        sampleRate: audioBuffer.sampleRate,
-        samples: audioBuffer.getChannelData(0),
+        soundId: sound?.soundId,
+        sampleRate: audioBuffer?.sampleRate,
+        samples: audioBuffer?.getChannelData(0),
         isFullScreen: state.scratchGui.mode.isFullScreen,
-        name: sound.name,
+        name: sound?.name,
         vm: state.scratchGui.vm
     };
 };

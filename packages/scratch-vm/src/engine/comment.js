@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * Object representing a Scratch Comment (block or workspace).
  */
 
@@ -15,7 +15,7 @@ class Comment {
      * @param {number} width The width of the comment when it is full size.
      * @param {number} height The height of the comment when it is full size.
      * @param {boolean} minimized Whether the comment is minimized.
-     * @constructor
+     * @class
      */
     constructor (id, text, x, y, width, height, minimized) {
         this.id = id || uid();

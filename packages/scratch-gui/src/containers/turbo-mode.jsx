@@ -31,10 +31,10 @@ class TurboMode extends React.Component {
     }
     render () {
         const {
-            /* eslint-disable no-unused-vars */
+             
             children,
             vm,
-            /* eslint-enable no-unused-vars */
+             
             ...props
         } = this.props;
         return this.props.children(this.toggleTurboMode, props);

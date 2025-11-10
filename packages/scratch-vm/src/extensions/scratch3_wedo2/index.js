@@ -35,7 +35,6 @@ const BLEService = {
  * - INPUT_VALUES
  * - INPUT_COMMAND
  * - OUTPUT_COMMAND
- *
  * @enum
  */
 const BLECharacteristic = {
@@ -116,7 +115,6 @@ const WeDo2Mode = {
  *
  * 0 = raw
  * 1 = percent
- *
  * @enum {number}
  */
 const WeDo2Unit = {
@@ -173,21 +171,21 @@ class WeDo2Motor {
         /**
          * If the motor has been turned on or is actively braking for a specific duration, this is the timeout ID for
          * the end-of-action handler. Cancel this when changing plans.
-         * @type {Object}
+         * @type {object}
          * @private
          */
         this._pendingTimeoutId = null;
 
         /**
          * The starting time for the pending timeout.
-         * @type {Object}
+         * @type {object}
          * @private
          */
         this._pendingTimeoutStartTime = null;
 
         /**
          * The delay/duration of the pending timeout.
-         * @type {Object}
+         * @type {object}
          * @private
          */
         this._pendingTimeoutDelay = null;
@@ -197,15 +195,15 @@ class WeDo2Motor {
     }
 
     /**
-     * @return {number} - the duration of active braking after a call to startBraking(). Afterward, turn the motor off.
-     * @constructor
+     * @returns {number} - the duration of active braking after a call to startBraking(). Afterward, turn the motor off.
+     * @class
      */
     static get BRAKE_TIME_MS () {
         return 1000;
     }
 
     /**
-     * @return {int} - this motor's current direction: 1 for "this way" or -1 for "that way"
+     * @returns {int} - this motor's current direction: 1 for "this way" or -1 for "that way"
      */
     get direction () {
         return this._direction;
@@ -223,7 +221,7 @@ class WeDo2Motor {
     }
 
     /**
-     * @return {int} - this motor's current power level, in the range [0,100].
+     * @returns {int} - this motor's current power level, in the range [0,100].
      */
     get power () {
         return this._power;
@@ -245,21 +243,21 @@ class WeDo2Motor {
     }
 
     /**
-     * @return {boolean} - true if this motor is currently moving, false if this motor is off or braking.
+     * @returns {boolean} - true if this motor is currently moving, false if this motor is off or braking.
      */
     get isOn () {
         return this._isOn;
     }
 
     /**
-     * @return {boolean} - time, in milliseconds, of when the pending timeout began.
+     * @returns {boolean} - time, in milliseconds, of when the pending timeout began.
      */
     get pendingTimeoutStartTime () {
         return this._pendingTimeoutStartTime;
     }
 
     /**
-     * @return {boolean} - delay, in milliseconds, of the pending timeout.
+     * @returns {boolean} - delay, in milliseconds, of the pending timeout.
      */
     get pendingTimeoutDelay () {
         return this._pendingTimeoutDelay;
@@ -315,7 +313,7 @@ class WeDo2Motor {
 
     /**
      * Turn this motor off.
-     * @param {boolean} [useLimiter=true] - if true, use the rate limiter
+     * @param {boolean} [useLimiter] - if true, use the rate limiter
      */
     turnOff (useLimiter = true) {
         if (this._power === 0) return;
@@ -441,21 +439,21 @@ class WeDo2 {
     }
 
     /**
-     * @return {number} - the latest value received for the tilt sensor's tilt about the X axis.
+     * @returns {number} - the latest value received for the tilt sensor's tilt about the X axis.
      */
     get tiltX () {
         return this._sensors.tiltX;
     }
 
     /**
-     * @return {number} - the latest value received for the tilt sensor's tilt about the Y axis.
+     * @returns {number} - the latest value received for the tilt sensor's tilt about the Y axis.
      */
     get tiltY () {
         return this._sensors.tiltY;
     }
 
     /**
-     * @return {number} - the latest value received from the distance sensor.
+     * @returns {number} - the latest value received from the distance sensor.
      */
     get distance () {
         return this._sensors.distance;
@@ -464,7 +462,7 @@ class WeDo2 {
     /**
      * Access a particular motor on this peripheral.
      * @param {int} index - the zero-based index of the desired motor.
-     * @return {WeDo2Motor} - the WeDo2Motor instance, if any, at that index.
+     * @returns {WeDo2Motor} - the WeDo2Motor instance, if any, at that index.
      */
     motor (index) {
         return this._motors[index];
@@ -487,7 +485,7 @@ class WeDo2 {
     /**
      * Set the WeDo 2.0 peripheral's LED to a specific color.
      * @param {int} inputRGB - a 24-bit RGB color in 0xRRGGBB format.
-     * @return {Promise} - a promise of the completion of the set led send operation.
+     * @returns {Promise} - a promise of the completion of the set led send operation.
      */
     setLED (inputRGB) {
         const rgb = [
@@ -507,7 +505,7 @@ class WeDo2 {
 
     /**
      * Sets the input mode of the LED to RGB.
-     * @return {Promise} - a promise returned by the send operation.
+     * @returns {Promise} - a promise returned by the send operation.
      */
     setLEDMode () {
         const cmd = this.generateInputCommand(
@@ -524,7 +522,7 @@ class WeDo2 {
 
     /**
      * Switch off the LED on the WeDo 2.0.
-     * @return {Promise} - a promise of the completion of the stop led send operation.
+     * @returns {Promise} - a promise of the completion of the stop led send operation.
      */
     stopLED () {
         const cmd = this.generateOutputCommand(
@@ -540,7 +538,7 @@ class WeDo2 {
      * Play a tone from the WeDo 2.0 peripheral for a specific amount of time.
      * @param {int} tone - the pitch of the tone, in Hz.
      * @param {int} milliseconds - the duration of the note, in milliseconds.
-     * @return {Promise} - a promise of the completion of the play tone send operation.
+     * @returns {Promise} - a promise of the completion of the play tone send operation.
      */
     playTone (tone, milliseconds) {
         const cmd = this.generateOutputCommand(
@@ -559,7 +557,7 @@ class WeDo2 {
 
     /**
      * Stop the tone playing from the WeDo 2.0 peripheral, if any.
-     * @return {Promise} - a promise that the command sent.
+     * @returns {Promise} - a promise that the command sent.
      */
     stopTone () {
         const cmd = this.generateOutputCommand(
@@ -637,7 +635,7 @@ class WeDo2 {
 
     /**
      * Called by the runtime to detect whether the WeDo 2.0 peripheral is connected.
-     * @return {boolean} - the connected state.
+     * @returns {boolean} - the connected state.
      */
     isConnected () {
         let connected = false;
@@ -651,8 +649,8 @@ class WeDo2 {
      * Write a message to the WeDo 2.0 peripheral BLE socket.
      * @param {number} uuid - the UUID of the characteristic to write to
      * @param {Array} message - the message to write.
-     * @param {boolean} [useLimiter=true] - if true, use the rate limiter
-     * @return {Promise} - a promise result of the write operation
+     * @param {boolean} [useLimiter] - if true, use the rate limiter
+     * @returns {Promise} - a promise result of the write operation
      */
     send (uuid, message, useLimiter = true) {
         if (!this.isConnected()) return Promise.resolve();
@@ -674,11 +672,10 @@ class WeDo2 {
      * (CONNECT ID, COMMAND ID, NUMBER OF BYTES, VALUES ...).
      *
      * This sends a command to the WeDo 2.0 to actuate the specified outputs.
-     *
      * @param  {number} connectID - the port (Connect ID) to send a command to.
      * @param  {number} commandID - the id of the byte command.
-     * @param  {array}  values    - the list of values to write to the command.
-     * @return {array}            - a generated output command.
+     * @param  {Array}  values    - the list of values to write to the command.
+     * @returns {Array}            - a generated output command.
      */
     generateOutputCommand (connectID, commandID, values = null) {
         let command = [connectID, commandID];
@@ -699,14 +696,13 @@ class WeDo2 {
      *
      * This sends a command to the WeDo 2.0 that sets that input format
      * of the specified inputs and sets value change notifications.
-     *
      * @param  {number}  connectID           - the port (Connect ID) to send a command to.
      * @param  {number}  type                - the type of input sensor.
      * @param  {number}  mode                - the mode of the input sensor.
      * @param  {number}  delta               - the delta change needed to trigger notification.
-     * @param  {array}   units               - the unit of the input sensor value.
+     * @param  {Array}   units               - the unit of the input sensor value.
      * @param  {boolean} enableNotifications - whether to enable notifications.
-     * @return {array}                       - a generated input command.
+     * @returns {Array}                       - a generated input command.
      */
     generateInputCommand (connectID, type, mode, delta, units, enableNotifications) {
         const command = [
@@ -894,14 +890,14 @@ const WeDo2TiltDirection = {
 class Scratch3WeDo2Blocks {
 
     /**
-     * @return {string} - the ID of this extension.
+     * @returns {string} - the ID of this extension.
      */
     static get EXTENSION_ID () {
         return 'wedo2';
     }
 
     /**
-     * @return {number} - the tilt sensor counts as "tilted" if its tilt angle meets or exceeds this threshold.
+     * @returns {number} - the tilt sensor counts as "tilted" if its tilt angle meets or exceeds this threshold.
      */
     static get TILT_THRESHOLD () {
         return 15;
@@ -1300,7 +1296,7 @@ class Scratch3WeDo2Blocks {
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to activate.
      * @property {int} DURATION - the amount of time to run the motors.
-     * @return {Promise} - a promise which will resolve at the end of the duration.
+     * @returns {Promise} - a promise which will resolve at the end of the duration.
      */
     motorOnFor (args) {
         // TODO: cast args.MOTOR_ID?
@@ -1323,7 +1319,7 @@ class Scratch3WeDo2Blocks {
      * Turn specified motor(s) on indefinitely.
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to activate.
-     * @return {Promise} - a Promise that resolves after some delay.
+     * @returns {Promise} - a Promise that resolves after some delay.
      */
     motorOn (args) {
         // TODO: cast args.MOTOR_ID?
@@ -1345,7 +1341,7 @@ class Scratch3WeDo2Blocks {
      * Turn specified motor(s) off.
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to deactivate.
-     * @return {Promise} - a Promise that resolves after some delay.
+     * @returns {Promise} - a Promise that resolves after some delay.
      */
     motorOff (args) {
         // TODO: cast args.MOTOR_ID?
@@ -1368,7 +1364,7 @@ class Scratch3WeDo2Blocks {
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to be affected.
      * @property {int} POWER - the new power level for the motor(s).
-     * @return {Promise} - a Promise that resolves after some delay.
+     * @returns {Promise} - a Promise that resolves after some delay.
      */
     startMotorPower (args) {
         // TODO: cast args.MOTOR_ID?
@@ -1393,7 +1389,7 @@ class Scratch3WeDo2Blocks {
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to be affected.
      * @property {MotorDirection} MOTOR_DIRECTION - the new direction for the motor(s).
-     * @return {Promise} - a Promise that resolves after some delay.
+     * @returns {Promise} - a Promise that resolves after some delay.
      */
     setMotorDirection (args) {
         // TODO: cast args.MOTOR_ID?
@@ -1436,7 +1432,7 @@ class Scratch3WeDo2Blocks {
      * Set the LED's hue.
      * @param {object} args - the block's arguments.
      * @property {number} HUE - the hue to set, in the range [0,100].
-     * @return {Promise} - a Promise that resolves after some delay.
+     * @returns {Promise} - a Promise that resolves after some delay.
      */
     setLightHue (args) {
         // Convert from [0,100] to [0,360]
@@ -1462,7 +1458,7 @@ class Scratch3WeDo2Blocks {
      * @param {object} args - the block's arguments.
      * @property {number} NOTE - the MIDI note to play.
      * @property {number} DURATION - the duration of the note, in seconds.
-     * @return {Promise} - a promise which will resolve at the end of the duration.
+     * @returns {Promise} - a promise which will resolve at the end of the duration.
      */
     playNoteFor (args) {
         let durationMS = Cast.toNumber(args.DURATION) * 1000;
@@ -1483,7 +1479,7 @@ class Scratch3WeDo2Blocks {
      * @param {object} args - the block's arguments.
      * @property {string} OP - the comparison operation: '<' or '>'.
      * @property {number} REFERENCE - the value to compare against.
-     * @return {boolean} - the result of the comparison, or false on error.
+     * @returns {boolean} - the result of the comparison, or false on error.
      */
     whenDistance (args) {
         switch (args.OP) {
@@ -1501,14 +1497,14 @@ class Scratch3WeDo2Blocks {
      * Test whether the tilt sensor is currently tilted.
      * @param {object} args - the block's arguments.
      * @property {TiltDirection} TILT_DIRECTION_ANY - the tilt direction to test (up, down, left, right, or any).
-     * @return {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
+     * @returns {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
      */
     whenTilted (args) {
         return this._isTilted(args.TILT_DIRECTION_ANY);
     }
 
     /**
-     * @return {number} - the distance sensor's value, scaled to the [0,100] range.
+     * @returns {number} - the distance sensor's value, scaled to the [0,100] range.
      */
     getDistance () {
         return this._peripheral.distance;
@@ -1518,7 +1514,7 @@ class Scratch3WeDo2Blocks {
      * Test whether the tilt sensor is currently tilted.
      * @param {object} args - the block's arguments.
      * @property {TiltDirection} TILT_DIRECTION_ANY - the tilt direction to test (up, down, left, right, or any).
-     * @return {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
+     * @returns {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
      */
     isTilted (args) {
         return this._isTilted(args.TILT_DIRECTION_ANY);
@@ -1527,7 +1523,7 @@ class Scratch3WeDo2Blocks {
     /**
      * @param {object} args - the block's arguments.
      * @property {TiltDirection} TILT_DIRECTION - the direction (up, down, left, right) to check.
-     * @return {number} - the tilt sensor's angle in the specified direction.
+     * @returns {number} - the tilt sensor's angle in the specified direction.
      * Note that getTiltAngle(up) = -getTiltAngle(down) and getTiltAngle(left) = -getTiltAngle(right).
      */
     getTiltAngle (args) {
@@ -1537,7 +1533,7 @@ class Scratch3WeDo2Blocks {
     /**
      * Test whether the tilt sensor is currently tilted.
      * @param {TiltDirection} direction - the tilt direction to test (up, down, left, right, or any).
-     * @return {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
+     * @returns {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
      * @private
      */
     _isTilted (direction) {
@@ -1554,7 +1550,7 @@ class Scratch3WeDo2Blocks {
 
     /**
      * @param {TiltDirection} direction - the direction (up, down, left, right) to check.
-     * @return {number} - the tilt sensor's angle in the specified direction.
+     * @returns {number} - the tilt sensor's angle in the specified direction.
      * Note that getTiltAngle(up) = -getTiltAngle(down) and getTiltAngle(left) = -getTiltAngle(right).
      * @private
      */
@@ -1604,7 +1600,7 @@ class Scratch3WeDo2Blocks {
 
     /**
      * @param {number} midiNote - the MIDI note value to convert.
-     * @return {number} - the frequency, in Hz, corresponding to that MIDI note value.
+     * @returns {number} - the frequency, in Hz, corresponding to that MIDI note value.
      * @private
      */
     _noteToTone (midiNote) {

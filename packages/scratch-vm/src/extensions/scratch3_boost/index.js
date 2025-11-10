@@ -300,7 +300,7 @@ const BoostMotorState = {
 /**
  * Helper function for converting a JavaScript number to an INT32-number
  * @param {number} number - a number
- * @return {array} - a 4-byte array of Int8-values representing an INT32-number
+ * @returns {Array} - a 4-byte array of Int8-values representing an INT32-number
  */
 const numberToInt32Array = function (number) {
     const buffer = new ArrayBuffer(4);
@@ -317,7 +317,7 @@ const numberToInt32Array = function (number) {
 /**
  * Helper function for converting a regular array to a Little Endian INT32-value
  * @param {Array} array - an array containing UInt8-values
- * @return {number} - a number
+ * @returns {number} - a number
  */
 const int32ArrayToNumber = function (array) {
     const i = Uint8Array.from(array);
@@ -380,7 +380,7 @@ class BoostMotor {
         /**
          * If the motor has been turned on or is actively braking for a specific duration, this is the timeout ID for
          * the end-of-action handler. Cancel this when changing plans.
-         * @type {Object}
+         * @type {object}
          * @private
          */
         this._pendingDurationTimeoutId = null;
@@ -409,7 +409,7 @@ class BoostMotor {
         /**
          * If the motor has been turned on run for a specific rotation, this is the function
          * that will be called once Scratch VM gets a notification from the Move Hub.
-         * @type {Object}
+         * @type {object}
          * @private
          */
         this._pendingRotationPromise = null;
@@ -418,7 +418,7 @@ class BoostMotor {
     }
 
     /**
-     * @return {int} - this motor's current direction: 1 for "this way" or -1 for "that way"
+     * @returns {int} - this motor's current direction: 1 for "this way" or -1 for "that way"
      */
     get direction () {
         return this._direction;
@@ -436,7 +436,7 @@ class BoostMotor {
     }
 
     /**
-     * @return {int} - this motor's current power level, in the range [0,100].
+     * @returns {int} - this motor's current power level, in the range [0,100].
      */
     get power () {
         return this._power;
@@ -458,7 +458,7 @@ class BoostMotor {
     }
 
     /**
-     * @return {int} - this motor's current position, in the range of [-MIN_INT32,MAX_INT32]
+     * @returns {int} - this motor's current position, in the range of [-MIN_INT32,MAX_INT32]
      */
     get position () {
         return this._position;
@@ -472,7 +472,7 @@ class BoostMotor {
     }
 
     /**
-     * @return {BoostMotorState} - the motor's current state.
+     * @returns {BoostMotorState} - the motor's current state.
      */
     get status () {
         return this._status;
@@ -488,28 +488,28 @@ class BoostMotor {
     }
 
     /**
-     * @return {number} - time, in milliseconds, of when the pending duration timeout began.
+     * @returns {number} - time, in milliseconds, of when the pending duration timeout began.
      */
     get pendingDurationTimeoutStartTime () {
         return this._pendingDurationTimeoutStartTime;
     }
 
     /**
-     * @return {number} - delay, in milliseconds, of the pending duration timeout.
+     * @returns {number} - delay, in milliseconds, of the pending duration timeout.
      */
     get pendingDurationTimeoutDelay () {
         return this._pendingDurationTimeoutDelay;
     }
 
     /**
-     * @return {number} - target position, in degrees, of the pending rotation.
+     * @returns {number} - target position, in degrees, of the pending rotation.
      */
     get pendingRotationDestination () {
         return this._pendingRotationDestination;
     }
 
     /**
-     * @return {Promise} - the Promise function for the pending rotation.
+     * @returns {Promise} - the Promise function for the pending rotation.
      */
     get pendingRotationPromise () {
         return this._pendingRotationPromise;
@@ -587,7 +587,7 @@ class BoostMotor {
 
     /**
      * Turn this motor off.
-     * @param {boolean} [useLimiter=true] - if true, use the rate limiter
+     * @param {boolean} [useLimiter] - if true, use the rate limiter
      */
     turnOff (useLimiter = true) {
         const cmd = this._parent.generateOutputCommand(
@@ -734,28 +734,28 @@ class Boost {
     }
 
     /**
-     * @return {number} - the latest value received for the tilt sensor's tilt about the X axis.
+     * @returns {number} - the latest value received for the tilt sensor's tilt about the X axis.
      */
     get tiltX () {
         return this._sensors.tiltX;
     }
 
     /**
-     * @return {number} - the latest value received for the tilt sensor's tilt about the Y axis.
+     * @returns {number} - the latest value received for the tilt sensor's tilt about the Y axis.
      */
     get tiltY () {
         return this._sensors.tiltY;
     }
 
     /**
-     * @return {number} - the latest color value received from the vision sensor.
+     * @returns {number} - the latest color value received from the vision sensor.
      */
     get color () {
         return this._sensors.color;
     }
 
     /**
-     * @return {number} - the previous color value received from the vision sensor.
+     * @returns {number} - the previous color value received from the vision sensor.
      */
     get previousColor () {
         return this._sensors.previousColor;
@@ -764,7 +764,7 @@ class Boost {
     /**
      * Look up the color id for an index received from the vision sensor.
      * @param {number} index - the color index to look up.
-     * @return {BoostColor} the color id for this index.
+     * @returns {BoostColor} the color id for this index.
      */
     boostColorForIndex (index) {
         const colorForIndex = Object.keys(BoostColorIndex).find(key => BoostColorIndex[key] === index);
@@ -774,7 +774,7 @@ class Boost {
     /**
      * Access a particular motor on this peripheral.
      * @param {int} index - the index of the desired motor.
-     * @return {BoostMotor} - the BoostMotor instance, if any, at that index.
+     * @returns {BoostMotor} - the BoostMotor instance, if any, at that index.
      */
     motor (index) {
         return this._motors[index];
@@ -797,7 +797,7 @@ class Boost {
     /**
      * Set the Boost peripheral's LED to a specific color.
      * @param {int} inputRGB - a 24-bit RGB color in 0xRRGGBB format.
-     * @return {Promise} - a promise of the completion of the set led send operation.
+     * @returns {Promise} - a promise of the completion of the set led send operation.
      */
     setLED (inputRGB) {
         const rgb = [
@@ -819,7 +819,7 @@ class Boost {
 
     /**
      * Sets the input mode of the LED to RGB.
-     * @return {Promise} - a promise returned by the send operation.
+     * @returns {Promise} - a promise returned by the send operation.
      */
     setLEDMode () {
         const cmd = this.generateInputCommand(
@@ -903,7 +903,7 @@ class Boost {
 
     /**
      * Called by the runtime to detect whether the Boost peripheral is connected.
-     * @return {boolean} - the connected state.
+     * @returns {boolean} - the connected state.
      */
     isConnected () {
         let connected = false;
@@ -917,8 +917,8 @@ class Boost {
      * Write a message to the Boost peripheral BLE socket.
      * @param {number} uuid - the UUID of the characteristic to write to
      * @param {Array} message - the message to write.
-     * @param {boolean} [useLimiter=true] - if true, use the rate limiter
-     * @return {Promise} - a promise result of the write operation
+     * @param {boolean} [useLimiter] - if true, use the rate limiter
+     * @returns {Promise} - a promise result of the write operation
      */
     send (uuid, message, useLimiter = true) {
         if (!this.isConnected()) return Promise.resolve();
@@ -940,12 +940,11 @@ class Boost {
      * (COMMON HEADER, PORT ID, EXECUTION BYTE, SUBCOMMAND ID, PAYLOAD).
      *
      * Payload is accepted as an array since these vary across different subcommands.
-     *
      * @param  {number} portID - the port (Connect ID) to send a command to.
      * @param  {number} execution - Byte containing startup/completion information
      * @param  {number} subCommand - the id of the subcommand byte.
-     * @param  {array}  payload    - the list of bytes to send as subcommand payload
-     * @return {array}            - a generated output command.
+     * @param  {Array}  payload    - the list of bytes to send as subcommand payload
+     * @returns {Array}            - a generated output command.
      */
     generateOutputCommand (portID, execution, subCommand, payload) {
         const hubID = 0x00;
@@ -962,12 +961,11 @@ class Boost {
      *
      * This sends a command to the Boost that sets that input format
      * of the specified inputs and sets value change notifications.
-     *
      * @param  {number}  portID           - the port (Connect ID) to send a command to.
      * @param  {number}  mode                - the mode of the input sensor.
      * @param  {number}  delta               - the delta change needed to trigger notification.
      * @param  {boolean} enableNotifications - whether to enable notifications.
-     * @return {array}                       - a generated input command.
+     * @returns {Array}                       - a generated input command.
      */
     generateInputCommand (portID, mode, delta, enableNotifications) {
         const command = [
@@ -1253,14 +1251,14 @@ const BoostTiltDirection = {
 class Scratch3BoostBlocks {
 
     /**
-     * @return {string} - the ID of this extension.
+     * @returns {string} - the ID of this extension.
      */
     static get EXTENSION_ID () {
         return 'boost';
     }
 
     /**
-     * @return {number} - the tilt sensor counts as "tilted" if its tilt angle meets or exceeds this threshold.
+     * @returns {number} - the tilt sensor counts as "tilted" if its tilt angle meets or exceeds this threshold.
      */
     static get TILT_THRESHOLD () {
         return 15;
@@ -1732,7 +1730,7 @@ class Scratch3BoostBlocks {
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to activate.
      * @property {int} DURATION - the amount of time to run the motors.
-     * @return {Promise} - a promise which will resolve at the end of the duration.
+     * @returns {Promise} - a promise which will resolve at the end of the duration.
      */
     motorOnFor (args) {
         // TODO: cast args.MOTOR_ID?
@@ -1754,7 +1752,7 @@ class Scratch3BoostBlocks {
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to activate.
      * @property {int} ROTATION - the amount of full rotations to turn the motors.
-     * @return {Promise} - a promise which will resolve at the end of the duration.
+     * @returns {Promise} - a promise which will resolve at the end of the duration.
      */
     motorOnForRotation (args) {
         // TODO: cast args.MOTOR_ID?
@@ -1795,7 +1793,7 @@ class Scratch3BoostBlocks {
      * Turn specified motor(s) on indefinitely.
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to activate.
-     * @return {Promise} - a Promise that resolves after some delay.
+     * @returns {Promise} - a Promise that resolves after some delay.
      */
     motorOn (args) {
         // TODO: cast args.MOTOR_ID?
@@ -1815,7 +1813,7 @@ class Scratch3BoostBlocks {
      * Turn specified motor(s) off.
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to deactivate.
-     * @return {Promise} - a Promise that resolves after some delay.
+     * @returns {Promise} - a Promise that resolves after some delay.
      */
     motorOff (args) {
         // TODO: cast args.MOTOR_ID?
@@ -1836,7 +1834,7 @@ class Scratch3BoostBlocks {
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to be affected.
      * @property {int} POWER - the new power level for the motor(s).
-     * @return {Promise} - returns a promise to make sure the block yields.
+     * @returns {Promise} - returns a promise to make sure the block yields.
      */
     setMotorPower (args) {
         // TODO: cast args.MOTOR_ID?
@@ -1868,7 +1866,7 @@ class Scratch3BoostBlocks {
      * @param {object} args - the block's arguments.
      * @property {MotorID} MOTOR_ID - the motor(s) to be affected.
      * @property {MotorDirection} MOTOR_DIRECTION - the new direction for the motor(s).
-     * @return {Promise} - returns a promise to make sure the block yields.
+     * @returns {Promise} - returns a promise to make sure the block yields.
      */
     setMotorDirection (args) {
         // TODO: cast args.MOTOR_ID?
@@ -1912,7 +1910,7 @@ class Scratch3BoostBlocks {
 
     /**
      * @param {object} args - the block's arguments.
-     * @return {number} - returns the motor's position.
+     * @returns {number} - returns the motor's position.
      */
     getMotorPosition (args) {
         let portID = null;
@@ -1987,7 +1985,7 @@ class Scratch3BoostBlocks {
      * Test whether the tilt sensor is currently tilted.
      * @param {object} args - the block's arguments.
      * @property {TiltDirection} TILT_DIRECTION_ANY - the tilt direction to test (up, down, left, right, or any).
-     * @return {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
+     * @returns {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
      */
     whenTilted (args) {
         return this._isTilted(args.TILT_DIRECTION_ANY);
@@ -1997,7 +1995,7 @@ class Scratch3BoostBlocks {
      * Test whether the tilt sensor is currently tilted.
      * @param {object} args - the block's arguments.
      * @property {TiltDirection} TILT_DIRECTION_ANY - the tilt direction to test (up, down, left, right, or any).
-     * @return {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
+     * @returns {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
      */
     isTilted (args) {
         return this._isTilted(args.TILT_DIRECTION_ANY);
@@ -2006,7 +2004,7 @@ class Scratch3BoostBlocks {
     /**
      * @param {object} args - the block's arguments.
      * @property {TiltDirection} TILT_DIRECTION - the direction (up, down, left, right) to check.
-     * @return {number} - the tilt sensor's angle in the specified direction.
+     * @returns {number} - the tilt sensor's angle in the specified direction.
      * Note that getTiltAngle(up) = -getTiltAngle(down) and getTiltAngle(left) = -getTiltAngle(right).
      */
     getTiltAngle (args) {
@@ -2016,7 +2014,7 @@ class Scratch3BoostBlocks {
     /**
      * Test whether the tilt sensor is currently tilted.
      * @param {TiltDirection} direction - the tilt direction to test (up, down, left, right, or any).
-     * @return {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
+     * @returns {boolean} - true if the tilt sensor is tilted past a threshold in the specified direction.
      * @private
      */
     _isTilted (direction) {
@@ -2031,7 +2029,7 @@ class Scratch3BoostBlocks {
 
     /**
      * @param {TiltDirection} direction - the direction (up, down, left, right) to check.
-     * @return {number} - the tilt sensor's angle in the specified direction.
+     * @returns {number} - the tilt sensor's angle in the specified direction.
      * Note that getTiltAngle(up) = -getTiltAngle(down) and getTiltAngle(left) = -getTiltAngle(right).
      * @private
      */
@@ -2054,7 +2052,7 @@ class Scratch3BoostBlocks {
      * Edge-triggering hat function, for when the vision sensor is detecting
      * a certain color.
      * @param {object} args - the block's arguments.
-     * @return {boolean} - true when the color sensor senses the specified color.
+     * @returns {boolean} - true when the color sensor senses the specified color.
      */
     whenColor (args) {
         if (args.COLOR === BoostColor.ANY) {
@@ -2073,7 +2071,7 @@ class Scratch3BoostBlocks {
      * A boolean reporter function, for whether the vision sensor is detecting
      * a certain color.
      * @param {object} args - the block's arguments.
-     * @return {boolean} - true when the color sensor senses the specified color.
+     * @returns {boolean} - true when the color sensor senses the specified color.
      */
     seeingColor (args) {
         if (args.COLOR === BoostColor.ANY) {
@@ -2087,7 +2085,7 @@ class Scratch3BoostBlocks {
      * Set the LED's hue.
      * @param {object} args - the block's arguments.
      * @property {number} HUE - the hue to set, in the range [0,100].
-     * @return {Promise} - a Promise that resolves after some delay.
+     * @returns {Promise} - a Promise that resolves after some delay.
      */
     setLightHue (args) {
         // Convert from [0,100] to [0,360]

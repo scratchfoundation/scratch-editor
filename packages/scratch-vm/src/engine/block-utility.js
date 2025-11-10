@@ -2,7 +2,7 @@ const Thread = require('./thread');
 const Timer = require('../util/timer');
 
 /**
- * @fileoverview
+ * @file
  * Interface provided to block primitive functions for interacting with the
  * runtime, thread, target, and convenient methods.
  */
@@ -69,7 +69,7 @@ class BlockUtility {
 
     /**
      * Check the stack timer and return a boolean based on whether it has finished or not.
-     * @return {boolean} - true if the stack timer has finished.
+     * @returns {boolean} - true if the stack timer has finished.
      */
     stackTimerFinished () {
         const timeElapsed = this.stackFrame.timer.timeElapsed();
@@ -81,7 +81,7 @@ class BlockUtility {
 
     /**
      * Check if the stack timer needs initialization.
-     * @return {boolean} - true if the stack timer needs to be initialized.
+     * @returns {boolean} - true if the stack timer needs to be initialized.
      */
     stackTimerNeedsInit () {
         return !this.stackFrame.timer;
@@ -157,7 +157,7 @@ class BlockUtility {
     /**
      * Get names and ids of parameters for the given procedure.
      * @param {string} procedureCode Procedure code for procedure to query.
-     * @return {Array.<string>} List of param names for a procedure.
+     * @returns {Array.<string>} List of param names for a procedure.
      */
     getProcedureParamNamesAndIds (procedureCode) {
         return this.thread.target.blocks.getProcedureParamNamesAndIds(procedureCode);
@@ -166,7 +166,7 @@ class BlockUtility {
     /**
      * Get names, ids, and defaults of parameters for the given procedure.
      * @param {string} procedureCode Procedure code for procedure to query.
-     * @return {Array.<string>} List of param names for a procedure.
+     * @returns {Array.<string>} List of param names for a procedure.
      */
     getProcedureParamNamesIdsAndDefaults (procedureCode) {
         return this.thread.target.blocks.getProcedureParamNamesIdsAndDefaults(procedureCode);
@@ -191,7 +191,7 @@ class BlockUtility {
     /**
      * Retrieve the stored parameter value for a given parameter name.
      * @param {string} paramName The procedure's parameter name.
-     * @return {*} The parameter's current stored value.
+     * @returns {*} The parameter's current stored value.
      */
     getParam (paramName) {
         return this.thread.getParam(paramName);
@@ -202,7 +202,7 @@ class BlockUtility {
      * @param {!string} requestedHat Opcode of hats to start.
      * @param {object=} optMatchFields Optionally, fields to match on the hat.
      * @param {Target=} optTarget Optionally, a target to restrict to.
-     * @return {Array.<Thread>} List of threads started by this function.
+     * @returns {Array.<Thread>} List of threads started by this function.
      */
     startHats (requestedHat, optMatchFields, optTarget) {
         // Store thread and sequencer to ensure we can return to the calling block's context.
@@ -224,7 +224,7 @@ class BlockUtility {
      * @param {string} device The name of like the device, like keyboard.
      * @param {string} func The name of the device's function to query.
      * @param {Array.<*>} args Arguments to pass to the device's function.
-     * @return {*} The expected output for the device's function.
+     * @returns {*} The expected output for the device's function.
      */
     ioQuery (device, func, args) {
         // Find the I/O device and execute the query/function call.

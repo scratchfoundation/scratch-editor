@@ -1,8 +1,10 @@
-var ExampleExtension = function () {
+/* global Scratch */
+
+const ExampleExtension = function () {
 };
 
 /**
- * @return {object} This extension's metadata.
+ * @returns {object} This extension's metadata.
  */
 ExampleExtension.prototype.getInfo = function () {
     return {

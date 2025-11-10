@@ -4,7 +4,7 @@ import styles from './waveform.css';
 
 // Waveform is expensive to compute, make sure it only updates when data does
 // by using PureComponent. In future can be changed back to function with React.memo
-// eslint-disable-next-line react/prefer-stateless-function
+ 
 class Waveform extends React.PureComponent {
     render () {
         const {

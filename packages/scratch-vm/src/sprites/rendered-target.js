@@ -12,7 +12,7 @@ class RenderedTarget extends Target {
     /**
      * @param {!Sprite} sprite Reference to the parent sprite.
      * @param {Runtime} runtime Reference to the runtime.
-     * @constructor
+     * @class
      */
     constructor (sprite, runtime) {
         super(runtime, sprite.blocks);
@@ -33,7 +33,7 @@ class RenderedTarget extends Target {
         /**
          * ID of the drawable for this rendered target,
          * returned by the renderer, if rendered.
-         * @type {?Number}
+         * @type {?number}
          */
         this.drawableID = null;
 
@@ -73,7 +73,7 @@ class RenderedTarget extends Target {
 
         /**
          * Scratch X coordinate. Currently should range from -240 to 240.
-         * @type {Number}
+         * @type {number}
          */
         this.x = 0;
 
@@ -149,7 +149,6 @@ class RenderedTarget extends Target {
          * video will start ON. If the extension is loaded as part of loading a
          * saved project the extension will see the value set when the stage
          * was loaded from the saved values including the video state.
-         *
          * @type {string}
          */
         this.videoState = RenderedTarget.VIDEO_STATE.ON;
@@ -288,7 +287,7 @@ class RenderedTarget extends Target {
 
     /**
      * Get the rendered direction and scale, after applying rotation style.
-     * @return {object<string, number>} Direction and scale to render.
+     * @returns {object<string, number>} Direction and scale to render.
      */
     _getRenderedDirectionAndScale () {
         // Default: no changes to `this.direction` or `this.scale`.
@@ -493,7 +492,7 @@ class RenderedTarget extends Target {
     /**
      * Delete a costume by index.
      * @param {number} index Costume index to be deleted
-     * @return {?object} The costume that was deleted or null
+     * @returns {?object} The costume that was deleted or null
      * if the index was out of bounds of the costumes list or
      * this target only has one costume.
      */
@@ -552,7 +551,7 @@ class RenderedTarget extends Target {
     /**
      * Delete a sound by index.
      * @param {number} index Sound index to be deleted
-     * @return {object} The deleted sound object, or null if no sound was deleted.
+     * @returns {object} The deleted sound object, or null if no sound was deleted.
      */
     deleteSound (index) {
         // Make sure the sound index is not out of bounds
@@ -591,7 +590,7 @@ class RenderedTarget extends Target {
     /**
      * Get a costume index of this rendered target, by name of the costume.
      * @param {?string} costumeName Name of a costume.
-     * @return {number} Index of the named costume, or -1 if not present.
+     * @returns {number} Index of the named costume, or -1 if not present.
      */
     getCostumeIndexByName (costumeName) {
         for (let i = 0; i < this.sprite.costumes.length; i++) {
@@ -604,7 +603,7 @@ class RenderedTarget extends Target {
 
     /**
      * Get a costume of this rendered target by id.
-     * @return {object} current costume
+     * @returns {object} current costume
      */
     getCurrentCostume () {
         return this.getCostumes()[this.currentCostume];
@@ -612,7 +611,7 @@ class RenderedTarget extends Target {
 
     /**
      * Get full costume list
-     * @return {object[]} list of costumes
+     * @returns {object[]} list of costumes
      */
     getCostumes () {
         return this.sprite.costumes;
@@ -661,7 +660,7 @@ class RenderedTarget extends Target {
 
     /**
      * Get full sound list
-     * @return {object[]} list of sounds
+     * @returns {object[]} list of sounds
      */
     getSounds () {
         return this.sprite.sounds;
@@ -705,7 +704,7 @@ class RenderedTarget extends Target {
 
     /**
      * Return whether this rendered target is a sprite (not a clone, not the stage).
-     * @return {boolean} True if not a clone and not the stage.
+     * @returns {boolean} True if not a clone and not the stage.
      */
     isSprite () {
         return !this.isStage && this.isOriginal;
@@ -714,7 +713,7 @@ class RenderedTarget extends Target {
     /**
      * Return the rendered target's tight bounding box.
      * Includes top, left, bottom, right attributes in Scratch coordinates.
-     * @return {?object} Tight bounding box, or null.
+     * @returns {?object} Tight bounding box, or null.
      */
     getBounds () {
         if (this.renderer) {
@@ -726,7 +725,7 @@ class RenderedTarget extends Target {
     /**
      * Return the bounding box around a slice of the top 8px of the rendered target.
      * Includes top, left, bottom, right attributes in Scratch coordinates.
-     * @return {?object} Tight bounding box, or null.
+     * @returns {?object} Tight bounding box, or null.
      */
     getBoundsForBubble () {
         if (this.renderer) {
@@ -738,7 +737,7 @@ class RenderedTarget extends Target {
     /**
      * Return whether this target is touching the mouse, an edge, or a sprite.
      * @param {string} requestedObject an id for mouse or edge, or a sprite name.
-     * @return {boolean} True if the sprite is touching the object.
+     * @returns {boolean} True if the sprite is touching the object.
      */
     isTouchingObject (requestedObject) {
         if (requestedObject === '_mouse_') {
@@ -756,7 +755,7 @@ class RenderedTarget extends Target {
      * Return whether touching a point.
      * @param {number} x X coordinate of test point.
      * @param {number} y Y coordinate of test point.
-     * @return {boolean} True iff the rendered target is touching the point.
+     * @returns {boolean} True iff the rendered target is touching the point.
      */
     isTouchingPoint (x, y) {
         if (this.renderer) {
@@ -766,8 +765,36 @@ class RenderedTarget extends Target {
     }
 
     /**
+     * Return whether drawable is touching a rectangle.
+     * @param {number} left - The left X coordinate of the rectangle.
+     * @param {number} top - The top Y coordinate of the rectangle.
+     * @param {number} right - The right X coordinate of the rectangle.
+     * @param {number} bottom - The bottom Y coordinate of the rectangle.
+     * @returns {boolean} True if the rendered target is touching the rectangle.
+     */
+    isTouchingRect (left, top, right, bottom) {
+        if (this.renderer) {
+            return this.renderer.drawableTouchingScratchRect(this.drawableID, left, top, right, bottom);
+        }
+        return false;
+    }
+
+    /**
+     * Return whether a drawable is touching a scratch point.
+     * @param {number} x - X coordinate of test point
+     * @param {number} y  - Y coordinate of test point
+     * @returns {boolean} True if the rendered target is touching a scratch point.
+     */
+    isTouchingScratchPoint (x, y) {
+        if (this.renderer) {
+            return this.renderer.drawableTouchingScratchPoint(this.drawableID, x, y);
+        }
+        return false;
+    }
+
+    /**
      * Return whether touching a stage edge.
-     * @return {boolean} True iff the rendered target is touching the stage edge.
+     * @returns {boolean} True iff the rendered target is touching the stage edge.
      */
     isTouchingEdge () {
         if (this.renderer) {
@@ -787,7 +814,7 @@ class RenderedTarget extends Target {
     /**
      * Return whether touching any of a named sprite's clones.
      * @param {string} spriteName Name of the sprite.
-     * @return {boolean} True iff touching a clone of the sprite.
+     * @returns {boolean} True iff touching a clone of the sprite.
      */
     isTouchingSprite (spriteName) {
         spriteName = Cast.toString(spriteName);
@@ -807,7 +834,7 @@ class RenderedTarget extends Target {
     /**
      * Return whether touching a color.
      * @param {Array.<number>} rgb [r,g,b], values between 0-255.
-     * @return {Promise.<boolean>} True iff the rendered target is touching the color.
+     * @returns {Promise.<boolean>} True iff the rendered target is touching the color.
      */
     isTouchingColor (rgb) {
         if (this.renderer) {
@@ -820,7 +847,7 @@ class RenderedTarget extends Target {
      * Return whether rendered target's color is touching a color.
      * @param {object} targetRgb {Array.<number>} [r,g,b], values between 0-255.
      * @param {object} maskRgb {Array.<number>} [r,g,b], values between 0-255.
-     * @return {Promise.<boolean>} True iff the color is touching the color.
+     * @returns {Promise.<boolean>} True iff the color is touching the color.
      */
     colorIsTouchingColor (targetRgb, maskRgb) {
         if (this.renderer) {
@@ -910,7 +937,7 @@ class RenderedTarget extends Target {
      * @param {number} newX New desired X position.
      * @param {number} newY New desired Y position.
      * @param {object=} optFence Optional fence with left, right, top bottom.
-     * @return {Array.<number>} Fenced X and Y coordinates.
+     * @returns {Array.<number>} Fenced X and Y coordinates.
      */
     keepInFence (newX, newY, optFence) {
         let fence = optFence;
@@ -950,7 +977,7 @@ class RenderedTarget extends Target {
     /**
      * Make a clone, copying any run-time properties.
      * If we've hit the global clone limit, returns null.
-     * @return {RenderedTarget} New clone.
+     * @returns {RenderedTarget} New clone.
      */
     makeClone () {
         if (!this.runtime.clonesAvailable() || this.isStage) {
@@ -977,7 +1004,7 @@ class RenderedTarget extends Target {
 
     /**
      * Make a duplicate using a duplicate sprite.
-     * @return {RenderedTarget} New clone.
+     * @returns {RenderedTarget} New clone.
      */
     duplicate () {
         return this.sprite.duplicate().then(newSprite => {

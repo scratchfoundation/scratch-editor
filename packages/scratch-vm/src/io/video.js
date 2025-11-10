@@ -79,8 +79,7 @@ class Video {
      * Request video be enabled.  Sets up video, creates video skin and enables preview.
      *
      * ioDevices.video.requestVideo()
-     *
-     * @return {Promise.<Video>} resolves a promise to this IO device when video is ready.
+     * @returns {Promise.<Video>} resolves a promise to this IO device when video is ready.
      */
     enableVideo () {
         if (!this.provider) return null;
@@ -89,7 +88,7 @@ class Video {
 
     /**
      * Disable video stream (turn video off)
-     * @return {void}
+     * @returns {void}
      */
     disableVideo () {
         this._disablePreview();
@@ -99,7 +98,6 @@ class Video {
 
     /**
      * Return frame data from the video feed in a specified dimensions, format, and mirroring.
-     *
      * @param {object} frameInfo A descriptor of the frame you would like to receive.
      * @param {Array.<number>} frameInfo.dimensions [width, height] array of numbers.  Defaults to [480,360]
      * @param {boolean} frameInfo.mirror If you specificly want a mirror/non-mirror frame, defaults to the global
@@ -107,8 +105,7 @@ class Video {
      * @param {string} frameInfo.format Requested video format, available formats are 'image-data' and 'canvas'.
      * @param {number} frameInfo.cacheTimeout Will reuse previous image data if the time since capture is less than
      *                                        the cacheTimeout.  Defaults to 16ms.
-     *
-     * @return {ArrayBuffer|Canvas|string|null} Frame data in requested format, null when errors.
+     * @returns {ArrayBuffer|Canvas|string|null} Frame data in requested format, null when errors.
      */
     getFrame ({
         dimensions = Video.DIMENSIONS,
@@ -195,6 +192,7 @@ class Video {
      * The only change available externally is hiding the preview, used e.g. to
      * prevent drawing the preview into project thumbnails.
      * @param {object} - data passed to this IO device.
+     * @param -.forceTransparentPreview
      * @property {boolean} forceTransparentPreview - whether the preview should be forced transparent.
      */
     postData ({forceTransparentPreview}) {

@@ -5,7 +5,7 @@
 /**
  * Given an SVG, replace Scratch 2.0 fonts with new 3.0 fonts. Add defaults where there are none.
  * @param {SVGElement} svgTag The SVG dom object
- * @return {void}
+ * @returns {void}
  */
 const convertFonts = function (svgTag) {
     // Collect all text elements into a list.

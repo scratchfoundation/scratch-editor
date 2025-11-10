@@ -31,8 +31,8 @@ class Controls extends React.Component {
     }
     render () {
         const {
-            vm, // eslint-disable-line no-unused-vars
-            isStarted, // eslint-disable-line no-unused-vars
+            vm,
+            isStarted,
             projectRunning,
             turbo,
             ...props

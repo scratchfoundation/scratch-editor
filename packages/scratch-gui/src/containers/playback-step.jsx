@@ -33,10 +33,10 @@ class PlaybackStep extends React.Component {
     }
     render () {
         const {
-            sampleRate, // eslint-disable-line no-unused-vars
-            onPlay, // eslint-disable-line no-unused-vars
-            onStopPlaying, // eslint-disable-line no-unused-vars
-            onSetPlayhead, // eslint-disable-line no-unused-vars
+            sampleRate,
+            onPlay,
+            onStopPlaying,
+            onSetPlayhead,
             ...componentProps
         } = this.props;
         return (

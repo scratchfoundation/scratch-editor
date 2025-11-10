@@ -11,7 +11,7 @@ class Scratch3DataBlocks {
 
     /**
      * Retrieve the block primitives implemented by this package.
-     * @return {object.<string, Function>} Mapping of opcode to Function.
+     * @returns {object.<string, Function>} Mapping of opcode to Function.
      */
     getPrimitives () {
         return {
@@ -247,7 +247,7 @@ class Scratch3DataBlocks {
 
     /**
      * Type representation for list variables.
-     * @const {number}
+     * @constant {number}
      */
     static get LIST_ITEM_LIMIT () {
         return 200000;

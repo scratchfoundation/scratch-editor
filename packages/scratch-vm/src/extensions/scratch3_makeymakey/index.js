@@ -61,7 +61,7 @@ const SCRATCH_KEY_NAME = {
 
 /**
  * Class for the makey makey blocks in Scratch 3.0
- * @constructor
+ * @class
  */
 class Scratch3MakeyMakeyBlocks {
     constructor (runtime) {

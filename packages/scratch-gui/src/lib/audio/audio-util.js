@@ -61,7 +61,7 @@ const encodeAndAddSoundToVM = function (vm, samples, sampleRate, name, callback)
 
 /**
  @typedef SoundBuffer
- @type {Object}
+ @type {object}
  @property {Float32Array} samples Array of audio samples
  @property {number} sampleRate Audio sample rate
  */

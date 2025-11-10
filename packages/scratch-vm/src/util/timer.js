@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * A utility for accurately measuring time.
  * To use:
  * ---

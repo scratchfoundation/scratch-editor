@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {intlShape, injectIntl} from 'react-intl';
+import {injectIntl} from 'react-intl';
+import intlShape from './intlShape';
 import bindAll from 'lodash.bindall';
 import {connect} from 'react-redux';
 
@@ -98,7 +99,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
         }
         render () {
             const {
-                /* eslint-disable no-unused-vars */
+                 
                 assetHost,
                 intl,
                 isLoadingProject: isLoadingProjectProp,
@@ -112,7 +113,7 @@ const ProjectFetcherHOC = function (WrappedComponent) {
                 projectToken,
                 reduxProjectId,
                 setProjectId: setProjectIdProp,
-                /* eslint-enable no-unused-vars */
+                 
                 isFetchingWithId: isFetchingWithIdProp,
                 ...componentProps
             } = this.props;

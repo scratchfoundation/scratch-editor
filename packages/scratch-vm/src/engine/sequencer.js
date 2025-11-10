@@ -4,19 +4,19 @@ const execute = require('./execute.js');
 
 /**
  * Profiler frame name for stepping a single thread.
- * @const {string}
+ * @constant {string}
  */
 const stepThreadProfilerFrame = 'Sequencer.stepThread';
 
 /**
  * Profiler frame name for the inner loop of stepThreads.
- * @const {string}
+ * @constant {string}
  */
 const stepThreadsInnerProfilerFrame = 'Sequencer.stepThreads#inner';
 
 /**
  * Profiler frame name for execute.
- * @const {string}
+ * @constant {string}
  */
 const executeProfilerFrame = 'execute';
 
@@ -65,7 +65,7 @@ class Sequencer {
 
     /**
      * Step through all threads in `this.runtime.threads`, running them in order.
-     * @return {Array.<!Thread>} List of inactive threads after stepping.
+     * @returns {Array.<!Thread>} List of inactive threads after stepping.
      */
     stepThreads () {
         // Work time is 75% of the thread stepping interval.

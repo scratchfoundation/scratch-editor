@@ -4,7 +4,7 @@ const twgl = require('twgl.js');
 class ShaderManager {
     /**
      * @param {WebGLRenderingContext} gl WebGL rendering context to create shaders for
-     * @constructor
+     * @class
      */
     constructor (gl) {
         this._gl = gl;
@@ -63,10 +63,10 @@ class ShaderManager {
 
         const definesText = `${defines.join('\n')}\n`;
 
-        /* eslint-disable global-require */
+         
         const vsFullText = definesText + require('raw-loader!./shaders/sprite.vert');
         const fsFullText = definesText + require('raw-loader!./shaders/sprite.frag');
-        /* eslint-enable global-require */
+         
 
         return twgl.createProgramInfo(this._gl, [vsFullText, fsFullText]);
     }
@@ -74,11 +74,11 @@ class ShaderManager {
 
 /**
  * @typedef {object} ShaderManager.Effect
- * @prop {int} mask - The bit in 'effectBits' representing the effect.
- * @prop {function} converter - A conversion function which takes a Scratch value (generally in the range
+ * @property {int} mask - The bit in 'effectBits' representing the effect.
+ * @property {function} converter - A conversion function which takes a Scratch value (generally in the range
  *   0..100 or -100..100) and maps it to a value useful to the shader. This
  *   mapping may not be reversible.
- * @prop {boolean} shapeChanges - Whether the effect could change the drawn shape.
+ * @property {boolean} shapeChanges - Whether the effect could change the drawn shape.
  */
 
 /**

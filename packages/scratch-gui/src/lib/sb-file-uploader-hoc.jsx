@@ -1,7 +1,8 @@
 import bindAll from 'lodash.bindall';
 import React from 'react';
 import PropTypes from 'prop-types';
-import {defineMessages, intlShape, injectIntl} from 'react-intl';
+import {defineMessages, injectIntl} from 'react-intl';
+import intlShape from './intlShape';
 import {connect} from 'react-redux';
 import log from '../lib/log';
 import sharedMessages from './shared-messages';
@@ -21,6 +22,7 @@ import {
 import {
     closeFileMenu
 } from '../reducers/menus';
+import {getProjectTitleFromFilename} from './sb-file-uploader-utils';
 
 const messages = defineMessages({
     loadError: {
@@ -45,7 +47,6 @@ const SBFileUploaderHOC = function (WrappedComponent) {
             super(props);
             bindAll(this, [
                 'createFileObjects',
-                'getProjectTitleFromFilename',
                 'handleFinishedLoadingUpload',
                 'handleStartSelectingFileUpload',
                 'handleChange',
@@ -133,15 +134,6 @@ const SBFileUploaderHOC = function (WrappedComponent) {
                 this.removeFileObjects();
             }
         }
-        // used in step 6 below
-        getProjectTitleFromFilename (fileInputFilename) {
-            if (!fileInputFilename) return '';
-            // only parse title with valid scratch project extensions
-            // (.sb, .sb2, and .sb3)
-            const matches = fileInputFilename.match(/^(.*)\.sb[23]?$/);
-            if (!matches) return '';
-            return matches[1].substring(0, 100); // truncate project title to max 100 chars
-        }
         // step 6: attached as a handler on our FileReader object; called when
         // file upload raw data is available in the reader
         onload () {
@@ -152,7 +144,7 @@ const SBFileUploaderHOC = function (WrappedComponent) {
                 this.props.vm.loadProject(this.fileReader.result)
                     .then(() => {
                         if (filename) {
-                            const uploadedProjectTitle = this.getProjectTitleFromFilename(filename);
+                            const uploadedProjectTitle = getProjectTitleFromFilename(filename);
                             this.props.onSetProjectTitle(uploadedProjectTitle);
                         }
                         loadingSuccess = true;
@@ -182,7 +174,7 @@ const SBFileUploaderHOC = function (WrappedComponent) {
         }
         render () {
             const {
-                /* eslint-disable no-unused-vars */
+                 
                 cancelFileUpload,
                 closeFileMenu: closeFileMenuProp,
                 isLoadingUpload,
@@ -193,7 +185,7 @@ const SBFileUploaderHOC = function (WrappedComponent) {
                 onSetProjectTitle,
                 projectChanged,
                 requestProjectUpload: requestProjectUploadProp,
-                /* eslint-enable no-unused-vars */
+                 
 
                 // Intentionally propagating this one as well, since it's used in MenuBar
                 // userOwnsProject,

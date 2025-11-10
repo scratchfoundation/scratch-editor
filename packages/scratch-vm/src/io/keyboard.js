@@ -42,7 +42,7 @@ class Keyboard {
     /**
      * Convert from a keyboard event key name to a Scratch key name.
      * @param  {string} keyString the input key string.
-     * @return {string} the corresponding Scratch key, or an empty string.
+     * @returns {string} the corresponding Scratch key, or an empty string.
      */
     _keyStringToScratchKey (keyString) {
         keyString = Cast.toString(keyString);
@@ -69,7 +69,7 @@ class Keyboard {
     /**
      * Convert from a block argument to a Scratch key name.
      * @param  {string} keyArg the input arg.
-     * @return {string} the corresponding Scratch key.
+     * @returns {string} the corresponding Scratch key.
      */
     _keyArgToScratchKey (keyArg) {
         // If a number was dropped in, try to convert from ASCII to Scratch key.
@@ -132,7 +132,7 @@ class Keyboard {
     /**
      * Get key down state for a specified key.
      * @param  {Any} keyArg key argument.
-     * @return {boolean} Is the specified key down?
+     * @returns {boolean} Is the specified key down?
      */
     getKeyIsDown (keyArg) {
         if (keyArg === 'any') {

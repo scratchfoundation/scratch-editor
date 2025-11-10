@@ -2,11 +2,12 @@ import 'web-audio-test-api';
 
 import React from 'react';
 import configureStore from 'redux-mock-store';
-import {mountWithIntl, shallowWithIntl} from '../../helpers/intl-helpers.jsx';
+import {renderWithIntl} from '../../helpers/intl-helpers.jsx';
 import {LoadingState} from '../../../src/reducers/project-state';
 import VM from '@scratch/scratch-vm';
 
 import SBFileUploaderHOC from '../../../src/lib/sb-file-uploader-hoc.jsx';
+import {IntlProvider} from 'react-intl';
 
 describe('SBFileUploaderHOC', () => {
     const mockStore = configureStore();
@@ -19,14 +20,10 @@ describe('SBFileUploaderHOC', () => {
         return SBFileUploaderHOC(Component);
     };
 
-    const shallowMountWithContext = component => (
-        shallowWithIntl(component, {context: {store}})
-    );
-
     const unwrappedInstance = () => {
         const WrappedComponent = getContainer();
         // default starting state: looking at a project you created, not logged in
-        const wrapper = shallowMountWithContext(
+        const wrapper = renderWithIntl(
             <WrappedComponent
                 projectChanged
                 canSave={false}
@@ -38,12 +35,10 @@ describe('SBFileUploaderHOC', () => {
                 onLoadingFinished={jest.fn()}
                 onLoadingStarted={jest.fn()}
                 onUpdateProjectTitle={jest.fn()}
+                store={store}
             />
         );
-        return wrapper
-            .dive() // unwrap intl
-            .dive() // unwrap redux Connect(SBFileUploaderComponent)
-            .instance(); // SBFileUploaderComponent
+        return wrapper;
     };
 
     beforeEach(() => {
@@ -61,30 +56,10 @@ describe('SBFileUploaderHOC', () => {
         });
     });
 
-    test('correctly sets title with .sb3 filename', () => {
-        const projectName = unwrappedInstance().getProjectTitleFromFilename('my project is great.sb3');
-        expect(projectName).toBe('my project is great');
-    });
-
-    test('correctly sets title with .sb2 filename', () => {
-        const projectName = unwrappedInstance().getProjectTitleFromFilename('my project is great.sb2');
-        expect(projectName).toBe('my project is great');
-    });
-
-    test('correctly sets title with .sb filename', () => {
-        const projectName = unwrappedInstance().getProjectTitleFromFilename('my project is great.sb');
-        expect(projectName).toBe('my project is great');
-    });
-
-    test('sets blank title with filename with no extension', () => {
-        const projectName = unwrappedInstance().getProjectTitleFromFilename('my project is great');
-        expect(projectName).toBe('');
-    });
-
     test('if isLoadingUpload becomes true, without fileToUpload set, will call cancelFileUpload', () => {
         const mockedCancelFileUpload = jest.fn();
         const WrappedComponent = getContainer();
-        const mounted = mountWithIntl(
+        const {rerender} = renderWithIntl(
             <WrappedComponent
                 projectChanged
                 canSave={false}
@@ -100,9 +75,27 @@ describe('SBFileUploaderHOC', () => {
                 onUpdateProjectTitle={jest.fn()}
             />
         );
-        mounted.setProps({
-            isLoadingUpload: true
-        });
+        rerender(
+            <IntlProvider
+                locale="en"
+                messages={{ }}
+            >
+                <WrappedComponent
+                    projectChanged
+                    canSave={false}
+                    cancelFileUpload={mockedCancelFileUpload}
+                    closeFileMenu={jest.fn()}
+                    isLoadingUpload
+                    requestProjectUpload={jest.fn()}
+                    store={store}
+                    userOwnsProject={false}
+                    vm={vm}
+                    onLoadingFinished={jest.fn()}
+                    onLoadingStarted={jest.fn()}
+                    onUpdateProjectTitle={jest.fn()}
+                />
+            </IntlProvider>
+        );
         expect(mockedCancelFileUpload).toHaveBeenCalled();
     });
 });

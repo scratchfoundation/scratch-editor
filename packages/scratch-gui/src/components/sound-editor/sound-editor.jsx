@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
-import {defineMessages, FormattedMessage, injectIntl, intlShape} from 'react-intl';
+import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
 
 import Waveform from '../waveform/waveform.jsx';
 import Label from '../forms/label.jsx';
@@ -137,186 +137,188 @@ const messages = defineMessages({
     }
 });
 
-const SoundEditor = props => (
-    <div
-        className={styles.editorContainer}
-        ref={props.setRef}
-        onMouseDown={props.onContainerClick}
-    >
-        <div className={styles.row}>
-            <div className={styles.inputGroup}>
-                <Label text={props.intl.formatMessage(messages.sound)}>
-                    <BufferedInput
-                        tabIndex="1"
-                        type="text"
-                        value={props.name}
-                        onSubmit={props.onChangeName}
+const SoundEditor = props => {
+    const intl = useIntl();
+    return (
+        <div
+            className={styles.editorContainer}
+            ref={props.setRef}
+            onMouseDown={props.onContainerClick}
+        >
+            <div className={styles.row}>
+                <div className={styles.inputGroup}>
+                    <Label text={intl.formatMessage(messages.sound)}>
+                        <BufferedInput
+                            tabIndex="1"
+                            type="text"
+                            value={props.name}
+                            onSubmit={props.onChangeName}
+                        />
+                    </Label>
+                    <div className={styles.buttonGroup}>
+                        <button
+                            className={styles.button}
+                            disabled={!props.canUndo}
+                            title={intl.formatMessage(messages.undo)}
+                            onClick={props.onUndo}
+                        >
+                            <img
+                                className={styles.undoIcon}
+                                draggable={false}
+                                src={undoIcon}
+                            />
+                        </button>
+                        <button
+                            className={styles.button}
+                            disabled={!props.canRedo}
+                            title={intl.formatMessage(messages.redo)}
+                            onClick={props.onRedo}
+                        >
+                            <img
+                                className={styles.redoIcon}
+                                draggable={false}
+                                src={redoIcon}
+                            />
+                        </button>
+                    </div>
+                </div>
+                <div className={styles.inputGroup}>
+                    <IconButton
+                        className={styles.toolButton}
+                        img={copyIcon}
+                        title={intl.formatMessage(messages.copy)}
+                        onClick={props.onCopy}
                     />
-                </Label>
-                <div className={styles.buttonGroup}>
-                    <button
-                        className={styles.button}
-                        disabled={!props.canUndo}
-                        title={props.intl.formatMessage(messages.undo)}
-                        onClick={props.onUndo}
-                    >
-                        <img
-                            className={styles.undoIcon}
-                            draggable={false}
-                            src={undoIcon}
-                        />
-                    </button>
-                    <button
-                        className={styles.button}
-                        disabled={!props.canRedo}
-                        title={props.intl.formatMessage(messages.redo)}
-                        onClick={props.onRedo}
-                    >
-                        <img
-                            className={styles.redoIcon}
-                            draggable={false}
-                            src={redoIcon}
-                        />
-                    </button>
+                    <IconButton
+                        className={styles.toolButton}
+                        disabled={props.canPaste === false}
+                        img={pasteIcon}
+                        title={intl.formatMessage(messages.paste)}
+                        onClick={props.onPaste}
+                    />
+                    <IconButton
+                        className={classNames(styles.toolButton, styles.flipInRtl)}
+                        img={copyToNewIcon}
+                        title={intl.formatMessage(messages.copyToNew)}
+                        onClick={props.onCopyToNew}
+                    />
+                </div>
+                <IconButton
+                    className={styles.toolButton}
+                    disabled={props.trimStart === null}
+                    img={deleteIcon}
+                    title={intl.formatMessage(messages.delete)}
+                    onClick={props.onDelete}
+                />
+            </div>
+            <div className={styles.row}>
+                <div className={styles.waveformContainer}>
+                    <Waveform
+                        data={props.chunkLevels}
+                        height={160}
+                        width={600}
+                    />
+                    <AudioSelector
+                        playhead={props.playhead}
+                        trimEnd={props.trimEnd}
+                        trimStart={props.trimStart}
+                        onPlay={props.onPlay}
+                        onSetTrim={props.onSetTrim}
+                        onStop={props.onStop}
+                    />
                 </div>
             </div>
-            <div className={styles.inputGroup}>
+            <div className={classNames(styles.row, styles.rowReverse)}>
+                <div className={styles.inputGroup}>
+                    {props.playhead ? (
+                        <button
+                            className={classNames(styles.roundButton, styles.stopButtonn)}
+                            title={intl.formatMessage(messages.stop)}
+                            onClick={props.onStop}
+                        >
+                            <img
+                                draggable={false}
+                                src={stopIcon}
+                            />
+                        </button>
+                    ) : (
+                        <button
+                            className={classNames(styles.roundButton, styles.playButton)}
+                            title={intl.formatMessage(messages.play)}
+                            onClick={props.onPlay}
+                        >
+                            <img
+                                draggable={false}
+                                src={playIcon}
+                            />
+                        </button>
+                    )}
+                </div>
                 <IconButton
-                    className={styles.toolButton}
-                    img={copyIcon}
-                    title={props.intl.formatMessage(messages.copy)}
-                    onClick={props.onCopy}
+                    className={styles.effectButton}
+                    img={fasterIcon}
+                    title={<FormattedMessage {...messages.faster} />}
+                    onClick={props.onFaster}
                 />
                 <IconButton
-                    className={styles.toolButton}
-                    disabled={props.canPaste === false}
-                    img={pasteIcon}
-                    title={props.intl.formatMessage(messages.paste)}
-                    onClick={props.onPaste}
+                    className={styles.effectButton}
+                    img={slowerIcon}
+                    title={<FormattedMessage {...messages.slower} />}
+                    onClick={props.onSlower}
                 />
                 <IconButton
-                    className={classNames(styles.toolButton, styles.flipInRtl)}
-                    img={copyToNewIcon}
-                    title={props.intl.formatMessage(messages.copyToNew)}
-                    onClick={props.onCopyToNew}
+                    disabled={props.tooLoud}
+                    className={classNames(styles.effectButton, styles.flipInRtl)}
+                    img={louderIcon}
+                    title={<FormattedMessage {...messages.louder} />}
+                    onClick={props.onLouder}
+                />
+                <IconButton
+                    className={classNames(styles.effectButton, styles.flipInRtl)}
+                    img={softerIcon}
+                    title={<FormattedMessage {...messages.softer} />}
+                    onClick={props.onSofter}
+                />
+                <IconButton
+                    className={classNames(styles.effectButton, styles.flipInRtl)}
+                    img={muteIcon}
+                    title={<FormattedMessage {...messages.mute} />}
+                    onClick={props.onMute}
+                />
+                <IconButton
+                    className={styles.effectButton}
+                    img={fadeInIcon}
+                    title={<FormattedMessage {...messages.fadeIn} />}
+                    onClick={props.onFadeIn}
+                />
+                <IconButton
+                    className={styles.effectButton}
+                    img={fadeOutIcon}
+                    title={<FormattedMessage {...messages.fadeOut} />}
+                    onClick={props.onFadeOut}
+                />
+                <IconButton
+                    className={styles.effectButton}
+                    img={reverseIcon}
+                    title={<FormattedMessage {...messages.reverse} />}
+                    onClick={props.onReverse}
+                />
+                <IconButton
+                    className={styles.effectButton}
+                    img={robotIcon}
+                    title={<FormattedMessage {...messages.robot} />}
+                    onClick={props.onRobot}
                 />
             </div>
-            <IconButton
-                className={styles.toolButton}
-                disabled={props.trimStart === null}
-                img={deleteIcon}
-                title={props.intl.formatMessage(messages.delete)}
-                onClick={props.onDelete}
-            />
         </div>
-        <div className={styles.row}>
-            <div className={styles.waveformContainer}>
-                <Waveform
-                    data={props.chunkLevels}
-                    height={160}
-                    width={600}
-                />
-                <AudioSelector
-                    playhead={props.playhead}
-                    trimEnd={props.trimEnd}
-                    trimStart={props.trimStart}
-                    onPlay={props.onPlay}
-                    onSetTrim={props.onSetTrim}
-                    onStop={props.onStop}
-                />
-            </div>
-        </div>
-        <div className={classNames(styles.row, styles.rowReverse)}>
-            <div className={styles.inputGroup}>
-                {props.playhead ? (
-                    <button
-                        className={classNames(styles.roundButton, styles.stopButtonn)}
-                        title={props.intl.formatMessage(messages.stop)}
-                        onClick={props.onStop}
-                    >
-                        <img
-                            draggable={false}
-                            src={stopIcon}
-                        />
-                    </button>
-                ) : (
-                    <button
-                        className={classNames(styles.roundButton, styles.playButton)}
-                        title={props.intl.formatMessage(messages.play)}
-                        onClick={props.onPlay}
-                    >
-                        <img
-                            draggable={false}
-                            src={playIcon}
-                        />
-                    </button>
-                )}
-            </div>
-            <IconButton
-                className={styles.effectButton}
-                img={fasterIcon}
-                title={<FormattedMessage {...messages.faster} />}
-                onClick={props.onFaster}
-            />
-            <IconButton
-                className={styles.effectButton}
-                img={slowerIcon}
-                title={<FormattedMessage {...messages.slower} />}
-                onClick={props.onSlower}
-            />
-            <IconButton
-                disabled={props.tooLoud}
-                className={classNames(styles.effectButton, styles.flipInRtl)}
-                img={louderIcon}
-                title={<FormattedMessage {...messages.louder} />}
-                onClick={props.onLouder}
-            />
-            <IconButton
-                className={classNames(styles.effectButton, styles.flipInRtl)}
-                img={softerIcon}
-                title={<FormattedMessage {...messages.softer} />}
-                onClick={props.onSofter}
-            />
-            <IconButton
-                className={classNames(styles.effectButton, styles.flipInRtl)}
-                img={muteIcon}
-                title={<FormattedMessage {...messages.mute} />}
-                onClick={props.onMute}
-            />
-            <IconButton
-                className={styles.effectButton}
-                img={fadeInIcon}
-                title={<FormattedMessage {...messages.fadeIn} />}
-                onClick={props.onFadeIn}
-            />
-            <IconButton
-                className={styles.effectButton}
-                img={fadeOutIcon}
-                title={<FormattedMessage {...messages.fadeOut} />}
-                onClick={props.onFadeOut}
-            />
-            <IconButton
-                className={styles.effectButton}
-                img={reverseIcon}
-                title={<FormattedMessage {...messages.reverse} />}
-                onClick={props.onReverse}
-            />
-            <IconButton
-                className={styles.effectButton}
-                img={robotIcon}
-                title={<FormattedMessage {...messages.robot} />}
-                onClick={props.onRobot}
-            />
-        </div>
-    </div>
-);
+    );
+};
 
 SoundEditor.propTypes = {
     canPaste: PropTypes.bool.isRequired,
     canRedo: PropTypes.bool.isRequired,
     canUndo: PropTypes.bool.isRequired,
     chunkLevels: PropTypes.arrayOf(PropTypes.number).isRequired,
-    intl: intlShape,
     name: PropTypes.string.isRequired,
     onChangeName: PropTypes.func.isRequired,
     onContainerClick: PropTypes.func.isRequired,
@@ -346,4 +348,4 @@ SoundEditor.propTypes = {
     trimStart: PropTypes.number
 };
 
-export default injectIntl(SoundEditor);
+export default SoundEditor;

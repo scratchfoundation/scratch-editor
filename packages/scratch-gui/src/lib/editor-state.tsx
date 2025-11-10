@@ -3,6 +3,7 @@ import localesReducer, {initLocale, localesInitialState} from '../reducers/local
 import locales from 'scratch-l10n';
 import {detectLocale} from './detect-locale';
 import {GUIConfig} from '../gui-config';
+import log from './log.js';
 
 interface WindowWithDevtools {
     __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
@@ -21,6 +22,7 @@ export interface EditorStateParams {
     isPlayerOnly?: boolean;
     showTelemetryModal?: boolean;
     isEmbedded?: boolean;
+    locale?: string;
 }
 
 /**
@@ -40,10 +42,22 @@ export class EditorState {
         let enhancer;
 
         let initializedLocales = localesInitialState;
-        const locale = detectLocale(Object.keys(locales));
+
+        let locale = 'en';
+        if (params.locale) {
+            if (Object.keys(locales).includes(params.locale)) {
+                locale = params.locale;
+            } else {
+                log.warn(`Unsupported locale ${params.locale}, falling back to en`);
+            }
+        } else {
+            locale = detectLocale(Object.keys(locales));
+        }
+
         if (locale !== 'en') {
             initializedLocales = initLocale(initializedLocales, locale);
         }
+
         if (params.localesOnly) {
             // Used for instantiating minimal state for the unsupported
             // browser modal

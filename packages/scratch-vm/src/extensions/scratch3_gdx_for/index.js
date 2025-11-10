@@ -239,7 +239,7 @@ class GdxFor {
 
     /**
      * Return true if connected to the goforce device.
-     * @return {boolean} - whether the goforce is connected.
+     * @returns {boolean} - whether the goforce is connected.
      */
     isConnected () {
         let connected = false;
@@ -470,14 +470,14 @@ const AxisValues = {
 class Scratch3GdxForBlocks {
 
     /**
-     * @return {string} - the name of this extension.
+     * @returns {string} - the name of this extension.
      */
     static get EXTENSION_NAME () {
         return 'Force and Acceleration';
     }
 
     /**
-     * @return {string} - the ID of this extension.
+     * @returns {string} - the ID of this extension.
      */
     static get EXTENSION_ID () {
         return 'gdxfor';
@@ -929,7 +929,7 @@ class Scratch3GdxForBlocks {
      * @param {number} x - x axis vector
      * @param {number} y - y axis vector
      * @param {number} z - z axis vector
-     * @return {number} - the magnitude of a three dimension vector.
+     * @returns {number} - the magnitude of a three dimension vector.
      */
     magnitude (x, y, z) {
         return Math.sqrt((x * x) + (y * y) + (z * z));

@@ -1,0 +1,44 @@
+name: GitHub Pages Cleanup
+
+on:
+  schedule:
+    - cron: 0 0 * * 6 # midnight on Saturdays
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out GitHub Pages branch
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          # replace `fetch-depth` with `shallow-since` if and when actions/checkout#619 (or an equivalent) gets merged
+          # then remove the "Fetch a bit more history" step below
+          fetch-depth: 1
+          ref: gh-pages
+      - name: Fetch a bit more history
+        run: git fetch --update-shallow --shallow-since="32 days ago" origin gh-pages
+      - name: Mark stale directories for removal
+        run: |
+          for dir in */; do
+            [ -L "${dir%/}" ] && continue  # skip symlinks (trim trailing slash for test)
+            if [ -z "$(git log -n 1 --since "1 month ago" -- "$dir")" ]; then
+              echo "Removing stale directory: $dir"
+              git rm --quiet -r "$dir"
+            fi
+          done
+      - name: Configure git user
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+      - name: Commit
+        run: |
+          if git diff --staged --quiet; then
+            echo 'No stale directories were found. Nothing to commit.'
+          else
+            git commit -m 'chore: remove stale GitHub Pages branches'
+          fi
+      - name: Push
+        run: "git push"

@@ -54,7 +54,7 @@
     align-items: center;
 }
 
-.sprite-image {
+body .sprite-image {
     user-select: none;
     pointer-events: none;
     max-width: 32px;

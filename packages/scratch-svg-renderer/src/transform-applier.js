@@ -501,14 +501,13 @@ const _parseUrl = (value, windowRef) => {
  * on groups down to the leaf level and averaging out the stroke width
  * around the shapes. Note that this doens't just change stroke widths, it
  * changes path data and attributes throughout the SVG.
- *
  * @param {SVGElement} svgTag The SVG dom object
  * @param {Window} windowRef The window to use. Need to pass in for
  *     tests to work, as they get angry at even the mention of window.
  * @param {object} bboxForTesting The bounds to use. Need to pass in for
  *     tests only, because getBBox doesn't work in Node. This should
  *     be the bounds of the svgTag without including stroke width or transforms.
- * @return {void}
+ * @returns {void}
  */
 const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
     const inherited = Matrix.identity();

@@ -105,7 +105,7 @@ const WELSH_ID = 'cy';
 
 /**
  * Class for the text2speech blocks.
- * @constructor
+ * @class
  */
 class Scratch3Text2SpeechBlocks {
     constructor (runtime) {
@@ -342,7 +342,7 @@ class Scratch3Text2SpeechBlocks {
 
     /**
      * The key to load & store a target's text2speech state.
-     * @return {string} The key.
+     * @returns {string} The key.
      */
     static get STATE_KEY () {
         return 'Scratch.text2speech';
@@ -485,7 +485,7 @@ class Scratch3Text2SpeechBlocks {
     /**
      * Get the language code currently set in the editor, or fall back to the
      * browser locale.
-     * @return {string} a Scratch locale code.
+     * @returns {string} a Scratch locale code.
      */
     getEditorLanguage () {
         const locale = formatMessage.setup().locale ||
@@ -585,7 +585,7 @@ class Scratch3Text2SpeechBlocks {
 
     /**
      * Get the menu of voices for the "set voice" block.
-     * @return {array} the text and value for each menu item.
+     * @returns {Array} the text and value for each menu item.
      */
     getVoiceMenu () {
         return Object.keys(this.VOICE_INFO).map(voiceId => ({
@@ -600,7 +600,7 @@ class Scratch3Text2SpeechBlocks {
      *   if there is a custom translated spoken language name, use that;
      *   otherwise use the translation in the languageNames menuMap;
      *   otherwise fall back to the untranslated name in LANGUAGE_INFO.
-     * @return {array} the text and value for each menu item.
+     * @returns {Array} the text and value for each menu item.
      */
     getLanguageMenu () {
         const editorLanguage = this.getEditorLanguage();
@@ -685,7 +685,7 @@ class Scratch3Text2SpeechBlocks {
      * Convert the provided text into a sound file and then play the file.
      * @param  {object} args Block arguments
      * @param {object} util Utility object provided by the runtime.
-     * @return {Promise} A promise that resolves after playing the sound
+     * @returns {Promise} A promise that resolves after playing the sound
      */
     speakAndWait (args, util) {
         // Cast input to string

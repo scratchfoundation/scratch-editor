@@ -480,16 +480,16 @@ test('variousTransformsEllipticalPath', t => {
 
 test('linearGradientTransformSquareSkewY', t => {
     const svgString =
-    `<svg version="1.1" width="200" height="200" viewBox="-100 0 100 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
-      `<defs>` +
-        `<linearGradient id="grad_a" x2="0" y2="1">` +
-          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
-          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
-        `</linearGradient>` +
-      `</defs>` +
-      `<path id="path" fill="url(#grad_a)" stroke="#000000" stroke-width="2" d="M0,0 0,100 100,100 100,0 z" ` +
-          `transform="translate(-50, 50) scale(-.75, 1) skewY(-15)"/>` +
-    `</svg>`;
+        `<svg version="1.1" width="200" height="200" viewBox="-100 0 100 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+        `<defs>` +
+            `<linearGradient id="grad_a" x2="0" y2="1">` +
+            `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+            `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+            `</linearGradient>` +
+        `</defs>` +
+        `<path id="path" fill="url(#grad_a)" stroke="#000000" stroke-width="2" d="M0,0 0,100 100,100 100,0 z" ` +
+            `transform="translate(-50, 50) scale(-.75, 1) skewY(-15)"/>` +
+        `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, {width: 100, height: 100, x: 0, y: 0});
     comparisonFileAppend(svgString, svgElement, 'linearGradientTransformSquareSkewY');
@@ -503,16 +503,16 @@ test('linearGradientTransformSquareSkewY', t => {
 
 test('linearGradientTransformSquareSkewX', t => {
     const svgString =
-    `<svg version="1.1" width="200" height="200" viewBox="-100 0 100 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
-      `<defs>` +
-        `<linearGradient id="grad_b" x2="0" y2="1">` +
-          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
-          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
-        `</linearGradient>` +
-      `</defs>` +
-      `<path id="path" fill="url(#grad_b)" stroke="#000000" stroke-width="2" d="M0,0 0,100 100,100 100,0 z" ` +
-          `transform="translate(-50, 50) scale(-.75, 1) skewX(-15)"/>` +
-    `</svg>`;
+        `<svg version="1.1" width="200" height="200" viewBox="-100 0 100 200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+        `<defs>` +
+            `<linearGradient id="grad_b" x2="0" y2="1">` +
+            `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+            `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+            `</linearGradient>` +
+        `</defs>` +
+        `<path id="path" fill="url(#grad_b)" stroke="#000000" stroke-width="2" d="M0,0 0,100 100,100 100,0 z" ` +
+            `transform="translate(-50, 50) scale(-.75, 1) skewX(-15)"/>` +
+        `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, {width: 100, height: 100, x: 0, y: 0});
     comparisonFileAppend(svgString, svgElement, 'linearGradientTransformSquareSkewX');
@@ -526,16 +526,16 @@ test('linearGradientTransformSquareSkewX', t => {
 
 test('linearGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
-      `<defs>` +
-        `<linearGradient id="grad_c">` +
-          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
-          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
-        `</linearGradient>` +
-      `</defs>` +
-      `<path id="path" fill="url(#grad_c)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
-          `transform="scale(.75) skewX(-15)"/>` +
-    `</svg>`;
+        `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+        `<defs>` +
+            `<linearGradient id="grad_c">` +
+            `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+            `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+            `</linearGradient>` +
+        `</defs>` +
+        `<path id="path" fill="url(#grad_c)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+            `transform="scale(.75) skewX(-15)"/>` +
+        `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'linearGradientTransform');
@@ -549,20 +549,20 @@ test('linearGradientTransform', t => {
 
 test('reusedLinearGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
-      `<defs>` +
-        `<linearGradient id="grad_1">` +
-          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
-          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
-        `</linearGradient>` +
-      `</defs>` +
-      `<path id="path" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
-          `transform="scale(.75) skewX(-15)"/>` +
-      `<path id="path2" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
-          `transform="translate(150, 150) rotate(180)"/>` +
-      `<path id="path3" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
-          `transform="translate(150, 150) rotate(180)"/>` +
-    `</svg>`;
+        `<svg version="1.1" width="200" height="150" viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+        `<defs>` +
+            `<linearGradient id="grad_1">` +
+            `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+            `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+            `</linearGradient>` +
+        `</defs>` +
+        `<path id="path" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+            `transform="scale(.75) skewX(-15)"/>` +
+        `<path id="path2" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+            `transform="translate(150, 150) rotate(180)"/>` +
+        `<path id="path3" fill="url(#grad_1)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+            `transform="translate(150, 150) rotate(180)"/>` +
+        `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'reusedLinearGradientTransform');
@@ -584,17 +584,17 @@ test('reusedLinearGradientTransform', t => {
 
 test('nestedLinearGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <defs>
-        <linearGradient id="grad_2" x2="0" y2="1">
-          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
-          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
-        </linearGradient>
-      </defs>
-      <g transform="scale(.75) skewX(-15)">
-        <path id="path" fill="url(#grad_2)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
-      </g>
-    </svg>`;
+        `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+            <linearGradient id="grad_2" x2="0" y2="1">
+            <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+            <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+            </linearGradient>
+        </defs>
+        <g transform="scale(.75) skewX(-15)">
+            <path id="path" fill="url(#grad_2)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
+        </g>
+        </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'nestedLinearGradientTransform');
@@ -608,16 +608,16 @@ test('nestedLinearGradientTransform', t => {
 
 test('percentLinearGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <defs>
-        <linearGradient id="grad_3" x2="50%" y2="50%">
-          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
-          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
-        </linearGradient>
-      </defs>
-      <path id="path" fill="url(#grad_3)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}"
-          transform="scale(.75) skewX(-15)" />
-    </svg>`;
+        `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+            <linearGradient id="grad_3" x2="50%" y2="50%">
+            <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+            <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+            </linearGradient>
+        </defs>
+        <path id="path" fill="url(#grad_3)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}"
+            transform="scale(.75) skewX(-15)" />
+        </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'percentLinearGradientTransform');
@@ -631,16 +631,16 @@ test('percentLinearGradientTransform', t => {
 
 test('userSpaceLinearGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <defs>
-        <linearGradient id="grad_4" x1="20" x2="80" y1="20" y2="80" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
-          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
-        </linearGradient>
-      </defs>
-      <path id="path" fill="url(#grad_4)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}"
-          transform="scale(.75) skewX(-15)" />
-    </svg>`;
+        `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+            <linearGradient id="grad_4" x1="20" x2="80" y1="20" y2="80" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+            <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+            </linearGradient>
+        </defs>
+        <path id="path" fill="url(#grad_4)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}"
+            transform="scale(.75) skewX(-15)" />
+        </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'userSpaceLinearGradientTransform');
@@ -654,16 +654,16 @@ test('userSpaceLinearGradientTransform', t => {
 
 test('degenerateLinearGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
-      `<defs>` +
-        `<linearGradient id="grad_d" x1="50%" x2="50%" y1="50%" y2="50%">` +
-          `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
-          `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
-        `</linearGradient>` +
-      `</defs>` +
-      `<path id="path" fill="url(#grad_d)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
-          `transform="scale(.75) skewX(-15)"/>` +
-    `</svg>`;
+        `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">` +
+        `<defs>` +
+            `<linearGradient id="grad_d" x1="50%" x2="50%" y1="50%" y2="50%">` +
+            `<stop offset="0" stop-color="green" stop-opacity="1"/>` +
+            `<stop offset="1" stop-color="red" stop-opacity="1"/>` +
+            `</linearGradient>` +
+        `</defs>` +
+        `<path id="path" fill="url(#grad_d)" stroke="#000000" stroke-width="2" d="${trickyBoundsPath}" ` +
+            `transform="scale(.75) skewX(-15)"/>` +
+        `</svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'linearGradientTransform');
@@ -673,17 +673,17 @@ test('degenerateLinearGradientTransform', t => {
 
 test('nestedRadialGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <defs>
-        <radialGradient id="grad_5">
-          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
-          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
-        </radialGradient>
-      </defs>
-      <g transform="scale(.75) skewX(-15)">
-        <path id="path" fill="url(#grad_5)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
-      </g>
-    </svg>`;
+        `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+            <radialGradient id="grad_5">
+            <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+            <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+            </radialGradient>
+        </defs>
+        <g transform="scale(.75) skewX(-15)">
+            <path id="path" fill="url(#grad_5)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
+        </g>
+        </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement,
@@ -697,17 +697,17 @@ test('nestedRadialGradientTransform', t => {
 
 test('focalRadialGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <defs>
-        <radialGradient id="grad_6" fx=".75" fy=".75">
-          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
-          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
-        </radialGradient>
-      </defs>
-      <g transform="scale(.75) skewX(-15)">
-        <path id="path" fill="url(#grad_6)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
-      </g>
-    </svg>`;
+        `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+            <radialGradient id="grad_6" fx=".75" fy=".75">
+            <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+            <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+            </radialGradient>
+        </defs>
+        <g transform="scale(.75) skewX(-15)">
+            <path id="path" fill="url(#grad_6)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
+        </g>
+        </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'focalRadialGradientTransform');
@@ -722,17 +722,17 @@ test('focalRadialGradientTransform', t => {
 
 test('percentRadialGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <defs>
-        <radialGradient id="grad_7" cx="60%" cy="80%" fx="75%" fy="85%">
-          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
-          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
-        </radialGradient>
-      </defs>
-      <g transform="scale(.75) skewX(-15)">
-        <path id="path" fill="url(#grad_7)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
-      </g>
-    </svg>`;
+        `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+            <radialGradient id="grad_7" cx="60%" cy="80%" fx="75%" fy="85%">
+            <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+            <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+            </radialGradient>
+        </defs>
+        <g transform="scale(.75) skewX(-15)">
+            <path id="path" fill="url(#grad_7)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}" />
+        </g>
+        </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'percentRadialGradientTransform');
@@ -747,16 +747,16 @@ test('percentRadialGradientTransform', t => {
 
 test('userSpaceRadialGradientTransform', t => {
     const svgString =
-    `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <defs>
-        <radialGradient id="grad_8" cx="80" r="10" cy="60" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
-          <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
-        </radialGradient>
-      </defs>
-      <path id="path" fill="url(#grad_8)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}"
-          transform="scale(.75) skewX(-15)" />
-    </svg>`;
+        `<svg version="1.1" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+            <radialGradient id="grad_8" cx="80" r="10" cy="60" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#7F00FF" stop-opacity="1"/>
+            <stop offset="1" stop-color="#FF9400" stop-opacity="1"/>
+            </radialGradient>
+        </defs>
+        <path id="path" fill="url(#grad_8)" stroke="#003FFF" stroke-width="5" d="${trickyBoundsPath}"
+            transform="scale(.75) skewX(-15)" />
+        </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window, trickyBoundsPathBounds);
     comparisonFileAppend(svgString, svgElement, 'userSpaceRadialGradientTransform');
@@ -769,15 +769,15 @@ test('userSpaceRadialGradientTransform', t => {
 
 test('blackFillsBugFix', t => {
     const svgString =
-    `<svg width="26px" height="14px" viewBox="0 0 26 14" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-      <g>
-        <g id="Page-1" stroke="none" stroke-width="5" fill="none" fill-rule="evenodd">
-          <path d="M23.87,0.75 C20.19,0.75 16.38,4.75 16.38,4.75 L16.38,9.25 C16.38,9.25 20.19,13.25 23.87,13.25
-              C24.6811343,11.269062 25.0661499,9.139551 25,7 C25.0661499,4.860449 24.6811343,2.73093802 23.87,0.75 Z"
-              id="Shape" stroke="#149948"/>
+        `<svg width="26px" height="14px" viewBox="0 0 26 14" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <g>
+            <g id="Page-1" stroke="none" stroke-width="5" fill="none" fill-rule="evenodd">
+            <path d="M23.87,0.75 C20.19,0.75 16.38,4.75 16.38,4.75 L16.38,9.25 C16.38,9.25 20.19,13.25 23.87,13.25
+                C24.6811343,11.269062 25.0661499,9.139551 25,7 C25.0661499,4.860449 24.6811343,2.73093802 23.87,0.75 Z"
+                id="Shape" stroke="#149948"/>
+            </g>
         </g>
-      </g>
-    </svg>`;
+        </svg>`;
     const svgElement = parser.parseFromString(svgString, 'text/xml').documentElement;
     transformStrokeWidths(svgElement, window,
         {

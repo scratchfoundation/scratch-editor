@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * The specMap below handles a few pieces of "translation" work between
  * the SB2 JSON format and the data we need to run a project
  * in the Scratch 3.0 VM.

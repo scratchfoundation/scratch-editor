@@ -71,7 +71,7 @@ describe('Working with costumes', () => {
         await clickText('Costumes');
 
         await rightClickText('costume1', scope.costumesTab);
-        await clickText('duplicate', scope.costumesTab);
+        await clickText('duplicate', scope.contextMenu);
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for duplication to finish
 
         // Make sure the duplicated costume is named correctly.
@@ -217,7 +217,7 @@ describe('Working with costumes', () => {
         await expect(logs).toEqual([]);
     });
 
-    test('Load an invalid svg from scratch3 as costume', async () => { // eslint-disable-line no-disabled-tests
+    test('Load an invalid svg from scratch3 as costume', async () => {
         await loadUri(uri);
         await clickText('Costumes');
         const el = await findByXpath('//button[@aria-label="Choose a Costume"]');
@@ -231,7 +231,7 @@ describe('Working with costumes', () => {
         await expect(tileVisible).toBe(true);
     });
 
-    test('Load an invalid svg from scratch2 as costume', async () => { // eslint-disable-line no-disabled-tests
+    test('Load an invalid svg from scratch2 as costume', async () => {
         await loadUri(uri);
         await clickText('Costumes');
         const el = await findByXpath('//button[@aria-label="Choose a Costume"]');

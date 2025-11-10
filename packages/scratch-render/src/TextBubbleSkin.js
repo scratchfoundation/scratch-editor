@@ -30,8 +30,8 @@ class TextBubbleSkin extends Skin {
      * Create a new text bubble skin.
      * @param {!int} id - The ID for this Skin.
      * @param {!RenderWebGL} renderer - The renderer which will use this skin.
-     * @constructor
-     * @extends Skin
+     * @class
+     * @augments Skin
      */
     constructor (id, renderer) {
         super(id);
@@ -85,7 +85,7 @@ class TextBubbleSkin extends Skin {
     }
 
     /**
-     * @return {Array<number>} the dimensions, in Scratch units, of this skin.
+     * @returns {Array<number>} the dimensions, in Scratch units, of this skin.
      */
     get size () {
         if (this._textDirty) {
@@ -248,7 +248,7 @@ class TextBubbleSkin extends Skin {
 
     /**
      * @param {Array<number>} scale - The scaling factors to be used, each in the [0,100] range.
-     * @return {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
+     * @returns {WebGLTexture} The GL texture representation of this skin when drawing at the given scale.
      */
     getTexture (scale) {
         // The texture only ever gets uniform scale. Take the larger of the two axes.

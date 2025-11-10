@@ -34,7 +34,7 @@ class Mouse {
      * Find a target by XY location
      * @param  {number} x X position to be sent to the renderer.
      * @param  {number} y Y position to be sent to the renderer.
-     * @return {Target} the target at that location
+     * @returns {Target} the target at that location
      * @private
      */
     _pickTarget (x, y) {
@@ -103,7 +103,7 @@ class Mouse {
 
     /**
      * Get the X position of the mouse in client coordinates.
-     * @return {number} Non-clamped X position of the mouse cursor.
+     * @returns {number} Non-clamped X position of the mouse cursor.
      */
     getClientX () {
         return this._clientX;
@@ -111,7 +111,7 @@ class Mouse {
 
     /**
      * Get the Y position of the mouse in client coordinates.
-     * @return {number} Non-clamped Y position of the mouse cursor.
+     * @returns {number} Non-clamped Y position of the mouse cursor.
      */
     getClientY () {
         return this._clientY;
@@ -119,7 +119,7 @@ class Mouse {
 
     /**
      * Get the X position of the mouse in scratch coordinates.
-     * @return {number} Clamped and integer rounded X position of the mouse cursor.
+     * @returns {number} Clamped and integer rounded X position of the mouse cursor.
      */
     getScratchX () {
         return this._scratchX;
@@ -127,7 +127,7 @@ class Mouse {
 
     /**
      * Get the Y position of the mouse in scratch coordinates.
-     * @return {number} Clamped and integer rounded Y position of the mouse cursor.
+     * @returns {number} Clamped and integer rounded Y position of the mouse cursor.
      */
     getScratchY () {
         return this._scratchY;
@@ -135,7 +135,7 @@ class Mouse {
 
     /**
      * Get the down state of the mouse.
-     * @return {boolean} Is the mouse down?
+     * @returns {boolean} Is the mouse down?
      */
     getIsDown () {
         return this._isDown;

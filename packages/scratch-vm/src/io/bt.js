@@ -96,7 +96,7 @@ class BT extends JSONRPC {
     }
 
     /**
-     * @return {bool} whether the peripheral is connected.
+     * @returns {bool} whether the peripheral is connected.
      */
     isConnected () {
         return this._connected;
@@ -113,7 +113,7 @@ class BT extends JSONRPC {
      * Handle a received call from the socket.
      * @param {string} method - a received method label.
      * @param {object} params - a received list of parameters.
-     * @return {object} - optional return value.
+     * @returns {object} - optional return value.
      */
     didReceiveCall (method, params) {
         // TODO: Add peripheral 'undiscover' handling

@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * A representation of a Skin's silhouette that can test if a point on the skin
  * renders a pixel where it is drawn.
  */
@@ -22,7 +22,7 @@ const intMax = (i, j) => i ^ ((i ^ j) & ((i - j) >> 31));
  * @param {Silhouette} silhouette - has data width and height
  * @param {number} x - x
  * @param {number} y - y
- * @return {number} Alpha value for x/y position
+ * @returns {number} Alpha value for x/y position
  */
 const getPoint = ({_width: width, _height: height, _colorData: data}, x, y) => {
     // 0 if outside bounds, otherwise read from data.
@@ -49,7 +49,7 @@ const __cornerWork = [
  * @param {number} x X position of texture [0, width).
  * @param {number} y Y position of texture [0, height).
  * @param {Uint8ClampedArray} dst A color 4b space.
- * @return {Uint8ClampedArray} The dst vector.
+ * @returns {Uint8ClampedArray} The dst vector.
  */
 const getColor4b = ({_width: width, _height: height, _colorData: data}, x, y, dst) => {
     // Clamp coords to edge, matching GL_CLAMP_TO_EDGE.
@@ -78,7 +78,7 @@ const getColor4b = ({_width: width, _height: height, _colorData: data}, x, y, ds
  * @param {number} x X position of texture [0, width).
  * @param {number} y Y position of texture [0, height).
  * @param {Uint8ClampedArray} dst A color 4b space.
- * @return {Uint8ClampedArray} The dst vector.
+ * @returns {Uint8ClampedArray} The dst vector.
  */
 const getPremultipliedColor4b = ({_width: width, _height: height, _colorData: data}, x, y, dst) => {
     // Clamp coords to edge, matching GL_CLAMP_TO_EDGE.
@@ -214,7 +214,7 @@ class Silhouette {
     /**
      * Test if texture coordinate touches the silhouette using nearest neighbor.
      * @param {twgl.v3} vec A texture coordinate.
-     * @return {boolean} If the nearest pixel has an alpha value.
+     * @returns {boolean} If the nearest pixel has an alpha value.
      */
     isTouchingNearest (vec) {
         if (!this._colorData) return;
@@ -229,7 +229,7 @@ class Silhouette {
      * Test to see if any of the 4 pixels used in the linear interpolate touch
      * the silhouette.
      * @param {twgl.v3} vec A texture coordinate.
-     * @return {boolean} Any of the pixels have some alpha.
+     * @returns {boolean} Any of the pixels have some alpha.
      */
     isTouchingLinear (vec) {
         if (!this._colorData) return;
@@ -244,7 +244,7 @@ class Silhouette {
     /**
      * Get the canvas element reused by Silhouettes to update their data with.
      * @private
-     * @return {CanvasElement} A canvas to draw bitmap data to.
+     * @returns {CanvasElement} A canvas to draw bitmap data to.
      */
     static _updateCanvas () {
         if (typeof __SilhouetteUpdateCanvas === 'undefined') {

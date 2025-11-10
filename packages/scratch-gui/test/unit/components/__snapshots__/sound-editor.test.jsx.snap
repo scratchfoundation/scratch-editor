@@ -1,523 +1,285 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Sound Editor Component matches snapshot 1`] = `
-<div
-  className={undefined}
-  onMouseDown={undefined}
->
-  <div
-    className={undefined}
-  >
-    <div
-      className={undefined}
-    >
-      <label
-        className={undefined}
-      >
-        <span
-          className={undefined}
-        >
+<div>
+  <div>
+    <div>
+      <label>
+        <span>
           Sound
         </span>
         <input
-          className=""
-          onBlur={[Function]}
-          onChange={[Function]}
-          onKeyPress={[Function]}
-          onSubmit={[Function]}
-          tabIndex="1"
+          class=""
+          tabindex="1"
           type="text"
           value="sound name"
         />
       </label>
-      <div
-        className={undefined}
-      >
+      <div>
         <button
-          className={undefined}
-          disabled={false}
-          onClick={[Function]}
           title="Undo"
         >
           <img
-            className={undefined}
-            draggable={false}
+            draggable="false"
             src="test-file-stub"
           />
         </button>
         <button
-          className={undefined}
-          disabled={true}
-          onClick={[Function]}
           title="Redo"
         >
           <img
-            className={undefined}
-            draggable={false}
+            draggable="false"
             src="test-file-stub"
           />
         </button>
       </div>
     </div>
-    <div
-      className={undefined}
-    >
+    <div>
       <div
-        className=""
-        onClick={undefined}
+        class=""
         role="button"
       >
         <img
-          className={undefined}
-          draggable={false}
+          draggable="false"
           src="test-file-stub"
         />
-        <div
-          className={undefined}
-        >
+        <div>
           Copy
         </div>
       </div>
       <div
-        className=""
-        onClick={undefined}
+        class=""
         role="button"
       >
         <img
-          className={undefined}
-          draggable={false}
+          draggable="false"
           src="test-file-stub"
         />
-        <div
-          className={undefined}
-        >
+        <div>
           Paste
         </div>
       </div>
       <div
-        className=""
-        onClick={undefined}
+        class=""
         role="button"
       >
         <img
-          className={undefined}
-          draggable={false}
+          draggable="false"
           src="test-file-stub"
         />
-        <div
-          className={undefined}
-        >
+        <div>
           Copy to New
         </div>
       </div>
     </div>
     <div
-      className=""
-      onClick={[Function]}
+      class=""
       role="button"
     >
       <img
-        className={undefined}
-        draggable={false}
+        draggable="false"
         src="test-file-stub"
       />
-      <div
-        className={undefined}
-      >
+      <div>
         Delete
       </div>
     </div>
   </div>
-  <div
-    className={undefined}
-  >
-    <div
-      className={undefined}
-    >
+  <div>
+    <div>
       <svg
-        className={undefined}
         viewBox="0 0 600 160"
       >
         <g
           transform="scale(1, -1) translate(0, -80)"
         >
           <path
-            className={undefined}
             d="M0 0Q0 80 150 120 Q300 160 450 200 Q600 240 600 0 Q600 -240 450 -200 Q300 -160 150 -120 Q0 -80 0 0Z"
-            strokeLinejoin="round"
-            strokeWidth={1}
+            stroke-linejoin="round"
+            stroke-width="1"
           />
         </g>
       </svg>
       <div
-        className=""
-        onMouseDown={[Function]}
-        onTouchStart={[Function]}
+        class=""
       >
         <div
-          className=""
-          style={
-            Object {
-              "alignContent": undefined,
-              "alignItems": undefined,
-              "alignSelf": undefined,
-              "flexBasis": undefined,
-              "flexDirection": undefined,
-              "flexGrow": undefined,
-              "flexShrink": undefined,
-              "flexWrap": undefined,
-              "height": undefined,
-              "justifyContent": undefined,
-              "left": "20%",
-              "width": "60.00000000000001%",
-            }
-          }
+          class=""
+          style="width: 60.00000000000001%; left: 20%;"
         >
           <div
-            className=""
-            style={
-              Object {
-                "alignContent": undefined,
-                "alignItems": undefined,
-                "alignSelf": undefined,
-                "flexBasis": undefined,
-                "flexDirection": undefined,
-                "flexGrow": undefined,
-                "flexShrink": undefined,
-                "flexWrap": undefined,
-                "height": undefined,
-                "justifyContent": undefined,
-                "width": undefined,
-              }
-            }
+            class=""
           />
           <div
-            className=""
-            onMouseDown={[Function]}
-            onTouchStart={[Function]}
-            style={
-              Object {
-                "alignContent": undefined,
-                "alignItems": undefined,
-                "alignSelf": undefined,
-                "flexBasis": undefined,
-                "flexDirection": undefined,
-                "flexGrow": undefined,
-                "flexShrink": undefined,
-                "flexWrap": undefined,
-                "height": undefined,
-                "justifyContent": undefined,
-                "width": undefined,
-              }
-            }
+            class=""
           >
             <div
-              className=""
-              style={
-                Object {
-                  "alignContent": undefined,
-                  "alignItems": undefined,
-                  "alignSelf": undefined,
-                  "flexBasis": undefined,
-                  "flexDirection": undefined,
-                  "flexGrow": undefined,
-                  "flexShrink": undefined,
-                  "flexWrap": undefined,
-                  "height": undefined,
-                  "justifyContent": undefined,
-                  "width": undefined,
-                }
-              }
+              class=""
             >
               <img
-                draggable={false}
+                draggable="false"
                 src="test-file-stub"
               />
             </div>
             <div
-              className=""
-              style={
-                Object {
-                  "alignContent": undefined,
-                  "alignItems": undefined,
-                  "alignSelf": undefined,
-                  "flexBasis": undefined,
-                  "flexDirection": undefined,
-                  "flexGrow": undefined,
-                  "flexShrink": undefined,
-                  "flexWrap": undefined,
-                  "height": undefined,
-                  "justifyContent": undefined,
-                  "width": undefined,
-                }
-              }
+              class=""
             >
               <img
-                draggable={false}
+                draggable="false"
                 src="test-file-stub"
               />
             </div>
           </div>
           <div
-            className=""
-            onMouseDown={[Function]}
-            onTouchStart={[Function]}
-            style={
-              Object {
-                "alignContent": undefined,
-                "alignItems": undefined,
-                "alignSelf": undefined,
-                "flexBasis": undefined,
-                "flexDirection": undefined,
-                "flexGrow": undefined,
-                "flexShrink": undefined,
-                "flexWrap": undefined,
-                "height": undefined,
-                "justifyContent": undefined,
-                "width": undefined,
-              }
-            }
+            class=""
           >
             <div
-              className=""
-              style={
-                Object {
-                  "alignContent": undefined,
-                  "alignItems": undefined,
-                  "alignSelf": undefined,
-                  "flexBasis": undefined,
-                  "flexDirection": undefined,
-                  "flexGrow": undefined,
-                  "flexShrink": undefined,
-                  "flexWrap": undefined,
-                  "height": undefined,
-                  "justifyContent": undefined,
-                  "width": undefined,
-                }
-              }
+              class=""
             >
               <img
-                draggable={false}
+                draggable="false"
                 src="test-file-stub"
               />
             </div>
             <div
-              className=""
-              style={
-                Object {
-                  "alignContent": undefined,
-                  "alignItems": undefined,
-                  "alignSelf": undefined,
-                  "flexBasis": undefined,
-                  "flexDirection": undefined,
-                  "flexGrow": undefined,
-                  "flexShrink": undefined,
-                  "flexWrap": undefined,
-                  "height": undefined,
-                  "justifyContent": undefined,
-                  "width": undefined,
-                }
-              }
+              class=""
             >
               <img
-                draggable={false}
+                draggable="false"
                 src="test-file-stub"
               />
             </div>
           </div>
         </div>
-        <div
-          className={undefined}
-        >
+        <div>
           <div
-            className=""
-            style={
-              Object {
-                "transform": "translateX(50%)",
-              }
-            }
+            class=""
+            style="transform: translateX(50%);"
           />
         </div>
       </div>
     </div>
   </div>
   <div
-    className=""
+    class=""
   >
-    <div
-      className={undefined}
-    >
+    <div>
       <button
-        className=""
-        onClick={[Function]}
+        class=""
         title="Stop"
       >
         <img
-          draggable={false}
+          draggable="false"
           src="test-file-stub"
         />
       </button>
     </div>
     <div
-      className=""
-      onClick={[Function]}
+      class=""
       role="button"
     >
       <img
-        className={undefined}
-        draggable={false}
+        draggable="false"
         src="test-file-stub"
       />
-      <div
-        className={undefined}
-      >
-        <span>
-          Faster
-        </span>
+      <div>
+        Faster
       </div>
     </div>
     <div
-      className=""
-      onClick={[Function]}
+      class=""
       role="button"
     >
       <img
-        className={undefined}
-        draggable={false}
+        draggable="false"
         src="test-file-stub"
       />
-      <div
-        className={undefined}
-      >
-        <span>
-          Slower
-        </span>
+      <div>
+        Slower
       </div>
     </div>
     <div
-      className=""
-      onClick={[Function]}
+      class=""
       role="button"
     >
       <img
-        className={undefined}
-        draggable={false}
+        draggable="false"
         src="test-file-stub"
       />
-      <div
-        className={undefined}
-      >
-        <span>
-          Louder
-        </span>
+      <div>
+        Louder
       </div>
     </div>
     <div
-      className=""
-      onClick={[Function]}
+      class=""
       role="button"
     >
       <img
-        className={undefined}
-        draggable={false}
+        draggable="false"
         src="test-file-stub"
       />
-      <div
-        className={undefined}
-      >
-        <span>
-          Softer
-        </span>
+      <div>
+        Softer
       </div>
     </div>
     <div
-      className=""
-      onClick={undefined}
+      class=""
       role="button"
     >
       <img
-        className={undefined}
-        draggable={false}
+        draggable="false"
         src="test-file-stub"
       />
-      <div
-        className={undefined}
-      >
-        <span>
-          Mute
-        </span>
+      <div>
+        Mute
       </div>
     </div>
     <div
-      className=""
-      onClick={undefined}
+      class=""
       role="button"
     >
       <img
-        className={undefined}
-        draggable={false}
+        draggable="false"
         src="test-file-stub"
       />
-      <div
-        className={undefined}
-      >
-        <span>
-          Fade in
-        </span>
+      <div>
+        Fade in
       </div>
     </div>
     <div
-      className=""
-      onClick={undefined}
+      class=""
       role="button"
     >
       <img
-        className={undefined}
-        draggable={false}
+        draggable="false"
         src="test-file-stub"
       />
-      <div
-        className={undefined}
-      >
-        <span>
-          Fade out
-        </span>
+      <div>
+        Fade out
       </div>
     </div>
     <div
-      className=""
-      onClick={[Function]}
+      class=""
       role="button"
     >
       <img
-        className={undefined}
-        draggable={false}
+        draggable="false"
         src="test-file-stub"
       />
-      <div
-        className={undefined}
-      >
-        <span>
-          Reverse
-        </span>
+      <div>
+        Reverse
       </div>
     </div>
     <div
-      className=""
-      onClick={[Function]}
+      class=""
       role="button"
     >
       <img
-        className={undefined}
-        draggable={false}
+        draggable="false"
         src="test-file-stub"
       />
-      <div
-        className={undefined}
-      >
-        <span>
-          Robot
-        </span>
+      <div>
+        Robot
       </div>
     </div>
   </div>

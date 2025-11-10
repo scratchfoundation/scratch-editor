@@ -27,7 +27,7 @@ const __cpuTouchingColorPixelCount = 4e4;
 /**
  * @callback RenderWebGL#idFilterFunc
  * @param {int} drawableID The ID to filter.
- * @return {bool} True if the ID passes the filter, otherwise false.
+ * @returns {bool} True if the ID passes the filter, otherwise false.
  */
 
 /**
@@ -99,7 +99,7 @@ class RenderWebGL extends EventEmitter {
         try {
             // Create the context the same way that the constructor will: attributes may make the difference.
             return !!RenderWebGL._getContext(optCanvas || document.createElement('canvas'));
-        } catch (e) {
+        } catch (e) { // eslint-disable-line no-unused-vars
             return false;
         }
     }
@@ -128,11 +128,11 @@ class RenderWebGL extends EventEmitter {
      * @see RenderWebGL#setStageSize
      * @see RenderWebGL#resize
      * @param {canvas} canvas The canvas to draw onto.
-     * @param {int} [xLeft=-240] The x-coordinate of the left edge.
-     * @param {int} [xRight=240] The x-coordinate of the right edge.
-     * @param {int} [yBottom=-180] The y-coordinate of the bottom edge.
-     * @param {int} [yTop=180] The y-coordinate of the top edge.
-     * @constructor
+     * @param {int} [xLeft] The x-coordinate of the left edge.
+     * @param {int} [xRight] The x-coordinate of the right edge.
+     * @param {int} [yBottom] The y-coordinate of the bottom edge.
+     * @param {int} [yTop] The y-coordinate of the top edge.
+     * @class
      * @listens RenderWebGL#event:NativeSizeChanged
      */
     constructor (canvas, xLeft, xRight, yBottom, yTop) {
@@ -158,7 +158,7 @@ class RenderWebGL extends EventEmitter {
 
         // A list of layer group names in the order they should appear
         // from furthest back to furthest in front.
-        /** @type {Array<String>} */
+        /** @type {Array<string>} */
         this._groupOrdering = [];
 
         /**
@@ -316,7 +316,7 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
-     * @return {Array<int>} the "native" size of the stage, which is used for pen, query renders, etc.
+     * @returns {Array<int>} the "native" size of the stage, which is used for pen, query renders, etc.
      */
     getNativeSize () {
         return [this._nativeSize[0], this._nativeSize[1]];
@@ -337,7 +337,7 @@ class RenderWebGL extends EventEmitter {
     /**
      * Create a new bitmap skin from a snapshot of the provided bitmap data.
      * @param {ImageData|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement} bitmapData - new contents for this skin.
-     * @param {!int} [costumeResolution=1] - The resolution to use for this bitmap.
+     * @param {!int} [costumeResolution] - The resolution to use for this bitmap.
      * @param {?Array<number>} [rotationCenter] Optional: rotation center of the skin. If not supplied, the center of
      * the skin will be used.
      * @returns {!int} the ID for the new skin.
@@ -578,7 +578,7 @@ class RenderWebGL extends EventEmitter {
      * Returns the position of the given drawableID in the draw list. This is
      * the absolute position irrespective of layer group.
      * @param {number} drawableID The drawable ID to find.
-     * @return {number} The postion of the given drawable ID.
+     * @returns {number} The postion of the given drawable ID.
      */
     getDrawableOrder (drawableID) {
         return this._drawList.indexOf(drawableID);
@@ -598,7 +598,7 @@ class RenderWebGL extends EventEmitter {
      * of the layer group.
      * @param {boolean=} optIsRelative If set, `order` refers to a relative change.
      * @param {number=} optMin If set, order constrained to be at least `optMin`.
-     * @return {?number} New order if changed, or null.
+     * @returns {?number} New order if changed, or null.
      */
     setDrawableOrder (drawableID, order, group, optIsRelative, optMin) {
         if (!group || !Object.prototype.hasOwnProperty.call(this._layerGroups, group)) {
@@ -672,7 +672,7 @@ class RenderWebGL extends EventEmitter {
     /**
      * Get the precise bounds for a Drawable.
      * @param {int} drawableID ID of Drawable to get bounds for.
-     * @return {object} Bounds for a tight box around the Drawable.
+     * @returns {object} Bounds for a tight box around the Drawable.
      */
     getBounds (drawableID) {
         const drawable = this._allDrawables[drawableID];
@@ -705,7 +705,7 @@ class RenderWebGL extends EventEmitter {
      * Get the precise bounds for a Drawable around the top slice.
      * Used for positioning speech bubbles more closely to the sprite.
      * @param {int} drawableID ID of Drawable to get bubble bounds for.
-     * @return {object} Bounds for a tight box around the Drawable top slice.
+     * @returns {object} Bounds for a tight box around the Drawable top slice.
      */
     getBoundsForBubble (drawableID) {
         const drawable = this._allDrawables[drawableID];
@@ -737,7 +737,7 @@ class RenderWebGL extends EventEmitter {
     /**
      * Get the current skin (costume) size of a Drawable.
      * @param {int} drawableID The ID of the Drawable to measure.
-     * @return {Array<number>} Skin size, width and height.
+     * @returns {Array<number>} Skin size, width and height.
      */
     getCurrentSkinSize (drawableID) {
         const drawable = this._allDrawables[drawableID];
@@ -747,7 +747,7 @@ class RenderWebGL extends EventEmitter {
     /**
      * Get the size of a skin by ID.
      * @param {int} skinID The ID of the Skin to measure.
-     * @return {Array<number>} Skin size, width and height.
+     * @returns {Array<number>} Skin size, width and height.
      */
     getSkinSize (skinID) {
         const skin = this._allSkins[skinID];
@@ -757,7 +757,7 @@ class RenderWebGL extends EventEmitter {
     /**
      * Get the rotation center of a skin by ID.
      * @param {int} skinID The ID of the Skin
-     * @return {Array<number>} The rotationCenterX and rotationCenterY
+     * @returns {Array<number>} The rotationCenterX and rotationCenterY
      */
     getSkinRotationCenter (skinID) {
         const skin = this._allSkins[skinID];
@@ -1005,7 +1005,6 @@ class RenderWebGL extends EventEmitter {
      * Convert a client based x/y position on the canvas to a Scratch 3 world space
      * Rectangle.  This creates recangles with a radius to cover selecting multiple
      * scratch pixels with touch / small render areas.
-     *
      * @param {int} centerX The client x coordinate of the picking location.
      * @param {int} centerY The client y coordinate of the picking location.
      * @param {int} [width] The client width of the touch event (optional).
@@ -1041,7 +1040,6 @@ class RenderWebGL extends EventEmitter {
     /**
      * Determine if the drawable is touching a client based x/y.  Helper method for sensing
      * touching mouse-pointer.  Ignores visibility.
-     *
      * @param {int} drawableID The ID of the drawable to check.
      * @param {int} centerX The client x coordinate of the picking location.
      * @param {int} centerY The client y coordinate of the picking location.
@@ -1070,11 +1068,56 @@ class RenderWebGL extends EventEmitter {
     }
 
     /**
+     * Determine if the drawable is touching a rectangle.
+     * @param {int} drawableID The ID of the drawable to check.
+     * @param {int} left - The left X coordinate of the rectangle.
+     * @param {int} top - The top Y coordinate of the rectangle.
+     * @param {int} right - The right X coordinate of the rectangle.
+     * @param {int} bottom - The bottom Y coordinate of the rectangle.
+     * @returns {boolean} If the drawable has any pixels that would draw in the rectangle area
+     */
+    drawableTouchingScratchRect (drawableID, left, top, right, bottom) {
+        const drawable = this._allDrawables[drawableID];
+        if (!drawable) {
+            return false;
+        }
+        const bounds = new Rectangle();
+        bounds.initFromBounds(left, right, bottom, top);
+        const worldPos = twgl.v3.create();
+
+        drawable.updateCPURenderAttributes();
+
+        for (worldPos[1] = bounds.bottom; worldPos[1] <= bounds.top; worldPos[1]++) {
+            for (worldPos[0] = bounds.left; worldPos[0] <= bounds.right; worldPos[0]++) {
+                if (drawable.isTouching(worldPos)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine if the drawable is touching a point in the Scratch coordinate system
+     * @param {int} drawableID The ID of the drawable to check.
+     * @param {int} x The x coordinate of the point.
+     * @param {int} y The y coordinate of the point.
+     * @returns {boolean} If the drawable is touching the point
+     */
+    drawableTouchingScratchPoint (drawableID, x, y) {
+        const drawable = this._allDrawables[drawableID];
+        if (!drawable) {
+            return false;
+        }
+        drawable.updateCPURenderAttributes();
+        return drawable.isTouching([x, y]);
+    }
+
+    /**
      * Detect which sprite, if any, is at the given location.
      * This function will pick all drawables that are visible, unless specific
      * candidate drawable IDs are provided.  Used for determining what is clicked
      * or dragged.  Will not select hidden / ghosted sprites.
-     *
      * @param {int} centerX The client x coordinate of the picking location.
      * @param {int} centerY The client y coordinate of the picking location.
      * @param {int} [touchWidth] The client width of the touch event (optional).
@@ -1152,7 +1195,7 @@ class RenderWebGL extends EventEmitter {
     /**
      * Return a drawable's pixel data and bounds in screen space.
      * @param {int} drawableID The ID of the drawable to get pixel data for
-     * @return {DrawableExtraction} Data about the picked drawable
+     * @returns {DrawableExtraction} Data about the picked drawable
      */
     extractDrawableScreenSpace (drawableID) {
         const drawable = this._allDrawables[drawableID];
@@ -1265,7 +1308,7 @@ class RenderWebGL extends EventEmitter {
      * @param {int} x The client x coordinate of the picking location.
      * @param {int} y The client y coordinate of the picking location.
      * @param {int} radius The client radius to extract pixels with.
-     * @return {?ColorExtraction} Data about the picked color
+     * @returns {?ColorExtraction} Data about the picked color
      */
     extractColor (x, y, radius) {
         this._doExitDrawRegion();
@@ -1325,7 +1368,7 @@ class RenderWebGL extends EventEmitter {
     /**
      * Get the candidate bounding box for a touching query.
      * @param {int} drawableID ID for drawable of query.
-     * @return {?Rectangle} Rectangle bounds for touching query, or null.
+     * @returns {?Rectangle} Rectangle bounds for touching query, or null.
      */
     _touchingBounds (drawableID) {
         const drawable = this._allDrawables[drawableID];
@@ -1354,7 +1397,7 @@ class RenderWebGL extends EventEmitter {
      * could possibly intersect the given bounds.
      * @param {int} drawableID - ID for drawable of query.
      * @param {Array<int>} candidateIDs - Candidates for touching query.
-     * @return {?Array< {id, drawable, intersection} >} Filtered candidates with useful data.
+     * @returns {?Array< {id, drawable, intersection} >} Filtered candidates with useful data.
      */
     _candidatesTouching (drawableID, candidateIDs) {
         const bounds = this._touchingBounds(drawableID);
@@ -1397,7 +1440,7 @@ class RenderWebGL extends EventEmitter {
      * Helper to get the union bounds from a set of candidates returned from the above method
      * @private
      * @param {Array<object>} candidates info from _candidatesTouching
-     * @return {Rectangle} the outer bounding box union
+     * @returns {Rectangle} the outer bounding box union
      */
     _candidatesBounds (candidates) {
         return candidates.reduce((memo, {intersection}) => {
@@ -1521,7 +1564,7 @@ class RenderWebGL extends EventEmitter {
      * Update the position object's x & y members to keep the drawable fenced in view.
      * @param {int} drawableID - The ID of the Drawable to update.
      * @param {Array.<number, number>} position to be fenced - An array of type [x, y]
-     * @return {Array.<number, number>} The fenced position as an array [x, y]
+     * @returns {Array.<number, number>} The fenced position as an array [x, y]
      */
     getFencedPositionOfDrawable (drawableID, position) {
         let x = position[0];
@@ -1701,7 +1744,6 @@ class RenderWebGL extends EventEmitter {
      * region. Since one region may be entered from within another a exit
      * handle can also be registered that is called when a new region is about
      * to be entered to restore a common inbetween state.
-     *
      * @param {any} regionId - id of the region to enter
      * @param {function} enter - handle to call when first entering a region
      * @param {function} exit - handle to call when leaving a region
@@ -1824,7 +1866,7 @@ class RenderWebGL extends EventEmitter {
      * Get the convex hull points for a particular Drawable.
      * To do this, calculate it based on the drawable's Silhouette.
      * @param {int} drawableID The Drawable IDs calculate convex hull for.
-     * @return {Array<Array<number>>} points Convex hull points, as [[x, y], ...]
+     * @returns {Array<Array<number>>} points Convex hull points, as [[x, y], ...]
      */
     _getConvexHullPointsForDrawable (drawableID) {
         const drawable = this._allDrawables[drawableID];
@@ -1842,11 +1884,10 @@ class RenderWebGL extends EventEmitter {
          *
          * The determinant is useful in this case to know if AC is counter-clockwise from AB.
          * A positive value means that AC is counter-clockwise from AB. A negative value means AC is clockwise from AB.
-         *
          * @param {Float32Array} A A 2d vector in space.
          * @param {Float32Array} B A 2d vector in space.
          * @param {Float32Array} C A 2d vector in space.
-         * @return {number} Greater than 0 if counter clockwise, less than if clockwise, 0 if all points are on a line.
+         * @returns {number} Greater than 0 if counter clockwise, less than if clockwise, 0 if all points are on a line.
          */
         const determinant = function (A, B, C) {
             // AB = B - A
@@ -1961,7 +2002,7 @@ class RenderWebGL extends EventEmitter {
      * @param {Array<Drawables>} drawables A list of drawables with the "top most"
      *              drawable at index 0
      * @param {Uint8ClampedArray} dst The color3b space to store the answer in.
-     * @return {Uint8ClampedArray} The dst vector with everything blended down.
+     * @returns {Uint8ClampedArray} The dst vector with everything blended down.
      */
     static sampleColor3b (vec, drawables, dst) {
         dst = dst || new Uint8ClampedArray(3);

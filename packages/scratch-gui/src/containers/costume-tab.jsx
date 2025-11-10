@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import bindAll from 'lodash.bindall';
-import {defineMessages, intlShape, injectIntl} from 'react-intl';
+import {defineMessages, injectIntl} from 'react-intl';
+import intlShape from '../lib/intlShape.js';
 import VM from '@scratch/scratch-vm';
 
 import AssetPanel from '../components/asset-panel/asset-panel.jsx';
@@ -259,7 +260,7 @@ class CostumeTab extends React.Component {
     }
     render () {
         const {
-            dispatchUpdateRestore, // eslint-disable-line no-unused-vars
+            dispatchUpdateRestore,
             intl,
             isRtl,
             vm

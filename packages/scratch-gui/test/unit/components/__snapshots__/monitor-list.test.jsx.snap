@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MonitorListComponent it renders the correct step size for discrete sliders 1`] = `
+<div
+  class="monitor-overlay"
+  style="width: 100px; height: 100px;"
+>
+  <div
+    class=""
+  >
+    <div
+      class="react-draggable"
+      style="transform: translate(0px,0px); top: 5px; left: 5px;"
+    >
+      <span
+        class="ContextMenuTrigger"
+        data-state="closed"
+      >
+        <div>
+          <div>
+            <div />
+            <div
+              style="background: rgb(15, 189, 140); color: rgb(255, 255, 255);"
+            />
+          </div>
+          <div>
+            <input
+              class="no-drag"
+              max="100"
+              min="0"
+              step="1"
+              type="range"
+              value=""
+            />
+          </div>
+        </div>
+      </span>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`MonitorListComponent it renders the correct step size for non-discrete sliders 1`] = `
+<div
+  class="monitor-overlay"
+  style="width: 100px; height: 100px;"
+>
+  <div
+    class=""
+  >
+    <div
+      class="react-draggable"
+      style="transform: translate(0px,0px); top: 5px; left: 5px;"
+    >
+      <span
+        class="ContextMenuTrigger"
+        data-state="closed"
+      >
+        <div>
+          <div>
+            <div />
+            <div
+              style="background: rgb(15, 189, 140); color: rgb(255, 255, 255);"
+            />
+          </div>
+          <div>
+            <input
+              class="no-drag"
+              max="100"
+              min="0"
+              step="0.01"
+              type="range"
+              value=""
+            />
+          </div>
+        </div>
+      </span>
+    </div>
+  </div>
+</div>
+`;

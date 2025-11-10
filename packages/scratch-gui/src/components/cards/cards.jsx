@@ -275,6 +275,60 @@ PreviewsStep.propTypes = {
     onShowAll: PropTypes.func.isRequired
 };
 
+const PreviewExternalStep = ({externalResources, onShowAll}) => (
+    <Fragment>
+        <div className={styles.stepTitle}>
+            <FormattedMessage
+                defaultMessage="More things to try!"
+                description="Title card with more things to try"
+                id="gui.cards.more-things-to-try"
+            />
+        </div>
+        <div className={styles.resources}>
+            {Object.keys(externalResources).slice(0, 2)
+                .map(id => (
+                    <a
+                        className={styles.resource}
+                        key={`resource-preview-${id}`}
+                        href={externalResources[id].url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <img
+                            className={styles.resourceImage}
+                            draggable={false}
+                            src={externalResources[id].img}
+                        />
+                        <div className={styles.resourceName}>{externalResources[id].name}</div>
+                    </a>
+                ))}
+        </div>
+        <div className={styles.seeAll}>
+            <div
+                className={styles.seeAllButton}
+                onClick={onShowAll}
+            >
+                <FormattedMessage
+                    defaultMessage="See more"
+                    description="Title for button to see more in how-to library"
+                    id="gui.cards.see-more"
+                />
+            </div>
+        </div>
+    </Fragment>
+);
+
+PreviewExternalStep.propTypes = {
+    externalResources: PropTypes.shape({
+        id: PropTypes.shape({
+            name: PropTypes.node.isRequired,
+            img: PropTypes.string.isRequired,
+            url: PropTypes.string.isRequired
+        })
+    }).isRequired,
+    onShowAll: PropTypes.func.isRequired
+};
+
 const Cards = props => {
     const {
         activeDeckId,
@@ -359,26 +413,32 @@ const Cards = props => {
                                     onShowAll={onShowAll}
                                 />
                             ) : (
-                                steps[step].video ? (
-                                    showVideos ?
-                                        (
-                                            <VideoStep
-                                                dragging={dragging}
-                                                expanded={expanded}
-                                                video={translateVideo(steps[step].video, locale)}
-                                            />
-                                        ) : (
-                                            <ImageStep
-                                                image={content[activeDeckId].img}
-                                                title={content[activeDeckId].name}
-                                            />
-                                        )
-                                ) : (
-                                    <ImageStep
-                                        image={translateImage(steps[step].image, locale)}
-                                        title={steps[step].title}
+                                steps[step].externalResources ? (
+                                    <PreviewExternalStep
+                                        externalResources={steps[step].externalResources}
+                                        onShowAll={onShowAll}
                                     />
-                                )
+                                ) :
+                                    steps[step].video ? (
+                                        showVideos ?
+                                            (
+                                                <VideoStep
+                                                    dragging={dragging}
+                                                    expanded={expanded}
+                                                    video={translateVideo(steps[step].video, locale)}
+                                                />
+                                            ) : (
+                                                <ImageStep
+                                                    image={content[activeDeckId].img}
+                                                    title={content[activeDeckId].name}
+                                                />
+                                            )
+                                    ) : (
+                                        <ImageStep
+                                            image={translateImage(steps[step].image, locale)}
+                                            title={steps[step].title}
+                                        />
+                                    )
                             )}
                             {steps[step].trackingPixel && steps[step].trackingPixel}
                         </div>

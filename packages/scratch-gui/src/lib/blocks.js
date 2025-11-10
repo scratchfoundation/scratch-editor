@@ -2,7 +2,7 @@
  * Connect scratch blocks with the vm
  * @param {VirtualMachine} vm - The scratch vm
  * @param {Bool} useCatBlocks - Whether to use cat blocks rendering of ScratchBlocks
- * @return {ScratchBlocks} ScratchBlocks connected with the vm
+ * @returns {ScratchBlocks} ScratchBlocks connected with the vm
  */
 export default function (vm, useCatBlocks) {
     const ScratchBlocks = useCatBlocks ? require('cat-blocks') : require('scratch-blocks');

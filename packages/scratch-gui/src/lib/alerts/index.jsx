@@ -175,21 +175,24 @@ const alerts = [
         clearList: ['cloudInfo'],
         content: (
             <FormattedMessage
-                defaultMessage="Please note, cloud variables only support numbers, not letters or symbols. {learnMoreLink}" // eslint-disable-line max-len
+                defaultMessage="Please note, cloud variables only support numbers, not letters or symbols. <a>{learnMoreLink}</a>" // eslint-disable-line max-len
                 description="Info about cloud variable limitations"
                 id="gui.alerts.cloudInfo"
                 values={{
                     learnMoreLink: (
+                        <FormattedMessage
+                            defaultMessage="Learn more."
+                            description="Link text to cloud var faq"
+                            id="gui.alerts.cloudInfoLearnMore"
+                        />
+                    ),
+                    a: learnMoreLink => (
                         <a
                             href="https://scratch.mit.edu/info/faq/#clouddata"
                             rel="noopener noreferrer"
                             target="_blank"
                         >
-                            <FormattedMessage
-                                defaultMessage="Learn more."
-                                description="Link text to cloud var faq"
-                                id="gui.alerts.cloudInfoLearnMore"
-                            />
+                            {learnMoreLink}
                         </a>
                     )
                 }}
@@ -208,6 +211,20 @@ const alerts = [
                 defaultMessage="Importing…"
                 description="Message indicating that project is in process of importing"
                 id="gui.alerts.importing"
+            />
+        ),
+        iconSpinner: true,
+        level: AlertLevels.SUCCESS
+    },
+    {
+        alertId: 'loadingExtensionData',
+        alertType: AlertTypes.STANDARD,
+        clearList: ['loadingExtensionData'],
+        content: (
+            <FormattedMessage
+                defaultMessage="Loading extension..."
+                description="Message indicating that extension is in process of loading"
+                id="gui.alerts.loadingExtensionData"
             />
         ),
         iconSpinner: true,

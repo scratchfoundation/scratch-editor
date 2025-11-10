@@ -39,7 +39,7 @@ const AccountNavComponent = ({
                 styles.userInfo,
                 className
             )}
-            onMouseUp={onClick}
+            onClick={onClick}
         >
             {avatarUrl ? (
                 <UserAvatar

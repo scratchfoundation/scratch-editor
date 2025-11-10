@@ -1,23 +1,36 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {render, fireEvent} from '@testing-library/react';
+import '@testing-library/jest-dom';
 import ButtonComponent from '../../../src/components/button/button';
-import renderer from 'react-test-renderer';
 
 describe('ButtonComponent', () => {
     test('matches snapshot', () => {
-        const onClick = jest.fn();
-        const component = renderer.create(
-            <ButtonComponent onClick={onClick} />
+        const {container} = render(
+            <ButtonComponent onClick={jest.fn()} />
         );
-        expect(component.toJSON()).toMatchSnapshot();
+
+        expect(container.firstChild).toMatchSnapshot();
     });
 
     test('triggers callback when clicked', () => {
         const onClick = jest.fn();
-        const componentShallowWrapper = shallow(
+        const {container} = render(
             <ButtonComponent onClick={onClick} />
         );
-        componentShallowWrapper.simulate('click');
-        expect(onClick).toHaveBeenCalled();
+
+        const button = container.firstChild;
+
+        fireEvent.click(button);
+
+        expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    test('does not trigger callback when not clicked', () => {
+        const onClick = jest.fn();
+        render(
+            <ButtonComponent onClick={onClick} />
+        );
+        
+        expect(onClick).toHaveBeenCalledTimes(0);
     });
 });

@@ -19,23 +19,22 @@ jobs:
       any-workspace: ${{ steps.filter.outputs.any-workspace }}
       packages: ${{ steps.filter.outputs.changes }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
       - name: Debug info
         # https://docs.github.com/en/actions/reference/security/secure-use#use-an-intermediate-environment-variable
         env:
-          GH_HEAD_REF: ${{ github.head_ref }}
+          # `env:` values are printed to the log even without using them in `run:`
+          GH_CONTEXT: ${{ toJson(github) }}
         run: |
           cat <<EOF
-          Scratch environment: ${{ vars.SCRATCH_ENV || '<none>' }}
+          Working directory: $(pwd)
           Node version: $(node --version)
           NPM version: $(npm --version)
-          GitHub ref: ${{ github.ref }}
-          GitHub head ref: ${GH_HEAD_REF}
-          Working directory: $(pwd)
+          Scratch environment: ${{ vars.SCRATCH_ENV || '<none>' }}
           EOF
 
       - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
@@ -52,7 +51,7 @@ jobs:
 
       - name: Store build artifacts
         if: ${{ steps.filter.outputs.any-workspace == 'true' }}
-        uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: build
           path: |
@@ -73,13 +72,13 @@ jobs:
           - package: any-workspace
     name: Test ${{ matrix.package }}
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
       - uses: ./.github/actions/install-dependencies
-      - uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
         with:
           name: build
           path: packages
@@ -87,11 +86,65 @@ jobs:
         with:
           package_name: ${{ matrix.package }}
 
+  preview:
+    runs-on: ubuntu-latest
+    needs: build
+    # We don't want to give forks free reign to publish to our GitHub Pages, so run this job only if both:
+    # - any workspace changed (otherwise there's no work to do)
+    # - and either
+    #   - this is not a PR (so it's some other event that happened in our fork, like a push or merge group)
+    #   - or it's a PR from our fork (not some other fork)
+    # - and
+    #   - it's not a Renovate branch (just to reduce noise)
+    if: ${{
+        (needs.build.outputs.any-workspace == 'true') &&
+        (
+          (!github.event.pull_request) ||
+          (github.event.pull_request.head.repo.full_name == github.repository)
+        ) &&
+        (!startsWith((github.head_ref || github.ref_name), 'renovate/'))
+      }}
+    name: Publish preview playgrounds to GitHub Pages
+    steps:
+      - name: Determine GitHub Pages directory name
+        id: branch_dir_name
+        # even `develop` should be published to a subdirectory
+        # that way each branch can be updated or cleaned up independently
+        run: |
+          echo "result=${GITHUB_REF_NAME//[^A-Za-z0-9._-]/_}" | tee --append "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: build
+          path: packages
+      - name: Prepare playgrounds for GitHub Pages
+        working-directory: ./packages
+        run: |
+          mkdir -p ../pages/
+          for pkg in *; do
+            if [ -d "${pkg}/playground" ]; then
+              # using symlinks is quick and artifact generation will dereference them
+              # if the GitHub Pages action stops dereferencing these links, we'll need to copy the files instead
+              ln -s "../packages/${pkg}/playground" "../pages/${pkg}"
+            fi
+          done
+
+          # scratch-gui doesn't follow the pattern above
+          ln -s "../packages/scratch-gui/build" "../pages/scratch-gui"
+
+          ls -l ../pages/
+      - name: Deploy playgrounds to GitHub Pages
+        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./pages
+          destination_dir: "${{steps.branch_dir_name.outputs.result}}"
+          full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
+
   results:
-    name: Results
+    name: Test Results
     runs-on: ubuntu-latest
     needs: test
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     steps:
       - run: |
           case "${{ needs.test.result }}" in

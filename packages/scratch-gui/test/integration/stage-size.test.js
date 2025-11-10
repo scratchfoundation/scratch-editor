@@ -27,13 +27,13 @@ describe('Loading scratch gui', () => {
     test('Switching small/large stage after highlighting and deleting sprite', async () => {
         await loadUri(uri);
 
-        await new Promise((r) => setTimeout(r, 500)); // wait for animation
+        await new Promise(r => setTimeout(r, 500)); // wait for animation
 
 
         // Delete it
         await rightClickText('Sprite1', scope.spriteTile);
         
-        await clickText('delete', scope.spriteTile);
+        await clickText('delete', scope.contextMenu);
         await clickText('yes', scope.modal);
 
         // Go to small stage mode

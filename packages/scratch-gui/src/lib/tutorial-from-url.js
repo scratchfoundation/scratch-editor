@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * Utility function to detect tutorial id from query paramenter on the URL.
  */
 
@@ -31,7 +31,7 @@ const getDeckIdFromUrlId = urlId => {
  * Check if there's a tutorial id provided as a query parameter in the URL.
  * Return the corresponding tutorial id or null if not found.
  * @param {object} queryParams the results of parsing the query string
- * @return {string} The ID of the requested tutorial or null if no tutorial was
+ * @returns {string} The ID of the requested tutorial or null if no tutorial was
  * requested or found.
  */
 const detectTutorialId = queryParams => {

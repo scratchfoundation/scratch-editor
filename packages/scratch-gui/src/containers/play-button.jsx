@@ -88,8 +88,8 @@ class PlayButton extends React.Component {
         const {
             className,
             isPlaying,
-            onPlay, // eslint-disable-line no-unused-vars
-            onStop // eslint-disable-line no-unused-vars
+            onPlay,
+            onStop
         } = this.props;
         return (
             <PlayButtonComponent

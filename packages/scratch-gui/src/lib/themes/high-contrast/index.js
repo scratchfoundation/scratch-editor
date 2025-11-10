@@ -3,6 +3,7 @@ import penIcon from './extensions/penIcon.svg';
 import text2speechIcon from './extensions/text2speechIcon.svg';
 import translateIcon from './extensions/translateIcon.svg';
 import videoSensingIcon from './extensions/videoSensingIcon.svg';
+import faceSensingIcon from './extensions/faceSensingIcon.svg';
 
 const blockColors = {
     motion: {
@@ -101,6 +102,9 @@ const extensions = {
     },
     videoSensing: {
         blockIconURI: videoSensingIcon
+    },
+    faceSensing: {
+        blockIconURI: faceSensingIcon
     }
 };
 

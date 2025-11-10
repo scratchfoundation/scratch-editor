@@ -5,8 +5,8 @@ const base64js = require('base64-js');
  */
 class BitmapAdapter {
     /**
-     * @param {?function} makeImage HTML image constructor. Tests can provide this.
-     * @param {?function} makeCanvas HTML canvas constructor. Tests can provide this.
+     * @param {?Function} makeImage HTML image constructor. Tests can provide this.
+     * @param {?Function} makeCanvas HTML canvas constructor. Tests can provide this.
      */
     constructor (makeImage, makeCanvas) {
         this._makeImage = makeImage ? makeImage : () => new Image();
@@ -46,7 +46,7 @@ class BitmapAdapter {
      * to resolution 2 bitmaps. Therefore, converting a resolution 1 bitmap means doubling
      * it in width and height.
      * @param {!string} dataURI Base 64 encoded image data of the bitmap
-     * @param {!function} callback Node-style callback that returns updated dataURI if conversion succeeded
+     * @param {!Function} callback Node-style callback that returns updated dataURI if conversion succeeded
      */
     convertResolution1Bitmap (dataURI, callback) {
         const image = this._makeImage();
@@ -64,7 +64,7 @@ class BitmapAdapter {
      * to in Scratch 3.0
      * @param {!number} oldWidth original width
      * @param {!number} oldHeight original height
-     * @return {object} Array of new width, new height
+     * @returns {object} Array of new width, new height
      */
     getResizedWidthHeight (oldWidth, oldHeight) {
         const STAGE_WIDTH = 480;

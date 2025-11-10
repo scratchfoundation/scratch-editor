@@ -1,7 +1,7 @@
 const Color = require('../util/color');
 
 /**
- * @fileoverview
+ * @file
  * Utilities for casting and comparing Scratch data-types.
  * Scratch behaves slightly differently from JavaScript in many respects,
  * and these differences should be encapsulated below.
@@ -17,7 +17,7 @@ class Cast {
      * Treats NaN as 0.
      * In Scratch 2.0, this is captured by `interp.numArg.`
      * @param {*} value Value to cast to number.
-     * @return {number} The Scratch-casted number value.
+     * @returns {number} The Scratch-casted number value.
      */
     static toNumber (value) {
         // If value is already a number we don't need to coerce it with
@@ -44,7 +44,7 @@ class Cast {
      * In Scratch 2.0, this is captured by `interp.boolArg.`
      * Treats some string values differently from JavaScript.
      * @param {*} value Value to cast to boolean.
-     * @return {boolean} The Scratch-casted boolean value.
+     * @returns {boolean} The Scratch-casted boolean value.
      */
     static toBoolean (value) {
         // Already a boolean?
@@ -68,7 +68,7 @@ class Cast {
     /**
      * Scratch cast to string.
      * @param {*} value Value to cast to string.
-     * @return {string} The Scratch-casted string value.
+     * @returns {string} The Scratch-casted string value.
      */
     static toString (value) {
         return String(value);
@@ -77,7 +77,7 @@ class Cast {
     /**
      * Cast any Scratch argument to an RGB color array to be used for the renderer.
      * @param {*} value Value to convert to RGB color array.
-     * @return {Array.<number>} [r,g,b], values between 0-255.
+     * @returns {Array.<number>} [r,g,b], values between 0-255.
      */
     static toRgbColorList (value) {
         const color = Cast.toRgbColorObject(value);
@@ -87,7 +87,7 @@ class Cast {
     /**
      * Cast any Scratch argument to an RGB color object to be used for the renderer.
      * @param {*} value Value to convert to RGB color object.
-     * @return {RGBOject} [r,g,b], values between 0-255.
+     * @returns {RGBOject} [r,g,b], values between 0-255.
      */
     static toRgbColorObject (value) {
         let color;
@@ -105,7 +105,7 @@ class Cast {
     /**
      * Determine if a Scratch argument is a white space string (or null / empty).
      * @param {*} val value to check.
-     * @return {boolean} True if the argument is all white spaces or null / empty.
+     * @returns {boolean} True if the argument is all white spaces or null / empty.
      */
     static isWhiteSpace (val) {
         return val === null || (typeof val === 'string' && val.trim().length === 0);
@@ -152,7 +152,7 @@ class Cast {
     /**
      * Determine if a Scratch argument number represents a round integer.
      * @param {*} val Value to check.
-     * @return {boolean} True if number looks like an integer.
+     * @returns {boolean} True if number looks like an integer.
      */
     static isInt (val) {
         // Values that are already numbers.
@@ -188,7 +188,7 @@ class Cast {
      * @param {*} index Scratch arg, including 1-based numbers or special cases.
      * @param {number} length Length of the list.
      * @param {boolean} acceptAll Whether it should accept "all" or not.
-     * @return {(number|string)} 1-based index for list, LIST_ALL, or LIST_INVALID.
+     * @returns {(number|string)} 1-based index for list, LIST_ALL, or LIST_INVALID.
      */
     static toListIndex (index, length, acceptAll) {
         if (typeof index !== 'number') {

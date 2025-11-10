@@ -31,7 +31,7 @@ const ColorParam = {
 
 /**
  * @typedef {object} PenState - the pen state associated with a particular target.
- * @property {Boolean} penDown - tracks whether the pen should draw for this target.
+ * @property {boolean} penDown - tracks whether the pen should draw for this target.
  * @property {number} color - the current color (hue) of the pen.
  * @property {PenAttributes} penAttributes - cached pen attributes for the renderer. This is the authoritative value for
  *   diameter but not for pen color.
@@ -40,7 +40,7 @@ const ColorParam = {
 /**
  * Host for the Pen-related blocks in Scratch 3.0
  * @param {Runtime} runtime - the runtime instantiating this block package.
- * @constructor
+ * @class
  */
 class Scratch3PenBlocks {
     constructor (runtime) {
@@ -203,7 +203,7 @@ class Scratch3PenBlocks {
 
     /**
      * Initialize color parameters menu with localized strings
-     * @returns {array} of the localized text and values for each menu element
+     * @returns {Array} of the localized text and values for each menu element
      * @private
      */
     _initColorParam () {

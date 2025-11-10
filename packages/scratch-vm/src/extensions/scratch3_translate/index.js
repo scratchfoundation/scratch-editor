@@ -34,7 +34,7 @@ const serverTimeoutMs = 10000; // 10 seconds (chosen arbitrarily).
 
 /**
  * Class for the translate block in Scratch 3.0.
- * @constructor
+ * @class
  */
 class Scratch3TranslateBlocks {
     constructor () {
@@ -86,7 +86,7 @@ class Scratch3TranslateBlocks {
 
     /**
      * The key to load & store a target's translate state.
-     * @return {string} The key.
+     * @returns {string} The key.
      */
     static get STATE_KEY () {
         return 'Scratch.translate';
@@ -157,7 +157,7 @@ class Scratch3TranslateBlocks {
     /**
      * Computes a list of language code and name pairs for the given language.
      * @param {string} code The language code to get the list of language pairs
-     * @return {Array.<object.<string, string>>} An array of languge name and
+     * @returns {Array.<object.<string, string>>} An array of languge name and
      *   language code pairs.
      * @private
      */
@@ -169,7 +169,7 @@ class Scratch3TranslateBlocks {
     }
     /**
      * Get the human readable language value for the reporter block.
-     * @return {string} the language name of the project viewer.
+     * @returns {string} the language name of the project viewer.
      */
     getViewerLanguage () {
         this._viewerLanguageCode = this.getViewerLanguageCode();
@@ -192,7 +192,7 @@ class Scratch3TranslateBlocks {
 
     /**
      * Get the viewer's language code.
-     * @return {string} the language code.
+     * @returns {string} the language code.
      */
     getViewerLanguageCode () {
         const locale = formatMessage.setup().locale;
@@ -217,7 +217,7 @@ class Scratch3TranslateBlocks {
      * Get a language code from a block argument. The arg can be a language code
      * or a language name, written in any language.
      * @param  {object} arg A block argument.
-     * @return {string} A language code.
+     * @returns {string} A language code.
      */
     getLanguageCodeFromArg (arg) {
         const languageArg = Cast.toString(arg).toLowerCase();
@@ -244,7 +244,7 @@ class Scratch3TranslateBlocks {
     /**
      * Translates the text in the translate block to the language specified in the menu.
      * @param {object} args - the block arguments.
-     * @return {Promise} - a promise that resolves after the response from the translate server.
+     * @returns {Promise} - a promise that resolves after the response from the translate server.
      */
     getTranslate (args) {
         // If the text contains only digits 0-9 and nothing else, return it without

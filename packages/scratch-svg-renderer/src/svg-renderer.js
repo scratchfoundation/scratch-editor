@@ -10,7 +10,7 @@ class SvgRenderer {
      * Create a quirks-mode SVG renderer for a particular canvas.
      * @param {HTMLCanvasElement} [canvas] An optional canvas element to draw to. If this is not provided, the renderer
      * will create a new canvas.
-     * @constructor
+     * @class
      */
     constructor (canvas) {
         /**
@@ -59,14 +59,14 @@ class SvgRenderer {
     }
 
     /**
-     * @return {Array<number>} the natural size, in Scratch units, of this SVG.
+     * @returns {Array<number>} the natural size, in Scratch units, of this SVG.
      */
     get size () {
         return [this._measurements.width, this._measurements.height];
     }
 
     /**
-     * @return {Array<number>} the offset (upper left corner) of the SVG's view box.
+     * @returns {Array<number>} the offset (upper left corner) of the SVG's view box.
      */
     get viewOffset () {
         return [this._measurements.x, this._measurements.y];
@@ -143,7 +143,7 @@ class SvgRenderer {
     /**
      * Draw to the canvas from a loaded image element.
      * @param {number} [scale] - Optionally, also scale the image by this factor.
-     **/
+     */
     _drawFromImage (scale) {
         if (this._cachedImage === null) return;
 

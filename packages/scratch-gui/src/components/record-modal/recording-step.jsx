@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import {defineMessages, useIntl} from 'react-intl';
 import Box from '../box/box.jsx';
 import Meter from '../meter/meter.jsx';
 import Waveform from '../waveform/waveform.jsx';
@@ -31,82 +31,84 @@ const messages = defineMessages({
     }
 });
 
-const RecordingStep = props => (
-    <Box>
-        <Box className={styles.visualizationContainer}>
-            <Box className={styles.meterContainer}>
-                <Meter
-                    height={172}
-                    level={props.level}
-                    width={20}
-                />
-            </Box>
-            <Box className={styles.waveformContainer}>
-                {props.levels ? (
-                    <Waveform
-                        data={props.levels}
-                        height={150}
-                        level={0}
-                        width={440}
+const RecordingStep = props => {
+    const intl = useIntl();
+    return (
+        <Box>
+            <Box className={styles.visualizationContainer}>
+                <Box className={styles.meterContainer}>
+                    <Meter
+                        height={172}
+                        level={props.level}
+                        width={20}
                     />
-                ) : (
-                    <span className={styles.helpText}>
-                        {props.listening ? props.intl.formatMessage(messages.beginRecord) :
-                            props.intl.formatMessage(messages.permission,
-                                {arrow: props.isRtl ? '↗️ \u00A0' : '↖️ \u00A0'}
-                            )
-                        }
-                    </span>
-                )}
+                </Box>
+                <Box className={styles.waveformContainer}>
+                    {props.levels ? (
+                        <Waveform
+                            data={props.levels}
+                            height={150}
+                            level={0}
+                            width={440}
+                        />
+                    ) : (
+                        <span className={styles.helpText}>
+                            {props.listening ? intl.formatMessage(messages.beginRecord) :
+                                intl.formatMessage(messages.permission,
+                                    {arrow: props.isRtl ? '↗️ \u00A0' : '↖️ \u00A0'}
+                                )
+                            }
+                        </span>
+                    )}
+                </Box>
+            </Box>
+            <Box className={styles.mainButtonRow}>
+                <button
+                    className={styles.mainButton}
+                    disabled={!props.listening}
+                    onClick={props.recording ? props.onStopRecording : props.onRecord}
+                >
+                    {props.recording ? (
+                        <img
+                            draggable={false}
+                            src={stopIcon}
+                        />
+                    ) : (
+                        <svg
+                            className={styles.recordButton}
+                            height="52"
+                            width="52"
+                        >
+                            <circle
+                                className={styles.recordButtonCircle}
+                                cx="26"
+                                cy="26"
+                                r="25"
+                            />
+                            <circle
+                                className={styles.recordButtonCircleOutline}
+                                cx="26"
+                                cy="26"
+                                r={27 + (props.level * 5)}
+                            />
+                        </svg>
+                    )}
+                    <div className={styles.helpText}>
+                        <span className={styles.recordingText}>
+                            {
+                                props.recording ?
+                                    intl.formatMessage(messages.stop) :
+                                    intl.formatMessage(messages.record)
+                            }
+                        </span>
+                    </div>
+                </button>
             </Box>
         </Box>
-        <Box className={styles.mainButtonRow}>
-            <button
-                className={styles.mainButton}
-                disabled={!props.listening}
-                onClick={props.recording ? props.onStopRecording : props.onRecord}
-            >
-                {props.recording ? (
-                    <img
-                        draggable={false}
-                        src={stopIcon}
-                    />
-                ) : (
-                    <svg
-                        className={styles.recordButton}
-                        height="52"
-                        width="52"
-                    >
-                        <circle
-                            className={styles.recordButtonCircle}
-                            cx="26"
-                            cy="26"
-                            r="25"
-                        />
-                        <circle
-                            className={styles.recordButtonCircleOutline}
-                            cx="26"
-                            cy="26"
-                            r={27 + (props.level * 5)}
-                        />
-                    </svg>
-                )}
-                <div className={styles.helpText}>
-                    <span className={styles.recordingText}>
-                        {
-                            props.recording ?
-                                props.intl.formatMessage(messages.stop) :
-                                props.intl.formatMessage(messages.record)
-                        }
-                    </span>
-                </div>
-            </button>
-        </Box>
-    </Box>
-);
+    );
+};
 
 RecordingStep.propTypes = {
-    intl: intlShape.isRequired,
     isRtl: PropTypes.bool,
     level: PropTypes.number,
     levels: PropTypes.arrayOf(PropTypes.number),
@@ -116,4 +118,4 @@ RecordingStep.propTypes = {
     recording: PropTypes.bool
 };
 
-export default injectIntl(RecordingStep);
+export default RecordingStep;

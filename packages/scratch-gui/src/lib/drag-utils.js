@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * Utility functions for drag interactions, e.g. sorting items in a grid/list.
  */
 
@@ -13,7 +13,7 @@
  * @param {{x: number, y: number}} position The xy coordinates to retreive the corresponding index of.
  * @param {Array.<DOMRect>} boxes The rects of the items, returned from `getBoundingClientRect`
  * @param {bool} isRtl are the boxes in RTL order.
- * @return {?number} index of the corresponding box, or null if one could not be found.
+ * @returns {?number} index of the corresponding box, or null if one could not be found.
  */
 const indexForPositionOnList = ({x, y}, boxes, isRtl) => {
     if (boxes.length === 0) return null;

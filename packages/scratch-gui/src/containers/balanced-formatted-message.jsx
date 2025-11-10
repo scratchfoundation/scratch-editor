@@ -8,7 +8,7 @@ const BalancedFormattedMessage = props => {
     const {className, resize, style, ...otherProps} = props;
     const balancedTextProps = {className, resize, style};
     return (<FormattedMessage {...otherProps}>
-        {(...children) => <BalancedText {...balancedTextProps}>{children}</BalancedText>}
+        {children => <BalancedText {...balancedTextProps}>{children}</BalancedText>}
     </FormattedMessage>);
 };
 

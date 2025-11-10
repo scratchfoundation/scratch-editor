@@ -99,6 +99,13 @@ class CloudProvider {
         return Math.random() * t;
     }
 
+    /**
+     * Schedule a reconnection attempt to the cloud data server after a websocket disconnect.
+     * This method manages the delay (with exponential backoff and jitter) before trying to reconnect,
+     * helping to avoid overwhelming the server with rapid reconnection attempts.
+     * @param {Function} fn - The function to call after the delay (typically to reopen the connection).
+     * @param {number} time - The delay time in milliseconds before attempting to reconnect.
+     */
     setTimeout (fn, time) {
         log.info(`Reconnecting in ${(time / 1000).toFixed(1)}s, attempt ${this.connectionAttempts}`);
         this._connectionTimeout = window.setTimeout(fn, time);

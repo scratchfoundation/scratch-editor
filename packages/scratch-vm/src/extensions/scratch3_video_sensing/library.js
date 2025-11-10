@@ -26,7 +26,6 @@ const HEIGHT = 360;
  * and v. This creates the motionAmount value.
  *
  * Old note: chosen empirically to give a range of roughly 0-100
- *
  * @type {number}
  */
 const AMOUNT_SCALE = 100;
@@ -38,7 +37,6 @@ const AMOUNT_SCALE = 100;
  *
  * Old note: note 2e-4 * activePixelNum is an experimentally tuned threshold
  * for my logitech Pro 9000 webcam - TTH
- *
  * @type {number}
  */
 const LOCAL_AMOUNT_SCALE = AMOUNT_SCALE * 2e-4;
@@ -75,7 +73,7 @@ const LOCAL_THRESHOLD = THRESHOLD / 3;
  * Store the necessary image pixel data to compares frames of a video and
  * detect an amount and direction of motion in the full sample or in a
  * specified area.
- * @constructor
+ * @class
  */
 class VideoMotion {
     constructor () {

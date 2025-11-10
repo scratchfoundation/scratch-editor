@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
-import {FormattedMessage, injectIntl} from 'react-intl';
+import {FormattedMessage} from 'react-intl';
 import UserAvatar from './user-avatar.jsx';
 
 import styles from './author-info.css';
@@ -11,7 +11,7 @@ const AuthorInfo = ({
     imageUrl,
     projectTitle,
     // TODO: use userId to link to user's profile
-    userId, // eslint-disable-line no-unused-vars
+    userId,
     username
 }) => (
     <div
@@ -31,11 +31,16 @@ const AuthorInfo = ({
             <div>
                 <span className={styles.usernameLine}>
                     <FormattedMessage
-                        defaultMessage="by {username}"
+                        defaultMessage="by <span>{name}</span>"
                         description="Shows that a project was created by this user"
                         id="gui.authorInfo.byUser"
                         values={{
-                            username: <span className={styles.username}>{username}</span>
+                            name: username,
+                            span: name => (
+                                <span className={styles.username}>
+                                    {name}
+                                </span>
+                            )
                         }}
                     />
                 </span>
@@ -52,4 +57,4 @@ AuthorInfo.propTypes = {
     username: PropTypes.oneOfType([PropTypes.string, PropTypes.bool])
 };
 
-export default injectIntl(AuthorInfo);
+export default AuthorInfo;

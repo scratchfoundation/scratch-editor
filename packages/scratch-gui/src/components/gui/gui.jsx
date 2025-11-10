@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import omit from 'lodash.omit';
 import PropTypes from 'prop-types';
 import React, {useEffect, useCallback} from 'react';
-import {defineMessages, FormattedMessage, injectIntl, intlShape} from 'react-intl';
+import {FormattedMessage, useIntl} from 'react-intl';
 import {connect} from 'react-redux';
 import MediaQuery from 'react-responsive';
 import {Tab, Tabs, TabList, TabPanel} from 'react-tabs';
@@ -23,6 +23,7 @@ import BackdropLibrary from '../../containers/backdrop-library.jsx';
 import Watermark from '../../containers/watermark.jsx';
 
 import Backpack from '../../containers/backpack.jsx';
+import ExtensionsButton from '../extension-button/extension-button.jsx';
 import WebGlModal from '../../containers/webgl-modal.jsx';
 import TipsLibrary from '../../containers/tips-library.jsx';
 import Cards from '../../containers/cards.jsx';
@@ -37,7 +38,6 @@ import {themeMap} from '../../lib/themes';
 import {AccountMenuOptionsPropTypes} from '../../lib/account-menu-options';
 
 import styles from './gui.css';
-import addExtensionIcon from './icon--extensions.svg';
 import codeIcon from './icon--code.svg';
 import costumesIcon from './icon--costumes.svg';
 import soundsIcon from './icon--sounds.svg';
@@ -45,19 +45,12 @@ import DebugModal from '../debug-modal/debug-modal.jsx';
 import {setPlatform} from '../../reducers/platform.js';
 import {PLATFORM} from '../../lib/platform.js';
 
-const messages = defineMessages({
-    addExtension: {
-        id: 'gui.gui.addExtension',
-        description: 'Button to add an extension in the target pane',
-        defaultMessage: 'Add Extension'
-    }
-});
-
 // Cache this value to only retrieve it once the first time.
 // Assume that it doesn't change for a session.
 let isRendererSupported = null;
 
 const GUIComponent = props => {
+    const intl = useIntl();
     const {
         accountMenuOptions,
         accountNavOpen,
@@ -91,7 +84,6 @@ const GUIComponent = props => {
         onDebugModalClose,
         onTutorialSelect,
         enableCommunity,
-        intl,
         isCreating,
         isFullScreen,
         isPlayerOnly,
@@ -102,6 +94,7 @@ const GUIComponent = props => {
         loading,
         logo,
         manuallySaveThumbnails,
+        menuBarHidden,
         renderLogin,
         onClickAbout,
         onClickAccountNav,
@@ -131,6 +124,7 @@ const GUIComponent = props => {
         onTelemetryModalOptOut,
         onUpdateProjectThumbnail,
         showComingSoon,
+        showNewFeatureCallouts,
         soundsTabVisible,
         stageSizeMode,
         targetIsStage,
@@ -176,6 +170,9 @@ const GUIComponent = props => {
 
     return (<MediaQuery minWidth={layout.fullSizeMinWidth}>{isFullSize => {
         const stageSize = resolveStageSize(stageSizeMode, isFullSize);
+        const boxStyles = classNames(styles.bodyWrapper, {
+            [styles.bodyWrapperWithoutMenuBar]: menuBarHidden
+        });
 
         return isPlayerOnly ? (
             <StageWrapper
@@ -255,7 +252,7 @@ const GUIComponent = props => {
                         onRequestClose={onRequestCloseBackdropLibrary}
                     />
                 ) : null}
-                <MenuBar
+                {!menuBarHidden && <MenuBar
                     accountNavOpen={accountNavOpen}
                     authorId={authorId}
                     authorThumbnailUrl={authorThumbnailUrl}
@@ -290,8 +287,8 @@ const GUIComponent = props => {
                     userOwnsProject={userOwnsProject}
                     username={username}
                     accountMenuOptions={accountMenuOptions}
-                />
-                <Box className={styles.bodyWrapper}>
+                />}
+                <Box className={boxStyles}>
                     <Box className={styles.flexWrapper}>
                         <Box className={styles.editorWrapper}>
                             <Tabs
@@ -301,6 +298,17 @@ const GUIComponent = props => {
                                 selectedTabClassName={tabClassNames.tabSelected}
                                 selectedTabPanelClassName={tabClassNames.tabPanelSelected}
                                 onSelect={onActivateTab}
+
+                                // TODO: focusTabOnClick should be true for accessibility, but currently conflicts
+                                // with nudge operations in the paint editor. We'll likely need to manage focus
+                                // differently within the paint editor before we can turn this back on.
+                                // Repro steps:
+                                // 1. Click the Costumes tab
+                                // 2. Select something in the paint editor (say, the cat's face)
+                                // 3. Press the left or right arrow key
+                                // Desired behavior: the face should nudge left or right
+                                // Actual behavior: the Code or Sounds tab is now focused
+                                focusTabOnClick={false}
                             >
                                 <TabList className={tabClassNames.tabList}>
                                     <Tab className={tabClassNames.tab}>
@@ -364,21 +372,17 @@ const GUIComponent = props => {
                                             stageSize={stageSize}
                                             theme={theme}
                                             vm={vm}
+                                            showNewFeatureCallouts={showNewFeatureCallouts}
+                                            username={username}
                                         />
                                     </Box>
-                                    <Box className={styles.extensionButtonContainer}>
-                                        <button
-                                            className={styles.extensionButton}
-                                            title={intl.formatMessage(messages.addExtension)}
-                                            onClick={onExtensionButtonClick}
-                                        >
-                                            <img
-                                                className={styles.extensionButtonIcon}
-                                                draggable={false}
-                                                src={addExtensionIcon}
-                                            />
-                                        </button>
-                                    </Box>
+                                    <ExtensionsButton
+                                        activeTabIndex={activeTabIndex}
+                                        intl={intl}
+                                        showNewFeatureCallouts={showNewFeatureCallouts}
+                                        onExtensionButtonClick={onExtensionButtonClick}
+                                        username={username}
+                                    />
                                     <Box className={styles.watermark}>
                                         <Watermark />
                                     </Box>
@@ -455,7 +459,6 @@ GUIComponent.propTypes = {
     onDebugModalClose: PropTypes.func,
     onTutorialSelect: PropTypes.func,
     enableCommunity: PropTypes.bool,
-    intl: intlShape.isRequired,
     isCreating: PropTypes.bool,
     isFullScreen: PropTypes.bool,
     isPlayerOnly: PropTypes.bool,
@@ -465,6 +468,7 @@ GUIComponent.propTypes = {
     loading: PropTypes.bool,
     logo: PropTypes.string,
     manuallySaveThumbnails: PropTypes.bool,
+    menuBarHidden: PropTypes.bool,
     onActivateCostumesTab: PropTypes.func,
     onActivateSoundsTab: PropTypes.func,
     onActivateTab: PropTypes.func,
@@ -493,6 +497,7 @@ GUIComponent.propTypes = {
     platform: PropTypes.oneOf(Object.keys(PLATFORM)),
     renderLogin: PropTypes.func,
     showComingSoon: PropTypes.bool,
+    showNewFeatureCallouts: PropTypes.bool,
     soundsTabVisible: PropTypes.bool,
     stageSizeMode: PropTypes.oneOf(Object.keys(STAGE_SIZE_MODES)),
     setPlatform: PropTypes.func,
@@ -527,7 +532,9 @@ GUIComponent.defaultProps = {
     isShared: false,
     isTotallyNormal: false,
     loading: false,
+    menuBarHidden: false,
     showComingSoon: false,
+    showNewFeatureCallouts: false,
     stageSizeMode: STAGE_SIZE_MODES.large,
     useExternalPeripheralList: false
 };
@@ -543,7 +550,5 @@ const mapDispatchToProps = dispatch => ({
     setPlatform: platform => dispatch(setPlatform(platform))
 });
 
-export default injectIntl(connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(GUIComponent));
+export default connect(mapStateToProps,
+    mapDispatchToProps)(GUIComponent);

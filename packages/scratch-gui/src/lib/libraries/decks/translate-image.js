@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * Utility functions for handling tutorial images in multiple languages
  */
 
@@ -89,7 +89,7 @@ const loadImageData = (locale, platform) => {
  * Return image data for tutorials based on locale (default: en)
  * @param {string} imageId key in the images object, or id string.
  * @param {string} locale requested locale
- * @return {string} image
+ * @returns {string} image
  */
 const translateImage = (imageId, locale) => {
     if (locale !== savedLocale || !Object.prototype.hasOwnProperty.call(savedImages, imageId)) {

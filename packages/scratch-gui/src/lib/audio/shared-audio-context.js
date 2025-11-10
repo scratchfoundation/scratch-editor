@@ -22,7 +22,7 @@ if (!bowser.msie) {
 
 /**
  * Wrap browser AudioContext because we shouldn't create more than one
- * @return {AudioContext} The singleton AudioContext
+ * @returns {AudioContext} The singleton AudioContext
  */
 export default function () {
     return AUDIO_CONTEXT;

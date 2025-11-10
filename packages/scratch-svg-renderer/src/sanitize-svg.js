@@ -98,7 +98,7 @@ let _TextDecoder;
 let _TextEncoder;
 if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
     // Wait to require the text encoding polyfill until we know it's needed.
-    // eslint-disable-next-line global-require
+     
     const encoding = require('fastestsmallesttextencoderdecoder');
     _TextDecoder = encoding.TextDecoder;
     _TextEncoder = encoding.TextEncoder;
@@ -110,7 +110,7 @@ if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
 /**
  * Load an SVG Uint8Array of bytes and "sanitize" it
  * @param {!Uint8Array} rawData unsanitized SVG daata
- * @return {Uint8Array} sanitized SVG data
+ * @returns {Uint8Array} sanitized SVG data
  */
 sanitizeSvg.sanitizeByteStream = function (rawData) {
     const decoder = new _TextDecoder();
@@ -124,7 +124,7 @@ sanitizeSvg.sanitizeByteStream = function (rawData) {
  * fixup-svg-string.js, and thus more risky; there are known examples of SVGs that
  * it will clobber. We use DOMPurify's svg profile, which restricts many types of tag.
  * @param {!string} rawSvgText unsanitized SVG string
- * @return {string} sanitized SVG text
+ * @returns {string} sanitized SVG text
  */
 sanitizeSvg.sanitizeSvgText = function (rawSvgText) {
     let sanitizedText = DOMPurify.sanitize(rawSvgText, {

@@ -1,0 +1,110 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Slider Prompt Container matches snapshot 1`] = `
+<body
+  class="ReactModal__Body--open"
+>
+  <div
+    data-react-modal-body-trap=""
+    style="position: absolute; opacity: 0;"
+    tabindex="0"
+  />
+  <div />
+  <div
+    data-react-modal-body-trap=""
+    style="position: absolute; opacity: 0;"
+    tabindex="0"
+  />
+  <div
+    class="ReactModalPortal"
+  >
+    <div
+      class="ReactModal__Overlay"
+      style="position: fixed; top: 0px; left: 0px; right: 0px; bottom: 0px; background-color: rgba(255, 255, 255, 0.75);"
+    >
+      <div
+        aria-label="Change slider range"
+        aria-modal="true"
+        class="ReactModal__Content scratch-editor-modal"
+        role="dialog"
+        tabindex="-1"
+      >
+        <div
+          class=""
+          dir="ltr"
+          style="flex-direction: column; flex-grow: 1;"
+        >
+          <div
+            class=""
+          >
+            <div
+              class=""
+            >
+              Change slider range
+            </div>
+            <div
+              class=""
+            >
+              <div
+                aria-label="Close"
+                class=""
+                role="button"
+                tabindex="0"
+              >
+                <img
+                  class=""
+                  src="test-file-stub"
+                />
+              </div>
+            </div>
+          </div>
+          <div
+            class=""
+          >
+            <div
+              class=""
+            >
+              Minimum value
+            </div>
+            <div
+              class=""
+            >
+              <input
+                name="Minimum value"
+                pattern="-?[0-9]*(\\.[0-9]+)?"
+                type="text"
+                value="0.00"
+              />
+            </div>
+            <div
+              class=""
+            >
+              Maximum value
+            </div>
+            <div
+              class=""
+            >
+              <input
+                name="Maximum value"
+                pattern="-?[0-9]*(\\.[0-9]+)?"
+                type="text"
+                value="100.00"
+              />
+            </div>
+            <div
+              class=""
+            >
+              <button>
+                Cancel
+              </button>
+              <button>
+                OK
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

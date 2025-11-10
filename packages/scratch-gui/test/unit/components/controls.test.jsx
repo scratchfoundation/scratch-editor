@@ -1,9 +1,8 @@
 import React from 'react';
-import {mountWithIntl} from '../../helpers/intl-helpers.jsx';
+import {fireEvent} from '@testing-library/react';
+import '@testing-library/jest-dom';
+import {renderWithIntl} from '../../helpers/intl-helpers.jsx';
 import Controls from '../../../src/components/controls/controls';
-import TurboMode from '../../../src/components/turbo-mode/turbo-mode';
-import GreenFlag from '../../../src/components/green-flag/green-flag';
-import StopAll from '../../../src/components/stop-all/stop-all';
 
 describe('Controls component', () => {
     const defaultProps = () => ({
@@ -14,27 +13,39 @@ describe('Controls component', () => {
     });
 
     test('shows turbo mode when in turbo mode', () => {
-        const component = mountWithIntl(
-            <Controls
-                {...defaultProps()}
-            />
-        );
-        expect(component.find(TurboMode).exists()).toEqual(false);
-        component.setProps({turbo: true});
-        expect(component.find(TurboMode).exists()).toEqual(true);
+        const {container: containerTurbo} = renderWithIntl(<Controls
+            {...defaultProps()}
+            turbo
+        />);
+        const turboMode = [...containerTurbo.querySelectorAll('div')].reverse().find(el => el.textContent.includes('Turbo Mode'));
+        expect(turboMode).toBeTruthy();
     });
 
-    test('triggers the right callbacks when clicked', () => {
-        const props = defaultProps();
-        const component = mountWithIntl(
-            <Controls
-                {...props}
-            />
-        );
-        component.find(GreenFlag).simulate('click');
-        expect(props.onGreenFlagClick).toHaveBeenCalled();
+    test('does not show turbo mode when not in turbo mode', () => {
+        const {container: containerNoTurbo} = renderWithIntl(<Controls {...defaultProps()} />);
+        const noTurboMode = [...containerNoTurbo.querySelectorAll('div')].reverse().find(el => el.textContent.includes('Turbo Mode'));
+        expect(noTurboMode).toBeFalsy();
+    });
 
-        component.find(StopAll).simulate('click');
-        expect(props.onStopAllClick).toHaveBeenCalled();
+    describe('triggers the right callbacks when clicked', () => {
+        test('when green flag button clicked triggers the right callback', () => {
+            const props = defaultProps();
+            const {container} = renderWithIntl(<Controls {...props} />);
+
+            const greenFlagButton = container.querySelector('img[title="Go"]');
+
+            fireEvent.click(greenFlagButton);
+            expect(props.onGreenFlagClick).toHaveBeenCalled();
+        });
+
+        test('when stop all button clicked triggers the right callback', () => {
+            const props = defaultProps();
+            const {container} = renderWithIntl(<Controls {...props} />);
+
+            const stopAllButton = container.querySelector('img[title="Stop"]');
+
+            fireEvent.click(stopAllButton);
+            expect(props.onStopAllClick).toHaveBeenCalled();
+        });
     });
 });

@@ -20,10 +20,9 @@ const FLOATING_POINT_ERROR_ALLOWANCE = 1e-6;
  * internal __isTouchingPosition as a return value, so this should be copied
  * if you ever need to get two local positions and store both.  Requires that
  * the drawable inverseMatrix is up to date.
- *
  * @param {Drawable} drawable The drawable to get the inverse matrix and uniforms from
  * @param {twgl.v3} vec [x,y] scratch space vector
- * @return {twgl.v3} [x,y] texture space float vector - transformed by effects and matrix
+ * @returns {twgl.v3} [x,y] texture space float vector - transformed by effects and matrix
  */
 const getLocalPosition = (drawable, vec) => {
     // Transfrom from world coordinates to Drawable coordinates.
@@ -59,7 +58,7 @@ class Drawable {
      * An object which can be drawn by the renderer.
      * @todo double-buffer all rendering state (position, skin, effects, etc.)
      * @param {!int} id - This Drawable's unique ID.
-     * @constructor
+     * @class
      */
     constructor (id) {
         /** @type {!int} */
@@ -108,9 +107,10 @@ class Drawable {
         this._inverseTransformDirty = true;
         this._visible = true;
 
-        /** A bitmask identifying which effects are currently in use.
+        /**
+         * A bitmask identifying which effects are currently in use.
          * @readonly
-         * @type {int} */
+          @type {int} */
         this.enabledEffects = 0;
 
         /** @todo move convex hull functionality, maybe bounds functionality overall, to Skin classes */
@@ -443,7 +443,7 @@ class Drawable {
 
     /**
      * Whether the Drawable needs convex hull points provided by the renderer.
-     * @return {boolean} True when no convex hull known, or it's dirty.
+     * @returns {boolean} True when no convex hull known, or it's dirty.
      */
     needsConvexHullPoints () {
         return !this._convexHullPoints || this._convexHullDirty || this._convexHullPoints.length === 0;
@@ -481,7 +481,7 @@ class Drawable {
      * The caller is responsible for ensuring this drawable's inverse matrix & its skin's silhouette are up-to-date.
      * @see updateCPURenderAttributes
      * @param {twgl.v3} vec World coordinate vector.
-     * @return {boolean} True if the world position touches the skin.
+     * @returns {boolean} True if the world position touches the skin.
      */
 
     // `updateCPURenderAttributes` sets this Drawable instance's `isTouching` method
@@ -510,7 +510,7 @@ class Drawable {
      * and then finds the minimum box along the axes.
      * Before calling this, ensure the renderer has updated convex hull points.
      * @param {?Rectangle} result optional destination for bounds calculation
-     * @return {!Rectangle} Bounds for a tight box around the Drawable.
+     * @returns {!Rectangle} Bounds for a tight box around the Drawable.
      */
     getBounds (result) {
         if (this.needsConvexHullPoints()) {
@@ -531,7 +531,7 @@ class Drawable {
      * Used for calculating where to position a text bubble.
      * Before calling this, ensure the renderer has updated convex hull points.
      * @param {?Rectangle} result optional destination for bounds calculation
-     * @return {!Rectangle} Bounds for a tight box around a slice of the Drawable.
+     * @returns {!Rectangle} Bounds for a tight box around a slice of the Drawable.
      */
     getBoundsForBubble (result) {
         if (this.needsConvexHullPoints()) {
@@ -558,7 +558,7 @@ class Drawable {
      * `getAABB` returns a much less accurate bounding box, but will be much
      * faster to calculate so may be desired for quick checks/optimizations.
      * @param {?Rectangle} result optional destination for bounds calculation
-     * @return {!Rectangle} Rough axis-aligned bounding box for Drawable.
+     * @returns {!Rectangle} Rough axis-aligned bounding box for Drawable.
      */
     getAABB (result) {
         if (this._transformDirty) {
@@ -575,7 +575,7 @@ class Drawable {
      * I.e., returns the tight bounding box when the convex hull points are already
      * known, but otherwise return the rough AABB of the Drawable.
      * @param {?Rectangle} result optional destination for bounds calculation
-     * @return {!Rectangle} Bounds for the Drawable.
+     * @returns {!Rectangle} Bounds for the Drawable.
      */
     getFastBounds (result) {
         if (!this.needsConvexHullPoints()) {
@@ -588,7 +588,7 @@ class Drawable {
      * Transform all the convex hull points by the current Drawable's
      * transform. This allows us to skip recalculating the convex hull
      * for many Drawable updates, including translation, rotation, scaling.
-     * @return {!Array.<!Array.number>} Array of glPoints which are Array<x, y>
+     * @returns {!Array.<!Array.number>} Array of glPoints which are Array<x, y>
      * @private
      */
     _getTransformedHullPoints () {
@@ -723,7 +723,7 @@ class Drawable {
         const textColor =
         // commenting out to only use nearest for now
         // drawable.skin.useNearest(drawable._scale, drawable) ?
-             drawable.skin._silhouette.colorAtNearest(localPosition, dst);
+            drawable.skin._silhouette.colorAtNearest(localPosition, dst);
         // : drawable.skin._silhouette.colorAtLinear(localPosition, dst);
 
         if (drawable.enabledEffects === 0) return textColor;

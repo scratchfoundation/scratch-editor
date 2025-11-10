@@ -91,6 +91,16 @@ import videoPet from './steps/video-pet.en.png';
 import videoAnimate from './steps/video-animate.en.png';
 import videoPop from './steps/video-pop.en.png';
 
+// Face Sensing
+import faceAddExtension from './steps/face-add-extension.en.gif';
+import faceAllowCamera from './steps/face-allow-camera.en.png';
+import faceAddFashionSprite from './steps/face-add-fashion-sprite.en.png';
+import faceGoToTopHead from './steps/face-go-to-top-head.en.gif';
+import faceGoToTopHeadForever from './steps/face-go-to-top-head-forever.en.png';
+import faceAdjustSize from './steps/face-adjust-size.en.gif';
+import faceAddAnotherSprite from './steps/face-add-another-sprite.en.png';
+import faceClickerGame from './steps/face-clicker-game.en.png';
+
 // Make it Fly
 import flyChooseBackdrop from './steps/fly-choose-backdrop.LTR.gif';
 import flyChooseCharacter from './steps/fly-choose-character.LTR.png';
@@ -292,6 +302,16 @@ const enImages = {
     videoPet: videoPet,
     videoAnimate: videoAnimate,
     videoPop: videoPop,
+
+    // Face Sensing
+    faceAddExtension: faceAddExtension,
+    faceAllowCamera: faceAllowCamera,
+    faceAddFashionSprite: faceAddFashionSprite,
+    faceGoToTopHead: faceGoToTopHead,
+    faceGoToTopHeadForever: faceGoToTopHeadForever,
+    faceAdjustSize: faceAdjustSize,
+    faceAddAnotherSprite: faceAddAnotherSprite,
+    faceClickerGame: faceClickerGame,
 
     // Make it Fly
     flyChooseBackdrop: flyChooseBackdrop,

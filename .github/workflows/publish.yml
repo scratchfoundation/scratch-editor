@@ -51,11 +51,11 @@ jobs:
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'github-actions@localhost'
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
         with:
           token: ${{ secrets.PAT_RELEASE_PUSH }} # persists the token for pushing to the repo later
 
-      - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
@@ -112,12 +112,7 @@ jobs:
 
       - name: Publish scratch-gui-standalone
         run: |
-          jq '
-            .name = "@scratch/scratch-gui-standalone" |
-            del(.peerDependencies) |
-            .exports."." = .exports."./standalone" |
-            del(.exports."./standalone")
-          ' ./packages/scratch-gui/package.json | npx sponge ./packages/scratch-gui/package.json
+          bash ./scripts/prepare-standalone-gui.sh
 
           npm --workspace=@scratch/scratch-gui-standalone run clean && npm --workspace=@scratch/scratch-gui-standalone run build:dist-standalone
           npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/scratch-gui-standalone
@@ -145,35 +140,3 @@ jobs:
         run: |
           git tag -f "${{github.event.release.tag_name}}" HEAD
           git push -f origin "refs/tags/${{github.event.release.tag_name}}"
-
-      - name: Deploy scratch-svg-renderer to GitHub Pages
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./packages/scratch-svg-renderer/playground
-          destination_dir: scratch-svg-renderer
-          full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
-
-      - name: Deploy scratch-render to GitHub Pages
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./packages/scratch-render/playground
-          destination_dir: scratch-render
-          full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
-
-      - name: Deploy scratch-vm to GitHub Pages
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./packages/scratch-vm/playground
-          destination_dir: scratch-vm
-          full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
-
-      - name: Deploy scratch-gui to GitHub Pages
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./packages/scratch-gui/build
-          destination_dir: scratch-gui
-          full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"

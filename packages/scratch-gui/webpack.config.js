@@ -21,12 +21,18 @@ const commonHtmlWebpackPluginOptions = {
     gtm_env_auth: process.env.GTM_ENV_AUTH || ''
 };
 
+const cssModuleExceptions = [
+    /\.raw\.css$/, // Allow for overriding CSS classes from libraries
+    /[\\/]driver\.js[\\/].*\.css$/ // driver.js CSS
+];
+
 const baseConfig = new ScratchWebpackConfigBuilder(
     {
         rootPath: path.resolve(__dirname),
         enableReact: true,
         enableTs: true,
-        shouldSplitChunks: false
+        shouldSplitChunks: false,
+        cssModuleExceptions
     })
     .setTarget('browserslist')
     .merge({
@@ -84,6 +90,10 @@ const baseConfig = new ScratchWebpackConfigBuilder(
                 context: '../../node_modules/scratch-storage/dist/web',
                 from: 'chunks/fetch-worker.*.{js,js.map}',
                 noErrorOnMissing: true
+            },
+            {
+                from: '../../node_modules/@mediapipe/face_detection',
+                to: 'chunks/mediapipe/face_detection'
             }
         ]
     }));

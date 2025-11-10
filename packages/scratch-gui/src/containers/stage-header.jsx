@@ -10,7 +10,7 @@ import {connect} from 'react-redux';
 
 import StageHeaderComponent from '../components/stage-header/stage-header.jsx';
 
-// eslint-disable-next-line react/prefer-stateless-function
+ 
 class StageHeader extends React.Component {
     constructor (props) {
         super(props);

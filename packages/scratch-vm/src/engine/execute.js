@@ -7,13 +7,13 @@ const cast = require('../util/cast');
 
 /**
  * Single BlockUtility instance reused by execute for every pritimive ran.
- * @const
+ * @constant
  */
 const blockUtility = new BlockUtility();
 
 /**
  * Profiler frame name for block functions.
- * @const {string}
+ * @constant {string}
  */
 const blockFunctionProfilerFrame = 'blockFunction';
 
@@ -26,7 +26,7 @@ let blockFunctionProfilerId = -1;
 /**
  * Utility function to determine if a value is a Promise.
  * @param {*} value Value to check for a Promise.
- * @return {boolean} True if the value appears to be a Promise.
+ * @returns {boolean} True if the value appears to be a Promise.
  */
 const isPromise = function (value) {
     return (
@@ -47,6 +47,8 @@ const isPromise = function (value) {
  * the primitive.
  * @param {!string} opcode opcode used to identify a block function primitive.
  * @param {!boolean} isHat Is the current block a hat?
+ * @param blockCached
+ * @param lastOperation
  */
 // @todo move this to callback attached to the thread when we have performance
 // metrics (dd)
@@ -155,7 +157,6 @@ const handlePromise = (primitiveReportedValue, sequencer, thread, blockCached, l
  * block when any change happens to it. This way we can quickly execute blocks
  * and keep perform the right action according to the current block information
  * in the editor.
- *
  * @param {Blocks} blockContainer the related Blocks instance
  * @param {object} cached default set of cached values
  */
@@ -211,7 +212,7 @@ class BlockCached {
 
         /**
          * The block opcode's implementation function.
-         * @type {?function}
+         * @type {?Function}
          */
         this._blockFunction = null;
 

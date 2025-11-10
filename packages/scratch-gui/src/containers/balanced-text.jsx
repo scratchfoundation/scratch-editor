@@ -58,7 +58,7 @@ class BalancedText extends React.Component {
     render () {
         let {
             children,
-            resize, // eslint-disable-line no-unused-vars
+            resize,
             style,
             ...otherProps
         } = this.props;

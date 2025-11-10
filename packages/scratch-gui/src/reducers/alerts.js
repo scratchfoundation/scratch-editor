@@ -12,14 +12,14 @@ const CLOSE_ALERT_WITH_ID = 'scratch-gui/alerts/CLOSE_ALERT_WITH_ID';
  *
  * {bool} visible - whether the alerts are visible
  * {array} alertsList - list of alerts, each with properties:
- *  * alertType (required): one of AlertTypes
- *  * closeButton (optional): bool indicating that we should show close button
- *  * content (optional): react element (a <FormattedMessage />)
- *  * extentionId (optional): id string that identifies the extension
- *  * iconURL (optional): string
- *  * level (required): string, one of AlertLevels
- *  * message (optional): string
- *  * showReconnect (optional): bool
+ *  alertType (required): one of AlertTypes
+ *  closeButton (optional): bool indicating that we should show close button
+ *  content (optional): react element (a <FormattedMessage />)
+ *  extentionId (optional): id string that identifies the extension
+ *  iconURL (optional): string
+ *  level (required): string, one of AlertLevels
+ *  message (optional): string
+ *  showReconnect (optional): bool
  */
 const initialState = {
     visible: true,
@@ -125,9 +125,8 @@ const reducer = function (state, action) {
 
 /**
  * Action creator to close an alert with the given index.
- *
  * @param {object} index - the index of the alert to close.
- * @return {object} - an object to be passed to the reducer.
+ * @returns {object} - an object to be passed to the reducer.
  */
 const closeAlert = function (index) {
     return {
@@ -138,9 +137,8 @@ const closeAlert = function (index) {
 
 /**
  * Action creator to close all alerts with a given ID.
- *
  * @param {string} alertId - id string of the alert to close
- * @return {object} - an object to be passed to the reducer.
+ * @returns {object} - an object to be passed to the reducer.
  */
 const closeAlertsWithId = function (alertId) {
     return {
@@ -151,9 +149,8 @@ const closeAlertsWithId = function (alertId) {
 
 /**
  * Action creator to close a single alert with a given ID.
- *
  * @param {string} alertId - id string of the alert to close
- * @return {object} - an object to be passed to the reducer.
+ * @returns {object} - an object to be passed to the reducer.
  */
 const closeAlertWithId = function (alertId) {
     return {
@@ -164,9 +161,8 @@ const closeAlertWithId = function (alertId) {
 
 /**
  * Action creator to show an alert with the given alertId.
- *
  * @param {string} alertId - id string of the alert to show
- * @return {object} - an object to be passed to the reducer.
+ * @returns {object} - an object to be passed to the reducer.
  */
 const showStandardAlert = function (alertId) {
     return {
@@ -177,11 +173,10 @@ const showStandardAlert = function (alertId) {
 
 /**
  * Action creator to show an alert with the given input data.
- *
  * @param {object} data - data for the alert
  * @param {string} data.message - message for the alert
  * @param {string} data.extensionId - extension ID for the alert
- * @return {object} - an object to be passed to the reducer.
+ * @returns {object} - an object to be passed to the reducer.
  */
 const showExtensionAlert = function (data) {
     return {
@@ -193,7 +188,6 @@ const showExtensionAlert = function (data) {
 /**
  * Function to dispatch showing an alert, with optional
  * timeout to make it close/go away.
- *
  * @param {object} dispatch - dispatch function
  * @param {string} alertId - the ID of the alert
  */

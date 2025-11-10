@@ -135,6 +135,7 @@ class LibraryItem extends React.PureComponent {
                 onMouseLeave={this.handleMouseLeave}
                 onPlay={this.handlePlay}
                 onStop={this.handleStop}
+                showItemCallout={this.props.showItemCallout}
             />
         );
     }
@@ -171,7 +172,8 @@ LibraryItem.propTypes = {
     onMouseLeave: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired,
     platform: PropTypes.oneOf(Object.keys(PLATFORM)),
-    showPlayButton: PropTypes.bool
+    showPlayButton: PropTypes.bool,
+    showItemCallout: PropTypes.bool
 };
 
 export default compose(

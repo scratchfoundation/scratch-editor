@@ -1,52 +1,39 @@
 import React from 'react';
-import {shallow} from 'enzyme';
 import ToggleButtons from '../../../src/components/toggle-buttons/toggle-buttons';
+import {fireEvent, render} from '@testing-library/react';
+
 
 describe('ToggleButtons', () => {
+    const buttons = [
+        {
+            title: 'Button 1',
+            handleClick: jest.fn(),
+            icon: 'Button 1 icon'
+        },
+        {
+            title: 'Button 2',
+            handleClick: jest.fn(),
+            icon: 'Button 2 icon'
+        }
+    ];
+
     test('renders multiple buttons', () => {
-        const component = shallow(<ToggleButtons
-            buttons={[
-                {
-                    title: 'Button 1',
-                    handleClick: () => {},
-                    icon: 'Button 1 icon'
-                },
-                {
-                    title: 'Button 2',
-                    handleClick: () => {},
-                    icon: 'Button 2 icon'
-                }
-            ]}
+        const {container} = render(<ToggleButtons
+            buttons={buttons}
         />);
 
-        const buttons = component.find('button');
-
-        expect(buttons).toHaveLength(2);
-        expect(buttons.get(0).props.title).toBe('Button 1');
-        expect(buttons.get(1).props.title).toBe('Button 2');
+        expect(container.firstChild).toMatchSnapshot();
     });
 
     test('calls correct click handler', () => {
-        const onClick1 = jest.fn();
-        const onClick2 = jest.fn();
-        const component = shallow(<ToggleButtons
-            buttons={[
-                {
-                    title: 'Button 1',
-                    handleClick: onClick1,
-                    icon: 'Button 1 icon'
-                },
-                {
-                    title: 'Button 2',
-                    handleClick: onClick2,
-                    icon: 'Button 2 icon'
-                }
-            ]}
+        const {container} = render(<ToggleButtons
+            buttons={buttons}
         />);
-        const button2 = component.find('button[title="Button 2"]');
-        button2.simulate('click');
 
-        expect(onClick2).toHaveBeenCalled();
-        expect(onClick1).not.toHaveBeenCalled();
+        const button2 = container.querySelector('button[title="Button 2"]');
+        fireEvent.click(button2);
+        
+        expect(buttons[1].handleClick).toHaveBeenCalled();
+        expect(buttons[0].handleClick).not.toHaveBeenCalled();
     });
 });

@@ -10,7 +10,7 @@ const StringUtil = require('../util/string-util');
 const VariableUtil = require('../util/variable-util');
 
 /**
- * @fileoverview
+ * @file
  * A Target is an abstract "code-running" object for the Scratch VM.
  * Examples include sprites/clones or potentially physical-world devices.
  */
@@ -20,7 +20,7 @@ class Target extends EventEmitter {
     /**
      * @param {Runtime} runtime Reference to the runtime.
      * @param {?Blocks} blocks Blocks instance for the blocks owned by this target.
-     * @constructor
+     * @class
      */
     constructor (runtime, blocks) {
         super();
@@ -92,7 +92,7 @@ class Target extends EventEmitter {
      * Update an edge-activated hat block value.
      * @param {!string} blockId ID of hat to store value for.
      * @param {*} newValue Value to store for edge-activated hat.
-     * @return {*} The old value for the edge-activated hat.
+     * @returns {*} The old value for the edge-activated hat.
      */
     updateEdgeActivatedValue (blockId, newValue) {
         const oldValue = this._edgeActivatedHatValues[blockId];
@@ -116,7 +116,7 @@ class Target extends EventEmitter {
      * Create a new variable if both lookups fail.
      * @param {string} id Id of the variable.
      * @param {string} name Name of the variable.
-     * @return {!Variable} Variable object.
+     * @returns {!Variable} Variable object.
      */
     lookupOrCreateVariable (id, name) {
         let variable = this.lookupVariableById(id);
@@ -136,7 +136,7 @@ class Target extends EventEmitter {
      * if it exists.
      * @param {string} id Id of the variable.
      * @param {string} name Name of the variable.
-     * @return {?Variable} Variable object.
+     * @returns {?Variable} Variable object.
      */
     lookupBroadcastMsg (id, name) {
         let broadcastMsg;
@@ -165,7 +165,7 @@ class Target extends EventEmitter {
      * if it exists. Does not create a new broadcast message variable if
      * it doesn't exist.
      * @param {string} name Name of the variable.
-     * @return {?Variable} Variable object.
+     * @returns {?Variable} Variable object.
      */
     lookupBroadcastByInputValue (name) {
         const vars = this.variables;
@@ -182,7 +182,7 @@ class Target extends EventEmitter {
      * Search begins for local variables; then look for globals.
      * @param {string} id Id of the variable.
      * @param {string} name Name of the variable.
-     * @return {!Variable} Variable object.
+     * @returns {!Variable} Variable object.
      */
     lookupVariableById (id) {
         // If we have a local copy, return it.
@@ -205,7 +205,7 @@ class Target extends EventEmitter {
      * @param {string} name Name of the variable.
      * @param {string} type Type of the variable. Defaults to Variable.SCALAR_TYPE.
      * @param {?bool} skipStage Optional flag to skip checking the stage
-     * @return {?Variable} Variable object if found, or null if not.
+     * @returns {?Variable} Variable object if found, or null if not.
      */
     lookupVariableByNameAndType (name, type, skipStage) {
         if (typeof name !== 'string') return;
@@ -235,11 +235,11 @@ class Target extends EventEmitter {
     }
 
     /**
-    * Look up a list object for this target, and create it if one doesn't exist.
-    * Search begins for local lists; then look for globals.
-    * @param {!string} id Id of the list.
-    * @param {!string} name Name of the list.
-    * @return {!Varible} Variable object representing the found/created list.
+     * Look up a list object for this target, and create it if one doesn't exist.
+     * Search begins for local lists; then look for globals.
+     * @param {!string} id Id of the list.
+     * @param {!string} name Name of the list.
+     * @returns {!Varible} Variable object representing the found/created list.
      */
     lookupOrCreateList (id, name) {
         let list = this.lookupVariableById(id);
@@ -404,7 +404,7 @@ class Target extends EventEmitter {
      * @param {string} id Id of variable to duplicate.
      * @param {boolean=} optKeepOriginalId Optional flag to keep the original variable ID
      * for the duplicate variable. This is necessary when cloning a sprite, for example.
-     * @return {?Variable} The duplicated variable, or null if
+     * @returns {?Variable} The duplicated variable, or null if
      * the original variable was not found.
      */
     duplicateVariable (id, optKeepOriginalId) {
@@ -432,7 +432,7 @@ class Target extends EventEmitter {
      * @param {object=} optBlocks Optional block container for the target being duplicated.
      * If provided, new variables will be generated with new UIDs and any variable references
      * in this blocks container will be updated to refer to the corresponding new IDs.
-     * @return {object} The duplicated dictionary of variables
+     * @returns {object} The duplicated dictionary of variables
      */
     duplicateVariables (optBlocks) {
         let allVarRefs;
@@ -498,7 +498,7 @@ class Target extends EventEmitter {
      * For the stage, this is all stage variables.
      * @param {string} type The variable type to search for; defaults to Variable.SCALAR_TYPE
      * @param {?bool} skipStage Optional flag to skip the stage.
-     * @return {Array<string>} A list of variable names
+     * @returns {Array<string>} A list of variable names
      */
     getAllVariableNamesInScopeByType (type, skipStage) {
         if (typeof type !== 'string') type = Variable.SCALAR_TYPE;
@@ -518,7 +518,7 @@ class Target extends EventEmitter {
      * Merge variable references with another variable.
      * @param {string} idToBeMerged ID of the variable whose references need to be updated
      * @param {string} idToMergeWith ID of the variable that the old references should be replaced with
-     * @param {?Array<Object>} optReferencesToUpdate Optional context of the change.
+     * @param {?Array<object>} optReferencesToUpdate Optional context of the change.
      * Defaults to all the blocks in this target.
      * @param {?string} optNewName New variable name to merge with. The old
      * variable name in the references being updated should be replaced with this new name.
@@ -624,7 +624,6 @@ class Target extends EventEmitter {
      * 2) The receiving target is the stage:
      * Create a new global variable with a fresh name and update all the referencing
      * fields to reference the new variable.
-     *
      * @param {Array<object>} blocks The blocks containing
      * potential conflicting references to variables.
      * @param {Target} receivingTarget The target receiving the variables

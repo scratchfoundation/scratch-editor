@@ -1,11 +1,12 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
 
-import {mountWithIntl} from '../../helpers/intl-helpers.jsx';
+import {renderWithIntl} from '../../helpers/intl-helpers.jsx';
 
 import ProjectFetcherHOC from '../../../src/lib/project-fetcher-hoc.jsx';
 import {LoadingState} from '../../../src/reducers/project-state';
 import {LegacyStorage} from '../../../src/lib/legacy-storage';
+import {IntlProvider} from 'react-intl';
 
 jest.mock('react-ga');
 
@@ -29,7 +30,7 @@ describe('ProjectFetcherHOC', () => {
         const Component = ({projectId}) => <div>{projectId}</div>;
         const WrappedComponent = ProjectFetcherHOC(Component);
         const mockSetProjectIdFunc = jest.fn();
-        mountWithIntl(
+        renderWithIntl(
             <WrappedComponent
                 projectId="100"
                 setProjectId={mockSetProjectIdFunc}
@@ -44,25 +45,36 @@ describe('ProjectFetcherHOC', () => {
         storage.load = jest.fn((type, id) => Promise.resolve({data: id}));
         const Component = ({projectId}) => <div>{projectId}</div>;
         const WrappedComponent = ProjectFetcherHOC(Component);
-        const mounted = mountWithIntl(
+        const {rerender} = renderWithIntl(
             <WrappedComponent
                 store={store}
                 onFetchedProjectData={mockedOnFetchedProject}
             />
         );
-        mounted.setProps({
-            reduxProjectId: '100',
-            isFetchingWithId: true,
-            loadingState: LoadingState.FETCHING_WITH_ID
-        });
+        rerender(
+            <IntlProvider
+                locale="en"
+                messages={{ }}
+            >
+                <WrappedComponent
+                    store={store}
+                    onFetchedProjectData={mockedOnFetchedProject}
+                    reduxProjectId="100"
+                    isFetchingWithId
+                    loadingState={LoadingState.FETCHING_WITH_ID}
+                />
+            </IntlProvider>
+        );
+
         expect(storage.load).toHaveBeenLastCalledWith(
             storage.AssetType.Project, '100', storage.DataFormat.JSON
         );
         storage.load = originalLoad;
-        // nextTick needed since storage.load is async, and onFetchedProject is called in its then()
-        process.nextTick(
+        // delay needed since storage.load is async, and onFetchedProject is called in its then()
+        setTimeout(
             () => expect(mockedOnFetchedProject)
-                .toHaveBeenLastCalledWith('100', LoadingState.FETCHING_WITH_ID)
+                .toHaveBeenLastCalledWith('100', LoadingState.FETCHING_WITH_ID),
+            1
         );
     });
 });

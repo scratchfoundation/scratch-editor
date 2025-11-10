@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * Access point for private method shared between blocks.js and execute.js for
  * caching execute information.
  */

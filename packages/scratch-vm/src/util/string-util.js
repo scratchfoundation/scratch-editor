@@ -46,9 +46,8 @@ class StringUtil {
      * can lead to serialization producing JSON that isn't valid based on the parser schema.
      * It is also consistent with the behavior of saving 2.0 projects.
      * This is only needed when stringifying an object for saving.
-     *
      * @param {!object} obj - The object to serialize
-     * @return {!string} The JSON.stringified string with Infinity/NaN replaced with 0
+     * @returns {!string} The JSON.stringified string with Infinity/NaN replaced with 0
      */
     static stringify (obj) {
         return JSON.stringify(obj, (_key, value) => {
@@ -66,7 +65,7 @@ class StringUtil {
      * instead so that the user facing string does not change how it displays.
      * @param {!string | !Array.<string>} unsafe Unsafe string possibly containing unicode control characters.
      * In some cases this argument may be an array (e.g. hacked inputs from 2.0)
-     * @return {string} String with control characters replaced.
+     * @returns {string} String with control characters replaced.
      */
     static replaceUnsafeChars (unsafe) {
         if (typeof unsafe !== 'string') {

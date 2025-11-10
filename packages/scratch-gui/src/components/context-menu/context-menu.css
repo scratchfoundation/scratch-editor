@@ -2,37 +2,42 @@
 @import "../../css/units.css";
 @import "../../css/z-index.css";
 
-.context-menu {
-    min-width: 130px;
-    padding: 5px 0; /* The white strip at the top and bottom of the menu */
-    margin: 2px 0 0; /* To keep the menu below the cursor comfortably */
-    font-size: 0.85rem;
-    text-align: left;
-    background-color: $ui-white;
+.context-menu-content {
+	background-color: white;
+	border-radius: 6px;
+	overflow: hidden;
+	padding: 5px 0px;
     border: 1px solid $ui-black-transparent;
     border-radius: calc($space / 2);
     box-shadow: 0px 0px 5px 1px $ui-black-transparent;
-    pointer-events: none;
     transition: opacity 0.2s ease;
     z-index: $z-index-context-menu;
 }
 
 .menu-item {
-    padding: 8px 12px;
-    white-space: nowrap;
+    font-size: 13px;
+	line-height: 1;
+	display: flex;
+    align-items: center;
+	height: 25px;
+	padding: 0px 12px;
+    padding-right: 40px;
+	position: relative;
+	user-select: none;
+	outline: none;
     cursor: pointer;
-    transition: 0.1s ease;
+    color: $text-primary;
 }
 
-.menu-item:hover {
+.menu-item[data-highlighted] {
     background: $looks-secondary;
     color: white;
 }
 
-.menu-item-bordered {
-    border-top: 1px solid $ui-black-transparent;
+.menu-item-danger[data-highlighted] {
+    background: $error-primary;
 }
 
-.menu-item-danger:hover {
-    background: $error-primary;
+.menu-item-bordered {
+    border-top: 1px solid $ui-black-transparent;
 }

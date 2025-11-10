@@ -1,11 +1,9 @@
 import React from 'react';
 import {Provider} from 'react-redux';
-const {mountWithIntl} = require('../../helpers/intl-helpers.jsx');
-
+import '@testing-library/jest-dom';
 import configureStore from 'redux-mock-store';
-
-import CrashMessageComponent from '../../../src/components/crash-message/crash-message.jsx';
 import ErrorBoundary from '../../../src/containers/error-boundary.jsx';
+import {renderWithIntl} from '../../helpers/intl-helpers.jsx';
 
 const ChildComponent = () => <div>hello</div>;
 
@@ -24,20 +22,29 @@ describe('ErrorBoundary', () => {
 
     test('ErrorBoundary shows children before error and CrashMessageComponent after', () => {
         const child = <ChildComponent />;
-        const wrapper = mountWithIntl(
-            <Provider store={store}><ErrorBoundary action="test">{child}</ErrorBoundary></Provider>
+        const {container} = renderWithIntl(
+            <Provider store={store}>
+                <ErrorBoundary action="test">{child}</ErrorBoundary>
+            </Provider>
         );
-        const errorSite = wrapper.childAt(0).childAt(0);
 
-        // @ts-ignore: 'onReload' prop is absent because this component will only be used for pattern matching
-        const crashMessagePattern = <CrashMessageComponent />;
+        const helloTextNoError = [...container.querySelectorAll('div')].reverse().find(el => el.textContent.includes('hello'));
+        expect(helloTextNoError).toBeTruthy();
+        expect(container.querySelector('h2')).toBeFalsy();
 
-        expect(wrapper.containsMatchingElement(child)).toBeTruthy();
-        expect(wrapper.containsMatchingElement(crashMessagePattern)).toBeFalsy();
+        const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => { });
+        const ThrowError = () => {
+            throw new Error('Test error');
+        };
+        const {container: containerError} = renderWithIntl(
+            <Provider store={store}>
+                <ErrorBoundary action="test"> <ThrowError /></ErrorBoundary>
+            </Provider>
+        );
+        consoleLogSpy.mockRestore();
 
-        errorSite.simulateError(new Error('fake error for testing purposes'));
-
-        expect(wrapper.containsMatchingElement(child)).toBeFalsy();
-        expect(wrapper.containsMatchingElement(crashMessagePattern)).toBeTruthy();
+        const helloTextError = [...containerError.querySelectorAll('div')].reverse().find(el => el.textContent.includes('hello'));
+        expect(helloTextError).toBeFalsy();
+        expect(containerError.querySelector('h2')).toHaveTextContent('Oops! Something went wrong.');
     });
 });

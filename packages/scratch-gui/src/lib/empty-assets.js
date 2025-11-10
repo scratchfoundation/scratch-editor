@@ -1,12 +1,12 @@
 /**
- * @fileoverview
+ * @file
  * Utility functions to return json corresponding to default empty assets.
  */
 
 /**
  * Generate a blank costume object for vm.addCostume with the provided name.
  * @param {string} name the name to use for the costume, caller should localize
- * @return {object} vm costume object
+ * @returns {object} vm costume object
  */
 const emptyCostume = name => ({
     name: name,
@@ -23,7 +23,7 @@ const emptyCostume = name => ({
  * @param {string} name the name to use for the sprite
  * @param {string} soundName the name to use for the default sound
  * @param {string} costumeName the name to use for the default costume
- * @return {object} object expected by vm.addSprite
+ * @returns {object} object expected by vm.addSprite
  */
 const emptySprite = (name, soundName, costumeName) => ({
     objName: name,

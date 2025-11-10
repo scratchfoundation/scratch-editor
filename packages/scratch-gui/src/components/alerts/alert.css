@@ -2,7 +2,7 @@
 @import "../../css/colors.css";
 @import "../../css/z-index.css";
 
-.alert {
+body .alert {
     width: 100%;
     display: flex;
     flex-direction: row;

@@ -1,6 +1,6 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
-import {mount} from 'enzyme';
+import {render, fireEvent} from '@testing-library/react';
 
 import HashParserHOC from '../../../src/lib/hash-parser-hoc.jsx';
 
@@ -23,7 +23,7 @@ describe('HashParserHOC', () => {
         const WrappedComponent = HashParserHOC(Component);
         window.location.hash = '#1234567';
         const mockSetProjectIdFunc = jest.fn();
-        mount(
+        render(
             <WrappedComponent
                 setProjectId={mockSetProjectIdFunc}
                 store={store}
@@ -37,7 +37,7 @@ describe('HashParserHOC', () => {
         const WrappedComponent = HashParserHOC(Component);
         window.location.hash = '';
         const mockSetProjectIdFunc = jest.fn();
-        mount(
+        render(
             <WrappedComponent
                 setProjectId={mockSetProjectIdFunc}
                 store={store}
@@ -51,7 +51,7 @@ describe('HashParserHOC', () => {
         const WrappedComponent = HashParserHOC(Component);
         window.location.hash = '#winning';
         const mockSetProjectIdFunc = jest.fn();
-        mount(
+        render(
             <WrappedComponent
                 setProjectId={mockSetProjectIdFunc}
                 store={store}
@@ -65,17 +65,14 @@ describe('HashParserHOC', () => {
         const WrappedComponent = HashParserHOC(Component);
         window.location.hash = '';
         const mockSetProjectIdFunc = jest.fn();
-        const mounted = mount(
+        render(
             <WrappedComponent
                 setProjectId={mockSetProjectIdFunc}
                 store={store}
             />
         );
         window.location.hash = '#1234567';
-        mounted
-            .childAt(0)
-            .instance()
-            .handleHashChange();
+        fireEvent(window, new HashChangeEvent('hashchange', {newURL: window.location.href}));
         expect(mockSetProjectIdFunc.mock.calls.length).toBe(2);
     });
 });

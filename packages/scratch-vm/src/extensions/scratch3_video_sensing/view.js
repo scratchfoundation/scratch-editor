@@ -149,7 +149,7 @@ const _videoMotionViewComponentsTmp = {
  * VideoMotion does to visualize what it does.
  * @param {VideoMotion} motion - VideoMotion with inputs to visualize
  * @param {OUTPUT} output - visualization output mode
- * @constructor
+ * @class
  */
 class VideoMotionView {
     constructor (motion, output = OUTPUT.XYT) {

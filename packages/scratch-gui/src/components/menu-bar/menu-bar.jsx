@@ -1,7 +1,8 @@
 import classNames from 'classnames';
 import {connect} from 'react-redux';
 import {compose} from 'redux';
-import {defineMessages, FormattedMessage, injectIntl, intlShape} from 'react-intl';
+import {defineMessages, FormattedMessage, injectIntl} from 'react-intl';
+import intlShape from '../../lib/intlShape.js';
 import PropTypes from 'prop-types';
 import bindAll from 'lodash.bindall';
 import bowser from 'bowser';
@@ -350,7 +351,7 @@ class MenuBar extends React.Component {
                 className={classNames(styles.menuBarItem, styles.hoverable, {
                     [styles.active]: this.props.aboutMenuOpen
                 })}
-                onMouseUp={this.props.onRequestOpenAbout}
+                onClick={this.props.onRequestOpenAbout}
             >
                 <img
                     className={styles.aboutIcon}
@@ -464,7 +465,7 @@ class MenuBar extends React.Component {
                                 className={classNames(styles.menuBarItem, styles.hoverable, {
                                     [styles.active]: this.props.fileMenuOpen
                                 })}
-                                onMouseUp={this.props.onClickFile}
+                                onClick={this.props.onClickFile}
                             >
                                 <img src={fileIcon} />
                                 <span className={styles.collapsibleLabel}>
@@ -534,7 +535,7 @@ class MenuBar extends React.Component {
                             className={classNames(styles.menuBarItem, styles.hoverable, {
                                 [styles.active]: this.props.editMenuOpen
                             })}
-                            onMouseUp={this.props.onClickEdit}
+                            onClick={this.props.onClickEdit}
                         >
                             <img src={editIcon} />
                             <span className={styles.collapsibleLabel}>
@@ -586,7 +587,7 @@ class MenuBar extends React.Component {
                                 className={classNames(styles.menuBarItem, styles.hoverable, {
                                     [styles.active]: this.props.modeMenuOpen
                                 })}
-                                onMouseUp={this.props.onClickMode}
+                                onClick={this.props.onClickMode}
                             >
                                 <div className={classNames(styles.editMenu)}>
                                     <FormattedMessage
@@ -801,7 +802,7 @@ class MenuBar extends React.Component {
                                             styles.hoverable
                                         )}
                                         key="join"
-                                        onMouseUp={this.props.onOpenRegistration}
+                                        onClick={this.props.onOpenRegistration}
                                     >
                                         <FormattedMessage
                                             defaultMessage="Join Scratch"
@@ -819,6 +820,7 @@ class MenuBar extends React.Component {
                                         )}
                                         key="login"
                                         onMouseUp={this.props.onClickLogin}
+                                        onClick={this.props.onClickLogin}
                                     >
                                         <FormattedMessage
                                             defaultMessage="Sign in"

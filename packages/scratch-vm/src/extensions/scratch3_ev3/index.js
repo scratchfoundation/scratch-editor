@@ -36,7 +36,6 @@ const BTSendRateMax = 40;
  * The format for these values is:
  * 0xxxxxxx for Short Format
  * 1ttt-bbb for Long Format
- *
  * @readonly
  * @enum {number}
  */
@@ -151,7 +150,6 @@ class EV3Motor {
     /**
      * Construct a EV3 Motor instance, which could be of type 'largeMotor' or
      * 'mediumMotor'.
-     *
      * @param {EV3} parent - the EV3 peripheral which owns this motor.
      * @param {int} index - the zero-based index of this motor on its parent peripheral.
      * @param {string} type - the type of motor (i.e. 'largeMotor' or 'mediumMotor').
@@ -217,7 +215,7 @@ class EV3Motor {
     }
 
     /**
-     * @return {string} - this motor's type: 'largeMotor' or 'mediumMotor'
+     * @returns {string} - this motor's type: 'largeMotor' or 'mediumMotor'
      */
     get type () {
         return this._type;
@@ -231,7 +229,7 @@ class EV3Motor {
     }
 
     /**
-     * @return {int} - this motor's current direction: 1 for "clockwise" or -1 for "counterclockwise"
+     * @returns {int} - this motor's current direction: 1 for "clockwise" or -1 for "counterclockwise"
      */
     get direction () {
         return this._direction;
@@ -249,7 +247,7 @@ class EV3Motor {
     }
 
     /**
-     * @return {int} - this motor's current power level, in the range [0,100].
+     * @returns {int} - this motor's current power level, in the range [0,100].
      */
     get power () {
         return this._power;
@@ -263,7 +261,7 @@ class EV3Motor {
     }
 
     /**
-     * @return {int} - this motor's current position, in the range [-inf,inf].
+     * @returns {int} - this motor's current position, in the range [-inf,inf].
      */
     get position () {
         return this._position;
@@ -294,7 +292,6 @@ class EV3Motor {
      * (Data32) STEP2 – Time in milliseconds for continues run
      * (Data32) STEP3 – Time in milliseconds for ramp down
      * (Data8) BRAKE - Specify break level [0: Float, 1: Break]
-     *
      * @param {number} milliseconds - run the motor for this long.
      */
     turnOnFor (milliseconds) {
@@ -394,7 +391,7 @@ class EV3Motor {
     /**
      * Generate motor run values for a given input.
      * @param  {number} run - run input.
-     * @return {array} - run values as a byte array.
+     * @returns {Array} - run values as a byte array.
      */
     _runValues (run) {
         // If run duration is less than max 16-bit integer
@@ -422,7 +419,7 @@ class EV3Motor {
      * The documentation in the 'EV3 Firmware Developer Kit' for motor port arguments
      * is sometimes mistaken, but we believe motor ports are mostly addressed this way.
      * @param {number} port - the port number to convert to an 'output bit field'.
-     * @return {number} - the converted port number.
+     * @returns {number} - the converted port number.
      */
     _portMask (port) {
         return Math.pow(2, port);
@@ -536,7 +533,7 @@ class EV3 {
     /**
      * Access a particular motor on this peripheral.
      * @param {int} index - the zero-based index of the desired motor.
-     * @return {EV3Motor} - the EV3Motor instance, if any, at that index.
+     * @returns {EV3Motor} - the EV3Motor instance, if any, at that index.
      */
     motor (index) {
         return this._motors[index];
@@ -646,7 +643,7 @@ class EV3 {
 
     /**
      * Called by the runtime to detect whether the EV3 peripheral is connected.
-     * @return {boolean} - the connected state.
+     * @returns {boolean} - the connected state.
      */
     isConnected () {
         let connected = false;
@@ -659,8 +656,8 @@ class EV3 {
     /**
      * Send a message to the peripheral BT socket.
      * @param {Uint8Array} message - the message to send.
-     * @param {boolean} [useLimiter=true] - if true, use the rate limiter
-     * @return {Promise} - a promise result of the send operation.
+     * @param {boolean} [useLimiter] - if true, use the rate limiter
+     * @returns {Promise} - a promise result of the send operation.
      */
     send (message, useLimiter = true) {
         if (!this.isConnected()) return Promise.resolve();
@@ -690,15 +687,14 @@ class EV3 {
      * Byte 2 - 3: Message counter, Little Endian. Forth running counter
      * Byte 4:     Command type. Either DIRECT_COMMAND_REPLY or DIRECT_COMMAND_NO_REPLY
      * Byte 5 - 6: Reservation (allocation) of global and local variables using a compressed format
-     *             (globals reserved in byte 5 and the 2 lsb of byte 6, locals reserved in the upper
-     *             6 bits of byte 6) – see documentation for more details.
+     * (globals reserved in byte 5 and the 2 lsb of byte 6, locals reserved in the upper
+     * 6 bits of byte 6) – see documentation for more details.
      * Byte 7 - n: Byte codes as a single command or compound commands (I.e. more commands composed
-     *             as a small program)
-     *
+     * as a small program)
      * @param {number} type - the direct command type.
      * @param {string} byteCommands - a compound array of EV3 Opcode + arguments.
      * @param {number} allocation - the allocation of global and local vars needed for replies.
-     * @return {array} - generated complete command byte array, with header and compounded commands.
+     * @returns {Array} - generated complete command byte array, with header and compounded commands.
      */
     generateCommand (type, byteCommands, allocation = 0) {
 
@@ -737,7 +733,6 @@ class EV3 {
      * See 'EV3 Firmware Developer Kit', section 4.8, page 46, at
      * https://education.lego.com/en-us/support/mindstorms-ev3/developer-kits
      * for a list of polling/input device commands and their arguments.
-     *
      * @private
      */
     _pollValues () {
@@ -820,13 +815,12 @@ class EV3 {
      * Byte 2 – 3: Message counter, Little Endian. Equals the Direct Command
      * Byte 4:     Reply type. Either DIRECT_REPLY or DIRECT_REPLY_ERROR
      * Byte 5 - n: Resonse buffer. I.e. the content of the by the Command reserved global variables.
-     *             I.e. if the command reserved 64 bytes, these bytes will be placed in the reply
-     *             packet as the bytes 5 to 68.
+     * I.e. if the command reserved 64 bytes, these bytes will be placed in the reply
+     * packet as the bytes 5 to 68.
      *
      * See 'EV3 Firmware Developer Kit', section 4.8, page 56 at
      * https://education.lego.com/en-us/support/mindstorms-ev3/developer-kits
      * for direct response buffer formats for various commands.
-     *
      * @param {object} params - incoming message parameters
      * @private
      */
@@ -928,7 +922,7 @@ class Scratch3Ev3Blocks {
 
     /**
      * The ID of the extension.
-     * @return {string} the id
+     * @returns {string} the id
      */
     static get EXTENSION_ID () {
         return 'ev3';
@@ -937,7 +931,7 @@ class Scratch3Ev3Blocks {
     /**
      * Creates a new instance of the EV3 extension.
      * @param  {object} runtime VM runtime
-     * @constructor
+     * @class
      */
     constructor (runtime) {
         /**
@@ -955,7 +949,7 @@ class Scratch3Ev3Blocks {
 
     /**
      * Define the EV3 extension.
-     * @return {object} Extension description.
+     * @returns {object} Extension description.
      */
     getInfo () {
         return {
@@ -1291,7 +1285,6 @@ class Scratch3Ev3Blocks {
      *
      * Note: This way of looping through motors is currently unnecessary, but could be
      * useful if an 'all motors' option is added in the future (see WeDo2 extension).
-     *
      * @param {MotorID} motorID - the ID specifier.
      * @param {Function} callback - the function to call with the numeric motor index for each motor.
      * @private
@@ -1325,19 +1318,18 @@ class Scratch3Ev3Blocks {
      * Formats menus into a format suitable for block menus, and loading previously
      * saved projects:
      * [
-     *   {
-     *    text: label,
-     *    value: index
-     *   },
-     *   {
-     *    text: label,
-     *    value: index
-     *   },
-     *   etc...
+     * {
+     * text: label,
+     * value: index
+     * },
+     * {
+     * text: label,
+     * value: index
+     * },
+     * etc...
      * ]
-     *
-     * @param {array} menu - a menu to format.
-     * @return {object} - a formatted menu as an object.
+     * @param {Array} menu - a menu to format.
+     * @returns {object} - a formatted menu as an object.
      * @private
      */
     _formatMenu (menu) {

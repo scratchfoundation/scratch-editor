@@ -2,7 +2,7 @@ class MathUtil {
     /**
      * Convert a value from degrees to radians.
      * @param {!number} deg Value in degrees.
-     * @return {!number} Equivalent value in radians.
+     * @returns {!number} Equivalent value in radians.
      */
     static degToRad (deg) {
         return deg * Math.PI / 180;
@@ -11,7 +11,7 @@ class MathUtil {
     /**
      * Convert a value from radians to degrees.
      * @param {!number} rad Value in radians.
-     * @return {!number} Equivalent value in degrees.
+     * @returns {!number} Equivalent value in degrees.
      */
     static radToDeg (rad) {
         return rad * 180 / Math.PI;
@@ -23,7 +23,7 @@ class MathUtil {
      * @param {!number} n Number to clamp.
      * @param {!number} min Minimum limit.
      * @param {!number} max Maximum limit.
-     * @return {!number} Value of n clamped to min and max.
+     * @returns {!number} Value of n clamped to min and max.
      */
     static clamp (n, min, max) {
         return Math.min(Math.max(n, min), max);
@@ -37,7 +37,7 @@ class MathUtil {
      * @param {!number} n Number to wrap.
      * @param {!number} min Minimum limit.
      * @param {!number} max Maximum limit.
-     * @return {!number} Value of n wrapped between min and max.
+     * @returns {!number} Value of n wrapped between min and max.
      */
     static wrapClamp (n, min, max) {
         const range = (max - min) + 1;
@@ -48,7 +48,7 @@ class MathUtil {
     /**
      * Convert a value from tan function in degrees.
      * @param {!number} angle in degrees
-     * @return {!number} Correct tan value
+     * @returns {!number} Correct tan value
      */
     static tan (angle) {
         angle = angle % 360;
@@ -71,7 +71,7 @@ class MathUtil {
      * original array.
      * E.g. [5, 19. 13, 1] => [1, 3, 2, 0]
      * @param {Array<number>} elts The elements to sort and reduce
-     * @return {Array<number>} The array of reduced orderings
+     * @returns {Array<number>} The array of reduced orderings
      */
     static reducedSortOrdering (elts) {
         const sorted = elts.slice(0).sort((a, b) => a - b);
@@ -84,11 +84,10 @@ class MathUtil {
      *
      * For instance, (1, 5, 3) will only pick 1, 2, 4, or 5 (with equal
      * probability)
-     *
      * @param {number} lower - The lower bound (inlcusive)
      * @param {number} upper - The upper bound (inclusive), such that lower <= upper
      * @param {number} excluded - The number to exclude (MUST be in the range)
-     * @return {number} A random integer in the range [lower, upper] that is not "excluded"
+     * @returns {number} A random integer in the range [lower, upper] that is not "excluded"
      */
     static inclusiveRandIntWithout (lower, upper, excluded) {
         // Note that subtraction is the number of items in the
@@ -111,7 +110,7 @@ class MathUtil {
      * @param {number} iMax input range maximum
      * @param {number} oMin output range minimum
      * @param {number} oMax output range maximum
-     * @return {number} scaled number
+     * @returns {number} scaled number
      */
     static scale (i, iMin, iMax, oMin, oMax) {
         const p = (i - iMin) / (iMax - iMin);

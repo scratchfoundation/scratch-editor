@@ -13,7 +13,7 @@ test('saving and loading sb2 project with monitors preserves sliderMin and slide
     const vm = new VirtualMachine();
     vm.attachStorage(makeTestStorage());
 
-    vm.on('playgroundData', e /* eslint-disable-line no-unused-vars */ => {
+    vm.on('playgroundData', e => {
         const threads = JSON.parse(e.threads);
         // All monitors should create threads that finish during the step and
         // are revoved from runtime.threads.

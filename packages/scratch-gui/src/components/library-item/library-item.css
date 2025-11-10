@@ -25,6 +25,7 @@
 
 .library-item-extension {
     align-self: stretch;
+    --radiate-color: 133, 92, 214; /* $looks-secondary */
 }
 
 .library-item:hover {
@@ -43,6 +44,13 @@
 
 .disabled:hover {
     border-color: $ui-black-transparent;
+}
+
+.content-wrapper {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    border-radius: $space;
 }
 
 .library-item-image-container-wrapper {
@@ -107,7 +115,6 @@
     flex-basis: 300px;
     max-width: 300px;
     height: auto;
-    overflow: hidden;
     padding: 0;
 }
 
@@ -202,4 +209,33 @@
 
 [dir="rtl"] .coming-soon-text {
     transform: translate(calc(-2 * $space), calc(2 * $space));
+}
+
+$radiate-distance: 20px;
+
+.radiate:before,
+.radiate:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    z-index: 0;
+    animation: radiate 2.5s infinite;
+    border-radius: $space;
+}
+
+.radiate:after {
+    animation-delay: 0.7s;
+}
+
+@keyframes radiate {
+    0% {
+        box-shadow: 0 0 0 0 rgba(var(--radiate-color), 0.7);
+    }
+    100% {
+        box-shadow: 0 0 0 $radiate-distance rgba(var(--radiate-color), 0);
+    }
 }

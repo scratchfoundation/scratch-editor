@@ -2,7 +2,8 @@ import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
 import VM from '@scratch/scratch-vm';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import {defineMessages, injectIntl} from 'react-intl';
+import intlShape from '../lib/intlShape.js';
 
 import extensionLibraryContent from '../lib/libraries/extensions/index.jsx';
 
@@ -60,6 +61,8 @@ class ExtensionLibrary extends React.PureComponent {
                 visible={this.props.visible}
                 onItemSelected={this.handleItemSelect}
                 onRequestClose={this.props.onRequestClose}
+                showNewFeatureCallouts={this.props.showNewFeatureCallouts}
+                username={this.props.username}
             />
         );
     }
@@ -70,7 +73,9 @@ ExtensionLibrary.propTypes = {
     onCategorySelected: PropTypes.func,
     onRequestClose: PropTypes.func,
     visible: PropTypes.bool,
-    vm: PropTypes.instanceOf(VM).isRequired // eslint-disable-line react/no-unused-prop-types
+    vm: PropTypes.instanceOf(VM).isRequired,
+    username: PropTypes.string,
+    showNewFeatureCallouts: PropTypes.bool
 };
 
 export default injectIntl(ExtensionLibrary);

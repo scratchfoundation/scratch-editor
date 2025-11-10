@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * Utility function to look up whether a translated video exists for a locale.
  */
 
@@ -191,7 +191,7 @@ const videos = {
  * Return a video identifier (on our video hosting service)
  * @param {string} videoId key in the videos object, or id string.
  * @param {string} locale locale to look up. If locale is not defined return the id for 'en' by default
- * @return {string} identifier for the video on our video hosting service.
+ * @returns {string} identifier for the video on our video hosting service.
  */
 const translateVideo = (videoId, locale) => {
     // if the videoId is not recognized in the videos object, assume it's already a video id on wistia

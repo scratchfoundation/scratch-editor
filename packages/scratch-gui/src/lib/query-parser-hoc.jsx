@@ -34,8 +34,8 @@ const QueryParserHOC = function (WrappedComponent) {
         }
         render () {
             const {
-                onOpenTipsLibrary, // eslint-disable-line no-unused-vars
-                onUpdateReduxDeck, // eslint-disable-line no-unused-vars
+                onOpenTipsLibrary,
+                onUpdateReduxDeck,
                 ...componentProps
             } = this.props;
             return (

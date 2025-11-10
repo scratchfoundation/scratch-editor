@@ -46,6 +46,9 @@ import gdxforInsetIconURL from './gdxfor/gdxfor-small.svg';
 import gdxforConnectionIconURL from './gdxfor/gdxfor-illustration.svg';
 import gdxforConnectionSmallIconURL from './gdxfor/gdxfor-small.svg';
 
+import faceSensingIconURL from './faceSensing/faceSensing.png';
+import faceSensingInsetIconURL from './faceSensing/faceSensing-small.svg';
+
 export default [
     {
         name: (
@@ -103,6 +106,26 @@ export default [
                 defaultMessage="Sense motion with the camera."
                 description="Description for the 'Video Sensing' extension"
                 id="gui.extension.videosensing.description"
+            />
+        ),
+        featured: true
+    },
+    {
+        name: (
+            <FormattedMessage
+                defaultMessage="Face Sensing"
+                description="Name for the 'Face Sensing' extension"
+                id="gui.extension.faceSensing.name"
+            />
+        ),
+        extensionId: 'faceSensing',
+        iconURL: faceSensingIconURL,
+        insetIconURL: faceSensingInsetIconURL,
+        description: (
+            <FormattedMessage
+                defaultMessage="Sense faces with the camera."
+                description="Description for the 'Face Sensing' extension"
+                id="gui.extension.faceSensing.description"
             />
         ),
         featured: true

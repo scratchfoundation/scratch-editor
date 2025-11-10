@@ -144,17 +144,18 @@ class UpdatePeripheralStep extends React.Component {
         } else if (this.state.err.message === 'No valid interfaces found.') {
             // this is a special case where the micro:bit's communication firmware is too old to support WebUSB
             resultsContent = (<BalancedFormattedMessage
-                defaultMessage="Please visit this link to update your micro:bit firmware: {microBitFirmwareLink}"
+                defaultMessage="Please visit this link to update your micro:bit firmware: <a>{microBitFirmwareLink}</a>"
                 description="Message to indicate that the special micro:bit interface firmware needs to be updated"
                 id="gui.connection.updatePeripheral.updateMicroBitFirmware"
                 values={{
-                    microBitFirmwareLink: <a
+                    microBitFirmwareLink: microBitFirmwareUrl,
+                    a: microBitFirmwareLink => (<a
                         rel="noopener noreferrer"
                         target="_blank"
-                        href={microBitFirmwareUrl}
+                        href={microBitFirmwareLink}
                     >
-                        {microBitFirmwareUrl}
-                    </a>
+                        {microBitFirmwareLink}
+                    </a>)
                 }}
             />);
         } else {

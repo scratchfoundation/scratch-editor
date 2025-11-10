@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * The BlocksRuntimeCache caches data about the top block of scripts so that
  * Runtime can iterate a targeted opcode and iterate the returned set faster.
  * Many top blocks need to match fields as well as opcode, since that matching

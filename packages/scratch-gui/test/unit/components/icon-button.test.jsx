@@ -1,37 +1,47 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {render, fireEvent} from '@testing-library/react';
+import '@testing-library/jest-dom';
 import IconButton from '../../../src/components/icon-button/icon-button';
-import renderer from 'react-test-renderer';
 
 describe('IconButtonComponent', () => {
-    test('matches snapshot', () => {
-        const onClick = jest.fn();
-        const title = <div>Text</div>;
-        const imgSrc = 'imgSrc';
-        const className = 'custom-class-name';
-        const component = renderer.create(
-            <IconButton
-                className={className}
-                img={imgSrc}
-                title={title}
-                onClick={onClick}
-            />
-        );
-        expect(component.toJSON()).toMatchSnapshot();
+    const defaultProps = {
+        img: 'imgSrc',
+        title: <div>Text</div>,
+        onClick: () => {},
+        className: 'custom-class-name'
+    };
+
+    test('renders with all props correctly', () => {
+        const {container} = render(<IconButton {...defaultProps} />);
+
+        expect(container.firstChild).toMatchSnapshot();
     });
 
     test('triggers callback when clicked', () => {
         const onClick = jest.fn();
-        const title = <div>Text</div>;
-        const imgSrc = 'imgSrc';
-        const componentShallowWrapper = shallow(
+
+        const {container} = render(
             <IconButton
-                img={imgSrc}
-                title={title}
+                {...defaultProps}
                 onClick={onClick}
             />
         );
-        componentShallowWrapper.simulate('click');
-        expect(onClick).toHaveBeenCalled();
+
+        const button = container.querySelector('div[role="button"]');
+
+        fireEvent.click(button);
+
+        expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    test('does not trigger callback when not clicked', () => {
+        const onClick = jest.fn();
+
+        render(<IconButton
+            {...defaultProps}
+            onClick={onClick}
+        />);
+        
+        expect(onClick).toHaveBeenCalledTimes(0);
     });
 });

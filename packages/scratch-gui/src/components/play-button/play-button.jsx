@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import classNames from 'classnames';
 
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import {defineMessages, useIntl} from 'react-intl';
 
 import styles from './play-button.css';
 
@@ -24,7 +24,6 @@ const messages = defineMessages({
 
 const PlayButtonComponent = ({
     className,
-    intl,
     isPlaying,
     onClick,
     onMouseDown,
@@ -33,6 +32,7 @@ const PlayButtonComponent = ({
     setButtonRef,
     ...props
 }) => {
+    const intl = useIntl();
     const label = isPlaying ?
         intl.formatMessage(messages.stop) :
         intl.formatMessage(messages.play);
@@ -61,7 +61,6 @@ const PlayButtonComponent = ({
 
 PlayButtonComponent.propTypes = {
     className: PropTypes.string,
-    intl: intlShape,
     isPlaying: PropTypes.bool.isRequired,
     onClick: PropTypes.func.isRequired,
     onMouseDown: PropTypes.func.isRequired,
@@ -70,4 +69,4 @@ PlayButtonComponent.propTypes = {
     setButtonRef: PropTypes.func.isRequired
 };
 
-export default injectIntl(PlayButtonComponent);
+export default PlayButtonComponent;

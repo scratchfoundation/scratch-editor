@@ -33,7 +33,7 @@ class ProjectWatcher extends React.Component {
     }
     fulfill () {
         this.props.onDoneUpdating();
-        this.setState({ // eslint-disable-line react/no-did-update-set-state
+        this.setState({
             waiting: false
         });
     }

@@ -139,7 +139,7 @@ const initTelemetryModal = function (currentState) {
     );
 };
 
-const configReducer = function (state: GUIConfig) {
+const configReducer = function (state?: GUIConfig | null) {
     if (typeof state === 'undefined') return null;
 
     return state;

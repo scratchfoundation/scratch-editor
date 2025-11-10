@@ -9,20 +9,19 @@ import {connect} from 'react-redux';
  * and drops of objects stored in the assetDrag redux state.
  *
  * Example: You want to enable MyComponent to receive drops from a drag type
- *    Wrapped = DropAreaHOC([...dragTypes])(
- *      <MyComponent />
- *    )
+ * Wrapped = DropAreaHOC([...dragTypes])(
+ * <MyComponent />
+ * )
  *
  * MyComponent now receives 2 new props
- *      containerRef: a ref that must be set on the container element
- *      dragOver: boolean if an asset is being dragged above the component
+ * containerRef: a ref that must be set on the container element
+ * dragOver: boolean if an asset is being dragged above the component
  *
  * Use the wrapped component:
- *    <Wrapped onDrop={yourDropHandler} />
+ * <Wrapped onDrop={yourDropHandler} />
  *
  * NB: This HOC _only_ works with objects that drag using the assetDrag reducer.
- *     This _does not_ handle drags for blocks coming from the workspace.
- *
+ * This _does not_ handle drags for blocks coming from the workspace.
  * @param {Array.<string>} dragTypes Types to respond to, from DragConstants
  * @returns {function} The HOC, specialized for those drag types
  */

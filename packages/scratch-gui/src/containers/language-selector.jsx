@@ -24,8 +24,8 @@ class LanguageSelector extends React.Component {
     }
     render () {
         const {
-            onChangeLanguage, // eslint-disable-line no-unused-vars
-            messagesByLocale, // eslint-disable-line no-unused-vars
+            onChangeLanguage,
+            messagesByLocale,
             children,
             ...props
         } = this.props;

@@ -68,7 +68,7 @@ const VideoState = {
 /**
  * Class for the motion-related blocks in Scratch 3.0
  * @param {Runtime} runtime - the runtime instantiating this block package.
- * @constructor
+ * @class
  */
 class Scratch3VideoSensingBlocks {
     constructor (runtime) {
@@ -263,7 +263,7 @@ class Scratch3VideoSensingBlocks {
      * string, and the value is one-indexed.
      * @param {object[]} info - An array of info objects each having a name
      *   property.
-     * @return {array} - An array of objects with text and value properties.
+     * @returns {Array} - An array of objects with text and value properties.
      * @private
      */
     _buildMenu (info) {

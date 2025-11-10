@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDomClient from 'react-dom/client';
 import {connect} from 'react-redux';
 import {compose} from 'redux';
 
@@ -61,4 +61,5 @@ const WrappedPlayer = compose(
 const appTarget = document.createElement('div');
 document.body.appendChild(appTarget);
 
-ReactDOM.render(<WrappedPlayer isPlayerOnly />, appTarget);
+const root = ReactDomClient.createRoot(appTarget);
+root.render(<WrappedPlayer isPlayerOnly />);

@@ -1,5 +1,5 @@
 import {ScratchPaintReducer} from 'scratch-paint';
-import LocalesReducer, {localesInitialState, initLocale} from './reducers/locales.js';
+import LocalesReducer, {localesInitialState, initLocale, selectLocale} from './reducers/locales.js';
 import GuiReducer, {buildInitialState, guiMiddleware, initEmbedded, initFullScreen, initPlayer} from './reducers/gui';
 import {setFullScreen, setPlayer, setEmbedded} from './reducers/mode.js';
 import {activateDeck} from './reducers/cards.js';
@@ -8,6 +8,7 @@ import {
     onFetchedProjectData,
     onLoadedProject,
     defaultProjectId,
+    manualUpdateProject,
     remixProject,
     requestNewProject,
     requestProjectUpload,
@@ -18,6 +19,7 @@ import {
     closeLoadingProject,
     openTelemetryModal
 } from './reducers/modals.js';
+import {setStageSize} from './reducers/stage-size';
 
 export const guiReducers = {
     locales: LocalesReducer,
@@ -30,10 +32,12 @@ export {
     onFetchedProjectData,
     onLoadedProject,
     defaultProjectId,
+    manualUpdateProject,
     remixProject,
     requestNewProject,
     requestProjectUpload,
     setProjectId,
+    setStageSize,
 
     openLoadingProject,
     closeLoadingProject,
@@ -49,5 +53,6 @@ export {
     setFullScreen,
     setPlayer,
     setEmbedded,
-    activateDeck
+    activateDeck,
+    selectLocale
 };

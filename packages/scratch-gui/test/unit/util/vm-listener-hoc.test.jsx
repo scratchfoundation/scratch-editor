@@ -1,9 +1,10 @@
 import React from 'react';
 import configureStore from 'redux-mock-store';
-import {mount} from 'enzyme';
+import {render} from '@testing-library/react';
 import VM from '@scratch/scratch-vm';
 
 import vmListenerHOC from '../../../src/lib/vm-listener-hoc.jsx';
+import '@testing-library/jest-dom';
 
 describe('VMListenerHOC', () => {
     const mockStore = configureStore();
@@ -25,7 +26,7 @@ describe('VMListenerHOC', () => {
         const Component = () => (<div />);
         const WrappedComponent = vmListenerHOC(Component);
         const onGreenFlag = jest.fn();
-        mount(
+        render(
             <WrappedComponent
                 store={store}
                 vm={vm}
@@ -38,23 +39,28 @@ describe('VMListenerHOC', () => {
     });
 
     test('onGreenFlag is not passed to the children', () => {
-        const Component = () => (<div />);
+        const Component = ({onGreenFlag}) => (
+            <div id="onGreenFlag">{`${onGreenFlag ?
+                onGreenFlag() :
+                onGreenFlag
+            }`}</div>
+        );
         const WrappedComponent = vmListenerHOC(Component);
-        const wrapper = mount(
+        const {container} = render(
             <WrappedComponent
                 store={store}
                 vm={vm}
                 onGreenFlag={jest.fn()}
             />
         );
-        const child = wrapper.find(Component);
-        expect(child.props().onGreenFlag).toBeUndefined();
+        const element = container.querySelector('#onGreenFlag');
+        expect(element).toHaveTextContent(/undefined/i);
     });
 
     test('targetsUpdate event from vm triggers targets update action', () => {
         const Component = () => (<div />);
         const WrappedComponent = vmListenerHOC(Component);
-        mount(
+        render(
             <WrappedComponent
                 store={store}
                 vm={vm}
@@ -79,7 +85,7 @@ describe('VMListenerHOC', () => {
                 vm: vm
             }
         });
-        mount(
+        render(
             <WrappedComponent
                 store={store}
                 vm={vm}
@@ -102,7 +108,7 @@ describe('VMListenerHOC', () => {
                 vm: vm
             }
         });
-        mount(
+        render(
             <WrappedComponent
                 store={store}
                 vm={vm}
@@ -123,7 +129,7 @@ describe('VMListenerHOC', () => {
                 vm: vm
             }
         });
-        mount(
+        render(
             <WrappedComponent
                 store={store}
                 vm={vm}
@@ -154,7 +160,7 @@ describe('VMListenerHOC', () => {
                 vm: vm
             }
         });
-        mount(
+        render(
             <WrappedComponent
                 attachKeyboardEvents
                 store={store}

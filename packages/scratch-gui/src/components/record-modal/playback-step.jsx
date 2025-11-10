@@ -4,7 +4,7 @@ import Box from '../box/box.jsx';
 import Waveform from '../waveform/waveform.jsx';
 import Meter from '../meter/meter.jsx';
 import AudioTrimmer from '../../containers/audio-trimmer.jsx';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
+import {defineMessages, useIntl} from 'react-intl';
 
 import styles from './record-modal.css';
 import backIcon from './icon--back.svg';
@@ -39,80 +39,82 @@ const messages = defineMessages({
     }
 });
 
-const PlaybackStep = props => (
-    <Box>
-        <Box className={styles.visualizationContainer}>
+const PlaybackStep = props => {
+    const intl = useIntl();
+    return (
+        <Box>
+            <Box className={styles.visualizationContainer}>
 
-            <Box className={styles.meterContainer}>
-                <Meter
-                    height={172}
-                    level={0}
-                    width={20}
-                />
+                <Box className={styles.meterContainer}>
+                    <Meter
+                        height={172}
+                        level={0}
+                        width={20}
+                    />
+                </Box>
+                <Box className={styles.waveformContainer}>
+                    <Waveform
+                        data={props.levels}
+                        height={150}
+                        level={0}
+                        width={480}
+                    />
+                    <AudioTrimmer
+                        playhead={props.playhead}
+                        trimEnd={props.trimEnd}
+                        trimStart={props.trimStart}
+                        onSetTrimEnd={props.onSetTrimEnd}
+                        onSetTrimStart={props.onSetTrimStart}
+                    />
+                </Box>
             </Box>
-            <Box className={styles.waveformContainer}>
-                <Waveform
-                    data={props.levels}
-                    height={150}
-                    level={0}
-                    width={480}
-                />
-                <AudioTrimmer
-                    playhead={props.playhead}
-                    trimEnd={props.trimEnd}
-                    trimStart={props.trimStart}
-                    onSetTrimEnd={props.onSetTrimEnd}
-                    onSetTrimStart={props.onSetTrimStart}
-                />
+            <Box className={styles.mainButtonRow}>
+                <button
+                    className={styles.mainButton}
+                    onClick={props.playing ? props.onStopPlaying : props.onPlay}
+                >
+                    <img
+                        draggable={false}
+                        src={props.playing ? stopIcon : playIcon}
+                    />
+                    <div className={styles.helpText}>
+                        <span className={styles.playingText}>
+                            {props.playing ?
+                                intl.formatMessage(messages.stopMsg) :
+                                intl.formatMessage(messages.playMsg)
+                            }
+                        </span>
+                    </div>
+                </button>
+            </Box>
+            <Box className={styles.buttonRow}>
+                <button
+                    className={styles.rerecordButton}
+                    onClick={props.onBack}
+                >
+                    <img
+                        draggable={false}
+                        src={backIcon}
+                    />
+                    {intl.formatMessage(messages.reRecordMsg)}
+                </button>
+                <button
+                    className={styles.okButton}
+                    disabled={props.encoding}
+                    onClick={props.onSubmit}
+                >
+                    {props.encoding ?
+                        intl.formatMessage(messages.loadingMsg) :
+                        intl.formatMessage(messages.saveMsg)
+                    }
+                </button>
             </Box>
         </Box>
-        <Box className={styles.mainButtonRow}>
-            <button
-                className={styles.mainButton}
-                onClick={props.playing ? props.onStopPlaying : props.onPlay}
-            >
-                <img
-                    draggable={false}
-                    src={props.playing ? stopIcon : playIcon}
-                />
-                <div className={styles.helpText}>
-                    <span className={styles.playingText}>
-                        {props.playing ?
-                            props.intl.formatMessage(messages.stopMsg) :
-                            props.intl.formatMessage(messages.playMsg)
-                        }
-                    </span>
-                </div>
-            </button>
-        </Box>
-        <Box className={styles.buttonRow}>
-            <button
-                className={styles.rerecordButton}
-                onClick={props.onBack}
-            >
-                <img
-                    draggable={false}
-                    src={backIcon}
-                />
-                {props.intl.formatMessage(messages.reRecordMsg)}
-            </button>
-            <button
-                className={styles.okButton}
-                disabled={props.encoding}
-                onClick={props.onSubmit}
-            >
-                {props.encoding ?
-                    props.intl.formatMessage(messages.loadingMsg) :
-                    props.intl.formatMessage(messages.saveMsg)
-                }
-            </button>
-        </Box>
-    </Box>
-);
+    );
+};
 
 PlaybackStep.propTypes = {
     encoding: PropTypes.bool.isRequired,
-    intl: intlShape.isRequired,
     levels: PropTypes.arrayOf(PropTypes.number).isRequired,
     onBack: PropTypes.func.isRequired,
     onPlay: PropTypes.func.isRequired,
@@ -126,4 +128,4 @@ PlaybackStep.propTypes = {
     trimStart: PropTypes.number.isRequired
 };
 
-export default injectIntl(PlaybackStep);
+export default PlaybackStep;

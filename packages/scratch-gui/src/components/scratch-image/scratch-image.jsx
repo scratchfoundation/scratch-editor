@@ -70,7 +70,6 @@ class ScratchImage extends React.PureComponent {
      * Calculate the state changes necessary to load the image specified in the provided source info. If the component
      * is mounted, call setState() with the return value of this function. If the component has not yet mounted, use
      * the return value of this function as initial state for the component.
-     *
      * @param {object} imageSource - the new source for the image, including either assetId or URI
      * @returns {object} - the new state values, if any.
      */

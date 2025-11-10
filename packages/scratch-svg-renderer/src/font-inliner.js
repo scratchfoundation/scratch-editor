@@ -15,7 +15,7 @@ const getFonts = require('scratch-render-fonts');
  *   // Using a <link> or <style>@import</style> to link to font-family
  *   // injected into the document: no effect.
  * @param {string} svgString The string representation of the svg to modify
- * @return {string} The svg with any needed fonts inlined
+ * @returns {string} The svg with any needed fonts inlined
  */
 const inlineSvgFonts = function (svgString) {
     const FONTS = getFonts();

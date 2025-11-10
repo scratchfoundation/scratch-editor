@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDomClient from 'react-dom/client';
 import {connect} from 'react-redux';
 
 import Controls from '../containers/controls.jsx';
@@ -32,4 +32,5 @@ const App = AppStateHOC(HashParserHOC(BlocksOnly));
 const appTarget = document.createElement('div');
 document.body.appendChild(appTarget);
 
-ReactDOM.render(<App />, appTarget);
+const root = ReactDomClient.createRoot(appTarget);
+root.render(<App />);

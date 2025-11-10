@@ -1,7 +1,8 @@
 import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {defineMessages, injectIntl, intlShape, FormattedMessage} from 'react-intl';
+import {defineMessages, injectIntl, FormattedMessage} from 'react-intl';
+import intlShape from '../../lib/intlShape.js';
 import ReactModal from 'react-modal';
 
 import Box from '../box/box.jsx';
@@ -24,7 +25,7 @@ const messages = defineMessages({
     bodyText2: {
         defaultMessage: 'The information we collect includes language selection, blocks usage, and some events like ' +
             'saving, loading, and uploading a project. We DO NOT collect any personal information. Please see our ' +
-            '{privacyPolicyLink} for more information.',
+            '<a>{privacyPolicyLink}</a> for more information.',
         description: 'First paragraph of body text for telemetry opt-in modal',
         id: 'gui.telemetryOptIn.body2'
     },
@@ -147,14 +148,15 @@ class TelemetryModal extends React.PureComponent {
                     <p><FormattedMessage
                         {...messages.bodyText2}
                         values={{
-                            privacyPolicyLink: (<a
+                            privacyPolicyLink: <FormattedMessage {...messages.privacyPolicyLink} />,
+                            a: privacyPolicyLink => (<a
                                 className={styles.privacyPolicyLink}
                                 href="https://scratch.mit.edu/privacy_policy/"
                                 onClick={this.props.onShowPrivacyPolicy}
                                 target="_blank"
                                 rel="noopener noreferrer"
                             >
-                                <FormattedMessage {...messages.privacyPolicyLink} />
+                                {privacyPolicyLink}
                             </a>)
                         }}
                     /></p>

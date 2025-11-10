@@ -14,6 +14,7 @@ const InlineMessageComponent = ({
 }) => (
     <div
         className={classNames(styles.inlineMessage, styles[level])}
+        aria-label="inline message"
     >
         {/* TODO: implement Rtl handling */}
         {iconSpinner && (

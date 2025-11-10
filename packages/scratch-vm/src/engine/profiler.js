@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * A way to profile Scratch internal performance. Like what blocks run during a
  * step? How much time do they take? How much time is spent inbetween blocks?
  *
@@ -21,37 +21,37 @@ let nextId = 0;
 
 /**
  * The mapping of names to ids.
- * @const {Object.<string, number>}
+ * @constant {Object.<string, number>}
  */
 const profilerNames = {};
 
 /**
  * The START event identifier in Profiler records.
- * @const {number}
+ * @constant {number}
  */
 const START = 0;
 
 /**
  * The STOP event identifier in Profiler records.
- * @const {number}
+ * @constant {number}
  */
 const STOP = 1;
 
 /**
  * The number of cells used in the records array by a START event.
- * @const {number}
+ * @constant {number}
  */
 const START_SIZE = 4;
 
 /**
  * The number of cells used in the records array by a STOP event.
- * @const {number}
+ * @constant {number}
  */
 const STOP_SIZE = 2;
 
 /**
  * Stored reference to Performance instance provided by the Browser.
- * @const {Performance}
+ * @constant {Performance}
  */
 const performance = typeof window === 'object' && window.performance;
 
@@ -169,13 +169,13 @@ class Profiler {
 
         /**
          * A reference to the START record id constant.
-         * @const {number}
+         * @constant {number}
          */
         this.START = START;
 
         /**
          * A reference to the STOP record id constant.
-         * @const {number}
+         * @constant {number}
          */
         this.STOP = STOP;
     }
@@ -215,7 +215,7 @@ class Profiler {
      * @param {number} id The id returned by idByName for a name symbol.
      * @param {*} arg The argument for a frame that identifies it in addition
      *   to the id.
-     * @return {{count: number}} A ProfilerFrame-like whose count should be
+     * @returns {{count: number}} A ProfilerFrame-like whose count should be
      *   incremented for each call.
      */
     frame (id, arg) {
@@ -320,7 +320,7 @@ class Profiler {
     /**
      * Lookup or create an id for a frame name.
      * @param {string} name The name to return an id for.
-     * @return {number} The id for the passed name.
+     * @returns {number} The id for the passed name.
      */
     idByName (name) {
         return Profiler.idByName(name);
@@ -329,7 +329,7 @@ class Profiler {
     /**
      * Reverse lookup the name from a given frame id.
      * @param {number} id The id to search for.
-     * @return {string} The name for the given id.
+     * @returns {string} The name for the given id.
      */
     nameById (id) {
         return Profiler.nameById(id);
@@ -339,7 +339,7 @@ class Profiler {
      * Lookup or create an id for a frame name.
      * @static
      * @param {string} name The name to return an id for.
-     * @return {number} The id for the passed name.
+     * @returns {number} The id for the passed name.
      */
     static idByName (name) {
         if (typeof profilerNames[name] !== 'number') {
@@ -352,7 +352,7 @@ class Profiler {
      * Reverse lookup the name from a given frame id.
      * @static
      * @param {number} id The id to search for.
-     * @return {string} The name for the given id.
+     * @returns {string} The name for the given id.
      */
     static nameById (id) {
         for (const name in profilerNames) {
@@ -365,7 +365,7 @@ class Profiler {
 
     /**
      * Profiler is only available on platforms with the Performance API.
-     * @return {boolean} Can the Profiler run in this browser?
+     * @returns {boolean} Can the Profiler run in this browser?
      */
     static available () {
         return (
@@ -377,13 +377,13 @@ class Profiler {
 
 /**
  * A reference to the START record id constant.
- * @const {number}
+ * @constant {number}
  */
 Profiler.START = START;
 
 /**
  * A reference to the STOP record id constant.
- * @const {number}
+ * @constant {number}
  */
 Profiler.STOP = STOP;
 

@@ -121,7 +121,7 @@ class OpcodeLabels {
          * Translation function for labels. By default just return the defaultMessage
          * @private
          * @param {object} message A message object compatible with react-intl formatMessage
-         * @return {string} Return the default string initially
+         * @returns {string} Return the default string initially
          */
         this._translator = message => message.defaultMessage;
 
@@ -233,7 +233,7 @@ class OpcodeLabels {
     /**
      * Return the label for an opcode
      * @param {string} opcode the opcode you want a label for
-     * @return {object} object with  label and category
+     * @returns {object} object with  label and category
      */
     getLabel (opcode) {
         if (opcode in this._opcodeMap) return this._opcodeMap[opcode];

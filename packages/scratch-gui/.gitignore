@@ -8,6 +8,7 @@ npm-*
 # Testing
 /.nyc_output
 /coverage
+/test-results
 
 # Build
 /build
@@ -26,6 +27,3 @@ npm-*
 
 # for act
 .secrets
-
-# Generated test results
-/test-results

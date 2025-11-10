@@ -1,7 +1,8 @@
 import bindAll from 'lodash.bindall';
 import React from 'react';
 import PropTypes from 'prop-types';
-import {injectIntl, intlShape} from 'react-intl';
+import {injectIntl} from 'react-intl';
+import intlShape from '../lib/intlShape.js';
 
 import {connect} from 'react-redux';
 import {moveMonitorRect} from '../reducers/monitor-layout';
@@ -19,7 +20,7 @@ class MonitorList extends React.Component {
         ]);
         OpcodeLabels.setTranslatorFunction(props.intl.formatMessage);
     }
-    handleMonitorChange (id, x, y) { // eslint-disable-line no-unused-vars
+    handleMonitorChange (id, x, y) {
         this.props.moveMonitorRect(id, x, y);
     }
     render () {

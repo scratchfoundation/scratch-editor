@@ -1,4 +1,4 @@
-.monitor-list {
+body .monitor-list {
     /* Width/height are set by the component, margin: auto centers in fullscreen */
     margin: auto;
     pointer-events: none;

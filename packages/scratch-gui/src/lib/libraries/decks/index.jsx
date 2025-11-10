@@ -39,6 +39,9 @@ import libraryStory from './thumbnails/tell-a-story.jpg';
 // Video Sensing
 import libraryVideoSens from './thumbnails/video-sensing.jpg';
 
+// Face Sensing
+import libraryFaceSens from './thumbnails/face-sensing.png';
+
 // Make-it-Fly
 import libraryMakeFly from './thumbnails/make-it-fly.jpg';
 
@@ -64,6 +67,10 @@ import addBackdropThumb from './thumbnails/add-backdrop.jpg';
 import addEffectsThumb from './thumbnails/add-effects.jpg';
 import moveArrowKeysThumb from './thumbnails/move-arrow-keys.jpg';
 import spinThumb from './thumbnails/spin.jpg';
+
+// Extrernal Resources
+import codingCards from './thumbnails/coding-cards.png';
+import faceSensingGame from './thumbnails/face-sensing-game.png';
 
 export const CATEGORIES = {
     gettingStarted: 'gettingStarted',
@@ -1558,7 +1565,119 @@ export default {
         ],
         urlId: 'video-sensing'
     },
-
+    'Face-Sensing': {
+        name: (
+            <FormattedMessage
+                defaultMessage="Face Sensing"
+                description="Name for the 'Face Sensing' how-to"
+                id="gui.howtos.facesens.name"
+            />
+        ),
+        img: libraryFaceSens,
+        category: CATEGORIES.intermediate,
+        steps: [{
+            video: 'fnjds1cjei'
+        },
+        {
+            title: (
+                <FormattedMessage
+                    defaultMessage="Add the “Face Sensing” Extension"
+                    description="Step name for 'Add the “Face Sensing” Extension' step"
+                    id="gui.howtos.facesens.step_addExtension"
+                />
+            ),
+            image: 'faceAddExtension'
+        }, {
+            title: (
+                <FormattedMessage
+                    defaultMessage="Allow Access to Your Camera (Your Video Is Private)"
+                    description="Step name for 'Allow Access to Your Camera' step"
+                    id="gui.howtos.facesens.step_allowCamera"
+                />
+            ),
+            image: 'faceAllowCamera'
+        }, {
+            title: (
+                <FormattedMessage
+                    defaultMessage="Select a “Fashion” Accessory Sprite"
+                    description="Step name for 'Select a “Fashion” Accessory Sprite' step"
+                    id="gui.howtos.facesens.step_addFashionSprite"
+                />
+            ),
+            image: 'faceAddFashionSprite'
+        }, {
+            title: (
+                <FormattedMessage
+                    defaultMessage="Go to Top of Head"
+                    description="Step name for 'Go to Top of Head' step"
+                    id="gui.howtos.facesens.step_goToTopHead"
+                />
+            ),
+            image: 'faceGoToTopHead'
+        }, {
+            title: (
+                <FormattedMessage
+                    defaultMessage="Forever Go to Top of Head"
+                    description="Step name for 'Forever Go to Top of Head' step"
+                    id="gui.howtos.facesens.step_goToTopHeadForever"
+                />
+            ),
+            image: 'faceGoToTopHeadForever'
+        }, {
+            title: (
+                <FormattedMessage
+                    defaultMessage="Use Blocks or Paint Editor to Adjust Size and Placement"
+                    description="Step name for 'Use Blocks or Paint Editor to Adjust Size and Placement' step"
+                    id="gui.howtos.facesens.step_adjustSize"
+                />
+            ),
+            image: 'faceAdjustSize'
+        }, {
+            title: (
+                <FormattedMessage
+                    defaultMessage="Add Another Sprite or Try Additional Blocks"
+                    description="Step name for 'Add Another Sprite or Try Additional Blocks' step"
+                    id="gui.howtos.facesens.step_addAnotherSprite"
+                />
+            ),
+            image: 'faceAddAnotherSprite'
+        }, {
+            title: (
+                <FormattedMessage
+                    defaultMessage="Or Convert a Clicker Game to Use Parts of Your Face"
+                    description="Step name for 'Or Convert a Clicker Game to Use Parts of Your Face' step"
+                    id="gui.howtos.facesens.step_clickerGame"
+                />
+            ),
+            image: 'faceClickerGame'
+        }, {
+            externalResources: {
+                'Face-Sensing-Game': {
+                    name: (
+                        <FormattedMessage
+                            defaultMessage="Starter Project | Face Sensing Game"
+                            description="Name for the 'Starter Project | Face Sensing Game' resource"
+                            id="gui.howtos.externalResources.faceSensingGame"
+                        />
+                    ),
+                    img: faceSensingGame,
+                    url: 'https://scratch.mit.edu/projects/1210061611'
+                },
+                'Coding-Cards': {
+                    name: (
+                        <FormattedMessage
+                            defaultMessage="Coding Cards | Face Sensing"
+                            description="Name for the 'Coding Cards | Face Sensing' how-to"
+                            id="gui.howtos.externalResources.codingCards"
+                        />
+                    ),
+                    img: codingCards,
+                    url: 'https://scratchfoundation.org/learn/learning-library/face-sensing'
+                }
+            }
+        }],
+        urlId: 'face-sensing'
+    },
     'talking': {
         name: (
             <FormattedMessage

@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ToggleButtons renders multiple buttons 1`] = `
+<div
+  class=""
+>
+  <button
+    aria-label="Button 1"
+    title="Button 1"
+  >
+    <img
+      aria-hidden="true"
+      src="Button 1 icon"
+    />
+  </button>
+  <button
+    aria-label="Button 2"
+    title="Button 2"
+  >
+    <img
+      aria-hidden="true"
+      src="Button 2 icon"
+    />
+  </button>
+</div>
+`;

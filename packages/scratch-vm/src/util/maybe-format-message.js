@@ -6,7 +6,7 @@ const formatMessage = require('format-message');
  * @param {*} maybeMessage - something that might be a message descriptor object.
  * @param {object} [args] - the arguments to pass to `formatMessage` if it gets called.
  * @param {string} [locale] - the locale to pass to `formatMessage` if it gets called.
- * @return {string|*} - the formatted message OR the original `maybeMessage` input.
+ * @returns {string|*} - the formatted message OR the original `maybeMessage` input.
  */
 const maybeFormatMessage = function (maybeMessage, args, locale) {
     if (maybeMessage && maybeMessage.id && maybeMessage.default) {

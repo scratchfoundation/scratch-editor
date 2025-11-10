@@ -1,11 +1,12 @@
 import React from 'react';
-import {mount} from 'enzyme';
+import {render} from '@testing-library/react';
 
 import ThrottledPropertyHOC from '../../../src/lib/throttled-property-hoc.jsx';
 
 describe('VMListenerHOC', () => {
-    let mounted;
+    let component;
     const throttleTime = 500;
+    let WrappedComponent;
     beforeEach(() => {
         const Component = ({propToThrottle, doNotThrottle}) => (
             <input
@@ -13,11 +14,11 @@ describe('VMListenerHOC', () => {
                 value={propToThrottle}
             />
         );
-        const WrappedComponent = ThrottledPropertyHOC('propToThrottle', throttleTime)(Component);
+        WrappedComponent = ThrottledPropertyHOC('propToThrottle', throttleTime)(Component);
 
         global.Date.now = () => 0;
 
-        mounted = mount(
+        component = render(
             <WrappedComponent
                 doNotThrottle="oldvalue"
                 propToThrottle={0}
@@ -26,29 +27,45 @@ describe('VMListenerHOC', () => {
     });
 
     test('it passes the props on initial render ', () => {
-        expect(mounted.find('[value=0]').exists()).toEqual(true);
-        expect(mounted.find('[name="oldvalue"]').exists()).toEqual(true);
+        const {container} = component;
+        expect(container.querySelector('input').value).toEqual('0');
+        expect(container.querySelector('input').name).toEqual('oldvalue');
     });
 
     test('it does not rerender if throttled prop is updated too soon', () => {
+        const {container, rerender} = component;
         global.Date.now = () => throttleTime / 2;
-        mounted.setProps({propToThrottle: 1});
-        mounted.update();
-        expect(mounted.find('[value=0]').exists()).toEqual(true);
+        rerender(
+            <WrappedComponent
+                doNotThrottle="oldvalue"
+                propToThrottle={1}
+            />
+        );
+        expect(container.querySelector('input').value).toEqual('0');
     });
 
     test('it does rerender if throttled prop is updated after throttle timeout', () => {
+        const {container, rerender} = component;
         global.Date.now = () => throttleTime * 2;
-        mounted.setProps({propToThrottle: 1});
-        mounted.update();
-        expect(mounted.find('[value=1]').exists()).toEqual(true);
+        rerender(
+            <WrappedComponent
+                doNotThrottle="oldvalue"
+                propToThrottle={1}
+            />
+        );
+        expect(container.querySelector('input').value).toEqual('1');
     });
 
     test('it does rerender if a non-throttled prop is changed', () => {
+        const {container, rerender} = component;
         global.Date.now = () => throttleTime / 2;
-        mounted.setProps({doNotThrottle: 'newvalue', propToThrottle: 2});
-        mounted.update();
-        expect(mounted.find('[name="newvalue"]').exists()).toEqual(true);
-        expect(mounted.find('[value=2]').exists()).toEqual(true);
+        rerender(
+            <WrappedComponent
+                doNotThrottle="newvalue"
+                propToThrottle={2}
+            />
+        );
+        expect(container.querySelector('input').value).toEqual('2');
+        expect(container.querySelector('input').name).toEqual('newvalue');
     });
 });

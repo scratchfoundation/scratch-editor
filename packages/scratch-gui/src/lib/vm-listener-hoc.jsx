@@ -10,7 +10,7 @@ import {updateBlockDrag} from '../reducers/block-drag';
 import {updateMonitors} from '../reducers/monitors';
 import {setProjectChanged, setProjectUnchanged} from '../reducers/project-changed';
 import {setRunningState, setTurboState, setStartedState} from '../reducers/vm-status';
-import {showExtensionAlert} from '../reducers/alerts';
+import {showExtensionAlert, showStandardAlert, closeAlertWithId} from '../reducers/alerts';
 import {updateMicIndicator} from '../reducers/mic-indicator';
 
 /*
@@ -46,6 +46,7 @@ const vmListenerHOC = function (WrappedComponent) {
             this.props.vm.on('PROJECT_START', this.props.onGreenFlag);
             this.props.vm.on('PERIPHERAL_CONNECTION_LOST_ERROR', this.props.onShowExtensionAlert);
             this.props.vm.on('MIC_LISTENING', this.props.onMicListeningUpdate);
+            this.props.vm.on('EXTENSION_DATA_LOADING', this.props.onExtensionDataLoading);
 
         }
         componentDidMount () {
@@ -68,6 +69,8 @@ const vmListenerHOC = function (WrappedComponent) {
         }
         componentWillUnmount () {
             this.props.vm.removeListener('PERIPHERAL_CONNECTION_LOST_ERROR', this.props.onShowExtensionAlert);
+            this.props.vm.removeListener('EXTENSION_DATA_LOADING', this.props.onExtensionDataLoading);
+            
             if (this.props.attachKeyboardEvents) {
                 document.removeEventListener('keydown', this.handleKeyDown);
                 document.removeEventListener('keyup', this.handleKeyUp);
@@ -115,7 +118,7 @@ const vmListenerHOC = function (WrappedComponent) {
         }
         render () {
             const {
-                /* eslint-disable no-unused-vars */
+                 
                 attachKeyboardEvents,
                 projectChanged,
                 shouldUpdateTargets,
@@ -125,6 +128,7 @@ const vmListenerHOC = function (WrappedComponent) {
                 onKeyDown,
                 onKeyUp,
                 onMicListeningUpdate,
+                onExtensionDataLoading,
                 onMonitorsUpdate,
                 onTargetsUpdate,
                 onProjectChanged,
@@ -135,7 +139,7 @@ const vmListenerHOC = function (WrappedComponent) {
                 onTurboModeOff,
                 onTurboModeOn,
                 onShowExtensionAlert,
-                /* eslint-enable no-unused-vars */
+                 
                 ...props
             } = this.props;
             return <WrappedComponent {...props} />;
@@ -144,6 +148,7 @@ const vmListenerHOC = function (WrappedComponent) {
     VMListener.propTypes = {
         attachKeyboardEvents: PropTypes.bool,
         onBlockDragUpdate: PropTypes.func.isRequired,
+        onExtensionDataLoading: PropTypes.func.isRequired,
         onGreenFlag: PropTypes.func,
         onKeyDown: PropTypes.func,
         onKeyUp: PropTypes.func,
@@ -205,6 +210,13 @@ const vmListenerHOC = function (WrappedComponent) {
         },
         onMicListeningUpdate: listening => {
             dispatch(updateMicIndicator(listening));
+        },
+        onExtensionDataLoading: loading => {
+            if (loading) {
+                dispatch(showStandardAlert('loadingExtensionData'));
+            } else {
+                dispatch(closeAlertWithId('loadingExtensionData'));
+            }
         }
     });
     return connect(

@@ -1,5 +1,5 @@
 /**
- * @fileoverview
+ * @file
  * This integration test ensures that a local upload of a sb2 project pulls
  * in assets correctly (from the provided .sb2 file) even if the assets
  * are not present on our servers.

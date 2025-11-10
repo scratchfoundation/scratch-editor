@@ -55,7 +55,7 @@ const indexHTML = path.resolve(__dirname, 'index.html');
     await browser.close();
 })().catch(err => {
     // Handle promise rejections by exiting with a nonzero code to ensure that tests don't erroneously pass
-    // eslint-disable-next-line no-console
+     
     console.error(err.message);
     process.exit(1);
 });

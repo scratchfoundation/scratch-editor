@@ -34,7 +34,7 @@ describe('Working with sounds', () => {
         // Delete the sound
         await rightClickText('Meow', scope.soundsTab);
         await driver.sleep(500); // Wait a moment for context menu; only needed for local testing
-        await clickText('delete', scope.soundsTab);
+        await clickText('delete', scope.contextMenu);
 
         // Add it back
         await clickXpath('//button[@aria-label="Choose a Sound"]');
@@ -79,7 +79,7 @@ describe('Working with sounds', () => {
         await clickText('Sounds');
 
         await rightClickText('Meow', scope.soundsTab);
-        await clickText('duplicate', scope.soundsTab);
+        await clickText('duplicate', scope.contextMenu);
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for error
 
         // Make sure the duplicated sound is named correctly.

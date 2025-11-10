@@ -12,7 +12,7 @@ import xhr from 'xhr';
  * @property {?boolean} params.isCopy a flag indicating if this save is creating a copy.
  * @property {?boolean} params.isRemix a flag indicating if this save is creating a remix.
  * @property {?string} params.title the title of the project.
- * @return {Promise} A promise that resolves when the network request resolves.
+ * @returns {Promise} A promise that resolves when the network request resolves.
  */
 export default function (projectHost, projectId, vmState, params) {
     const opts = {

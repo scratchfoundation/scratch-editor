@@ -1,41 +1,50 @@
 import React from 'react';
-import {ContextMenu, MenuItem} from 'react-contextmenu';
+import PropTypes from 'prop-types';
+import ContextMenu from '../../lib/radix-ui-context-menu.js';
 import classNames from 'classnames';
-
 import styles from './context-menu.css';
 
-const StyledContextMenu = props => (
-    <ContextMenu
+const StyledMenuItem = ({children, ...props}) => (
+    <ContextMenu.ContextMenuItem
+        className={styles.menuItem}
         {...props}
-        className={styles.contextMenu}
-    />
+    >
+        {children}
+    </ContextMenu.ContextMenuItem>
 );
 
-const StyledMenuItem = props => (
-    <MenuItem
+StyledMenuItem.propTypes = {
+    children: PropTypes.node
+};
+
+const BorderedMenuItem = ({children, ...props}) => (
+    <ContextMenu.ContextMenuItem
+        className={classNames(styles.menuItem, styles.menuItemBordered)}
         {...props}
-        attributes={{className: styles.menuItem}}
-    />
+    >
+        {children}
+    </ContextMenu.ContextMenuItem>
 );
 
-const BorderedMenuItem = props => (
-    <MenuItem
+BorderedMenuItem.propTypes = {
+    children: PropTypes.node
+};
+
+const DangerousMenuItem = ({children, ...props}) => (
+    <ContextMenu.ContextMenuItem
+        className={classNames(styles.menuItem, styles.menuItemBordered, styles.menuItemDanger)}
         {...props}
-        attributes={{className: classNames(styles.menuItem, styles.menuItemBordered)}}
-    />
+    >
+        {children}
+    </ContextMenu.ContextMenuItem>
 );
 
-const DangerousMenuItem = props => (
-    <MenuItem
-        {...props}
-        attributes={{className: classNames(styles.menuItem, styles.menuItemBordered, styles.menuItemDanger)}}
-    />
-);
-
+DangerousMenuItem.propTypes = {
+    children: PropTypes.node
+};
 
 export {
     BorderedMenuItem,
     DangerousMenuItem,
-    StyledContextMenu as ContextMenu,
     StyledMenuItem as MenuItem
 };

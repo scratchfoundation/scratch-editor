@@ -1,11 +1,12 @@
 import React from 'react';
-import {mountWithIntl} from '../../helpers/intl-helpers.jsx';
+import {renderWithIntl} from '../../helpers/intl-helpers.jsx';
+import '@testing-library/jest-dom';
 import {PLATFORM} from '../../../src/lib/platform.js';
 
 // Mock this utility because it uses dynamic imports that do not work with jest
-jest.mock('../../../src/lib/libraries/decks/translate-image.js', () => {});
+jest.mock('../../../src/lib/libraries/decks/translate-image.js', () => { });
 
-import Cards, {ImageStep, VideoStep} from '../../../src/components/cards/cards.jsx';
+import Cards from '../../../src/components/cards/cards.jsx';
 
 describe('Cards component', () => {
     const defaultProps = () => ({
@@ -37,28 +38,21 @@ describe('Cards component', () => {
     });
 
     test('showVideos=true shows the video step', () => {
-        const component = mountWithIntl(
-            <Cards
-                {...defaultProps()}
-                platform={PLATFORM.WEB}
-                showVideos
-            />
-        );
-        expect(component.find(ImageStep).exists()).toEqual(false);
-        expect(component.find(VideoStep).exists()).toEqual(true);
+        const {container} = renderWithIntl(<Cards
+            {...defaultProps()}
+            platform={PLATFORM.WEB}
+            showVideos
+        />);
+
+        expect(container.firstChild).toMatchSnapshot();
     });
 
     test('showVideos=false shows the title image/name instead of video step', () => {
-        const component = mountWithIntl(
-            <Cards
-                {...defaultProps()}
-                showVideos={false}
-            />
-        );
-        expect(component.find(VideoStep).exists()).toEqual(false);
+        const {container} = renderWithIntl(<Cards
+            {...defaultProps()}
+            showVideos={false}
+        />);
 
-        const imageStep = component.find(ImageStep);
-        expect(imageStep.props().image).toEqual('id1 - img');
-        expect(imageStep.props().title).toEqual('id1 - name');
+        expect(container.firstChild).toMatchSnapshot();
     });
 });

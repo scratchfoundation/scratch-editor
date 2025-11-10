@@ -12,7 +12,7 @@ const OldTimeyMode = props => {
             <audio
                 src={oldtimeySound}
                 ref={audio => {
-                    audio && (audio.volume = 0.1); // eslint-disable-line no-unused-expressions
+                    audio && (audio.volume = 0.1); // eslint-disable-line @typescript-eslint/no-unused-expressions
                 }}
                 autoPlay
                 loop
