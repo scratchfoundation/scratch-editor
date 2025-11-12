@@ -29,6 +29,7 @@ goog.provide('Blockly.BlockSvg.render');
 goog.require('Blockly.BlockSvg');
 goog.require('Blockly.scratchBlocksUtils');
 goog.require('Blockly.utils');
+goog.require('Blockly.constants');
 
 
 // UI constants for rendering blocks.
@@ -141,7 +142,11 @@ Blockly.BlockSvg.STATEMENT_INPUT_INNER_SPACE = 2 * Blockly.BlockSvg.GRID_UNIT;
  */
 Object.defineProperty(Blockly.BlockSvg, 'START_HAT_HEIGHT', {
   get: function() {
-    return Blockly.useCatBlocks ? 31 : 16;
+    if (Blockly.theme === Blockly.Themes.CAT_BLOCKS) {
+      return 31;
+    }
+
+    return 16;
   },
   enumerable: true,
   configurable: true
@@ -160,12 +165,14 @@ Blockly.BlockSvg.ICON_SEPARATOR_HEIGHT = 10 * Blockly.BlockSvg.GRID_UNIT;
  */
 Object.defineProperty(Blockly.BlockSvg, 'START_HAT_PATH', {
   get: function() {
-    return Blockly.useCatBlocks
-      ? 'c2.6,-2.3 5.5,-4.3 8.5,-6.2' +
+    if (Blockly.theme === Blockly.Themes.CAT_BLOCKS) {
+      return 'c2.6,-2.3 5.5,-4.3 8.5,-6.2' +
         'c-1,-12.5 5.3,-23.3 8.4,-24.8c3.7,-1.8 16.5,13.1 18.4,15.4' +
         'c8.4,-1.3 17,-1.3 25.4,0c1.9,-2.3 14.7,-17.2 18.4,-15.4' +
-        'c3.1,1.5 9.4,12.3 8.4,24.8c3,1.8 5.9,3.9 8.5,6.1'
-      : 'c 25,-22 71,-22 96,0';
+        'c3.1,1.5 9.4,12.3 8.4,24.8c3,1.8 5.9,3.9 8.5,6.1';
+    }
+
+    return 'c 25,-22 71,-22 96,0';
   },
   enumerable: true,
   configurable: true
@@ -495,11 +502,13 @@ Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS = 5 * Blockly.BlockSvg.GRID_UNIT;
  */
 Object.defineProperty(Blockly.BlockSvg, 'TOP_LEFT_CORNER_DEFINE_HAT', {
   get: function() {
-    return Blockly.useCatBlocks
-      ? 'c0,-7.1 3.7,-13.3 9.3,-16.9c1.7,-7.5 5.4,-13.2 7.6,-14.2' +
+    if (Blockly.theme === Blockly.Themes.CAT_BLOCKS) {
+      return 'c0,-7.1 3.7,-13.3 9.3,-16.9c1.7,-7.5 5.4,-13.2 7.6,-14.2' +
         'c2.6,-1.3 10,6 14.6,11.1h33c4.6,-5.1 11.9,-12.4 14.6,-11.1' +
-        'c1.9,0.9 4.9,5.2 6.8,11.1c2.6,0,5.2,0,7.8,0'
-      : 'a ' + Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ',' +
+        'c1.9,0.9 4.9,5.2 6.8,11.1c2.6,0,5.2,0,7.8,0';
+    }
+    
+    return 'a ' + Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ',' +
         Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ' 0 0,1 ' +
         Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS + ',-' +
         Blockly.BlockSvg.DEFINE_HAT_CORNER_RADIUS;
@@ -544,12 +553,7 @@ Blockly.BlockSvg.prototype.updateColour = function() {
     }
   }
 
-  // Render block stroke
-  if (Blockly.useCatBlocks) {
-    this.svgPathBody_.setAttribute('stroke', strokeColour);
-  } else {
-    this.svgPath_.setAttribute('stroke', strokeColour);
-  }
+  this.blockFrameElement_.setAttribute('stroke', strokeColour);
 
   // Render block fill
   if (this.isGlowingBlock_ || renderShadowed) {
@@ -562,18 +566,10 @@ Blockly.BlockSvg.prototype.updateColour = function() {
   } else {
     var fillColour = this.getColour();
   }
-  if (Blockly.useCatBlocks) {
-    this.svgPathBody_.setAttribute('fill', fillColour);
-  } else {
-    this.svgPath_.setAttribute('fill', fillColour);
-  }
+  this.blockFrameElement_.setAttribute('fill', fillColour);
 
   // Render opacity
-  if (Blockly.useCatBlocks) {
-    this.svgPathBody_.setAttribute('fill-opacity', this.getOpacity());
-  } else {
-    this.svgPath_.setAttribute('fill-opacity', this.getOpacity());
-  }
+  this.blockFrameElement_.setAttribute('fill-opacity', this.getOpacity());
 
   // Update colours of input shapes.
   for (var i = 0, input; input = this.inputList[i]; i++) {
@@ -605,19 +601,11 @@ Blockly.BlockSvg.prototype.highlightForReplacement = function(add) {
   if (add) {
     var replacementGlowFilterId = this.workspace.options.replacementGlowFilterId
       || 'blocklyReplacementGlowFilter';
-    if (Blockly.useCatBlocks) {
-      this.svgPathBody_.setAttribute('filter', 'url(#' + replacementGlowFilterId + ')');
-    } else {
-      this.svgPath_.setAttribute('filter', 'url(#' + replacementGlowFilterId + ')');
-    }
+    this.blockFrameElement_.setAttribute('filter', 'url(#' + replacementGlowFilterId + ')');
     Blockly.utils.addClass(/** @type {!Element} */ (this.svgGroup_),
         'blocklyReplaceable');
   } else {
-    if (Blockly.useCatBlocks) {
-      this.svgPathBody_.removeAttribute('filter');
-    } else {
-      this.svgPath_.removeAttribute('filter');
-    }
+    this.blockFrameElement_.removeAttribute('filter');
     Blockly.utils.removeClass(/** @type {!Element} */ (this.svgGroup_),
         'blocklyReplaceable');
   }
@@ -1166,7 +1154,14 @@ Blockly.BlockSvg.prototype.computeOutputPadding_ = function(inputRows) {
 };
 
 // Cat face and ear animation for CatBlocks
+// TODO: Do we want to move this and `initCatFace_` to a separate file?
+// Or would just that complicate unforking?
 Blockly.BlockSvg.prototype.renderCatFace_ = function() {
+  // This only makes sense in the context of the Cat Blocks theme.
+  if (this.theme !== Blockly.Themes.CAT_BLOCKS) {
+    return;
+  }
+
   this.svgPath_.svgFace.setAttribute('fill','#000000');
 
   var closedEye = Blockly.utils.createSvgElement('path', {}, this.svgFace_);
@@ -1236,7 +1231,7 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
     // No output or previous connection.
     this.squareTopLeftCorner_ = true;
     this.startHat_ = true;
-    if (Blockly.useCatBlocks) {
+    if (Blockly.theme === Blockly.Themes.CAT_BLOCKS) {
       this.initCatStuff();
     }
     inputRows.rightEdge = Math.max(inputRows.rightEdge, 100);
@@ -1265,23 +1260,16 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(iconWidth, inputRows) {
   this.renderDrawLeft_(steps);
 
   var pathString = steps.join(' ');
-  if (Blockly.useCatBlocks) {
-    this.svgPathBody_.setAttribute('d', pathString);
-    if (this.startHat_ && !this.svgFace_.firstChild) {
-      this.renderCatFace_();
-    }
-  } else {
-    this.svgPath_.setAttribute('d', pathString);
+  this.blockFrameElement_.setAttribute('d', pathString);
+
+  if (Blockly.theme === Blockly.Themes.CAT_BLOCKS && this.startHat_ && !this.svgFace_.firstChild) {
+    this.renderCatFace_();
   }
 
   if (this.RTL) {
     // Mirror the block's path.
     // This is awesome.
-    if (Blockly.useCatBlocks) {
-      this.svgPathBody_.setAttribute('transform', 'scale(-1 1)');
-    } else {
-      this.svgPath_.setAttribute('transform', 'scale(-1 1)');
-    }
+    this.blockFrameElement_.setAttribute('transform', 'scale(-1 1)');
   }
 };
 

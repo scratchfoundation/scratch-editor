@@ -37,6 +37,7 @@ goog.require('Blockly.scratchBlocksUtils');
 goog.require('Blockly.Tooltip');
 goog.require('Blockly.Touch');
 goog.require('Blockly.utils');
+goog.require('Blockly.constants');
 
 goog.require('goog.Timer');
 goog.require('goog.asserts');
@@ -64,7 +65,7 @@ Blockly.BlockSvg = function(workspace, prototypeName, opt_id) {
    */
   this.svgGroup_ = Blockly.utils.createSvgElement('g', {}, null);
   /** @type {SVGElement} */
-  if (Blockly.useCatBlocks) {
+  if (Blockly.theme === Blockly.Themes.CAT_BLOCKS) {
     this.svgPath_ = Blockly.utils.createSvgElement('g', {}, this.svgGroup_);
     this.svgPathBody_ = Blockly.utils.createSvgElement('path',
         {'class': 'blocklyPath blocklyBlockBackground'}, this.svgPath_);
@@ -95,11 +96,7 @@ Blockly.BlockSvg = function(workspace, prototypeName, opt_id) {
    */
   this.useDragSurface_ = Blockly.utils.is3dSupported() && !!workspace.blockDragSurface_;
 
-  if (Blockly.useCatBlocks) {
-    Blockly.Tooltip.bindMouseEvents(this.svgPathBody_);
-  } else {
-    Blockly.Tooltip.bindMouseEvents(this.svgPath_);
-  }
+  Blockly.Tooltip.bindMouseEvents(this.blockFrameElement_);
   Blockly.BlockSvg.superClass_.constructor.call(this,
       workspace, prototypeName, opt_id);
 
@@ -195,6 +192,23 @@ Blockly.BlockSvg.prototype.initSvg = function() {
   }
 };
 
+Object.defineProperty(Blockly.BlockSvg.prototype, 'blockFrameElement_', {
+  /**
+   * The svg element (e.g. svgPath_ or svgPathBody_) that is
+   * responsible for the outline of the block, based on the current theme.
+   * @return {!SVGElement} The SVG element forming the outline.
+   * @this {Blockly.BlockSvg}
+   */
+  get: function() {
+    if (Blockly.theme === Blockly.Themes.CAT_BLOCKS) {
+      return this.svgPathBody_;
+    }
+    return this.svgPath_;
+  },
+  enumerable: true,
+  configurable: true
+});
+
 /**
  * Select this block.  Highlight it visually.
  */
@@ -240,7 +254,10 @@ Blockly.BlockSvg.prototype.unselect = function() {
 };
 
 Blockly.BlockSvg.prototype.initCatStuff = function() {
-  if (this.hasInitCatStuff) return;
+  if (this.theme !== Blockly.Themes.CAT_BLOCKS || this.hasInitCatStuff) {
+    return;
+  }
+  // TODO: Test what happens if we turn on and off Cat Blocks several times
   this.hasInitCatStuff = true;
 
   // Ear part of the SVG path for hat blocks
@@ -435,7 +452,7 @@ Blockly.BlockSvg.prototype.setGlowBlock = function(isGlowingBlock) {
  * @param {boolean} isGlowingStack Whether the stack starting with this block should glow.
  */
 Blockly.BlockSvg.prototype.setGlowStack = function(isGlowingStack) {
-  if (Blockly.useCatBlocks) {
+  if (Blockly.theme === Blockly.Themes.CAT_BLOCKS) {
     if (isGlowingStack) {
       // For performance, don't follow the mouse when the stack is glowing
       document.removeEventListener('mousemove', this.windowListener);
@@ -1042,7 +1059,6 @@ Blockly.BlockSvg.prototype.dispose = function(healStack, animate) {
     // The block has already been deleted.
     return;
   }
-  // TODO: Can we skip the checks and always clear the timeouts?
   if (this.blinkFn) {
     clearTimeout(this.blinkFn);
   }
