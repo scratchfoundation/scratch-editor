@@ -551,11 +551,7 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(metrics) {
   if (this.RTL) {
     // Mirror the block's path.
     // This is awesome.
-    if (Blockly.useCatBlocks) {
-      this.svgPathBody_.setAttribute('transform', 'scale(-1 1)');
-    } else {
-      this.svgPath_.setAttribute('transform', 'scale(-1 1)');
-    }
+    this.blockFrameElement_.setAttribute('transform', 'scale(-1 1)');
   }
 
   // Horizontal blocks have a single Image Field that is specially positioned

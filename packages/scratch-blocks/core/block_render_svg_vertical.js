@@ -1158,7 +1158,7 @@ Blockly.BlockSvg.prototype.computeOutputPadding_ = function(inputRows) {
 // Or would just that complicate unforking?
 Blockly.BlockSvg.prototype.renderCatFace_ = function() {
   // This only makes sense in the context of the Cat Blocks theme.
-  if (this.theme !== Blockly.Themes.CAT_BLOCKS) {
+  if (Blockly.theme !== Blockly.Themes.CAT_BLOCKS) {
     return;
   }
 

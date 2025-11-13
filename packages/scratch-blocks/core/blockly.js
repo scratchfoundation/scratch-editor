@@ -196,7 +196,7 @@ Object.defineProperty(Blockly, 'theme', {
   }
 });
 
-Blockly.switchTheme = function(theme) {
+Blockly.setTheme = function(theme) {
   if (theme === Blockly.Themes.CAT_BLOCKS) {
     Blockly.theme_ = theme;
   } else {

@@ -254,7 +254,7 @@ Blockly.BlockSvg.prototype.unselect = function() {
 };
 
 Blockly.BlockSvg.prototype.initCatStuff = function() {
-  if (this.theme !== Blockly.Themes.CAT_BLOCKS || this.hasInitCatStuff) {
+  if (Blockly.theme !== Blockly.Themes.CAT_BLOCKS || this.hasInitCatStuff) {
     return;
   }
   // TODO: Test what happens if we turn on and off Cat Blocks several times
