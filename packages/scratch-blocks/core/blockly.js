@@ -196,6 +196,11 @@ Object.defineProperty(Blockly, 'theme', {
   }
 });
 
+/**
+ * Sets the global theme, which is applied to all workspaces.
+ * If the passed theme depends on initialization logic, that will only be applied to newly created workspaces.
+ * @param {!Blockly.Themes} theme the theme to set as the global theme.
+ */
 Blockly.setTheme = function(theme) {
   if (theme === Blockly.Themes.CAT_BLOCKS) {
     Blockly.theme_ = theme;
