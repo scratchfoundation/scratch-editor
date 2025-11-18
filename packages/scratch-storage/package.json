@@ -16,7 +16,7 @@
     "build": "rimraf dist && webpack --mode=production",
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "coverage": "tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
-    "prepare": "husky install",
+    "prepare": "husky",
     "semantic-release": "semantic-release",
     "test": "npm run test:lint && jest \"test[\\\\/](unit|integration)\"",
     "test:clearCache": "jest --clearCache",
