@@ -56,22 +56,29 @@ const registerStep = function () {
  * @param message The message from the parent.
  * @param message.data A job id, url, and options descriptor to perform.
  */
-const onMessage = ({data: job}: MessageEvent<JobMessage>) => {
+const onMessage = async ({data: job}: MessageEvent<JobMessage>) => {
     if (jobsActive === 0 && !intervalId) {
         registerStep();
     }
 
     jobsActive++;
 
-    fetch(job.url, job.options)
-        .then(result => {
-            if (result.ok) return result.arrayBuffer();
-            if (result.status === 404) return null;
-            return Promise.reject(result.status);
-        })
-        .then(buffer => complete.push({id: job.id, buffer}))
-        .catch(error => complete.push({id: job.id, error: (error && error.message) || `Failed request: ${job.url}`}))
-        .then(() => jobsActive--);
+    try {
+        const response = await fetch(job.url, job.options);
+        const result:CompletionMessage = {id: job.id};
+        if (response.ok) {
+            result.buffer = await response.arrayBuffer();
+        } else if (response.status === 404) {
+            result.buffer = null;
+        } else {
+            throw response.status;
+        }
+        complete.push(result);
+    } catch (error) {
+        complete.push({id: job.id, error: ((error as Error)?.message) || `Failed request: ${job.url}`});
+    } finally {
+        jobsActive--;
+    }
 };
 
 // "fetch" is supported in Node.js as of 16.15 and our target browsers as of ~2017
