@@ -140,6 +140,10 @@ button::-moz-focus-inner {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
 }
 
+.tooltip:after {
+    background-color: $extensions-primary;
+}
+
 .coming-soon-tooltip {
     background-color: $data-primary !important;
 }
@@ -154,7 +158,6 @@ button::-moz-focus-inner {
     box-shadow: 0 0 .5rem hsla(0, 0%, 0%, .25) !important;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     z-index: $z-index-tooltip !important;
-    --tooltip-arrow-color: $extensions-primary;
 }
 
 $arrow-size: 0.5rem;

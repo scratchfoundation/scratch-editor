@@ -17,7 +17,6 @@
     "prepare": "husky install",
     "test": "npm test --workspaces",
     "refresh-gh-workflow": "ts-node scripts/build-gha-workflows.ts",
-    "update-legal": "npm --workspaces exec -c 'rm -f ./{LICENSE,TRADEMARK} && cp -f ../../{LICENSE,TRADEMARK} .'",
     "version": "cross-env-shell ./scripts/npm-version.sh"
   },
   "config": {
