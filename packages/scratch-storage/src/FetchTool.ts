@@ -1,3 +1,4 @@
+import {AssetQueueOptions} from './HostQueues';
 import {scratchFetch} from './scratchFetch';
 import {ScratchGetRequest, ScratchSendRequest, Tool} from './Tool';
 
@@ -24,7 +25,7 @@ export class FetchTool implements Tool {
      * @returns {Promise.<Uint8Array?>} Resolve to Buffer of data from server.
      */
     get ({url, ...options}: ScratchGetRequest): Promise<Uint8Array | null> {
-        return scratchFetch(url, Object.assign({method: 'GET'}, options))
+        return scratchFetch(url, Object.assign({method: 'GET'}, options), {queueOptions: AssetQueueOptions})
             .then((result: Response) => {
                 if (result.ok) return result.arrayBuffer().then(b => new Uint8Array(b));
                 if (result.status === 404) return null;
@@ -49,7 +50,7 @@ export class FetchTool implements Tool {
     send ({url, withCredentials = false, ...options}: ScratchSendRequest): Promise<string> {
         return scratchFetch(url, Object.assign({
             credentials: withCredentials ? 'include' : 'omit'
-        }, options))
+        }, options), {queueOptions: AssetQueueOptions})
             .then(response => {
                 if (response.ok) return response.text();
                 return Promise.reject(response.status);

@@ -1,3 +1,6 @@
+import {type QueueOptions} from '../../scratch-editor/packages/task-herder/dist/TaskQueue';
+import {hostQueueManager} from './HostQueues';
+
 export const Headers = globalThis.Headers;
 
 /**
@@ -10,6 +13,21 @@ export enum RequestMetadata {
     /** The ID of the project run associated with this request */
     RunId = 'X-Run-ID'
 }
+
+export type ScratchFetchOptions = {
+    /**
+     * The name of the queue to use for this request.
+     * If absent, the hostname of the requested URL will be used as the queue name.
+     * This is a Scratch-specific extension to the standard RequestInit type.
+     */
+    queueName?: string;
+
+    /**
+     * The options to use when creating the queue for this request.
+     * Ignored if a queue with the specified name already exists.
+     */
+    queueOptions?: QueueOptions;
+};
 
 /**
  * Metadata headers for requests.
@@ -71,13 +89,27 @@ export const applyMetadata = (options?: globalThis.RequestInit): globalThis.Requ
  * Make a network request.
  * This is a wrapper for the global fetch method, adding some Scratch-specific functionality.
  * @param {RequestInfo|URL} resource The resource to fetch.
- * @param {RequestInit} options Optional object containing custom settings for this request.
+ * @param {RequestInit} [requestOptions] Optional object containing custom settings for this request.
+ * @param {ScratchFetchOptions} [scratchOptions] Optional Scratch-specific settings for this request.
  * @see {@link https://developer.mozilla.org/docs/Web/API/fetch} for more about the fetch API.
  * @returns {Promise<Response>} A promise for the response to the request.
  */
-export const scratchFetch = (resource: RequestInfo | URL, options?: globalThis.RequestInit): Promise<Response> => {
-    const augmentedOptions = applyMetadata(options);
-    return fetch(resource, augmentedOptions);
+export const scratchFetch = (
+    resource: RequestInfo | URL,
+    requestOptions?: globalThis.RequestInit,
+    scratchOptions?: ScratchFetchOptions
+): Promise<Response> => {
+    requestOptions = applyMetadata(requestOptions);
+
+    let queueName = scratchOptions?.queueName;
+    if (!queueName) {
+        // Normalize resource to a Request object. The `fetch` call will do this anyway, so it's not much extra work,
+        // but it guarantees availability of the URL for queue naming.
+        resource = new Request(resource, requestOptions);
+        queueName = new URL(resource.url).hostname;
+    }
+    const queue = hostQueueManager.getOrCreate(queueName, scratchOptions?.queueOptions);
+    return queue.do(() => fetch(resource, requestOptions));
 };
 
 /**

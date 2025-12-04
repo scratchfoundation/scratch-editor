@@ -2,6 +2,13 @@
 /* eslint-disable-next-line spaced-comment */
 /// <reference lib="webworker" />
 
+// This worker won't share the same queue as the main thread, but throttling should be okay
+// as long as we don't use FetchTool and FetchWorkerTool at the same time.
+// TODO: Communicate metadata from the main thread to workers or move the worker boundary "into" `scratchFetch`.
+// Make sure to benchmark any changes to avoid performance regressions, especially for large project loads.
+import {AssetQueueOptions} from './HostQueues';
+import {scratchFetch} from './scratchFetch';
+
 interface JobMessage {
     id: string,
     url: string;
@@ -64,7 +71,8 @@ const onMessage = async ({data: job}: MessageEvent<JobMessage>) => {
     jobsActive++;
 
     try {
-        const response = await fetch(job.url, job.options);
+        const response = await scratchFetch(job.url, job.options, {queueOptions: AssetQueueOptions});
+
         const result:CompletionMessage = {id: job.id};
         if (response.ok) {
             result.buffer = await response.arrayBuffer();

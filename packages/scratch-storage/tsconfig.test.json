@@ -5,7 +5,7 @@
     /* Visit https://aka.ms/tsconfig to read more about this file */
 
     /* Modules */
-    "module": "CommonJS",
+    "isolatedModules": true,
     "types": ["jest", "./src/types.d.ts"],
   }
 }
