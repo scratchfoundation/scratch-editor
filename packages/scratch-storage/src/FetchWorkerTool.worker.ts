@@ -10,13 +10,13 @@ import {AssetQueueOptions} from './HostQueues';
 import {scratchFetch} from './scratchFetch';
 
 interface JobMessage {
-    id: string,
+    id: string;
     url: string;
     options: RequestInit | undefined;
 }
 
 interface CompletionMessage {
-    id: string,
+    id: string;
     buffer?: ArrayBuffer | null;
     error?: string;
 }
@@ -73,7 +73,7 @@ const onMessage = async ({data: job}: MessageEvent<JobMessage>) => {
     try {
         const response = await scratchFetch(job.url, job.options, {queueOptions: AssetQueueOptions});
 
-        const result:CompletionMessage = {id: job.id};
+        const result: CompletionMessage = {id: job.id};
         if (response.ok) {
             result.buffer = await response.arrayBuffer();
         } else if (response.status === 404) {
