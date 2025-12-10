@@ -374,6 +374,18 @@ Blockly.Blocks["sensing_dayssince2000"] = {
   },
 };
 
+Blockly.Blocks["sensing_online"] = {
+  /**
+   * Block to report whether or not the system is online
+   */
+  init: function(this: Blockly.Block) {
+    this.jsonInit({
+      message0: Blockly.Msg.SENSING_ONLINE,
+      extensions: ["colours_sensing", "output_boolean", "monitor_block"],
+    });
+  },
+};
+
 Blockly.Blocks["sensing_username"] = {
   /**
    * Block to report user's username
