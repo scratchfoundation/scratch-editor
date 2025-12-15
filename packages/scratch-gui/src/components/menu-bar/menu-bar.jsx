@@ -289,6 +289,11 @@ class MenuBar extends React.Component {
         };
     }
     handleKeyPress (event) {
+        if (event.key === 'Enter' || event.key === '') {
+            event.preventDefault();
+            event.target.click();
+        }
+
         const modifier = bowser.mac ? event.metaKey : event.ctrlKey;
         if (modifier && event.key === 's') {
             this.props.onClickSave();
@@ -442,6 +447,9 @@ class MenuBar extends React.Component {
                     <div className={styles.fileGroup}>
                         <div className={classNames(styles.menuBarItem)}>
                             <img
+                                role="button"
+                                aria-label="Go Home"
+                                tabIndex="0"
                                 id="logo_img"
                                 alt="Scratch"
                                 className={classNames(styles.scratchLogo, {

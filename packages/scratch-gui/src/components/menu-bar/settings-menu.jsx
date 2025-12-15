@@ -27,6 +27,9 @@ const SettingsMenu = ({
             [menuBarStyles.active]: settingsMenuOpen
         })}
         onClick={onRequestOpen}
+        role="button"
+        tabIndex={0}
+        aria-label="Settings"
     >
         <img
             src={settingsIcon}
