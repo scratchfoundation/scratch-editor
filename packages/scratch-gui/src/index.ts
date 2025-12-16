@@ -4,6 +4,7 @@ import {legacyConfig} from './legacy-config';
 export {default} from './containers/gui.jsx';
 export {default as GUIComponent} from './components/gui/gui.jsx';
 export {default as AppStateHOC} from './lib/app-state-hoc.jsx';
+export {default as downloadBlob} from './lib/download-blob.js';
 export {setAppElement} from 'react-modal';
 
 export {legacyConfig};
