@@ -8,7 +8,7 @@
   "homepage": "https://github.com/scratchfoundation/scratch-editor#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/scratchfoundation/scratch-editor.git"
+    "url": "git+https://github.com/scratchfoundation/scratch-editor.git"
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production npm run --workspaces build",

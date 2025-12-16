@@ -1,13 +1,16 @@
 {
-  "name": "@scratch/scratch-gui",
+  "name": "@RaspberryPiFoundation/scratch-gui",
   "version": "12.2.2",
   "description": "Graphical User Interface for creating and running Scratch 3.0 projects",
   "author": "Massachusetts Institute of Technology",
   "license": "AGPL-3.0-only",
-  "homepage": "https://github.com/scratchfoundation/scratch-gui#readme",
+  "homepage": "https://github.com/RaspberryPiFoundation/scratch-editor#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/scratchfoundation/scratch-editor.git"
+    "url": "https://github.com/RaspberryPiFoundation/scratch-editor.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "main": "./dist/scratch-gui.js",
   "types": "./dist/types/index.d.ts",

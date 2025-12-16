@@ -1,11 +1,12 @@
 name: CI
 
 on:
-  merge_group:
-  pull_request:
-  push: # WARNING: Renovate sometimes automerges without PR, so we MUST build and test renovate/** branches
-  workflow_call:
-  workflow_dispatch:
+  workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+  push: # Runs whenever a commit is pushed to the repository
+    branches: [experience-cs]
+
+permissions:
+  packages: write # deploy to GitHub Packages
 
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.compare || github.head_ref || github.ref }}"
@@ -24,6 +25,8 @@ jobs:
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
+          registry-url: "https://npm.pkg.github.com"
+      - uses: wagoid/commitlint-github-action@9763196e10f27aef304c9b8b660d31d97fce0f99 # v5
       - name: Debug info
         # https://docs.github.com/en/actions/reference/security/secure-use#use-an-intermediate-environment-variable
         env:
@@ -43,6 +46,8 @@ jobs:
           filters: ./.github/path-filters.yml
 
       - if: ${{ steps.filter.outputs.any-workspace == 'true' }}
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: ./.github/actions/install-dependencies
 
       - name: Build packages
@@ -58,6 +63,15 @@ jobs:
             packages/**/build
             packages/**/dist
             packages/**/playground
+      - name: Publish scratch-gui to GitHub Packages
+        working-directory: ./packages/scratch-gui
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RELEASE_VERSION="0.1.0-experience-cs.$(date +'%Y%m%d%H%M%S')"
+          npm version --no-git-tag-version $RELEASE_VERSION
+          npm publish --access public --tag latest
+
 
   test:
     runs-on: ubuntu-latest
