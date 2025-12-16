@@ -9,7 +9,8 @@
     "allowJs": true,
 
     /* Modules */
-    "module": "commonjs",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "types": ["./src/types.d.ts"],
 
     /* Emit */
