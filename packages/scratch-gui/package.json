@@ -124,7 +124,7 @@
     "scratch-l10n": "6.1.42",
     "scratch-paint": "4.1.34",
     "scratch-render-fonts": "1.0.252",
-    "scratch-storage": "5.0.10",
+    "scratch-storage": "npm:@RaspberryPiFoundation/scratch-storage@0.1.0-experience-cs.20250701103408",
     "startaudiocontext": "1.2.1",
     "style-loader": "4.0.0",
     "text-encoding": "0.7.0",
