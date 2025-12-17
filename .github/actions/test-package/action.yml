@@ -15,7 +15,11 @@ runs:
       run: |
         if [[ ${{ inputs.package_name }} == "scratch-render" ]]; then
           npx playwright install --with-deps chromium
-        fi
+        fi    
+    - name: Explicitly install Rolldown linux binaries
+      shell: bash
+      run: npm install @rolldown/binding-linux-x64-gnu --no-save --ignore-scripts
+
     - name: Test
       working-directory: ./packages/${{ inputs.package_name }}
       shell: bash
