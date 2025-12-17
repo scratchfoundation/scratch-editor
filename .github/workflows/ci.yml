@@ -23,8 +23,8 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
         with:
-          cache: 'npm'
-          node-version-file: '.nvmrc'
+          cache: "npm"
+          node-version-file: ".nvmrc"
           registry-url: "https://npm.pkg.github.com"
       - uses: wagoid/commitlint-github-action@9763196e10f27aef304c9b8b660d31d97fce0f99 # v5
       - name: Debug info
@@ -50,6 +50,10 @@ jobs:
           NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: ./.github/actions/install-dependencies
 
+      - name: Explicitly install Rolldown linux binaries
+        if: ${{ steps.filter.outputs.any-workspace == 'true' }}
+        run: npm install @rolldown/binding-linux-x64-gnu --no-save --ignore-scripts
+
       - name: Build packages
         if: ${{ steps.filter.outputs.any-workspace == 'true' }}
         run: npm run build
@@ -72,7 +76,6 @@ jobs:
           npm version --no-git-tag-version $RELEASE_VERSION
           npm publish --access public --tag latest
 
-
   test:
     runs-on: ubuntu-latest
     needs: build
@@ -89,8 +92,8 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
         with:
-          cache: 'npm'
-          node-version-file: '.nvmrc'
+          cache: "npm"
+          node-version-file: ".nvmrc"
       - uses: ./.github/actions/install-dependencies
       - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
         with:
@@ -111,12 +114,12 @@ jobs:
     # - and
     #   - it's not a Renovate branch (just to reduce noise)
     if: ${{
-        (needs.build.outputs.any-workspace == 'true') &&
-        (
-          (!github.event.pull_request) ||
-          (github.event.pull_request.head.repo.full_name == github.repository)
-        ) &&
-        (!startsWith((github.head_ref || github.ref_name), 'renovate/'))
+      (needs.build.outputs.any-workspace == 'true') &&
+      (
+      (!github.event.pull_request) ||
+      (github.event.pull_request.head.repo.full_name == github.repository)
+      ) &&
+      (!startsWith((github.head_ref || github.ref_name), 'renovate/'))
       }}
     name: Publish preview playgrounds to GitHub Pages
     steps:
