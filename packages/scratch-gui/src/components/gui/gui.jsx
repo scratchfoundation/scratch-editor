@@ -44,6 +44,7 @@ import soundsIcon from './icon--sounds.svg';
 import DebugModal from '../debug-modal/debug-modal.jsx';
 import {setPlatform} from '../../reducers/platform.js';
 import {PLATFORM} from '../../lib/platform.js';
+import {MenuRefProvider} from '../context-menu/menu-path-context.jsx';
 
 // Cache this value to only retrieve it once the first time.
 // Assume that it doesn't change for a session.
@@ -252,42 +253,46 @@ const GUIComponent = props => {
                         onRequestClose={onRequestCloseBackdropLibrary}
                     />
                 ) : null}
-                {!menuBarHidden && <MenuBar
-                    accountNavOpen={accountNavOpen}
-                    authorId={authorId}
-                    authorThumbnailUrl={authorThumbnailUrl}
-                    authorUsername={authorUsername}
-                    canChangeLanguage={canChangeLanguage}
-                    canChangeTheme={canChangeTheme}
-                    canCreateCopy={canCreateCopy}
-                    canCreateNew={canCreateNew}
-                    canEditTitle={canEditTitle}
-                    canManageFiles={canManageFiles}
-                    canRemix={canRemix}
-                    canSave={canSave}
-                    canShare={canShare}
-                    className={styles.menuBarPosition}
-                    enableCommunity={enableCommunity}
-                    isShared={isShared}
-                    isTotallyNormal={isTotallyNormal}
-                    logo={logo}
-                    renderLogin={renderLogin}
-                    showComingSoon={showComingSoon}
-                    onClickAbout={onClickAbout}
-                    onClickAccountNav={onClickAccountNav}
-                    onClickLogo={onClickLogo}
-                    onCloseAccountNav={onCloseAccountNav}
-                    onLogOut={onLogOut}
-                    onOpenRegistration={onOpenRegistration}
-                    onProjectTelemetryEvent={onProjectTelemetryEvent}
-                    onSeeCommunity={onSeeCommunity}
-                    onShare={onShare}
-                    onStartSelectingFileUpload={onStartSelectingFileUpload}
-                    onToggleLoginOpen={onToggleLoginOpen}
-                    userOwnsProject={userOwnsProject}
-                    username={username}
-                    accountMenuOptions={accountMenuOptions}
-                />}
+                {!menuBarHidden &&
+                <MenuRefProvider>
+                    <MenuBar
+                        accountNavOpen={accountNavOpen}
+                        authorId={authorId}
+                        authorThumbnailUrl={authorThumbnailUrl}
+                        authorUsername={authorUsername}
+                        canChangeLanguage={canChangeLanguage}
+                        canChangeTheme={canChangeTheme}
+                        canCreateCopy={canCreateCopy}
+                        canCreateNew={canCreateNew}
+                        canEditTitle={canEditTitle}
+                        canManageFiles={canManageFiles}
+                        canRemix={canRemix}
+                        canSave={canSave}
+                        canShare={canShare}
+                        className={styles.menuBarPosition}
+                        enableCommunity={enableCommunity}
+                        isShared={isShared}
+                        isTotallyNormal={isTotallyNormal}
+                        logo={logo}
+                        renderLogin={renderLogin}
+                        showComingSoon={showComingSoon}
+                        onClickAbout={onClickAbout}
+                        onClickAccountNav={onClickAccountNav}
+                        onClickLogo={onClickLogo}
+                        onCloseAccountNav={onCloseAccountNav}
+                        onLogOut={onLogOut}
+                        onOpenRegistration={onOpenRegistration}
+                        onProjectTelemetryEvent={onProjectTelemetryEvent}
+                        onSeeCommunity={onSeeCommunity}
+                        onShare={onShare}
+                        onStartSelectingFileUpload={onStartSelectingFileUpload}
+                        onToggleLoginOpen={onToggleLoginOpen}
+                        userOwnsProject={userOwnsProject}
+                        username={username}
+                        accountMenuOptions={accountMenuOptions}
+                    />
+                </MenuRefProvider>
+                }
                 <Box className={boxStyles}>
                     <Box className={styles.flexWrapper}>
                         <Box className={styles.editorWrapper}>

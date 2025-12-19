@@ -148,6 +148,7 @@ GUI.propTypes = {
 };
 
 GUI.defaultProps = {
+    // isTotallyNormal: true, - for testing only
     isTotallyNormal: false,
     onStorageInit: () => {},
     onProjectLoaded: () => {},

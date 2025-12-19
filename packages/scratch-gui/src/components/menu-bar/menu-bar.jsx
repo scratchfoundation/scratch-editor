@@ -289,7 +289,7 @@ class MenuBar extends React.Component {
         };
     }
     handleKeyPress (event) {
-        if (event.key === 'Enter' || event.key === '') {
+        if (event.key === 'Enter') {
             event.preventDefault();
             event.target.click();
         }
@@ -474,6 +474,9 @@ class MenuBar extends React.Component {
                                     [styles.active]: this.props.fileMenuOpen
                                 })}
                                 onClick={this.props.onClickFile}
+                                aria-label="File Menu"
+                                role="button"
+                                tabIndex={0}
                             >
                                 <img src={fileIcon} />
                                 <span className={styles.collapsibleLabel}>
@@ -544,6 +547,9 @@ class MenuBar extends React.Component {
                                 [styles.active]: this.props.editMenuOpen
                             })}
                             onClick={this.props.onClickEdit}
+                            role="button"
+                            aria-label="Edit Menu"
+                            tabIndex={0}
                         >
                             <img src={editIcon} />
                             <span className={styles.collapsibleLabel}>
@@ -596,6 +602,9 @@ class MenuBar extends React.Component {
                                     [styles.active]: this.props.modeMenuOpen
                                 })}
                                 onClick={this.props.onClickMode}
+                                role="button"
+                                aria-label="Mode"
+                                tabIndex={0}
                             >
                                 <div className={classNames(styles.editMenu)}>
                                     <FormattedMessage
@@ -713,6 +722,8 @@ class MenuBar extends React.Component {
                     <Divider className={classNames(styles.divider)} />
                     <div className={styles.fileGroup}>
                         <div
+                            tabIndex={0}
+                            role="button"
                             aria-label={this.props.intl.formatMessage(ariaMessages.tutorials)}
                             className={
                                 classNames(styles.menuBarItem, styles.noOffset, styles.hoverable, 'tutorials-button')
@@ -728,6 +739,8 @@ class MenuBar extends React.Component {
                             </span>
                         </div>
                         <div
+                            tabIndex={0}
+                            role="button"
                             aria-label={this.props.intl.formatMessage(ariaMessages.debug)}
                             className={classNames(styles.menuBarItem, styles.noOffset, styles.hoverable)}
                             onClick={this.props.onOpenDebugModal}

@@ -32,7 +32,6 @@ MenuComponent.propTypes = {
     place: PropTypes.oneOf(['left', 'right'])
 };
 
-
 const Submenu = ({children, className, place, ...props}) => (
     <div
         className={classNames(
@@ -63,7 +62,11 @@ const MenuItem = ({
     children,
     className,
     expanded = false,
-    onClick
+    onClick,
+    focusedRef,
+    ariaLabel,
+    ariaRole,
+    onParentKeyPress
 }) => (
     <li
         className={classNames(
@@ -73,16 +76,25 @@ const MenuItem = ({
             {[styles.expanded]: expanded}
         )}
         onClick={onClick}
+        tabIndex={-1}
+        ref={focusedRef}
+        aria-label={ariaLabel}
+        role={ariaRole}
+        onKeyDown={onParentKeyPress}
     >
         {children}
     </li>
 );
 
 MenuItem.propTypes = {
+    ariaLabel: PropTypes.string,
+    ariaRole: PropTypes.string,
     children: PropTypes.node,
     className: PropTypes.string,
     expanded: PropTypes.bool,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
+    focusedRef: PropTypes.object,
+    onParentKeyPress: PropTypes.func
 };
 
 
