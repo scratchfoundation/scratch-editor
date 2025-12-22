@@ -6,9 +6,12 @@
 
 import * as Blockly from "blockly/core";
 import type { RenderInfo } from "./render_info";
+import { ConstantProvider } from "./constants";
 
 export class Drawer extends Blockly.zelos.Drawer {
+  constants_: ConstantProvider;
   info_: RenderInfo;
+
   drawStatementInput_(row: Blockly.blockRendering.Row) {
     if (this.info_.isBowlerHatBlock()) {
       // Bowler hat blocks have straight sides with no C-shape/indentation for
@@ -36,6 +39,12 @@ export class Drawer extends Blockly.zelos.Drawer {
     }
   }
 
+  makeReplacementTop_() {
+    if (this.info_.isBowlerHatBlock()) {
+      return this.constants_.makeBowlerHatPath(this.info_.width);
+    }
+  }
+
   drawTop_() {
     super.drawTop_();
     // This is a horrible hack, but the superclass' implementation of drawTop_()
@@ -45,12 +54,10 @@ export class Drawer extends Blockly.zelos.Drawer {
     // replace it with the desired bowler hat path here.
     // If https://github.com/google/blockly/issues/7292 is resolved, this should
     // be revisited.
-    if (this.info_.isBowlerHatBlock()) {
+    const replacementTop = this.makeReplacementTop_();
+    if (replacementTop) {
       const capHatPath = this.constants_.START_HAT.path;
-      const bowlerHatPath = `a20,20 0 0,1 20,-20 l ${
-        this.info_.width - 40
-      } 0 a20,20 0 0,1 20,20`;
-      this.outlinePath_ = this.outlinePath_.replace(capHatPath, bowlerHatPath);
+      this.outlinePath_ = this.outlinePath_.replace(capHatPath, replacementTop);
     }
   }
 }

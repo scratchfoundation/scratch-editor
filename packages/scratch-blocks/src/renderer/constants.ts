@@ -10,6 +10,8 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
   REPLACEMENT_GLOW_COLOUR = "#ffffff";
   SELECTED_GLOW_COLOUR = "#ffffff";
 
+  BOWLER_HAT_HEIGHT = 20;
+
   /**
    * Sets the visual theme used to render the workspace.
    * This method also synthesizes a "selected" theme, used to color blocks with
@@ -56,4 +58,16 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
     super.createDom(svg, tagName, selector);
     this.selectedGlowFilterId = "";
   }
+
+  /**
+   * Generate a bowler hat path string for a specific block.
+   * @param width the `info_.width` of the block.
+   * @returns The SVG path string for the bowler hat.
+   */
+  makeBowlerHatPath(width: number): string {
+    const bowlerHatPath = `a20,20 0 0,1 20,-20 l ${
+      width - 40
+    } 0 a20,20 0 0,1 20,20`;
+    return bowlerHatPath;
+  };
 }

@@ -15,6 +15,16 @@ import { PathObject } from "./path_object";
  */
 export class ScratchRenderer extends Blockly.zelos.Renderer {
   /**
+   * Get the CSS class name associated with this renderer.
+   * Note that all Scratch renderers share the same CSS class name.
+   *
+   * @returns The class name.
+   */
+  getClassName(): string {
+    return "scratch-renderer";
+  }
+
+  /**
    * Create a new instance of the renderer's drawer.
    *
    * @param block The block to render.
@@ -73,4 +83,4 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
   }
 }
 
-Blockly.blockRendering.register("scratch", ScratchRenderer);
+Blockly.blockRendering.register("scratch_classic", ScratchRenderer);

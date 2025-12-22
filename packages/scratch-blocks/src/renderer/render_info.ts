@@ -5,12 +5,20 @@
  */
 
 import * as Blockly from "blockly/core";
+
 import { BowlerHat } from "./bowler_hat";
+import { ConstantProvider } from "./constants";
 
 export class RenderInfo extends Blockly.zelos.RenderInfo {
+  constants_: ConstantProvider;
+
+  makeBowlerHat() {
+    return new BowlerHat(this.constants_);
+  }
+
   populateTopRow_() {
     if (this.isBowlerHatBlock()) {
-      const bowlerHat = new BowlerHat(this.constants_);
+      const bowlerHat = this.makeBowlerHat();
       this.topRow.elements.push(
         new Blockly.blockRendering.SquareCorner(this.constants_)
       );
