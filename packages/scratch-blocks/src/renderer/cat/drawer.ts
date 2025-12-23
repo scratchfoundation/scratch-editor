@@ -82,7 +82,7 @@ export class Drawer extends ClassicDrawer {
     let ignoreBlink = false;
 
     // TODO: Would it be better to use CSS for this?
-    this.block_.pathObject.svgPath.addEventListener("mouseenter", () => {
+    Blockly.browserEvents.bind(this.block_.pathObject.svgPath, "mouseenter", this, () => {
       if (ignoreBlink) return;
       ignoreBlink = true;
       setVisibility(this.parts_[FacePart.EYE_1_OPEN], false);
@@ -106,7 +106,7 @@ export class Drawer extends ClassicDrawer {
     let ignoreFlick1 = false;
     let ignoreFlick2 = false;
 
-    this.parts_[FacePart.EAR_1_INSIDE].addEventListener("mouseenter", () => {
+    Blockly.browserEvents.bind(this.parts_[FacePart.EAR_1_INSIDE], "mouseenter", this, () => {
       if (ignoreFlick1) return;
       ignoreFlick1 = true;
       setVisibility(this.parts_[FacePart.EAR_1_INSIDE], false);
@@ -121,7 +121,7 @@ export class Drawer extends ClassicDrawer {
         ignoreFlick1 = false;
       }, 2 * flickDuration);
     });
-    this.parts_[FacePart.EAR_2_INSIDE].addEventListener("mouseenter", () => {
+    Blockly.browserEvents.bind(this.parts_[FacePart.EAR_2_INSIDE], "mouseenter", this, () => {
       if (ignoreFlick2) return;
       ignoreFlick2 = true;
       setVisibility(this.parts_[FacePart.EAR_2_INSIDE], false);
