@@ -69,5 +69,5 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
       width - 40
     } 0 a20,20 0 0,1 20,20`;
     return bowlerHatPath;
-  };
+  }
 }

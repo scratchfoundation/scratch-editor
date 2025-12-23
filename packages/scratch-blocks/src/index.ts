@@ -86,7 +86,11 @@ export {
 export * from "./xml";
 
 interface ScratchBlocksOptions extends Blockly.BlocklyOptions {
-  theme?: ScratchBlocksTheme;
+  /**
+   * Scratch uses "theme" to talk about the shape of blocks. The Blockly concept of a theme affects CSS properties and
+   * aligns more closely with "color mode" in Scratch.
+   */
+  scratchTheme?: ScratchBlocksTheme;
 }
 
 function sanitizeTheme(theme?: ScratchBlocksTheme) {
@@ -112,10 +116,10 @@ export function inject(container: Element, options: ScratchBlocksOptions) {
   registerStatusIndicatorLabelFlyoutInflater();
   registerScratchContinuousCategory();
 
-  const theme = sanitizeTheme(options.theme);
+  const scratchTheme = sanitizeTheme(options.scratchTheme);
 
   Object.assign(options, {
-    renderer: `scratch_${theme}`,
+    renderer: `scratch_${scratchTheme}`,
     plugins: {
       toolbox: ScratchContinuousToolbox,
       flyoutsVerticalToolbox: CheckableContinuousFlyout,
