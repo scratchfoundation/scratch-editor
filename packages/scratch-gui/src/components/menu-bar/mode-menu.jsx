@@ -33,6 +33,7 @@ export class ModeMenu extends BaseMenu {
                 onClick={this.handleOnOpen}
                 role="button"
                 aria-label="Mode"
+                aria-expanded={this.isExpanded()}
                 tabIndex={0}
                 onKeyDown={this.handleKeyPress}
             >

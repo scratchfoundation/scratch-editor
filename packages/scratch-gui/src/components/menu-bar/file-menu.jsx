@@ -74,6 +74,7 @@ export class FileMenu extends BaseMenu {
                 })}
                 onClick={this.handleOnOpen}
                 aria-label="File Menu"
+                aria-expanded={this.isExpanded()}
                 role="button"
                 tabIndex={0}
                 ref={this.props.menuRef}

@@ -37,6 +37,7 @@ export class EditMenu extends BaseMenu {
                 onClick={this.handleOnOpen}
                 role="button"
                 aria-label="Edit Menu"
+                aria-expanded={this.isExpanded()}
                 tabIndex={0}
                 onKeyDown={this.handleKeyPress}
             >

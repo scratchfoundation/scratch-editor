@@ -83,6 +83,7 @@ class ThemeMenu extends BaseMenu {
                     ref={menuRef}
                     role="button"
                     aria-label="Theme Menu"
+                    aria-expanded={this.isExpanded()}
                     tabIndex={-1}
                     onKeyDown={this.handleKeyPress}
                 >

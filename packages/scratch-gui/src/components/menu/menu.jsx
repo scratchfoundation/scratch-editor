@@ -20,7 +20,6 @@ const MenuComponent = ({
             }
         )}
         ref={componentRef}
-        // role="listbox"
     >
         {children}
     </ul>
@@ -81,7 +80,7 @@ const MenuItem = ({
         tabIndex={-1}
         ref={menuRef}
         aria-label={ariaLabel}
-        // aria-selected={ariaRole === 'option' ? isSelected : null}
+        aria-selected={isSelected ?? null}
         role={ariaRole}
         onKeyDown={onParentKeyPress}
     >

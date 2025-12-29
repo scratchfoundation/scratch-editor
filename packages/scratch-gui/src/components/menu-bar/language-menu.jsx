@@ -63,6 +63,7 @@ class LanguageMenu extends BaseMenu {
                     onMouseOver={this.handleMouseOver}
                     ref={menuRef}
                     aria-label="Language Menu"
+                    aria-expanded={this.isExpanded()}
                     role="button"
                     tabIndex={-1}
                     onKeyDown={this.handleKeyPress}
@@ -100,7 +101,6 @@ class LanguageMenu extends BaseMenu {
                                     menuRef={this.itemRefs[index]}
                                     onParentKeyPress={this.handleKeyPressOpenMenu}
                                     isSelected={isSelected}
-                                    // ariaRole="option"
                                 >
                                     <img
                                         className={classNames(styles.check, {
