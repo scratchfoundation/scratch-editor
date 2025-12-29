@@ -120,15 +120,12 @@ const accountMenuOpen = state => state.scratchGui.menus[MENU_ACCOUNT];
 
 const openEditMenu = () => openMenu(MENU_EDIT);
 const closeEditMenu = () => closeMenu(MENU_EDIT);
-const editMenuOpen = state => state.scratchGui.menus[MENU_EDIT];
 
 const openFileMenu = () => openMenu(MENU_FILE);
 const closeFileMenu = () => closeMenu(MENU_FILE);
-const fileMenuOpen = state => state.scratchGui.menus[MENU_FILE];
 
 const openLanguageMenu = () => openMenu(MENU_LANGUAGE);
 const closeLanguageMenu = () => closeMenu(MENU_LANGUAGE);
-const languageMenuOpen = state => state.scratchGui.menus[MENU_LANGUAGE];
 
 const openLoginMenu = () => openMenu(MENU_LOGIN);
 const closeLoginMenu = () => closeMenu(MENU_LOGIN);
@@ -136,15 +133,12 @@ const loginMenuOpen = state => state.scratchGui.menus[MENU_LOGIN];
 
 const openModeMenu = () => openMenu(MENU_MODE);
 const closeModeMenu = () => closeMenu(MENU_MODE);
-const modeMenuOpen = state => state.scratchGui.menus[MENU_MODE];
 
 const openSettingsMenu = () => openMenu(MENU_SETTINGS);
 const closeSettingsMenu = () => closeMenu(MENU_SETTINGS);
-const settingsMenuOpen = state => state.scratchGui.menus[MENU_SETTINGS];
 
 const openThemeMenu = () => openMenu(MENU_THEME);
 const closeThemeMenu = () => closeMenu(MENU_THEME);
-const themeMenuOpen = state => state.scratchGui.menus[MENU_THEME];
 
 export {
     reducer as default,
@@ -157,23 +151,17 @@ export {
     accountMenuOpen,
     openEditMenu,
     closeEditMenu,
-    editMenuOpen,
     openFileMenu,
     closeFileMenu,
-    fileMenuOpen,
     openLanguageMenu,
     closeLanguageMenu,
-    languageMenuOpen,
     openLoginMenu,
     closeLoginMenu,
     loginMenuOpen,
     openModeMenu,
     closeModeMenu,
-    modeMenuOpen,
     openSettingsMenu,
     closeSettingsMenu,
-    settingsMenuOpen,
     openThemeMenu,
-    closeThemeMenu,
-    themeMenuOpen
+    closeThemeMenu
 };

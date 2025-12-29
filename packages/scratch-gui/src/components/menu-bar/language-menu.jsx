@@ -9,7 +9,7 @@ import locales from 'scratch-l10n';
 import check from './check.svg';
 import {MenuItem, Submenu} from '../menu/menu.jsx';
 import languageIcon from '../language-selector/language-icon.svg';
-import {closeLanguageMenu, languageMenuOpen, openLanguageMenu} from '../../reducers/menus.js';
+import {closeLanguageMenu, openLanguageMenu} from '../../reducers/menus.js';
 import {selectLocale} from '../../reducers/locales.js';
 
 import styles from './settings-menu.css';
@@ -137,7 +137,6 @@ LanguageMenu.propTypes = {
 const mapStateToProps = state => ({
     currentLocale: state.locales.locale,
     isRtl: state.locales.isRtl,
-    menuOpen: languageMenuOpen(state),
     messagesByLocale: state.locales.messagesByLocale
 });
 
