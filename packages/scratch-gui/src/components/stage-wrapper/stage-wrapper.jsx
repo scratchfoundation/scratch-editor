@@ -13,6 +13,8 @@ import styles from './stage-wrapper.css';
 
 const StageWrapperComponent = function (props) {
     const {
+        ariaLabel,
+        ariaRole,
         isFullScreen,
         isRtl,
         isRendererSupported,
@@ -30,6 +32,8 @@ const StageWrapperComponent = function (props) {
                 {[styles.fullScreen]: isFullScreen}
             )}
             dir={isRtl ? 'rtl' : 'ltr'}
+            role={ariaRole}
+            aria-label={ariaLabel}
         >
             <Box className={styles.stageMenuWrapper}>
                 <StageHeader
@@ -57,6 +61,8 @@ const StageWrapperComponent = function (props) {
 };
 
 StageWrapperComponent.propTypes = {
+    ariaLabel: PropTypes.string,
+    ariaRole: PropTypes.string,
     isFullScreen: PropTypes.bool,
     isRendererSupported: PropTypes.bool.isRequired,
     isRtl: PropTypes.bool.isRequired,

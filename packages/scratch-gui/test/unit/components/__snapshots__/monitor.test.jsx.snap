@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Monitor Component it selects the correct colors based on dark mode theme 1`] = `
+exports[`Monitor Component it selects the correct colors based on dark mode 1`] = `
 <div
   class="react-draggable"
   style="transform: translate(0px,0px);"
@@ -23,7 +23,7 @@ exports[`Monitor Component it selects the correct colors based on dark mode them
 </div>
 `;
 
-exports[`Monitor Component it selects the correct colors based on default theme 1`] = `
+exports[`Monitor Component it selects the correct colors based on default color mode 1`] = `
 <div
   class="react-draggable"
   style="transform: translate(0px,0px);"

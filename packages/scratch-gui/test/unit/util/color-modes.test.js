@@ -1,32 +1,32 @@
 import {
-    DARK_THEME,
+    DARK_MODE,
     defaultColors,
-    DEFAULT_THEME,
-    getColorsForTheme,
-    HIGH_CONTRAST_THEME
-} from '../../../src/lib/themes';
-import {injectExtensionBlockTheme, injectExtensionCategoryTheme} from '../../../src/lib/themes/blockHelpers';
-import {detectTheme, persistTheme} from '../../../src/lib/themes/themePersistance';
+    DEFAULT_MODE,
+    getColorsForMode,
+    HIGH_CONTRAST_MODE
+} from '../../../src/lib/settings/color-mode';
+import {injectExtensionBlockMode, injectExtensionCategoryMode} from '../../../src/lib/settings/color-mode/blockHelpers';
+import {detectColorMode, persistColorMode} from '../../../src/lib/settings/color-mode/persistence';
 
-jest.mock('../../../src/lib/themes/default');
-jest.mock('../../../src/lib/themes/dark');
+jest.mock('../../../src/lib/settings/color-mode/default');
+jest.mock('../../../src/lib/settings/color-mode/dark');
 
-describe('themes', () => {
+describe('color modes', () => {
     let serializeToString;
 
     describe('core functionality', () => {
-        test('provides the default theme colors', () => {
+        test('provides the default color mode colors', () => {
             expect(defaultColors.motion.primary).toEqual('#111111');
         });
 
         test('returns the dark mode', () => {
-            const colors = getColorsForTheme(DARK_THEME);
+            const colors = getColorsForMode(DARK_MODE);
 
             expect(colors.motion.primary).toEqual('#AAAAAA');
         });
 
-        test('uses default theme colors when not specified', () => {
-            const colors = getColorsForTheme(DARK_THEME);
+        test('uses default color mode colors when not specified', () => {
+            const colors = getColorsForMode(DARK_MODE);
 
             expect(colors.motion.secondary).toEqual('#222222');
         });
@@ -45,7 +45,7 @@ describe('themes', () => {
             global.XMLSerializer = XMLSerializer;
         });
 
-        test('updates extension block colors based on theme', () => {
+        test('updates extension block colors based on color mode', () => {
             const blockInfoJson = {
                 type: 'dummy_block',
                 colour: '#0FBD8C',
@@ -53,7 +53,7 @@ describe('themes', () => {
                 colourTertiary: '#0B8E69'
             };
 
-            const updated = injectExtensionBlockTheme(blockInfoJson, DARK_THEME);
+            const updated = injectExtensionBlockMode(blockInfoJson, DARK_MODE);
 
             expect(updated).toEqual({
                 type: 'dummy_block',
@@ -65,7 +65,7 @@ describe('themes', () => {
             expect(blockInfoJson.colour).toBe('#0FBD8C');
         });
 
-        test('updates extension block icon based on theme', () => {
+        test('updates extension block icon based on color mode', () => {
             const blockInfoJson = {
                 type: 'pen_block',
                 args0: [
@@ -79,7 +79,7 @@ describe('themes', () => {
                 colourTertiary: '#0B8E69'
             };
 
-            const updated = injectExtensionBlockTheme(blockInfoJson, DARK_THEME);
+            const updated = injectExtensionBlockMode(blockInfoJson, DARK_MODE);
 
             expect(updated).toEqual({
                 type: 'pen_block',
@@ -97,7 +97,7 @@ describe('themes', () => {
             expect(blockInfoJson.args0[0].src).toBe('original');
         });
 
-        test('bypasses updates if using the default theme', () => {
+        test('bypasses updates if using the default color mode', () => {
             const blockInfoJson = {
                 type: 'dummy_block',
                 colour: '#0FBD8C',
@@ -105,7 +105,7 @@ describe('themes', () => {
                 colourTertiary: '#0B8E69'
             };
 
-            const updated = injectExtensionBlockTheme(blockInfoJson, DEFAULT_THEME);
+            const updated = injectExtensionBlockMode(blockInfoJson, DEFAULT_MODE);
 
             expect(updated).toEqual({
                 type: 'dummy_block',
@@ -115,7 +115,7 @@ describe('themes', () => {
             });
         });
 
-        test('updates extension category based on theme', () => {
+        test('updates extension category based on color mode', () => {
             const dynamicBlockXML = [
                 {
                     id: 'pen',
@@ -123,7 +123,7 @@ describe('themes', () => {
                 }
             ];
 
-            injectExtensionCategoryTheme(dynamicBlockXML, DARK_THEME);
+            injectExtensionCategoryMode(dynamicBlockXML, DARK_MODE);
 
             // XMLSerializer is not available outside the browser.
             // Verify the mocked XMLSerializer.serializeToString is called with updated colors.
@@ -133,35 +133,35 @@ describe('themes', () => {
         });
     });
 
-    describe('theme persistance', () => {
-        test('returns the theme stored in a cookie', () => {
-            window.document.cookie = `scratchtheme=${HIGH_CONTRAST_THEME}`;
+    describe('color mode persistence', () => {
+        test('returns the color mode stored in a cookie', () => {
+            window.document.cookie = `scratchtheme=${HIGH_CONTRAST_MODE}`;
 
-            const theme = detectTheme();
+            const colorMode = detectColorMode();
 
-            expect(theme).toEqual(HIGH_CONTRAST_THEME);
+            expect(colorMode).toEqual(HIGH_CONTRAST_MODE);
         });
 
-        test('returns the system theme when no cookie', () => {
+        test('returns the system color mode when no cookie', () => {
             window.document.cookie = 'scratchtheme=';
 
-            const theme = detectTheme();
+            const colorMode = detectColorMode();
 
-            expect(theme).toEqual(DEFAULT_THEME);
+            expect(colorMode).toEqual(DEFAULT_MODE);
         });
 
-        test('persists theme to cookie', () => {
+        test('persists color mode to cookie', () => {
             window.document.cookie = 'scratchtheme=';
 
-            persistTheme(HIGH_CONTRAST_THEME);
+            persistColorMode(HIGH_CONTRAST_MODE);
 
-            expect(window.document.cookie).toEqual(`scratchtheme=${HIGH_CONTRAST_THEME}`);
+            expect(window.document.cookie).toEqual(`scratchtheme=${HIGH_CONTRAST_MODE}`);
         });
 
-        test('clears theme when matching system preferences', () => {
-            window.document.cookie = `scratchtheme=${HIGH_CONTRAST_THEME}`;
+        test('clears color mode when matching system preferences', () => {
+            window.document.cookie = `scratchtheme=${HIGH_CONTRAST_MODE}`;
 
-            persistTheme(DEFAULT_THEME);
+            persistColorMode(DEFAULT_MODE);
 
             expect(window.document.cookie).toEqual('scratchtheme=');
         });

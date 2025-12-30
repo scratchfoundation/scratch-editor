@@ -145,7 +145,7 @@ const fetchBitmapCanvas_ = function (costume, runtime, rotationCenter) {
             mergeCanvas.width = baseImageElement.width;
             mergeCanvas.height = baseImageElement.height;
 
-            const ctx = mergeCanvas.getContext('2d');
+            const ctx = mergeCanvas.getContext('2d', {willReadFrequently: true});
             ctx.drawImage(baseImageElement, 0, 0);
             if (textImageElement) {
                 ctx.drawImage(textImageElement, 0, 0);

@@ -77,7 +77,7 @@ const baseConfig = new ScratchWebpackConfigBuilder(
             {
                 // overwrite some of the default block media with high-contrast versions
                 // this entry must come after copying scratch-blocks/media into the high-contrast directory
-                from: 'src/lib/themes/high-contrast/blocks-media',
+                from: 'src/lib/settings/color-mode/high-contrast/blocks-media',
                 to: 'static/blocks-media/high-contrast',
                 force: true
             },
@@ -89,6 +89,11 @@ const baseConfig = new ScratchWebpackConfigBuilder(
             {
                 context: '../../node_modules/scratch-storage/dist/web',
                 from: 'chunks/fetch-worker.*.{js,js.map}',
+                noErrorOnMissing: true
+            },
+            {
+                context: '../../node_modules/scratch-storage/dist/web',
+                from: 'chunks/vendors-*.{js,js.map}',
                 noErrorOnMissing: true
             },
             {

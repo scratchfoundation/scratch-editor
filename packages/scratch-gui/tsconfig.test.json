@@ -3,6 +3,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
+    "allowJs": true,
 
     /* Modules */
     "types": ["jest", "./src/types.d.ts"],

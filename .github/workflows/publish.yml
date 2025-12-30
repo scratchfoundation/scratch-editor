@@ -119,6 +119,13 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
+      - name: Publish task-herder
+        run: |
+          npm run build --workspace @scratch/task-herder
+          npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/task-herder
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
       - name: Push to develop
         shell: bash
         run: |

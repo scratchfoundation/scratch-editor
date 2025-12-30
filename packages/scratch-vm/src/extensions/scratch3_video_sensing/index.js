@@ -355,15 +355,6 @@ class Scratch3VideoSensingBlocks {
     }
 
     /**
-     * States the video sensing activity can be set to.
-     * @readonly
-     * @enum {string}
-     */
-    static get VideoState () {
-        return VideoState;
-    }
-
-    /**
      * An array of info on video state options for the "turn video [STATE]" block.
      * @type {object[]}
      * @param {string} name - the translatable name to display in the video state menu

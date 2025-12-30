@@ -1,5 +1,5 @@
-import pLimit, { type LimitFunction } from 'p-limit'
 import { CancelReason } from './CancelReason'
+import { PromiseWithResolvers } from './PromiseWithResolvers'
 import { TaskRecord, type TaskOptions } from './TaskRecord'
 
 export interface QueueOptions {
@@ -29,25 +29,42 @@ export class TaskQueue {
   private readonly burstLimit: number
   private readonly sustainRate: number
   private readonly queueCostLimit: number
-  private readonly concurrencyLimiter: LimitFunction
-  private readonly boundRunTasks = this.runTasks.bind(this)
+  private readonly concurrencyLimit: number
   private tokenCount: number
 
+  private runningTasks = 0
   private pendingTaskRecords: TaskRecord<unknown>[] = []
-  private timeout: number | null = null
   private lastRefillTime: number = Date.now()
+  private onTaskAdded = PromiseWithResolvers<void>().resolve // start with a no-op of correct type
+  private onTaskFinished = PromiseWithResolvers<void>().resolve // start with a no-op of correct type
 
   constructor(options: QueueOptions) {
     this.burstLimit = options.burstLimit
     this.sustainRate = options.sustainRate
     this.tokenCount = options.startingTokens ?? options.burstLimit
     this.queueCostLimit = options.queueCostLimit ?? Infinity
-    this.concurrencyLimiter = pLimit(options.concurrency ?? 1)
+    this.concurrencyLimit = options.concurrency ?? 1
+    void this.runTasks()
   }
 
   /** @returns The number of tasks currently in the queue */
   get length(): number {
     return this.pendingTaskRecords.length
+  }
+
+  /**
+   * @returns The current configuration options of the queue. Used primarily for testing and inspection.
+   * Note that the `startingTokens` value returned here reflects the current token count, which is only guaranteed to
+   * match the originally configured starting tokens value if no time has passed and no tasks have been processed.
+   */
+  get options(): Readonly<QueueOptions> {
+    return {
+      burstLimit: this.burstLimit,
+      sustainRate: this.sustainRate,
+      startingTokens: this.tokenCount,
+      queueCostLimit: this.queueCostLimit,
+      concurrency: this.concurrencyLimit,
+    }
   }
 
   /**
@@ -77,10 +94,7 @@ export class TaskQueue {
       this.cancel(taskRecord.promise, new Error(CancelReason.Aborted))
     })
 
-    // If the queue was empty, we need to prime the pump
-    if (this.pendingTaskRecords.length === 1) {
-      void this.runTasks()
-    }
+    this.onTaskAdded()
 
     return taskRecord.promise
   }
@@ -96,9 +110,6 @@ export class TaskQueue {
     if (taskIndex !== -1) {
       const [taskRecord] = this.pendingTaskRecords.splice(taskIndex, 1)
       taskRecord.cancel(reason ?? new Error(CancelReason.Cancel))
-      if (taskIndex === 0 && this.pendingTaskRecords.length > 0) {
-        void this.runTasks()
-      }
       return true
     }
     return false
@@ -110,10 +121,6 @@ export class TaskQueue {
    * @returns The number of tasks that were cancelled.
    */
   cancelAll(reason?: Error): number {
-    if (this.timeout !== null) {
-      clearTimeout(this.timeout)
-      this.timeout = null
-    }
     const oldTasks = this.pendingTaskRecords
     this.pendingTaskRecords = []
     reason = reason ?? new Error(CancelReason.Cancel)
@@ -164,17 +171,15 @@ export class TaskQueue {
   /**
    * Run tasks from the queue as tokens become available.
    */
-  private runTasks(): void {
-    if (this.timeout !== null) {
-      clearTimeout(this.timeout)
-      this.timeout = null
-    }
-
+  private async runTasks(): Promise<void> {
     for (;;) {
       const nextRecord = this.pendingTaskRecords.shift()
       if (!nextRecord) {
         // No more tasks to run
-        return
+        const { promise, resolve } = PromiseWithResolvers<void>()
+        this.onTaskAdded = resolve
+        await promise // wait until a task is added
+        continue // then try again
       }
 
       if (nextRecord.cost > this.burstLimit) {
@@ -185,16 +190,34 @@ export class TaskQueue {
 
       // Refill before each task in case the time it took for the last task to run was enough to afford the next.
       if (this.refillAndSpend(nextRecord.cost)) {
-        // Run the task within the concurrency limiter
-        void this.concurrencyLimiter(nextRecord.run)
+        if (this.runningTasks >= this.concurrencyLimit) {
+          const { promise, resolve } = PromiseWithResolvers<void>()
+          this.onTaskFinished = resolve
+          await promise // wait until a task finishes
+          // then we know there's room for at least one more task
+        }
+        void this.runTask(nextRecord)
       } else {
         // We can't currently afford this task. Put it back and wait until we can, then try again.
         this.pendingTaskRecords.unshift(nextRecord)
         const tokensNeeded = Math.max(nextRecord.cost - this.tokenCount, 0)
         const estimatedWait = Math.ceil((1000 * tokensNeeded) / this.sustainRate)
-        this.timeout = setTimeout(this.boundRunTasks, estimatedWait)
-        return
+        await new Promise(resolve => setTimeout(resolve, estimatedWait))
       }
+    }
+  }
+
+  /**
+   * Run a task record right now, managing the running tasks count.
+   * @param taskRecord The task that should run.
+   */
+  private async runTask(taskRecord: TaskRecord<unknown>): Promise<void> {
+    this.runningTasks++
+    try {
+      await taskRecord.run()
+    } finally {
+      this.runningTasks--
+      this.onTaskFinished()
     }
   }
 }

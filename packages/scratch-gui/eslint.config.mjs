@@ -40,7 +40,7 @@ export default eslintConfigScratch.defineConfig(
                 projectService: false,
                 tsconfigRootDir: import.meta.dirname,
                 project: [
-                    'tsconfig.json',
+                    'tsconfig.eslint.json',
                     'tsconfig.test.json'
                 ]
             }

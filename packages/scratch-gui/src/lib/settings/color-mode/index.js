@@ -14,68 +14,68 @@ import {blockColors as defaultColors} from './default';
 import defaultIcon from './default/icon.svg';
 import highContrastIcon from './high-contrast/icon.svg';
 
-const DEFAULT_THEME = 'default';
-const HIGH_CONTRAST_THEME = 'high-contrast';
-const DARK_THEME = 'dark';
+const DEFAULT_MODE = 'default';
+const HIGH_CONTRAST_MODE = 'high-contrast';
+const DARK_MODE = 'dark';
 
 const mergeWithDefaults = colors => defaultsDeep({}, colors, defaultColors);
 
 const messages = defineMessages({
-    [DEFAULT_THEME]: {
+    [DEFAULT_MODE]: {
         id: 'gui.theme.default',
         defaultMessage: 'Original',
-        description: 'label for original theme'
+        description: 'label for original color mode'
     },
-    [DARK_THEME]: {
+    [DARK_MODE]: {
         id: 'gui.theme.dark',
         defaultMessage: 'Dark',
-        description: 'label for dark mode theme'
+        description: 'label for dark mode'
     },
-    [HIGH_CONTRAST_THEME]: {
+    [HIGH_CONTRAST_MODE]: {
         id: 'gui.theme.highContrast',
         defaultMessage: 'High Contrast',
-        description: 'label for high theme'
+        description: 'label for high contrast mode'
     }
 });
 
-const themeMap = {
-    [DEFAULT_THEME]: {
+const colorModeMap = {
+    [DEFAULT_MODE]: {
         blocksMediaFolder: 'blocks-media/default',
         colors: defaultColors,
         extensions: {},
-        label: messages[DEFAULT_THEME],
+        label: messages[DEFAULT_MODE],
         icon: defaultIcon
     },
-    [DARK_THEME]: {
+    [DARK_MODE]: {
         blocksMediaFolder: 'blocks-media/default',
         colors: mergeWithDefaults(darkModeBlockColors),
         extensions: darkModeExtensions,
-        label: messages[DARK_THEME]
+        label: messages[DARK_MODE]
     },
-    [HIGH_CONTRAST_THEME]: {
+    [HIGH_CONTRAST_MODE]: {
         blocksMediaFolder: 'blocks-media/high-contrast',
         colors: mergeWithDefaults(highContrastBlockColors),
         extensions: highContrastExtensions,
-        label: messages[HIGH_CONTRAST_THEME],
+        label: messages[HIGH_CONTRAST_MODE],
         icon: highContrastIcon
     }
 };
 
-const getColorsForTheme = theme => {
-    const themeInfo = themeMap[theme];
+const getColorsForMode = colorMode => {
+    const modeInfo = colorModeMap[colorMode];
 
-    if (!themeInfo) {
-        throw new Error(`Undefined theme ${theme}`);
+    if (!modeInfo) {
+        throw new Error(`Undefined color mode ${colorMode}`);
     }
 
-    return themeInfo.colors;
+    return modeInfo.colors;
 };
 
 export {
-    DEFAULT_THEME,
-    DARK_THEME,
-    HIGH_CONTRAST_THEME,
+    DEFAULT_MODE,
+    DARK_MODE,
+    HIGH_CONTRAST_MODE,
     defaultColors,
-    getColorsForTheme,
-    themeMap
+    getColorsForMode,
+    colorModeMap
 };

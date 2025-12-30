@@ -69,9 +69,10 @@ class BitmapSkin extends Skin {
         // memory.
         let textureData = bitmapData;
         if (bitmapData instanceof HTMLCanvasElement) {
-            // Given a HTMLCanvasElement get the image data to pass to webgl and
-            // Silhouette.
-            const context = bitmapData.getContext('2d');
+            // Given a HTMLCanvasElement, get the image data to pass to WebGL and the Silhouette. The 2D context was
+            // likely already created, so `willReadFrequently` is likely ignored here, but it's good documentation and
+            // may help if the code path changes someday.
+            const context = bitmapData.getContext('2d', {willReadFrequently: true});
             textureData = context.getImageData(0, 0, bitmapData.width, bitmapData.height);
         }
 

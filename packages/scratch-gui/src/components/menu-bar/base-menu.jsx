@@ -99,7 +99,6 @@ export class BaseMenu extends React.PureComponent {
         this.setState({focusedIndex: newIndex}, () => {
             this.refocusRef(this.itemRefs[newIndex]);
         });
-        this.context.print();
     }
 
     handleOnClose () {

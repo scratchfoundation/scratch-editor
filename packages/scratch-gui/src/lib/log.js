@@ -1,4 +1,5 @@
-import minilog from 'minilog';
-minilog.enable();
+import {Logger} from 'tslog';
 
-export default minilog('gui');
+export default new Logger({
+    name: 'scratch-gui'
+});

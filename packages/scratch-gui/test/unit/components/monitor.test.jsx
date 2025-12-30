@@ -1,10 +1,10 @@
 import React from 'react';
 import {render} from '@testing-library/react';
 import Monitor from '../../../src/components/monitor/monitor';
-import {DARK_THEME, DEFAULT_THEME} from '../../../src/lib/themes';
+import {DARK_MODE, DEFAULT_MODE} from '../../../src/lib/settings/color-mode';
 
-jest.mock('../../../src/lib/themes/default');
-jest.mock('../../../src/lib/themes/dark');
+jest.mock('../../../src/lib/settings/color-mode/default');
+jest.mock('../../../src/lib/settings/color-mode/dark');
 
 describe('Monitor Component', () => {
     const noop = jest.fn();
@@ -22,19 +22,19 @@ describe('Monitor Component', () => {
         onNextMode: noop
     };
 
-    test('it selects the correct colors based on default theme', () => {
+    test('it selects the correct colors based on default color mode', () => {
         const {container} = render(<Monitor
             {...defaultProps}
-            theme={DEFAULT_THEME}
+            colorMode={DEFAULT_MODE}
         />);
 
         expect(container.firstChild).toMatchSnapshot();
     });
 
-    test('it selects the correct colors based on dark mode theme', () => {
+    test('it selects the correct colors based on dark mode', () => {
         const {container} = render(<Monitor
             {...defaultProps}
-            theme={DARK_THEME}
+            colorMode={DARK_MODE}
         />);
 
         expect(container.firstChild).toMatchSnapshot();

@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-render",
-  "version": "12.0.2-hotfix",
+  "version": "12.3.1",
   "description": "WebGL Renderer for Scratch 3.0",
   "author": "Massachusetts Institute of Technology",
   "license": "AGPL-3.0-only",
@@ -46,13 +46,13 @@
     "iOS >= 8"
   ],
   "dependencies": {
-    "@scratch/scratch-svg-renderer": "12.0.2-hotfix",
+    "@scratch/scratch-svg-renderer": "12.3.1",
     "grapheme-breaker": "0.3.2",
     "hull.js": "0.2.10",
     "ify-loader": "1.1.0",
     "linebreak": "0.3.0",
-    "minilog": "3.1.0",
     "raw-loader": "0.5.1",
+    "tslog": "4.10.2",
     "twgl.js": "4.24.0"
   },
   "peerDependencies": {
@@ -62,12 +62,12 @@
     "@babel/core": "7.28.5",
     "@babel/polyfill": "7.12.1",
     "@babel/preset-env": "7.28.5",
-    "@scratch/scratch-vm": "12.0.2-hotfix",
+    "@scratch/scratch-vm": "12.3.1",
     "babel-loader": "9.2.1",
     "copy-webpack-plugin": "6.4.1",
     "docdash": "0.4.0",
-    "eslint": "9.39.1",
-    "eslint-config-scratch": "12.0.41",
+    "eslint": "9.39.2",
+    "eslint-config-scratch": "12.0.42",
     "gh-pages": "1.2.0",
     "globals": "16.5.0",
     "html-webpack-plugin": "5.6.5",
@@ -79,8 +79,8 @@
     "scratch-webpack-configuration": "3.1.0",
     "semantic-release": "19.0.5",
     "tap": "21.5.0",
-    "terser-webpack-plugin": "5.3.15",
-    "webpack": "5.103.0",
+    "terser-webpack-plugin": "5.3.16",
+    "webpack": "5.104.1",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.2.2"
   }

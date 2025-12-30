@@ -10,7 +10,7 @@ import {addMonitorRect, getInitialPosition, resizeMonitorRect, removeMonitorRect
 import {getVariable, setVariableValue} from '../lib/variable-utils';
 import importCSV from '../lib/import-csv';
 import downloadBlob from '../lib/download-blob';
-import {DEFAULT_THEME} from '../lib/themes';
+import {DEFAULT_MODE} from '../lib/settings/color-mode/index.js';
 import SliderPrompt from './slider-prompt.jsx';
 
 import {connect} from 'react-redux';
@@ -215,7 +215,7 @@ class Monitor extends React.Component {
                     min={this.props.min}
                     mode={this.props.mode}
                     targetId={this.props.targetId}
-                    theme={this.props.theme}
+                    colorMode={this.props.colorMode}
                     width={this.props.width}
                     onDragEnd={this.handleDragEnd}
                     onExport={isList ? this.handleExport : null}
@@ -253,7 +253,7 @@ Monitor.propTypes = {
     resizeMonitorRect: PropTypes.func.isRequired,
     spriteName: PropTypes.string,
     targetId: PropTypes.string,
-    theme: PropTypes.string,
+    colorMode: PropTypes.string,
     toolboxXML: PropTypes.string,
     value: PropTypes.oneOfType([
         PropTypes.string,
@@ -269,11 +269,11 @@ Monitor.propTypes = {
     y: PropTypes.number
 };
 Monitor.defaultProps = {
-    theme: DEFAULT_THEME
+    colorMode: DEFAULT_MODE
 };
 const mapStateToProps = state => ({
     monitorLayout: state.scratchGui.monitorLayout,
-    theme: state.scratchGui.theme.theme,
+    colorMode: state.scratchGui.settings.colorMode,
     // render on toolbox updates since changes to the blocks could affect monitor labels, i.e. updated locale
     toolboxXML: state.scratchGui.toolbox.toolboxXML,
     vm: state.scratchGui.vm

@@ -6,7 +6,6 @@
     /* Language and Environment */
     "target": "ESNext",
     "jsx": "react",
-    "allowJs": true,
 
     /* Modules */
     "module": "commonjs",

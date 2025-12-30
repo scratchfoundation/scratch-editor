@@ -2,7 +2,8 @@
     width: 1.5rem;
 }
 
-.theme-label {
+/* Unused? */
+.color-mode-label {
     flex: 1;
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "@scratch/task-herder",
-  "version": "0.0.0",
+  "version": "12.3.1",
   "description": "An asynchronous task runner with configurable rate limiting / throttling and concurrency control.",
   "keywords": [
     "rate limit",
@@ -12,7 +12,6 @@
   ],
   "author": "Scratch Foundation",
   "license": "AGPL-3.0-only",
-  "private": true,
   "type": "module",
   "files": [
     "LICENSE",
@@ -29,6 +28,7 @@
     }
   },
   "scripts": {
+    "clean": "rimraf dist",
     "dev": "vite",
     "build": "tsc --project tsconfig.build.json && vite build",
     "format": "prettier --write . && eslint --fix",
@@ -37,19 +37,17 @@
     "test": "npm run lint && vitest run --coverage"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "4.0.15",
-    "eslint": "9.39.1",
-    "eslint-config-scratch": "12.0.41",
+    "@vitest/coverage-v8": "4.0.16",
+    "eslint": "9.39.2",
+    "eslint-config-scratch": "12.0.42",
     "prettier": "3.7.4",
+    "rimraf": "6.1.2",
     "typescript": "5.9.3",
     "unplugin-dts": "1.0.0-beta.6",
-    "vite": "npm:rolldown-vite@7.2.10",
-    "vitest": "4.0.15"
+    "vite": "npm:rolldown-vite@7.3.0",
+    "vitest": "4.0.16"
   },
   "overrides": {
-    "vite": "npm:rolldown-vite@7.2.10"
-  },
-  "dependencies": {
-    "p-limit": "7.2.0"
+    "vite": "npm:rolldown-vite@7.3.0"
   }
 }

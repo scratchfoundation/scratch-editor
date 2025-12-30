@@ -4,7 +4,7 @@ import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
 import {renderWithIntl} from '../../helpers/intl-helpers.jsx';
 import MonitorList from '../../../src/components/monitor-list/monitor-list.jsx';
-import {DEFAULT_THEME} from '../../../src/lib/themes';
+import {DEFAULT_MODE} from '../../../src/lib/settings/color-mode';
 
 describe('MonitorListComponent', () => {
     const store = configureStore()({
@@ -13,8 +13,8 @@ describe('MonitorListComponent', () => {
                 monitors: {},
                 savedMonitorPositions: {}
             },
-            theme: {
-                theme: DEFAULT_THEME
+            settings: {
+                colorMode: DEFAULT_MODE
             },
             toolbox: {
                 toolboxXML: ''

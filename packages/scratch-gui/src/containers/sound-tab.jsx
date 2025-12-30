@@ -174,6 +174,8 @@ class SoundTab extends React.Component {
 
     render () {
         const {
+            ariaLabel,
+            ariaRole,
             dispatchUpdateRestore,
             intl,
             isRtl,
@@ -222,6 +224,8 @@ class SoundTab extends React.Component {
 
         return (
             <AssetPanel
+                ariaLabel={ariaLabel}
+                ariaRole={ariaRole}
                 buttons={[{
                     title: intl.formatMessage(messages.addSound),
                     img: addSoundFromLibraryIcon,
@@ -278,6 +282,8 @@ class SoundTab extends React.Component {
 }
 
 SoundTab.propTypes = {
+    ariaLabel: PropTypes.string,
+    ariaRole: PropTypes.string,
     dispatchUpdateRestore: PropTypes.func,
     editingTarget: PropTypes.string,
     intl: intlShape,

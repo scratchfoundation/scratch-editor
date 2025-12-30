@@ -5,7 +5,15 @@
  * @returns {ScratchBlocks} ScratchBlocks connected with the vm
  */
 export default function (vm, useCatBlocks) {
-    const ScratchBlocks = useCatBlocks ? require('cat-blocks') : require('scratch-blocks');
+    const ScratchBlocks = require('scratch-blocks');
+
+    // TODO: Set theme from editor settings
+    if (useCatBlocks) {
+        ScratchBlocks.setTheme(ScratchBlocks.Themes.CAT_BLOCKS);
+    } else {
+        ScratchBlocks.setTheme(ScratchBlocks.Themes.CLASSIC);
+    }
+    
     const jsonForMenuBlock = function (name, menuOptionsFn, colors, start) {
         return {
             message0: '%1',

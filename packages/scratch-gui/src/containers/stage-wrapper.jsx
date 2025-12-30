@@ -7,6 +7,8 @@ import StageWrapperComponent from '../components/stage-wrapper/stage-wrapper.jsx
 const StageWrapper = props => <StageWrapperComponent {...props} />;
 
 StageWrapper.propTypes = {
+    ariaLabel: PropTypes.string,
+    ariaRole: PropTypes.string,
     isRendererSupported: PropTypes.bool.isRequired,
     stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired,
     vm: PropTypes.instanceOf(VM).isRequired

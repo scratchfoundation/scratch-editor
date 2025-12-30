@@ -9,6 +9,7 @@ const MENU_LANGUAGE = 'languageMenu';
 const MENU_LOGIN = 'loginMenu';
 const MENU_MODE = 'modeMenu';
 const MENU_SETTINGS = 'settingsMenu';
+const MENU_COLOR_MODE = 'colorModeMenu';
 const MENU_THEME = 'themeMenu';
 
 class Menu {
@@ -51,6 +52,7 @@ const rootMenu = new Menu('root')
     .addChild(
         new Menu(MENU_SETTINGS)
             .addChild(new Menu(MENU_LANGUAGE))
+            .addChild(new Menu(MENU_COLOR_MODE))
             .addChild(new Menu(MENU_THEME))
     )
     .addChild(new Menu(MENU_FILE))
@@ -70,6 +72,7 @@ const initialState = {
     [MENU_LOGIN]: false,
     [MENU_MODE]: false,
     [MENU_SETTINGS]: false,
+    [MENU_COLOR_MODE]: false,
     [MENU_THEME]: false
 };
 
@@ -137,6 +140,10 @@ const closeModeMenu = () => closeMenu(MENU_MODE);
 const openSettingsMenu = () => openMenu(MENU_SETTINGS);
 const closeSettingsMenu = () => closeMenu(MENU_SETTINGS);
 
+const openColorModeMenu = () => openMenu(MENU_COLOR_MODE);
+const closeColorModeMenu = () => closeMenu(MENU_COLOR_MODE);
+const colorModeMenuOpen = state => state.scratchGui.menus[MENU_COLOR_MODE];
+
 const openThemeMenu = () => openMenu(MENU_THEME);
 const closeThemeMenu = () => closeMenu(MENU_THEME);
 
@@ -162,6 +169,9 @@ export {
     closeModeMenu,
     openSettingsMenu,
     closeSettingsMenu,
+    openColorModeMenu,
+    closeColorModeMenu,
+    colorModeMenuOpen,
     openThemeMenu,
     closeThemeMenu
 };

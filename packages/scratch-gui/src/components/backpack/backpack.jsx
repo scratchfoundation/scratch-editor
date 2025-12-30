@@ -41,6 +41,8 @@ const labelMap = defineMessages({
 });
 
 const Backpack = ({
+    ariaLabel,
+    ariaRole,
     blockDragOver,
     containerRef,
     contents,
@@ -57,7 +59,11 @@ const Backpack = ({
 }) => {
     const intl = useIntl();
     return (
-        <div className={styles.backpackContainer}>
+        <div
+            className={styles.backpackContainer}
+            role={ariaRole}
+            aria-label={ariaLabel}
+        >
             <div
                 className={styles.backpackHeader}
                 onClick={onToggle}
@@ -156,6 +162,8 @@ const Backpack = ({
 };
 
 Backpack.propTypes = {
+    ariaLabel: PropTypes.string,
+    ariaRole: PropTypes.string,
     blockDragOver: PropTypes.bool,
     containerRef: PropTypes.func,
     contents: PropTypes.arrayOf(PropTypes.shape({

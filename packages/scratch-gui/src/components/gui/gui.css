@@ -28,7 +28,6 @@
         b) for combined stage menu + stage + sprite/stage selectors
     */
     flex-direction: row;
-    height: 100%;
 
     /*
         Stop scrollbar popping in and out from scratch-blocks border issue

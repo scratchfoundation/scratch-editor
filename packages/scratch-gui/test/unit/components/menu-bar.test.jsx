@@ -3,7 +3,7 @@ import {renderWithIntl} from '../../helpers/intl-helpers.jsx';
 import MenuBar from '../../../src/components/menu-bar/menu-bar';
 import {menuInitialState} from '../../../src/reducers/menus';
 import {LoadingState} from '../../../src/reducers/project-state';
-import {DEFAULT_THEME} from '../../../src/lib/themes';
+import {DEFAULT_MODE} from '../../../src/lib/settings/color-mode';
 import {fireEvent} from '@testing-library/react';
 
 import {PLATFORM} from '../../../src/lib/platform';
@@ -23,8 +23,8 @@ describe('MenuBar Component', () => {
             projectState: {
                 loadingState: LoadingState.NOT_LOADED
             },
-            theme: {
-                theme: DEFAULT_THEME
+            settings: {
+                colorMode: DEFAULT_MODE
             },
             timeTravel: {
                 year: 'NOW'

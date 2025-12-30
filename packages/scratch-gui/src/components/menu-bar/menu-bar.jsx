@@ -420,6 +420,8 @@ class MenuBar extends React.Component {
                     this.props.className,
                     styles.menuBar
                 )}
+                aria-label={this.props.ariaLabel}
+                role={this.props.ariaRole}
             >
                 <div className={styles.mainMenu}>
                     <div className={styles.fileGroup}>
@@ -438,11 +440,14 @@ class MenuBar extends React.Component {
                                 onClick={this.props.onClickLogo}
                             />
                         </div>
-                        {(this.props.canChangeTheme || this.props.canChangeLanguage) && (<SettingsMenu
+                        {(this.props.canChangeColorMode || this.props.canChangeLanguage || this.props.canChangeTheme) &&
+                        (<SettingsMenu
                             menuRef={this.settingsRef}
                             depth={1}
                             canChangeLanguage={this.props.canChangeLanguage}
+                            canChangeColorMode={this.props.canChangeColorMode}
                             canChangeTheme={this.props.canChangeTheme}
+                            hasActiveMembership={this.props.hasActiveMembership}
                             isRtl={this.props.isRtl}
                             onClose={this.props.onRequestCloseSettings}
                             onOpen={this.props.onClickSettings}
@@ -502,6 +507,7 @@ class MenuBar extends React.Component {
                             projectTitle={this.props.projectTitle}
                             userId={this.props.authorId}
                             username={this.props.authorUsername}
+                            avatarBadge={this.props.authorAvatarBadge}
                         />
                     ) : null)}
                     <div className={classNames(styles.menuBarItem)}>
@@ -640,6 +646,7 @@ class MenuBar extends React.Component {
                                     onLogOut={menuOpts.canLogout ? this.props.onLogOut : null}
 
                                     username={this.props.username}
+                                    avatarBadge={this.props.avatarBadge}
 
                                     avatarUrl={menuOpts.avatarUrl}
                                     myStuffUrl={menuOpts.myStuffUrl}
@@ -754,11 +761,15 @@ class MenuBar extends React.Component {
 MenuBar.propTypes = {
     aboutMenuOpen: PropTypes.bool,
     accountMenuOpen: PropTypes.bool,
+    ariaLabel: PropTypes.string,
+    ariaRole: PropTypes.string,
     authorId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
     authorThumbnailUrl: PropTypes.string,
     authorUsername: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+    authorAvatarBadge: PropTypes.number,
     autoUpdateProject: PropTypes.func,
     canChangeLanguage: PropTypes.bool,
+    canChangeColorMode: PropTypes.bool,
     canChangeTheme: PropTypes.bool,
     canCreateCopy: PropTypes.bool,
     canCreateNew: PropTypes.bool,
@@ -771,6 +782,7 @@ MenuBar.propTypes = {
     confirmReadyToReplaceProject: PropTypes.func,
     currentLocale: PropTypes.string.isRequired,
     enableCommunity: PropTypes.bool,
+    hasActiveMembership: PropTypes.bool,
     intl: intlShape,
     isRtl: PropTypes.bool,
     isShared: PropTypes.bool,
@@ -829,6 +841,7 @@ MenuBar.propTypes = {
     shouldSaveBeforeTransition: PropTypes.func,
     showComingSoon: PropTypes.bool,
     username: PropTypes.string,
+    avatarBadge: PropTypes.number,
     userOwnsProject: PropTypes.bool,
 
     accountMenuOptions: AccountMenuOptionsPropTypes,
@@ -858,6 +871,7 @@ const mapStateToProps = (state, ownProps) => {
         loginMenuOpen: loginMenuOpen(state),
         projectTitle: state.scratchGui.projectTitle,
         username: ownProps.username ?? (user ? user.username : null),
+        avatarBadge: user ? user.membership_avatar_badge : null,
         userIsEducator: permissions && permissions.educator,
         vm: state.scratchGui.vm,
         mode220022BC: isTimeTravel220022BC(state),

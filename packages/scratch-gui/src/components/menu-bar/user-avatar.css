@@ -8,3 +8,28 @@
     vertical-align: middle;
     box-shadow: 0 0 0 1px $ui-black-transparent;
 }
+
+.avatar-badge {
+    border: 1px solid $ui-orange;
+    box-sizing: border-box;
+    border-radius: 17%;
+    box-shadow: none;
+}
+
+.avatar-badge-wrapper {
+    display: inline-flex;
+    background: url('./cat-ears.svg') no-repeat top ;
+    background-size: contain;
+    align-items: flex-end;
+
+    width: $menu-bar-button-size;
+    height: calc($menu-bar-button-size * 1.28);
+}
+
+[dir="ltr"] .avatar-badge-wrapper {
+    margin-right: calc($space * .8125);
+}
+
+[dir="rtl"] .avatar-badge-wrapper {
+    margin-left: calc($space * .8125);
+}
