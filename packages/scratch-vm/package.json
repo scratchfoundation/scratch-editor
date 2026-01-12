@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-vm",
-  "version": "12.0.2-hotfix",
+  "version": "12.1.4",
   "description": "Virtual Machine for Scratch 3.0",
   "author": "Massachusetts Institute of Technology",
   "license": "AGPL-3.0-only",
@@ -52,8 +52,8 @@
     "allow-incomplete-coverage": true
   },
   "dependencies": {
-    "@scratch/scratch-render": "12.0.2-hotfix",
-    "@scratch/scratch-svg-renderer": "12.0.2-hotfix",
+    "@scratch/scratch-render": "12.1.4",
+    "@scratch/scratch-svg-renderer": "12.1.4",
     "@vernier/godirect": "1.8.3",
     "arraybuffer-loader": "1.0.8",
     "atob": "2.1.2",
