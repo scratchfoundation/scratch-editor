@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-svg-renderer",
-  "version": "12.1.4",
+  "version": "12.1.5",
   "description": "SVG renderer for Scratch",
   "main": "./dist/node/scratch-svg-renderer.js",
   "browser": "./dist/web/scratch-svg-renderer.js",
