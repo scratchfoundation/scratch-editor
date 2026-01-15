@@ -9,7 +9,7 @@ import styles from './author-info.css';
 const authorInfo = defineMessage({
     id: 'gui.aria.authorInfo',
     defaultMessage: 'Project "{projectTitle}" by {username}',
-    description: 'ARIA label for author info'
+    description: 'accessibility label for author info'
 });
 
 const AuthorInfo = ({

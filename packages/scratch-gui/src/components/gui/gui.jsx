@@ -52,57 +52,57 @@ const ariaMessages = defineMessages({
     menuBar: {
         id: 'gui.aria.menuBar',
         defaultMessage: 'Menu topbar',
-        description: 'ARIA label for the top menu bar'
+        description: 'accessibility label for the top menu bar'
     },
     editor: {
         id: 'gui.aria.editor',
         defaultMessage: 'Editor',
-        description: 'ARIA label for the main editor area'
+        description: 'accessibility label for the main editor area'
     },
     tabList: {
         id: 'gui.aria.tabList',
         defaultMessage: 'Tab list',
-        description: 'ARIA label for the editor tab list'
+        description: 'accessibility label for the editor tab list'
     },
     codePanel: {
         id: 'gui.aria.codePanel',
         defaultMessage: 'Code editor panel',
-        description: 'ARIA label for the code editor panel'
+        description: 'accessibility label for the code editor panel'
     },
     costumesPanel: {
         id: 'gui.aria.costumesPanel',
         defaultMessage: 'Costumes editor panel',
-        description: 'ARIA label for the costumes editor panel'
+        description: 'accessibility label for the costumes editor panel'
     },
     backdropsPanel: {
         id: 'gui.aria.backdropsPanel',
         defaultMessage: 'Backdrops editor panel',
-        description: 'ARIA label for the backdrops editor panel'
+        description: 'accessibility label for the backdrops editor panel'
     },
     soundsPanel: {
         id: 'gui.aria.soundsPanel',
         defaultMessage: 'Sounds editor panel',
-        description: 'ARIA label for the sounds editor panel'
+        description: 'accessibility label for the sounds editor panel'
     },
     backpack: {
         id: 'gui.aria.backpack',
         defaultMessage: 'Backpack',
-        description: 'ARIA label for the backpack'
+        description: 'accessibility label for the backpack'
     },
     stageAndTarget: {
         id: 'gui.aria.stageAndTarget',
         defaultMessage: 'Stage and target',
-        description: 'ARIA label for stage and target area'
+        description: 'accessibility label for stage and target area'
     },
     stage: {
         id: 'gui.aria.stage',
         defaultMessage: 'Stage',
-        description: 'ARIA label for the stage'
+        description: 'accessibility label for the stage'
     },
     targetPane: {
         id: 'gui.aria.targetPane',
         defaultMessage: 'Target pane',
-        description: 'ARIA label for the target pane'
+        description: 'accessibility label for the target pane'
     }
 });
 

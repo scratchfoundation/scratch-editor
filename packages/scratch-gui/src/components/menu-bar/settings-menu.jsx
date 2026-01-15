@@ -29,17 +29,17 @@ const ariaMessages = defineMessages({
     settingsMenu: {
         id: 'gui.aria.settingsMenu',
         defaultMessage: 'Settings menu',
-        description: 'ARIA label for settings menu'
+        description: 'accessibility label for settings menu'
     },
     themeMenu: {
         id: 'gui.aria.themeMenu',
         defaultMessage: 'Theme menu',
-        description: 'ARIA label for theme menu'
+        description: 'accessibility label for theme menu'
     },
     colorMenu: {
         id: 'gui.aria.colorMenu',
         defaultMessage: 'Color menu',
-        description: 'ARIA label for color menu'
+        description: 'accessibility label for color menu'
     }
 });
 

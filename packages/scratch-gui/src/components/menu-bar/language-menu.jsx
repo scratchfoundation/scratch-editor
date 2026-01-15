@@ -19,7 +19,7 @@ import propTypes from '../../lib/prop-types.js';
 const languageMenu = defineMessage({
     id: 'gui.aria.languageMenu',
     defaultMessage: 'Language menu',
-    description: 'ARIA label for language menu'
+    description: 'accessibility label for language menu'
 });
 
 const LanguageMenu = ({

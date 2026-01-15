@@ -19,6 +19,21 @@ const KEY = {
  * - moving focus between menu items with arrow keys
  * - handling Escape, Enter, and Tab behavior
  * - coordinating open menus via MenuRefContext
+ * STEPS TO USE IT:
+ * ______________________________________________________________________________________
+ * 1. Define itemRefs as an array of refs for the submenu items, then pass
+ * {itemRefs, menuRef (ref for component itself) and depth (starting from 1 for )}
+ * 2. In the top component (button/div/...) pass
+ * - onClick={handleOnOpen}
+ * - ref={menuRef}
+ * - onKeyDown={handleKeyPress}
+ * - tabIndex={0} if it's the core menu accessible via tab or tabIndex={1} if it's a submenu
+ * - aria-expanded={isExpanded()} (also everywhere else where you require isExpanded() logic,
+ * such as the css responsible for conditionally displaying the dropdown)
+ * 3. In the submenu items pass:
+ * - itemRef={itemRefs[index]}
+ * - onParentKeyPress={handleKeyPressOpenMenu}
+ * ______________________________________________________________________________________
  * @param {object} params
  *  Parameters object
  * @param {{ current: HTMLElement | null }} params.menuRef

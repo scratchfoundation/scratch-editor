@@ -19,7 +19,7 @@ const EditorModes = {
 const modeMenu = defineMessage({
     id: 'gui.aria.modeMenu',
     defaultMessage: 'Mode menu',
-    description: 'ARIA label for mode menu'
+    description: 'accessibility label for mode menu'
 });
 
 const ModeMenu = ({

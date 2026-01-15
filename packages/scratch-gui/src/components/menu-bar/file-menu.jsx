@@ -24,7 +24,7 @@ import {
 const fileMenu = defineMessage({
     id: 'gui.aria.fileMenu',
     defaultMessage: 'File menu',
-    description: 'ARIA label for file menu'
+    description: 'accessibility label for file menu'
 });
 
 const FileMenu = ({

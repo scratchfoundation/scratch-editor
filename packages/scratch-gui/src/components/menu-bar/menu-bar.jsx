@@ -78,17 +78,17 @@ const ariaMessages = defineMessages({
     tutorials: {
         id: 'gui.menuBar.tutorialsLibrary',
         defaultMessage: 'Tutorials',
-        description: 'ARIA text for the tutorials button'
+        description: 'accessibility text for the tutorials button'
     },
     debug: {
         id: 'gui.menuBar.debug',
         defaultMessage: 'Debug',
-        description: 'ARIA text for the debug button'
+        description: 'accessibility text for the debug button'
     },
     home: {
         id: 'gui.menuBar.home',
         defaultMessage: 'Home',
-        description: 'ARIA text for the home button'
+        description: 'accessibility text for the home button'
     }
 });
 

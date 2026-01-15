@@ -18,7 +18,7 @@ import dropdownCaret from './dropdown-caret.svg';
 const accountMenu = defineMessage({
     id: 'gui.aria.accountMenu',
     defaultMessage: 'Account menu',
-    description: 'ARIA label for account menu'
+    description: 'accessibility label for account menu'
 });
 
 const AccountMenu = ({

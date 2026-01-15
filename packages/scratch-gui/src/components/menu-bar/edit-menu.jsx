@@ -17,7 +17,7 @@ import propTypes from '../../lib/prop-types.js';
 const editMenu = defineMessage({
     id: 'gui.aria.editMenu',
     defaultMessage: 'Edit menu',
-    description: 'ARIA label for edit menu'
+    description: 'accessibility label for edit menu'
 });
 
 const EditMenu = ({

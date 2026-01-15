@@ -16,7 +16,7 @@ import propTypes from '../../lib/prop-types.js';
 const aboutMenuMessage = defineMessage({
     id: 'gui.aria.aboutMenu',
     defaultMessage: 'About menu',
-    description: 'ARIA label for About menu'
+    description: 'accessibility label for About menu'
 });
 
 const AboutButton = props => {
