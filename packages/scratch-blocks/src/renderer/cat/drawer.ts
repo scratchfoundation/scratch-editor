@@ -53,11 +53,11 @@ export class Drawer extends ClassicDrawer {
     }
   }
 
-  makeReplacementTop_() {
+  override makeReplacementTop_() {
     return this.constants_.makeCatPath(this.info_.width, this.pathEarState);
   }
 
-  draw() {
+  override draw() {
     super.draw();
     if (this.face_) {
       const scale = this.info_.RTL ? "scale(-1 1)" : "";

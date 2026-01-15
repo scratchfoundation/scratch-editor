@@ -14,11 +14,11 @@ import { ConstantProvider } from "./constants";
 import { Drawer } from "./drawer";
 
 export class CatScratchRenderer extends ScratchRenderer {
-  makeConstants_() {
+  override makeConstants_() {
     return new ConstantProvider();
   }
 
-  makeDrawer_(block: Blockly.BlockSvg, info: RenderInfo) {
+  override makeDrawer_(block: Blockly.BlockSvg, info: RenderInfo) {
     return new Drawer(block as CatBlockSvg, info);
   }
 }

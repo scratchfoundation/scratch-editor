@@ -20,7 +20,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    *
    * @returns The class name.
    */
-  getClassName(): string {
+  override getClassName(): string {
     return "scratch-renderer";
   }
 
@@ -32,7 +32,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    *     block.
    * @returns The drawer.
    */
-  makeDrawer_(block: Blockly.BlockSvg, info: RenderInfo): Drawer {
+  override makeDrawer_(block: Blockly.BlockSvg, info: RenderInfo): Drawer {
     return new Drawer(block, info);
   }
 
@@ -42,7 +42,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    * @param block The block to measure.
    * @returns The render info object.
    */
-  makeRenderInfo_(block: Blockly.BlockSvg): RenderInfo {
+  override makeRenderInfo_(block: Blockly.BlockSvg): RenderInfo {
     return new RenderInfo(this, block);
   }
 
@@ -51,7 +51,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    *
    * @returns The constant provider.
    */
-  makeConstants_(): ConstantProvider {
+  override makeConstants_(): ConstantProvider {
     return new ConstantProvider();
   }
 
@@ -62,7 +62,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    * @param style The style object to use for colouring.
    * @returns The renderer path object.
    */
-  makePathObject(
+  override makePathObject(
     root: SVGElement,
     style: Blockly.Theme.BlockStyle
   ): PathObject {
@@ -75,7 +75,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    * @param connection The connection to determine whether or not to highlight.
    * @returns True if we should highlight the connection.
    */
-  shouldHighlightConnection(connection: Blockly.RenderedConnection): boolean {
+  override shouldHighlightConnection(connection: Blockly.RenderedConnection): boolean {
     return (
       connection.type === Blockly.ConnectionType.INPUT_VALUE &&
       connection.getCheck()?.includes("Boolean")

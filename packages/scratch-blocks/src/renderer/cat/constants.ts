@@ -108,7 +108,7 @@ export class ConstantProvider extends ClassicConstantProvider {
    * The return value will be stored as START_HAT.
    * In the case of cat blocks, this is just a placeholder for sizing.
    */
-  makeStartHat() {
+  override makeStartHat() {
     return {
       height: this.START_HAT_HEIGHT,
       width: this.START_HAT_WIDTH,

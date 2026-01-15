@@ -22,7 +22,7 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
    *
    * @param theme The new theme to apply.
    */
-  setTheme(theme: Blockly.Theme) {
+  override setTheme(theme: Blockly.Theme) {
     const root = document.querySelector(":root") as HTMLElement;
     for (const [key, colour] of Object.entries(theme.blockStyles)) {
       if (typeof colour !== "object") {
@@ -54,7 +54,7 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
     super.setTheme(theme);
   }
 
-  createDom(svg: SVGElement, tagName: string, selector: string) {
+  override createDom(svg: SVGElement, tagName: string, selector: string) {
     super.createDom(svg, tagName, selector);
     this.selectedGlowFilterId = "";
   }
