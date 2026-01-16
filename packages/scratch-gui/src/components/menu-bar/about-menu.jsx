@@ -67,7 +67,7 @@ const AboutMenu = ({
         // hide the button
         return null;
     }
-    if (typeof onClickAbout === 'function') {
+    if (typeof onClick === 'function') {
         // make a button which calls a function
         return <AboutButton onClick={onClick} />;
     }

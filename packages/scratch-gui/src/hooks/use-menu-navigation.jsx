@@ -13,7 +13,7 @@ import {KEY} from '../lib/navigation-keys';
  * STEPS TO USE IT:
  * ______________________________________________________________________________________
  * 1. Define itemRefs as an array of refs for the submenu items, then pass
- * {itemRefs, menuRef (ref for component itself) and depth (starting from 1 for )}
+ * {itemRefs, menuRef (ref for component itself) and depth (starting from 1 for top-level menus)}
  * 2. In the top component (button/div/...) pass
  * - onClick={handleOnOpen}
  * - ref={menuRef}

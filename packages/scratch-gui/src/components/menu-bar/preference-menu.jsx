@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useMemo} from 'react';
 import {FormattedMessage} from 'react-intl';
 import {connect} from 'react-redux';
 import useMenuNavigation from '../../hooks/use-menu-navigation.jsx';
@@ -63,7 +63,7 @@ const PreferenceMenu = ({
     isRtl,
     menuRef
 }) => {
-    const itemRefs = Object.keys(itemsMap).map(() => React.createRef());
+    const itemRefs = useMemo(() => Object.keys(itemsMap).map(() => React.createRef()), [itemsMap]);
 
     const itemKeys = Object.keys(itemsMap);
     const selectedItem = itemsMap[selectedItemKey];
