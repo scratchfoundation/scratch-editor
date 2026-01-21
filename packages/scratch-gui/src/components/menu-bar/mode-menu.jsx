@@ -67,7 +67,7 @@ const ModeMenu = ({
                     <MenuItem
                         onClick={onSetMode(EditorModes.NOW)}
                         isDataMenuItem
-                        onParentKeyPress={handleKeyDownOpenMenu}
+                        onParentKeyDown={handleKeyDownOpenMenu}
                     >
                         <span className={classNames({[styles.inactive]: !modeNow})}>
                             {'✓'}
@@ -82,7 +82,7 @@ const ModeMenu = ({
                     <MenuItem
                         onClick={onSetMode(EditorModes.MODE_2020)}
                         isDataMenuItem
-                        onParentKeyPress={handleKeyDownOpenMenu}
+                        onParentKeyDown={handleKeyDownOpenMenu}
                     >
                         <span className={classNames({[styles.inactive]: !mode2020})}>
                             {'✓'}

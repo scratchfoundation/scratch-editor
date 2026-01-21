@@ -69,7 +69,7 @@ const MenuItem = ({
     onClick,
     ariaLabel,
     ariaRole,
-    onParentKeyPress
+    onParentKeyDown
 }) => (
     <li
         className={classNames(
@@ -84,7 +84,7 @@ const MenuItem = ({
         aria-selected={isSelected}
         aria-disabled={isDisabled}
         role={ariaRole}
-        onKeyDown={onParentKeyPress}
+        onKeyDown={onParentKeyDown}
         data-menu-item={isDataMenuItem}
         data-menu-item-wrapper={isDataMenuItemWrapper}
     >
@@ -103,7 +103,7 @@ MenuItem.propTypes = {
     isDataMenuItem: PropTypes.bool,
     isDataMenuItemWrapper: PropTypes.bool,
     onClick: PropTypes.func,
-    onParentKeyPress: PropTypes.func
+    onParentKeyDown: PropTypes.func
 };
 
 const addDividerClassToFirstChild = (child, id) => (

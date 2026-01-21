@@ -99,7 +99,7 @@ const LanguageMenu = ({
                                 // eslint-disable-next-line react/jsx-no-bind
                                 onClick={() => onChangeLanguage(locale)}
                                 isDataMenuItem
-                                onParentKeyPress={handleKeyDownOpenMenu}
+                                onParentKeyDown={handleKeyDownOpenMenu}
                                 isSelected={isSelected}
                             >
                                 <img

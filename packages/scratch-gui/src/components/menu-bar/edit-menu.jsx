@@ -68,7 +68,7 @@ const EditMenu = ({
                         className={classNames({[styles.disabled]: !restorable})}
                         onClick={onRestoreOption(handleRestore)}
                         isDataMenuItem
-                        onParentKeyPress={handleKeyDownOpenMenu}
+                        onParentKeyDown={handleKeyDownOpenMenu}
                         isDisabled={!restorable}
                     >
                         {restoreOptionMessage(deletedItem)}
@@ -79,7 +79,7 @@ const EditMenu = ({
                         <MenuItem
                             onClick={toggleTurboMode}
                             isDataMenuItem
-                            onParentKeyPress={handleKeyDownOpenMenu}
+                            onParentKeyDown={handleKeyDownOpenMenu}
                         >
                             {turboMode ? (
                                 <FormattedMessage

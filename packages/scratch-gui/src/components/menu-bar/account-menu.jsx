@@ -48,8 +48,7 @@ const AccountMenu = ({
         handleKeyDownOpenMenu,
         menuRef
     } = useMenuNavigation({
-        depth: 1,
-        buttonContainsMenuItems: false
+        depth: 1
     });
 
     return (
@@ -100,7 +99,7 @@ const AccountMenu = ({
                     <MenuItemContainer
                         href={profileUrl}
                         isDataMenuItem
-                        onParentKeyPress={handleKeyDownOpenMenu}
+                        onParentKeyDown={handleKeyDownOpenMenu}
                     >
                         <FormattedMessage
                             defaultMessage="Profile"
@@ -114,7 +113,7 @@ const AccountMenu = ({
                     <MenuItemContainer
                         href={myStuffUrl}
                         isDataMenuItem
-                        onParentKeyPress={handleKeyDownOpenMenu}
+                        onParentKeyDown={handleKeyDownOpenMenu}
                     >
                         <FormattedMessage
                             defaultMessage="My Stuff"
@@ -128,7 +127,7 @@ const AccountMenu = ({
                     <MenuItemContainer
                         href={myClassesUrl}
                         isDataMenuItem
-                        onParentKeyPress={handleKeyDownOpenMenu}
+                        onParentKeyDown={handleKeyDownOpenMenu}
                     >
                         <FormattedMessage
                             defaultMessage="My Classes"
@@ -142,7 +141,7 @@ const AccountMenu = ({
                     <MenuItemContainer
                         href={myClassUrl}
                         isDataMenuItem
-                        onParentKeyPress={handleKeyDownOpenMenu}
+                        onParentKeyDown={handleKeyDownOpenMenu}
                     >
                         <FormattedMessage
                             defaultMessage="My Class"
@@ -156,7 +155,7 @@ const AccountMenu = ({
                     <MenuItemContainer
                         href={accountSettingsUrl}
                         isDataMenuItem
-                        onParentKeyPress={handleKeyDownOpenMenu}
+                        onParentKeyDown={handleKeyDownOpenMenu}
                     >
                         <FormattedMessage
                             defaultMessage="Account settings"
@@ -171,7 +170,7 @@ const AccountMenu = ({
                         <MenuItemContainer
                             onClick={onLogOut}
                             isDataMenuItem
-                            onParentKeyPress={handleKeyDownOpenMenu}
+                            onParentKeyDown={handleKeyDownOpenMenu}
                         >
                             <FormattedMessage
                                 defaultMessage="Sign out"

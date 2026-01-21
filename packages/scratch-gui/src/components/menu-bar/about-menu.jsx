@@ -98,7 +98,7 @@ const AboutMenu = ({
                         <MenuItem
                             key={itemProps.title}
                             onClick={wrapAboutMenuCallback(itemProps.onClick)}
-                            onParentKeyPress={handleKeyDownOpenMenu}
+                            onParentKeyDown={handleKeyDownOpenMenu}
                             isDataMenuItem
                         >
                             {itemProps.title}

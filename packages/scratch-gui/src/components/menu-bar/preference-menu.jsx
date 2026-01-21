@@ -24,7 +24,7 @@ const PreferenceItem = props => {
     return (
         <MenuItem
             onClick={props.onClick}
-            onParentKeyPress={props.onParentKeyPress}
+            onParentKeyDown={props.onParentKeyDown}
             isSelected={props.isSelected}
             {...props}
         >
@@ -49,7 +49,7 @@ PreferenceItem.propTypes = {
         icon: PropTypes.string,
         label: intlMessageShape.isRequired
     }),
-    onParentKeyPress: PropTypes.func
+    onParentKeyDown: PropTypes.func
 };
 
 const PreferenceMenu = ({
@@ -102,7 +102,7 @@ const PreferenceMenu = ({
             <Submenu place={isRtl ? 'left' : 'right'}>
                 {itemKeys.map(itemKey => (
                     <PreferenceItem
-                        onParentKeyPress={handleKeyDownOpenMenu}
+                        onParentKeyDown={handleKeyDownOpenMenu}
                         isDataMenuItem
                         key={itemKey}
                         isSelected={itemKey === selectedItemKey}

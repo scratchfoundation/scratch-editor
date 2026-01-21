@@ -2,7 +2,10 @@ import {useCallback, useContext, useState, useRef} from 'react';
 import {MenuRefContext} from '../contexts/menu-ref-context';
 import {KEY} from '../lib/navigation-keys';
 
+// for all items of menu, to be found via the custom algorithm
 const MENU_ITEM_SELECTOR = '[data-menu-item="true"]';
+// wrapper prop should only be used for wrappers of an expandable menu,
+// where the submenu containings its items are its sibling, instead of child
 const MENU_ITEM_WRAPPER_SELECTOR = '[data-menu-item-wrapper="true"]';
 
 /**
@@ -12,24 +15,20 @@ const MENU_ITEM_WRAPPER_SELECTOR = '[data-menu-item-wrapper="true"]';
  * - Opening and closing menus
  * - Handling Escape, Enter, Arrow and Tab keys
  * - Coordinating nested open menus via MenuRefContext
- * - Automatically focusing the first or default menu item when opening
- * - BFS to find first-level menu items, including wrapped items
- *
- * Notes:
- * - Menu items can be direct children or wrapped in a container marked with
- *   `data-menu-item-wrapper`. The BFS will traverse until it finds menu items
- *   or wrapped menu items, but will not go deeper than needed.
- * - The hook automatically skips the starting element itself when looking for siblings.
+ * - Automatically focusing the first or default menu item on open
  *
  * STEPS TO USE IT:
  * 1. In the top-level menu trigger (button/div/...) pass:
  *    - onClick={handleOnOpen}
  *    - ref={menuRef}
  *    - onKeyDown={handleKeyDown}
- *    - tabIndex={0} if it's the core menu accessible via Tab
+ *    - tabIndex={0} or {-1} depending on the kind of focusability we want
  *    - aria-expanded={isExpanded()}
- * 2. Mark each submenu item or leaf menu item with:
- *    - data-menu-item
+ * 2. Data-menu-item and data-menu-item-wrapper
+ * When used inside a given menu component, this hook considers its focusable menu items to be
+ * all of its (possibly nested) descendants, which match the following criteria:
+ * - are selectable by either `MENU_ITEM_SELECTOR` or `MENU_ITEM_WRAPPER_SELECTOR`,
+ * - are themselves not nested inside another menu item wrapper.
  * 3. If an expandable submenu is wrapped and button does not contain the submenu items as children,
  * mark the wrapper with:
  *    - data-menu-item-wrapper
@@ -40,8 +39,6 @@ const MENU_ITEM_WRAPPER_SELECTOR = '[data-menu-item-wrapper="true"]';
  *   Nesting depth of the menu (1 = top-level menu).
  * @param {number} [params.defaultIndexOnOpen]
  *   Default menu item index to focus when opening the menu.
- * @param {number} [params.buttonContainsMenuItems]
- *   Set to false in case the menu items are not children of the button for the dropdown.
  * @returns {object} An object containing the menu state and keyboard handlers:
  *   - menuRef: reference to element to be used in component
  *   - focusedIndex: number — Index of the currently focused menu item.
@@ -53,8 +50,7 @@ const MENU_ITEM_WRAPPER_SELECTOR = '[data-menu-item-wrapper="true"]';
  */
 export default function useMenuNavigation ({
     depth,
-    defaultIndexOnOpen = 0,
-    buttonContainsMenuItems = true
+    defaultIndexOnOpen = 0
 }) {
     const menuRef = useRef(null);
     const menuContext = useContext(MenuRefContext);
@@ -130,19 +126,21 @@ export default function useMenuNavigation ({
         refocusIndex(nextIndex);
     }, [focusedIndex, menuRef, refocusIndex]);
 
+    const handleTab = useCallback(e => {
+        if (isExpanded() && e.key === KEY.TAB) {
+            handleOnClose();
+            menuContext.closeAllMenus();
+            return;
+        }
+    }, [isExpanded, handleOnClose, menuContext]);
+
     const handleKeyDownOpenMenu = useCallback(e => {
         const items = findDirectSubitems(menuRef);
 
         // copies logic from handleKeyDown in case the opening clickable
         // component doesn't contain its subitems as children
         // it is a little bit hacky, some of the logic here could be refactored a little bit
-        if (!buttonContainsMenuItems) {
-            if (depth === 1 && e.key === KEY.TAB) {
-                handleOnClose();
-                menuContext.closeAllMenus();
-                return;
-            }
-        }
+        handleTab(e);
 
         // Logic for vertical menus, will need to change when implementing for vertical
         switch (e.key) {
@@ -169,11 +167,7 @@ export default function useMenuNavigation ({
     }, [handleMove, handleOnClose, focusedIndex]);
 
     const handleKeyDown = useCallback(e => {
-        if (isExpanded() && depth === 1 && e.key === KEY.TAB) {
-            handleOnClose();
-            menuContext.closeAllMenus();
-            return;
-        }
+        handleTab(e);
 
         if (menuContext.isInnermostMenu(menuRef)) {
             handleKeyDownOpenMenu(e);
