@@ -43,7 +43,7 @@
     "base64-loader": "1.0.0",
     "css-tree": "1.1.3",
     "fastestsmallesttextencoderdecoder": "1.0.22",
-    "isomorphic-dompurify": "2.26.0",
+    "isomorphic-dompurify": "2.35.0",
     "transformation-matrix": "1.15.3",
     "tslog": "4.10.2"
   },
