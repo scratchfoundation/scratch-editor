@@ -3,6 +3,16 @@ const path = require('path');
 
 const md5 = require('js-md5');
 
+/**
+ * @typedef {object} KnownAsset
+ * @property {Buffer} content - The content of the asset.
+ * @property {string} hash - The MD5 hash of the asset content.
+ */
+
+/**
+ * @typedef {{[id: string]: KnownAsset}} KnownAssetCollection
+ */
+
 const projects = [
     '117504922'
 ];
@@ -15,6 +25,11 @@ const assets = [
     'fe5e3566965f9de793beeffce377d054.jpg'
 ];
 
+/**
+ * Load a file from disk, then return its content and hash.
+ * @param {string} filename - The file to load
+ * @returns {KnownAsset} The loaded asset
+ */
 const loadSomething = filename => {
     const fullPath = path.join(__dirname, 'assets', filename);
     const content = fs.readFileSync(fullPath);
@@ -25,6 +40,11 @@ const loadSomething = filename => {
     };
 };
 
+/**
+ * Load a project from disk, ensure it's valid JSON, then return its content and hash.
+ * @param {string} id - The project ID
+ * @returns {KnownAsset} The loaded project asset
+ */
 const loadProject = id => {
     const filename = `${id}.json`;
     const result = loadSomething(filename);
@@ -35,6 +55,11 @@ const loadProject = id => {
     return result;
 };
 
+/**
+ * Load an asset from disk, ensuring its hash matches its filename.
+ * @param {string} filename - The file to load
+ * @returns {KnownAsset} The loaded asset
+ */
 const loadAsset = filename => {
     const result = loadSomething(filename);
 
@@ -46,15 +71,18 @@ const loadAsset = filename => {
     return result;
 };
 
+/**
+ * @type {KnownAssetCollection}
+ */
 const knownAssets = Object.assign({},
     projects.reduce((bag, id) => {
         bag[id] = loadProject(id);
         return bag;
-    }, {}),
+    }, /** @type {KnownAssetCollection} */ ({})),
     assets.reduce((bag, filename) => {
         bag[filename] = loadAsset(filename);
         return bag;
-    }, {})
+    }, /** @type {KnownAssetCollection} */ ({}))
 );
 
 module.exports = knownAssets;

@@ -1,6 +1,9 @@
 const md5 = require('js-md5');
 
+const mockFetch = require('../fixtures/mockFetch.js');
 const ScratchStorage = require('../../src/index').ScratchStorage;
+
+jest.spyOn(global, 'fetch').mockImplementation(mockFetch.fetch);
 
 test('constructor', () => {
     const storage = new ScratchStorage();
@@ -68,15 +71,15 @@ const getTestAssets = storage => [
 ];
 
 const addWebStores = storage => {
-    // these `asset => ...` callbacks generate values specifically for the cross-fetch mock
+    // these `asset => ...` callbacks generate values specifically for the fetch mock
     // in the real world they would generate proper URIs
     storage.addWebStore(
         [storage.AssetType.Project],
-        asset => asset.assetId,
+        asset => `http://example.com/${asset.assetId}`,
         null, null);
     storage.addWebStore(
         [storage.AssetType.ImageVector, storage.AssetType.ImageBitmap, storage.AssetType.Sound],
-        asset => `${asset.assetId}.${asset.dataFormat}`,
+        asset => `http://example.com/${asset.assetId}.${asset.dataFormat}`,
         null, null
     );
 };

@@ -1,29 +1,44 @@
-const crossFetch = require('cross-fetch');
+import {type QueueOptions} from '@scratch/task-herder';
+import {hostQueueManager} from './HostQueues';
+
+export const Headers = globalThis.Headers;
 
 /**
- * Metadata header names
- * @enum {string} The enum value is the name of the associated header.
- * @readonly
+ * Metadata header names.
+ * The enum value is the name of the associated header.
  */
-const RequestMetadata = {
+export enum RequestMetadata {
     /** The ID of the project associated with this request */
-    ProjectId: 'X-Project-ID',
+    ProjectId = 'X-Project-ID',
     /** The ID of the project run associated with this request */
-    RunId: 'X-Run-ID'
+    RunId = 'X-Run-ID'
+}
+
+export type ScratchFetchOptions = {
+    /**
+     * The name of the queue to use for this request.
+     * If absent, the hostname of the requested URL will be used as the queue name.
+     * This is a Scratch-specific extension to the standard RequestInit type.
+     */
+    queueName?: string;
+
+    /**
+     * The options to use when creating the queue for this request.
+     * Ignored if a queue with the specified name already exists.
+     */
+    queueOptions?: QueueOptions;
 };
 
 /**
- * Metadata headers for requests
- * @type {Headers}
+ * Metadata headers for requests.
  */
-const metadata = new crossFetch.Headers();
+const metadata = new Headers();
 
 /**
  * Check if there is any metadata to apply.
  * @returns {boolean} true if `metadata` has contents, or false if it is empty.
  */
-const hasMetadata = () => {
-    /* global self */
+export const hasMetadata = (): boolean => {
     const searchParams = (
         typeof self !== 'undefined' &&
         self &&
@@ -51,16 +66,16 @@ const hasMetadata = () => {
  * @param {RequestInit} [options] The initial request options. May be null or undefined.
  * @returns {RequestInit|undefined} the provided options parameter without modification, or a new options object.
  */
-const applyMetadata = options => {
+export const applyMetadata = (options?: globalThis.RequestInit): globalThis.RequestInit | undefined => {
     if (hasMetadata()) {
         const augmentedOptions = Object.assign({}, options);
-        augmentedOptions.headers = new crossFetch.Headers(metadata);
+        augmentedOptions.headers = new Headers(metadata);
         if (options && options.headers) {
             // the Fetch spec says options.headers could be:
             // "A Headers object, an object literal, or an array of two-item arrays to set request's headers."
             // turn it into a Headers object to be sure of how to interact with it
-            const overrideHeaders = options.headers instanceof crossFetch.Headers ?
-                options.headers : new crossFetch.Headers(options.headers);
+            const overrideHeaders = options.headers instanceof Headers ?
+                options.headers : new Headers(options.headers);
             for (const [name, value] of overrideHeaders.entries()) {
                 augmentedOptions.headers.set(name, value);
             }
@@ -74,13 +89,27 @@ const applyMetadata = options => {
  * Make a network request.
  * This is a wrapper for the global fetch method, adding some Scratch-specific functionality.
  * @param {RequestInfo|URL} resource The resource to fetch.
- * @param {RequestInit} options Optional object containing custom settings for this request.
+ * @param {RequestInit} [requestOptions] Optional object containing custom settings for this request.
+ * @param {ScratchFetchOptions} [scratchOptions] Optional Scratch-specific settings for this request.
  * @see {@link https://developer.mozilla.org/docs/Web/API/fetch} for more about the fetch API.
  * @returns {Promise<Response>} A promise for the response to the request.
  */
-const scratchFetch = (resource, options) => {
-    const augmentedOptions = applyMetadata(options);
-    return crossFetch(resource, augmentedOptions);
+export const scratchFetch = (
+    resource: RequestInfo | URL,
+    requestOptions?: globalThis.RequestInit,
+    scratchOptions?: ScratchFetchOptions
+): Promise<Response> => {
+    requestOptions = applyMetadata(requestOptions);
+
+    let queueName = scratchOptions?.queueName;
+    if (!queueName) {
+        // Normalize resource to a Request object. The `fetch` call will do this anyway, so it's not much extra work,
+        // but it guarantees availability of the URL for queue naming.
+        resource = new Request(resource, requestOptions);
+        queueName = new URL(resource.url).hostname;
+    }
+    const queue = hostQueueManager.getOrCreate(queueName, scratchOptions?.queueOptions);
+    return queue.do(() => fetch(resource, requestOptions));
 };
 
 /**
@@ -90,7 +119,7 @@ const scratchFetch = (resource, options) => {
  * @param {RequestMetadata} name The name of the metadata item to set.
  * @param {any} value The value to set (will be converted to a string).
  */
-const setMetadata = (name, value) => {
+export const setMetadata = (name: RequestMetadata, value: any): void => {
     metadata.set(name, value);
 };
 
@@ -98,7 +127,7 @@ const setMetadata = (name, value) => {
  * Remove a named request metadata item.
  * @param {RequestMetadata} name The name of the metadata item to remove.
  */
-const unsetMetadata = name => {
+export const unsetMetadata = (name: RequestMetadata): void => {
     metadata.delete(name);
 };
 
@@ -106,16 +135,6 @@ const unsetMetadata = name => {
  * Retrieve a named request metadata item.
  * Only for use in tests. At the time of writing, used in scratch-vm tests.
  * @param {RequestMetadata} name The name of the metadata item to retrieve.
- * @returns {any} value The value of the metadata item, or `undefined` if it was not found.
+ * @returns {string|null} The value of the metadata item, or `null` if it was not found.
  */
-const getMetadata = name => metadata.get(name);
-
-module.exports = {
-    Headers: crossFetch.Headers,
-    RequestMetadata,
-    applyMetadata,
-    scratchFetch,
-    setMetadata,
-    unsetMetadata,
-    getMetadata
-};
+export const getMetadata = (name: RequestMetadata): string | null => metadata.get(name);

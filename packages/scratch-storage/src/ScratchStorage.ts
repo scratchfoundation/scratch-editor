@@ -6,7 +6,7 @@ import WebHelper, {UrlFunction} from './WebHelper';
 import _Asset, {AssetData, AssetId} from './Asset';
 import {AssetType as _AssetType, AssetType} from './AssetType';
 import {DataFormat as _DataFormat, DataFormat} from './DataFormat';
-import _scratchFetch from './scratchFetch';
+import * as _scratchFetch from './scratchFetch';
 import Helper from './Helper';
 
 interface HelperWithPriority {

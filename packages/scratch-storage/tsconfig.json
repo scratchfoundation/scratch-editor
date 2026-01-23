@@ -9,7 +9,6 @@
 
     /* Modules */
     "module": "Preserve",
-    "types": ["./src/types.d.ts"],
 
     /* Emit */
     "declaration": true,

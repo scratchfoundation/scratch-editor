@@ -13,12 +13,14 @@
   "browser": "./dist/web/scratch-storage.js",
   "types": "./dist/types/index.d.ts",
   "scripts": {
-    "build": "rimraf dist && webpack --mode=production",
+    "build": "npm run clean && webpack --mode=production",
+    "clean": "rimraf dist",
     "commitmsg": "commitlint -e $GIT_PARAMS",
     "coverage": "tap ./test/{unit,integration}/*.js --coverage --coverage-report=lcov",
     "prepare": "husky",
     "semantic-release": "semantic-release",
     "test": "npm run test:lint && jest \"test[\\\\/](unit|integration)\"",
+    "test:build": "jest \"test[\\\\/]build\"",
     "test:clearCache": "jest --clearCache",
     "test:integration": "jest \"test[\\\\/]integration\"",
     "test:lint": "eslint",
@@ -31,10 +33,10 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.21.0",
+    "@scratch/task-herder": "12.2.2",
     "arraybuffer-loader": "^1.0.3",
     "base64-js": "^1.3.0",
     "buffer": "6.0.3",
-    "cross-fetch": "^4.1.0",
     "fastestsmallesttextencoderdecoder": "^1.0.7",
     "js-md5": "^0.7.3",
     "minilog": "^3.1.0"

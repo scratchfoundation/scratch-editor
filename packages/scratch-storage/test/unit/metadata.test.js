@@ -1,4 +1,5 @@
-jest.mock('cross-fetch');
+const mockFetch = require('../fixtures/mockFetch.js');
+jest.spyOn(global, 'fetch').mockImplementation(mockFetch.fetch);
 
 beforeEach(() => {
     // reset the metadata container to ensure the tests don't interfere with each other
@@ -17,7 +18,7 @@ test('get without metadata', async () => {
     const tool = new FetchTool();
 
     const mockFetchTestData = {};
-    const result = await tool.get({url: '200', mockFetchTestData});
+    const result = await tool.get({url: 'http://example.com/200', mockFetchTestData});
 
     expect(result).toBeInstanceOf(Uint8Array);
     expect(mockFetchTestData.headers).toBeTruthy();
@@ -35,7 +36,7 @@ test('get with metadata', async () => {
     setMetadata(RequestMetadata.RunId, 5678);
 
     const mockFetchTestData = {};
-    const result = await tool.get({url: '200', mockFetchTestData});
+    const result = await tool.get({url: 'http://example.com/200', mockFetchTestData});
 
     expect(result).toBeInstanceOf(Uint8Array);
     expect(mockFetchTestData.headers).toBeTruthy();
@@ -49,7 +50,7 @@ test('send without metadata', async () => {
     const tool = new FetchTool();
 
     const mockFetchTestData = {};
-    const result = await tool.send({url: '200', mockFetchTestData});
+    const result = await tool.send({url: 'http://example.com/200', mockFetchTestData});
 
     expect(typeof result).toBe('string');
     expect(mockFetchTestData.headers).toBeTruthy();
@@ -67,7 +68,7 @@ test('send with metadata', async () => {
     setMetadata(RequestMetadata.RunId, 8765);
 
     const mockFetchTestData = {};
-    const result = await tool.send({url: '200', mockFetchTestData});
+    const result = await tool.send({url: 'http://example.com/200', mockFetchTestData});
 
     expect(typeof result).toBe('string');
     expect(mockFetchTestData.headers).toBeTruthy();
@@ -89,7 +90,7 @@ test('selectively delete metadata', async () => {
 
     const mockFetchTestData = {};
 
-    const result1 = await tool.send({url: '200', mockFetchTestData});
+    const result1 = await tool.send({url: 'http://example.com/200', mockFetchTestData});
     expect(typeof result1).toBe('string');
     expect(mockFetchTestData.headers).toBeTruthy();
 
@@ -100,7 +101,7 @@ test('selectively delete metadata', async () => {
     // remove the Project ID from metadata
     unsetMetadata(RequestMetadata.ProjectId);
 
-    const result2 = await tool.send({url: '200', mockFetchTestData});
+    const result2 = await tool.send({url: 'http://example.com/200', mockFetchTestData});
     expect(typeof result2).toBe('string');
     expect(mockFetchTestData.headers).toBeTruthy();
 
@@ -120,7 +121,7 @@ test('metadata has case-insensitive keys', async () => {
     const tool = new FetchTool();
 
     const mockFetchTestData = {};
-    await tool.get({url: '200', mockFetchTestData});
+    await tool.get({url: 'http://example.com/200', mockFetchTestData});
 
     expect(mockFetchTestData.headers).toBeTruthy();
     expect(mockFetchTestData.headersCount).toBe(1);

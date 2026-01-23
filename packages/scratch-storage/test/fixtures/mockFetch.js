@@ -1,8 +1,15 @@
+/**
+ * Mock implementation of the fetch function for testing.
+ * Since `fetch` is a global, Jest will not automatically mock it from `__mocks__`.
+ *
+ * // In your test setup file or at the top of your test files:
+ * global.fetch = require('../mocks/fetch').default;
+ */
+
 const TextEncoder = require('util').TextEncoder;
-const crossFetch = jest.requireActual('cross-fetch');
 const knownAssets = require('../fixtures/known-assets.js');
 
-const Headers = crossFetch.Headers;
+const Headers = global.Headers;
 const successText = 'successful response';
 
 /**
@@ -30,7 +37,7 @@ const successText = 'successful response';
  * @returns {Promise<MockFetchResponse>} A promise for a Response-like object. Does not fully implement Response.
  */
 const mockFetch = (resource, options) => {
-    /** @type MockFetchResponse */
+    /** @type {MockFetchResponse} */
     const results = {
         ok: false,
         status: 0
@@ -39,14 +46,15 @@ const mockFetch = (resource, options) => {
         options.mockFetchTestData.headers = new Headers(options.headers);
         options.mockFetchTestData.headersCount = Array.from(options.mockFetchTestData.headers).length;
     }
-
-    const assetInfo = knownAssets[resource];
+    const request = new Request(resource, options);
+    const path = new URL(request.url).pathname.slice(1); // remove leading '/'
+    const assetInfo = knownAssets[path];
     if (assetInfo) {
         results.ok = true;
         results.status = 200;
         results.arrayBuffer = () => Promise.resolve(assetInfo.content);
     } else {
-        switch (resource) {
+        switch (path) {
         case '200':
             results.ok = true;
             results.status = 200;
@@ -68,14 +76,7 @@ const mockFetch = (resource, options) => {
     return Promise.resolve(results);
 };
 
-// Mimic the cross-fetch module, but replace its `fetch` with `mockFetch` and add a few extras
-
-module.exports = exports = mockFetch;
-exports.fetch = mockFetch;
-exports.Headers = crossFetch.Headers;
-exports.Request = crossFetch.Request;
-exports.Response = crossFetch.Response;
-exports.successText = successText;
-
-// Needed for TypeScript consumers without esModuleInterop.
-exports.default = mockFetch;
+module.exports = {
+    fetch: mockFetch,
+    successText
+};
