@@ -113,6 +113,20 @@ export const scratchFetch = (
 };
 
 /**
+ * Create a new fetch queue with the given identifier and option overrides.
+ * If a queue with that identifier already exists, it will be replaced.
+ * Queues are automatically created as needed with default options, so
+ * there's no need to call this unless you need to override the default queue options.
+ * WARNING: If the old queue has is not empty, it may continue to run its tasks in the background.
+ * If you need to cancel fetch tasks in that queue before replacing it, do so manually first.
+ * @param queueName The name of the queue to create.
+ * @param overrides Optional overrides for the default QueueOptions for this specific queue.
+ */
+export const createQueue = (queueName: string, overrides: Partial<QueueOptions>): void => {
+    hostQueueManager.create(queueName, overrides);
+};
+
+/**
  * Set the value of a named request metadata item.
  * Setting the value to `null` or `undefined` will NOT remove the item.
  * Use `unsetMetadata` for that.
