@@ -32,8 +32,8 @@ const setVisibility = (element: SVGElement, visible: boolean) => {
 
 /**
  * Manages the SVG elements for the cat face.
- * This class holds the persistent SVG elements and manages events (blinking, etc.),
- * but layout is driven by the Drawer/RenderInfo.
+ * This class holds the persistent SVG elements and manages events (blinking, etc.)
+ * Owned by the PathObject with similar lifetime.
  */
 export class CatFace {
     faceGroup_: SVGElement;
@@ -43,9 +43,7 @@ export class CatFace {
     renderer_: CatScratchRenderer;
     block_: Blockly.BlockSvg;
 
-    constructor(
-        info: RenderInfo,
-    ) {
+    constructor(info: RenderInfo) {
         this.constants_ = info.constants_;
         this.renderer_ = info.renderer_;
         this.block_ = info.block_;
@@ -99,6 +97,11 @@ export class CatFace {
         });
     }
 
+    /**
+     * Asks the renderer to re-render the block at a time when it normally wouldn't.
+     * Necessary if the path geometry has changed (ear flicks).
+     * Not necessary for face changes (blinking).
+     */
     private triggerRedraw() {
         this.renderer_.render(this.block_);
     }

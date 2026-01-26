@@ -18,8 +18,8 @@ export enum PathEarState {
 
 export interface CatPathState {
   capType: PathCapType;
-  ear1State: PathEarState;
-  ear2State: PathEarState;
+  ear1State: PathEarState; // Left ear in LTR, right in RTL
+  ear2State: PathEarState; // Right ear in LTR, left in RTL
 }
 
 export class ConstantProvider extends ClassicConstantProvider {
