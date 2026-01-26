@@ -1,17 +1,17 @@
 /**
  * @license
- * Copyright 2025 Scratch Foundation
+ * Copyright 2026 Scratch Foundation
  * SPDX-License-Identifier: Apache-2.0
  */
 
 import * as Blockly from "blockly/core";
 
 import { ScratchRenderer } from "../renderer";
-import type { RenderInfo } from "../render_info";
 
-import type { CatBlockSvg } from "./cat_block_svg";
 import { ConstantProvider } from "./constants";
 import { Drawer } from "./drawer";
+import { RenderInfo } from "./render_info";
+import { PathObject } from "./path_object";
 
 export class CatScratchRenderer extends ScratchRenderer {
   override makeConstants_() {
@@ -19,7 +19,15 @@ export class CatScratchRenderer extends ScratchRenderer {
   }
 
   override makeDrawer_(block: Blockly.BlockSvg, info: RenderInfo) {
-    return new Drawer(block as CatBlockSvg, info);
+    return new Drawer(block, info);
+  }
+
+  override makeRenderInfo_(block: Blockly.BlockSvg): RenderInfo {
+    return new RenderInfo(this, block);
+  }
+
+  override makePathObject(root: SVGElement, style: Blockly.Theme.BlockStyle): PathObject {
+    return new PathObject(root, style, this.getConstants());
   }
 }
 
