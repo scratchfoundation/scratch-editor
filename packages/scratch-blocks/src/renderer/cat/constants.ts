@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright 2025 Scratch Foundation
+ * Copyright 2026 Scratch Foundation
  * SPDX-License-Identifier: Apache-2.0
  */
 
@@ -129,7 +129,7 @@ export class ConstantProvider extends ClassicConstantProvider {
       this[`${state.capType}_EAR_2_${state.ear2State}_PATH`];
     const spacer = (state.capType === PathCapType.BOWLER)
       ? `l ${width - this.START_HAT_WIDTH - this.BOWLER_WIDTH_MAGIC} 0`
-      : ""; // allow cap logic to finish the path
+      : ""; // caps don't need an internal spacer like bowlers do
     const pathEnd = this[`${state.capType}_END_PATH`];
     return `${pathStart}${pathEar1}${pathMiddle}${pathEar2}${spacer}${pathEnd}`;
   }

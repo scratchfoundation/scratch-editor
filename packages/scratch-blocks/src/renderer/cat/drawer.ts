@@ -41,9 +41,12 @@ export class Drawer extends ClassicDrawer {
     const catFace = pathObject.catFace;
     if (catFace) {
       // Update the transform for the whole group
-      const scale = this.info_.RTL ? "scale(-1 1)" : "";
-      const translate = `translate(0, ${this.info_.startY})`;
-      catFace.setTransform(`${scale} ${translate}`);
+      const transformParts: string[] = [];
+      if (this.info_.RTL) {
+        transformParts.push("scale(-1 1)");
+      }
+      transformParts.push(`translate(0, ${this.info_.startY})`);
+      catFace.setTransform(transformParts.join(" "));
     }
   }
 
