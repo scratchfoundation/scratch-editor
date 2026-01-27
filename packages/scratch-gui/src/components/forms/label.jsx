@@ -15,6 +15,8 @@ const Label = React.forwardRef((props, ref) => (
     </label>
 ));
 
+Label.displayName = 'Label';
+
 Label.propTypes = {
     above: PropTypes.bool,
     children: PropTypes.node,
