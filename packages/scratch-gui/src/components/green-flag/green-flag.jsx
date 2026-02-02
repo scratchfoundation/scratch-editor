@@ -14,14 +14,14 @@ const GreenFlagComponent = function (props) {
         ...componentProps
     } = props;
 
-    // Unfocus so project stage can capture keyboard events
+    // Unfocus so project stage can capture keyboard events for
+    // blocks that react to arrow movement for example
     const handleOnClick = useCallback(e => {
         onClick(e);
 
         const target = e.currentTarget;
         if (target) target.blur();
     }, [onClick]);
-
 
     return (
         <button
