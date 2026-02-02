@@ -23,6 +23,7 @@ import "./blocks/sound";
 import * as scratchBlocksUtils from "./scratch_blocks_utils";
 import * as ScratchVariables from "./variables";
 import "./css";
+import "./renderer/cat/renderer";
 import "./renderer/renderer";
 import * as contextMenuItems from "./context_menu_items";
 import {
@@ -64,6 +65,7 @@ import { registerRecyclableBlockFlyoutInflater } from "./recyclable_block_flyout
 import { registerScratchBlockPaster } from "./scratch_block_paster";
 import { registerStatusIndicatorLabelFlyoutInflater } from "./status_indicator_label_flyout_inflater";
 import { registerScratchContinuousCategory } from "./scratch_continuous_category";
+import { ScratchBlocksTheme } from "./constants";
 
 export * from "blockly/core";
 export * from "./block_reporting";
@@ -83,7 +85,22 @@ export {
 } from "./status_indicator_label";
 export * from "./xml";
 
-export function inject(container: Element, options: Blockly.BlocklyOptions) {
+interface ScratchBlocksOptions extends Blockly.BlocklyOptions {
+  /**
+   * Scratch uses "theme" to talk about the shape of blocks. The Blockly concept of a theme affects CSS properties and
+   * aligns more closely with "color mode" in Scratch.
+   */
+  scratchTheme?: ScratchBlocksTheme;
+}
+
+function sanitizeTheme(theme?: ScratchBlocksTheme) {
+  if (theme === ScratchBlocksTheme.CAT_BLOCKS) {
+    return theme;
+  }
+  return ScratchBlocksTheme.CLASSIC;
+}
+
+export function inject(container: Element, options: ScratchBlocksOptions) {
   registerScratchFieldAngle();
   registerFieldColourSlider();
   registerScratchFieldDropdown();
@@ -99,8 +116,10 @@ export function inject(container: Element, options: Blockly.BlocklyOptions) {
   registerStatusIndicatorLabelFlyoutInflater();
   registerScratchContinuousCategory();
 
+  const scratchTheme = sanitizeTheme(options.scratchTheme);
+
   Object.assign(options, {
-    renderer: "scratch",
+    renderer: `scratch_${scratchTheme}`,
     plugins: {
       toolbox: ScratchContinuousToolbox,
       flyoutsVerticalToolbox: CheckableContinuousFlyout,

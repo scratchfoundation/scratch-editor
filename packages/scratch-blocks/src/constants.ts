@@ -74,3 +74,12 @@ export { OUTPUT_SHAPE_ROUND };
  */
 const NEW_BROADCAST_MESSAGE_ID = "NEW_BROADCAST_MESSAGE_ID";
 export { NEW_BROADCAST_MESSAGE_ID };
+
+/**
+ * Enum defining supported Scratch block themes.
+ * Scratch block themes can customize the shape of blocks independently of their color.
+ */
+export enum ScratchBlocksTheme {
+  CLASSIC = "classic",
+  CAT_BLOCKS = "catblocks",
+}

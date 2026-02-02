@@ -5,13 +5,14 @@
  */
 
 import * as Blockly from "blockly/core";
+import { ConstantProvider } from "./constants";
 
 export class BowlerHat extends Blockly.blockRendering.Hat {
-  constructor(constants: Blockly.blockRendering.ConstantProvider) {
+  constructor(constants: ConstantProvider) {
     super(constants);
     // Calculated dynamically by computeBounds_().
     this.width = 0;
-    this.height = 20;
+    this.height = constants.BOWLER_HAT_HEIGHT;
     this.ascenderHeight = this.height;
   }
 }

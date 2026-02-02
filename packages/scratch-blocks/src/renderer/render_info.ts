@@ -5,12 +5,16 @@
  */
 
 import * as Blockly from "blockly/core";
+
 import { BowlerHat } from "./bowler_hat";
+import { ConstantProvider } from "./constants";
 
 export class RenderInfo extends Blockly.zelos.RenderInfo {
-  populateTopRow_() {
+  constants_: ConstantProvider;
+
+  override populateTopRow_() {
     if (this.isBowlerHatBlock()) {
-      const bowlerHat = new BowlerHat(this.constants_);
+      const bowlerHat = this.makeBowlerHat();
       this.topRow.elements.push(
         new Blockly.blockRendering.SquareCorner(this.constants_)
       );
@@ -25,14 +29,14 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
     }
   }
 
-  populateBottomRow_() {
+  override populateBottomRow_() {
     super.populateBottomRow_();
     if (this.isBowlerHatBlock()) {
       this.bottomRow.minHeight = this.constants_.MEDIUM_PADDING;
     }
   }
 
-  computeBounds_() {
+  override computeBounds_() {
     super.computeBounds_();
     if (this.isBowlerHatBlock()) {
       // Resize the render info to the same width as the widest part of a
@@ -55,7 +59,7 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
     }
   }
 
-  getInRowSpacing_(
+  override getInRowSpacing_(
     prev: Blockly.blockRendering.Measurable,
     next: Blockly.blockRendering.Measurable
   ): number {
@@ -71,7 +75,7 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
     return super.getInRowSpacing_(prev, next);
   }
 
-  getSpacerRowHeight_(
+  override getSpacerRowHeight_(
     prev: Blockly.blockRendering.Row,
     next: Blockly.blockRendering.Row
   ): number {
@@ -82,7 +86,7 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
     return super.getSpacerRowHeight_(prev, next);
   }
 
-  getElemCenterline_(
+  override getElemCenterline_(
     row: Blockly.blockRendering.Row,
     elem: Blockly.blockRendering.Measurable
   ): number {
@@ -106,5 +110,9 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
 
   isBowlerHatBlock() {
     return this.block_.hat === "bowler";
+  }
+
+  makeBowlerHat() {
+    return new BowlerHat(this.constants_);
   }
 }

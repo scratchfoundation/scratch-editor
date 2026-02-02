@@ -6,10 +6,13 @@
 
 import * as Blockly from "blockly/core";
 import type { RenderInfo } from "./render_info";
+import { ConstantProvider } from "./constants";
 
 export class Drawer extends Blockly.zelos.Drawer {
+  constants_: ConstantProvider;
   info_: RenderInfo;
-  drawStatementInput_(row: Blockly.blockRendering.Row) {
+
+  override drawStatementInput_(row: Blockly.blockRendering.Row) {
     if (this.info_.isBowlerHatBlock()) {
       // Bowler hat blocks have straight sides with no C-shape/indentation for
       // statement blocks.
@@ -20,7 +23,7 @@ export class Drawer extends Blockly.zelos.Drawer {
     }
   }
 
-  drawRightSideRow_(row: Blockly.blockRendering.Row) {
+  override drawRightSideRow_(row: Blockly.blockRendering.Row) {
     if (
       this.info_.isBowlerHatBlock() &&
       Blockly.blockRendering.Types.isSpacer(row)
@@ -36,21 +39,25 @@ export class Drawer extends Blockly.zelos.Drawer {
     }
   }
 
-  drawTop_() {
+  override drawTop_() {
     super.drawTop_();
     // This is a horrible hack, but the superclass' implementation of drawTop_()
     // provides no way to cleanly override a hat's path without copying and
     // pasting the entire implementation here. We know that there will only be
     // one hat on a block, and its path is a known constant, so we just find and
     // replace it with the desired bowler hat path here.
-    // If https://github.com/google/blockly/issues/7292 is resolved, this should
-    // be revisited.
-    if (this.info_.isBowlerHatBlock()) {
+    // If https://github.com/RaspberryPiFoundation/blockly/issues/7292 is
+    // resolved, this should be revisited.
+    const replacementTop = this.makeReplacementTop_();
+    if (replacementTop) {
       const capHatPath = this.constants_.START_HAT.path;
-      const bowlerHatPath = `a20,20 0 0,1 20,-20 l ${
-        this.info_.width - 40
-      } 0 a20,20 0 0,1 20,20`;
-      this.outlinePath_ = this.outlinePath_.replace(capHatPath, bowlerHatPath);
+      this.outlinePath_ = this.outlinePath_.replace(capHatPath, replacementTop);
+    }
+  }
+
+  makeReplacementTop_() {
+    if (this.info_.isBowlerHatBlock()) {
+      return this.constants_.makeBowlerHatPath(this.info_.width);
     }
   }
 }

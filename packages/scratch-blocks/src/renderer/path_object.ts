@@ -17,7 +17,7 @@ export class PathObject extends Blockly.zelos.PathObject {
    *
    * @param block The source block.
    */
-  applyColour(block: Blockly.BlockSvg) {
+  override applyColour(block: Blockly.BlockSvg) {
     super.applyColour(block);
 
     // These blocks are special in that, while they are technically shadow
