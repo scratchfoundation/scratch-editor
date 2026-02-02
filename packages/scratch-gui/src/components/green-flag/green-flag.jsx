@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, {useCallback} from 'react';
 
 import greenFlagIcon from './icon--green-flag.svg';
 import styles from './green-flag.css';
@@ -13,10 +13,20 @@ const GreenFlagComponent = function (props) {
         title,
         ...componentProps
     } = props;
+
+    // Unfocus so project stage can capture keyboard events
+    const handleOnClick = useCallback(e => {
+        onClick(e);
+
+        const target = e.currentTarget;
+        if (target) target.blur();
+    }, [onClick]);
+
+
     return (
         <button
             className={styles.greenFlagButton}
-            onClick={onClick}
+            onClick={handleOnClick}
             {...componentProps}
         >
             <img
