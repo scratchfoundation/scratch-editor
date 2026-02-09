@@ -143,21 +143,7 @@ export default function useMenuNavigation ({
     const handleOnClose = useCallback(menuRefToClose => {
         const ref = menuRefToClose || menuRef;
         menuContext.closeMenuByRef(ref);
-        const wrapper = ref?.current;
-
-        // If wrapper, try to focus the direct menu trigger button
-        if (wrapper && wrapper.matches(MENU_ITEM_WRAPPER_SELECTOR)) {
-            const directChild = Array.from(wrapper.children).find(child =>
-                child.matches && child.matches(MENU_ITEM_SELECTOR)
-            );
-            if (directChild) {
-                directChild.focus();
-                return;
-            }
-        }
-        
-        // Fallback: focus wrapper itself if possible
-        wrapper?.focus();
+        ref?.current?.focus();
     }, [menuContext, menuRef]);
 
     const handleOnCloseAllMenus = useCallback(() => {
