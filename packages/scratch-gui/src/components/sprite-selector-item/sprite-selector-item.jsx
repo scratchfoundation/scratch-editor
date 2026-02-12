@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import DeleteButton from '../delete-button/delete-button.jsx';
 import styles from './sprite-selector-item.css';
 import contextMenuStyles from '../context-menu/context-menu.css';
@@ -20,7 +20,12 @@ const SpriteSelectorItem = props => {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-    
+
+    const handleKeyDown = useCallback(event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+            props.onClick(event);
+        }
+    });
 
     return (
         <ContextMenu.Root modal={false}>
@@ -38,6 +43,7 @@ const SpriteSelectorItem = props => {
                     onMouseEnter={props.onMouseEnter}
                     onMouseLeave={props.onMouseLeave}
                     onMouseDown={props.onMouseDown}
+                    onKeyDown={handleKeyDown}
                     onTouchStart={props.onMouseDown}
                     ref={props.componentRef}
                 >
