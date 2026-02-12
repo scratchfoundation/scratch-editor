@@ -195,7 +195,7 @@
     "buffer": "6.0.3",
     "cheerio": "1.2.0",
     "cross-env": "7.0.3",
-    "eslint": "9.39.2",
+    "eslint": "10.0.0",
     "eslint-config-scratch": "12.0.49",
     "eslint-import-resolver-webpack": "0.13.10",
     "eslint-plugin-import": "2.32.0",
