@@ -20,6 +20,13 @@
     cursor: pointer;
 
     user-select: none;
+
+    /* removing default button styling */
+    width: 100%;
+    background: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
 }
 
 .sprite-selector-item.is-selected {

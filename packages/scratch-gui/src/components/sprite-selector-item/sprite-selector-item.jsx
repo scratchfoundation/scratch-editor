@@ -25,7 +25,7 @@ const SpriteSelectorItem = props => {
         if (event.key === 'Enter' || event.key === ' ') {
             props.onClick(event);
         }
-    });
+    }, [props.onClick]);
 
     return (
         <ContextMenu.Root modal={false}>
@@ -33,9 +33,8 @@ const SpriteSelectorItem = props => {
                 disabled={props.preventContextMenu}
                 asChild
             >
-                <div
-                    role="button"
-                    tabIndex={0}
+                <button
+                    aria-label={`${props.name}${props.details ? ` (${props.details})` : ''}`}
                     className={classNames(props.className, styles.spriteSelectorItem, {
                         [styles.isSelected]: props.selected
                     })}
@@ -74,7 +73,7 @@ const SpriteSelectorItem = props => {
                             onClick={props.onDeleteButtonClick}
                         />
                     ) : null}
-                </div>
+                </button>
             </ContextMenu.Trigger>
             {(props.onDuplicateButtonClick || props.onDeleteButtonClick || props.onExportButtonClick) && (
                 <ContextMenu.Portal>
