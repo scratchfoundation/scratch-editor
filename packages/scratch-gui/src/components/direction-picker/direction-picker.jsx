@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import Popover from 'react-popover';
 import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
@@ -14,7 +14,6 @@ import styles from './direction-picker.css';
 import allAroundIcon from './icon--all-around.svg';
 import leftRightIcon from './icon--left-right.svg';
 import dontRotateIcon from './icon--dont-rotate.svg';
-import useFocusOutside from '../../hooks/useFocusOutside.js';
 
 const BufferedInput = BufferedInputHOC(Input);
 
@@ -53,7 +52,28 @@ const messages = defineMessages({
 const DirectionPicker = props => {
     const intl = useIntl();
 
-    const {containerRef, popoverRef} = useFocusOutside(props.onClosePopover);
+    const containerRef = useRef(null);
+    const popoverRef = useRef(null);
+
+    useEffect(() => {
+        const handleFocusIn = event => {
+            const target = event.target;
+            if (
+                (containerRef.current && containerRef.current.contains(target)) ||
+                (popoverRef.current && popoverRef.current.contains(target))
+            ) {
+                return;
+            }
+
+            props.onClosePopover();
+        };
+
+        document.addEventListener('focusin', handleFocusIn);
+
+        return () => {
+            document.removeEventListener('focusin', handleFocusIn);
+        };
+    }, [containerRef, props.onClosePopover]);
 
     return (
         <Label
