@@ -38,7 +38,7 @@ const SpriteSelectorItem = props => {
                 <div
                     role="button"
                     tabIndex={0}
-                    aria-label={`${props.name}${props.details ? ` (${props.details})` : ''}`}
+                    aria-label={props.details ? `${props.name} (${props.details})` : props.name}
                     className={classNames(props.className, styles.spriteSelectorItem, {
                         [styles.isSelected]: props.selected
                     })}
