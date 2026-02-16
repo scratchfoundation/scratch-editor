@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import ReactTooltip from 'react-tooltip';
 import styles from './action-menu.css';
-import useActionMenuNavigation from '../../hooks/use-action-menu-navigation';
+import {KEY} from '../../lib/navigation-keys';
 
 const CLOSE_DELAY = 300; // ms
 
@@ -20,14 +20,106 @@ const ActionMenu = ({
     const closeTimeoutRef = useRef(null);
     const mainTooltipId = useRef(`tooltip-${Math.random()}`).current;
 
-    const {
-        containerRef,
-        buttonRef,
-        isExpanded,
-        setIsExpanded,
-        handleOnFocus,
-        handleKeyDown
-    } = useActionMenuNavigation();
+    const containerRef = useRef(null);
+    const buttonRef = useRef(null);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const skipNextBlurRef = useRef(false);
+    const itemRefs = useRef([]);
+
+    useEffect(() => {
+        if (!isExpanded) {
+            if (skipNextBlurRef.current) {
+                // Skip the blur this time
+                skipNextBlurRef.current = false;
+                return;
+            }
+            // If menu is closed, blur any focused element to prevent keyboard events from affecting it
+            if (document.activeElement !== document.body) {
+                document.activeElement.blur();
+            }
+            
+            buttonRef?.current?.blur();
+        }
+    }, [isExpanded, buttonRef, skipNextBlurRef]);
+
+    // Handle clicks/touches outside to close menu
+    useEffect(() => {
+        const handleTouchOutside = e => {
+            if (containerRef.current && !containerRef.current.contains(e.target)) {
+                setIsExpanded(false);
+                ReactTooltip.hide();
+            }
+        };
+
+        document.addEventListener('mousedown', handleTouchOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleTouchOutside);
+        };
+    }, [containerRef, setIsExpanded]);
+
+    const focusItem = useCallback(item => {
+        if (item) {
+            item.focus();
+        }
+    }, []);
+
+    const handleOnFocus = useCallback(() => {
+        setIsExpanded(true);
+        const items = itemRefs.current;
+        if (!items.length) return;
+
+        // default to last item (first above)
+        const defaultItem = items[items.length - 1];
+        focusItem(defaultItem);
+        // TODO: refresh tooltip so it repositions correctly
+    }, [itemRefs, focusItem, setIsExpanded]);
+
+    const handleMove = useCallback(direction => {
+        const items = itemRefs.current;
+        if (!items.length) return;
+
+        const currentIndex = items.indexOf(document.activeElement);
+        const nextIndex = (currentIndex + direction + items.length) % items.length;
+        focusItem(items[nextIndex]);
+    }, [itemRefs, focusItem]);
+
+    const handleKeyDown = useCallback(e => {
+        switch (e.key) {
+        case KEY.ARROW_DOWN:
+            e.preventDefault();
+            handleMove(1);
+            break;
+        case KEY.ARROW_UP:
+            e.preventDefault();
+            handleMove(-1);
+            break;
+        case KEY.TAB:
+            setIsExpanded(false);
+            // A little bit hacky logic for shift + tab to move focus to previous element
+            if (e.shiftKey) {
+                e.preventDefault();
+                const focusables = Array.from(
+                    document.querySelectorAll('a, button, input, select, textarea, [tabindex]')
+                );
+
+                const filteredFocusables = focusables.filter(el => {
+                    // Skip disabled, hidden, or tabindex=-1
+                    if (el.disabled) return false;
+                    if (el.offsetParent === null) return false;
+                    const tabindex = el.getAttribute('tabindex');
+                    if (tabindex === '-1') return false;
+                    return true;
+                });
+                const currentIndex = filteredFocusables.indexOf(buttonRef.current);
+                if (currentIndex > 0) {
+                    filteredFocusables[currentIndex - 1].focus();
+                }
+
+                skipNextBlurRef.current = true;
+            }
+            return;
+        }
+    }, [handleMove, isExpanded, setIsExpanded]);
 
     const handleClosePopover = useCallback(() => {
         closeTimeoutRef.current = setTimeout(() => {
@@ -92,6 +184,7 @@ const ActionMenu = ({
             })}
             onMouseEnter={handleToggleOpenState}
             onMouseLeave={handleClosePopover}
+            onBlur={handleClosePopover}
             ref={containerRef}
         >
             <button
@@ -149,7 +242,9 @@ const ActionMenu = ({
                                         onClick={hasFileInput ? handleClick : clickDelayer(handleClick)}
                                         tabIndex={-1}
                                         onKeyDown={handleKeyDown}
-                                        data-action-menu-item
+                                        ref={el => {
+                                            itemRefs.current[keyId] = el;
+                                        }}
                                     >
                                         <img
                                             className={styles.moreIcon}
