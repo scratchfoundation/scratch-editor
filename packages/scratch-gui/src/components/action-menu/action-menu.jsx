@@ -184,7 +184,6 @@ const ActionMenu = ({
             })}
             onMouseEnter={handleToggleOpenState}
             onMouseLeave={handleClosePopover}
-            onBlur={handleClosePopover}
             ref={containerRef}
         >
             <button
