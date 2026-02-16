@@ -1,13 +1,13 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import DeleteButton from '../delete-button/delete-button.jsx';
 import styles from './sprite-selector-item.css';
 import contextMenuStyles from '../context-menu/context-menu.css';
 import {DangerousMenuItem, MenuItem} from '../context-menu/context-menu.jsx';
 import {FormattedMessage} from 'react-intl';
 import ContextMenu from '../../lib/radix-ui-context-menu.js';
-import {KEY} from '../../lib/keyboard-keys.js';
+import {KEY} from '../../lib/navigation-keys.js'
 
 const SpriteSelectorItem = props => {
     useEffect(() => {
@@ -23,7 +23,8 @@ const SpriteSelectorItem = props => {
     }, []);
 
     const handleKeyDown = useCallback(event => {
-        if (event.key === KEY.ENTER) {
+        if (event.key === KEY.ENTER && event.currentTarget === event.target) {
+            event.preventDefault();
             props.onClick(event);
         }
     }, [props.onClick]);
