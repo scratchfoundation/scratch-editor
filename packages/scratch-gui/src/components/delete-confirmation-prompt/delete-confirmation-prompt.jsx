@@ -1,5 +1,5 @@
 import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
-import React from 'react';
+import React, {useCallback} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
@@ -89,16 +89,16 @@ const DeleteConfirmationPrompt = ({
     const intl = useIntl();
     const modalPositionValues = calculateModalPosition(relativeElemRef, modalPosition);
     const yesButtonRef = React.useRef(null); // keeping ref of yes button to focus on mount
+    
+    const handleAfterOpen = useCallback(() => {
+        if (yesButtonRef.current) {
+            yesButtonRef.current.focus();
+        }
+    }, []);
 
     return (<ReactModal
         isOpen
-        onAfterOpen={() => {
-            if (yesButtonRef.current) {
-                yesButtonRef.current.focus();
-            }
-        }}
-        // We have to inline the styles, since a part
-        // of them are dynamically generated
+        onAfterOpen={handleAfterOpen}
         style={{
             content: {
                 ...modalPositionValues,
