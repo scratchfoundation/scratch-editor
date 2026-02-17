@@ -88,17 +88,9 @@ const DeleteConfirmationPrompt = ({
 }) => {
     const intl = useIntl();
     const modalPositionValues = calculateModalPosition(relativeElemRef, modalPosition);
-    const yesButtonRef = React.useRef(null); // keeping ref of yes button to focus on mount
-    
-    const handleAfterOpen = useCallback(() => {
-        if (yesButtonRef.current) {
-            yesButtonRef.current.focus();
-        }
-    }, []);
 
     return (<ReactModal
         isOpen
-        onAfterOpen={handleAfterOpen}
         style={{
             content: {
                 ...modalPositionValues,
@@ -139,7 +131,6 @@ const DeleteConfirmationPrompt = ({
                 </Box>
                 <Box className={styles.buttonRow}>
                     <button
-                        ref={yesButtonRef}
                         className={styles.okButton}
                         onClick={onOk}
                         role="button"
