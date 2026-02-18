@@ -1,6 +1,6 @@
 import {FormattedMessage, defineMessages, useIntl} from 'react-intl';
 import PropTypes from 'prop-types';
-import React, {useCallback, useRef, useLayoutEffect} from 'react';
+import React, {useCallback, useRef} from 'react';
 import {connect} from 'react-redux';
 import VM from '@scratch/scratch-vm';
 
@@ -80,7 +80,9 @@ const StageHeaderComponent = function (props) {
 
     const handleEnterFullScreen = useCallback(() => {
         onSetStageFull();
-        trapFocus();
+        requestAnimationFrame(() => {
+            trapFocus();
+        });
     }, [onSetStageFull, trapFocus]);
 
     const handleExitFullScreen = useCallback(() => {
