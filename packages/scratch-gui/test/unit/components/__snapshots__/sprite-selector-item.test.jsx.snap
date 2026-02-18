@@ -2,6 +2,7 @@
 
 exports[`SpriteSelectorItemComponent does not have a close box when not selected 1`] = `
 <div
+  aria-label="Pony sprite"
   class="ponies"
   data-state="closed"
   role="button"
@@ -25,6 +26,7 @@ exports[`SpriteSelectorItemComponent does not have a close box when not selected
 
 exports[`SpriteSelectorItemComponent matches snapshot when given a number and details to show 1`] = `
 <div
+  aria-label="Pony sprite (480 x 360)"
   class="ponies undefined"
   data-state="closed"
   role="button"
@@ -67,6 +69,7 @@ exports[`SpriteSelectorItemComponent matches snapshot when given a number and de
 
 exports[`SpriteSelectorItemComponent matches snapshot when selected 1`] = `
 <div
+  aria-label="Pony sprite"
   class="ponies undefined"
   data-state="closed"
   role="button"
