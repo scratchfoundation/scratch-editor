@@ -35,6 +35,7 @@ class Scratch3MotionBlocks {
             motion_xposition: this.getX,
             motion_yposition: this.getY,
             motion_direction: this.getDirection,
+            motion_pointtowardsxy: this.pointTowardsXY,
             // Legacy no-op blocks:
             motion_scroll_right: () => {},
             motion_scroll_up: () => {},
@@ -273,6 +274,16 @@ class Scratch3MotionBlocks {
 
     getDirection (args, util) {
         return util.target.direction;
+    }
+
+    pointTowardsXY (args, util) {
+        let targetX = Cast.toNumber(args.X);
+        let targetY = Cast.toNumber(args.Y);
+        
+        const dx = targetX - util.target.x;
+        const dy = targetY - util.target.y;
+        const direction = 90 - MathUtil.radToDeg(Math.atan2(dy, dx));
+        util.target.setDirection(direction);
     }
 
     // This corresponds to snapToInteger in Scratch 2
