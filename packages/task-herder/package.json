@@ -1,6 +1,6 @@
 {
   "name": "@scratch/task-herder",
-  "version": "12.6.2",
+  "version": "12.7.0-spork.2",
   "description": "An asynchronous task runner with configurable rate limiting / throttling and concurrency control.",
   "keywords": [
     "rate limit",
