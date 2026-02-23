@@ -124,11 +124,30 @@ const ActionMenu = ({
         }
     }, [isExpanded, focusItem, itemRefs.current.length]);
 
+    useEffect(() => {
+        if (!isExpanded) {
+            ReactTooltip.hide();
+        }
+    }, [isExpanded]);
+
     const clickEvent = useCallback(
         fn => (event => {
             if (fn) fn(event);
         }), []
     );
+
+    const handleItemMouseEnter = useCallback(index => () => {
+        const items = itemRefs.current;
+        const currentFocusedIndex = items.indexOf(document.activeElement);
+        if (currentFocusedIndex === index) return;
+        
+        if (items[currentFocusedIndex]) {
+            items[currentFocusedIndex].blur();
+        }
+        if (items[index]) {
+            focusItem(items[index]);
+        }
+    }, [focusItem]);
 
     return (
         <div
@@ -196,6 +215,7 @@ const ActionMenu = ({
                                         ref={el => {
                                             itemRefs.current[keyId] = el;
                                         }}
+                                        onMouseEnter={handleItemMouseEnter(keyId)}
                                     >
                                         <img
                                             className={styles.moreIcon}
