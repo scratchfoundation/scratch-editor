@@ -96,37 +96,39 @@ class Backpack extends React.Component {
         if (!payloader) return;
 
         // Creating the payload is async, so set loading before starting
-        this.setState({loading: true}, () => {
-            payloader(dragInfo.payload, this.props.vm)
-                .then(payload => {
-                    // Force the asset to save to the asset server before storing in backpack
-                    // Ensures any asset present in the backpack is also on the asset server
-                    if (presaveAsset && !presaveAsset.clean) {
-                        return scratchStorage.store(
-                            presaveAsset.assetType,
-                            presaveAsset.dataFormat,
-                            presaveAsset.data,
-                            presaveAsset.assetId
-                        ).then(() => payload);
-                    }
-                    return payload;
-                })
-                .then(payload => saveBackpackObject({
+        this.setState({loading: true}, async () => {
+            // If the payloader fails, let the exception leak out: the backpack hasn't changed yet, so there's no need
+            // to set the backpack into an error state.
+            const payload = await payloader(dragInfo.payload, this.props.vm);
+            // Force the asset to save to the asset server before storing in backpack
+            // Ensures any asset present in the backpack is also on the asset server
+            // This is also allowed to fail without setting the backpack into an error state
+            if (presaveAsset && !presaveAsset.clean) {
+                await scratchStorage.store(
+                    presaveAsset.assetType,
+                    presaveAsset.dataFormat,
+                    presaveAsset.data,
+                    presaveAsset.assetId
+                );
+            }
+            try {
+                // If the backpack save fails, the local and server backpack may or may not be out of sync.
+                // The editor might be able to function, but that might lead to lost work.
+                // In other words, a failure here should set the backpack into an error state.
+                const item = await saveBackpackObject({
                     host: this.props.host,
                     token: this.props.token,
                     username: this.props.username,
                     ...payload
-                }))
-                .then(item => {
-                    this.setState({
-                        loading: false,
-                        contents: [item].concat(this.state.contents)
-                    });
-                })
-                .catch(error => {
-                    this.setState({error: true, loading: false});
-                    throw error;
                 });
+                this.setState({
+                    loading: false,
+                    contents: [item].concat(this.state.contents)
+                });
+            } catch (error) {
+                this.setState({error: true, loading: false});
+                throw error;
+            }
         });
     }
     handleDelete (id) {
