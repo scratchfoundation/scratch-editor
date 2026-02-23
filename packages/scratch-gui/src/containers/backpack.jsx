@@ -97,21 +97,27 @@ class Backpack extends React.Component {
 
         // Creating the payload is async, so set loading before starting
         this.setState({loading: true}, async () => {
-            // If the payloader fails, let the exception leak out: the backpack hasn't changed yet, so there's no need
-            // to set the backpack into an error state.
-            const payload = await payloader(dragInfo.payload, this.props.vm);
-            // Force the asset to save to the asset server before storing in backpack
-            // Ensures any asset present in the backpack is also on the asset server
-            // This is also allowed to fail without setting the backpack into an error state
-            if (presaveAsset && !presaveAsset.clean) {
-                await scratchStorage.store(
-                    presaveAsset.assetType,
-                    presaveAsset.dataFormat,
-                    presaveAsset.data,
-                    presaveAsset.assetId
-                );
-            }
+            // If there's a failure before the backpack state changes, then we don't need to set the backpack into an
+            // error state. The operation failed, but the backpack is still potentially usable and consistent. If the
+            // backpack state might have changed on the server OR client by the time of the failure, then we should
+            // set the backpack into an error state.
+            let backpackMightHaveChanged = false;
             try {
+                const payload = await payloader(dragInfo.payload, this.props.vm);
+                // Force the asset to save to the asset server before storing in backpack
+                // Ensures any asset present in the backpack is also on the asset server
+                if (presaveAsset && !presaveAsset.clean) {
+                    await scratchStorage.store(
+                        presaveAsset.assetType,
+                        presaveAsset.dataFormat,
+                        presaveAsset.data,
+                        presaveAsset.assetId
+                    );
+                }
+
+                // We're about to start trying to change backpack state...
+                backpackMightHaveChanged = true;
+
                 // If the backpack save fails, the local and server backpack may or may not be out of sync.
                 // The editor might be able to function, but that might lead to lost work.
                 // In other words, a failure here should set the backpack into an error state.
@@ -126,7 +132,7 @@ class Backpack extends React.Component {
                     contents: [item].concat(this.state.contents)
                 });
             } catch (error) {
-                this.setState({error: true, loading: false});
+                this.setState({error: backpackMightHaveChanged, loading: false});
                 throw error;
             }
         });
