@@ -61,7 +61,7 @@
     "babel-plugin-transform-object-rest-spread": "6.26.0",
     "canvas": "2.11.2",
     "css-loader": "3.6.0",
-    "eslint": "9.39.2",
+    "eslint": "9.39.3",
     "eslint-config-scratch": "12.0.49",
     "gh-pages": "3.2.3",
     "globals": "16.5.0",
