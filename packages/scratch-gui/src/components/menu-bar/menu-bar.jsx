@@ -30,6 +30,8 @@ import TurboMode from '../../containers/turbo-mode.jsx';
 import MenuBarHOC from '../../containers/menu-bar-hoc.jsx';
 import SettingsMenu from './settings-menu.jsx';
 
+import {storeProjectThumbnail} from '../../lib/store-project-thumbnail';
+import dataURItoBlob from '../../lib/data-uri-to-blob';
 import {openTipsLibrary, openDebugModal} from '../../reducers/modals';
 import {setPlayer} from '../../reducers/mode';
 import {
@@ -224,6 +226,7 @@ class MenuBar extends React.Component {
         this.props.onRequestCloseFile();
     }
     handleClickSave () {
+        console.log(this.props.canUpdateThumbnail);
         this.props.onClickSave();
         this.props.onRequestCloseFile();
     }
@@ -287,6 +290,15 @@ class MenuBar extends React.Component {
             restoreFun();
             this.props.onRequestCloseEdit();
         };
+    }
+    handleUpdateThumbnail () {
+        const projectId = this.props.projectId?.toString();
+        storeProjectThumbnail(this.props.vm, dataURI => {
+            this.props.onUpdateProjectThumbnail(
+                projectId,
+                dataURItoBlob(dataURI)
+            );
+        });
     }
     handleKeyPress (event) {
         const modifier = bowser.mac ? event.metaKey : event.ctrlKey;
@@ -385,6 +397,13 @@ class MenuBar extends React.Component {
         };
     }
     render () {
+        const updateThumbnailMessage = (
+            <FormattedMessage
+                defaultMessage="Update Thumbnail"
+                description="Menu bar item for updating the project thumbnail"
+                id="gui.menuBar.updateThumbnail"
+            />
+        );
         const saveNowMessage = (
             <FormattedMessage
                 defaultMessage="Save now"
@@ -496,11 +515,12 @@ class MenuBar extends React.Component {
                                             {newProjectMessage}
                                         </MenuItem>
                                     </MenuSection>
-                                    {(this.props.canSave || this.props.canCreateCopy || this.props.canRemix) && (
+                                    {(this.props.canSave || this.props.canCreateCopy ||
+                                        this.props.canRemix || this.props.canUpdateThumbnail) && (
                                         <MenuSection>
                                             {this.props.canSave && (
                                                 <MenuItem onClick={this.handleClickSave}>
-                                                    {saveNowMessage}
+                                                    {saveNowMessage} + {this.props.canUpdateThumbnail}
                                                 </MenuItem>
                                             )}
                                             {this.props.canCreateCopy && (
@@ -511,6 +531,11 @@ class MenuBar extends React.Component {
                                             {this.props.canRemix && (
                                                 <MenuItem onClick={this.handleClickRemix}>
                                                     {remixMessage}
+                                                </MenuItem>
+                                            )}
+                                            {this.props.canUpdateThumbnail && (
+                                                <MenuItem onClick={this.handleClickUpdateThumbnail}>
+                                                    {updateThumbnailMessage}
                                                 </MenuItem>
                                             )}
                                         </MenuSection>
@@ -749,6 +774,12 @@ class MenuBar extends React.Component {
                         {this.props.canSave && (
                             <SaveStatus />
                         )}
+                        {this.props.canUpdateThumbnail && (
+                            <SaveStatus
+                                onClickSave={this.props.onUpdateProjectThumbnail}
+                                formattedMessage={updateThumbnailMessage}
+                            />
+                        )}
                     </div>
 
                     {menuOpts.canHaveSession ? (
@@ -920,6 +951,7 @@ MenuBar.propTypes = {
     canManageFiles: PropTypes.bool,
     canRemix: PropTypes.bool,
     canSave: PropTypes.bool,
+    canUpdateThumbnail: PropTypes.bool,
     canShare: PropTypes.bool,
     className: PropTypes.string,
     confirmReadyToReplaceProject: PropTypes.func,
@@ -943,6 +975,7 @@ MenuBar.propTypes = {
     mode220022BC: PropTypes.bool,
     modeMenuOpen: PropTypes.bool,
     modeNow: PropTypes.bool,
+    projectId: PropTypes.number.isRequired,
     onClickAbout: PropTypes.oneOfType([
         PropTypes.func, // button mode: call this callback when the About button is clicked
         PropTypes.arrayOf( // menu mode: list of items in the About menu
@@ -981,6 +1014,7 @@ MenuBar.propTypes = {
     onShare: PropTypes.func,
     onStartSelectingFileUpload: PropTypes.func,
     onToggleLoginOpen: PropTypes.func,
+    onUpdateProjectThumbnail: PropTypes.func,
     platform: PropTypes.oneOf(Object.keys(PLATFORM)),
     projectTitle: PropTypes.string,
     renderLogin: PropTypes.func,
@@ -1030,6 +1064,7 @@ const mapStateToProps = (state, ownProps) => {
         mode1990: isTimeTravel1990(state),
         mode2020: isTimeTravel2020(state),
         modeNow: isTimeTravelNow(state),
+        projectId: state.scratchGui.projectState.projectId,
 
         platform: state.scratchGui.platform.platform,
 

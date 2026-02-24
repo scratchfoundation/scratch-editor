@@ -348,6 +348,7 @@ const GUIComponent = props => {
                         canManageFiles={canManageFiles}
                         canRemix={canRemix}
                         canSave={canSave}
+                        canUpdateThumbnail={userOwnsProject && manuallySaveThumbnails && !isPlayerOnly}
                         canShare={canShare}
                         className={styles.menuBarPosition}
                         enableCommunity={enableCommunity}
@@ -368,6 +369,7 @@ const GUIComponent = props => {
                         onShare={onShare}
                         onStartSelectingFileUpload={onStartSelectingFileUpload}
                         onToggleLoginOpen={onToggleLoginOpen}
+                        onUpdateProjectThumbnail={onUpdateProjectThumbnail}
                         userOwnsProject={userOwnsProject}
                         username={username}
                         accountMenuOptions={accountMenuOptions}
