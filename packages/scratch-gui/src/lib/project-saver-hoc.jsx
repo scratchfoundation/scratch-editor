@@ -271,18 +271,18 @@ const ProjectSaverHOC = function (WrappedComponent) {
                     // Thumbnails are now manual only
                     // Do not update thumbnail on save
                     
-                    // const id = response.id.toString();
-                    // if (this.props.onUpdateProjectThumbnail && id && (
-                    //     !this.props.manuallySaveThumbnails ||
-                    //     // Always save thumbnail on project creation
-                    //     options?.isCreatingProject)) {
-                    //     storeProjectThumbnail(this.props.vm, dataURI => {
-                    //         this.props.onUpdateProjectThumbnail(
-                    //             id,
-                    //             dataURItoBlob(dataURI)
-                    //         );
-                    //     });
-                    // }
+                    const id = response.id.toString();
+                    if (this.props.onUpdateProjectThumbnail && id && (
+                        !this.props.manuallySaveThumbnails ||
+                        // Always save thumbnail on project creation
+                        options?.isCreatingProject)) {
+                        storeProjectThumbnail(this.props.vm, dataURI => {
+                            this.props.onUpdateProjectThumbnail(
+                                id,
+                                dataURItoBlob(dataURI)
+                            );
+                        });
+                    }
                     this.reportTelemetryEvent('projectDidSave');
                     return response;
                 })

@@ -191,6 +191,7 @@ class MenuBar extends React.Component {
             'handleClickRemix',
             'handleClickSave',
             'handleClickSaveAsCopy',
+            'handleClickUpdateThumbnail',
             'handleClickSeeCommunity',
             'handleClickShare',
             'handleSetMode',
@@ -226,13 +227,23 @@ class MenuBar extends React.Component {
         this.props.onRequestCloseFile();
     }
     handleClickSave () {
-        console.log(this.props.canUpdateThumbnail);
         this.props.onClickSave();
         this.props.onRequestCloseFile();
     }
     handleClickSaveAsCopy () {
         this.props.onClickSaveAsCopy();
         this.props.onRequestCloseFile();
+    }
+    handleClickUpdateThumbnail () {
+        // const projectId = this.props.projectId?.toString();
+        // console.log(projectId);
+        // if (!this.props.onUpdateProjectThumbnail) return;
+        // storeProjectThumbnail(this.props.vm, dataURI => {
+        //     this.props.onUpdateProjectThumbnail(
+        //         projectId,
+        //         dataURItoBlob(dataURI)
+        //     );
+        // });
     }
     handleClickSeeCommunity (waitForUpdate) {
         if (this.props.shouldSaveBeforeTransition()) {
@@ -290,15 +301,6 @@ class MenuBar extends React.Component {
             restoreFun();
             this.props.onRequestCloseEdit();
         };
-    }
-    handleUpdateThumbnail () {
-        const projectId = this.props.projectId?.toString();
-        storeProjectThumbnail(this.props.vm, dataURI => {
-            this.props.onUpdateProjectThumbnail(
-                projectId,
-                dataURItoBlob(dataURI)
-            );
-        });
     }
     handleKeyPress (event) {
         const modifier = bowser.mac ? event.metaKey : event.ctrlKey;
@@ -520,7 +522,7 @@ class MenuBar extends React.Component {
                                         <MenuSection>
                                             {this.props.canSave && (
                                                 <MenuItem onClick={this.handleClickSave}>
-                                                    {saveNowMessage} + {this.props.canUpdateThumbnail}
+                                                    {saveNowMessage}
                                                 </MenuItem>
                                             )}
                                             {this.props.canCreateCopy && (
@@ -773,12 +775,6 @@ class MenuBar extends React.Component {
                     <div className={styles.menuBarItem}>
                         {this.props.canSave && (
                             <SaveStatus />
-                        )}
-                        {this.props.canUpdateThumbnail && (
-                            <SaveStatus
-                                onClickSave={this.props.onUpdateProjectThumbnail}
-                                formattedMessage={updateThumbnailMessage}
-                            />
                         )}
                     </div>
 
