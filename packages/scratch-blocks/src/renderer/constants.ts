@@ -54,6 +54,53 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
     super.setTheme(theme);
   }
 
+  /**
+   * Returns the shape for the given connection.
+   *
+   * For OUTPUT_VALUE connections, the block's explicit output shape takes
+   * priority (e.g. a Boolean reporter gets a hexagonal output connector).
+   * For INPUT_VALUE connections, we use only the connection's type checks so
+   * that input slots inside a Boolean reporter (like `<a = b>`) are still
+   * drawn with the rounded shape that matches what they accept, not the
+   * hexagonal shape of their parent block's output.
+   */
+  override shapeFor(connection: Blockly.RenderedConnection) {
+    let checks = connection.getCheck();
+    if (!checks && connection.targetConnection) {
+      checks = connection.targetConnection.getCheck();
+    }
+
+    if (connection.type === Blockly.ConnectionType.OUTPUT_VALUE) {
+      const outputShape = connection.getSourceBlock().getOutputShape();
+      if (outputShape !== null) {
+        switch (outputShape) {
+          case this.SHAPES.HEXAGONAL:
+            return this.HEXAGONAL;
+          case this.SHAPES.ROUND:
+            return this.ROUNDED;
+          case this.SHAPES.SQUARE:
+            return this.SQUARED;
+        }
+      }
+    }
+
+    // For INPUT_VALUE (and OUTPUT_VALUE fallthrough), use connection checks.
+    if (checks?.includes("Boolean")) return this.HEXAGONAL;
+    if (checks?.includes("Number")) return this.ROUNDED;
+    if (checks?.includes("String")) return this.ROUNDED;
+    // For INPUT_VALUE or OUTPUT_VALUE with unrecognized checks, default to
+    // ROUNDED. Don't call super.shapeFor() here: the base implementation
+    // uses getSourceBlock().getOutputShape(), which would incorrectly return
+    // HEXAGONAL for inputs inside Boolean reporters (e.g. `<a = b>`).
+    if (
+      connection.type === Blockly.ConnectionType.INPUT_VALUE ||
+      connection.type === Blockly.ConnectionType.OUTPUT_VALUE
+    ) {
+      return this.ROUNDED;
+    }
+    return super.shapeFor(connection);
+  }
+
   override createDom(svg: SVGElement, tagName: string, selector: string) {
     super.createDom(svg, tagName, selector);
     this.selectedGlowFilterId = "";
