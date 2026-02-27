@@ -32,6 +32,7 @@ import {
 } from "@blockly/continuous-toolbox";
 import { CheckableContinuousFlyout } from "./checkable_continuous_flyout";
 import { buildGlowFilter, glowStack } from "./glows";
+import { ScratchZoomControls } from "./scratch_zoom_controls";
 import { ScratchContinuousToolbox } from "./scratch_continuous_toolbox";
 import "./scratch_comment_icon";
 import "./scratch_dragger";
@@ -79,6 +80,7 @@ export { ScratchVariables };
 export { contextMenuItems };
 export { FieldColourSlider, FieldNote };
 export { CheckboxBubble } from "./checkbox_bubble";
+export { ScratchZoomControls } from "./scratch_zoom_controls";
 export {
   StatusIndicatorLabel,
   StatusButtonState,
@@ -130,6 +132,18 @@ export function inject(container: Element, options: ScratchBlocksOptions) {
 
   buildGlowFilter(workspace);
   buildShadowFilter(workspace);
+
+  // Replace Blockly's sprite-sheet zoom controls with SVG-file-based ones so
+  // each button is a separate file and the correct set is picked up via
+  // pathToMedia (which varies by Scratch color mode).
+  const originalZoomControls = workspace.zoomControls_;
+  if (originalZoomControls) {
+    originalZoomControls.dispose();
+  }
+  const scratchZoomControls = new ScratchZoomControls(workspace);
+  const zoomControlsSvg = scratchZoomControls.createDom();
+  workspace.svgGroup_.appendChild(zoomControlsSvg);
+  scratchZoomControls.init();
 
   Blockly.config.dragRadius = 3;
   Blockly.config.snapRadius = 48;

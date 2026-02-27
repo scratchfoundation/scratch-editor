@@ -682,6 +682,14 @@ const styles = `
     opacity: 1;
   }
 
+  .blocklyZoom>image:hover {
+    opacity: 0.75;
+  }
+
+  .blocklyZoom>image:active {
+    opacity: 0.6;
+  }
+
   /* Darken flyout scrollbars due to being on a grey background. */
   /* By contrast, workspace scrollbars are on a white background. */
   .blocklyFlyout .blocklyScrollbarHandle {
