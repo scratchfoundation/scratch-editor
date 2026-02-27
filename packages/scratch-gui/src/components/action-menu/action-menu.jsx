@@ -17,10 +17,10 @@ const ActionMenu = ({
 }) => {
     const [forceHide, setForceHide] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
-    const ignoreNextFocusRef = useRef(false);
 
     const closeTimeoutRef = useRef(null);
     const mainTooltipId = useRef(`tooltip-${Math.random()}`).current;
+    // refs to handle custom keyboard navigation behavior
     const containerRef = useRef(null);
     const buttonRef = useRef(null);
     const itemRefs = useRef([]);
@@ -37,13 +37,12 @@ const ActionMenu = ({
             clearTimeout(closeTimeoutRef.current);
             closeTimeoutRef.current = null;
         } else if (!isExpanded) {
-            if (ignoreNextFocusRef.current) {
-                ignoreNextFocusRef.current = false;
-                return;
-            }
             setIsExpanded(true);
             setForceHide(false);
-            focusItem(buttonRef.current);
+            // Avoid double tooltip by just refocusing to the core element
+            requestAnimationFrame(() => {
+                focusItem(buttonRef.current);
+            });
         }
     }, [isExpanded]);
 
@@ -111,11 +110,12 @@ const ActionMenu = ({
             setIsExpanded(false);
             focusItem(buttonRef.current);
         } else if (e.key === KEY.ESCAPE) {
-            e.stopPropagation();
-            setIsExpanded(false);
-            ignoreNextFocusRef.current = true;
+            focusItem(buttonRef.current);
+        } else if (e.key === KEY.ENTER) {
             requestAnimationFrame(() => {
-                buttonRef.current?.focus();
+                ReactTooltip.hide(document.activeElement);
+                focusItem(buttonRef.current);
+                ReactTooltip.show(buttonRef.current);
             });
         }
     }, [handleMove, isExpanded, setIsExpanded]);
@@ -128,32 +128,13 @@ const ActionMenu = ({
     }, []);
 
     useEffect(() => {
-        const items = itemRefs.current;
-        const currentFocusedIndex = items.indexOf(document.activeElement);
-        if (isExpanded && items.length) {
-            const timer = setTimeout(() => {
-                // blur and refocus in order to recalculate tooltip position upon expansion
-                if (items[currentFocusedIndex]) {
-                    items[currentFocusedIndex].blur();
-                    focusItem(items[currentFocusedIndex]);
-                }
-            }, CLOSE_DELAY);
-            return () => clearTimeout(timer);
-        }
-    }, [isExpanded, focusItem, itemRefs.current.length]);
-
-    useEffect(() => {
         if (!isExpanded) {
             ReactTooltip.hide();
         }
     }, [isExpanded]);
 
-    const clickEvent = useCallback(
-        fn => (event => {
-            if (fn) fn(event);
-        }), []
-    );
-
+    // needed to resolve collision of styling based on mouse hovering and keyboard movement,
+    // so as not to highlight multiple items at the same time
     const handleItemMouseEnter = useCallback(index => () => {
         const items = itemRefs.current;
         const currentFocusedIndex = items.indexOf(document.activeElement);
@@ -164,19 +145,10 @@ const ActionMenu = ({
         }
         if (items[index]) {
             focusItem(items[index]);
+        } else {
+            // Not a menu item, so it must be the main button
+            focusItem(buttonRef.current);
         }
-    }, [focusItem]);
-
-    const handleCoreButtonMouseEnter = useCallback(() => {
-        // Focus on buttonRef and unfocus inner menu without unexpanding
-        const items = itemRefs.current;
-        const currentFocusedIndex = items.indexOf(document.activeElement);
-        if (buttonRef.current === document.activeElement) return;
-
-        if (items[currentFocusedIndex]) {
-            items[currentFocusedIndex].blur();
-        }
-        focusItem(buttonRef.current);
     }, [focusItem]);
 
     return (
@@ -196,9 +168,9 @@ const ActionMenu = ({
                 className={classNames(styles.button, styles.mainButton)}
                 data-for={mainTooltipId}
                 data-tip={mainTitle}
-                onClick={clickEvent(onClick)}
+                onClick={onClick}
                 ref={buttonRef}
-                onMouseEnter={handleCoreButtonMouseEnter}
+                onMouseEnter={handleItemMouseEnter(-1)}
             >
                 <img
                     className={styles.mainIcon}
@@ -240,7 +212,7 @@ const ActionMenu = ({
                                         })}
                                         data-for={tooltipId}
                                         data-tip={title}
-                                        onClick={hasFileInput ? handleClick : clickEvent(handleClick)}
+                                        onClick={handleClick}
                                         tabIndex={-1}
                                         ref={el => {
                                             itemRefs.current[keyId] = el;
