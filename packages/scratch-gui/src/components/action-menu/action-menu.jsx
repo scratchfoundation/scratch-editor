@@ -17,6 +17,7 @@ const ActionMenu = ({
 }) => {
     const [forceHide, setForceHide] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const lastFocusedItem = useRef(null);
 
     const closeTimeoutRef = useRef(null);
     const mainTooltipId = useRef(`tooltip-${Math.random()}`).current;
@@ -27,9 +28,20 @@ const ActionMenu = ({
 
     const focusItem = useCallback(item => {
         if (item) {
+            console.log('focusing item', item);
+            lastFocusedItem.current = item;
             item.focus();
         }
     }, []);
+
+    const refocusLastFocusedItem = useCallback(() => {
+        requestAnimationFrame(() => {
+            if (lastFocusedItem.current) {
+                lastFocusedItem.current.blur();
+                focusItem(lastFocusedItem.current);
+            }
+        });
+    }, [focusItem]);
 
     const handleToggleOpenState = useCallback(() => {
         // Mouse enter back in after timeout was started prevents it from closing.
@@ -39,10 +51,11 @@ const ActionMenu = ({
         } else if (!isExpanded) {
             setIsExpanded(true);
             setForceHide(false);
-            // Avoid double tooltip by just refocusing to the core element
-            requestAnimationFrame(() => {
-                focusItem(buttonRef.current);
-            });
+            focusItem(lastFocusedItem.current || buttonRef.current);
+            // tooltip refocus tweak
+            setTimeout(() => {
+                refocusLastFocusedItem();
+            }, CLOSE_DELAY);
         }
     }, [isExpanded]);
 
@@ -112,11 +125,11 @@ const ActionMenu = ({
         } else if (e.key === KEY.ESCAPE) {
             focusItem(buttonRef.current);
         } else if (e.key === KEY.ENTER) {
-            requestAnimationFrame(() => {
-                ReactTooltip.hide(document.activeElement);
-                focusItem(buttonRef.current);
-                ReactTooltip.show(buttonRef.current);
-            });
+            // timeout in case it loads something that loses the tooltip message
+            // the exact delay number may need to adjust based on the time it takes to load
+            setTimeout(() => {
+                refocusLastFocusedItem();
+            }, CLOSE_DELAY);
         }
     }, [handleMove, isExpanded, setIsExpanded]);
 
@@ -124,14 +137,18 @@ const ActionMenu = ({
         closeTimeoutRef.current = setTimeout(() => {
             setIsExpanded(false);
             closeTimeoutRef.current = null;
+            lastFocusedItem.current = null;
         }, CLOSE_DELAY);
     }, []);
 
     useEffect(() => {
-        if (!isExpanded) {
+        if (isExpanded) {
+            refocusLastFocusedItem();
+            ReactTooltip.hide();
+        } else {
             ReactTooltip.hide();
         }
-    }, [isExpanded]);
+    }, [isExpanded, focusItem, itemRefs.current.length]);
 
     // needed to resolve collision of styling based on mouse hovering and keyboard movement,
     // so as not to highlight multiple items at the same time
@@ -192,7 +209,7 @@ const ActionMenu = ({
                             {
                                 img,
                                 title,
-                                onClick: handleClick,
+                                onClick: onClickItem,
                                 fileAccept,
                                 fileChange,
                                 fileInput,
@@ -200,9 +217,19 @@ const ActionMenu = ({
                             },
                             keyId
                         ) => {
-                            const isComingSoon = !handleClick;
+                            const isComingSoon = !onClickItem;
                             const hasFileInput = fileInput;
                             const tooltipId = `${mainTooltipId}-${title}`;
+                            
+                            const handleClick = useCallback(e => {
+                                onClickItem(e);
+                                // timeout in case it loads something that loses the tooltip message
+                                // the exact delay number may need to adjust based on the time it takes to load
+                                setTimeout(() => {
+                                    refocusLastFocusedItem();
+                                }, CLOSE_DELAY);
+                            }, [onClickItem]);
+
                             return (
                                 <li key={`${tooltipId}-${keyId}`}>
                                     <button
