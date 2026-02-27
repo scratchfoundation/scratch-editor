@@ -60,4 +60,45 @@ export class Drawer extends Blockly.zelos.Drawer {
       return this.constants_.makeBowlerHatPath(this.info_.width);
     }
   }
+
+  /**
+   * Draw the connection highlight path for the given connection measurable.
+   *
+   * For rounded (non-hexagonal) input slots we expand the outline by 1px in
+   * every direction so the white highlight stroke sits just outside the input
+   * slot's background and remains visible rather than merging with it.
+   */
+  override drawConnectionHighlightPath(
+    measurable: Blockly.blockRendering.Connection
+  ) {
+    const conn = measurable.connectionModel;
+    if (
+      conn.type === Blockly.ConnectionType.INPUT_VALUE &&
+      measurable.isDynamicShape
+    ) {
+      const input = measurable as Blockly.blockRendering.InlineInput;
+      const EXPAND_X = 0.5;
+      const EXPAND_Y = 2;
+      const xPos = input.connectionWidth - EXPAND_X;
+      const yPos = -input.height / 2 - EXPAND_Y;
+      const width = input.width - input.connectionWidth * 2 + 2 * EXPAND_X;
+      const height = input.height + 2 * EXPAND_Y;
+      const shape = input.shape as Blockly.blockRendering.DynamicShape;
+      const path =
+        Blockly.utils.svgPaths.moveTo(xPos, yPos) +
+        Blockly.utils.svgPaths.lineOnAxis("h", width) +
+        shape.pathRightDown(height) +
+        Blockly.utils.svgPaths.lineOnAxis("h", -width) +
+        shape.pathUp(height) +
+        "z";
+      const block = conn.getSourceBlock();
+      return block.pathObject.addConnectionHighlight?.(
+        conn,
+        path,
+        conn.getOffsetInBlock(),
+        block.RTL
+      );
+    }
+    return super.drawConnectionHighlightPath(measurable);
+  }
 }
