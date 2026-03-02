@@ -8,6 +8,7 @@ const config = {
     libraryTarget: "commonjs2",
     path: path.resolve(__dirname, "dist"),
     filename: "[name].js",
+    clean: true,
   },
   resolve: {
     extensions: [".ts", ".js"],

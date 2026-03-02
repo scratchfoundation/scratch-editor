@@ -1,15 +1,33 @@
 {
+  "compilerOptions": {
+    /* Type Checking */
+    "noImplicitAny": true,
+    "strict": false, // TODO: try to enable "strict" mode and fix the resulting errors
+
+    /* Modules */
+    "module": "es6",
+    "moduleResolution": "node",
+
+    /* Emit */
+    "declaration": true,
+    "declarationDir": "./dist/types/",
+    "declarationMap": true,
+    "outDir": "./dist/",
+    "sourceMap": true,
+
+    /* JavaScript Support */
+    "allowJs": true,
+
+    /* Interop Constraints */
+    "forceConsistentCasingInFileNames": true,
+
+    /* Language and Environment */
+    "target": "es6",
+  },
   "include": [
     "./src/",
     "./tests/",
-    "./types/"
-  ],
-  "compilerOptions": {
-    "outDir": "./dist/",
-    "noImplicitAny": true,
-    "module": "es6",
-    "target": "es6",
-    "allowJs": true,
-    "moduleResolution": "node"
-  }
+    "./types/",
+    "./index.ts",
+  ]
 }
