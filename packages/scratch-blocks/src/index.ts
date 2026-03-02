@@ -139,11 +139,12 @@ export function inject(container: Element, options: ScratchBlocksOptions) {
   const originalZoomControls = workspace.zoomControls_;
   if (originalZoomControls) {
     originalZoomControls.dispose();
+
+    const scratchZoomControls = new ScratchZoomControls(workspace);
+    const zoomControlsSvg = scratchZoomControls.createDom();
+    workspace.svgGroup_.appendChild(zoomControlsSvg);
+    scratchZoomControls.init();
   }
-  const scratchZoomControls = new ScratchZoomControls(workspace);
-  const zoomControlsSvg = scratchZoomControls.createDom();
-  workspace.svgGroup_.appendChild(zoomControlsSvg);
-  scratchZoomControls.init();
 
   Blockly.config.dragRadius = 3;
   Blockly.config.snapRadius = 48;
