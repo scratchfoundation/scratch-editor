@@ -19,14 +19,6 @@ const config = {
     filename: "[name].mjs",
     clean: true,
   },
-  // Treat blockly packages as externals so they are not bundled.
-  // The consuming app is expected to provide them.
-  externalsType: "module",
-  externals: {
-    "blockly/core": "blockly/core",
-    "@blockly/continuous-toolbox": "@blockly/continuous-toolbox",
-    "@blockly/field-colour": "@blockly/field-colour",
-  },
   resolve: {
     extensions: [".ts", ".js"],
   },
