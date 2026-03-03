@@ -1,33 +1,55 @@
-const path = require("path");
+const path = require("node:path");
 
-// Base config that applies to either development or production mode.
+/**
+ * @import {Configuration, RuleSetRule} from "webpack"
+ */
+
+/**
+ * Base config that applies to either development or production mode.
+ * @satisfies {Configuration}
+ */
 const config = {
   entry: "./src/index.ts",
+  experiments: {
+    outputModule: true,
+  },
   output: {
-    library: "ScratchBlocks",
-    libraryTarget: "commonjs2",
+    library: {type: "module"},
     path: path.resolve(__dirname, "dist"),
-    filename: "[name].js",
+    filename: "[name].mjs",
     clean: true,
+  },
+  // Treat blockly packages as externals so they are not bundled.
+  // The consuming app is expected to provide them.
+  externalsType: "module",
+  externals: {
+    "blockly/core": "blockly/core",
+    "@blockly/continuous-toolbox": "@blockly/continuous-toolbox",
+    "@blockly/field-colour": "@blockly/field-colour",
   },
   resolve: {
     extensions: [".ts", ".js"],
   },
   module: {
-    rules: [
+    rules: /** @type {RuleSetRule[]} */ ([
       {
         test: /\.ts$/,
         use: "ts-loader",
         exclude: /node_modules/,
       },
-    ],
+    ]),
   },
   // Enable webpack-dev-server to get hot refresh of the app.
   devServer: {
     static: "./build",
   },
+  devtool: /** @type {Configuration["devtool"]} */ (false),
+  ignoreWarnings: /** @type {Configuration["ignoreWarnings"]} */ ([]),
 };
 
+/**
+ * @returns {Configuration}
+ */
 module.exports = (env, argv) => {
   if (argv.mode === "development") {
     // Set the output path to the `build` directory

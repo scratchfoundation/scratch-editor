@@ -5,8 +5,8 @@
     "strict": false, // TODO: try to enable "strict" mode and fix the resulting errors
 
     /* Modules */
-    "module": "es6",
-    "moduleResolution": "node",
+    "module": "esnext",
+    "moduleResolution": "bundler",
 
     /* Emit */
     "declaration": true,
@@ -22,12 +22,11 @@
     "forceConsistentCasingInFileNames": true,
 
     /* Language and Environment */
-    "target": "es6",
+    "target": "es2020",
   },
   "include": [
     "./src/",
     "./tests/",
     "./types/",
-    "./index.ts",
   ]
 }
