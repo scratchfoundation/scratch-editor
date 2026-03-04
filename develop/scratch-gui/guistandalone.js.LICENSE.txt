@@ -116,6 +116,8 @@ and limitations under the License.
 
 /*! @source http://purl.eligrey.com/github/canvas-toBlob.js/blob/master/canvas-toBlob.js */
 
+/*! For license information please see main.mjs.LICENSE.txt */
+
 /*! css-mediaquery */
 
 /*! hyphenate-style-name */
