@@ -1,13 +1,33 @@
-// This file was automatically generated.  Do not modify.
+import * as Blockly from 'blockly/core';
 
-'use strict';
+export class ScratchMsgs {
+  static currentLocale_ = 'en';
+  static locales = {};
 
-goog.provide('Blockly.ScratchMsgs.allLocales');
+  static setLocale(locale) {
+    if (Object.keys(this.locales).includes(locale)) {
+      this.currentLocale_ = locale;
+      Object.assign(Blockly.Msg, this.locales[locale]);
+    } else {
+      // keep current locale
+      console.warn('Ignoring unrecognized locale: ' + locale);
+    }
+  }
 
-goog.require('Blockly.ScratchMsgs');
+  static translate(msgId, defaultMsg, useLocale) {
+    var locale = useLocale || this.currentLocale_;
 
+    if (Object.keys(this.locales).includes(locale)) {
+      var messages = this.locales[locale];
+      if (Object.keys(messages).includes(msgId)) {
+        return messages[msgId];
+      }
+    }
+    return defaultMsg;
+  }
+}
 
-Blockly.ScratchMsgs.locales["ab"] =
+ScratchMsgs.locales["ab"] =
 {
     "CONTROL_FOREVER": "инагӡалатәуп еснагь",
     "CONTROL_REPEAT": "инагӡалатәуп %1 - нтә",
@@ -247,7 +267,7 @@ Blockly.ScratchMsgs.locales["ab"] =
     "CATEGORY_OPERATORS": "Аоператорқәа",
     "CATEGORY_VARIABLES": "Аҽеиҭакқәа",
     "CATEGORY_MYBLOCKS": "Сара сблокқәа",
-    "DUPLICATE": "Адубликат",
+    "DUPLICATE_BLOCK": "Адубликат",
     "DELETE": "Ианыхтәуп",
     "ADD_COMMENT": "Иацҵатәуп акомментари",
     "REMOVE_COMMENT": "Ианыхтәуп акомментари",
@@ -295,7 +315,7 @@ Blockly.ScratchMsgs.locales["ab"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "ацҳамҭа1"
 };
 
-Blockly.ScratchMsgs.locales["af"] =
+ScratchMsgs.locales["af"] =
 {
     "CONTROL_FOREVER": "vir ewig",
     "CONTROL_REPEAT": "herhaal %1 keer",
@@ -535,7 +555,7 @@ Blockly.ScratchMsgs.locales["af"] =
     "CATEGORY_OPERATORS": "Operateurs",
     "CATEGORY_VARIABLES": "Veranderlikes",
     "CATEGORY_MYBLOCKS": "My Blokke",
-    "DUPLICATE": "Dupliseer",
+    "DUPLICATE_BLOCK": "Dupliseer",
     "DELETE": "Skrap",
     "ADD_COMMENT": "Voeg Kommentaar By",
     "REMOVE_COMMENT": "Verwyder Kommentaar",
@@ -583,7 +603,7 @@ Blockly.ScratchMsgs.locales["af"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "boodskap1"
 };
 
-Blockly.ScratchMsgs.locales["ar"] =
+ScratchMsgs.locales["ar"] =
 {
     "CONTROL_FOREVER": "كرِّر باستمرار",
     "CONTROL_REPEAT": "كرِّر %1 مرة",
@@ -823,7 +843,7 @@ Blockly.ScratchMsgs.locales["ar"] =
     "CATEGORY_OPERATORS": "العمليات",
     "CATEGORY_VARIABLES": "المتغيرات",
     "CATEGORY_MYBLOCKS": "لبناتي",
-    "DUPLICATE": "مضاعفة",
+    "DUPLICATE_BLOCK": "مضاعفة",
     "DELETE": "حذف",
     "ADD_COMMENT": "إضافة تعليق",
     "REMOVE_COMMENT": "حذف التعليق",
@@ -871,7 +891,7 @@ Blockly.ScratchMsgs.locales["ar"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "الرسالة 1"
 };
 
-Blockly.ScratchMsgs.locales["am"] =
+ScratchMsgs.locales["am"] =
 {
     "CONTROL_FOREVER": "ለዘላለም",
     "CONTROL_REPEAT": "%1ን ድገም",
@@ -1111,7 +1131,7 @@ Blockly.ScratchMsgs.locales["am"] =
     "CATEGORY_OPERATORS": "ስሌቶች",
     "CATEGORY_VARIABLES": "ተለዋዋጮች",
     "CATEGORY_MYBLOCKS": "የኔ ጥምሮች",
-    "DUPLICATE": "ቅጂ አድርገህ ገልብጥ",
+    "DUPLICATE_BLOCK": "ቅጂ አድርገህ ገልብጥ",
     "DELETE": "አጥፋ",
     "ADD_COMMENT": "አስተያየት ጨምር",
     "REMOVE_COMMENT": "አስተያየት አውጣ",
@@ -1159,7 +1179,7 @@ Blockly.ScratchMsgs.locales["am"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "መልእክት1"
 };
 
-Blockly.ScratchMsgs.locales["an"] =
+ScratchMsgs.locales["an"] =
 {
     "CONTROL_FOREVER": "pa cutio",
     "CONTROL_REPEAT": "repetir %1",
@@ -1399,7 +1419,7 @@ Blockly.ScratchMsgs.locales["an"] =
     "CATEGORY_OPERATORS": "Operadors",
     "CATEGORY_VARIABLES": "Variables",
     "CATEGORY_MYBLOCKS": "Los míos bloques",
-    "DUPLICATE": "Duplicar",
+    "DUPLICATE_BLOCK": "Duplicar",
     "DELETE": "Borrar",
     "ADD_COMMENT": "Anyadir comentario",
     "REMOVE_COMMENT": "Eliminar comentario",
@@ -1447,7 +1467,7 @@ Blockly.ScratchMsgs.locales["an"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "mensache1"
 };
 
-Blockly.ScratchMsgs.locales["ast"] =
+ScratchMsgs.locales["ast"] =
 {
     "CONTROL_FOREVER": "pa siempres",
     "CONTROL_REPEAT": "repetir %1",
@@ -1687,7 +1707,7 @@ Blockly.ScratchMsgs.locales["ast"] =
     "CATEGORY_OPERATORS": "Operadores",
     "CATEGORY_VARIABLES": "Variables",
     "CATEGORY_MYBLOCKS": "Los Mios Bloques",
-    "DUPLICATE": "Duplicar",
+    "DUPLICATE_BLOCK": "Duplicar",
     "DELETE": "Esborrar",
     "ADD_COMMENT": "Amestar comentariu",
     "REMOVE_COMMENT": "Esborrar Comentariu",
@@ -1735,7 +1755,7 @@ Blockly.ScratchMsgs.locales["ast"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "mensaxe1"
 };
 
-Blockly.ScratchMsgs.locales["az"] =
+ScratchMsgs.locales["az"] =
 {
     "CONTROL_FOREVER": "həmişə",
     "CONTROL_REPEAT": "təkrarla %1 dəfə",
@@ -1975,7 +1995,7 @@ Blockly.ScratchMsgs.locales["az"] =
     "CATEGORY_OPERATORS": "Operatorlar",
     "CATEGORY_VARIABLES": "Dəyişənlər",
     "CATEGORY_MYBLOCKS": "Mənim Bloklarım",
-    "DUPLICATE": "Dublikatın yarat",
+    "DUPLICATE_BLOCK": "Dublikatın yarat",
     "DELETE": "Sil",
     "ADD_COMMENT": "Şərh əlavə et",
     "REMOVE_COMMENT": "Şərhi sil",
@@ -2023,7 +2043,7 @@ Blockly.ScratchMsgs.locales["az"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "ismarıc 1"
 };
 
-Blockly.ScratchMsgs.locales["id"] =
+ScratchMsgs.locales["id"] =
 {
     "CONTROL_FOREVER": "selamanya",
     "CONTROL_REPEAT": "ulangi %1 kali",
@@ -2263,7 +2283,7 @@ Blockly.ScratchMsgs.locales["id"] =
     "CATEGORY_OPERATORS": "Operator",
     "CATEGORY_VARIABLES": "Variabel",
     "CATEGORY_MYBLOCKS": "Balok Saya",
-    "DUPLICATE": "Gandakan",
+    "DUPLICATE_BLOCK": "Gandakan",
     "DELETE": "Hapus",
     "ADD_COMMENT": "Tambahkan Komentar",
     "REMOVE_COMMENT": "Hapus Komentar",
@@ -2311,7 +2331,7 @@ Blockly.ScratchMsgs.locales["id"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "pesan1"
 };
 
-Blockly.ScratchMsgs.locales["bn"] =
+ScratchMsgs.locales["bn"] =
 {
     "CONTROL_FOREVER": "চিরকালের জন্য",
     "CONTROL_REPEAT": "পুনরাবৃত্তি %1 বার",
@@ -2551,7 +2571,7 @@ Blockly.ScratchMsgs.locales["bn"] =
     "CATEGORY_OPERATORS": "অপারেটর",
     "CATEGORY_VARIABLES": "ভ্যারিয়েবল",
     "CATEGORY_MYBLOCKS": "আমার ব্লকগুলো",
-    "DUPLICATE": "অনুরূপ",
+    "DUPLICATE_BLOCK": "অনুরূপ",
     "DELETE": "অপসারণ",
     "ADD_COMMENT": "মন্তব্য যোগ কর",
     "REMOVE_COMMENT": "মন্তব্য অপসারণ কর",
@@ -2599,7 +2619,7 @@ Blockly.ScratchMsgs.locales["bn"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "বার্তা1"
 };
 
-Blockly.ScratchMsgs.locales["be"] =
+ScratchMsgs.locales["be"] =
 {
     "CONTROL_FOREVER": "заўжды",
     "CONTROL_REPEAT": "паўтарыць %1",
@@ -2839,7 +2859,7 @@ Blockly.ScratchMsgs.locales["be"] =
     "CATEGORY_OPERATORS": "Аператары",
     "CATEGORY_VARIABLES": "Зменныя",
     "CATEGORY_MYBLOCKS": "Уласныя блокі",
-    "DUPLICATE": "Падвоіць",
+    "DUPLICATE_BLOCK": "Падвоіць",
     "DELETE": "Выдаліць",
     "ADD_COMMENT": "Дадаць каментарый",
     "REMOVE_COMMENT": "Выдаліць каментарый",
@@ -2887,7 +2907,7 @@ Blockly.ScratchMsgs.locales["be"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "паведамленне1"
 };
 
-Blockly.ScratchMsgs.locales["bg"] =
+ScratchMsgs.locales["bg"] =
 {
     "CONTROL_FOREVER": "винаги",
     "CONTROL_REPEAT": "повтори %1",
@@ -3127,7 +3147,7 @@ Blockly.ScratchMsgs.locales["bg"] =
     "CATEGORY_OPERATORS": "Оператори",
     "CATEGORY_VARIABLES": "Променливи",
     "CATEGORY_MYBLOCKS": "Моите Блокове",
-    "DUPLICATE": "Дублиране",
+    "DUPLICATE_BLOCK": "Дублиране",
     "DELETE": "Изтриване",
     "ADD_COMMENT": "Добави коментар",
     "REMOVE_COMMENT": "Премахни Коментар",
@@ -3175,7 +3195,7 @@ Blockly.ScratchMsgs.locales["bg"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "съобщение1"
 };
 
-Blockly.ScratchMsgs.locales["ca"] =
+ScratchMsgs.locales["ca"] =
 {
     "CONTROL_FOREVER": "per sempre",
     "CONTROL_REPEAT": "repeteix %1",
@@ -3415,7 +3435,7 @@ Blockly.ScratchMsgs.locales["ca"] =
     "CATEGORY_OPERATORS": "Operadors",
     "CATEGORY_VARIABLES": "Variables",
     "CATEGORY_MYBLOCKS": "Els meus blocs",
-    "DUPLICATE": "Duplica",
+    "DUPLICATE_BLOCK": "Duplica",
     "DELETE": "Elimina",
     "ADD_COMMENT": "Afegeix un comentari",
     "REMOVE_COMMENT": "Elimina el comentari",
@@ -3463,7 +3483,7 @@ Blockly.ScratchMsgs.locales["ca"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "missatge1"
 };
 
-Blockly.ScratchMsgs.locales["cs"] =
+ScratchMsgs.locales["cs"] =
 {
     "CONTROL_FOREVER": "opakuj stále",
     "CONTROL_REPEAT": "opakuj %1 krát",
@@ -3703,7 +3723,7 @@ Blockly.ScratchMsgs.locales["cs"] =
     "CATEGORY_OPERATORS": "Operátory",
     "CATEGORY_VARIABLES": "Proměnné",
     "CATEGORY_MYBLOCKS": "Moje bloky",
-    "DUPLICATE": "Kopírovat",
+    "DUPLICATE_BLOCK": "Kopírovat",
     "DELETE": "Odstranit",
     "ADD_COMMENT": "Přidat poznámku",
     "REMOVE_COMMENT": "Odstranit poznámku",
@@ -3751,7 +3771,7 @@ Blockly.ScratchMsgs.locales["cs"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "zpráva1"
 };
 
-Blockly.ScratchMsgs.locales["cy"] =
+ScratchMsgs.locales["cy"] =
 {
     "CONTROL_FOREVER": "am byth",
     "CONTROL_REPEAT": "ailadrodd %1",
@@ -3991,7 +4011,7 @@ Blockly.ScratchMsgs.locales["cy"] =
     "CATEGORY_OPERATORS": "Gweithredwyr",
     "CATEGORY_VARIABLES": "Newidynnau",
     "CATEGORY_MYBLOCKS": "Fy Mlociau",
-    "DUPLICATE": "Dyblygu",
+    "DUPLICATE_BLOCK": "Dyblygu",
     "DELETE": "Dileu",
     "ADD_COMMENT": "Ychwanegu Sylw",
     "REMOVE_COMMENT": "Tynnu Sylw",
@@ -4039,7 +4059,7 @@ Blockly.ScratchMsgs.locales["cy"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "neges1"
 };
 
-Blockly.ScratchMsgs.locales["da"] =
+ScratchMsgs.locales["da"] =
 {
     "CONTROL_FOREVER": "for evigt",
     "CONTROL_REPEAT": "gentag %1 gange",
@@ -4279,7 +4299,7 @@ Blockly.ScratchMsgs.locales["da"] =
     "CATEGORY_OPERATORS": "Operatorer",
     "CATEGORY_VARIABLES": "Variabler",
     "CATEGORY_MYBLOCKS": "Mine brikker",
-    "DUPLICATE": "Kopiér",
+    "DUPLICATE_BLOCK": "Kopiér",
     "DELETE": "Slet",
     "ADD_COMMENT": "Tilføj kommentar",
     "REMOVE_COMMENT": "Slet kommentar",
@@ -4327,7 +4347,7 @@ Blockly.ScratchMsgs.locales["da"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "besked1"
 };
 
-Blockly.ScratchMsgs.locales["de"] =
+ScratchMsgs.locales["de"] =
 {
     "CONTROL_FOREVER": "wiederhole fortlaufend",
     "CONTROL_REPEAT": "wiederhole %1 mal",
@@ -4567,7 +4587,7 @@ Blockly.ScratchMsgs.locales["de"] =
     "CATEGORY_OPERATORS": "Operatoren",
     "CATEGORY_VARIABLES": "Variablen",
     "CATEGORY_MYBLOCKS": "Meine Blöcke",
-    "DUPLICATE": "Duplizieren",
+    "DUPLICATE_BLOCK": "Duplizieren",
     "DELETE": "Löschen",
     "ADD_COMMENT": "Kommentar hinzufügen",
     "REMOVE_COMMENT": "Kommentar entfernen",
@@ -4615,7 +4635,7 @@ Blockly.ScratchMsgs.locales["de"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "Nachricht1"
 };
 
-Blockly.ScratchMsgs.locales["et"] =
+ScratchMsgs.locales["et"] =
 {
     "CONTROL_FOREVER": "korda lõputult",
     "CONTROL_REPEAT": "korda %1 korda",
@@ -4855,7 +4875,7 @@ Blockly.ScratchMsgs.locales["et"] =
     "CATEGORY_OPERATORS": "Tehted",
     "CATEGORY_VARIABLES": "Muutujad",
     "CATEGORY_MYBLOCKS": "Minu Plokid",
-    "DUPLICATE": "Paljunda",
+    "DUPLICATE_BLOCK": "Paljunda",
     "DELETE": "Kustuta",
     "ADD_COMMENT": "Lisa kommentaar",
     "REMOVE_COMMENT": "Eemalda kommentaar",
@@ -4903,7 +4923,7 @@ Blockly.ScratchMsgs.locales["et"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "teade1"
 };
 
-Blockly.ScratchMsgs.locales["el"] =
+ScratchMsgs.locales["el"] =
 {
     "CONTROL_FOREVER": "για πάντα",
     "CONTROL_REPEAT": "επανάλαβε %1",
@@ -5143,7 +5163,7 @@ Blockly.ScratchMsgs.locales["el"] =
     "CATEGORY_OPERATORS": "Τελεστές",
     "CATEGORY_VARIABLES": "Μεταβλητές",
     "CATEGORY_MYBLOCKS": "Οι Εντολές μου",
-    "DUPLICATE": "Διπλασιασμός",
+    "DUPLICATE_BLOCK": "Διπλασιασμός",
     "DELETE": "Διαγραφή",
     "ADD_COMMENT": "Προσθήκη σχολίου",
     "REMOVE_COMMENT": "Αφαίρεση σχολίου",
@@ -5191,7 +5211,7 @@ Blockly.ScratchMsgs.locales["el"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "μήνυμα1"
 };
 
-Blockly.ScratchMsgs.locales["en"] =
+ScratchMsgs.locales["en"] =
 {
     "CONTROL_FOREVER": "forever",
     "CONTROL_REPEAT": "repeat %1",
@@ -5431,7 +5451,7 @@ Blockly.ScratchMsgs.locales["en"] =
     "CATEGORY_OPERATORS": "Operators",
     "CATEGORY_VARIABLES": "Variables",
     "CATEGORY_MYBLOCKS": "My Blocks",
-    "DUPLICATE": "Duplicate",
+    "DUPLICATE_BLOCK": "Duplicate",
     "DELETE": "Delete",
     "ADD_COMMENT": "Add Comment",
     "REMOVE_COMMENT": "Remove Comment",
@@ -5479,7 +5499,7 @@ Blockly.ScratchMsgs.locales["en"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "message1"
 };
 
-Blockly.ScratchMsgs.locales["es"] =
+ScratchMsgs.locales["es"] =
 {
     "CONTROL_FOREVER": "por siempre",
     "CONTROL_REPEAT": "repetir %1",
@@ -5719,7 +5739,7 @@ Blockly.ScratchMsgs.locales["es"] =
     "CATEGORY_OPERATORS": "Operadores",
     "CATEGORY_VARIABLES": "Variables",
     "CATEGORY_MYBLOCKS": "Mis bloques",
-    "DUPLICATE": "Duplicar",
+    "DUPLICATE_BLOCK": "Duplicar",
     "DELETE": "Eliminar",
     "ADD_COMMENT": "Añadir comentario",
     "REMOVE_COMMENT": "Eliminar comentario",
@@ -5767,7 +5787,7 @@ Blockly.ScratchMsgs.locales["es"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "mensaje1"
 };
 
-Blockly.ScratchMsgs.locales["es-419"] =
+ScratchMsgs.locales["es-419"] =
 {
     "CONTROL_FOREVER": "por siempre",
     "CONTROL_REPEAT": "repetir %1",
@@ -6007,7 +6027,7 @@ Blockly.ScratchMsgs.locales["es-419"] =
     "CATEGORY_OPERATORS": "Operadores",
     "CATEGORY_VARIABLES": "Variables",
     "CATEGORY_MYBLOCKS": "Mis Bloques",
-    "DUPLICATE": "Duplicar",
+    "DUPLICATE_BLOCK": "Duplicar",
     "DELETE": "Eliminar",
     "ADD_COMMENT": "Agregar comentario",
     "REMOVE_COMMENT": "Eliminar comentario",
@@ -6055,7 +6075,7 @@ Blockly.ScratchMsgs.locales["es-419"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "mensaje1"
 };
 
-Blockly.ScratchMsgs.locales["eo"] =
+ScratchMsgs.locales["eo"] =
 {
     "CONTROL_FOREVER": "ripeti senfine",
     "CONTROL_REPEAT": "ripeti %1-foje",
@@ -6295,7 +6315,7 @@ Blockly.ScratchMsgs.locales["eo"] =
     "CATEGORY_OPERATORS": "Operatoroj",
     "CATEGORY_VARIABLES": "Variabloj",
     "CATEGORY_MYBLOCKS": "Miaj Blokoj",
-    "DUPLICATE": "Krei kopion",
+    "DUPLICATE_BLOCK": "Krei kopion",
     "DELETE": "Forigi",
     "ADD_COMMENT": "Aldoni komenton",
     "REMOVE_COMMENT": "Forigi komenton",
@@ -6343,7 +6363,7 @@ Blockly.ScratchMsgs.locales["eo"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "mesaĝo1"
 };
 
-Blockly.ScratchMsgs.locales["eu"] =
+ScratchMsgs.locales["eu"] =
 {
     "CONTROL_FOREVER": "etengabe",
     "CONTROL_REPEAT": "errepikatu %1 aldiz",
@@ -6583,7 +6603,7 @@ Blockly.ScratchMsgs.locales["eu"] =
     "CATEGORY_OPERATORS": "Eragileak",
     "CATEGORY_VARIABLES": "Aldagaiak",
     "CATEGORY_MYBLOCKS": "Nire blokeak",
-    "DUPLICATE": "Bikoiztu",
+    "DUPLICATE_BLOCK": "Bikoiztu",
     "DELETE": "Ezabatu",
     "ADD_COMMENT": "Gehitu iruzkina",
     "REMOVE_COMMENT": "Kendu iruzkina",
@@ -6631,7 +6651,7 @@ Blockly.ScratchMsgs.locales["eu"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "mezua1"
 };
 
-Blockly.ScratchMsgs.locales["fa"] =
+ScratchMsgs.locales["fa"] =
 {
     "CONTROL_FOREVER": "برای همیشه",
     "CONTROL_REPEAT": "تکرار کن %1",
@@ -6871,7 +6891,7 @@ Blockly.ScratchMsgs.locales["fa"] =
     "CATEGORY_OPERATORS": "عملگرها",
     "CATEGORY_VARIABLES": "متغیرها",
     "CATEGORY_MYBLOCKS": "قطعه‌های من",
-    "DUPLICATE": "تکثیر",
+    "DUPLICATE_BLOCK": "تکثیر",
     "DELETE": "حذف",
     "ADD_COMMENT": "افزودن یادداشت",
     "REMOVE_COMMENT": "حذف یادداشت",
@@ -6919,7 +6939,7 @@ Blockly.ScratchMsgs.locales["fa"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "پیام 1"
 };
 
-Blockly.ScratchMsgs.locales["fil"] =
+ScratchMsgs.locales["fil"] =
 {
     "CONTROL_FOREVER": "kailanman",
     "CONTROL_REPEAT": "ulitin nang %1",
@@ -7159,7 +7179,7 @@ Blockly.ScratchMsgs.locales["fil"] =
     "CATEGORY_OPERATORS": "Mga Operator",
     "CATEGORY_VARIABLES": "Mga Variable",
     "CATEGORY_MYBLOCKS": "Mga Block Ko",
-    "DUPLICATE": "Doblehin",
+    "DUPLICATE_BLOCK": "Doblehin",
     "DELETE": "Burahin",
     "ADD_COMMENT": "Magkomento",
     "REMOVE_COMMENT": "Tanggalin ang Komento",
@@ -7207,7 +7227,7 @@ Blockly.ScratchMsgs.locales["fil"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "mensahe1"
 };
 
-Blockly.ScratchMsgs.locales["fr"] =
+ScratchMsgs.locales["fr"] =
 {
     "CONTROL_FOREVER": "répéter indéfiniment",
     "CONTROL_REPEAT": "répéter %1 fois",
@@ -7447,7 +7467,7 @@ Blockly.ScratchMsgs.locales["fr"] =
     "CATEGORY_OPERATORS": "Opérateurs",
     "CATEGORY_VARIABLES": "Variables",
     "CATEGORY_MYBLOCKS": "Mes Blocs",
-    "DUPLICATE": "Dupliquer",
+    "DUPLICATE_BLOCK": "Dupliquer",
     "DELETE": "Supprimer",
     "ADD_COMMENT": "Ajouter un commentaire",
     "REMOVE_COMMENT": "Retirer le commentaire",
@@ -7495,7 +7515,7 @@ Blockly.ScratchMsgs.locales["fr"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "message1"
 };
 
-Blockly.ScratchMsgs.locales["fy"] =
+ScratchMsgs.locales["fy"] =
 {
     "CONTROL_FOREVER": "foar altyd",
     "CONTROL_REPEAT": "werhelje %1",
@@ -7735,7 +7755,7 @@ Blockly.ScratchMsgs.locales["fy"] =
     "CATEGORY_OPERATORS": "Bestjoerders",
     "CATEGORY_VARIABLES": "Fariabelen",
     "CATEGORY_MYBLOCKS": "Myn Blokken",
-    "DUPLICATE": "Duplisearje",
+    "DUPLICATE_BLOCK": "Duplisearje",
     "DELETE": "Wiskje",
     "ADD_COMMENT": "Kommentaar tafoegje",
     "REMOVE_COMMENT": "Kommentaar fuortsmite",
@@ -7783,7 +7803,7 @@ Blockly.ScratchMsgs.locales["fy"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "berjocht1"
 };
 
-Blockly.ScratchMsgs.locales["ga"] =
+ScratchMsgs.locales["ga"] =
 {
     "CONTROL_FOREVER": "go deo",
     "CONTROL_REPEAT": "déan %1 uair",
@@ -8023,7 +8043,7 @@ Blockly.ScratchMsgs.locales["ga"] =
     "CATEGORY_OPERATORS": "Oibreoirí",
     "CATEGORY_VARIABLES": "Athróga",
     "CATEGORY_MYBLOCKS": "Mo Chuid Blocanna",
-    "DUPLICATE": "Cóipeáil",
+    "DUPLICATE_BLOCK": "Cóipeáil",
     "DELETE": "Scrios",
     "ADD_COMMENT": "Cuir Nóta Tráchta Leis",
     "REMOVE_COMMENT": "Bain an Nóta Tráchta",
@@ -8071,7 +8091,7 @@ Blockly.ScratchMsgs.locales["ga"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "teachtaireacht1"
 };
 
-Blockly.ScratchMsgs.locales["gd"] =
+ScratchMsgs.locales["gd"] =
 {
     "CONTROL_FOREVER": "gu buan",
     "CONTROL_REPEAT": "dèan seo %1 turas",
@@ -8311,7 +8331,7 @@ Blockly.ScratchMsgs.locales["gd"] =
     "CATEGORY_OPERATORS": "Gnìomharaiche",
     "CATEGORY_VARIABLES": "Caochladairean",
     "CATEGORY_MYBLOCKS": "Bloca agamsa",
-    "DUPLICATE": "Dùblaich",
+    "DUPLICATE_BLOCK": "Dùblaich",
     "DELETE": "Sguab às",
     "ADD_COMMENT": "Cuir beachd ris",
     "REMOVE_COMMENT": "Thoir am beachd air falbh",
@@ -8359,7 +8379,7 @@ Blockly.ScratchMsgs.locales["gd"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "teachdaireachd1"
 };
 
-Blockly.ScratchMsgs.locales["gl"] =
+ScratchMsgs.locales["gl"] =
 {
     "CONTROL_FOREVER": "para sempre",
     "CONTROL_REPEAT": "repetir %1",
@@ -8599,7 +8619,7 @@ Blockly.ScratchMsgs.locales["gl"] =
     "CATEGORY_OPERATORS": "Operadores",
     "CATEGORY_VARIABLES": "Variábeis",
     "CATEGORY_MYBLOCKS": "Os meus bloques",
-    "DUPLICATE": "Duplicar",
+    "DUPLICATE_BLOCK": "Duplicar",
     "DELETE": "Eliminar",
     "ADD_COMMENT": "Engadir comentario",
     "REMOVE_COMMENT": "Retirar comentario",
@@ -8647,7 +8667,7 @@ Blockly.ScratchMsgs.locales["gl"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "mensaxe1"
 };
 
-Blockly.ScratchMsgs.locales["ko"] =
+ScratchMsgs.locales["ko"] =
 {
     "CONTROL_FOREVER": "무한 반복하기",
     "CONTROL_REPEAT": "%1 번 반복하기",
@@ -8887,7 +8907,7 @@ Blockly.ScratchMsgs.locales["ko"] =
     "CATEGORY_OPERATORS": "연산",
     "CATEGORY_VARIABLES": "변수",
     "CATEGORY_MYBLOCKS": "내 블록",
-    "DUPLICATE": "복사하기",
+    "DUPLICATE_BLOCK": "복사하기",
     "DELETE": "삭제하기",
     "ADD_COMMENT": "주석 넣기",
     "REMOVE_COMMENT": "주석 지우기",
@@ -8935,7 +8955,7 @@ Blockly.ScratchMsgs.locales["ko"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "메시지1"
 };
 
-Blockly.ScratchMsgs.locales["ha"] =
+ScratchMsgs.locales["ha"] =
 {
     "CONTROL_FOREVER": "har abada ",
     "CONTROL_REPEAT": "maimaita %1",
@@ -9175,7 +9195,7 @@ Blockly.ScratchMsgs.locales["ha"] =
     "CATEGORY_OPERATORS": "ma'alaƙanta",
     "CATEGORY_VARIABLES": "abubuwa masu canzawa",
     "CATEGORY_MYBLOCKS": "tubalai na",
-    "DUPLICATE": "kwafa",
+    "DUPLICATE_BLOCK": "kwafa",
     "DELETE": "goge",
     "ADD_COMMENT": "ƙara tsokaci ",
     "REMOVE_COMMENT": "cire tsokaci",
@@ -9223,7 +9243,7 @@ Blockly.ScratchMsgs.locales["ha"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "saƙon1"
 };
 
-Blockly.ScratchMsgs.locales["hy"] =
+ScratchMsgs.locales["hy"] =
 {
     "CONTROL_FOREVER": "անվերջ",
     "CONTROL_REPEAT": "կրկնել %1",
@@ -9463,7 +9483,7 @@ Blockly.ScratchMsgs.locales["hy"] =
     "CATEGORY_OPERATORS": "Հաշվարկ",
     "CATEGORY_VARIABLES": "Փոփոխա­­կան",
     "CATEGORY_MYBLOCKS": "Մասնիկ",
-    "DUPLICATE": "Կրկնօրինակել",
+    "DUPLICATE_BLOCK": "Կրկնօրինակել",
     "DELETE": "Ջնջել",
     "ADD_COMMENT": "Ավելացնել մեկնաբանություն",
     "REMOVE_COMMENT": "Ջնջել մեկնաբանությունը",
@@ -9511,7 +9531,7 @@ Blockly.ScratchMsgs.locales["hy"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "հաղորդագրություն1"
 };
 
-Blockly.ScratchMsgs.locales["he"] =
+ScratchMsgs.locales["he"] =
 {
     "CONTROL_FOREVER": "לעולמים",
     "CONTROL_REPEAT": "חזור  %1 פעמים",
@@ -9751,7 +9771,7 @@ Blockly.ScratchMsgs.locales["he"] =
     "CATEGORY_OPERATORS": "מפעילים",
     "CATEGORY_VARIABLES": "משתנים",
     "CATEGORY_MYBLOCKS": "הלבנים שלי",
-    "DUPLICATE": "שכפל",
+    "DUPLICATE_BLOCK": "שכפל",
     "DELETE": "מחק",
     "ADD_COMMENT": "הוספת תגובה",
     "REMOVE_COMMENT": "מחק תגובה",
@@ -9799,7 +9819,7 @@ Blockly.ScratchMsgs.locales["he"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "מסר 1"
 };
 
-Blockly.ScratchMsgs.locales["hi"] =
+ScratchMsgs.locales["hi"] =
 {
     "CONTROL_FOREVER": "सदैव",
     "CONTROL_REPEAT": "%1 बार दोहराएं",
@@ -10039,7 +10059,7 @@ Blockly.ScratchMsgs.locales["hi"] =
     "CATEGORY_OPERATORS": "ऑपरेटर्स",
     "CATEGORY_VARIABLES": "चर वस्तुएँ",
     "CATEGORY_MYBLOCKS": "मेरे खण्ड",
-    "DUPLICATE": "प्रतिरुप",
+    "DUPLICATE_BLOCK": "प्रतिरुप",
     "DELETE": "मिटाये",
     "ADD_COMMENT": "टिप्पणी दे",
     "REMOVE_COMMENT": "टिप्पणी मिटाये",
@@ -10087,7 +10107,7 @@ Blockly.ScratchMsgs.locales["hi"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "संदेश 1 "
 };
 
-Blockly.ScratchMsgs.locales["hr"] =
+ScratchMsgs.locales["hr"] =
 {
     "CONTROL_FOREVER": "ponavljaj",
     "CONTROL_REPEAT": "ponovi %1",
@@ -10327,7 +10347,7 @@ Blockly.ScratchMsgs.locales["hr"] =
     "CATEGORY_OPERATORS": "Operacije",
     "CATEGORY_VARIABLES": "Varijable",
     "CATEGORY_MYBLOCKS": "Moji Blokovi",
-    "DUPLICATE": "Dupliciraj",
+    "DUPLICATE_BLOCK": "Dupliciraj",
     "DELETE": "Izbriši",
     "ADD_COMMENT": "Dodaj komentar",
     "REMOVE_COMMENT": "Ukloni komentar",
@@ -10375,7 +10395,7 @@ Blockly.ScratchMsgs.locales["hr"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "poruka1"
 };
 
-Blockly.ScratchMsgs.locales["xh"] =
+ScratchMsgs.locales["xh"] =
 {
     "CONTROL_FOREVER": "naphakade",
     "CONTROL_REPEAT": "phinda %1",
@@ -10615,7 +10635,7 @@ Blockly.ScratchMsgs.locales["xh"] =
     "CATEGORY_OPERATORS": "ababhexeshi",
     "CATEGORY_VARIABLES": "iiveriyebhl",
     "CATEGORY_MYBLOCKS": "Ibhloko zam",
-    "DUPLICATE": "ukukhuphela",
+    "DUPLICATE_BLOCK": "ukukhuphela",
     "DELETE": "cima",
     "ADD_COMMENT": "faka uluvo",
     "REMOVE_COMMENT": "Susa uluvo",
@@ -10663,7 +10683,7 @@ Blockly.ScratchMsgs.locales["xh"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "umyalezo1"
 };
 
-Blockly.ScratchMsgs.locales["zu"] =
+ScratchMsgs.locales["zu"] =
 {
     "CONTROL_FOREVER": "phakade ",
     "CONTROL_REPEAT": "phinda %1 ",
@@ -10903,7 +10923,7 @@ Blockly.ScratchMsgs.locales["zu"] =
     "CATEGORY_OPERATORS": "Abahambisayo",
     "CATEGORY_VARIABLES": "okuguqukayo",
     "CATEGORY_MYBLOCKS": "Amabhulokisi ami",
-    "DUPLICATE": "Fanisa",
+    "DUPLICATE_BLOCK": "Fanisa",
     "DELETE": "Cima",
     "ADD_COMMENT": "engeza ukuphawula",
     "REMOVE_COMMENT": "Susa ukuphawula",
@@ -10951,7 +10971,7 @@ Blockly.ScratchMsgs.locales["zu"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "umyalezo wokuqala"
 };
 
-Blockly.ScratchMsgs.locales["is"] =
+ScratchMsgs.locales["is"] =
 {
     "CONTROL_FOREVER": "endalaust",
     "CONTROL_REPEAT": "endurtaka %1 sinnum",
@@ -11191,7 +11211,7 @@ Blockly.ScratchMsgs.locales["is"] =
     "CATEGORY_OPERATORS": "Virkjar",
     "CATEGORY_VARIABLES": "Breytur",
     "CATEGORY_MYBLOCKS": "Mínir kubbar",
-    "DUPLICATE": "Tvöfalda",
+    "DUPLICATE_BLOCK": "Tvöfalda",
     "DELETE": "Eyða",
     "ADD_COMMENT": "Bæta við athugasemd",
     "REMOVE_COMMENT": "Fjarlægja athugasemd",
@@ -11239,7 +11259,7 @@ Blockly.ScratchMsgs.locales["is"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "dæmiUmNafnÁSkilaboðum"
 };
 
-Blockly.ScratchMsgs.locales["it"] =
+ScratchMsgs.locales["it"] =
 {
     "CONTROL_FOREVER": "per sempre",
     "CONTROL_REPEAT": "ripeti %1  volte",
@@ -11479,7 +11499,7 @@ Blockly.ScratchMsgs.locales["it"] =
     "CATEGORY_OPERATORS": "Operatori",
     "CATEGORY_VARIABLES": "Variabili",
     "CATEGORY_MYBLOCKS": "I Miei Blocchi",
-    "DUPLICATE": "Duplica",
+    "DUPLICATE_BLOCK": "Duplica",
     "DELETE": "Cancella",
     "ADD_COMMENT": "Aggiungi commento",
     "REMOVE_COMMENT": "Rimuovi commento",
@@ -11527,7 +11547,7 @@ Blockly.ScratchMsgs.locales["it"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "messaggio1"
 };
 
-Blockly.ScratchMsgs.locales["ka"] =
+ScratchMsgs.locales["ka"] =
 {
     "CONTROL_FOREVER": "მუდმივად",
     "CONTROL_REPEAT": "გაიმეორე %1ჯერ",
@@ -11767,7 +11787,7 @@ Blockly.ScratchMsgs.locales["ka"] =
     "CATEGORY_OPERATORS": "ოპერატორები",
     "CATEGORY_VARIABLES": "ცვლადები",
     "CATEGORY_MYBLOCKS": "ჩემი ბლოკები",
-    "DUPLICATE": "დუბლირება",
+    "DUPLICATE_BLOCK": "დუბლირება",
     "DELETE": "წაშლა",
     "ADD_COMMENT": "დაამატე კომენტარი",
     "REMOVE_COMMENT": "წაშალე კომენტარი",
@@ -11815,7 +11835,7 @@ Blockly.ScratchMsgs.locales["ka"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "შეტყობინება1"
 };
 
-Blockly.ScratchMsgs.locales["kk"] =
+ScratchMsgs.locales["kk"] =
 {
     "CONTROL_FOREVER": "әрқашан",
     "CONTROL_REPEAT": "%1 рет қайталау",
@@ -12055,7 +12075,7 @@ Blockly.ScratchMsgs.locales["kk"] =
     "CATEGORY_OPERATORS": "Операторлар",
     "CATEGORY_VARIABLES": "айнымалылар",
     "CATEGORY_MYBLOCKS": "Менің блоктарым",
-    "DUPLICATE": "Көшірмесін жасау",
+    "DUPLICATE_BLOCK": "Көшірмесін жасау",
     "DELETE": "Жою",
     "ADD_COMMENT": "Комментарий жазу",
     "REMOVE_COMMENT": "Комментарийді өшіру",
@@ -12103,7 +12123,7 @@ Blockly.ScratchMsgs.locales["kk"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "хабарлама1"
 };
 
-Blockly.ScratchMsgs.locales["qu"] =
+ScratchMsgs.locales["qu"] =
 {
     "CONTROL_FOREVER": "wiñaypaq",
     "CONTROL_REPEAT": "musuqmanta %1",
@@ -12343,7 +12363,7 @@ Blockly.ScratchMsgs.locales["qu"] =
     "CATEGORY_OPERATORS": "Llamkaq",
     "CATEGORY_VARIABLES": "hukniraq",
     "CATEGORY_MYBLOCKS": "champaykuna",
-    "DUPLICATE": "iskachay",
+    "DUPLICATE_BLOCK": "iskachay",
     "DELETE": "Pichay",
     "ADD_COMMENT": "yapay parlarisqaykita",
     "REMOVE_COMMENT": "parlasqaykita kitay",
@@ -12391,7 +12411,7 @@ Blockly.ScratchMsgs.locales["qu"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "qillqa1"
 };
 
-Blockly.ScratchMsgs.locales["sw"] =
+ScratchMsgs.locales["sw"] =
 {
     "CONTROL_FOREVER": "milele",
     "CONTROL_REPEAT": "rudia %1",
@@ -12631,7 +12651,7 @@ Blockly.ScratchMsgs.locales["sw"] =
     "CATEGORY_OPERATORS": "Opereta",
     "CATEGORY_VARIABLES": "Vibadilika",
     "CATEGORY_MYBLOCKS": "Bloku Zangu",
-    "DUPLICATE": "Toa Nakala Nyingine",
+    "DUPLICATE_BLOCK": "Toa Nakala Nyingine",
     "DELETE": "Futa",
     "ADD_COMMENT": "Ongeza Maoni",
     "REMOVE_COMMENT": "Futa Maoni",
@@ -12679,7 +12699,7 @@ Blockly.ScratchMsgs.locales["sw"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "ujumbe1"
 };
 
-Blockly.ScratchMsgs.locales["ht"] =
+ScratchMsgs.locales["ht"] =
 {
     "CONTROL_FOREVER": "pou toujou",
     "CONTROL_REPEAT": "repete %1",
@@ -12919,7 +12939,7 @@ Blockly.ScratchMsgs.locales["ht"] =
     "CATEGORY_OPERATORS": "Operatè",
     "CATEGORY_VARIABLES": "Varyab ",
     "CATEGORY_MYBLOCKS": "Blòk mwen yo",
-    "DUPLICATE": "Fè marasa",
+    "DUPLICATE_BLOCK": "Fè marasa",
     "DELETE": "Efase",
     "ADD_COMMENT": "Ajoute remak",
     "REMOVE_COMMENT": "Retire remak",
@@ -12967,7 +12987,7 @@ Blockly.ScratchMsgs.locales["ht"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "mesaj1"
 };
 
-Blockly.ScratchMsgs.locales["ku"] =
+ScratchMsgs.locales["ku"] =
 {
     "CONTROL_FOREVER": "berdewamî",
     "CONTROL_REPEAT": "%1 caran dubare bike",
@@ -13207,7 +13227,7 @@ Blockly.ScratchMsgs.locales["ku"] =
     "CATEGORY_OPERATORS": "Operator",
     "CATEGORY_VARIABLES": "Guherok",
     "CATEGORY_MYBLOCKS": "Blokên Min",
-    "DUPLICATE": "Dubare",
+    "DUPLICATE_BLOCK": "Dubare",
     "DELETE": "Jê bibe",
     "ADD_COMMENT": "Şîrove tevlî bike",
     "REMOVE_COMMENT": "Şîroveyê Rake",
@@ -13255,7 +13275,7 @@ Blockly.ScratchMsgs.locales["ku"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "peyam1"
 };
 
-Blockly.ScratchMsgs.locales["ckb"] =
+ScratchMsgs.locales["ckb"] =
 {
     "CONTROL_FOREVER": "بۆهەتایە",
     "CONTROL_REPEAT": "دوبارەکردنەوە %1",
@@ -13495,7 +13515,7 @@ Blockly.ScratchMsgs.locales["ckb"] =
     "CATEGORY_OPERATORS": "كرده‌هێماکان",
     "CATEGORY_VARIABLES": "گۆڕاوەکان",
     "CATEGORY_MYBLOCKS": "بلۆکەکانم",
-    "DUPLICATE": "هاوشێوەکردنەوە",
+    "DUPLICATE_BLOCK": "هاوشێوەکردنەوە",
     "DELETE": "سڕینەوە",
     "ADD_COMMENT": "زیادکردنی لێدوان",
     "REMOVE_COMMENT": "لابردنی لێدوان",
@@ -13543,7 +13563,7 @@ Blockly.ScratchMsgs.locales["ckb"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "نامەی1"
 };
 
-Blockly.ScratchMsgs.locales["lv"] =
+ScratchMsgs.locales["lv"] =
 {
     "CONTROL_FOREVER": "nepārtraukti",
     "CONTROL_REPEAT": "atkārtot %1",
@@ -13783,7 +13803,7 @@ Blockly.ScratchMsgs.locales["lv"] =
     "CATEGORY_OPERATORS": "Operatori",
     "CATEGORY_VARIABLES": "Mainīgie",
     "CATEGORY_MYBLOCKS": "Mani bloki",
-    "DUPLICATE": "Dublēt",
+    "DUPLICATE_BLOCK": "Dublēt",
     "DELETE": "Dzēst",
     "ADD_COMMENT": "Pievienot komentāru",
     "REMOVE_COMMENT": "Noņemt komentāru",
@@ -13831,7 +13851,7 @@ Blockly.ScratchMsgs.locales["lv"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "ziņa1"
 };
 
-Blockly.ScratchMsgs.locales["lt"] =
+ScratchMsgs.locales["lt"] =
 {
     "CONTROL_FOREVER": "kartok be galo",
     "CONTROL_REPEAT": "kartok %1",
@@ -14071,7 +14091,7 @@ Blockly.ScratchMsgs.locales["lt"] =
     "CATEGORY_OPERATORS": "Matematika",
     "CATEGORY_VARIABLES": "Kintamieji",
     "CATEGORY_MYBLOCKS": "Mano Komandos",
-    "DUPLICATE": "Kurti kopiją",
+    "DUPLICATE_BLOCK": "Kurti kopiją",
     "DELETE": "Ištrinti",
     "ADD_COMMENT": "Pridėti komentarą",
     "REMOVE_COMMENT": "Pašalinti komentarą",
@@ -14119,7 +14139,7 @@ Blockly.ScratchMsgs.locales["lt"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "žinutė1"
 };
 
-Blockly.ScratchMsgs.locales["hu"] =
+ScratchMsgs.locales["hu"] =
 {
     "CONTROL_FOREVER": "mindig",
     "CONTROL_REPEAT": "ismételd %1",
@@ -14359,7 +14379,7 @@ Blockly.ScratchMsgs.locales["hu"] =
     "CATEGORY_OPERATORS": "Műveletek",
     "CATEGORY_VARIABLES": "Változók",
     "CATEGORY_MYBLOCKS": "Blokkjaim",
-    "DUPLICATE": "Duplikálás",
+    "DUPLICATE_BLOCK": "Duplikálás",
     "DELETE": "Törlés",
     "ADD_COMMENT": "Megjegyzés",
     "REMOVE_COMMENT": "Megjegyzés eltávolítása",
@@ -14407,7 +14427,7 @@ Blockly.ScratchMsgs.locales["hu"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "üzenet1"
 };
 
-Blockly.ScratchMsgs.locales["mi"] =
+ScratchMsgs.locales["mi"] =
 {
     "CONTROL_FOREVER": "mō ake, ake mahia",
     "CONTROL_REPEAT": "tōaitia %1",
@@ -14647,7 +14667,7 @@ Blockly.ScratchMsgs.locales["mi"] =
     "CATEGORY_OPERATORS": "Tohutūmahi",
     "CATEGORY_VARIABLES": "Ngā Taurangi",
     "CATEGORY_MYBLOCKS": "Aku Paraka",
-    "DUPLICATE": "Tāruatia",
+    "DUPLICATE_BLOCK": "Tāruatia",
     "DELETE": "Mukua",
     "ADD_COMMENT": "Tāpiri Tākupu",
     "REMOVE_COMMENT": "Mukua te Tākupu",
@@ -14695,7 +14715,7 @@ Blockly.ScratchMsgs.locales["mi"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "karere1"
 };
 
-Blockly.ScratchMsgs.locales["mn"] =
+ScratchMsgs.locales["mn"] =
 {
     "CONTROL_FOREVER": "Үргэлж",
     "CONTROL_REPEAT": "%1 удаа давтах",
@@ -14935,7 +14955,7 @@ Blockly.ScratchMsgs.locales["mn"] =
     "CATEGORY_OPERATORS": "Тоолохуй",
     "CATEGORY_VARIABLES": "Хувьсагч",
     "CATEGORY_MYBLOCKS": "Миний блокууд",
-    "DUPLICATE": "Хувилах",
+    "DUPLICATE_BLOCK": "Хувилах",
     "DELETE": "Устгах",
     "ADD_COMMENT": "Тайлбар нэмэх",
     "REMOVE_COMMENT": "Тайлбар устгах",
@@ -14983,7 +15003,7 @@ Blockly.ScratchMsgs.locales["mn"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "мэссэж1"
 };
 
-Blockly.ScratchMsgs.locales["nl"] =
+ScratchMsgs.locales["nl"] =
 {
     "CONTROL_FOREVER": "herhaal",
     "CONTROL_REPEAT": "herhaal %1",
@@ -15223,7 +15243,7 @@ Blockly.ScratchMsgs.locales["nl"] =
     "CATEGORY_OPERATORS": "Functies",
     "CATEGORY_VARIABLES": "Variabelen",
     "CATEGORY_MYBLOCKS": "Mijn blokken",
-    "DUPLICATE": "Kopie maken",
+    "DUPLICATE_BLOCK": "Kopie maken",
     "DELETE": "Verwijderen",
     "ADD_COMMENT": "Commentaar toevoegen",
     "REMOVE_COMMENT": "Commentaar verwijderen",
@@ -15271,7 +15291,7 @@ Blockly.ScratchMsgs.locales["nl"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "bericht1"
 };
 
-Blockly.ScratchMsgs.locales["ja"] =
+ScratchMsgs.locales["ja"] =
 {
     "CONTROL_FOREVER": "ずっと",
     "CONTROL_REPEAT": "%1 回繰り返す",
@@ -15511,7 +15531,7 @@ Blockly.ScratchMsgs.locales["ja"] =
     "CATEGORY_OPERATORS": "演算",
     "CATEGORY_VARIABLES": "変数",
     "CATEGORY_MYBLOCKS": "ブロック定義",
-    "DUPLICATE": "複製",
+    "DUPLICATE_BLOCK": "複製",
     "DELETE": "削除",
     "ADD_COMMENT": "コメントを追加",
     "REMOVE_COMMENT": "コメントを削除",
@@ -15559,7 +15579,7 @@ Blockly.ScratchMsgs.locales["ja"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "メッセージ1"
 };
 
-Blockly.ScratchMsgs.locales["ja-Hira"] =
+ScratchMsgs.locales["ja-Hira"] =
 {
     "CONTROL_FOREVER": "ずっと",
     "CONTROL_REPEAT": "%1 かいくりかえす",
@@ -15799,7 +15819,7 @@ Blockly.ScratchMsgs.locales["ja-Hira"] =
     "CATEGORY_OPERATORS": "えんざん",
     "CATEGORY_VARIABLES": "へんすう",
     "CATEGORY_MYBLOCKS": "ブロックていぎ",
-    "DUPLICATE": "ふくせい",
+    "DUPLICATE_BLOCK": "ふくせい",
     "DELETE": "さくじょ",
     "ADD_COMMENT": "コメントをついか",
     "REMOVE_COMMENT": "コメントをさくじょ",
@@ -15847,7 +15867,7 @@ Blockly.ScratchMsgs.locales["ja-Hira"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "メッセージ1"
 };
 
-Blockly.ScratchMsgs.locales["nb"] =
+ScratchMsgs.locales["nb"] =
 {
     "CONTROL_FOREVER": "gjenta for alltid",
     "CONTROL_REPEAT": "gjenta %1 ganger",
@@ -16087,7 +16107,7 @@ Blockly.ScratchMsgs.locales["nb"] =
     "CATEGORY_OPERATORS": "Operatorer",
     "CATEGORY_VARIABLES": "Variabler",
     "CATEGORY_MYBLOCKS": "Mine klosser",
-    "DUPLICATE": "Lag en kopi",
+    "DUPLICATE_BLOCK": "Lag en kopi",
     "DELETE": "Slett",
     "ADD_COMMENT": "Skriv en kommentar",
     "REMOVE_COMMENT": "Fjern kommentar",
@@ -16135,7 +16155,7 @@ Blockly.ScratchMsgs.locales["nb"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "melding1"
 };
 
-Blockly.ScratchMsgs.locales["nn"] =
+ScratchMsgs.locales["nn"] =
 {
     "CONTROL_FOREVER": "for alltid",
     "CONTROL_REPEAT": "gjenta %1 gongar",
@@ -16375,7 +16395,7 @@ Blockly.ScratchMsgs.locales["nn"] =
     "CATEGORY_OPERATORS": "Operatorar",
     "CATEGORY_VARIABLES": "Variablar",
     "CATEGORY_MYBLOCKS": "Mine klossar",
-    "DUPLICATE": "Lag ein kopi",
+    "DUPLICATE_BLOCK": "Lag ein kopi",
     "DELETE": "Slett",
     "ADD_COMMENT": "Skriv kommentar",
     "REMOVE_COMMENT": "Fjern kommentar",
@@ -16423,7 +16443,7 @@ Blockly.ScratchMsgs.locales["nn"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "melding1"
 };
 
-Blockly.ScratchMsgs.locales["oc"] =
+ScratchMsgs.locales["oc"] =
 {
     "CONTROL_FOREVER": "per totjorn",
     "CONTROL_REPEAT": "repetir %1",
@@ -16663,7 +16683,7 @@ Blockly.ScratchMsgs.locales["oc"] =
     "CATEGORY_OPERATORS": "Operators",
     "CATEGORY_VARIABLES": "Variablas",
     "CATEGORY_MYBLOCKS": "Mos Blòcs",
-    "DUPLICATE": "Desdoblar",
+    "DUPLICATE_BLOCK": "Desdoblar",
     "DELETE": "Suprimir",
     "ADD_COMMENT": "Apondre Comentari",
     "REMOVE_COMMENT": "Suprimir Comentari",
@@ -16711,7 +16731,7 @@ Blockly.ScratchMsgs.locales["oc"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "messatge1"
 };
 
-Blockly.ScratchMsgs.locales["or"] =
+ScratchMsgs.locales["or"] =
 {
     "CONTROL_FOREVER": "ସବୁ ଦିନ ପାଇଁ ",
     "CONTROL_REPEAT": "%1 ପୁନରାବୃତ୍ତି କର",
@@ -16951,7 +16971,7 @@ Blockly.ScratchMsgs.locales["or"] =
     "CATEGORY_OPERATORS": "ଅପରେଟର ଗୁଡିକ",
     "CATEGORY_VARIABLES": "ଭେରିଏବଲ୍ ଗୁଡିକ",
     "CATEGORY_MYBLOCKS": "ମୋ ବ୍ଲକ ଗୁଡି଼କ",
-    "DUPLICATE": "ପ୍ରତିରୂପ",
+    "DUPLICATE_BLOCK": "ପ୍ରତିରୂପ",
     "DELETE": "ଲିଭାଅ",
     "ADD_COMMENT": "ଟିପ୍ପଣୀ ଦିଅ",
     "REMOVE_COMMENT": "ଟିପ୍ପଣୀ ଲିଭାଅ",
@@ -16999,7 +17019,7 @@ Blockly.ScratchMsgs.locales["or"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "ସନ୍ଦେଶ 1 "
 };
 
-Blockly.ScratchMsgs.locales["uz"] =
+ScratchMsgs.locales["uz"] =
 {
     "CONTROL_FOREVER": "har doim",
     "CONTROL_REPEAT": "%1 marta takrorlash",
@@ -17239,7 +17259,7 @@ Blockly.ScratchMsgs.locales["uz"] =
     "CATEGORY_OPERATORS": "Amallar",
     "CATEGORY_VARIABLES": "O'zgaruvchi",
     "CATEGORY_MYBLOCKS": "Mening bloklarim",
-    "DUPLICATE": "Nusxalash",
+    "DUPLICATE_BLOCK": "Nusxalash",
     "DELETE": "O'chirish",
     "ADD_COMMENT": "Izoh qo'shish",
     "REMOVE_COMMENT": "Izohni o'chirish",
@@ -17287,7 +17307,7 @@ Blockly.ScratchMsgs.locales["uz"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "xabar1"
 };
 
-Blockly.ScratchMsgs.locales["th"] =
+ScratchMsgs.locales["th"] =
 {
     "CONTROL_FOREVER": "วนซ้ำตลอด",
     "CONTROL_REPEAT": "ทำซ้ำ %1",
@@ -17527,7 +17547,7 @@ Blockly.ScratchMsgs.locales["th"] =
     "CATEGORY_OPERATORS": "ตัวดำเนินการ",
     "CATEGORY_VARIABLES": "ตัวแปร",
     "CATEGORY_MYBLOCKS": "บล็อกของฉัน",
-    "DUPLICATE": "ทำซ้ำ",
+    "DUPLICATE_BLOCK": "ทำซ้ำ",
     "DELETE": "ลบ",
     "ADD_COMMENT": "เพิ่มคำอธิบาย",
     "REMOVE_COMMENT": "ลบคำอธิบาย",
@@ -17575,7 +17595,7 @@ Blockly.ScratchMsgs.locales["th"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "ข้อความ1"
 };
 
-Blockly.ScratchMsgs.locales["km"] =
+ScratchMsgs.locales["km"] =
 {
     "CONTROL_FOREVER": "រហូត",
     "CONTROL_REPEAT": "ធ្វើដដែលៗ %1 ដង",
@@ -17815,7 +17835,7 @@ Blockly.ScratchMsgs.locales["km"] =
     "CATEGORY_OPERATORS": "ប្រមាណវិធី",
     "CATEGORY_VARIABLES": "អថេរ",
     "CATEGORY_MYBLOCKS": "ប្លុកខ្ញុំ",
-    "DUPLICATE": "ចម្លង",
+    "DUPLICATE_BLOCK": "ចម្លង",
     "DELETE": "លុប",
     "ADD_COMMENT": "ដាក់មតិ",
     "REMOVE_COMMENT": "លុបមតិ",
@@ -17863,7 +17883,7 @@ Blockly.ScratchMsgs.locales["km"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "សារ 1"
 };
 
-Blockly.ScratchMsgs.locales["pl"] =
+ScratchMsgs.locales["pl"] =
 {
     "CONTROL_FOREVER": "zawsze",
     "CONTROL_REPEAT": "powtórz %1 razy",
@@ -18103,7 +18123,7 @@ Blockly.ScratchMsgs.locales["pl"] =
     "CATEGORY_OPERATORS": "Wyrażenia",
     "CATEGORY_VARIABLES": "Zmienne",
     "CATEGORY_MYBLOCKS": "Moje bloki",
-    "DUPLICATE": "Duplikuj",
+    "DUPLICATE_BLOCK": "Duplikuj",
     "DELETE": "Usuń",
     "ADD_COMMENT": "Dodaj komentarz",
     "REMOVE_COMMENT": "Usuń komentarz",
@@ -18151,7 +18171,7 @@ Blockly.ScratchMsgs.locales["pl"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "wiadomość1"
 };
 
-Blockly.ScratchMsgs.locales["pt"] =
+ScratchMsgs.locales["pt"] =
 {
     "CONTROL_FOREVER": "repete para sempre",
     "CONTROL_REPEAT": "repete %1 vezes",
@@ -18391,7 +18411,7 @@ Blockly.ScratchMsgs.locales["pt"] =
     "CATEGORY_OPERATORS": "Operadores",
     "CATEGORY_VARIABLES": "Variáveis",
     "CATEGORY_MYBLOCKS": "Os Meus Blocos",
-    "DUPLICATE": "Duplicar",
+    "DUPLICATE_BLOCK": "Duplicar",
     "DELETE": "Remover",
     "ADD_COMMENT": "Adicionar Comentário",
     "REMOVE_COMMENT": "Remover Comentário",
@@ -18439,7 +18459,7 @@ Blockly.ScratchMsgs.locales["pt"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "Mensagem 1"
 };
 
-Blockly.ScratchMsgs.locales["pt-br"] =
+ScratchMsgs.locales["pt-br"] =
 {
     "CONTROL_FOREVER": "sempre",
     "CONTROL_REPEAT": "repita %1 vezes",
@@ -18679,7 +18699,7 @@ Blockly.ScratchMsgs.locales["pt-br"] =
     "CATEGORY_OPERATORS": "Operadores",
     "CATEGORY_VARIABLES": "Variáveis",
     "CATEGORY_MYBLOCKS": "Meus Blocos",
-    "DUPLICATE": "Duplicar",
+    "DUPLICATE_BLOCK": "Duplicar",
     "DELETE": "Apagar",
     "ADD_COMMENT": "Comentar",
     "REMOVE_COMMENT": "Remover Comentário",
@@ -18727,7 +18747,7 @@ Blockly.ScratchMsgs.locales["pt-br"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "mensagem 1"
 };
 
-Blockly.ScratchMsgs.locales["rap"] =
+ScratchMsgs.locales["rap"] =
 {
     "CONTROL_FOREVER": "mo āŋa paurō te hora",
     "CONTROL_REPEAT": "haka ʾou %1",
@@ -18967,7 +18987,7 @@ Blockly.ScratchMsgs.locales["rap"] =
     "CATEGORY_OPERATORS": "operadores",
     "CATEGORY_VARIABLES": "variables",
     "CATEGORY_MYBLOCKS": "taʾaku avhata poto roa mekera",
-    "DUPLICATE": "haka rahi",
+    "DUPLICATE_BLOCK": "haka rahi",
     "DELETE": "haka kore",
     "ADD_COMMENT": "hahaʾo te vanāŋa",
     "REMOVE_COMMENT": "haka kore te vanaŋa",
@@ -19015,7 +19035,7 @@ Blockly.ScratchMsgs.locales["rap"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "ki hāŋa1"
 };
 
-Blockly.ScratchMsgs.locales["ro"] =
+ScratchMsgs.locales["ro"] =
 {
     "CONTROL_FOREVER": "la infinit",
     "CONTROL_REPEAT": "repetă %1",
@@ -19255,7 +19275,7 @@ Blockly.ScratchMsgs.locales["ro"] =
     "CATEGORY_OPERATORS": "Operatori",
     "CATEGORY_VARIABLES": "Variabile",
     "CATEGORY_MYBLOCKS": "Blocurile mele",
-    "DUPLICATE": "Duplică",
+    "DUPLICATE_BLOCK": "Duplică",
     "DELETE": "Șterge",
     "ADD_COMMENT": "Adaugă comentariu",
     "REMOVE_COMMENT": "Șterge comentariul",
@@ -19303,7 +19323,7 @@ Blockly.ScratchMsgs.locales["ro"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "mesaj1"
 };
 
-Blockly.ScratchMsgs.locales["ru"] =
+ScratchMsgs.locales["ru"] =
 {
     "CONTROL_FOREVER": "повторять всегда",
     "CONTROL_REPEAT": "повторить %1 раз",
@@ -19543,7 +19563,7 @@ Blockly.ScratchMsgs.locales["ru"] =
     "CATEGORY_OPERATORS": "Операторы",
     "CATEGORY_VARIABLES": "Переменные",
     "CATEGORY_MYBLOCKS": "Другие блоки",
-    "DUPLICATE": "Дублировать",
+    "DUPLICATE_BLOCK": "Дублировать",
     "DELETE": "Удалить",
     "ADD_COMMENT": "Добавить комментарий",
     "REMOVE_COMMENT": "Удалить комментарий",
@@ -19591,7 +19611,7 @@ Blockly.ScratchMsgs.locales["ru"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "сообщение1"
 };
 
-Blockly.ScratchMsgs.locales["nso"] =
+ScratchMsgs.locales["nso"] =
 {
     "CONTROL_FOREVER": "ka go sa felego",
     "CONTROL_REPEAT": "bušeletša %1",
@@ -19831,7 +19851,7 @@ Blockly.ScratchMsgs.locales["nso"] =
     "CATEGORY_OPERATORS": "Bašomiši",
     "CATEGORY_VARIABLES": "Diphetošo",
     "CATEGORY_MYBLOCKS": "Dipoloko tša Ka",
-    "DUPLICATE": "Pedifatša",
+    "DUPLICATE_BLOCK": "Pedifatša",
     "DELETE": "Phumula",
     "ADD_COMMENT": "Tlatša Tshwayotshwayo",
     "REMOVE_COMMENT": "Tloša Tshwayotshwayo",
@@ -19879,7 +19899,7 @@ Blockly.ScratchMsgs.locales["nso"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "molaetša1"
 };
 
-Blockly.ScratchMsgs.locales["tn"] =
+ScratchMsgs.locales["tn"] =
 {
     "CONTROL_FOREVER": "gosafeleng",
     "CONTROL_REPEAT": "boeletsa %1",
@@ -20119,7 +20139,7 @@ Blockly.ScratchMsgs.locales["tn"] =
     "CATEGORY_OPERATORS": "Badiri",
     "CATEGORY_VARIABLES": "Dipharologano",
     "CATEGORY_MYBLOCKS": "Diboloko tsa me",
-    "DUPLICATE": "Gatisa",
+    "DUPLICATE_BLOCK": "Gatisa",
     "DELETE": "Phimola",
     "ADD_COMMENT": "Tsenya kakgelo",
     "REMOVE_COMMENT": "Tlosa kakgelo",
@@ -20167,7 +20187,7 @@ Blockly.ScratchMsgs.locales["tn"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "molaetsa 1"
 };
 
-Blockly.ScratchMsgs.locales["sk"] =
+ScratchMsgs.locales["sk"] =
 {
     "CONTROL_FOREVER": "opakuj stále",
     "CONTROL_REPEAT": "opakuj %1",
@@ -20407,7 +20427,7 @@ Blockly.ScratchMsgs.locales["sk"] =
     "CATEGORY_OPERATORS": "Výpočty",
     "CATEGORY_VARIABLES": "Premenné",
     "CATEGORY_MYBLOCKS": "Nové bloky",
-    "DUPLICATE": "duplikuj",
+    "DUPLICATE_BLOCK": "duplikuj",
     "DELETE": "zruš",
     "ADD_COMMENT": "pridaj komentár",
     "REMOVE_COMMENT": "zruš komentár",
@@ -20455,7 +20475,7 @@ Blockly.ScratchMsgs.locales["sk"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "správa1"
 };
 
-Blockly.ScratchMsgs.locales["sl"] =
+ScratchMsgs.locales["sl"] =
 {
     "CONTROL_FOREVER": "ponavljaj",
     "CONTROL_REPEAT": "ponovi %1 krat",
@@ -20695,7 +20715,7 @@ Blockly.ScratchMsgs.locales["sl"] =
     "CATEGORY_OPERATORS": "Operatorji",
     "CATEGORY_VARIABLES": "Spremenljivke",
     "CATEGORY_MYBLOCKS": "Moji bloki",
-    "DUPLICATE": "Podvoji",
+    "DUPLICATE_BLOCK": "Podvoji",
     "DELETE": "Izbriši",
     "ADD_COMMENT": "Dodaj komentar",
     "REMOVE_COMMENT": "Odstrani komentar",
@@ -20743,7 +20763,7 @@ Blockly.ScratchMsgs.locales["sl"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "sporočilo1"
 };
 
-Blockly.ScratchMsgs.locales["sr"] =
+ScratchMsgs.locales["sr"] =
 {
     "CONTROL_FOREVER": "понављај заувек",
     "CONTROL_REPEAT": "понови %1",
@@ -20983,7 +21003,7 @@ Blockly.ScratchMsgs.locales["sr"] =
     "CATEGORY_OPERATORS": "Оператори",
     "CATEGORY_VARIABLES": "Променљиве",
     "CATEGORY_MYBLOCKS": "Моји блокови",
-    "DUPLICATE": "Умножи",
+    "DUPLICATE_BLOCK": "Умножи",
     "DELETE": "Обриши",
     "ADD_COMMENT": "Додај коментар",
     "REMOVE_COMMENT": "Уклони коментар",
@@ -21031,7 +21051,7 @@ Blockly.ScratchMsgs.locales["sr"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "порука1"
 };
 
-Blockly.ScratchMsgs.locales["fi"] =
+ScratchMsgs.locales["fi"] =
 {
     "CONTROL_FOREVER": "ikuisesti",
     "CONTROL_REPEAT": "toista %1 kertaa",
@@ -21271,7 +21291,7 @@ Blockly.ScratchMsgs.locales["fi"] =
     "CATEGORY_OPERATORS": "Toiminnot",
     "CATEGORY_VARIABLES": "Muuttujat",
     "CATEGORY_MYBLOCKS": "Lohkoni",
-    "DUPLICATE": "Kopioi",
+    "DUPLICATE_BLOCK": "Kopioi",
     "DELETE": "Poista",
     "ADD_COMMENT": "Lisää kommentti",
     "REMOVE_COMMENT": "Poista kommentti",
@@ -21319,7 +21339,7 @@ Blockly.ScratchMsgs.locales["fi"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "viesti1"
 };
 
-Blockly.ScratchMsgs.locales["sv"] =
+ScratchMsgs.locales["sv"] =
 {
     "CONTROL_FOREVER": "för alltid",
     "CONTROL_REPEAT": "repetera %1",
@@ -21559,7 +21579,7 @@ Blockly.ScratchMsgs.locales["sv"] =
     "CATEGORY_OPERATORS": "Operatorer",
     "CATEGORY_VARIABLES": "Variabler",
     "CATEGORY_MYBLOCKS": "Mina block",
-    "DUPLICATE": "Kopiera",
+    "DUPLICATE_BLOCK": "Kopiera",
     "DELETE": "Radera",
     "ADD_COMMENT": "Lägg till kommentar",
     "REMOVE_COMMENT": "Ta bort kommentar",
@@ -21607,7 +21627,7 @@ Blockly.ScratchMsgs.locales["sv"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "meddelande1"
 };
 
-Blockly.ScratchMsgs.locales["vi"] =
+ScratchMsgs.locales["vi"] =
 {
     "CONTROL_FOREVER": "liên tục",
     "CONTROL_REPEAT": "lặp lại %1",
@@ -21847,7 +21867,7 @@ Blockly.ScratchMsgs.locales["vi"] =
     "CATEGORY_OPERATORS": "Các phép toán",
     "CATEGORY_VARIABLES": "Các biến số",
     "CATEGORY_MYBLOCKS": "Khối của tôi",
-    "DUPLICATE": "Nhân bản",
+    "DUPLICATE_BLOCK": "Nhân bản",
     "DELETE": "Xóa",
     "ADD_COMMENT": "Thêm chú thích",
     "REMOVE_COMMENT": "Xóa chú thích",
@@ -21895,7 +21915,7 @@ Blockly.ScratchMsgs.locales["vi"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "tin nhắn 1"
 };
 
-Blockly.ScratchMsgs.locales["tr"] =
+ScratchMsgs.locales["tr"] =
 {
     "CONTROL_FOREVER": "sürekli tekrarla",
     "CONTROL_REPEAT": "%1 defa tekrarla",
@@ -22135,7 +22155,7 @@ Blockly.ScratchMsgs.locales["tr"] =
     "CATEGORY_OPERATORS": "Operatörler",
     "CATEGORY_VARIABLES": "Değişkenler",
     "CATEGORY_MYBLOCKS": "Bloklarım",
-    "DUPLICATE": "Çoğalt",
+    "DUPLICATE_BLOCK": "Çoğalt",
     "DELETE": "Sil",
     "ADD_COMMENT": "Yorum Ekle",
     "REMOVE_COMMENT": "Yorumu Sil",
@@ -22183,7 +22203,7 @@ Blockly.ScratchMsgs.locales["tr"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "haber1"
 };
 
-Blockly.ScratchMsgs.locales["uk"] =
+ScratchMsgs.locales["uk"] =
 {
     "CONTROL_FOREVER": "завжди",
     "CONTROL_REPEAT": "повторити %1",
@@ -22423,7 +22443,7 @@ Blockly.ScratchMsgs.locales["uk"] =
     "CATEGORY_OPERATORS": "Оператори",
     "CATEGORY_VARIABLES": "Змінні",
     "CATEGORY_MYBLOCKS": "Мої блоки",
-    "DUPLICATE": "Дублювати",
+    "DUPLICATE_BLOCK": "Дублювати",
     "DELETE": "Вилучити",
     "ADD_COMMENT": "Додати коментар",
     "REMOVE_COMMENT": "Вилучити коментар",
@@ -22471,7 +22491,7 @@ Blockly.ScratchMsgs.locales["uk"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "повідомлення1"
 };
 
-Blockly.ScratchMsgs.locales["zh-cn"] =
+ScratchMsgs.locales["zh-cn"] =
 {
     "CONTROL_FOREVER": "重复执行",
     "CONTROL_REPEAT": "重复执行 %1 次",
@@ -22711,7 +22731,7 @@ Blockly.ScratchMsgs.locales["zh-cn"] =
     "CATEGORY_OPERATORS": "运算",
     "CATEGORY_VARIABLES": "变量",
     "CATEGORY_MYBLOCKS": "自制积木",
-    "DUPLICATE": "复制",
+    "DUPLICATE_BLOCK": "复制",
     "DELETE": "删除",
     "ADD_COMMENT": "添加注释",
     "REMOVE_COMMENT": "删除注释",
@@ -22759,7 +22779,7 @@ Blockly.ScratchMsgs.locales["zh-cn"] =
     "DEFAULT_BROADCAST_MESSAGE_NAME": "消息1"
 };
 
-Blockly.ScratchMsgs.locales["zh-tw"] =
+ScratchMsgs.locales["zh-tw"] =
 {
     "CONTROL_FOREVER": "重複無限次",
     "CONTROL_REPEAT": "重複 %1 次",
@@ -22999,7 +23019,7 @@ Blockly.ScratchMsgs.locales["zh-tw"] =
     "CATEGORY_OPERATORS": "運算",
     "CATEGORY_VARIABLES": "變數",
     "CATEGORY_MYBLOCKS": "函式積木",
-    "DUPLICATE": "複製",
+    "DUPLICATE_BLOCK": "複製",
     "DELETE": "刪除",
     "ADD_COMMENT": "添加註解",
     "REMOVE_COMMENT": "移除註解",
