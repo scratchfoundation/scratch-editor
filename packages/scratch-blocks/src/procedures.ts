@@ -36,7 +36,7 @@ function allProcedureMutations(root: Blockly.WorkspaceSvg): Element[] {
   const blocks = root.getAllBlocks();
   return blocks
     .filter((b) => b.type === Constants.PROCEDURES_PROTOTYPE_BLOCK_TYPE)
-    .map((b) => b.mutationToDom(/* opt_generateShadows */ true));
+    .map((b) => b.mutationToDom!(/* opt_generateShadows */ true) as Element);
 }
 
 /**
@@ -47,8 +47,8 @@ function allProcedureMutations(root: Blockly.WorkspaceSvg): Element[] {
  */
 function sortProcedureMutations(mutations: Element[]): Element[] {
   return mutations.slice().sort(function (a, b) {
-    const procCodeA = a.getAttribute("proccode");
-    const procCodeB = b.getAttribute("proccode");
+    const procCodeA = a.getAttribute("proccode")!;
+    const procCodeB = b.getAttribute("proccode")!;
 
     return scratchBlocksUtils.compareStrings(procCodeA, procCodeB);
   });
@@ -163,10 +163,10 @@ function mutateCallersAndPrototype(
   callers.push(prototypeBlock);
   Blockly.Events.setGroup(true);
   callers.forEach((caller) => {
-    const oldMutationDom = caller.mutationToDom();
+    const oldMutationDom = caller.mutationToDom!();
     const oldMutation = oldMutationDom && Blockly.Xml.domToText(oldMutationDom);
-    caller.domToMutation(mutation);
-    const newMutationDom = caller.mutationToDom();
+    caller.domToMutation!(mutation);
+    const newMutationDom = caller.mutationToDom!();
     const newMutation = newMutationDom && Blockly.Xml.domToText(newMutationDom);
     if (oldMutation !== newMutation) {
       Blockly.Events.fire(
@@ -197,8 +197,8 @@ function getDefineBlock(
   return workspace.getTopBlocks(false).find((block) => {
     if (block.type === Constants.PROCEDURES_DEFINITION_BLOCK_TYPE) {
       const prototypeBlock = block
-        .getInput("custom_block")
-        .connection.targetBlock() as Blockly.BlockSvg;
+        .getInput("custom_block")!
+        .connection!.targetBlock() as Blockly.BlockSvg;
       return (
         isProcedureBlock(prototypeBlock) &&
         prototypeBlock.getProcCode() === procCode
@@ -222,8 +222,8 @@ function getPrototypeBlock(
   const defineBlock = getDefineBlock(procCode, workspace);
   if (defineBlock) {
     return defineBlock
-      .getInput("custom_block")
-      .connection.targetBlock() as Blockly.BlockSvg;
+      .getInput("custom_block")!
+      .connection!.targetBlock() as Blockly.BlockSvg;
   }
   return undefined;
 }
@@ -243,7 +243,7 @@ function newProcedureMutation(): Element {
         warp="false">
       </mutation>
     </xml>`;
-  return Blockly.utils.xml.textToDom(mutationText).firstElementChild;
+  return Blockly.utils.xml.textToDom(mutationText).firstElementChild!;
 }
 
 /**
@@ -251,7 +251,7 @@ function newProcedureMutation(): Element {
  * @param workspace The workspace to create the new procedure on.
  */
 function createProcedureDefCallback(workspace: Blockly.WorkspaceSvg) {
-  ScratchProcedures.externalProcedureDefCallback(
+  ScratchProcedures.externalProcedureDefCallback!(
     newProcedureMutation(),
     createProcedureCallbackFactory(workspace)
   );
@@ -278,7 +278,7 @@ function createProcedureCallbackFactory(
           </statement>
         </block>
       </xml>`;
-    const blockDom = Blockly.utils.xml.textToDom(blockText).firstElementChild;
+    const blockDom = Blockly.utils.xml.textToDom(blockText).firstElementChild!;
     Blockly.Events.setGroup(true);
     const block = Blockly.Xml.domToBlock(
       blockDom,
@@ -338,15 +338,23 @@ function editProcedureCallback(block: Blockly.BlockSvg) {
     // This is a call block, find the prototype corresponding to the procCode.
     // Make sure to search the correct workspace, call block can be in flyout.
     const workspaceToSearch = block.workspace.isFlyout
-      ? block.workspace.targetWorkspace
+      ? block.workspace.targetWorkspace!
       : block.workspace;
-    prototypeBlock = getPrototypeBlock(block.getProcCode(), workspaceToSearch);
+    const foundBlock = getPrototypeBlock(block.getProcCode(), workspaceToSearch);
+    if (!foundBlock) {
+      console.warn(
+        "editProcedureCallback: could not find prototype for",
+        block.getProcCode()
+      );
+      return;
+    }
+    prototypeBlock = foundBlock;
   } else {
     prototypeBlock = block;
   }
   // Block now refers to the procedure prototype block, it is safe to proceed.
-  ScratchProcedures.externalProcedureDefCallback(
-    prototypeBlock.mutationToDom(),
+  ScratchProcedures.externalProcedureDefCallback!(
+    prototypeBlock.mutationToDom!(),
     editProcedureCallbackFactory(prototypeBlock)
   );
 }

@@ -78,7 +78,7 @@ class FieldVariableGetter extends Blockly.FieldLabel {
    */
   doValueUpdate_(newVariableId: string) {
     super.doValueUpdate_(newVariableId);
-    const workspace = this.getSourceBlock().workspace;
+    const workspace = this.getSourceBlock()!.workspace;
     this.variable = Blockly.Variables.getVariable(workspace, newVariableId);
   }
 
@@ -97,13 +97,13 @@ class FieldVariableGetter extends Blockly.FieldLabel {
   }
 
   fromXml(element: Element) {
-    this.setValue(element.getAttribute("id"));
+    this.setValue(element.getAttribute("id")!);
   }
 
   toXml(element: Element): Element {
-    element.setAttribute("id", this.variable.getId());
-    element.setAttribute("variabletype", this.variable.getType());
-    element.textContent = this.variable.getName();
+    element.setAttribute("id", this.variable!.getId());
+    element.setAttribute("variabletype", this.variable!.getType());
+    element.textContent = this.variable!.getName();
     return element;
   }
 }

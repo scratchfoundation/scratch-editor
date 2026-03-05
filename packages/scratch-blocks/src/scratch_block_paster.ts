@@ -36,7 +36,7 @@ class ScratchBlockPaster extends Blockly.clipboard.BlockPaster {
     // fired for blocks with comments, the VM will never receive it, causing its
     // state to get out of sync. Manually fire it here (after suppression has
     // been turned off) if needed.
-    const commentIcon = block.getIcon(Blockly.icons.IconType.COMMENT);
+    const commentIcon = block?.getIcon(Blockly.icons.IconType.COMMENT);
     if (commentIcon) {
       (commentIcon as ScratchCommentIcon).fireCreateEvent();
     }

@@ -369,7 +369,7 @@ export class FieldNote extends Blockly.FieldTextInput {
       "line",
       {
         stroke: (
-          this.sourceBlock_.getParent() as Blockly.BlockSvg
+          this.sourceBlock_!.getParent() as Blockly.BlockSvg
         ).getColourTertiary(),
         x1: 0,
         y1: FieldNote.TOP_MENU_HEIGHT,
@@ -407,7 +407,7 @@ export class FieldNote extends Blockly.FieldTextInput {
       octaveDownButton,
       "mousedown",
       this,
-      function () {
+      () => {
         this.changeOctaveBy_(-1);
       }
     );
@@ -415,14 +415,14 @@ export class FieldNote extends Blockly.FieldTextInput {
       octaveUpButton,
       "mousedown",
       this,
-      function () {
+      () => {
         this.changeOctaveBy_(1);
       }
     );
     const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg;
     Blockly.DropDownDiv.setColour(
-      sourceBlock.getParent().getColour(),
-      sourceBlock.getParent().getColourTertiary()
+      (sourceBlock.getParent() as Blockly.BlockSvg).getColour(),
+      (sourceBlock.getParent() as Blockly.BlockSvg).getColourTertiary()
     );
     Blockly.DropDownDiv.showPositionedByBlock(this, sourceBlock);
 
@@ -441,7 +441,7 @@ export class FieldNote extends Blockly.FieldTextInput {
     x: number,
     whiteKeyGroup: SVGElement,
     blackKeyGroup: SVGElement,
-    keySVGarray: SVGElement[]
+    keySVGarray: SVGElement[] | null
   ) {
     let xIncrement, width, height, fill, stroke, group;
     x += FieldNote.EDGE_PADDING / 2;
@@ -463,7 +463,7 @@ export class FieldNote extends Blockly.FieldTextInput {
         height = FieldNote.WHITE_KEY_HEIGHT;
         fill = FieldNote.WHITE_KEY_COLOR;
         stroke = (
-          this.sourceBlock_.getParent() as Blockly.BlockSvg
+          this.sourceBlock_!.getParent() as Blockly.BlockSvg
         ).getColourTertiary();
         group = whiteKeyGroup;
       }
@@ -594,7 +594,7 @@ export class FieldNote extends Blockly.FieldTextInput {
       "line",
       {
         stroke: (
-          this.sourceBlock_.getParent() as Blockly.BlockSvg
+          this.sourceBlock_!.getParent() as Blockly.BlockSvg
         ).getColourTertiary(),
         x1: x - FieldNote.INSET,
         y1: 0,
@@ -643,13 +643,15 @@ export class FieldNote extends Blockly.FieldTextInput {
    * @param visible If true, set labels to be visible.
    */
   private setCKeyLabelsVisible_(visible: boolean) {
-    if (visible) {
-      this.fadeSvgToOpacity_(this.lowCText_, 1);
-      this.fadeSvgToOpacity_(this.highCText_, 1);
-    } else {
-      this.fadeSvgToOpacity_(this.lowCText_, 0);
-      this.fadeSvgToOpacity_(this.highCText_, 0);
+    if (!this.lowCText_ || !this.highCText_) {
+      console.warn(
+        "FieldNote.setCKeyLabelsVisible_: C-key label DOM is not fully initialized"
+      );
+      return;
     }
+    const opacity = visible ? 1 : 0;
+    this.fadeSvgToOpacity_(this.lowCText_, opacity);
+    this.fadeSvgToOpacity_(this.highCText_, opacity);
   }
 
   /**
@@ -686,8 +688,10 @@ export class FieldNote extends Blockly.FieldTextInput {
    */
   private onMouseUp_() {
     this.mouseIsDown_ = false;
-    Blockly.browserEvents.unbind(this.mouseUpWrapper_);
-    this.mouseUpWrapper_ = null;
+    if (this.mouseUpWrapper_) {
+      Blockly.browserEvents.unbind(this.mouseUpWrapper_);
+      this.mouseUpWrapper_ = null;
+    }
   }
 
   /**
@@ -709,7 +713,7 @@ export class FieldNote extends Blockly.FieldTextInput {
   private selectNoteWithMouseEvent_(e: PointerEvent) {
     const newNoteNum =
       Number((e.target as HTMLElement).getAttribute("data-pitch")) +
-      this.displayedOctave_ * 12;
+      (this.displayedOctave_ ?? 0) * 12;
     this.setEditorValue_(newNoteNum);
     this.playNoteInternal_();
   }
@@ -719,7 +723,7 @@ export class FieldNote extends Blockly.FieldTextInput {
    */
   private playNoteInternal_() {
     if (FieldNote.playNote_) {
-      FieldNote.playNote_(Number(this.getValue()), "Music");
+      FieldNote.playNote_(Number(this.getValue()!), "Music");
     }
   }
 
@@ -740,7 +744,7 @@ export class FieldNote extends Blockly.FieldTextInput {
    * @param octaves The number of octaves to change by.
    */
   private changeOctaveBy_(octaves: number) {
-    this.displayedOctave_ += octaves;
+    this.displayedOctave_ = (this.displayedOctave_ ?? 0) + octaves;
     if (this.displayedOctave_ < 0) {
       this.displayedOctave_ = 0;
       return;
@@ -766,7 +770,7 @@ export class FieldNote extends Blockly.FieldTextInput {
   private stepOctaveAnimation_() {
     const absDiff = Math.abs(this.animationPos_ - this.animationTarget_);
     if (absDiff < 1) {
-      this.pianoSVG_.setAttribute("transform", "translate(0, 0)");
+      this.pianoSVG_?.setAttribute("transform", "translate(0, 0)");
       this.setCKeyLabelsVisible_(true);
       this.playNoteInternal_();
       return;
@@ -774,7 +778,7 @@ export class FieldNote extends Blockly.FieldTextInput {
     this.animationPos_ +=
       (this.animationTarget_ - this.animationPos_) *
       FieldNote.ANIMATION_FRACTION;
-    this.pianoSVG_.setAttribute(
+    this.pianoSVG_?.setAttribute(
       "transform",
       "translate(" + this.animationPos_ + ",0)"
     );
@@ -799,7 +803,7 @@ export class FieldNote extends Blockly.FieldTextInput {
    * @returns The index of the piano key.
    */
   private noteNumToKeyIndex_(noteNum: number): number {
-    return Math.floor(noteNum) - this.displayedOctave_ * 12;
+    return Math.floor(noteNum) - (this.displayedOctave_ ?? 0) * 12;
   }
 
   /**
@@ -833,12 +837,15 @@ export class FieldNote extends Blockly.FieldTextInput {
       this.keySVGs_[index].setAttribute("fill", FieldNote.KEY_SELECTED_COLOR);
       // Update the note name text
       const noteName = FieldNote.KEY_INFO[index].name;
-      this.noteNameText_.textContent =
-        noteName + " (" + Math.floor(noteNum) + ")";
+      if (this.noteNameText_) {
+        this.noteNameText_.textContent =
+          noteName + " (" + Math.floor(noteNum) + ")";
+      }
       // Update the low and high C note names
-      const lowCNum = this.displayedOctave_ * 12;
-      this.lowCText_.textContent = "C(" + lowCNum + ")";
-      this.highCText_.textContent = "C(" + (lowCNum + 12) + ")";
+      const lowCNum = (this.displayedOctave_ ?? 0) * 12;
+      if (this.lowCText_) this.lowCText_.textContent = "C(" + lowCNum + ")";
+      if (this.highCText_)
+        this.highCText_.textContent = "C(" + (lowCNum + 12) + ")";
     }
   }
 

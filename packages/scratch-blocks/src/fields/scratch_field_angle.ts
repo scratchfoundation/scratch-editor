@@ -51,17 +51,17 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
   /**
    * Opaque identifier used to unbind event listener in dispose().
    */
-  private mouseDownWrapper_: Blockly.browserEvents.Data;
+  private mouseDownWrapper_!: Blockly.browserEvents.Data;
 
   /**
    * Opaque identifier used to unbind event listener in dispose().
    */
-  private mouseMoveWrapper: Blockly.browserEvents.Data;
+  private mouseMoveWrapper!: Blockly.browserEvents.Data;
 
   /**
    * Opaque identifier used to unbind event listener in dispose().
    */
-  private mouseUpWrapper: Blockly.browserEvents.Data;
+  private mouseUpWrapper!: Blockly.browserEvents.Data;
 
   /**
    * Round angles to the nearest 15 degrees when using mouse.
@@ -141,7 +141,7 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
    */
   dispose() {
     super.dispose();
-    this.gauge = null;
+    this.gauge = undefined;
     if (this.mouseDownWrapper_) {
       Blockly.browserEvents.unbind(this.mouseDownWrapper_);
     }
@@ -190,10 +190,10 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
         cy: this.HALF,
         r: this.RADIUS,
         fill: (
-          this.getSourceBlock().getParent() as Blockly.BlockSvg
+          this.getSourceBlock()!.getParent() as Blockly.BlockSvg
         ).getColourSecondary(),
         stroke: (
-          this.getSourceBlock().getParent() as Blockly.BlockSvg
+          this.getSourceBlock()!.getParent() as Blockly.BlockSvg
         ).getColourTertiary(),
         class: "blocklyAngleCircle",
       },
@@ -284,9 +284,9 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
     );
 
     Blockly.DropDownDiv.setColour(
-      this.getSourceBlock().getParent().getColour(),
+      (this.getSourceBlock()!.getParent() as Blockly.BlockSvg).getColour(),
       (
-        this.getSourceBlock().getParent() as Blockly.BlockSvg
+        this.getSourceBlock()!.getParent() as Blockly.BlockSvg
       ).getColourTertiary()
     );
     Blockly.DropDownDiv.showPositionedByBlock(
@@ -336,7 +336,7 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
    */
   onMouseMove(e: PointerEvent) {
     e.preventDefault();
-    const bBox = this.gauge.ownerSVGElement.getBoundingClientRect();
+    const bBox = this.gauge!.ownerSVGElement!.getBoundingClientRect();
     const dx = e.clientX - bBox.left - this.HALF;
     const dy = e.clientY - bBox.top - this.HALF;
     let angle = Math.atan(-dy / dx);
@@ -418,12 +418,12 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
       } else {
         imageRotation = -angleDegrees;
       }
-      this.arrow.setAttribute("transform", "rotate(" + imageRotation + ")");
+      this.arrow!.setAttribute("transform", "rotate(" + imageRotation + ")");
     }
-    this.gauge.setAttribute("d", path.join(""));
-    this.line.setAttribute("x2", `${x2}`);
-    this.line.setAttribute("y2", `${y2}`);
-    this.handle.setAttribute("transform", "translate(" + x2 + "," + y2 + ")");
+    this.gauge!.setAttribute("d", path.join(""));
+    this.line!.setAttribute("x2", `${x2}`);
+    this.line!.setAttribute("y2", `${y2}`);
+    this.handle!.setAttribute("transform", "translate(" + x2 + "," + y2 + ")");
   }
 
   /**

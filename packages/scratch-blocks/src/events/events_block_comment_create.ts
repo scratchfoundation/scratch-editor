@@ -12,7 +12,7 @@ import {
 import type { ScratchCommentBubble } from "../scratch_comment_bubble";
 
 class BlockCommentCreate extends BlockCommentBase {
-  json: {
+  json!: {
     x: number;
     y: number;
     width: number;
@@ -22,6 +22,9 @@ class BlockCommentCreate extends BlockCommentBase {
   constructor(opt_blockComment?: ScratchCommentBubble) {
     super(opt_blockComment);
     this.type = "block_comment_create";
+    // opt_blockComment is absent when this class is instantiated by fromJson.
+    // In that case fromJson sets this.json directly, so return early here.
+    if (!opt_blockComment) return;
     const size = opt_blockComment.getSize();
     const location = opt_blockComment.getRelativeToSurfaceXY();
     this.json = {

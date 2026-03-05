@@ -64,11 +64,11 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
     json: Blockly.utils.toolbox.LabelInfo
   ) {
     super(workspace, targetWorkspace, json, true);
-    this.extensionId = json["id"];
+    this.extensionId = json["id"]!;
 
     const heightDelta = 40 - this.height;
     this.height = 40;
-    const text = this.getSvgRoot().querySelector("text");
+    const text = this.getSvgRoot().querySelector("text")!;
     const previousY = Number(text.getAttribute("y"));
 
     text.setAttribute("y", `${previousY + heightDelta / 2}`);
@@ -77,7 +77,7 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
     const marginX = 20;
     const marginY = 5;
     const touchPadding = 16;
-    const flyoutWidth = targetWorkspace.getFlyout().getWidth();
+    const flyoutWidth = targetWorkspace.getFlyout()!.getWidth();
 
     const statusButtonX = workspace.RTL
       ? marginX - flyoutWidth + statusButtonWidth

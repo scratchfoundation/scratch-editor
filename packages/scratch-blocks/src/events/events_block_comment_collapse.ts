@@ -12,12 +12,12 @@ import {
 import type { ScratchCommentBubble } from "../scratch_comment_bubble";
 
 class BlockCommentCollapse extends BlockCommentBase {
-  newCollapsed: boolean;
+  newCollapsed!: boolean;
 
   constructor(opt_blockComment?: ScratchCommentBubble, collapsed?: boolean) {
     super(opt_blockComment);
     this.type = "block_comment_collapse";
-    this.newCollapsed = collapsed;
+    if (collapsed !== undefined) this.newCollapsed = collapsed;
   }
 
   toJson(): BlockCommentCollapseJson {
@@ -45,7 +45,19 @@ class BlockCommentCollapse extends BlockCommentBase {
   run(forward: boolean) {
     const workspace = this.getEventWorkspace_();
     const block = workspace.getBlockById(this.blockId);
+    if (!block) {
+      console.warn(
+        "BlockCommentCollapse.run: block not found",
+        this.blockId,
+        this.workspaceId
+      );
+      return;
+    }
     const comment = block.getIcon(Blockly.icons.IconType.COMMENT);
+    if (!comment) {
+      console.warn("BlockCommentCollapse.run: comment icon not found", block.id);
+      return;
+    }
     comment.setBubbleVisible(forward ? !this.newCollapsed : this.newCollapsed);
   }
 }

@@ -499,9 +499,18 @@ const CUSTOM_CONTEXT_MENU_GET_VARIABLE_MIXIN = {
     if (this.isCollapsed()) {
       return;
     }
-    const currentVarName = (this.getField(fieldName) as ScratchFieldVariable)
-      .getVariable()
-      .getName();
+    const currentVariable = (this.getField(fieldName) as ScratchFieldVariable)
+      .getVariable();
+    if (!currentVariable) {
+      console.warn(
+        "contextMenu_getVariableBlock: no variable found for field",
+        fieldName,
+        "on block",
+        this.type
+      );
+      return;
+    }
+    const currentVarName = currentVariable.getName();
     if (!this.isInFlyout) {
       this.workspace
         .getVariablesOfType(Constants.SCALAR_VARIABLE_TYPE)
@@ -568,9 +577,18 @@ const CUSTOM_CONTEXT_MENU_GET_LIST_MIXIN = {
     if (this.isCollapsed()) {
       return;
     }
-    const currentVarName = (this.getField(fieldName) as ScratchFieldVariable)
-      .getVariable()
-      .getName();
+    const currentVariable = (this.getField(fieldName) as ScratchFieldVariable)
+      .getVariable();
+    if (!currentVariable) {
+      console.warn(
+        "contextMenu_getListBlock: no list variable found for field",
+        fieldName,
+        "on block",
+        this.type
+      );
+      return;
+    }
+    const currentVarName = currentVariable.getName();
     if (!this.isInFlyout) {
       this.workspace
         .getVariablesOfType(Constants.LIST_VARIABLE_TYPE)
@@ -635,6 +653,7 @@ const VARIABLE_OPTION_CALLBACK_FACTORY = function (
     const variableField = block.getField(fieldName);
     if (!variableField) {
       console.log("Tried to get a variable field on the wrong type of block.");
+      return;
     }
     variableField.setValue(id);
   };
@@ -677,6 +696,15 @@ const DELETE_OPTION_CALLBACK_FACTORY = function (
     const variable = (
       block.getField(fieldName) as ScratchFieldVariable
     ).getVariable();
+    if (!variable) {
+      console.warn(
+        "DELETE_OPTION_CALLBACK_FACTORY: no variable to delete for field",
+        fieldName,
+        "on block",
+        block.type
+      );
+      return;
+    }
     Blockly.Variables.deleteVariable(variable.getWorkspace(), variable, block);
   };
 };

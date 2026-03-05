@@ -141,7 +141,7 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
 
     // Show a numeric keypad in the drop-down on touch
     if (showNumPad) {
-      this.htmlInput_.select();
+      this.htmlInput_!.select();
       this.showNumPad_();
     }
   }
@@ -173,7 +173,7 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
     // Set colour and size of drop-down
     const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg;
     Blockly.DropDownDiv.setColour(
-      sourceBlock.getParent().getColour(),
+      (sourceBlock.getParent() as Blockly.BlockSvg).getColour(),
       sourceBlock.getColourTertiary()
     );
     contentDiv.style.width = ScratchFieldNumber.DROPDOWN_WIDTH + "px";
@@ -205,11 +205,12 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
     );
     Blockly.DropDownDiv.show(
       this,
-      this.getSourceBlock().RTL,
+      this.getSourceBlock()!.RTL,
       primaryX,
       primaryY,
       secondaryX,
       secondaryY,
+      false,
       this.onHide_.bind(this)
     );
   }
@@ -222,8 +223,8 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    */
   private addButtons_(contentDiv: Element) {
     const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg;
-    const buttonColour = sourceBlock.getParent().getColour();
-    const buttonBorderColour = sourceBlock.getParent().getColourTertiary();
+    const buttonColour = (sourceBlock.getParent() as Blockly.BlockSvg).getColour();
+    const buttonBorderColour = (sourceBlock.getParent() as Blockly.BlockSvg).getColourTertiary();
 
     // Add numeric keypad buttons
     const buttons = ScratchFieldNumber.NUMPAD_BUTTONS;
@@ -298,10 +299,10 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
     // String of the button (e.g., '7')
     const spliceValue = (e.target as HTMLElement).innerText;
     // Old value of the text field
-    const oldValue = this.htmlInput_.value;
+    const oldValue = this.htmlInput_!.value;
     // Determine the selected portion of the text field
-    const selectionStart = this.htmlInput_.selectionStart;
-    const selectionEnd = this.htmlInput_.selectionEnd;
+    const selectionStart = this.htmlInput_!.selectionStart ?? 0;
+    const selectionEnd = this.htmlInput_!.selectionEnd ?? 0;
 
     // Splice in the new value
     const newValue =
@@ -327,10 +328,10 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    */
   numPadEraseButtonTouch(e: PointerEvent) {
     // Old value of the text field
-    const oldValue = this.htmlInput_.value;
+    const oldValue = this.htmlInput_!.value;
     // Determine what is selected to erase (if anything)
-    let selectionStart = this.htmlInput_.selectionStart;
-    const selectionEnd = this.htmlInput_.selectionEnd;
+    let selectionStart = this.htmlInput_!.selectionStart ?? 0;
+    const selectionEnd = this.htmlInput_!.selectionEnd ?? 0;
 
     // If selection is zero-length, shift start to the left 1 character
     if (selectionStart == selectionEnd) {
@@ -359,7 +360,7 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
   private updateDisplay_(newValue: string, newSelection: number) {
     this.setEditorValue_(newValue);
     // Resize and scroll the text field appropriately
-    const htmlInput = this.htmlInput_;
+    const htmlInput = this.htmlInput_!;
     htmlInput.setSelectionRange(newSelection, newSelection);
     htmlInput.scrollLeft = htmlInput.scrollWidth;
   }

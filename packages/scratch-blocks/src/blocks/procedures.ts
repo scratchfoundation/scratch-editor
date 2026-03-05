@@ -33,7 +33,7 @@ type ConnectionMap = {
   [key: string]: {
     shadow: Element;
     block: Blockly.BlockSvg;
-  };
+  } | null;
 };
 
 /**
@@ -68,6 +68,14 @@ class DuplicateOnDragDraggable implements Blockly.IDraggable {
    */
   startDrag(e: PointerEvent) {
     const data = this.block.toCopyData();
+    if (!data) {
+      console.warn(
+        "DuplicateOnDragDraggable.startDrag: failed to serialize block for copy",
+        this.block.type,
+        this.block.id
+      );
+      return;
+    }
     this.copy = Blockly.clipboard.paste(
       data,
       this.block.workspace
@@ -76,9 +84,19 @@ class DuplicateOnDragDraggable implements Blockly.IDraggable {
   }
 
   drag(newLoc: Blockly.utils.Coordinate, e?: PointerEvent) {
-    (
-      this.block.workspace.getGesture(e).getCurrentDragger() as ScratchDragger
-    ).setDraggable(this.copy);
+    const gesture = this.block.workspace.getGesture(e);
+    if (!gesture || !this.copy) {
+      console.warn(
+        "DuplicateOnDragDraggable.drag: missing gesture or copied block",
+        {
+          hasGesture: Boolean(gesture),
+          hasCopy: Boolean(this.copy),
+          blockId: this.block.id,
+        }
+      );
+      return;
+    }
+    (gesture.getCurrentDragger() as ScratchDragger).setDraggable(this.copy);
     this.copy.drag(newLoc, e);
   }
 
@@ -120,12 +138,12 @@ function callerMutationToDom(this: ProcedureCallBlock): Element {
  * @param xmlElement XML storage element.
  */
 function callerDomToMutation(this: ProcedureCallBlock, xmlElement: Element) {
-  this.procCode_ = xmlElement.getAttribute("proccode");
+  this.procCode_ = xmlElement.getAttribute("proccode")!;
   this.generateShadows_ = JSON.parse(
-    xmlElement.getAttribute("generateshadows")
+    xmlElement.getAttribute("generateshadows")!
   );
-  this.argumentIds_ = JSON.parse(xmlElement.getAttribute("argumentids"));
-  this.warp_ = JSON.parse(xmlElement.getAttribute("warp"));
+  this.argumentIds_ = JSON.parse(xmlElement.getAttribute("argumentids")!);
+  this.warp_ = JSON.parse(xmlElement.getAttribute("warp")!);
   this.updateDisplay_();
 }
 
@@ -167,16 +185,16 @@ function definitionDomToMutation(
   this: ProcedurePrototypeBlock | ProcedureDeclarationBlock,
   xmlElement: Element
 ) {
-  this.procCode_ = xmlElement.getAttribute("proccode");
-  this.warp_ = JSON.parse(xmlElement.getAttribute("warp"));
+  this.procCode_ = xmlElement.getAttribute("proccode")!;
+  this.warp_ = JSON.parse(xmlElement.getAttribute("warp")!);
 
   const prevArgIds = this.argumentIds_;
   const prevDisplayNames = this.displayNames_;
 
-  this.argumentIds_ = JSON.parse(xmlElement.getAttribute("argumentids"));
-  this.displayNames_ = JSON.parse(xmlElement.getAttribute("argumentnames"));
+  this.argumentIds_ = JSON.parse(xmlElement.getAttribute("argumentids")!);
+  this.displayNames_ = JSON.parse(xmlElement.getAttribute("argumentnames")!);
   this.argumentDefaults_ = JSON.parse(
-    xmlElement.getAttribute("argumentdefaults")
+    xmlElement.getAttribute("argumentdefaults")!
   );
   this.updateDisplay_();
   if ("updateArgumentReporterNames_" in this) {
@@ -224,7 +242,7 @@ function disconnectOldBlocks_(this: ProcedureBlock): ConnectionMap {
     if (input.connection) {
       const target = input.connection.targetBlock() as Blockly.BlockSvg;
       const saveInfo = {
-        shadow: input.connection.getShadowDom(true),
+        shadow: input.connection.getShadowDom(true) as Element,
         block: target,
       };
       connectionMap[input.name] = saveInfo;
@@ -420,7 +438,7 @@ function attachShadow_(
         new (Blockly.Events.get(Blockly.Events.BLOCK_CREATE))(newBlock)
       );
     }
-    newBlock.outputConnection.connect(input.connection);
+    newBlock.outputConnection!.connect(input.connection!);
   }
 }
 
@@ -486,21 +504,21 @@ function populateArgumentOnCaller_(
   id: string,
   input: Blockly.Input
 ) {
-  let oldBlock: Blockly.BlockSvg;
-  let oldShadow: Element;
+  let oldBlock: Blockly.BlockSvg | undefined;
+  let oldShadow: Element | undefined;
   if (connectionMap && id in connectionMap) {
     const saveInfo = connectionMap[id];
-    oldBlock = saveInfo["block"];
-    oldShadow = saveInfo["shadow"];
+    oldBlock = saveInfo?.["block"];
+    oldShadow = saveInfo?.["shadow"];
   }
 
   if (connectionMap && oldBlock) {
     // Reattach the old block and shadow DOM.
     connectionMap[input.name] = null;
-    oldBlock.outputConnection.connect(input.connection);
+    oldBlock.outputConnection!.connect(input.connection!);
     if (type !== ArgumentType.BOOLEAN && this.generateShadows_) {
       const shadowDom = oldShadow || this.buildShadowDom_(type);
-      input.connection.setShadowDom(shadowDom);
+      input.connection!.setShadowDom(shadowDom);
     }
   } else if (this.generateShadows_) {
     this.attachShadow_(input, type);
@@ -526,10 +544,10 @@ function populateArgumentOnPrototype_(
   id: string,
   input: Blockly.Input
 ) {
-  let oldBlock = null;
+  let oldBlock: Blockly.BlockSvg | null = null;
   if (connectionMap && id in connectionMap) {
     const saveInfo = connectionMap[id];
-    oldBlock = saveInfo["block"];
+    oldBlock = saveInfo?.["block"] ?? null;
   }
 
   const oldTypeMatches = checkOldTypeMatches_(oldBlock, type);
@@ -548,7 +566,7 @@ function populateArgumentOnPrototype_(
   }
 
   // Attach the block.
-  input.connection.connect(argumentReporter.outputConnection);
+  input.connection!.connect(argumentReporter.outputConnection!);
 }
 
 /**
@@ -570,10 +588,10 @@ function populateArgumentOnDeclaration_(
   id: string,
   input: Blockly.Input
 ) {
-  let oldBlock = null;
+  let oldBlock: Blockly.BlockSvg | null = null;
   if (connectionMap && id in connectionMap) {
     const saveInfo = connectionMap[id];
-    oldBlock = saveInfo["block"];
+    oldBlock = saveInfo?.["block"] ?? null;
   }
 
   // TODO: This always returns false, because it checks for argument reporter
@@ -593,7 +611,7 @@ function populateArgumentOnDeclaration_(
   }
 
   // Attach the block.
-  input.connection.connect(argumentEditor.outputConnection);
+  input.connection!.connect(argumentEditor.outputConnection!);
 }
 
 /**
@@ -686,7 +704,7 @@ function updateDeclarationProcCode_(this: ProcedureDeclarationBlock) {
       this.procCode_ += input.fieldRow[0].getValue();
     } else if (input.type === Blockly.inputs.inputTypes.VALUE) {
       // Inspect the argument editor.
-      const target = input.connection.targetBlock();
+      const target = input.connection!.targetBlock()!;
       this.displayNames_.push(target.getFieldValue("TEXT"));
       this.argumentIds_.push(input.name);
       if (target.type === "argument_editor_boolean") {
@@ -712,8 +730,8 @@ function focusLastEditor_(this: ProcedureDeclarationBlock) {
       newInput.fieldRow[0].showEditor();
     } else if (newInput.type === Blockly.inputs.inputTypes.VALUE) {
       // Inspect the argument editor.
-      const target = newInput.connection.targetBlock();
-      target.getField("TEXT").showEditor();
+      const target = newInput.connection!.targetBlock()!;
+      target.getField("TEXT")!.showEditor();
     }
   }
 }
@@ -791,7 +809,7 @@ function removeFieldCallback(
   for (var n = 0; n < this.inputList.length; n++) {
     var input = this.inputList[n];
     if (input.connection) {
-      var target = input.connection.targetBlock();
+      var target = input.connection!.targetBlock()!;
       if (field.name && target.getField(field.name) === field) {
         inputNameToRemove = input.name;
       }

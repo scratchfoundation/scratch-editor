@@ -12,8 +12,8 @@ import {
 import type { ScratchCommentBubble } from "../scratch_comment_bubble";
 
 class BlockCommentChange extends BlockCommentBase {
-  oldContents_: string;
-  newContents_: string;
+  oldContents_!: string;
+  newContents_!: string;
 
   constructor(
     opt_blockComment?: ScratchCommentBubble,
@@ -22,8 +22,8 @@ class BlockCommentChange extends BlockCommentBase {
   ) {
     super(opt_blockComment);
     this.type = "block_comment_change";
-    this.oldContents_ = oldContents;
-    this.newContents_ = newContents;
+    if (oldContents !== undefined) this.oldContents_ = oldContents;
+    if (newContents !== undefined) this.newContents_ = newContents;
     // Disable undo because Blockly already tracks changes to comment text for
     // undo purposes; this event exists solely to keep the Scratch VM apprised
     // of the state of things.

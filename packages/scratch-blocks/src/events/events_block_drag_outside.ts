@@ -7,12 +7,12 @@
 import * as Blockly from "blockly/core";
 
 export class BlockDragOutside extends Blockly.Events.BlockBase {
-  isOutside: boolean;
+  isOutside!: boolean;
 
   constructor(block?: Blockly.Block, isOutside?: boolean) {
     super(block);
     this.type = "dragOutside";
-    this.isOutside = isOutside;
+    if (isOutside !== undefined) this.isOutside = isOutside;
     this.recordUndo = false;
   }
 

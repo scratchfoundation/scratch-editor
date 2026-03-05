@@ -39,7 +39,7 @@ enum LEDState {
  * Class for a matrix field.
  */
 class FieldMatrix extends Blockly.Field<string> {
-  private originalStyle?: string;
+  private originalStyle = "";
 
   /**
    * Array of SVGElement<rect> for matrix thumbnail image on block field.
@@ -215,7 +215,7 @@ class FieldMatrix extends Blockly.Field<string> {
       this.arrow_.setAttributeNS(
         "http://www.w3.org/1999/xlink",
         "xlink:href",
-        this.getConstants().FIELD_DROPDOWN_SVG_ARROW_DATAURI
+        this.getConstants()!.FIELD_DROPDOWN_SVG_ARROW_DATAURI
       );
       this.arrow_.style.cursor = "default";
     }
@@ -348,7 +348,7 @@ class FieldMatrix extends Blockly.Field<string> {
   }
 
   dropdownDispose_() {
-    const sourceBlock = this.getSourceBlock();
+    const sourceBlock = this.getSourceBlock()!;
     if (sourceBlock.isShadow()) {
       sourceBlock.setStyle(this.originalStyle);
     }
@@ -396,8 +396,8 @@ class FieldMatrix extends Blockly.Field<string> {
    * Redraw the matrix with the current value.
    */
   private updateMatrix_() {
-    const matrix = this.getValue();
-    const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg;
+    const matrix = this.getValue()!;
+    const sourceBlock = this.getSourceBlock()! as Blockly.BlockSvg;
     for (let i = 0; i < matrix.length; i++) {
       if (matrix[i] === LEDState.OFF) {
         this.fillMatrixNode_(
@@ -451,7 +451,7 @@ class FieldMatrix extends Blockly.Field<string> {
 
   setLEDNode_(led: number, state: LEDState) {
     if (led < 0 || led > 24) return;
-    const oldMatrix = this.getValue();
+    const oldMatrix = this.getValue()!;
     const newMatrix =
       oldMatrix.substr(0, led) + state + oldMatrix.substr(led + 1);
     this.setValue(newMatrix);
@@ -469,7 +469,7 @@ class FieldMatrix extends Blockly.Field<string> {
 
   toggleLEDNode_(led: number) {
     if (led < 0 || led > 24) return;
-    if (this.getValue().charAt(led) === LEDState.OFF) {
+    if (this.getValue()!.charAt(led) === LEDState.OFF) {
       this.setLEDNode_(led, LEDState.ON);
     } else {
       this.setLEDNode_(led, LEDState.OFF);
@@ -496,7 +496,7 @@ class FieldMatrix extends Blockly.Field<string> {
     );
     const ledHit = this.checkForLED_(e);
     if (ledHit > -1) {
-      if (this.getValue().charAt(ledHit) === LEDState.OFF) {
+      if (this.getValue()!.charAt(ledHit) === LEDState.OFF) {
         this.paintStyle_ = PaintStyle.FILL;
       } else {
         this.paintStyle_ = PaintStyle.CLEAR;
@@ -548,6 +548,7 @@ class FieldMatrix extends Blockly.Field<string> {
    * @returns The matching matrix node or -1 for none.
    */
   checkForLED_(e: PointerEvent): number {
+    if (!this.matrixStage_) return -1;
     const bBox = this.matrixStage_.getBoundingClientRect();
     const nodeSize = FieldMatrix.MATRIX_NODE_SIZE;
     const nodePad = FieldMatrix.MATRIX_NODE_PAD;

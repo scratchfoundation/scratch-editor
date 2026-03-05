@@ -41,9 +41,9 @@ export class FieldColourSlider extends FieldColour {
    * The button calls this function with a callback to update the field value.
    * BEWARE: This is not a stable API. It may change.
    */
-  static activateEyedropper_: (
+  static activateEyedropper_?: (
     callback: (colour: string) => void
-  ) => void | null = null;
+  ) => void;
 
   /**
    * Path to the eyedropper svg icon.
@@ -61,9 +61,9 @@ export class FieldColourSlider extends FieldColour {
   private hueReadout_?: Element;
   private saturationReadout_?: Element;
   private brightnessReadout_?: Element;
-  private hue_?: number;
-  private saturation_?: number;
-  private brightness_?: number;
+  private hue_ = 0;
+  private saturation_ = 0;
+  private brightness_ = 0;
   private eyedropperEventData_?: Blockly.browserEvents.Data;
 
   /**
@@ -133,34 +133,58 @@ export class FieldColourSlider extends FieldColour {
    * Update the readouts and slider backgrounds after value has changed.
    */
   private updateDom_() {
-    if (this.hueSlider_) {
-      // Update the slider backgrounds
-      this.setGradient_(this.hueSlider_, ColourChannel.HUE);
-      this.setGradient_(this.saturationSlider_, ColourChannel.SATURATION);
-      this.setGradient_(this.brightnessSlider_, ColourChannel.BRIGHTNESS);
-
-      // Update the readouts
-      this.hueReadout_.textContent = Math.floor(
-        (100 * this.hue_) / 360
-      ).toFixed(0);
-      this.saturationReadout_.textContent = Math.floor(
-        100 * this.saturation_
-      ).toFixed(0);
-      this.brightnessReadout_.textContent = Math.floor(
-        (100 * this.brightness_) / 255
-      ).toFixed(0);
+    const hueSlider = this.hueSlider_;
+    const saturationSlider = this.saturationSlider_;
+    const brightnessSlider = this.brightnessSlider_;
+    const hueReadout = this.hueReadout_;
+    const saturationReadout = this.saturationReadout_;
+    const brightnessReadout = this.brightnessReadout_;
+    if (
+      !hueSlider ||
+      !saturationSlider ||
+      !brightnessSlider ||
+      !hueReadout ||
+      !saturationReadout ||
+      !brightnessReadout
+    ) {
+      console.warn(
+        "FieldColourSlider.updateDom_: slider/readout DOM is not fully initialized"
+      );
+      return;
     }
+
+    this.setGradient_(hueSlider, ColourChannel.HUE);
+    this.setGradient_(saturationSlider, ColourChannel.SATURATION);
+    this.setGradient_(brightnessSlider, ColourChannel.BRIGHTNESS);
+
+    hueReadout.textContent = Math.floor(
+      (100 * this.hue_) / 360
+    ).toFixed(0);
+    saturationReadout.textContent = Math.floor(
+      100 * this.saturation_
+    ).toFixed(0);
+    brightnessReadout.textContent = Math.floor(
+      (100 * this.brightness_) / 255
+    ).toFixed(0);
   }
 
   /**
    * Update the slider handle positions from the current field value.
    */
   private updateSliderHandles_() {
-    if (this.hueSlider_) {
-      this.hueSlider_.value = `${this.hue_}`;
-      this.saturationSlider_.value = `${this.saturation_}`;
-      this.brightnessSlider_.value = `${this.brightness_}`;
+    const hueSlider = this.hueSlider_;
+    const saturationSlider = this.saturationSlider_;
+    const brightnessSlider = this.brightnessSlider_;
+    if (!hueSlider || !saturationSlider || !brightnessSlider) {
+      console.warn(
+        "FieldColourSlider.updateSliderHandles_: slider DOM is not fully initialized"
+      );
+      return;
     }
+
+    hueSlider.value = `${this.hue_}`;
+    saturationSlider.value = `${this.saturation_}`;
+    brightnessSlider.value = `${this.brightness_}`;
   }
 
   /**
@@ -219,7 +243,7 @@ export class FieldColourSlider extends FieldColour {
    * Activate the eyedropper, passing in a callback for setting the field value.
    */
   private activateEyedropperInternal_() {
-    FieldColourSlider.activateEyedropper_((chosenColour: string) => {
+    FieldColourSlider.activateEyedropper_?.((chosenColour: string) => {
       // Update the internal hue/saturation/brightness values so sliders update.
       const components = Blockly.utils.colour.hexToRgb(chosenColour);
       const { hue, saturation, value } = this.rgbToHsv(
@@ -245,7 +269,8 @@ export class FieldColourSlider extends FieldColour {
 
     // Init color component values that are used while the editor is open
     // in order to keep the slider values stable.
-    const components = Blockly.utils.colour.hexToRgb(this.getValue());
+    const currentValue = this.getValue() ?? "#000000";
+    const components = Blockly.utils.colour.hexToRgb(currentValue);
     const { hue, saturation, value } = this.rgbToHsv(
       components[0],
       components[1],
@@ -314,7 +339,7 @@ export class FieldColourSlider extends FieldColour {
 
     // Set value updates the slider positions
     // Do this before attaching callbacks to avoid extra events from initial set
-    this.setValue(this.getValue());
+    this.setValue(this.getValue() ?? currentValue);
 
     this.hueChangeEventKey_ = Blockly.browserEvents.bind(
       this.hueSlider_,

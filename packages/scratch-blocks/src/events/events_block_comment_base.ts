@@ -9,9 +9,9 @@ import type { ScratchCommentBubble } from "../scratch_comment_bubble";
 
 export class BlockCommentBase extends Blockly.Events.Abstract {
   isBlank = true;
-  commentId: string;
-  blockId: string;
-  workspaceId: string;
+  commentId!: string;
+  blockId!: string;
+  workspaceId!: string;
 
   constructor(opt_blockComment?: ScratchCommentBubble) {
     super();
@@ -20,8 +20,11 @@ export class BlockCommentBase extends Blockly.Events.Abstract {
     if (!opt_blockComment) return;
 
     this.commentId = opt_blockComment.getId();
-    this.blockId = opt_blockComment.getSourceBlock()?.id;
-    this.workspaceId = opt_blockComment.getSourceBlock()?.workspace.id;
+    const sourceBlock = opt_blockComment.getSourceBlock();
+    if (sourceBlock) {
+      this.blockId = sourceBlock.id;
+      this.workspaceId = sourceBlock.workspace.id;
+    }
   }
 
   toJson(): BlockCommentBaseJson {

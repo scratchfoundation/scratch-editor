@@ -10,7 +10,7 @@ import { BowlerHat } from "./bowler_hat";
 import { ConstantProvider } from "./constants";
 
 export class RenderInfo extends Blockly.zelos.RenderInfo {
-  constants_: ConstantProvider;
+  declare constants_: ConstantProvider;
 
   override populateTopRow_() {
     if (this.isBowlerHatBlock()) {
@@ -41,19 +41,22 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
     if (this.isBowlerHatBlock()) {
       // Resize the render info to the same width as the widest part of a
       // bowler hat block.
-      const statementRow = this.rows.find((r) => r.hasStatement);
+      // Bowler hat blocks always have exactly one statement row and one input
+      // element, so these find() calls are guaranteed to succeed.
+      const statementRow = this.rows.find((r) => r.hasStatement)!;
       this.width =
         statementRow.widthWithConnectedBlocks -
         statementRow.elements.find((e) =>
           Blockly.blockRendering.Types.isInput(e)
-        ).width +
+        )!.width +
         this.constants_.MEDIUM_PADDING;
 
       // The bowler hat's width is the same as the block's width, so it can't
       // be derived from the constants like a normal hat and has to be set here.
+      // populateTopRow_ always adds a hat element for bowler hat blocks.
       const hat = this.topRow.elements.find((e) =>
         Blockly.blockRendering.Types.isHat(e)
-      );
+      )!;
       hat.width = this.width;
       this.topRow.measure();
     }

@@ -2,7 +2,7 @@
   "compilerOptions": {
     /* Type Checking */
     "noImplicitAny": true,
-    "strict": false, // TODO: try to enable "strict" mode and fix the resulting errors
+    "strict": true,
 
     /* Modules */
     "module": "esnext",
