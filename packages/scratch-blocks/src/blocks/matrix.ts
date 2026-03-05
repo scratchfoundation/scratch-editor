@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
@@ -19,13 +18,13 @@
  */
 
 /**
- * @fileoverview Matrix blocks for Blockly.
+ * @file Matrix blocks for Blockly.
  * @author khanning@gmail.com (Kreg Hanning)
  */
 import * as Blockly from "blockly/core";
 import * as Constants from "../constants";
 
-Blockly.Blocks["matrix"] = {
+Blockly.Blocks.matrix = {
   /**
    * Block for matrix value.
    */

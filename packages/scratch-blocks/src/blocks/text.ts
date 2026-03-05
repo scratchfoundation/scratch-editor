@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
@@ -19,12 +18,12 @@
  */
 
 /**
- * @fileoverview Text blocks for Blockly.
+ * @file Text blocks for Blockly.
  * @author fraser@google.com (Neil Fraser)
  */
 import * as Blockly from "blockly/core";
 
-Blockly.Blocks["text"] = {
+Blockly.Blocks.text = {
   /**
    * Block for text value.
    */

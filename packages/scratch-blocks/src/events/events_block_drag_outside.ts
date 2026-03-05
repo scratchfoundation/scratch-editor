@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -33,7 +32,7 @@ export class BlockDragOutside extends Blockly.Events.BlockBase {
       workspace,
       event ?? new BlockDragOutside()
     ) as BlockDragOutside;
-    newEvent.isOutside = json["isOutside"];
+    newEvent.isOutside = json.isOutside;
 
     return newEvent;
   }

@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -37,7 +36,7 @@ class BlockCommentCollapse extends BlockCommentBase {
       workspace,
       event ?? new BlockCommentCollapse()
     ) as BlockCommentCollapse;
-    newEvent.newCollapsed = json["collapsed"];
+    newEvent.newCollapsed = json.collapsed;
 
     return newEvent;
   }

@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -99,9 +98,9 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
       "isScratchExtension" in this.block_ &&
       this.block_.isScratchExtension &&
       Blockly.blockRendering.Types.isField(elem) &&
-      (elem as Blockly.blockRendering.Field).field instanceof
+      (elem).field instanceof
         Blockly.FieldImage &&
-      (elem as Blockly.blockRendering.Field).field ===
+      (elem).field ===
         this.block_.inputList[0].fieldRow[0] &&
       this.block_.previousConnection
     ) {

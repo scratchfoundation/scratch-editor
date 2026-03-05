@@ -145,22 +145,22 @@
   </xml>
 
   <script>
-    var editorActions = document.getElementById('editor-actions');
+    let editorActions = document.getElementById('editor-actions');
     editorActions.style.visibility = 'hidden';
 
-    var callback = null;
-    var mutationRoot = null;
+    let callback = null;
+    let mutationRoot = null;
 
-    var declarationWorkspace = Blockly.inject('primaryDiv',
+    let declarationWorkspace = Blockly.inject('primaryDiv',
         {media: '../media/'});
 
-    declarationWorkspace.addChangeListener(function() {
+    declarationWorkspace.addChangeListener(() => {
       if (mutationRoot) {
         mutationRoot.onChangeFn();
       }
     });
 
-    var definitionWorkspace = Blockly.inject('secondaryDiv', {
+    let definitionWorkspace = Blockly.inject('secondaryDiv', {
       media: '../media/',
       toolbox: document.getElementById('toolbox'),
       zoom: {
@@ -182,7 +182,7 @@
     }
 
     function applyMutation() {
-      var mutation = mutationRoot.mutationToDom(/* opt_generateShadows */ true)
+      let mutation = mutationRoot.mutationToDom(/* opt_generateShadows */ true)
       console.log(mutation);
       callback(mutation);
       callback = null;
@@ -205,14 +205,14 @@
     }
 
     function removeRandomInput() {
-      var rnd = Math.floor(Math.random() * mutationRoot.inputList.length);
+      let rnd = Math.floor(Math.random() * mutationRoot.inputList.length);
       mutationRoot.removeInput(mutationRoot.inputList[rnd].name);
       mutationRoot.onChangeFn();
       mutationRoot.updateDisplay_();
     }
 
     function addRandomInput() {
-      var rnd = Math.floor(Math.random() * 3);
+      let rnd = Math.floor(Math.random() * 3);
       switch (rnd) {
         case 0:
           addTextNumber();

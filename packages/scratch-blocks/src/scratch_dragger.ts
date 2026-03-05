@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -30,7 +29,6 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
 
   /**
    * Sets the current item being dragged.
-   *
    * @param draggable The item being dragged.
    */
   setDraggable(draggable: Blockly.IDraggable) {
@@ -39,7 +37,6 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
 
   /**
    * Handles the start of a drag operation.
-   *
    * @param event The event that triggered the drag.
    */
   onDragStart(event: PointerEvent) {
@@ -64,7 +61,6 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
 
   /**
    * Handles motion during an ongoing drag operation.
-   *
    * @param event The event that triggered this call.
    * @param totalDelta The change in pointer position since the last invocation.
    */
@@ -75,7 +71,6 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
 
   /**
    * Records whether or not the current drag is out of the workspace's bounds.
-   *
    * @param event The event that triggered this call.
    */
   updateOutOfBoundsState(event: PointerEvent) {
@@ -94,7 +89,6 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
 
   /**
    * Handles the end of a drag.
-   *
    * @param event The event that ended the drag.
    */
   onDragEnd(event: PointerEvent) {
@@ -152,7 +146,6 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
   /**
    * Returns whether or not the dragged item should return to its starting
    * position.
-   *
    * @param event The drag event that triggered this check.
    * @param rootDraggable The topmost item being dragged.
    * @returns True if the draggable should return to its starting position.
@@ -169,7 +162,6 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
   /**
    * Returns the root element being dragged. For shadow blocks, this is the
    * parent block.
-   *
    * @param draggable The element being dragged directly.
    * @returns The element being dragged, or its parent.
    */
@@ -187,7 +179,6 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
   /**
    * Returns whether or not the given event occurred within the bounds of the
    * workspace.
-   *
    * @param event The event to check.
    * @returns True if the event occurred inside the workspace.
    */

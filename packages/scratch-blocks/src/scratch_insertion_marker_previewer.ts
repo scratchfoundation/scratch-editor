@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2025 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -13,7 +12,6 @@ class ScratchInsertionMarkerPreviewer extends Blockly.InsertionMarkerPreviewer {
   /**
    * Transforms the given block into a JSON representation used to construct an
    * insertion marker.
-   *
    * @param block The block to serialize and use as an insertion marker.
    * @returns A JSON-formatted string corresponding to a serialized
    *     representation of the given block suitable for use as an insertion

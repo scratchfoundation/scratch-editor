@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2017 Massachusetts Institute of Technology
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Vertical separator field. Draws a vertical line.
+ * @file Vertical separator field. Draws a vertical line.
  * @author ericr@media.mit.edu (Eric Rosenbaum)
  */
 import * as Blockly from "blockly/core";

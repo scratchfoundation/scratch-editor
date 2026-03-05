@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2016 Massachusetts Institute of Technology
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview 5x5 matrix input field.
+ * @file 5x5 matrix input field.
  * Displays an editable 5x5 matrix for controlling LED arrays.
  * @author khanning@gmail.com (Kreg Hanning)
  */
@@ -110,7 +109,7 @@ class FieldMatrix extends Blockly.Field<string> {
    * @returns The new field instance.
    */
   static fromJson(options: FieldMatrixConfig): FieldMatrix {
-    return new FieldMatrix(options["matrix"]);
+    return new FieldMatrix(options.matrix);
   }
 
   /**
@@ -357,7 +356,6 @@ class FieldMatrix extends Blockly.Field<string> {
 
   /**
    * Make an svg object that resembles a 3x3 matrix to be used as a button.
-   *
    * @param fill The color to fill the matrix nodes.
    * @returns The button svg element.
    */
@@ -419,7 +417,6 @@ class FieldMatrix extends Blockly.Field<string> {
 
   /**
    * Clear the matrix.
-   *
    * @param e Mouse event.
    */
   clearMatrix_(e: PointerEvent) {
@@ -429,7 +426,6 @@ class FieldMatrix extends Blockly.Field<string> {
 
   /**
    * Fill the matrix.
-   *
    * @param e Mouse event.
    */
   fillMatrix_(e: PointerEvent) {
@@ -439,13 +435,12 @@ class FieldMatrix extends Blockly.Field<string> {
 
   /**
    * Fill matrix node with specified colour.
-   *
    * @param node The array of matrix nodes.
    * @param index The index of the matrix node.
    * @param fill The fill colour in '#rrggbb' format.
    */
   fillMatrixNode_(node: SVGElement[], index: number, fill: string) {
-    if (!node || !node[index] || !fill) return;
+    if (!node?.[index] || !fill) return;
     node[index].setAttribute("fill", fill);
   }
 
@@ -478,7 +473,6 @@ class FieldMatrix extends Blockly.Field<string> {
 
   /**
    * Toggle matrix nodes on and off.
-   *
    * @param e Mouse event.
    */
   onMouseDown(e: PointerEvent) {
@@ -525,7 +519,6 @@ class FieldMatrix extends Blockly.Field<string> {
 
   /**
    * Toggle matrix nodes on and off by dragging mouse.
-   *
    * @param e Mouse move event.
    */
   onMouseMove(e: PointerEvent) {
@@ -543,7 +536,6 @@ class FieldMatrix extends Blockly.Field<string> {
 
   /**
    * Check if mouse coordinates collide with a matrix node.
-   *
    * @param e Mouse move event.
    * @returns The matching matrix node or -1 for none.
    */
@@ -592,7 +584,7 @@ class FieldMatrix extends Blockly.Field<string> {
 
   updateSize_() {
     const constants = this.getConstants() as Blockly.zelos.ConstantProvider;
-    let totalHeight = constants.FIELD_TEXT_HEIGHT;
+    const totalHeight = constants.FIELD_TEXT_HEIGHT;
 
     this.size_.height = totalHeight;
     this.size_.width =

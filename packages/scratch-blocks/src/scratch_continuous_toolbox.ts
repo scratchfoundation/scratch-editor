@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -26,7 +25,6 @@ export class ScratchContinuousToolbox extends ContinuousToolbox {
   /**
    * Converts the given toolbox item to a corresponding array of items that
    * should appear in the flyout.
-   *
    * @param toolboxItem The toolbox item to convert.
    * @returns An array of flyout item definitions.
    */
@@ -71,7 +69,6 @@ export class ScratchContinuousToolbox extends ContinuousToolbox {
   /**
    * Returns whether or not the given item should be deselected.
    * Prevents items from being deselected without a replacement.
-   *
    * @param oldItem The item that was previously selected.
    * @param newItem The item that is proposed to be selected instead.
    * @returns True if the old item should be allowed to be deselected.

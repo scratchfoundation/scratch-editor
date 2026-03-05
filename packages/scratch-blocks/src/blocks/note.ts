@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
@@ -19,13 +18,13 @@
  */
 
 /**
- * @fileoverview Note block.
+ * @file Note block.
  * @author ericr@media.mit.edu (Eric Rosenbaum)
  */
 import * as Blockly from "blockly/core";
 import * as Constants from "../constants";
 
-Blockly.Blocks["note"] = {
+Blockly.Blocks.note = {
   /**
    * Block for musical note value.
    */

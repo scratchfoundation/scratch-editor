@@ -31,10 +31,10 @@
     <script>
       'use strict';
 
-      var workspace = null;
+      let workspace = null;
 
       function start() {
-        var soundsEnabled = null;
+        let soundsEnabled = null;
         if (sessionStorage) {
           // Restore sounds state.
           soundsEnabled = sessionStorage.getItem('soundsEnabled');
@@ -50,21 +50,21 @@
 
         // Setup blocks
         // Parse the URL arguments.
-        var match = location.search.match(/dir=([^&]+)/);
-        var rtl = match && match[1] == 'rtl';
+        let match = location.search.match(/dir=([^&]+)/);
+        let rtl = match && match[1] == 'rtl';
         document.forms.options.elements.dir.selectedIndex = Number(rtl);
-        var toolbox = getToolboxElement();
+        let toolbox = getToolboxElement();
         document.forms.options.elements.toolbox.selectedIndex =
           toolbox ? 1: 0;
 
         match = location.search.match(/side=([^&]+)/);
 
-        var side = match ? match[1] : 'start';
+        let side = match ? match[1] : 'start';
 
         document.forms.options.elements.side.value = side;
 
         match = location.search.match(/locale=([^&]+)/);
-        var locale = match ? match[1] : 'en';
+        let locale = match ? match[1] : 'en';
         Blockly.ScratchMsgs.setLocale(locale);
         document.forms.options.elements.locale.value = locale;
 
@@ -97,7 +97,7 @@
 
         if (sessionStorage) {
           // Restore previously displayed text.
-          var text = sessionStorage.getItem('textarea');
+          let text = sessionStorage.getItem('textarea');
           if (text) {
             document.getElementById('importExport').value = text;
           }
@@ -106,7 +106,7 @@
 
         if (sessionStorage) {
           // Restore event logging state.
-          var state = sessionStorage.getItem('logEvents');
+          let state = sessionStorage.getItem('logEvents');
           logEvents(Boolean(state));
 
           // Restore flyout event logging state.
@@ -116,13 +116,13 @@
       }
 
       function getToolboxElement() {
-        var match = location.search.match(/toolbox=([^&]+)/);
+        let match = location.search.match(/toolbox=([^&]+)/);
         return document.getElementById('toolbox-' + (match ? match[1] : 'categories'));
       }
 
       function toXml() {
-        var output = document.getElementById('importExport');
-        var xml = Blockly.Xml.workspaceToDom(workspace);
+        let output = document.getElementById('importExport');
+        let xml = Blockly.Xml.workspaceToDom(workspace);
         output.value = Blockly.Xml.domToPrettyText(xml);
         output.focus();
         output.select();
@@ -130,8 +130,8 @@
       }
 
       function fromXml() {
-        var input = document.getElementById('importExport');
-        var xml = Blockly.Xml.textToDom(input.value);
+        let input = document.getElementById('importExport');
+        let xml = Blockly.Xml.textToDom(input.value);
         Blockly.Xml.domToWorkspace(xml, workspace);
         taChange();
       }
@@ -139,11 +139,11 @@
       // Disable the "Import from XML" button if the XML is invalid.
       // Preserve text between page reloads.
       function taChange() {
-        var textarea = document.getElementById('importExport');
+        let textarea = document.getElementById('importExport');
         if (sessionStorage) {
           sessionStorage.setItem('textarea', textarea.value)
         }
-        var valid = true;
+        let valid = true;
         try {
           Blockly.Xml.textToDom(textarea.value);
         } catch (e) {
@@ -153,7 +153,7 @@
       }
 
       function logEvents(state) {
-        var checkbox = document.getElementById('logCheck');
+        let checkbox = document.getElementById('logCheck');
         checkbox.checked = state;
         if (sessionStorage) {
           sessionStorage.setItem('logEvents', state ? 'checked' : '');
@@ -166,13 +166,13 @@
       }
 
       function logFlyoutEvents(state) {
-        var checkbox = document.getElementById('logFlyoutCheck');
+        let checkbox = document.getElementById('logFlyoutCheck');
         checkbox.checked = state;
-        var soundsEnabled = null;
+        let soundsEnabled = null;
         if (sessionStorage) {
           sessionStorage.setItem('logFlyoutEvents', state ? 'checked' : '');
         }
-        var flyoutWorkspace = (workspace.flyout_) ? workspace.flyout_.workspace_ :
+        let flyoutWorkspace = (workspace.flyout_) ? workspace.flyout_.workspace_ :
           workspace.toolbox_.flyout_.workspace_;
         if (state) {
           flyoutWorkspace.addChangeListener(logger);
@@ -210,16 +210,16 @@
       }
 
       function sprinkles(n) {
-        var prototypes = [];
-        var toolbox = workspace.options.languageTree;
+        let prototypes = [];
+        let toolbox = workspace.options.languageTree;
         if (!toolbox) {
           console.error('Toolbox not found; add a toolbox element to the DOM.');
           return;
         }
-        var blocks = toolbox.getElementsByTagName('block');
-        for (var i = 0; i < n; i++) {
-          var blockXML = blocks[Math.floor(Math.random() * blocks.length)];
-          var block = Blockly.Xml.domToBlock(blockXML, workspace);
+        let blocks = toolbox.getElementsByTagName('block');
+        for (let i = 0; i < n; i++) {
+          let blockXML = blocks[Math.floor(Math.random() * blocks.length)];
+          let block = Blockly.Xml.domToBlock(blockXML, workspace);
           block.initSvg();
           block.moveBy(
             Math.round(Math.random() * 450 + 40),
@@ -228,7 +228,7 @@
         }
       }
 
-      var equalsXml = [
+      let equalsXml = [
         '  <shadow type="operator_equals">',
         '    <value name="OPERAND1">',
         '     <shadow type="text">',
@@ -241,7 +241,7 @@
         '  </shadow>'
       ].join('\n');
 
-      var spaghettiXml = [
+      let spaghettiXml = [
         '  <block type="control_if_else">',
         '    <value name="CONDITION">',
         '      <shadow type="operator_equals"></shadow>',
@@ -254,7 +254,7 @@
 
       function spaghetti(n) {
         console.log("Starting spaghetti.  This may take some time...");
-        var xml = spaghettiXml;
+        let xml = spaghettiXml;
         // Nest if/else statements deeply.
         for(var i = 0; i < 2 * n; i++) {
           xml = xml.replace(/(<statement name="SUBSTACK2?"?>)<\//g,
@@ -267,7 +267,7 @@
         }
 
         // Nest boolean comparisons.
-        var equalsBlock = equalsXml;
+        let equalsBlock = equalsXml;
         for (var i = 0; i < n; i++) {
           equalsBlock = equalsBlock.replace(
               /(<shadow( type="operator_equals")?>)<\/shadow>/g, equalsXml);
@@ -278,14 +278,14 @@
             equalsBlock);
 
         xml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + xml + '</xml>';
-        var dom = Blockly.Xml.textToDom(xml);
+        let dom = Blockly.Xml.textToDom(xml);
         console.time('Spaghetti domToWorkspace');
         Blockly.Xml.domToWorkspace(dom, workspace);
         console.timeEnd('Spaghetti domToWorkspace');
       }
 
       function setSoundsEnabled(state) {
-        var checkbox = document.getElementById('soundsEnabled');
+        let checkbox = document.getElementById('soundsEnabled');
         checkbox.checked = (state) ? 'checked' : '';
         if (sessionStorage) {
           sessionStorage.setItem('soundsEnabled', state);
@@ -303,7 +303,7 @@
 
       function setLocale(locale) {
         workspace.getFlyout().setRecyclingEnabled(false);
-        var xml = Blockly.Xml.workspaceToDom(workspace);
+        let xml = Blockly.Xml.workspaceToDom(workspace);
         Blockly.ScratchMsgs.setLocale(locale);
         Blockly.Xml.clearWorkspaceAndLoadFromXml(xml, workspace);
         workspace.getFlyout().setRecyclingEnabled(true);

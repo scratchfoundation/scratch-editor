@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2017 Google Inc.
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Variable getter field.  Appears as a label but has a variable
+ * @file Variable getter field.  Appears as a label but has a variable
  *     picker in the right-click menu.
  * @author fenichel@google.com (Rachel Fenichel)
  */
@@ -34,7 +33,6 @@ class FieldVariableGetter extends Blockly.FieldLabel {
 
   /**
    * Creates a new FieldVariableGetter.
-   *
    * @param allowedVariableType The type of variables this field can display.
    */
   constructor(private allowedVariableType = "") {
@@ -44,7 +42,6 @@ class FieldVariableGetter extends Blockly.FieldLabel {
 
   /**
    * Returns the ID of this field's variable.
-   *
    * @returns The ID of this field's variable.
    */
   getValue(): string {
@@ -53,7 +50,6 @@ class FieldVariableGetter extends Blockly.FieldLabel {
 
   /**
    * Returns the name of this field's variable.
-   *
    * @returns The name of this field's variable.
    */
   getText(): string {
@@ -64,7 +60,6 @@ class FieldVariableGetter extends Blockly.FieldLabel {
    * Get the variable model for the variable associated with this field.
    * Not guaranteed to be in the variable map on the workspace (e.g. if accessed
    * after the variable has been deleted).
-   *
    * @returns the selected variable, or null if none was selected.
    */
   getVariable(): Blockly.IVariableModel<Blockly.IVariableState> | null {
@@ -73,7 +68,6 @@ class FieldVariableGetter extends Blockly.FieldLabel {
 
   /**
    * Updates this field's variable to one with the given ID.
-   *
    * @param newVariableId ID of a variable this field should represent.
    */
   doValueUpdate_(newVariableId: string) {
@@ -93,7 +87,7 @@ class FieldVariableGetter extends Blockly.FieldLabel {
   }
 
   static fromJson(options: FieldVariableGetterConfig) {
-    return new FieldVariableGetter(options["allowedVariableType"]);
+    return new FieldVariableGetter(options.allowedVariableType);
   }
 
   fromXml(element: Element) {

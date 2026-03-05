@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2026 Scratch Foundation
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -45,14 +44,13 @@ export class ScratchZoomControls implements Blockly.IPositionable {
 
   /**
    * Creates the zoom controls DOM.
-   *
    * @returns The root SVG group element.
    */
   createDom(): SVGGElement {
     this.svgGroup = Blockly.utils.dom.createSvgElement(
       Blockly.utils.Svg.G,
       {}
-    ) as SVGGElement;
+    );
 
     const media = this.workspace.options.pathToMedia;
 
@@ -107,7 +105,6 @@ export class ScratchZoomControls implements Blockly.IPositionable {
 
   /**
    * Creates an SVG group containing one zoom button image.
-   *
    * @param extraClass Additional CSS class to add alongside `blocklyZoom`.
    * @param imageHref URL of the SVG icon to display.
    * @returns The button group element.
@@ -118,7 +115,7 @@ export class ScratchZoomControls implements Blockly.IPositionable {
   ): SVGGElement {
     const group = Blockly.utils.dom.createSvgElement(Blockly.utils.Svg.G, {
       class: `blocklyZoom ${extraClass}`,
-    }) as SVGGElement;
+    });
 
     const image = Blockly.utils.dom.createSvgElement(
       Blockly.utils.Svg.IMAGE,
@@ -127,7 +124,7 @@ export class ScratchZoomControls implements Blockly.IPositionable {
         height: this.SIZE,
       },
       group
-    ) as SVGImageElement;
+    );
     image.setAttributeNS(
       Blockly.utils.dom.XLINK_NS,
       "xlink:href",
@@ -179,6 +176,8 @@ export class ScratchZoomControls implements Blockly.IPositionable {
   /**
    * Positions the zoom controls in the corner opposite the toolbox, bumping
    * down (or up) to avoid overlapping other positioned UI elements.
+   * @param metrics
+   * @param savedPositions
    */
   position(
     metrics: Blockly.MetricsManager.UiMetrics,
@@ -255,7 +254,6 @@ export class ScratchZoomControls implements Blockly.IPositionable {
 
   /**
    * Handles zoom in / zoom out button clicks.
-   *
    * @param amount Positive to zoom in, negative to zoom out.
    * @param e The pointer event.
    */
@@ -271,7 +269,6 @@ export class ScratchZoomControls implements Blockly.IPositionable {
   /**
    * Handles zoom reset button clicks. Animates back to the starting scale and
    * re-centers the workspace.
-   *
    * @param e The pointer event.
    */
   private resetZoom(e: PointerEvent) {

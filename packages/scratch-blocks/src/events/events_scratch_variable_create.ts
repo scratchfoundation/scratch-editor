@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -37,8 +36,8 @@ class ScratchVariableCreate extends Blockly.Events.VarCreate {
       workspace,
       event ?? new ScratchVariableCreate()
     ) as ScratchVariableCreate;
-    newEvent.isLocal = json["isLocal"];
-    newEvent.isCloud = json["isCloud"];
+    newEvent.isLocal = json.isLocal;
+    newEvent.isCloud = json.isCloud;
     return newEvent;
   }
 

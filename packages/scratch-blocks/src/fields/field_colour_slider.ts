@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Colour input field.
+ * @file Colour input field.
  * @author fraser@google.com (Neil Fraser)
  */
 import * as Blockly from "blockly/core";
@@ -68,12 +67,11 @@ export class FieldColourSlider extends FieldColour {
 
   /**
    * Construct a FieldColourSlider from a JSON arg object.
-   *
    * @param options A JSON object with options (colour).
    * @returns The new field instance.
    */
   static fromJson(options: FieldColourFromJsonConfig): FieldColourSlider {
-    return new FieldColourSlider(options["colour"]);
+    return new FieldColourSlider(options.colour);
   }
 
   doValueUpdate_(newValue: string) {
@@ -84,9 +82,8 @@ export class FieldColourSlider extends FieldColour {
 
   /**
    * Create the hue, saturation or value CSS gradient for the slide backgrounds.
-   *
    * @param channel – Either "hue", "saturation" or "value".
-   * @return Array colour hex colour stops for the given channel
+   * @returns Array colour hex colour stops for the given channel
    */
   private createColourStops_(channel: ColourChannel): string[] {
     const stops = [];
@@ -120,13 +117,12 @@ export class FieldColourSlider extends FieldColour {
 
   /**
    * Set the gradient CSS properties for the given node and channel
-   *
    * @param node The DOM node the gradient will be set on.
    * @param channel Either "hue", "saturation" or "value".
    */
   private setGradient_(node: HTMLElement, channel: ColourChannel) {
     const gradient = this.createColourStops_(channel).join(",");
-    node.style["background"] = `linear-gradient(to right, ${gradient})`;
+    node.style.background = `linear-gradient(to right, ${gradient})`;
   }
 
   /**
@@ -189,9 +185,8 @@ export class FieldColourSlider extends FieldColour {
 
   /**
    * Create label and readout DOM elements, returning the readout.
-   *
    * @param labelText Text for the label
-   * @return The container node and the readout node.
+   * @returns The container node and the readout node.
    */
   private createLabelDom_(labelText: string): Element[] {
     const labelContainer = document.createElement("div");
@@ -208,7 +203,6 @@ export class FieldColourSlider extends FieldColour {
 
   /**
    * Factory for creating the different slider callbacks
-   *
    * @param channel One of "hue", "saturation" or "brightness"
    * @returns The callback for slider update
    */

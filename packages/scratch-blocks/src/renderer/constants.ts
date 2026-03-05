@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -19,11 +18,10 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
    * styles contain any raw color values, corresponding CSS variables will be
    * created/overridden so that those colors can be dynamically referenced in
    * stylesheets.
-   *
    * @param theme The new theme to apply.
    */
   override setTheme(theme: Blockly.Theme) {
-    const root = document.querySelector(":root") as HTMLElement;
+    const root = document.documentElement;
     for (const [key, colour] of Object.entries(theme.blockStyles)) {
       if (typeof colour !== "object") {
         const varKey = `--colour-${key}`;
@@ -63,6 +61,7 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
    * that input slots inside a Boolean reporter (like `<a = b>`) are still
    * drawn with the rounded shape that matches what they accept, not the
    * hexagonal shape of their parent block's output.
+   * @param connection
    */
   override shapeFor(connection: Blockly.RenderedConnection): ReturnType<Blockly.zelos.ConstantProvider["shapeFor"]> {
     let checks = connection.getCheck();

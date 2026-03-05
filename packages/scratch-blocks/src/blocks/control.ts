@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2016 Massachusetts Institute of Technology
@@ -20,7 +19,7 @@
 
 import * as Blockly from "blockly/core";
 
-Blockly.Blocks["control_forever"] = {
+Blockly.Blocks.control_forever = {
   /**
    * Block for repeat n times (external number).
    * https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#5eke39
@@ -54,7 +53,7 @@ Blockly.Blocks["control_forever"] = {
   },
 };
 
-Blockly.Blocks["control_repeat"] = {
+Blockly.Blocks.control_repeat = {
   /**
    * Block for repeat n times (external number).
    * https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#so57n9
@@ -94,7 +93,7 @@ Blockly.Blocks["control_repeat"] = {
   },
 };
 
-Blockly.Blocks["control_if"] = {
+Blockly.Blocks.control_if = {
   /**
    * Block for if-then.
    */
@@ -121,7 +120,7 @@ Blockly.Blocks["control_if"] = {
   },
 };
 
-Blockly.Blocks["control_if_else"] = {
+Blockly.Blocks.control_if_else = {
   /**
    * Block for if-else.
    */
@@ -156,7 +155,7 @@ Blockly.Blocks["control_if_else"] = {
   },
 };
 
-Blockly.Blocks["control_stop"] = {
+Blockly.Blocks.control_stop = {
   /**
    * Block for stop all scripts.
    */
@@ -199,7 +198,7 @@ Blockly.Blocks["control_stop"] = {
   },
 };
 
-Blockly.Blocks["control_wait"] = {
+Blockly.Blocks.control_wait = {
   /**
    * Block to wait (pause) stack.
    */
@@ -218,7 +217,7 @@ Blockly.Blocks["control_wait"] = {
   },
 };
 
-Blockly.Blocks["control_wait_until"] = {
+Blockly.Blocks.control_wait_until = {
   /**
    * Block to wait until a condition becomes true.
    */
@@ -237,7 +236,7 @@ Blockly.Blocks["control_wait_until"] = {
   },
 };
 
-Blockly.Blocks["control_repeat_until"] = {
+Blockly.Blocks.control_repeat_until = {
   /**
    * Block to repeat until a condition becomes true.
    */
@@ -276,7 +275,7 @@ Blockly.Blocks["control_repeat_until"] = {
   },
 };
 
-Blockly.Blocks["control_while"] = {
+Blockly.Blocks.control_while = {
   /**
    * Block to repeat until a condition becomes false.
    * (This is an obsolete "hacked" block, for compatibility with 2.0.)
@@ -316,7 +315,7 @@ Blockly.Blocks["control_while"] = {
   },
 };
 
-Blockly.Blocks["control_for_each"] = {
+Blockly.Blocks.control_for_each = {
   /**
    * Block for for-each. This is an obsolete block that is implemented for
    * compatibility with Scratch 2.0 projects.
@@ -347,7 +346,7 @@ Blockly.Blocks["control_for_each"] = {
   },
 };
 
-Blockly.Blocks["control_start_as_clone"] = {
+Blockly.Blocks.control_start_as_clone = {
   /**
    * Block for "when I start as a clone" hat.
    */
@@ -364,9 +363,9 @@ Blockly.Blocks["control_start_as_clone"] = {
 /**
  * Create-clone drop-down menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["control_create_clone_of_menu"] = {};
+Blockly.Blocks.control_create_clone_of_menu = {};
 
-Blockly.Blocks["control_create_clone_of"] = {
+Blockly.Blocks.control_create_clone_of = {
   /**
    * Block for "create clone of..."
    */
@@ -385,7 +384,7 @@ Blockly.Blocks["control_create_clone_of"] = {
   },
 };
 
-Blockly.Blocks["control_delete_this_clone"] = {
+Blockly.Blocks.control_delete_this_clone = {
   /**
    * Block for "delete this clone."
    */
@@ -398,7 +397,7 @@ Blockly.Blocks["control_delete_this_clone"] = {
   },
 };
 
-Blockly.Blocks["control_get_counter"] = {
+Blockly.Blocks.control_get_counter = {
   /**
    * Block to get the counter value. This is an obsolete block that is
    * implemented for compatibility with Scratch 2.0 projects.
@@ -411,7 +410,7 @@ Blockly.Blocks["control_get_counter"] = {
   },
 };
 
-Blockly.Blocks["control_incr_counter"] = {
+Blockly.Blocks.control_incr_counter = {
   /**
    * Block to add one to the counter value. This is an obsolete block that is
    * implemented for compatibility with Scratch 2.0 projects.
@@ -424,7 +423,7 @@ Blockly.Blocks["control_incr_counter"] = {
   },
 };
 
-Blockly.Blocks["control_clear_counter"] = {
+Blockly.Blocks.control_clear_counter = {
   /**
    * Block to clear the counter value. This is an obsolete block that is
    * implemented for compatibility with Scratch 2.0 projects.
@@ -437,7 +436,7 @@ Blockly.Blocks["control_clear_counter"] = {
   },
 };
 
-Blockly.Blocks["control_all_at_once"] = {
+Blockly.Blocks.control_all_at_once = {
   /**
    * Block to run the contained script. This is an obsolete block that is
    * implemented for compatibility with Scratch 2.0 projects. Note that

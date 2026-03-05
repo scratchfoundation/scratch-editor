@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -10,6 +9,7 @@ import { Colours } from "./colours";
 /**
  * Creates an SVG filter to apply drop shadows to blocks being dragged and
  * inserts it into the DOM.
+ * @param workspace
  */
 export function buildShadowFilter(workspace: Blockly.WorkspaceSvg) {
   const svg = workspace.getParentSvg();

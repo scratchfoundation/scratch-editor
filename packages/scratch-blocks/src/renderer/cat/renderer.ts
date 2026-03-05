@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2026 Scratch Foundation
  * SPDX-License-Identifier: Apache-2.0
  */

@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -17,7 +16,6 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
   /**
    * Get the CSS class name associated with this renderer.
    * Note that all Scratch renderers share the same CSS class name.
-   *
    * @returns The class name.
    */
   override getClassName(): string {
@@ -26,10 +24,10 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
 
   /**
    * Create a new instance of the renderer's drawer.
-   *
    * @param block The block to render.
    * @param infoAn object containing all the information needed to render this
    *     block.
+   * @param info
    * @returns The drawer.
    */
   override makeDrawer_(block: Blockly.BlockSvg, info: Blockly.blockRendering.RenderInfo): Drawer {
@@ -38,7 +36,6 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
 
   /**
    * Create a new instance of the renderer's render info object.
-   *
    * @param block The block to measure.
    * @returns The render info object.
    */
@@ -48,7 +45,6 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
 
   /**
    * Create a new instance of the renderer's constant provider.
-   *
    * @returns The constant provider.
    */
   override makeConstants_(): ConstantProvider {
@@ -57,7 +53,6 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
 
   /**
    * Create a new instance of a renderer path object.
-   *
    * @param root The root SVG element.
    * @param style The style object to use for colouring.
    * @returns The renderer path object.
@@ -71,7 +66,6 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
 
   /**
    * Determine whether or not to highlight a connection.
-   *
    * @param connection The connection to determine whether or not to highlight.
    * @returns True if we should highlight the connection.
    */

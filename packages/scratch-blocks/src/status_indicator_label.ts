@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2018 Google Inc.
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Class for a category header in the flyout for Scratch
+ * @file Class for a category header in the flyout for Scratch
  * extensions which can display a textual label and a status button.
  * @author ericr@media.mit.edu (Eric Rosenbaum)
  */
@@ -53,7 +52,6 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
 
   /**
    * Creates a new StatusIndicatorLabel.
-   *
    * @param workspace The workspace in which to place this header.
    * @param targetWorkspace The flyout's target workspace.
    * @param json The JSON specifying the header.
@@ -64,7 +62,7 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
     json: Blockly.utils.toolbox.LabelInfo
   ) {
     super(workspace, targetWorkspace, json, true);
-    this.extensionId = json["id"]!;
+    this.extensionId = json.id!;
 
     const heightDelta = 40 - this.height;
     this.height = 40;
@@ -122,8 +120,8 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
    * Set the image on the status button using a status string.
    */
   refreshStatus() {
-    var status = this.getExtensionState(this.extensionId);
-    var basePath = Blockly.getMainWorkspace().options.pathToMedia;
+    const status = this.getExtensionState(this.extensionId);
+    const basePath = Blockly.getMainWorkspace().options.pathToMedia;
     if (status == StatusButtonState.READY) {
       this.setImageSrc(basePath + "status-ready.svg");
     }
@@ -150,7 +148,7 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
   /**
    * Gets the extension state. Overridden externally.
    * @param extensionId The ID of the extension in question.
-   * @return The state of the extension.
+   * @returns The state of the extension.
    */
   getExtensionState(extensionId: string): StatusButtonState {
     return StatusButtonState.NOT_READY;

@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2017 Google Inc.
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Extensions for vertical blocks in scratch-blocks.
+ * @file Extensions for vertical blocks in scratch-blocks.
  * The following extensions can be used to describe a block in Scratch terms.
  * For instance, a block in the operators colour scheme with a number output
  * would have the "colours_operators" and "output_number" extensions.
@@ -33,9 +32,8 @@ import { FlyoutCheckboxIcon } from "../flyout_checkbox_icon";
 /**
  * Helper function that generates an extension based on a category name.
  * The generated function will set the block's style based on the category name.
- *
  * @param category The name of the category to set colours for.
- * @return An extension function that sets colours based on the given category.
+ * @returns An extension function that sets colours based on the given category.
  */
 const colourHelper = function (category: string): () => void {
   /**
@@ -146,16 +144,13 @@ const PROCEDURE_DEF_CONTEXTMENU = function (this: Blockly.Block) {
   /**
    * Add the "edit" option and removes the "duplicate" option from the context
    * menu.
-   *
    * @param menuOptions List of menu options to edit.
    */
   this.mixin(
     {
       customContextMenu: function (
-        menuOptions: Array<
-          | Blockly.ContextMenuRegistry.ContextMenuOption
-          | Blockly.ContextMenuRegistry.LegacyContextMenuOption
-        >
+        menuOptions: (| Blockly.ContextMenuRegistry.ContextMenuOption
+          | Blockly.ContextMenuRegistry.LegacyContextMenuOption)[]
       ) {
         // Add the edit option at the end.
         menuOptions.push(ScratchProcedures.makeEditOption(this));
@@ -171,7 +166,7 @@ const PROCEDURE_DEF_CONTEXTMENU = function (this: Blockly.Block) {
       checkAndDelete: function () {
         const input = this.getInput("custom_block");
         // this is the root block, not the shadow block.
-        if (input && input.connection && input.connection.targetBlock()) {
+        if (input?.connection?.targetBlock()) {
           const procCode = input.connection.targetBlock().getProcCode();
           const didDelete = ScratchProcedures.deleteProcedureDefCallback(
             procCode,
@@ -190,23 +185,18 @@ const PROCEDURE_DEF_CONTEXTMENU = function (this: Blockly.Block) {
 /**
  * Mixin to add a context menu for a procedure call block.
  * It adds the "edit" option and the "define" option.
- * @mixin
- * @augments Blockly.Block
  * @package
  */
 const PROCEDURE_CALL_CONTEXTMENU = {
   /**
    * Add the "edit" option to the context menu.
-   *
    * @todo Add "go to definition" option once implemented.
    * @param menuOptions List of menu options to edit.
    */
   customContextMenu: function (
     this: Blockly.BlockSvg,
-    menuOptions: Array<
-      | Blockly.ContextMenuRegistry.ContextMenuOption
-      | Blockly.ContextMenuRegistry.LegacyContextMenuOption
-    >
+    menuOptions: (| Blockly.ContextMenuRegistry.ContextMenuOption
+      | Blockly.ContextMenuRegistry.LegacyContextMenuOption)[]
   ) {
     menuOptions.push(ScratchProcedures.makeEditOption(this));
   },

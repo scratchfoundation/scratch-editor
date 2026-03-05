@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -51,12 +50,12 @@ class BlockCommentResize extends BlockCommentBase {
       event ?? new BlockCommentResize()
     ) as BlockCommentResize;
     newEvent.newSize = new Blockly.utils.Size(
-      json["newSize"]["width"],
-      json["newSize"]["height"]
+      json.newSize.width,
+      json.newSize.height
     );
     newEvent.oldSize = new Blockly.utils.Size(
-      json["oldSize"]["width"],
-      json["oldSize"]["height"]
+      json.oldSize.width,
+      json.oldSize.height
     );
 
     return newEvent;

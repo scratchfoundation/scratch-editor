@@ -12,7 +12,7 @@
 <script src="../blocks_horizontal/wedo.js"></script>
 <script>
 'use strict';
-var options = {
+let options = {
   comments: true,
   collapse: true,
   media: '../media/',
@@ -35,8 +35,8 @@ var options = {
 };
 
 function start() {
-  var match = location.search.match(/toolbox=([^&]+)/);
-  var toolbox =
+  let match = location.search.match(/toolbox=([^&]+)/);
+  let toolbox =
       document.getElementById('toolbox-' + (match ? match[1] : 'categories'));
   document.forms.options.elements.toolbox.selectedIndex =
       Number(toolbox.getElementsByTagName('category').length == 0);

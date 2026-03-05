@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2018 Google Inc.
@@ -19,14 +18,13 @@
  */
 
 /**
- * @fileoverview Utility methods for Scratch Blocks but not Blockly.
+ * @file Utility methods for Scratch Blocks but not Blockly.
  * @author fenichel@google.com (Rachel Fenichel)
  */
 import * as Blockly from "blockly/core";
 
 /**
  * Compare strings with natural number sorting.
- *
  * @param str1 First input.
  * @param str2 Second input.
  * @returns -1, 0, or 1 to signify greater than, equality, or less than.

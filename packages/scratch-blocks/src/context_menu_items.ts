@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -14,8 +13,8 @@ export function registerDeleteBlock() {
     displayText(scope: Blockly.ContextMenuRegistry.Scope) {
       const descendantCount = getDeletableBlocksInStack(scope.block!).length;
       return descendantCount === 1
-        ? Blockly.Msg["DELETE_BLOCK"]
-        : Blockly.Msg["DELETE_X_BLOCKS"].replace("%1", `${descendantCount}`);
+        ? Blockly.Msg.DELETE_BLOCK
+        : Blockly.Msg.DELETE_X_BLOCKS.replace("%1", `${descendantCount}`);
     },
     preconditionFn(scope: Blockly.ContextMenuRegistry.Scope) {
       if (!scope.block!.isInFlyout && scope.block!.isDeletable()) {
@@ -67,9 +66,9 @@ export function registerDeleteAll() {
         scope.workspace
       ).length;
       if (deletableBlocksLength === 1) {
-        return Blockly.Msg["DELETE_BLOCK"];
+        return Blockly.Msg.DELETE_BLOCK;
       }
-      return Blockly.Msg["DELETE_X_BLOCKS"].replace(
+      return Blockly.Msg.DELETE_X_BLOCKS.replace(
         "%1",
         `${deletableBlocksLength}`
       );
@@ -93,11 +92,11 @@ export function registerDeleteAll() {
         deleteNext(deletableBlocks);
       } else {
         Blockly.dialog.confirm(
-          Blockly.Msg["DELETE_ALL_BLOCKS"].replace(
+          Blockly.Msg.DELETE_ALL_BLOCKS.replace(
             "%1",
             String(deletableBlocks.length)
           ),
-          function (ok: boolean) {
+          (ok: boolean) => {
             if (ok) {
               deleteNext(deletableBlocks);
             }
@@ -130,7 +129,6 @@ function getDeletableBlocksInWorkspace(
 
 /**
  * Deletes the given blocks. Used to delete all blocks in the workspace.
- *
  * @param deleteList List of blocks to delete.
  * @param eventGroup Event group ID with which all delete events should be
  *     associated.  If not specified, create a new group.

@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
@@ -19,13 +18,13 @@
  */
 
 /**
- * @fileoverview Math blocks for Blockly.
+ * @file Math blocks for Blockly.
  * @author q.neutron@gmail.com (Quynh Neutron)
  */
 import * as Blockly from "blockly/core";
 import * as Constants from "../constants";
 
-Blockly.Blocks["math_number"] = {
+Blockly.Blocks.math_number = {
   /**
    * Block for generic numeric value.
    */
@@ -46,7 +45,7 @@ Blockly.Blocks["math_number"] = {
   },
 };
 
-Blockly.Blocks["math_integer"] = {
+Blockly.Blocks.math_integer = {
   /**
    * Block for integer value (no decimal, + or -).
    */
@@ -67,7 +66,7 @@ Blockly.Blocks["math_integer"] = {
   },
 };
 
-Blockly.Blocks["math_whole_number"] = {
+Blockly.Blocks.math_whole_number = {
   /**
    * Block for whole number value, no negatives or decimals.
    */
@@ -89,7 +88,7 @@ Blockly.Blocks["math_whole_number"] = {
   },
 };
 
-Blockly.Blocks["math_positive_number"] = {
+Blockly.Blocks.math_positive_number = {
   /**
    * Block for positive number value, with decimal.
    */
@@ -110,7 +109,7 @@ Blockly.Blocks["math_positive_number"] = {
   },
 };
 
-Blockly.Blocks["math_angle"] = {
+Blockly.Blocks.math_angle = {
   /**
    * Block for angle picker.
    */

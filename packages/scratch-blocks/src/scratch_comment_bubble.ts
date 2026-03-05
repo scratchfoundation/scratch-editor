@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -8,8 +7,6 @@ import * as Blockly from "blockly/core";
 
 /**
  * A Scratch-style comment bubble for block comments.
- * @implements {IBubble}
- * @implements {ISelectable}
  */
 export class ScratchCommentBubble
   extends Blockly.comments.CommentView
@@ -158,8 +155,8 @@ export class ScratchCommentBubble
     if (!this.anchorChain) return;
 
     const location = this.getRelativeToSurfaceXY();
-    this.anchorChain!.setAttribute("x1", `${this.anchor!.x - location.x}`);
-    this.anchorChain!.setAttribute("y1", `${this.anchor!.y - location.y}`);
+    this.anchorChain.setAttribute("x1", `${this.anchor!.x - location.x}`);
+    this.anchorChain.setAttribute("y1", `${this.anchor!.y - location.y}`);
   }
 
   getId() {

@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2017 Google Inc.
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Data Flyout components including variable and list blocks.
+ * @file Data Flyout components including variable and list blocks.
  * @author marisaleung@google.com (Marisa Leung)
  */
 
@@ -29,7 +28,6 @@ import { LIST_VARIABLE_TYPE, SCALAR_VARIABLE_TYPE } from "./constants";
 
 /**
  * Construct the blocks required by the flyout for the variable category.
- *
  * @param workspace The workspace containing variables.
  * @returns Array of XML block elements.
  */
@@ -85,7 +83,6 @@ export function getVariablesCategory(
 
 /**
  * Construct and add a data_variable block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -103,7 +100,6 @@ function addDataVariable(
 
 /**
  * Construct and add a data_setvariableto block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -130,7 +126,6 @@ function addSetVariableTo(
 
 /**
  * Construct and add a data_changevariableby block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -157,7 +152,6 @@ function addChangeVariableBy(
 
 /**
  * Construct and add a data_showVariable block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -175,7 +169,6 @@ function addShowVariable(
 
 /**
  * Construct and add a data_hideVariable block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -193,7 +186,6 @@ function addHideVariable(
 
 /**
  * Construct and add a data_listcontents block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -211,7 +203,6 @@ function addDataList(
 
 /**
  * Construct and add a data_addtolist block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -236,7 +227,6 @@ function addAddToList(
 
 /**
  * Construct and add a data_deleteoflist block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -261,7 +251,6 @@ function addDeleteOfList(
 
 /**
  * Construct and add a data_deleteoflist block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -277,7 +266,6 @@ function addDeleteAllOfList(
 
 /**
  * Construct and add a data_insertatlist block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -310,7 +298,6 @@ function addInsertAtList(
 
 /**
  * Construct and add a data_replaceitemoflist block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -343,7 +330,6 @@ function addReplaceItemOfList(
 
 /**
  * Construct and add a data_itemoflist block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -366,8 +352,8 @@ function addItemOfList(
   ]);
 }
 
-/** Construct and add a data_itemnumoflist block to xmlList.
- *
+/**
+ * Construct and add a data_itemnumoflist block to xmlList.
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -392,7 +378,6 @@ function addItemNumberOfList(
 
 /**
  * Construct and add a data_lengthoflist block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -408,7 +393,6 @@ function addLengthOfList(
 
 /**
  * Construct and add a data_listcontainsitem block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -433,7 +417,6 @@ function addListContainsItem(
 
 /**
  * Construct and add a data_showlist block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -449,7 +432,6 @@ function addShowList(
 
 /**
  * Construct and add a data_hidelist block to xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  */
@@ -465,7 +447,6 @@ function addHideList(
 
 /**
  * Construct a create variable button and push it to the xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param workspace Workspace to register callback to.
  * @param type Type of variable this is for. For example, 'LIST' or
@@ -509,7 +490,6 @@ function addCreateButton(
 /**
  * Construct a variable block with the given variable, blockType, and optional
  *     value tags. Add the variable block to the given xmlList.
- *
  * @param xmlList Array of XML block elements.
  * @param variable Variable to select in the field.
  * @param blockType Type of block. For example, 'data_hidelist' or
@@ -542,8 +522,8 @@ function addBlock(
       );
     }
 
-    var gap = 8;
-    var blockText = `
+    const gap = 8;
+    const blockText = `
       <xml>
         <block type="${blockType}" gap="${gap}">
           ${generateVariableFieldXml(variable, fieldName)}
@@ -551,14 +531,13 @@ function addBlock(
           ${secondValueField}
         </block>
       </xml>`;
-    var block = Blockly.utils.xml.textToDom(blockText).firstElementChild!;
+    const block = Blockly.utils.xml.textToDom(blockText).firstElementChild!;
     xmlList.push(block);
   }
 }
 
 /**
  * Creates XML representing a variable field.
- *
  * @param variableModel The variable to represent in the field.
  * @param opt_name A custom name for the field, if desired.
  * @returns XML representation of a variable field.
@@ -578,7 +557,6 @@ function generateVariableFieldXml(
 /**
  * Create the text representation of a value dom element with a shadow of the
  *     indicated type inside.
- *
  * @param valueName Name of the value tags.
  * @param type The type of the shadow tags.
  * @param value The default shadow value.
@@ -612,7 +590,6 @@ function createValue(valueName: string, type: string, value: string): string {
 
 /**
  * Construct a block separator. Add the separator to the given xmlList.
- *
  * @param xmlList Array of XML block elements.
  */
 function addSep(xmlList: Element[]) {

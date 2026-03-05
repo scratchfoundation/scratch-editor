@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Colour blocks for Blockly.
+ * @file Colour blocks for Blockly.
  * @author fraser@google.com (Neil Fraser)
  */
 import * as Blockly from "blockly/core";
@@ -27,7 +26,6 @@ import * as Constants from "../constants";
 
 /**
  * Pick a random colour.
- *
  * @returns #RRGGBB for random colour.
  */
 function randomColour(): string {
@@ -35,7 +33,7 @@ function randomColour(): string {
   return "#" + ("00000" + num.toString(16)).substr(-6);
 }
 
-Blockly.Blocks["colour_picker"] = {
+Blockly.Blocks.colour_picker = {
   /**
    * Block for colour picker.
    */

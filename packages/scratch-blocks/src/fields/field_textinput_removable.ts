@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2016 Massachusetts Institute of Technology
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Text input field with floating "remove" button.
+ * @file Text input field with floating "remove" button.
  * @author pkaplan@media.mit.edu (Paul Kaplan)
  */
 import * as Blockly from "blockly/core";
@@ -75,7 +74,6 @@ export class FieldTextInputRemovable extends Blockly.FieldTextInput {
   /**
    * Helper function to construct a FieldTextInputRemovable from a JSON arg object,
    * dereferencing any string table references.
-   *
    * @param options A JSON object with options (text, class, and spellcheck).
    * @returns The new text input.
    */
@@ -83,11 +81,11 @@ export class FieldTextInputRemovable extends Blockly.FieldTextInput {
     options: Blockly.FieldTextInputFromJsonConfig
   ): FieldTextInputRemovable {
     const text = Blockly.utils.parsing.replaceMessageReferences(
-      options["text"]
+      options.text
     );
     const field = new FieldTextInputRemovable(text, null, options);
-    if (typeof options["spellcheck"] == "boolean") {
-      field.setSpellcheck(options["spellcheck"]);
+    if (typeof options.spellcheck == "boolean") {
+      field.setSpellcheck(options.spellcheck);
     }
     return field;
   }

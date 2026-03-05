@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2013 Google Inc.
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Angle input field.
+ * @file Angle input field.
  * @author fraser@google.com (Neil Fraser)
  */
 "use strict";
@@ -155,6 +154,7 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
 
   /**
    * Show the inline free-text editor on top of the text.
+   * @param event
    */
   showEditor_(event: PointerEvent) {
     // Mobile browsers have issues with in-line textareas (focus & keyboards).
@@ -420,7 +420,7 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
       }
       this.arrow!.setAttribute("transform", "rotate(" + imageRotation + ")");
     }
-    this.gauge!.setAttribute("d", path.join(""));
+    this.gauge.setAttribute("d", path.join(""));
     this.line!.setAttribute("x2", `${x2}`);
     this.line!.setAttribute("y2", `${y2}`);
     this.handle!.setAttribute("transform", "translate(" + x2 + "," + y2 + ")");
@@ -464,12 +464,11 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
 
   /**
    * Construct a FieldAngle from a JSON arg object.
-   *
    * @param options A JSON object with options (angle).
    * @returns The new field instance.
    */
   fromJson(options: ScratchFieldAngleJsonConfig): ScratchFieldAngle {
-    return new ScratchFieldAngle(options["angle"]);
+    return new ScratchFieldAngle(options.angle);
   }
 }
 

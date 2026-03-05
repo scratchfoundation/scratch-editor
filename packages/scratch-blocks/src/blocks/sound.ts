@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2016 Massachusetts Institute of Technology
@@ -23,9 +22,9 @@ import * as Blockly from "blockly/core";
 /**
  * Sound effects drop-down menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["sound_sounds_menu"] = {};
+Blockly.Blocks.sound_sounds_menu = {};
 
-Blockly.Blocks["sound_play"] = {
+Blockly.Blocks.sound_play = {
   /**
    * Block to play sound.
    */
@@ -43,7 +42,7 @@ Blockly.Blocks["sound_play"] = {
   },
 };
 
-Blockly.Blocks["sound_playuntildone"] = {
+Blockly.Blocks.sound_playuntildone = {
   /**
    * Block to play sound until done.
    */
@@ -61,7 +60,7 @@ Blockly.Blocks["sound_playuntildone"] = {
   },
 };
 
-Blockly.Blocks["sound_stopallsounds"] = {
+Blockly.Blocks.sound_stopallsounds = {
   /**
    * Block to stop all sounds
    */
@@ -73,7 +72,7 @@ Blockly.Blocks["sound_stopallsounds"] = {
   },
 };
 
-Blockly.Blocks["sound_seteffectto"] = {
+Blockly.Blocks.sound_seteffectto = {
   /**
    * Block to set the audio effect
    */
@@ -99,7 +98,7 @@ Blockly.Blocks["sound_seteffectto"] = {
   },
 };
 
-Blockly.Blocks["sound_changeeffectby"] = {
+Blockly.Blocks.sound_changeeffectby = {
   /**
    * Block to change the audio effect
    */
@@ -125,7 +124,7 @@ Blockly.Blocks["sound_changeeffectby"] = {
   },
 };
 
-Blockly.Blocks["sound_cleareffects"] = {
+Blockly.Blocks.sound_cleareffects = {
   /**
    * Block to clear audio effects
    */
@@ -137,7 +136,7 @@ Blockly.Blocks["sound_cleareffects"] = {
   },
 };
 
-Blockly.Blocks["sound_changevolumeby"] = {
+Blockly.Blocks.sound_changevolumeby = {
   /**
    * Block to change the sprite's volume by a certain value
    */
@@ -155,7 +154,7 @@ Blockly.Blocks["sound_changevolumeby"] = {
   },
 };
 
-Blockly.Blocks["sound_setvolumeto"] = {
+Blockly.Blocks.sound_setvolumeto = {
   /**
    * Block to set the sprite's volume to a certain percent
    */
@@ -173,7 +172,7 @@ Blockly.Blocks["sound_setvolumeto"] = {
   },
 };
 
-Blockly.Blocks["sound_volume"] = {
+Blockly.Blocks.sound_volume = {
   /**
    * Block to report volume
    */

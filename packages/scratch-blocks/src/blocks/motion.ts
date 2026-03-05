@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2016 Massachusetts Institute of Technology
@@ -20,7 +19,7 @@
 
 import * as Blockly from "blockly/core";
 
-Blockly.Blocks["motion_movesteps"] = {
+Blockly.Blocks.motion_movesteps = {
   /**
    * Block to move steps.
    */
@@ -38,7 +37,7 @@ Blockly.Blocks["motion_movesteps"] = {
   },
 };
 
-Blockly.Blocks["motion_turnright"] = {
+Blockly.Blocks.motion_turnright = {
   /**
    * Block to turn right.
    */
@@ -63,7 +62,7 @@ Blockly.Blocks["motion_turnright"] = {
   },
 };
 
-Blockly.Blocks["motion_turnleft"] = {
+Blockly.Blocks.motion_turnleft = {
   /**
    * Block to turn left.
    */
@@ -88,7 +87,7 @@ Blockly.Blocks["motion_turnleft"] = {
   },
 };
 
-Blockly.Blocks["motion_pointindirection"] = {
+Blockly.Blocks.motion_pointindirection = {
   /**
    * Block to point in direction.
    */
@@ -109,9 +108,9 @@ Blockly.Blocks["motion_pointindirection"] = {
 /**
  * Point towards drop-down menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["motion_pointtowards_menu"] = {};
+Blockly.Blocks.motion_pointtowards_menu = {};
 
-Blockly.Blocks["motion_pointtowards"] = {
+Blockly.Blocks.motion_pointtowards = {
   /**
    * Block to point in direction.
    */
@@ -132,9 +131,9 @@ Blockly.Blocks["motion_pointtowards"] = {
 /**
  * Go to drop-down menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["motion_goto_menu"] = {};
+Blockly.Blocks.motion_goto_menu = {};
 
-Blockly.Blocks["motion_gotoxy"] = {
+Blockly.Blocks.motion_gotoxy = {
   /**
    * Block to go to X, Y.
    */
@@ -156,7 +155,7 @@ Blockly.Blocks["motion_gotoxy"] = {
   },
 };
 
-Blockly.Blocks["motion_goto"] = {
+Blockly.Blocks.motion_goto = {
   /**
    * Block to go to a menu item.
    */
@@ -174,7 +173,7 @@ Blockly.Blocks["motion_goto"] = {
   },
 };
 
-Blockly.Blocks["motion_glidesecstoxy"] = {
+Blockly.Blocks.motion_glidesecstoxy = {
   /**
    * Block to glide for a specified time.
    */
@@ -203,9 +202,9 @@ Blockly.Blocks["motion_glidesecstoxy"] = {
 /**
  * Glide to drop-down menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["motion_glideto_menu"] = {};
+Blockly.Blocks.motion_glideto_menu = {};
 
-Blockly.Blocks["motion_glideto"] = {
+Blockly.Blocks.motion_glideto = {
   /**
    * Block to glide to a menu item
    */
@@ -227,7 +226,7 @@ Blockly.Blocks["motion_glideto"] = {
   },
 };
 
-Blockly.Blocks["motion_changexby"] = {
+Blockly.Blocks.motion_changexby = {
   /**
    * Block to change X.
    */
@@ -245,7 +244,7 @@ Blockly.Blocks["motion_changexby"] = {
   },
 };
 
-Blockly.Blocks["motion_setx"] = {
+Blockly.Blocks.motion_setx = {
   /**
    * Block to set X.
    */
@@ -263,7 +262,7 @@ Blockly.Blocks["motion_setx"] = {
   },
 };
 
-Blockly.Blocks["motion_changeyby"] = {
+Blockly.Blocks.motion_changeyby = {
   /**
    * Block to change Y.
    */
@@ -281,7 +280,7 @@ Blockly.Blocks["motion_changeyby"] = {
   },
 };
 
-Blockly.Blocks["motion_sety"] = {
+Blockly.Blocks.motion_sety = {
   /**
    * Block to set Y.
    */
@@ -299,7 +298,7 @@ Blockly.Blocks["motion_sety"] = {
   },
 };
 
-Blockly.Blocks["motion_ifonedgebounce"] = {
+Blockly.Blocks.motion_ifonedgebounce = {
   /**
    * Block to bounce on edge.
    */
@@ -311,7 +310,7 @@ Blockly.Blocks["motion_ifonedgebounce"] = {
   },
 };
 
-Blockly.Blocks["motion_setrotationstyle"] = {
+Blockly.Blocks.motion_setrotationstyle = {
   /**
    * Block to set rotation style.
    */
@@ -334,7 +333,7 @@ Blockly.Blocks["motion_setrotationstyle"] = {
   },
 };
 
-Blockly.Blocks["motion_xposition"] = {
+Blockly.Blocks.motion_xposition = {
   /**
    * Block to report X.
    */
@@ -346,7 +345,7 @@ Blockly.Blocks["motion_xposition"] = {
   },
 };
 
-Blockly.Blocks["motion_yposition"] = {
+Blockly.Blocks.motion_yposition = {
   /**
    * Block to report Y.
    */
@@ -358,7 +357,7 @@ Blockly.Blocks["motion_yposition"] = {
   },
 };
 
-Blockly.Blocks["motion_direction"] = {
+Blockly.Blocks.motion_direction = {
   /**
    * Block to report direction.
    */
@@ -370,7 +369,7 @@ Blockly.Blocks["motion_direction"] = {
   },
 };
 
-Blockly.Blocks["motion_scroll_right"] = {
+Blockly.Blocks.motion_scroll_right = {
   /**
    * Block to scroll the stage right. Does not actually do anything. This is
    * an obsolete block that is implemented for compatibility with Scratch 2.0
@@ -390,7 +389,7 @@ Blockly.Blocks["motion_scroll_right"] = {
   },
 };
 
-Blockly.Blocks["motion_scroll_up"] = {
+Blockly.Blocks.motion_scroll_up = {
   /**
    * Block to scroll the stage up. Does not actually do anything. This is an
    * obsolete block that is implemented for compatibility with Scratch 2.0
@@ -410,7 +409,7 @@ Blockly.Blocks["motion_scroll_up"] = {
   },
 };
 
-Blockly.Blocks["motion_align_scene"] = {
+Blockly.Blocks.motion_align_scene = {
   /**
    * Block to change the stage's scrolling alignment. Does not actually do
    * anything. This is an obsolete block that is implemented for compatibility
@@ -437,7 +436,7 @@ Blockly.Blocks["motion_align_scene"] = {
   },
 };
 
-Blockly.Blocks["motion_xscroll"] = {
+Blockly.Blocks.motion_xscroll = {
   /**
    * Block to report the stage's scroll position's X value. Does not actually
    * do anything. This is an obsolete block that is implemented for
@@ -451,7 +450,7 @@ Blockly.Blocks["motion_xscroll"] = {
   },
 };
 
-Blockly.Blocks["motion_yscroll"] = {
+Blockly.Blocks.motion_yscroll = {
   /**
    * Block to report the stage's scroll position's Y value. Does not actually
    * do anything. This is an obsolete block that is implemented for

@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -45,8 +44,8 @@ export class BlockCommentBase extends Blockly.Events.Abstract {
       workspace,
       event ?? new BlockCommentBase()
     ) as BlockCommentBase;
-    newEvent.commentId = json["commentId"];
-    newEvent.blockId = json["blockId"];
+    newEvent.commentId = json.commentId;
+    newEvent.blockId = json.blockId;
     return newEvent;
   }
 }

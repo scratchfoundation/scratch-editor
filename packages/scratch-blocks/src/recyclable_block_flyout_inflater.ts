@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -14,7 +13,6 @@ import { RecyclableBlockFlyoutInflater as BlocklyRecyclableBlockFlyoutInflater }
 export class RecyclableBlockFlyoutInflater extends BlocklyRecyclableBlockFlyoutInflater {
   /**
    * Creates a block on the flyout workspace from the given block definition.
-   *
    * @param state A JSON representation of a block to load.
    * @param flyoutWorkspace The flyout's workspace.
    * @returns The newly created block.

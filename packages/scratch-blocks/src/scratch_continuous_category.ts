@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -22,8 +21,8 @@ export class ScratchContinuousCategory extends ContinuousCategory {
    */
   private showStatusButton = false;
 
-  /** Creates a new ScratchContinuousCategory.
-   *
+  /**
+   * Creates a new ScratchContinuousCategory.
    * @param toolboxItemDef A toolbox item definition.
    * @param parentToolbox The toolbox this category is being added to.
    * @param opt_parent The parent toolbox category, if any.
@@ -34,7 +33,7 @@ export class ScratchContinuousCategory extends ContinuousCategory {
     opt_parent?: Blockly.ICollapsibleToolboxItem
   ) {
     super(toolboxItemDef, parentToolbox, opt_parent);
-    this.showStatusButton = toolboxItemDef["showStatusButton"] === "true";
+    this.showStatusButton = toolboxItemDef.showStatusButton === "true";
   }
 
   /**
@@ -49,7 +48,7 @@ export class ScratchContinuousCategory extends ContinuousCategory {
       return icon;
     } else {
       const icon = super.createIconDom_();
-      icon.style.border = `1px solid ${this.toolboxItemDef_["secondaryColour"]}`;
+      icon.style.border = `1px solid ${this.toolboxItemDef_.secondaryColour}`;
       return icon;
     }
   }

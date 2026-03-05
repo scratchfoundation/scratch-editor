@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -18,6 +17,7 @@ class StatusIndicatorLabelFlyoutInflater extends Blockly.LabelFlyoutInflater {
    * @param state JSON representation of a status indicator label.
    * @param flyoutWorkspace The workspace to create the
    *     label on.
+   * @param flyout
    * @returns The newly created status indicator label.
    */
   load(

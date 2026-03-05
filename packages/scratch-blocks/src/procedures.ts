@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Utility functions for handling procedures.
+ * @file Utility functions for handling procedures.
  * @author fraser@google.com (Neil Fraser)
  */
 
@@ -30,23 +29,23 @@ import * as scratchBlocksUtils from "../src/scratch_blocks_utils";
 /**
  * Find all user-created procedure definition mutations in a workspace.
  * @param root Root workspace.
- * @return Array of mutation xml elements.
+ * @returns Array of mutation xml elements.
  */
 function allProcedureMutations(root: Blockly.WorkspaceSvg): Element[] {
   const blocks = root.getAllBlocks();
   return blocks
     .filter((b) => b.type === Constants.PROCEDURES_PROTOTYPE_BLOCK_TYPE)
-    .map((b) => b.mutationToDom!(/* opt_generateShadows */ true) as Element);
+    .map((b) => b.mutationToDom!(/* opt_generateShadows */ true));
 }
 
 /**
  * Sorts an array of procedure definition mutations alphabetically.
  * (Does not mutate the given array.)
  * @param mutations Array of mutation xml elements.
- * @return Sorted array of mutation xml elements.
+ * @returns Sorted array of mutation xml elements.
  */
 function sortProcedureMutations(mutations: Element[]): Element[] {
-  return mutations.slice().sort(function (a, b) {
+  return mutations.slice().sort((a, b) => {
     const procCodeA = a.getAttribute("proccode")!;
     const procCodeB = b.getAttribute("proccode")!;
 
@@ -57,10 +56,10 @@ function sortProcedureMutations(mutations: Element[]): Element[] {
 /**
  * Construct the blocks required by the flyout for the procedure category.
  * @param workspace The workspace containing procedures.
- * @return Array of XML block elements.
+ * @returns Array of XML block elements.
  */
 function getProceduresCategory(workspace: Blockly.WorkspaceSvg): Element[] {
-  var xmlList: Element[] = [];
+  const xmlList: Element[] = [];
 
   addCreateButton(workspace, xmlList);
 
@@ -113,7 +112,7 @@ function addCreateButton(workspace: Blockly.WorkspaceSvg, xmlList: Element[]) {
  * @param allowRecursive True if the search should include recursive
  *     procedure calls.  False if the search should ignore the stack starting
  *     with definitionRoot.
- * @return Array of caller blocks.
+ * @returns Array of caller blocks.
  */
 export function getCallers(
   name: string,
@@ -126,13 +125,11 @@ export function getCallers(
       return [];
     }
 
-    return block.getDescendants(false).filter((descendant) => {
-      return (
+    return block.getDescendants(false).filter((descendant) => (
         isProcedureBlock(descendant) &&
         descendant.type === Constants.PROCEDURES_CALL_BLOCK_TYPE &&
         descendant.getProcCode() === name
-      );
-    });
+      ));
   });
 }
 
@@ -187,7 +184,7 @@ function mutateCallersAndPrototype(
  * Find the definition block for the named procedure.
  * @param procCode The identifier of the procedure.
  * @param workspace The workspace to search.
- * @return The procedure definition block, or undefined if not found.
+ * @returns The procedure definition block, or undefined if not found.
  */
 function getDefineBlock(
   procCode: string,
@@ -213,7 +210,7 @@ function getDefineBlock(
  * Find the prototype block for the named procedure.
  * @param procCode The identifier of the procedure.
  * @param workspace The workspace to search.
- * @return The procedure prototype block, or undefined if not found.
+ * @returns The procedure prototype block, or undefined if not found.
  */
 function getPrototypeBlock(
   procCode: string,
@@ -230,13 +227,13 @@ function getPrototypeBlock(
 
 /**
  * Create a mutation for a brand new custom procedure.
- * @return The mutation for a new custom procedure
+ * @returns The mutation for a new custom procedure
  */
 function newProcedureMutation(): Element {
   const mutationText = `
     <xml>
       <mutation
-        proccode="${Blockly.Msg["PROCEDURE_DEFAULT_NAME"]}"
+        proccode="${Blockly.Msg.PROCEDURE_DEFAULT_NAME}"
         argumentids="[]"
         argumentnames="[]"
         argumentdefaults="[]"
@@ -260,7 +257,7 @@ function createProcedureDefCallback(workspace: Blockly.WorkspaceSvg) {
 /**
  * Callback factory for adding a new custom procedure from a mutation.
  * @param workspace The workspace to create the new procedure on.
- * @return callback for creating the new custom procedure.
+ * @returns callback for creating the new custom procedure.
  */
 function createProcedureCallbackFactory(
   workspace: Blockly.WorkspaceSvg
@@ -362,7 +359,7 @@ function editProcedureCallback(block: Blockly.BlockSvg) {
 /**
  * Callback factory for editing an existing custom procedure.
  * @param block The procedure prototype block being edited.
- * @return Callback for editing the custom procedure.
+ * @returns Callback for editing the custom procedure.
  */
 function editProcedureCallbackFactory(
   block: Blockly.BlockSvg
@@ -379,7 +376,7 @@ function editProcedureCallbackFactory(
  * This appears in the context menu for procedure definitions and procedure
  * calls.
  * @param block The block where the right-click originated.
- * @return A menu option, containing text, enabled, and a callback.
+ * @returns A menu option, containing text, enabled, and a callback.
  */
 function makeEditOption(
   block: Blockly.BlockSvg
@@ -400,7 +397,7 @@ function makeEditOption(
  * @param procCode The identifier of the procedure to delete.
  * @param definitionRoot The root block of the stack that defines the custom
  *     procedure.
- * @return True if the custom procedure was deleted, false otherwise.
+ * @returns True if the custom procedure was deleted, false otherwise.
  */
 function deleteProcedureDefCallback(
   procCode: string,
@@ -424,7 +421,6 @@ function deleteProcedureDefCallback(
 
 /**
  * Returns whether the given block is a procedure block and narrows its type.
- *
  * @param block The block to check.
  * @returns True if the block is a procedure block, otherwise false.
  */

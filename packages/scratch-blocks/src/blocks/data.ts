@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2016 Massachusetts Institute of Technology
@@ -25,7 +24,7 @@ import { renameVariable } from "../variables";
 import type { ScratchFieldVariable } from "../fields/scratch_field_variable";
 import type { ScratchVariableModel } from "../scratch_variable_model";
 
-Blockly.Blocks["data_variable"] = {
+Blockly.Blocks.data_variable = {
   /**
    * Block of Variables
    */
@@ -50,7 +49,7 @@ Blockly.Blocks["data_variable"] = {
   },
 };
 
-Blockly.Blocks["data_setvariableto"] = {
+Blockly.Blocks.data_setvariableto = {
   /**
    * Block to set variable to a certain value
    */
@@ -74,7 +73,7 @@ Blockly.Blocks["data_setvariableto"] = {
   },
 };
 
-Blockly.Blocks["data_changevariableby"] = {
+Blockly.Blocks.data_changevariableby = {
   /**
    * Block to change variable by a certain value
    */
@@ -98,7 +97,7 @@ Blockly.Blocks["data_changevariableby"] = {
   },
 };
 
-Blockly.Blocks["data_showvariable"] = {
+Blockly.Blocks.data_showvariable = {
   /**
    * Block to show a variable
    */
@@ -120,7 +119,7 @@ Blockly.Blocks["data_showvariable"] = {
   },
 };
 
-Blockly.Blocks["data_hidevariable"] = {
+Blockly.Blocks.data_hidevariable = {
   /**
    * Block to hide a variable
    */
@@ -142,7 +141,7 @@ Blockly.Blocks["data_hidevariable"] = {
   },
 };
 
-Blockly.Blocks["data_listcontents"] = {
+Blockly.Blocks.data_listcontents = {
   /**
    * List reporter.
    */
@@ -166,7 +165,7 @@ Blockly.Blocks["data_listcontents"] = {
   },
 };
 
-Blockly.Blocks["data_listindexall"] = {
+Blockly.Blocks.data_listindexall = {
   /**
    * List index menu, with all option.
    */
@@ -192,7 +191,7 @@ Blockly.Blocks["data_listindexall"] = {
   },
 };
 
-Blockly.Blocks["data_listindexrandom"] = {
+Blockly.Blocks.data_listindexrandom = {
   /**
    * List index menu, with random option.
    */
@@ -218,7 +217,7 @@ Blockly.Blocks["data_listindexrandom"] = {
   },
 };
 
-Blockly.Blocks["data_addtolist"] = {
+Blockly.Blocks.data_addtolist = {
   /**
    * Block to add item to list.
    */
@@ -242,7 +241,7 @@ Blockly.Blocks["data_addtolist"] = {
   },
 };
 
-Blockly.Blocks["data_deleteoflist"] = {
+Blockly.Blocks.data_deleteoflist = {
   /**
    * Block to delete item from list.
    */
@@ -266,7 +265,7 @@ Blockly.Blocks["data_deleteoflist"] = {
   },
 };
 
-Blockly.Blocks["data_deletealloflist"] = {
+Blockly.Blocks.data_deletealloflist = {
   /**
    * Block to delete all items from list.
    */
@@ -286,7 +285,7 @@ Blockly.Blocks["data_deletealloflist"] = {
   },
 };
 
-Blockly.Blocks["data_insertatlist"] = {
+Blockly.Blocks.data_insertatlist = {
   /**
    * Block to insert item to list.
    */
@@ -314,7 +313,7 @@ Blockly.Blocks["data_insertatlist"] = {
   },
 };
 
-Blockly.Blocks["data_replaceitemoflist"] = {
+Blockly.Blocks.data_replaceitemoflist = {
   /**
    * Block to insert item to list.
    */
@@ -342,7 +341,7 @@ Blockly.Blocks["data_replaceitemoflist"] = {
   },
 };
 
-Blockly.Blocks["data_itemoflist"] = {
+Blockly.Blocks.data_itemoflist = {
   /**
    * Block for reporting item of list.
    */
@@ -368,7 +367,7 @@ Blockly.Blocks["data_itemoflist"] = {
   },
 };
 
-Blockly.Blocks["data_itemnumoflist"] = {
+Blockly.Blocks.data_itemnumoflist = {
   /**
    * Block for reporting the item # of a string in a list.
    */
@@ -394,7 +393,7 @@ Blockly.Blocks["data_itemnumoflist"] = {
   },
 };
 
-Blockly.Blocks["data_lengthoflist"] = {
+Blockly.Blocks.data_lengthoflist = {
   /**
    * Block for reporting length of list.
    */
@@ -414,7 +413,7 @@ Blockly.Blocks["data_lengthoflist"] = {
   },
 };
 
-Blockly.Blocks["data_listcontainsitem"] = {
+Blockly.Blocks.data_listcontainsitem = {
   /**
    * Block to report whether list contains item.
    */
@@ -438,7 +437,7 @@ Blockly.Blocks["data_listcontainsitem"] = {
   },
 };
 
-Blockly.Blocks["data_showlist"] = {
+Blockly.Blocks.data_showlist = {
   /**
    * Block to show a list.
    */
@@ -458,7 +457,7 @@ Blockly.Blocks["data_showlist"] = {
   },
 };
 
-Blockly.Blocks["data_hidelist"] = {
+Blockly.Blocks.data_hidelist = {
   /**
    * Block to hide a list.
    */
@@ -485,15 +484,12 @@ Blockly.Blocks["data_hidelist"] = {
 const CUSTOM_CONTEXT_MENU_GET_VARIABLE_MIXIN = {
   /**
    * Add context menu option to change the selected variable.
-   *
    * @param options List of menu options to add to.
    */
   customContextMenu: function (
     this: Blockly.Block,
-    options: Array<
-      | Blockly.ContextMenuRegistry.ContextMenuOption
-      | Blockly.ContextMenuRegistry.LegacyContextMenuOption
-    >
+    options: (| Blockly.ContextMenuRegistry.ContextMenuOption
+      | Blockly.ContextMenuRegistry.LegacyContextMenuOption)[]
   ) {
     const fieldName = "VARIABLE";
     if (this.isCollapsed()) {
@@ -514,12 +510,10 @@ const CUSTOM_CONTEXT_MENU_GET_VARIABLE_MIXIN = {
     if (!this.isInFlyout) {
       this.workspace
         .getVariablesOfType(Constants.SCALAR_VARIABLE_TYPE)
-        .sort(function (
+        .sort((
           a: Blockly.IVariableModel<Blockly.IVariableState>,
           b: Blockly.IVariableModel<Blockly.IVariableState>
-        ) {
-          return scratchBlocksUtils.compareStrings(a.getName(), b.getName());
-        })
+        ) => scratchBlocksUtils.compareStrings(a.getName(), b.getName()))
         .forEach((variable: Blockly.IVariableModel<Blockly.IVariableState>) => {
           const varName = variable.getName();
           if (varName === currentVarName) return;
@@ -563,15 +557,12 @@ Blockly.Extensions.registerMixin(
 const CUSTOM_CONTEXT_MENU_GET_LIST_MIXIN = {
   /**
    * Add context menu option to change the selected list.
-   *
    * @param options List of menu options to add to.
    */
   customContextMenu: function (
     this: Blockly.Block,
-    options: Array<
-      | Blockly.ContextMenuRegistry.ContextMenuOption
-      | Blockly.ContextMenuRegistry.LegacyContextMenuOption
-    >
+    options: (| Blockly.ContextMenuRegistry.ContextMenuOption
+      | Blockly.ContextMenuRegistry.LegacyContextMenuOption)[]
   ) {
     const fieldName = "LIST";
     if (this.isCollapsed()) {
@@ -592,12 +583,10 @@ const CUSTOM_CONTEXT_MENU_GET_LIST_MIXIN = {
     if (!this.isInFlyout) {
       this.workspace
         .getVariablesOfType(Constants.LIST_VARIABLE_TYPE)
-        .sort(function (
+        .sort((
           a: Blockly.IVariableModel<Blockly.IVariableState>,
           b: Blockly.IVariableModel<Blockly.IVariableState>
-        ) {
-          return scratchBlocksUtils.compareStrings(a.getName(), b.getName());
-        })
+        ) => scratchBlocksUtils.compareStrings(a.getName(), b.getName()))
         .forEach((variable: Blockly.IVariableModel<Blockly.IVariableState>) => {
           const varName = variable.getName();
           if (varName === currentVarName) return;
@@ -638,7 +627,6 @@ Blockly.Extensions.registerMixin(
  * block.  Each variable on the workspace gets its own item in the dropdown
  * menu, and clicking on that item changes the text of the field on the source
  * block.
- *
  * @param block The block to update.
  * @param id The id of the variable to set on this block.
  * @param fieldName The name of the field to update on the block.
@@ -662,7 +650,6 @@ const VARIABLE_OPTION_CALLBACK_FACTORY = function (
 /**
  * Callback for rename variable dropdown menu option associated with a
  * variable getter block.
- *
  * @param block The block with the variable to rename.
  * @param fieldName The name of the field to inspect on the block.
  * @returns A function that renames the variable.
@@ -683,10 +670,9 @@ const RENAME_OPTION_CALLBACK_FACTORY = function (
 /**
  * Callback for delete variable dropdown menu option associated with a
  * variable getter block.
- *
  * @param block The block with the variable to delete.
  * @param fieldName The name of the field to inspect on the block.
- * @return A function that deletes the variable.
+ * @returns A function that deletes the variable.
  */
 const DELETE_OPTION_CALLBACK_FACTORY = function (
   block: Blockly.Block,

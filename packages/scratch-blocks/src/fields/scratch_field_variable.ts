@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Variable input field.
+ * @file Variable input field.
  * @author fraser@google.com (Neil Fraser)
  */
 import * as Blockly from "blockly/core";
@@ -69,7 +68,6 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
    * selected option when the workspace is refreshed.
    * Re-sort the broadcast messages by name, and set the field value to the id
    * of the variable that comes first in sorted order.
-   *
    * @param workspace The flyout workspace containing the broadcast block.
    * @returns The variable of type 'broadcast_msg' that comes first in sorted
    * order.
@@ -93,7 +91,6 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
   /**
    * Return a sorted list of variable names for variable dropdown menus.
    * Include a special option at the end for creating a new variable name.
-   *
    * @returns Array of variable names.
    */
   static dropdownCreate(this: ScratchFieldVariable): Blockly.MenuOption[] {
@@ -121,11 +118,11 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
     return options;
   }
 
-  /** Handle the selection of an item in the variable dropdown menu.
+  /**
+   * Handle the selection of an item in the variable dropdown menu.
    * Special case the 'Rename variable...', 'Delete variable...',
    * and 'New message...' options.
    * In the rename case, prompt the user for a new name.
-   *
    * @param menu The Menu component clicked.
    * @param menuItem The MenuItem selected within menu.
    */

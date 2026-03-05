@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -78,7 +77,6 @@ export class CheckboxBubble
 
   /**
    * Creates a new flyout checkbox bubble.
-   *
    * @param sourceBlock The block this bubble should be associated with.
    */
   constructor(private sourceBlock: Blockly.BlockSvg) {
@@ -145,7 +143,6 @@ export class CheckboxBubble
 
   /**
    * Sets whether or not this bubble should be displayed in the checked state.
-   *
    * @param checked True if this bubble should be checked.
    */
   setChecked(checked: boolean) {
@@ -173,7 +170,6 @@ export class CheckboxBubble
    * Returns whether or not the specified block has its checkbox checked.
    *
    * This method is patched by scratch-gui to query the VM state.
-   *
    * @param blockId The ID of the block in question.
    * @returns True if the block's checkbox should be checked.
    */
@@ -183,7 +179,6 @@ export class CheckboxBubble
 
   /**
    * Returns whether this bubble is movable by the user.
-   *
    * @returns Always returns false.
    */
   isMovable(): boolean {
@@ -192,7 +187,6 @@ export class CheckboxBubble
 
   /**
    * Returns the root SVG element for this bubble.
-   *
    * @returns The root SVG element.
    */
   getSvgRoot(): SVGGElement {
@@ -216,7 +210,6 @@ export class CheckboxBubble
 
   /**
    * Moves this bubble to the specified location.
-   *
    * @param x The location on the X axis to move to.
    * @param y The location on the Y axis to move to.
    */
@@ -228,7 +221,6 @@ export class CheckboxBubble
 
   /**
    * Returns this bubble's location in workspace coordinates.
-   *
    * @returns The bubble's location.
    */
   getRelativeToSurfaceXY(): Blockly.utils.Coordinate {

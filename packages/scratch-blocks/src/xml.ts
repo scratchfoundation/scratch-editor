@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2025 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -9,7 +8,6 @@ import { ScratchVariableModel } from "./scratch_variable_model";
 
 /**
  * Clears the workspace and loads the given serialized state.
- *
  * @param xml XML representation of a Blockly workspace.
  * @param workspace The workspace to load the serialized data onto.
  */

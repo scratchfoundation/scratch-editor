@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2016 Massachusetts Institute of Technology
@@ -20,7 +19,7 @@
 
 import * as Blockly from "blockly/core";
 
-Blockly.Blocks["looks_sayforsecs"] = {
+Blockly.Blocks.looks_sayforsecs = {
   /**
    * Block to say for some time.
    */
@@ -42,7 +41,7 @@ Blockly.Blocks["looks_sayforsecs"] = {
   },
 };
 
-Blockly.Blocks["looks_say"] = {
+Blockly.Blocks.looks_say = {
   /**
    * Block to say.
    */
@@ -60,7 +59,7 @@ Blockly.Blocks["looks_say"] = {
   },
 };
 
-Blockly.Blocks["looks_thinkforsecs"] = {
+Blockly.Blocks.looks_thinkforsecs = {
   /**
    * Block to think for some time.
    */
@@ -82,7 +81,7 @@ Blockly.Blocks["looks_thinkforsecs"] = {
   },
 };
 
-Blockly.Blocks["looks_think"] = {
+Blockly.Blocks.looks_think = {
   /**
    * Block to think.
    */
@@ -100,7 +99,7 @@ Blockly.Blocks["looks_think"] = {
   },
 };
 
-Blockly.Blocks["looks_show"] = {
+Blockly.Blocks.looks_show = {
   /**
    * Show block.
    */
@@ -112,7 +111,7 @@ Blockly.Blocks["looks_show"] = {
   },
 };
 
-Blockly.Blocks["looks_hide"] = {
+Blockly.Blocks.looks_hide = {
   /**
    * Hide block.
    */
@@ -124,7 +123,7 @@ Blockly.Blocks["looks_hide"] = {
   },
 };
 
-Blockly.Blocks["looks_hideallsprites"] = {
+Blockly.Blocks.looks_hideallsprites = {
   /**
    * Hide-all-sprites block. Does not actually do anything. This is an
    * obsolete block that is implemented for compatibility with Scratch 2.0
@@ -138,7 +137,7 @@ Blockly.Blocks["looks_hideallsprites"] = {
   },
 };
 
-Blockly.Blocks["looks_changeeffectby"] = {
+Blockly.Blocks.looks_changeeffectby = {
   /**
    * Block to change graphic effect.
    */
@@ -169,7 +168,7 @@ Blockly.Blocks["looks_changeeffectby"] = {
   },
 };
 
-Blockly.Blocks["looks_seteffectto"] = {
+Blockly.Blocks.looks_seteffectto = {
   /**
    * Block to set graphic effect.
    */
@@ -200,7 +199,7 @@ Blockly.Blocks["looks_seteffectto"] = {
   },
 };
 
-Blockly.Blocks["looks_cleargraphiceffects"] = {
+Blockly.Blocks.looks_cleargraphiceffects = {
   /**
    * Block to clear graphic effects.
    */
@@ -212,7 +211,7 @@ Blockly.Blocks["looks_cleargraphiceffects"] = {
   },
 };
 
-Blockly.Blocks["looks_changesizeby"] = {
+Blockly.Blocks.looks_changesizeby = {
   /**
    * Block to change size
    */
@@ -230,7 +229,7 @@ Blockly.Blocks["looks_changesizeby"] = {
   },
 };
 
-Blockly.Blocks["looks_setsizeto"] = {
+Blockly.Blocks.looks_setsizeto = {
   /**
    * Block to set size
    */
@@ -248,7 +247,7 @@ Blockly.Blocks["looks_setsizeto"] = {
   },
 };
 
-Blockly.Blocks["looks_size"] = {
+Blockly.Blocks.looks_size = {
   /**
    * Block to report size
    */
@@ -260,7 +259,7 @@ Blockly.Blocks["looks_size"] = {
   },
 };
 
-Blockly.Blocks["looks_changestretchby"] = {
+Blockly.Blocks.looks_changestretchby = {
   /**
    * Block to change stretch. Does not actually do anything. This is an
    * obsolete block that is implemented for compatibility with Scratch 1.4
@@ -287,7 +286,7 @@ Blockly.Blocks["looks_changestretchby"] = {
   },
 };
 
-Blockly.Blocks["looks_setstretchto"] = {
+Blockly.Blocks.looks_setstretchto = {
   /**
    * Block to set stretch. Does not actually do anything. This is an obsolete
    * block that is implemented for compatibility with Scratch 1.4 projects
@@ -310,9 +309,9 @@ Blockly.Blocks["looks_setstretchto"] = {
 /**
  * Costumes drop-down menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["looks_costume"] = {};
+Blockly.Blocks.looks_costume = {};
 
-Blockly.Blocks["looks_switchcostumeto"] = {
+Blockly.Blocks.looks_switchcostumeto = {
   /**
    * Block to switch the sprite's costume to the selected one.
    */
@@ -330,7 +329,7 @@ Blockly.Blocks["looks_switchcostumeto"] = {
   },
 };
 
-Blockly.Blocks["looks_nextcostume"] = {
+Blockly.Blocks.looks_nextcostume = {
   /**
    * Block to switch the sprite's costume to the next one.
    */
@@ -342,7 +341,7 @@ Blockly.Blocks["looks_nextcostume"] = {
   },
 };
 
-Blockly.Blocks["looks_switchbackdropto"] = {
+Blockly.Blocks.looks_switchbackdropto = {
   /**
    * Block to switch the backdrop to the selected one.
    */
@@ -363,9 +362,9 @@ Blockly.Blocks["looks_switchbackdropto"] = {
 /**
  * Backdrop list. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["looks_backdrops"] = {};
+Blockly.Blocks.looks_backdrops = {};
 
-Blockly.Blocks["looks_gotofrontback"] = {
+Blockly.Blocks.looks_gotofrontback = {
   /**
    * "Go to front/back" Block.
    */
@@ -387,7 +386,7 @@ Blockly.Blocks["looks_gotofrontback"] = {
   },
 };
 
-Blockly.Blocks["looks_goforwardbackwardlayers"] = {
+Blockly.Blocks.looks_goforwardbackwardlayers = {
   /**
    * "Go forward/backward [Number] Layers" Block.
    */
@@ -413,7 +412,7 @@ Blockly.Blocks["looks_goforwardbackwardlayers"] = {
   },
 };
 
-Blockly.Blocks["looks_backdropnumbername"] = {
+Blockly.Blocks.looks_backdropnumbername = {
   /**
    * Block to report backdrop's number or name
    */
@@ -435,7 +434,7 @@ Blockly.Blocks["looks_backdropnumbername"] = {
   },
 };
 
-Blockly.Blocks["looks_costumenumbername"] = {
+Blockly.Blocks.looks_costumenumbername = {
   /**
    * Block to report costume's number or name
    */
@@ -457,7 +456,7 @@ Blockly.Blocks["looks_costumenumbername"] = {
   },
 };
 
-Blockly.Blocks["looks_switchbackdroptoandwait"] = {
+Blockly.Blocks.looks_switchbackdroptoandwait = {
   /**
    * Block to switch the backdrop to the selected one and wait.
    */
@@ -475,7 +474,7 @@ Blockly.Blocks["looks_switchbackdroptoandwait"] = {
   },
 };
 
-Blockly.Blocks["looks_nextbackdrop"] = {
+Blockly.Blocks.looks_nextbackdrop = {
   /**
    * Block to switch the backdrop to the next one.
    */

@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -67,6 +66,7 @@ export class Drawer extends Blockly.zelos.Drawer {
    * For rounded (non-hexagonal) input slots we expand the outline by 1px in
    * every direction so the white highlight stroke sits just outside the input
    * slot's background and remains visible rather than merging with it.
+   * @param measurable
    */
   override drawConnectionHighlightPath(
     measurable: Blockly.blockRendering.Connection

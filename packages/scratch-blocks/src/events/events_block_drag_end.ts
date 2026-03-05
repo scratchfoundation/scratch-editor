@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -36,8 +35,8 @@ export class BlockDragEnd extends Blockly.Events.BlockBase {
       workspace,
       event ?? new BlockDragEnd()
     ) as BlockDragEnd;
-    newEvent.isOutside = json["isOutside"];
-    newEvent.xml = Blockly.utils.xml.textToDom(json["xml"]);
+    newEvent.isOutside = json.isOutside;
+    newEvent.xml = Blockly.utils.xml.textToDom(json.xml);
 
     return newEvent;
   }

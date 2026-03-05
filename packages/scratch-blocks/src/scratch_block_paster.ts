@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -13,7 +12,6 @@ import type { ScratchCommentIcon } from "./scratch_comment_icon";
 class ScratchBlockPaster extends Blockly.clipboard.BlockPaster {
   /**
    * Deserializes the given block data onto the workspace.
-   *
    * @param copyData The serialized block state to create a copy of on the
    *     workspace.
    * @param workspace The workspace to paste the block onto.

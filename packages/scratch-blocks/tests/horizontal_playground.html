@@ -17,11 +17,11 @@
     <script>
       'use strict';
 
-      var fakeDragStack = [];
-      var workspace = null;
+      let fakeDragStack = [];
+      let workspace = null;
 
       function start() {
-        var soundsEnabled = null;
+        let soundsEnabled = null;
         if (sessionStorage) {
           // Restore sounds state.
           soundsEnabled = sessionStorage.getItem('soundsEnabled');
@@ -37,16 +37,16 @@
 
         // Setup blocks
         // Parse the URL arguments.
-        var match = location.search.match(/dir=([^&]+)/);
-        var rtl = match && match[1] == 'rtl';
+        let match = location.search.match(/dir=([^&]+)/);
+        let rtl = match && match[1] == 'rtl';
         document.forms.options.elements.dir.selectedIndex = Number(rtl);
-        var toolbox = getToolboxElement();
+        let toolbox = getToolboxElement();
         document.forms.options.elements.toolbox.selectedIndex =
           toolbox ? 1: 0;
 
         match = location.search.match(/side=([^&]+)/);
 
-        var side = match ? match[1] : 'start';
+        let side = match ? match[1] : 'start';
 
         document.forms.options.elements.side.value = side;
 
@@ -84,14 +84,14 @@
         
         if (sessionStorage) {
           // Restore previously displayed text.
-          var text = sessionStorage.getItem('textarea');
+          let text = sessionStorage.getItem('textarea');
           if (text) {
             document.getElementById('importExport').value = text;
           }
           taChange();
 
           // Restore event logging state.
-          var state = sessionStorage.getItem('logEvents');
+          let state = sessionStorage.getItem('logEvents');
           logEvents(Boolean(state));
 
           // Restore flyout event logging state.
@@ -101,13 +101,13 @@
       }
 
       function getToolboxElement() {
-        var match = location.search.match(/toolbox=([^&]+)/);
+        let match = location.search.match(/toolbox=([^&]+)/);
         return document.getElementById('toolbox-' + (match ? match[1] : 'categories'));
       }
 
       function toXml() {
-        var output = document.getElementById('importExport');
-        var xml = Blockly.Xml.workspaceToDom(workspace);
+        let output = document.getElementById('importExport');
+        let xml = Blockly.Xml.workspaceToDom(workspace);
         output.value = Blockly.Xml.domToPrettyText(xml);
         output.focus();
         output.select();
@@ -115,8 +115,8 @@
       }
 
       function fromXml() {
-        var input = document.getElementById('importExport');
-        var xml = Blockly.Xml.textToDom(input.value);
+        let input = document.getElementById('importExport');
+        let xml = Blockly.Xml.textToDom(input.value);
         Blockly.Xml.domToWorkspace(workspace, xml);
         taChange();
       }
@@ -124,11 +124,11 @@
       // Disable the "Import from XML" button if the XML is invalid.
       // Preserve text between page reloads.
       function taChange() {
-        var textarea = document.getElementById('importExport');
+        let textarea = document.getElementById('importExport');
         if (sessionStorage) {
           sessionStorage.setItem('textarea', textarea.value);
         }
-        var valid = true;
+        let valid = true;
         try {
           Blockly.Xml.textToDom(textarea.value);
         } catch (e) {
@@ -138,7 +138,7 @@
       }
 
       function logEvents(state) {
-        var checkbox = document.getElementById('logCheck');
+        let checkbox = document.getElementById('logCheck');
         checkbox.checked = state;
         if (sessionStorage) {
           sessionStorage.setItem('logEvents', state ? 'checked' : '');
@@ -151,12 +151,12 @@
       }
 
       function logFlyoutEvents(state) {
-        var checkbox = document.getElementById('logFlyoutCheck');
+        let checkbox = document.getElementById('logFlyoutCheck');
         checkbox.checked = state;
         if (sessionStorage) {
           sessionStorage.setItem('logFlyoutEvents', state ? 'checked' : '');
         }
-        var flyoutWorkspace = (workspace.flyout_) ? workspace.flyout_.workspace_ :
+        let flyoutWorkspace = (workspace.flyout_) ? workspace.flyout_.workspace_ :
           workspace.toolbox_.flyout_.workspace_;
         if (state) {
           flyoutWorkspace.addChangeListener(logger);
@@ -194,16 +194,16 @@
       }
 
       function sprinkles(n) {
-        var prototypes = [];
-        var toolbox = workspace.options.languageTree;
+        let prototypes = [];
+        let toolbox = workspace.options.languageTree;
         if (!toolbox) {
           console.error('Toolbox not found; add a toolbox element to the DOM.');
           return;
         }
-        var blocks = toolbox.getElementsByTagName('block');
-        for (var i = 0; i < n; i++) {
-          var blockXML = blocks[Math.floor(Math.random() * blocks.length)];
-          var block = Blockly.Xml.domToBlock(blockXML, workspace);
+        let blocks = toolbox.getElementsByTagName('block');
+        for (let i = 0; i < n; i++) {
+          let blockXML = blocks[Math.floor(Math.random() * blocks.length)];
+          let block = Blockly.Xml.domToBlock(blockXML, workspace);
           block.initSvg();
           block.moveBy(
             Math.round(Math.random() * 450 + 40),
@@ -213,13 +213,13 @@
       }
 
       function spaghetti(n) {
-        var xml = spaghettiXml;
-        for(var i = 0; i < n; i++) {
+        let xml = spaghettiXml;
+        for(let i = 0; i < n; i++) {
           xml = xml.replace(/(<(statement|next)( name="SUBSTACK")?>)<\//g,
           '$1' + spaghettiXml + '</');
         }
         xml = '<xml xmlns="http://www.w3.org/1999/xhtml">' + xml + '</xml>';
-        var dom = Blockly.Xml.textToDom(xml);
+        let dom = Blockly.Xml.textToDom(xml);
         console.time('Spaghetti domToWorkspace');
         Blockly.Xml.domToWorkspace(workspace, dom);
         console.timeEnd('Spaghetti domToWorkspace');
@@ -238,40 +238,40 @@
       ].join('\n');
 
       function setSoundsEnabled(state) {
-        var checkbox = document.getElementById('soundsEnabled');
+        let checkbox = document.getElementById('soundsEnabled');
         checkbox.checked = (state) ? 'checked' : '';
         if (sessionStorage) {
           sessionStorage.setItem('soundsEnabled', state);
         }
       }
       function fakeDrag(id, dx, dy, opt_workspace) {
-        var ws = opt_workspace || Blockly.getMainWorkspace();
-        var blockToDrag = ws.getBlockById(id);
+        let ws = opt_workspace || Blockly.getMainWorkspace();
+        let blockToDrag = ws.getBlockById(id);
 
         if (!blockToDrag) {
           fakeDragWrapper();
           return;
         }
-        var blockTop = blockToDrag.svgGroup_.getBoundingClientRect().top;
-        var blockLeft = blockToDrag.svgGroup_.getBoundingClientRect().left;
+        let blockTop = blockToDrag.svgGroup_.getBoundingClientRect().top;
+        let blockLeft = blockToDrag.svgGroup_.getBoundingClientRect().left;
 
         // Click somewhere on the block.
-        var mouseDownEvent = new MouseEvent('mousedown',
+        let mouseDownEvent = new MouseEvent('mousedown',
             {clientX: blockLeft + 5, clientY: blockTop + 5});
         blockToDrag.onMouseDown_(mouseDownEvent);
 
         // Throw in a move for good measure.
         setTimeout(
-          function() {
-            var mouseMoveEvent = new MouseEvent('mousemove',
+          () => {
+            let mouseMoveEvent = new MouseEvent('mousemove',
                 {clientX: blockLeft + dx,
                 clientY: blockTop + dy});
             blockToDrag.onMouseMove_(mouseMoveEvent);
 
             // Drop at dx, dy.
             setTimeout(
-              function() {
-                var mouseUpEvent = new MouseEvent('mouseup',
+              () => {
+                let mouseUpEvent = new MouseEvent('mouseup',
                     {clientX: blockLeft + dx,
                     clientY: blockTop + dy});
                 blockToDrag.onMouseUp_(mouseUpEvent);
@@ -282,15 +282,15 @@
       };
 
       function fakeDragWrapper() {
-        var dragInfo = fakeDragStack.pop();
+        let dragInfo = fakeDragStack.pop();
         if (dragInfo) {
           fakeDrag(dragInfo.id, dragInfo.dx, dragInfo.dy, dragInfo.workspace);
         }
       }
 
       function fakeManyDrags() {
-        var blockList = workspace.getAllBlocks();
-        for (var i = 0; i < 2 * blockList.length; i++) {
+        let blockList = workspace.getAllBlocks();
+        for (let i = 0; i < 2 * blockList.length; i++) {
           fakeDragStack.push(
             {
               id: blockList[Math.round(Math.random() * (blockList.length - 1))].id,

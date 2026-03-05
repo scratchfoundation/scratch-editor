@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -9,7 +8,6 @@ import { Colours } from "./colours";
 
 /**
  * Glow/unglow a stack in the workspace.
- *
  * @param id ID of block which starts the stack.
  * @param isGlowingStack Whether to glow the stack.
  */

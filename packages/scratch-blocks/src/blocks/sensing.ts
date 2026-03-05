@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2016 Massachusetts Institute of Technology
@@ -21,7 +20,7 @@
 import * as Blockly from "blockly/core";
 import * as Constants from "../constants";
 
-Blockly.Blocks["sensing_touchingobject"] = {
+Blockly.Blocks.sensing_touchingobject = {
   /**
    * Block to Report if its touching a Object.
    */
@@ -42,9 +41,9 @@ Blockly.Blocks["sensing_touchingobject"] = {
 /**
  * "Touching [Object]" Block Menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["sensing_touchingobjectmenu"] = {};
+Blockly.Blocks.sensing_touchingobjectmenu = {};
 
-Blockly.Blocks["sensing_touchingcolor"] = {
+Blockly.Blocks.sensing_touchingcolor = {
   /**
    * Block to Report if its touching a certain Color.
    */
@@ -62,7 +61,7 @@ Blockly.Blocks["sensing_touchingcolor"] = {
   },
 };
 
-Blockly.Blocks["sensing_coloristouchingcolor"] = {
+Blockly.Blocks.sensing_coloristouchingcolor = {
   /**
    * Block to Report if a color is touching a certain Color.
    */
@@ -84,7 +83,7 @@ Blockly.Blocks["sensing_coloristouchingcolor"] = {
   },
 };
 
-Blockly.Blocks["sensing_distanceto"] = {
+Blockly.Blocks.sensing_distanceto = {
   /**
    * Block to Report distance to another Object.
    */
@@ -105,9 +104,9 @@ Blockly.Blocks["sensing_distanceto"] = {
 /**
  * "Distance to [Object]" Block Menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["sensing_distancetomenu"] = {};
+Blockly.Blocks.sensing_distancetomenu = {};
 
-Blockly.Blocks["sensing_askandwait"] = {
+Blockly.Blocks.sensing_askandwait = {
   /**
    * Block to ask a question and wait
    */
@@ -125,7 +124,7 @@ Blockly.Blocks["sensing_askandwait"] = {
   },
 };
 
-Blockly.Blocks["sensing_answer"] = {
+Blockly.Blocks.sensing_answer = {
   /**
    * Block to report answer
    */
@@ -137,7 +136,7 @@ Blockly.Blocks["sensing_answer"] = {
   },
 };
 
-Blockly.Blocks["sensing_keypressed"] = {
+Blockly.Blocks.sensing_keypressed = {
   /**
    * Block to Report if a key is pressed.
    */
@@ -155,7 +154,7 @@ Blockly.Blocks["sensing_keypressed"] = {
   },
 };
 
-Blockly.Blocks["sensing_keyoptions"] = {
+Blockly.Blocks.sensing_keyoptions = {
   /**
    * Options for Keys
    */
@@ -217,7 +216,7 @@ Blockly.Blocks["sensing_keyoptions"] = {
   },
 };
 
-Blockly.Blocks["sensing_mousedown"] = {
+Blockly.Blocks.sensing_mousedown = {
   /**
    * Block to Report if the mouse is down.
    */
@@ -229,7 +228,7 @@ Blockly.Blocks["sensing_mousedown"] = {
   },
 };
 
-Blockly.Blocks["sensing_mousex"] = {
+Blockly.Blocks.sensing_mousex = {
   /**
    * Block to report mouse's x position
    */
@@ -241,7 +240,7 @@ Blockly.Blocks["sensing_mousex"] = {
   },
 };
 
-Blockly.Blocks["sensing_mousey"] = {
+Blockly.Blocks.sensing_mousey = {
   /**
    * Block to report mouse's y position
    */
@@ -253,7 +252,7 @@ Blockly.Blocks["sensing_mousey"] = {
   },
 };
 
-Blockly.Blocks["sensing_setdragmode"] = {
+Blockly.Blocks.sensing_setdragmode = {
   /**
    * Block to set drag mode.
    */
@@ -275,7 +274,7 @@ Blockly.Blocks["sensing_setdragmode"] = {
   },
 };
 
-Blockly.Blocks["sensing_loudness"] = {
+Blockly.Blocks.sensing_loudness = {
   /**
    * Block to report loudness
    */
@@ -287,7 +286,7 @@ Blockly.Blocks["sensing_loudness"] = {
   },
 };
 
-Blockly.Blocks["sensing_loud"] = {
+Blockly.Blocks.sensing_loud = {
   /**
    * Block to report if the loudness is "loud" (greater than 10). This is an
    * obsolete block that is implemented for compatibility with Scratch 2.0 and
@@ -301,7 +300,7 @@ Blockly.Blocks["sensing_loud"] = {
   },
 };
 
-Blockly.Blocks["sensing_timer"] = {
+Blockly.Blocks.sensing_timer = {
   /**
    * Block to report timer
    */
@@ -313,7 +312,7 @@ Blockly.Blocks["sensing_timer"] = {
   },
 };
 
-Blockly.Blocks["sensing_resettimer"] = {
+Blockly.Blocks.sensing_resettimer = {
   /**
    * Block to reset timer
    */
@@ -328,14 +327,14 @@ Blockly.Blocks["sensing_resettimer"] = {
 /**
  * "* of _" object menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["sensing_of_object_menu"] = {};
+Blockly.Blocks.sensing_of_object_menu = {};
 
 /**
  * Block to report properties of sprites. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["sensing_of"] = {};
+Blockly.Blocks.sensing_of = {};
 
-Blockly.Blocks["sensing_current"] = {
+Blockly.Blocks.sensing_current = {
   /**
    * Block to Report the current option.
    */
@@ -362,7 +361,7 @@ Blockly.Blocks["sensing_current"] = {
   },
 };
 
-Blockly.Blocks["sensing_dayssince2000"] = {
+Blockly.Blocks.sensing_dayssince2000 = {
   /**
    * Block to report days since 2000
    */
@@ -374,7 +373,7 @@ Blockly.Blocks["sensing_dayssince2000"] = {
   },
 };
 
-Blockly.Blocks["sensing_online"] = {
+Blockly.Blocks.sensing_online = {
   /**
    * Block to report whether or not the system is online
    */
@@ -386,7 +385,7 @@ Blockly.Blocks["sensing_online"] = {
   },
 };
 
-Blockly.Blocks["sensing_username"] = {
+Blockly.Blocks.sensing_username = {
   /**
    * Block to report user's username
    */
@@ -398,7 +397,7 @@ Blockly.Blocks["sensing_username"] = {
   },
 };
 
-Blockly.Blocks["sensing_userid"] = {
+Blockly.Blocks.sensing_userid = {
   /**
    * Block to report user's ID. Does not actually do anything. This is an
    * obsolete block that is implemented for compatibility with Scratch 2.0

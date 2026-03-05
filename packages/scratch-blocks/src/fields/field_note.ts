@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2018 Massachusetts Institute of Technology
@@ -19,21 +18,19 @@
  */
 
 /**
- * @fileoverview Note input field, for selecting a musical note on a piano.
+ * @file Note input field, for selecting a musical note on a piano.
  * @author ericr@media.mit.edu (Eric Rosenbaum)
  */
 import * as Blockly from "blockly/core";
 
 /**
  * Class for a note input field, for selecting a musical note on a piano.
- * @param {(string|number)=} opt_value The initial content of the field. The
+ * @param opt_value The initial content of the field. The
  *     value should cast to a number, and if it does not, '0' will be used.
- * @param {Function=} opt_validator An optional function that is called
+ * @param opt_validator An optional function that is called
  *     to validate any constraints on what the user entered.  Takes the new
  *     text as an argument and returns the accepted text or null to abort
  *     the change.
- * @extends {Blockly.FieldTextInput}
- * @constructor
  */
 export class FieldNote extends Blockly.FieldTextInput {
   /**
@@ -247,12 +244,11 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Construct a FieldNote from a JSON arg object.
-   *
    * @param options A JSON object with options.
    * @returns The new field instance.
    */
   static fromJson(options: FieldNoteJsonConfig): FieldNote {
-    return new FieldNote(options["note"]);
+    return new FieldNote(options.note);
   }
 
   /**
@@ -260,10 +256,10 @@ export class FieldNote extends Blockly.FieldTextInput {
    */
   dispose() {
     super.dispose();
-    this.mouseDownWrappers_.forEach(function (wrapper) {
+    this.mouseDownWrappers_.forEach((wrapper) => {
       Blockly.browserEvents.unbind(wrapper);
     });
-    this.mouseEnterWrappers_.forEach(function (wrapper) {
+    this.mouseEnterWrappers_.forEach((wrapper) => {
       Blockly.browserEvents.unbind(wrapper);
     });
     if (this.mouseUpWrapper_) {
@@ -284,6 +280,8 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Show a field with piano keys.
+   * @param event
+   * @param quietInput
    */
   showEditor_(event: PointerEvent, quietInput = false) {
     super.showEditor_(event, quietInput, false);
@@ -421,8 +419,8 @@ export class FieldNote extends Blockly.FieldTextInput {
     );
     const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg;
     Blockly.DropDownDiv.setColour(
-      (sourceBlock.getParent() as Blockly.BlockSvg).getColour(),
-      (sourceBlock.getParent() as Blockly.BlockSvg).getColourTertiary()
+      (sourceBlock.getParent()!).getColour(),
+      (sourceBlock.getParent()!).getColourTertiary()
     );
     Blockly.DropDownDiv.showPositionedByBlock(this, sourceBlock);
 
@@ -431,7 +429,6 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Add one octave of piano keys drawn using SVG.
-   *
    * @param x The x position of the left edge of this octave of keys.
    * @param whiteKeyGroup The group for all white piano keys.
    * @param blackKeyGroup The group for all black piano keys.
@@ -446,7 +443,7 @@ export class FieldNote extends Blockly.FieldTextInput {
     let xIncrement, width, height, fill, stroke, group;
     x += FieldNote.EDGE_PADDING / 2;
     const y = FieldNote.TOP_MENU_HEIGHT;
-    for (var i = 0; i < FieldNote.KEY_INFO.length; i++) {
+    for (let i = 0; i < FieldNote.KEY_INFO.length; i++) {
       // Draw a black or white key
       if (FieldNote.KEY_INFO[i].isBlack) {
         // Black keys are shifted back half a key
@@ -501,7 +498,6 @@ export class FieldNote extends Blockly.FieldTextInput {
   /**
    * Construct the SVG path string for a piano key shape: a rectangle with rounded
    * corners at the bottom.
-   *
    * @param x the x position for the key.
    * @param y the y position for the key.
    * @param width the width of the key.
@@ -562,7 +558,6 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Add a button for switching the displayed octave of the piano up or down.
-   *
    * @param x The x position of the button.
    * @param flipped If true, the icon should be flipped.
    * @param svg The svg element to add the buttons to.
@@ -616,7 +611,6 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Add an SVG text label for display on the C keys of the piano.
-   *
    * @param x The x position for the label.
    * @param svg The SVG element to add the label to.
    * @returns The SVG element containing the label.
@@ -639,7 +633,6 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Set the visibility of the C key labels.
-   *
    * @param visible If true, set labels to be visible.
    */
   private setCKeyLabelsVisible_(visible: boolean) {
@@ -656,7 +649,6 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Animate an SVG to fade it in or out to a target opacity.
-   *
    * @param svg The SVG element to apply the fade to.
    * @param opacity The target opacity.
    */
@@ -669,7 +661,6 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Handle the mouse down event on a piano key.
-   *
    * @param e Mouse down event.
    */
   private onMouseDownOnKey_(e: PointerEvent) {
@@ -696,7 +687,6 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Handle the event when the mouse enters a piano key.
-   *
    * @param e Mouse enter event.
    */
   private onMouseEnter_(e: PointerEvent) {
@@ -707,7 +697,6 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Use the data in a mouse event to select a new note, and play it.
-   *
    * @param e Mouse event.
    */
   private selectNoteWithMouseEvent_(e: PointerEvent) {
@@ -730,7 +719,6 @@ export class FieldNote extends Blockly.FieldTextInput {
   /**
    * Function to play a musical note corresponding to the key selected.
    * Overridden externally.
-   *
    * @param noteNum the MIDI note number to play.
    * @param id An id to select a scratch extension to play the note.
    */
@@ -740,7 +728,6 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Change the selected note by a number of octaves, and start the animation.
-   *
    * @param octaves The number of octaves to change by.
    */
   private changeOctaveBy_(octaves: number) {
@@ -798,7 +785,6 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * For a MIDI note number, find the index of the corresponding piano key.
-   *
    * @param noteNum The note number.
    * @returns The index of the piano key.
    */
@@ -824,7 +810,7 @@ export class FieldNote extends Blockly.FieldTextInput {
     const index = this.noteNumToKeyIndex_(noteNum);
 
     // Clear the highlight on all keys
-    this.keySVGs_.forEach(function (svg) {
+    this.keySVGs_.forEach((svg) => {
       const isBlack = svg.getAttribute("data-isBlack");
       if (isBlack === "true") {
         svg.setAttribute("fill", FieldNote.BLACK_KEY_COLOR);
@@ -851,7 +837,6 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Ensure that only a valid MIDI note number may be entered.
-   *
    * @param text The user's text.
    * @returns A string representing a valid note number, or null if invalid.
    */
@@ -859,7 +844,7 @@ export class FieldNote extends Blockly.FieldTextInput {
     if (text === null) {
       return null;
     }
-    var n = parseFloat(text || "0");
+    let n = parseFloat(text || "0");
     if (isNaN(n)) {
       return null;
     }

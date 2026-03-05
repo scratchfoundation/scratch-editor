@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2016 Massachusetts Institute of Technology
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Field for numbers. Includes validator and numpad on touch.
+ * @file Field for numbers. Includes validator and numpad on touch.
  * @author tmickel@mit.edu (Tim Mickel)
  */
 import * as Blockly from "blockly/core";
@@ -33,17 +32,15 @@ import { Colours } from "../colours";
  * These properties are included here (i.e. instead of just accepting a
  * decimalAllowed, negativeAllowed) to maintain API compatibility with Blockly
  * and Blockly for Android.
- * @param {(string|number)=} opt_value The initial content of the field. The value
+ * @param opt_value The initial content of the field. The value
  *     should cast to a number, and if it does not, '0' will be used.
- * @param {(string|number)=} opt_min Minimum value.
- * @param {(string|number)=} opt_max Maximum value.
- * @param {(string|number)=} opt_precision Precision for value.
- * @param {Function=} opt_validator An optional function that is called
+ * @param opt_min Minimum value.
+ * @param opt_max Maximum value.
+ * @param opt_precision Precision for value.
+ * @param opt_validator An optional function that is called
  *     to validate any constraints on what the user entered.  Takes the new
  *     text as an argument and returns the accepted text or null to abort
  *     the change.
- * @extends {Blockly.FieldTextInput}
- * @constructor
  */
 class ScratchFieldNumber extends Blockly.FieldTextInput {
   private negativeAllowed_ = true;
@@ -51,8 +48,6 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
   private exponentialAllowed_ = true;
   /**
    * Fixed width of the num-pad drop-down, in px.
-   * @type {number}
-   * @const
    */
   static DROPDOWN_WIDTH = 168;
 
@@ -60,8 +55,6 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    * Buttons for the num-pad, in order from the top left.
    * Values are strings of the number or symbol will be added to the field text
    * when the button is pressed.
-   * @type {Array.<string>}
-   * @const
    */
   // Calculator order
   static NUMPAD_BUTTONS = [
@@ -82,8 +75,6 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
 
   /**
    * Src for the delete icon to be shown on the num-pad.
-   * @type {string}
-   * @const
    */
   static NUMPAD_DELETE_ICON =
     "data:image/svg+xml;utf8," +
@@ -114,7 +105,7 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
   /**
    * Return an appropriate restrictor, depending on whether this FieldNumber
    * allows decimal or negative numbers.
-   * @return {!RegExp} Regular expression for this FieldNumber's restrictor.
+   * @returns Regular expression for this FieldNumber's restrictor.
    */
   getNumRestrictor() {
     let pattern = "[\\d]"; // Always allow digits.
@@ -133,10 +124,11 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
   /**
    * Show the inline free-text editor on top of the text and the num-pad if
    * appropriate.
+   * @param e
    */
   showEditor_(e: PointerEvent) {
     // Do not focus on mobile devices so we can show the num-pad
-    const showNumPad = e && e.pointerType === "touch";
+    const showNumPad = e?.pointerType === "touch";
     super.showEditor_(e, showNumPad);
 
     // Show a numeric keypad in the drop-down on touch
@@ -173,7 +165,7 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
     // Set colour and size of drop-down
     const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg;
     Blockly.DropDownDiv.setColour(
-      (sourceBlock.getParent() as Blockly.BlockSvg).getColour(),
+      (sourceBlock.getParent()!).getColour(),
       sourceBlock.getColourTertiary()
     );
     contentDiv.style.width = ScratchFieldNumber.DROPDOWN_WIDTH + "px";
@@ -189,7 +181,7 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
     // sourceBlock_ is the rendered shadow field input box
     const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg;
     const scale = sourceBlock.workspace.scale;
-    let bBox = sourceBlock.getHeightWidth();
+    const bBox = sourceBlock.getHeightWidth();
     bBox.width *= scale;
     bBox.height *= scale;
     const position = this.getAbsoluteXY_();
@@ -218,13 +210,12 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
   /**
    * Add number, punctuation, and erase buttons to the numeric keypad's content
    * div.
-   *
    * @param contentDiv The div for the numeric keypad.
    */
   private addButtons_(contentDiv: Element) {
     const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg;
-    const buttonColour = (sourceBlock.getParent() as Blockly.BlockSvg).getColour();
-    const buttonBorderColour = (sourceBlock.getParent() as Blockly.BlockSvg).getColourTertiary();
+    const buttonColour = (sourceBlock.getParent()!).getColour();
+    const buttonBorderColour = (sourceBlock.getParent()!).getColourTertiary();
 
     // Add numeric keypad buttons
     const buttons = ScratchFieldNumber.NUMPAD_BUTTONS;
@@ -292,7 +283,6 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
   /**
    * Call for when a num-pad number or punctuation button is touched.
    * Determine what the user is inputting and update the text field appropriately.
-   *
    * @param e DOM event triggering the touch.
    */
   numPadButtonTouch(e: PointerEvent) {
@@ -323,7 +313,6 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
   /**
    * Call for when the num-pad erase button is touched.
    * Determine what the user is asking to erase, and erase it.
-   *
    * @param e DOM event triggering the touch.
    */
   numPadEraseButtonTouch(e: PointerEvent) {
@@ -353,7 +342,6 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
 
   /**
    * Update the displayed value and resize/scroll the text field as needed.
-   *
    * @param newValue The new text to display.
    * @param newSelection The new index to put the cursor
    */

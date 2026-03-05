@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -13,7 +12,6 @@ import { STATUS_INDICATOR_LABEL_TYPE } from "./status_indicator_label_flyout_inf
 export class CheckableContinuousFlyout extends ContinuousFlyout {
   /**
    * Creates a new CheckableContinuousFlyout.
-   *
    * @param workspaceOptions Configuration options for the flyout workspace.
    */
   constructor(workspaceOptions: Blockly.Options) {
@@ -26,7 +24,6 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
 
   /**
    * Serializes a block to JSON in order to copy it to the main workspace.
-   *
    * @param block The block to serialize.
    * @returns A JSON representation of the block.
    */
@@ -42,7 +39,6 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
 
   /**
    * Set the state of a checkbox by block ID.
-   *
    * @param blockId ID of the block whose checkbox should be set
    * @param value Value to set the checkbox to.
    */
@@ -88,7 +84,6 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
 
   /**
    * Validates that the given toolbox item represents a label.
-   *
    * @param item The toolbox item to check.
    * @returns True if the item represents a label in the flyout.
    */

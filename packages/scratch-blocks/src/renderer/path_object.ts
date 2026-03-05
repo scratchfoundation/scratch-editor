@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -14,7 +13,6 @@ export class PathObject extends Blockly.zelos.PathObject {
   /**
    * Apply the stored colours to the block's path, taking into account whether
    * the paths belong to a shadow block.
-   *
    * @param block The source block.
    */
   override applyColour(block: Blockly.BlockSvg) {

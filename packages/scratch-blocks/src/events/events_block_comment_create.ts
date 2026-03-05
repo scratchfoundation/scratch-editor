@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -57,10 +56,10 @@ class BlockCommentCreate extends BlockCommentBase {
       event ?? new BlockCommentCreate()
     ) as BlockCommentCreate;
     newEvent.json = {
-      x: json["x"],
-      y: json["y"],
-      width: json["width"],
-      height: json["height"],
+      x: json.x,
+      y: json.y,
+      width: json.width,
+      height: json.height,
     };
 
     return newEvent;

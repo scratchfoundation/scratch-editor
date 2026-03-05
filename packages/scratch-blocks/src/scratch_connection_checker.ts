@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -12,7 +11,6 @@ import * as Blockly from "blockly/core";
 class ScratchConnectionChecker extends Blockly.ConnectionChecker {
   /**
    * Returns whether or not the two connections should be allowed to connect.
-   *
    * @param a One of the connections to check.
    * @param b The other connection to check.
    * @param distance The maximum allowable distance between connections.

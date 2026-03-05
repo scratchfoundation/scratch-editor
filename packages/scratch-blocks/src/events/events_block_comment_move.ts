@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -45,12 +44,12 @@ class BlockCommentMove extends BlockCommentBase {
       event ?? new BlockCommentMove()
     ) as BlockCommentMove;
     newEvent.newCoordinate_ = new Blockly.utils.Coordinate(
-      json["newCoordinate"]["x"],
-      json["newCoordinate"]["y"]
+      json.newCoordinate.x,
+      json.newCoordinate.y
     );
     newEvent.oldCoordinate_ = new Blockly.utils.Coordinate(
-      json["oldCoordinate"]["x"],
-      json["oldCoordinate"]["y"]
+      json.oldCoordinate.x,
+      json.oldCoordinate.y
     );
 
     return newEvent;

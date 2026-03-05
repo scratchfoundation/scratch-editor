@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -176,15 +175,15 @@ export class ScratchCommentIcon
 
   loadState(state: CommentState) {
     Blockly.Events.setGroup(true);
-    this.setText(state["text"]);
-    this.setBubbleSize(new Blockly.utils.Size(state["width"], state["height"]));
-    const delta = new Blockly.utils.Coordinate(state["x"], state["y"]);
+    this.setText(state.text);
+    this.setBubbleSize(new Blockly.utils.Size(state.width, state.height));
+    const delta = new Blockly.utils.Coordinate(state.x, state.y);
     const newBubbleLocation = Blockly.utils.Coordinate.sum(
       this.workspaceLocation,
       delta
     );
     this.commentBubble.moveTo(newBubbleLocation);
-    this.commentBubble.setCollapsed(state["collapsed"]);
+    this.commentBubble.setCollapsed(state.collapsed);
     Blockly.Events.setGroup(false);
   }
 

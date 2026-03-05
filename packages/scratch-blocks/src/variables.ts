@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
@@ -19,7 +18,7 @@
  */
 
 /**
- * @fileoverview Utility functions for handling variables.
+ * @file Utility functions for handling variables.
  * @author fraser@google.com (Neil Fraser)
  */
 import * as Blockly from "blockly/core";
@@ -54,7 +53,6 @@ let prompt: PromptType | undefined = undefined;
 
 /**
  * Sets the handler for calls to prompt().
- *
  * @param handler The new prompt function.
  */
 export function setPromptHandler(handler: PromptType) {
@@ -63,7 +61,6 @@ export function setPromptHandler(handler: PromptType) {
 
 /**
  * Create a new variable on the given workspace.
- *
  * @param workspace The workspace on which to create the variable.
  * @param opt_callback An optional callback function to act on the id of the
  *     variable that is created from the user's input, or null if the change is
@@ -101,11 +98,11 @@ export function createVariable(
   prompt!(
     newMsg,
     "",
-    function (
+    (
       text: string,
       additionalVars: string[],
       variableOptions?: { scope?: string; isCloud?: boolean }
-    ) {
+    ) => {
       variableOptions = variableOptions || {};
       const scope = variableOptions.scope;
       const isLocal = scope === "local" || false;
@@ -168,7 +165,6 @@ export function createVariable(
  * agnostic of type. This is so that functions like  createVariable and
  * renameVariable can call a single function (with a single type signature) to
  * validate the user-provided name for a variable.
- *
  * @param type The type of the variable for which the provided name should be
  *     validated.
  * @param text The user-provided text that should be validated as a variable
@@ -228,7 +224,6 @@ function nameValidator(
 
 /**
  * Validate the given name as a broadcast message type.
- *
  * @param name The name to validate
  * @param workspace The workspace the name should be validated against.
  * @param opt_callback An optional function to call if a broadcast message
@@ -267,7 +262,6 @@ function validateBroadcastMessageName(
 /**
  * Validate the given name as a scalar variable or list type.
  * This function is also responsible for any user facing error-handling.
- *
  * @param name The name to validate
  * @param workspace The workspace the name should be validated against.
  * @param additionalVars A list of additional variable names to check for
@@ -295,7 +289,7 @@ function validateScalarVarOrListName(
   if (isCloud) {
     name = CLOUD_PREFIX + name;
   }
-  if (workspace.getVariable(name, type) || additionalVars.indexOf(name) >= 0) {
+  if (workspace.getVariable(name, type) || additionalVars.includes(name)) {
     // error
     Blockly.dialog.alert(errorMsg.replace("%1", name));
     return null;
@@ -307,7 +301,6 @@ function validateScalarVarOrListName(
 
 /**
  * Rename a variable with the given workspace, variableType, and oldName.
- *
  * @param workspace The workspace on which to rename the variable.
  * @param variable Variable to rename.
  * @param opt_callback A callback. It will be passed an acceptable new variable
@@ -341,7 +334,7 @@ export function renameVariable(
 
   const promptText = promptMsg.replace("%1", variable.getName());
   let promptDefaultText = variable.getName();
-  if (variable.isCloud && variable.getName().indexOf(CLOUD_PREFIX) == 0) {
+  if (variable.isCloud && variable.getName().startsWith(CLOUD_PREFIX)) {
     promptDefaultText = promptDefaultText.substring(CLOUD_PREFIX.length);
   }
 
@@ -352,7 +345,7 @@ export function renameVariable(
       if (
         variable.isCloud &&
         newName.length > 0 &&
-        newName.indexOf(CLOUD_PREFIX) == 0
+        newName.startsWith(CLOUD_PREFIX)
       ) {
         newName = newName.substring(CLOUD_PREFIX.length);
         // The name validator will add the prefix back

@@ -1,5 +1,4 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -48,8 +47,8 @@ class BlockCommentChange extends BlockCommentBase {
       workspace,
       event ?? new BlockCommentChange()
     ) as BlockCommentChange;
-    newEvent.newContents_ = json["newContents"];
-    newEvent.oldContents_ = json["oldContents"];
+    newEvent.newContents_ = json.newContents;
+    newEvent.oldContents_ = json.oldContents;
 
     return newEvent;
   }
