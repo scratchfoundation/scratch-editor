@@ -2,8 +2,7 @@
  * Copyright 2026 Scratch Foundation
  * SPDX-License-Identifier: Apache-2.0
  */
-
-import * as Blockly from "blockly/core";
+import * as Blockly from 'blockly/core'
 
 /**
  * Scratch-specific zoom controls that use separate SVG files for each button
@@ -12,33 +11,33 @@ import * as Blockly from "blockly/core";
  * default vs. high-contrast), enabling per-mode icon designs.
  */
 export class ScratchZoomControls implements Blockly.IPositionable {
-  id = "zoomControls";
+  id = 'zoomControls'
 
-  private boundEvents: Blockly.browserEvents.Data[] = [];
+  private boundEvents: Blockly.browserEvents.Data[] = []
 
-  private svgGroup: SVGGElement | null = null;
-  private zoomInGroup: SVGGElement | null = null;
-  private zoomOutGroup: SVGGElement | null = null;
-  private zoomResetGroup: SVGGElement | null = null;
+  private svgGroup: SVGGElement | null = null
+  private zoomInGroup: SVGGElement | null = null
+  private zoomOutGroup: SVGGElement | null = null
+  private zoomResetGroup: SVGGElement | null = null
 
   /** Rendered width and height of each button, in SVG units. */
-  private readonly SIZE = 36;
+  private readonly SIZE = 36
 
   /** Gap between zoom in and zoom out buttons. */
-  private readonly SMALL_SPACING = 4;
+  private readonly SMALL_SPACING = 4
 
   /** Gap between zoom in/out group and zoom reset button. */
-  private readonly LARGE_SPACING = 12;
+  private readonly LARGE_SPACING = 12
 
   /** Distance from the workspace edge, vertical axis. */
-  private readonly MARGIN_VERTICAL = 20;
+  private readonly MARGIN_VERTICAL = 20
 
   /** Distance from the workspace edge, horizontal axis. */
-  private readonly MARGIN_HORIZONTAL = 20;
+  private readonly MARGIN_HORIZONTAL = 20
 
-  private left = 0;
-  private top = 0;
-  private initialized = false;
+  private left = 0
+  private top = 0
+  private initialized = false
 
   constructor(private readonly workspace: Blockly.WorkspaceSvg) {}
 
@@ -47,60 +46,33 @@ export class ScratchZoomControls implements Blockly.IPositionable {
    * @returns The root SVG group element.
    */
   createDom(): SVGGElement {
-    this.svgGroup = Blockly.utils.dom.createSvgElement(
-      Blockly.utils.Svg.G,
-      {}
-    );
+    this.svgGroup = Blockly.utils.dom.createSvgElement(Blockly.utils.Svg.G, {})
 
-    const media = this.workspace.options.pathToMedia;
+    const media = this.workspace.options.pathToMedia
 
-    this.zoomOutGroup = this.createButtonGroup(
-      "blocklyZoomOut",
-      `${media}zoom-out.svg`
-    );
-    this.svgGroup.appendChild(this.zoomOutGroup);
+    this.zoomOutGroup = this.createButtonGroup('blocklyZoomOut', `${media}zoom-out.svg`)
+    this.svgGroup.appendChild(this.zoomOutGroup)
     this.boundEvents.push(
-      Blockly.browserEvents.conditionalBind(
-        this.zoomOutGroup,
-        "pointerdown",
-        null,
-        this.zoom.bind(this, -1)
-      )
-    );
+      Blockly.browserEvents.conditionalBind(this.zoomOutGroup, 'pointerdown', null, this.zoom.bind(this, -1)),
+    )
 
-    this.zoomInGroup = this.createButtonGroup(
-      "blocklyZoomIn",
-      `${media}zoom-in.svg`
-    );
-    this.svgGroup.appendChild(this.zoomInGroup);
+    this.zoomInGroup = this.createButtonGroup('blocklyZoomIn', `${media}zoom-in.svg`)
+    this.svgGroup.appendChild(this.zoomInGroup)
     this.boundEvents.push(
-      Blockly.browserEvents.conditionalBind(
-        this.zoomInGroup,
-        "pointerdown",
-        null,
-        this.zoom.bind(this, 1)
-      )
-    );
+      Blockly.browserEvents.conditionalBind(this.zoomInGroup, 'pointerdown', null, this.zoom.bind(this, 1)),
+    )
 
     if (this.workspace.isMovable()) {
       // Only add zoom reset if the workspace is movable — if it isn't,
       // zooming to center could push blocks off the visible edges.
-      this.zoomResetGroup = this.createButtonGroup(
-        "blocklyZoomReset",
-        `${media}zoom-reset.svg`
-      );
-      this.svgGroup.appendChild(this.zoomResetGroup);
+      this.zoomResetGroup = this.createButtonGroup('blocklyZoomReset', `${media}zoom-reset.svg`)
+      this.svgGroup.appendChild(this.zoomResetGroup)
       this.boundEvents.push(
-        Blockly.browserEvents.conditionalBind(
-          this.zoomResetGroup,
-          "pointerdown",
-          null,
-          this.resetZoom.bind(this)
-        )
-      );
+        Blockly.browserEvents.conditionalBind(this.zoomResetGroup, 'pointerdown', null, this.resetZoom.bind(this)),
+      )
     }
 
-    return this.svgGroup;
+    return this.svgGroup
   }
 
   /**
@@ -109,13 +81,10 @@ export class ScratchZoomControls implements Blockly.IPositionable {
    * @param imageHref URL of the SVG icon to display.
    * @returns The button group element.
    */
-  private createButtonGroup(
-    extraClass: string,
-    imageHref: string
-  ): SVGGElement {
+  private createButtonGroup(extraClass: string, imageHref: string): SVGGElement {
     const group = Blockly.utils.dom.createSvgElement(Blockly.utils.Svg.G, {
       class: `blocklyZoom ${extraClass}`,
-    });
+    })
 
     const image = Blockly.utils.dom.createSvgElement(
       Blockly.utils.Svg.IMAGE,
@@ -123,15 +92,11 @@ export class ScratchZoomControls implements Blockly.IPositionable {
         width: this.SIZE,
         height: this.SIZE,
       },
-      group
-    );
-    image.setAttributeNS(
-      Blockly.utils.dom.XLINK_NS,
-      "xlink:href",
-      imageHref
-    );
+      group,
+    )
+    image.setAttributeNS(Blockly.utils.dom.XLINK_NS, 'xlink:href', imageHref)
 
-    return group;
+    return group
   }
 
   /** Registers this component with the workspace's ComponentManager. */
@@ -140,20 +105,20 @@ export class ScratchZoomControls implements Blockly.IPositionable {
       component: this,
       weight: 2,
       capabilities: [Blockly.ComponentManager.Capability.POSITIONABLE],
-    });
-    this.initialized = true;
+    })
+    this.initialized = true
   }
 
   /** Removes this component from the DOM and ComponentManager. */
   dispose() {
-    this.workspace.getComponentManager().removeComponent("zoomControls");
+    this.workspace.getComponentManager().removeComponent('zoomControls')
     if (this.svgGroup) {
-      Blockly.utils.dom.removeNode(this.svgGroup);
+      Blockly.utils.dom.removeNode(this.svgGroup)
     }
     for (const event of this.boundEvents) {
-      Blockly.browserEvents.unbind(event);
+      Blockly.browserEvents.unbind(event)
     }
-    this.boundEvents.length = 0;
+    this.boundEvents.length = 0
   }
 
   /**
@@ -161,16 +126,11 @@ export class ScratchZoomControls implements Blockly.IPositionable {
    * the Blockly injection div.
    */
   getBoundingRectangle(): Blockly.utils.Rect | null {
-    let height = this.SMALL_SPACING + 2 * this.SIZE;
+    let height = this.SMALL_SPACING + 2 * this.SIZE
     if (this.zoomResetGroup) {
-      height += this.LARGE_SPACING + this.SIZE;
+      height += this.LARGE_SPACING + this.SIZE
     }
-    return new Blockly.utils.Rect(
-      this.top,
-      this.top + height,
-      this.left,
-      this.left + this.SIZE
-    );
+    return new Blockly.utils.Rect(this.top, this.top + height, this.left, this.left + this.SIZE)
   }
 
   /**
@@ -179,20 +139,14 @@ export class ScratchZoomControls implements Blockly.IPositionable {
    * @param metrics
    * @param savedPositions
    */
-  position(
-    metrics: Blockly.MetricsManager.UiMetrics,
-    savedPositions: Blockly.utils.Rect[]
-  ) {
-    if (!this.initialized) return;
+  position(metrics: Blockly.MetricsManager.UiMetrics, savedPositions: Blockly.utils.Rect[]) {
+    if (!this.initialized) return
 
-    const cornerPosition = Blockly.uiPosition.getCornerOppositeToolbox(
-      this.workspace,
-      metrics
-    );
+    const cornerPosition = Blockly.uiPosition.getCornerOppositeToolbox(this.workspace, metrics)
 
-    let height = this.SMALL_SPACING + 2 * this.SIZE;
+    let height = this.SMALL_SPACING + 2 * this.SIZE
     if (this.zoomResetGroup) {
-      height += this.LARGE_SPACING + this.SIZE;
+      height += this.LARGE_SPACING + this.SIZE
     }
 
     const startRect = Blockly.uiPosition.getStartPositionRect(
@@ -201,55 +155,52 @@ export class ScratchZoomControls implements Blockly.IPositionable {
       this.MARGIN_HORIZONTAL,
       this.MARGIN_VERTICAL,
       metrics,
-      this.workspace
-    );
+      this.workspace,
+    )
 
-    const verticalPosition = cornerPosition.vertical;
+    const verticalPosition = cornerPosition.vertical
     const bumpDirection =
       verticalPosition === Blockly.uiPosition.verticalPosition.TOP
         ? Blockly.uiPosition.bumpDirection.DOWN
-        : Blockly.uiPosition.bumpDirection.UP;
+        : Blockly.uiPosition.bumpDirection.UP
 
     const positionRect = Blockly.uiPosition.bumpPositionRect(
       startRect,
       this.MARGIN_VERTICAL,
       bumpDirection,
-      savedPositions
-    );
+      savedPositions,
+    )
 
     // Zoom in and zoom out are always adjacent (small gap); reset has extra visual separation (large gap).
     // The layout mirrors between corners so the button nearest the corner stays anchored there.
     if (verticalPosition === Blockly.uiPosition.verticalPosition.TOP) {
       // Top corner: reset nearest the corner (top), zoom out, zoom in furthest.
       if (this.zoomResetGroup) {
-        this.zoomResetGroup.setAttribute("transform", "translate(0, 0)");
-        const zoomOutY = this.LARGE_SPACING + this.SIZE;
-        this.zoomOutGroup?.setAttribute("transform", `translate(0, ${zoomOutY})`);
-        const zoomInY = zoomOutY + this.SMALL_SPACING + this.SIZE;
-        this.zoomInGroup?.setAttribute("transform", `translate(0, ${zoomInY})`);
+        this.zoomResetGroup.setAttribute('transform', 'translate(0, 0)')
+        const zoomOutY = this.LARGE_SPACING + this.SIZE
+        this.zoomOutGroup?.setAttribute('transform', `translate(0, ${zoomOutY})`)
+        const zoomInY = zoomOutY + this.SMALL_SPACING + this.SIZE
+        this.zoomInGroup?.setAttribute('transform', `translate(0, ${zoomInY})`)
       } else {
-        this.zoomOutGroup?.setAttribute("transform", "translate(0, 0)");
-        const zoomInY = this.SMALL_SPACING + this.SIZE;
-        this.zoomInGroup?.setAttribute("transform", `translate(0, ${zoomInY})`);
+        this.zoomOutGroup?.setAttribute('transform', 'translate(0, 0)')
+        const zoomInY = this.SMALL_SPACING + this.SIZE
+        this.zoomInGroup?.setAttribute('transform', `translate(0, ${zoomInY})`)
       }
     } else {
       // Bottom corner (default): zoom in furthest from corner (top), zoom out,
       // reset nearest the corner (bottom).
-      this.zoomInGroup?.setAttribute("transform", "translate(0, 0)");
-      const zoomOutY = this.SMALL_SPACING + this.SIZE;
-      this.zoomOutGroup?.setAttribute("transform", `translate(0, ${zoomOutY})`);
+      this.zoomInGroup?.setAttribute('transform', 'translate(0, 0)')
+      const zoomOutY = this.SMALL_SPACING + this.SIZE
+      this.zoomOutGroup?.setAttribute('transform', `translate(0, ${zoomOutY})`)
       if (this.zoomResetGroup) {
-        const zoomResetY = zoomOutY + this.LARGE_SPACING + this.SIZE;
-        this.zoomResetGroup.setAttribute("transform", `translate(0, ${zoomResetY})`);
+        const zoomResetY = zoomOutY + this.LARGE_SPACING + this.SIZE
+        this.zoomResetGroup.setAttribute('transform', `translate(0, ${zoomResetY})`)
       }
     }
 
-    this.top = positionRect.top;
-    this.left = positionRect.left;
-    this.svgGroup?.setAttribute(
-      "transform",
-      `translate(${this.left}, ${this.top})`
-    );
+    this.top = positionRect.top
+    this.left = positionRect.left
+    this.svgGroup?.setAttribute('transform', `translate(${this.left}, ${this.top})`)
   }
 
   /**
@@ -258,12 +209,12 @@ export class ScratchZoomControls implements Blockly.IPositionable {
    * @param e The pointer event.
    */
   private zoom(amount: number, e: PointerEvent) {
-    this.workspace.markFocused();
-    this.workspace.zoomCenter(amount);
-    this.fireZoomEvent();
-    Blockly.Touch.clearTouchIdentifier();
-    e.stopPropagation();
-    e.preventDefault();
+    this.workspace.markFocused()
+    this.workspace.zoomCenter(amount)
+    this.fireZoomEvent()
+    Blockly.Touch.clearTouchIdentifier()
+    e.stopPropagation()
+    e.preventDefault()
   }
 
   /**
@@ -272,35 +223,31 @@ export class ScratchZoomControls implements Blockly.IPositionable {
    * @param e The pointer event.
    */
   private resetZoom(e: PointerEvent) {
-    this.workspace.markFocused();
+    this.workspace.markFocused()
 
     // Compute the zoom amount needed to get from currentScale back to
     // startScale using the workspace's configured speed:
     //   targetScale = currentScale * speed^amount
     //   amount = log_speed(targetScale / currentScale)
-    const targetScale = this.workspace.options.zoomOptions.startScale;
-    const currentScale = this.workspace.scale;
-    const speed = this.workspace.options.zoomOptions.scaleSpeed;
-    const amount = Math.log(targetScale / currentScale) / Math.log(speed);
+    const targetScale = this.workspace.options.zoomOptions.startScale
+    const currentScale = this.workspace.scale
+    const speed = this.workspace.options.zoomOptions.scaleSpeed
+    const amount = Math.log(targetScale / currentScale) / Math.log(speed)
 
-    this.workspace.beginCanvasTransition();
-    this.workspace.zoomCenter(amount);
-    this.workspace.scrollCenter();
-    setTimeout(this.workspace.endCanvasTransition.bind(this.workspace), 500);
+    this.workspace.beginCanvasTransition()
+    this.workspace.zoomCenter(amount)
+    this.workspace.scrollCenter()
+    setTimeout(this.workspace.endCanvasTransition.bind(this.workspace), 500)
 
-    this.fireZoomEvent();
-    Blockly.Touch.clearTouchIdentifier();
-    e.stopPropagation();
-    e.preventDefault();
+    this.fireZoomEvent()
+    Blockly.Touch.clearTouchIdentifier()
+    e.stopPropagation()
+    e.preventDefault()
   }
 
   /** Fires a zoom controls click event for external listeners. */
   private fireZoomEvent() {
-    const event = new (Blockly.Events.get(Blockly.Events.CLICK))(
-      null,
-      this.workspace.id,
-      "zoom_controls"
-    );
-    Blockly.Events.fire(event);
+    const event = new (Blockly.Events.get(Blockly.Events.CLICK))(null, this.workspace.id, 'zoom_controls')
+    Blockly.Events.fire(event)
   }
 }

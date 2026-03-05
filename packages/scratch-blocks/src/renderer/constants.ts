@@ -2,14 +2,13 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-
-import * as Blockly from "blockly/core";
+import * as Blockly from 'blockly/core'
 
 export class ConstantProvider extends Blockly.zelos.ConstantProvider {
-  REPLACEMENT_GLOW_COLOUR = "#ffffff";
-  SELECTED_GLOW_COLOUR = "#ffffff";
+  REPLACEMENT_GLOW_COLOUR = '#ffffff'
+  SELECTED_GLOW_COLOUR = '#ffffff'
 
-  BOWLER_HAT_HEIGHT = 20;
+  BOWLER_HAT_HEIGHT = 20
 
   /**
    * Sets the visual theme used to render the workspace.
@@ -21,35 +20,23 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
    * @param theme The new theme to apply.
    */
   override setTheme(theme: Blockly.Theme) {
-    const root = document.documentElement;
+    const root = document.documentElement
     for (const [key, colour] of Object.entries(theme.blockStyles)) {
-      if (typeof colour !== "object") {
-        const varKey = `--colour-${key}`;
-        root.style.setProperty(varKey, colour);
+      if (typeof colour !== 'object') {
+        const varKey = `--colour-${key}`
+        root.style.setProperty(varKey, colour)
       } else {
         const style = {
-          colourPrimary:
-            "colourQuaternary" in colour
-              ? `${colour.colourQuaternary}`
-              : colour.colourTertiary,
-          colourSecondary:
-            "colourQuaternary" in colour
-              ? `${colour.colourQuaternary}`
-              : colour.colourTertiary,
-          colourTertiary:
-            "colourQuaternary" in colour
-              ? `${colour.colourQuaternary}`
-              : colour.colourTertiary,
-          colourQuaternary:
-            "colourQuaternary" in colour
-              ? `${colour.colourQuaternary}`
-              : colour.colourTertiary,
-          hat: "",
-        };
-        theme.setBlockStyle(`${key}_selected`, style);
+          colourPrimary: 'colourQuaternary' in colour ? `${colour.colourQuaternary}` : colour.colourTertiary,
+          colourSecondary: 'colourQuaternary' in colour ? `${colour.colourQuaternary}` : colour.colourTertiary,
+          colourTertiary: 'colourQuaternary' in colour ? `${colour.colourQuaternary}` : colour.colourTertiary,
+          colourQuaternary: 'colourQuaternary' in colour ? `${colour.colourQuaternary}` : colour.colourTertiary,
+          hat: '',
+        }
+        theme.setBlockStyle(`${key}_selected`, style)
       }
     }
-    super.setTheme(theme);
+    super.setTheme(theme)
   }
 
   /**
@@ -63,30 +50,30 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
    * hexagonal shape of their parent block's output.
    * @param connection
    */
-  override shapeFor(connection: Blockly.RenderedConnection): ReturnType<Blockly.zelos.ConstantProvider["shapeFor"]> {
-    let checks = connection.getCheck();
+  override shapeFor(connection: Blockly.RenderedConnection): ReturnType<Blockly.zelos.ConstantProvider['shapeFor']> {
+    let checks = connection.getCheck()
     if (!checks && connection.targetConnection) {
-      checks = connection.targetConnection.getCheck();
+      checks = connection.targetConnection.getCheck()
     }
 
     if (connection.type === Blockly.ConnectionType.OUTPUT_VALUE) {
-      const outputShape = connection.getSourceBlock().getOutputShape();
+      const outputShape = connection.getSourceBlock().getOutputShape()
       if (outputShape !== null) {
         switch (outputShape) {
           case this.SHAPES.HEXAGONAL:
-            return this.HEXAGONAL!;
+            return this.HEXAGONAL!
           case this.SHAPES.ROUND:
-            return this.ROUNDED!;
+            return this.ROUNDED!
           case this.SHAPES.SQUARE:
-            return this.SQUARED!;
+            return this.SQUARED!
         }
       }
     }
 
     // For INPUT_VALUE (and OUTPUT_VALUE fallthrough), use connection checks.
-    if (checks?.includes("Boolean")) return this.HEXAGONAL!;
-    if (checks?.includes("Number")) return this.ROUNDED!;
-    if (checks?.includes("String")) return this.ROUNDED!;
+    if (checks?.includes('Boolean')) return this.HEXAGONAL!
+    if (checks?.includes('Number')) return this.ROUNDED!
+    if (checks?.includes('String')) return this.ROUNDED!
     // For INPUT_VALUE or OUTPUT_VALUE with unrecognized checks, default to
     // ROUNDED. Don't call super.shapeFor() here: the base implementation
     // uses getSourceBlock().getOutputShape(), which would incorrectly return
@@ -95,14 +82,14 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
       connection.type === Blockly.ConnectionType.INPUT_VALUE ||
       connection.type === Blockly.ConnectionType.OUTPUT_VALUE
     ) {
-      return this.ROUNDED!;
+      return this.ROUNDED!
     }
-    return super.shapeFor(connection);
+    return super.shapeFor(connection)
   }
 
   override createDom(svg: SVGElement, tagName: string, selector: string) {
-    super.createDom(svg, tagName, selector);
-    this.selectedGlowFilterId = "";
+    super.createDom(svg, tagName, selector)
+    this.selectedGlowFilterId = ''
   }
 
   /**
@@ -111,9 +98,7 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
    * @returns The SVG path string for the bowler hat.
    */
   makeBowlerHatPath(width: number): string {
-    const bowlerHatPath = `a20,20 0 0,1 20,-20 l ${
-      width - 40
-    } 0 a20,20 0 0,1 20,20`;
-    return bowlerHatPath;
+    const bowlerHatPath = `a20,20 0 0,1 20,-20 l ${width - 40} 0 a20,20 0 0,1 20,20`
+    return bowlerHatPath
   }
 }

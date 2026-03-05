@@ -2,13 +2,12 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-
-import * as Blockly from "blockly/core";
-import { ContinuousCategory } from "@blockly/continuous-toolbox";
+import * as Blockly from 'blockly/core'
+import { ContinuousCategory } from '@blockly/continuous-toolbox'
 
 type StatusIndicatorCategoryInfo = Blockly.utils.toolbox.CategoryInfo & {
-  showStatusButton?: string;
-};
+  showStatusButton?: string
+}
 
 /**
  * Selectable category shown in the Scratch toolbox.
@@ -19,7 +18,7 @@ export class ScratchContinuousCategory extends ContinuousCategory {
    * in the flyout, typically for extensions that interface with hardware
    * devices.
    */
-  private showStatusButton = false;
+  private showStatusButton = false
 
   /**
    * Creates a new ScratchContinuousCategory.
@@ -30,10 +29,10 @@ export class ScratchContinuousCategory extends ContinuousCategory {
   constructor(
     toolboxItemDef: StatusIndicatorCategoryInfo,
     parentToolbox: Blockly.Toolbox,
-    opt_parent?: Blockly.ICollapsibleToolboxItem
+    opt_parent?: Blockly.ICollapsibleToolboxItem,
   ) {
-    super(toolboxItemDef, parentToolbox, opt_parent);
-    this.showStatusButton = toolboxItemDef.showStatusButton === "true";
+    super(toolboxItemDef, parentToolbox, opt_parent)
+    this.showStatusButton = toolboxItemDef.showStatusButton === 'true'
   }
 
   /**
@@ -42,14 +41,14 @@ export class ScratchContinuousCategory extends ContinuousCategory {
    */
   createIconDom_(): HTMLElement {
     if (this.toolboxItemDef_.iconURI) {
-      const icon = document.createElement("img");
-      icon.src = this.toolboxItemDef_.iconURI;
-      icon.className = "categoryIconBubble";
-      return icon;
+      const icon = document.createElement('img')
+      icon.src = this.toolboxItemDef_.iconURI
+      icon.className = 'categoryIconBubble'
+      return icon
     } else {
-      const icon = super.createIconDom_();
-      icon.style.border = `1px solid ${this.toolboxItemDef_.secondaryColour}`;
-      return icon;
+      const icon = super.createIconDom_()
+      icon.style.border = `1px solid ${this.toolboxItemDef_.secondaryColour}`
+      return icon
     }
   }
 
@@ -58,9 +57,9 @@ export class ScratchContinuousCategory extends ContinuousCategory {
    * @param isSelected True if this category is selected.
    */
   setSelected(isSelected: boolean) {
-    super.setSelected(isSelected);
+    super.setSelected(isSelected)
     // Prevent hardcoding the background color to grey.
-    this.rowDiv_.style.backgroundColor = "";
+    this.rowDiv_.style.backgroundColor = ''
   }
 
   /**
@@ -68,19 +67,16 @@ export class ScratchContinuousCategory extends ContinuousCategory {
    * status indicators.
    */
   shouldShowStatusButton() {
-    return this.showStatusButton;
+    return this.showStatusButton
   }
 }
 
 /** Registers this toolbox category and unregisters the default one. */
 export function registerScratchContinuousCategory() {
-  Blockly.registry.unregister(
-    Blockly.registry.Type.TOOLBOX_ITEM,
-    ScratchContinuousCategory.registrationName
-  );
+  Blockly.registry.unregister(Blockly.registry.Type.TOOLBOX_ITEM, ScratchContinuousCategory.registrationName)
   Blockly.registry.register(
     Blockly.registry.Type.TOOLBOX_ITEM,
     ScratchContinuousCategory.registrationName,
-    ScratchContinuousCategory
-  );
+    ScratchContinuousCategory,
+  )
 }

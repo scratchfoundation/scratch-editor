@@ -16,49 +16,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * @file Variable input field.
  * @author fraser@google.com (Neil Fraser)
  */
-import * as Blockly from "blockly/core";
-import * as Constants from "../constants";
-import { ScratchMsgs } from "../../msg/scratch_msgs.js";
-import { createVariable, renameVariable } from "../variables";
-import type { ScratchVariableModel } from "../scratch_variable_model";
+import * as Blockly from 'blockly/core'
+import { ScratchMsgs } from '../../msg/scratch_msgs.js'
+import * as Constants from '../constants'
+import type { ScratchVariableModel } from '../scratch_variable_model'
+import { createVariable, renameVariable } from '../variables'
 
 export class ScratchFieldVariable extends Blockly.FieldVariable {
-  private originalStyle!: string;
+  private originalStyle!: string
 
   constructor(
     varName: string | null | typeof Blockly.Field.SKIP_SETUP,
     validator?: Blockly.FieldVariableValidator,
     variableTypes?: string[],
     defaultType?: string,
-    config?: Blockly.FieldVariableConfig
+    config?: Blockly.FieldVariableConfig,
   ) {
-    super(varName, validator, variableTypes, defaultType, config);
+    super(varName, validator, variableTypes, defaultType, config)
     // dropdownCreate returns MenuOption[] rather than Blockly.MenuGenerator's
     // MenuOption[][] variant; the cast is needed to satisfy FieldVariable's
     // menuGenerator_ type while the actual runtime shape is compatible.
-    this.menuGenerator_ = ScratchFieldVariable.dropdownCreate as unknown as Blockly.MenuGenerator;
+    this.menuGenerator_ = ScratchFieldVariable.dropdownCreate as unknown as Blockly.MenuGenerator
   }
 
   initModel() {
     if (!this.getVariable()) {
-      const sourceBlock = this.getSourceBlock();
+      const sourceBlock = this.getSourceBlock()
       if (sourceBlock) {
-        const broadcastVariable = this.initFlyoutBroadcast(
-          sourceBlock.workspace as Blockly.WorkspaceSvg
-        );
+        const broadcastVariable = this.initFlyoutBroadcast(sourceBlock.workspace as Blockly.WorkspaceSvg)
         if (broadcastVariable) {
-          this.doValueUpdate_(broadcastVariable.getId());
-          return;
+          this.doValueUpdate_(broadcastVariable.getId())
+          return
         }
       }
     }
 
-    super.initModel();
+    super.initModel()
   }
 
   /**
@@ -72,19 +69,15 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
    * @returns The variable of type 'broadcast_msg' that comes first in sorted
    * order.
    */
-  initFlyoutBroadcast(
-    workspace: Blockly.WorkspaceSvg
-  ): Blockly.IVariableModel<Blockly.IVariableState> | undefined {
-    const broadcastVars = workspace.getVariablesOfType(
-      Constants.BROADCAST_MESSAGE_VARIABLE_TYPE
-    );
+  initFlyoutBroadcast(workspace: Blockly.WorkspaceSvg): Blockly.IVariableModel<Blockly.IVariableState> | undefined {
+    const broadcastVars = workspace.getVariablesOfType(Constants.BROADCAST_MESSAGE_VARIABLE_TYPE)
     if (
       workspace.isFlyout &&
       this.getDefaultType() == Constants.BROADCAST_MESSAGE_VARIABLE_TYPE &&
       broadcastVars.length != 0
     ) {
-      broadcastVars.sort(Blockly.Variables.compareByName);
-      return broadcastVars[0];
+      broadcastVars.sort(Blockly.Variables.compareByName)
+      return broadcastVars[0]
     }
   }
 
@@ -94,28 +87,22 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
    * @returns Array of variable names.
    */
   static dropdownCreate(this: ScratchFieldVariable): Blockly.MenuOption[] {
-    let options = super.dropdownCreate();
-    const type = this.getDefaultType();
+    let options = super.dropdownCreate()
+    const type = this.getDefaultType()
     if (type === Constants.BROADCAST_MESSAGE_VARIABLE_TYPE) {
-      options.splice(-2, 2, [
-        ScratchMsgs.translate("NEW_BROADCAST_MESSAGE"),
-        Constants.NEW_BROADCAST_MESSAGE_ID,
-      ]);
+      options.splice(-2, 2, [ScratchMsgs.translate('NEW_BROADCAST_MESSAGE'), Constants.NEW_BROADCAST_MESSAGE_ID])
     } else if (type === Constants.LIST_VARIABLE_TYPE) {
-      options = options.map((option) => {
+      options = options.map(option => {
         if (option[1] === Blockly.RENAME_VARIABLE_ID) {
-          return [ScratchMsgs.translate("RENAME_LIST"), option[1]];
+          return [ScratchMsgs.translate('RENAME_LIST'), option[1]]
         } else if (option[1] === Blockly.DELETE_VARIABLE_ID) {
-          return [
-            ScratchMsgs.translate("DELETE_LIST").replace("%1", this.getText()),
-            option[1],
-          ];
+          return [ScratchMsgs.translate('DELETE_LIST').replace('%1', this.getText()), option[1]]
         }
-        return option;
-      });
+        return option
+      })
     }
 
-    return options;
+    return options
   }
 
   /**
@@ -127,57 +114,52 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
    * @param menuItem The MenuItem selected within menu.
    */
   onItemSelected_(menu: Blockly.Menu, menuItem: Blockly.MenuItem) {
-    const sourceBlock = this.getSourceBlock();
+    const sourceBlock = this.getSourceBlock()
     if (sourceBlock && !sourceBlock.isDeadOrDying()) {
-      const selectedItem = menuItem.getValue();
+      const selectedItem = menuItem.getValue()
       if (selectedItem === Constants.NEW_BROADCAST_MESSAGE_ID) {
         createVariable(
           sourceBlock.workspace as Blockly.WorkspaceSvg,
-          (varId) => {
+          varId => {
             if (varId) {
-              this.setValue(varId);
+              this.setValue(varId)
             }
           },
-          Constants.BROADCAST_MESSAGE_VARIABLE_TYPE
-        );
-        return;
+          Constants.BROADCAST_MESSAGE_VARIABLE_TYPE,
+        )
+        return
       } else if (selectedItem === Blockly.RENAME_VARIABLE_ID) {
-        renameVariable(
-          sourceBlock.workspace as Blockly.WorkspaceSvg,
-          this.getVariable() as ScratchVariableModel
-        );
-        return;
+        renameVariable(sourceBlock.workspace as Blockly.WorkspaceSvg, this.getVariable() as ScratchVariableModel)
+        return
       }
     }
-    super.onItemSelected_(menu, menuItem);
+    super.onItemSelected_(menu, menuItem)
   }
 
   showEditor_(event: PointerEvent) {
-    super.showEditor_(event);
-    const sourceBlock = this.getSourceBlock()!;
-    const styleName = sourceBlock.getStyleName();
+    super.showEditor_(event)
+    const sourceBlock = this.getSourceBlock()!
+    const styleName = sourceBlock.getStyleName()
     const style = (sourceBlock.workspace as Blockly.WorkspaceSvg)
       .getRenderer()
       .getConstants()
-      .getBlockStyle(styleName);
+      .getBlockStyle(styleName)
     if (sourceBlock.isShadow()) {
-      this.originalStyle = styleName;
-      sourceBlock.setStyle(`${this.originalStyle}_selected`);
+      this.originalStyle = styleName
+      sourceBlock.setStyle(`${this.originalStyle}_selected`)
     } else if (this.borderRect_) {
       this.borderRect_.setAttribute(
-        "fill",
-        "colourQuaternary" in style
-          ? `${style.colourQuaternary}`
-          : style.colourTertiary
-      );
+        'fill',
+        'colourQuaternary' in style ? `${style.colourQuaternary}` : style.colourTertiary,
+      )
     }
   }
 
   dropdownDispose_() {
-    super.dropdownDispose_();
-    const sourceBlock = this.getSourceBlock()!;
+    super.dropdownDispose_()
+    const sourceBlock = this.getSourceBlock()!
     if (sourceBlock.isShadow()) {
-      sourceBlock.setStyle(this.originalStyle);
+      sourceBlock.setStyle(this.originalStyle)
     }
   }
 }
@@ -186,6 +168,6 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
  * Register the field and any dependencies.
  */
 export function registerScratchFieldVariable() {
-  Blockly.fieldRegistry.unregister("field_variable");
-  Blockly.fieldRegistry.register("field_variable", ScratchFieldVariable);
+  Blockly.fieldRegistry.unregister('field_variable')
+  Blockly.fieldRegistry.register('field_variable', ScratchFieldVariable)
 }

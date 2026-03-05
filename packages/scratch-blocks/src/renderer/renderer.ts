@@ -2,12 +2,11 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-
-import * as Blockly from "blockly/core";
-import { Drawer } from "./drawer";
-import { RenderInfo } from "./render_info";
-import { ConstantProvider } from "./constants";
-import { PathObject } from "./path_object";
+import * as Blockly from 'blockly/core'
+import { ConstantProvider } from './constants'
+import { Drawer } from './drawer'
+import { PathObject } from './path_object'
+import { RenderInfo } from './render_info'
 
 /**
  * Custom renderer for Scratch-style blocks.
@@ -19,7 +18,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    * @returns The class name.
    */
   override getClassName(): string {
-    return "scratch-renderer";
+    return 'scratch-renderer'
   }
 
   /**
@@ -31,7 +30,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    * @returns The drawer.
    */
   override makeDrawer_(block: Blockly.BlockSvg, info: Blockly.blockRendering.RenderInfo): Drawer {
-    return new Drawer(block, info as RenderInfo);
+    return new Drawer(block, info as RenderInfo)
   }
 
   /**
@@ -40,7 +39,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    * @returns The render info object.
    */
   override makeRenderInfo_(block: Blockly.BlockSvg): RenderInfo {
-    return new RenderInfo(this, block);
+    return new RenderInfo(this, block)
   }
 
   /**
@@ -48,7 +47,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    * @returns The constant provider.
    */
   override makeConstants_(): ConstantProvider {
-    return new ConstantProvider();
+    return new ConstantProvider()
   }
 
   /**
@@ -57,11 +56,8 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    * @param style The style object to use for colouring.
    * @returns The renderer path object.
    */
-  override makePathObject(
-    root: SVGElement,
-    style: Blockly.Theme.BlockStyle
-  ): PathObject {
-    return new PathObject(root, style, this.getConstants());
+  override makePathObject(root: SVGElement, style: Blockly.Theme.BlockStyle): PathObject {
+    return new PathObject(root, style, this.getConstants())
   }
 
   /**
@@ -70,10 +66,8 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    * @returns True if we should highlight the connection.
    */
   override shouldHighlightConnection(connection: Blockly.RenderedConnection): boolean {
-    return (
-      connection.type === Blockly.ConnectionType.INPUT_VALUE
-    );
+    return connection.type === Blockly.ConnectionType.INPUT_VALUE
   }
 }
 
-Blockly.blockRendering.register("scratch_classic", ScratchRenderer);
+Blockly.blockRendering.register('scratch_classic', ScratchRenderer)

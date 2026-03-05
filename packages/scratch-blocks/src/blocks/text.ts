@@ -16,12 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * @file Text blocks for Blockly.
  * @author fraser@google.com (Neil Fraser)
  */
-import * as Blockly from "blockly/core";
+import * as Blockly from 'blockly/core'
 
 Blockly.Blocks.text = {
   /**
@@ -29,15 +28,15 @@ Blockly.Blocks.text = {
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
-      message0: "%1",
+      message0: '%1',
       args0: [
         {
-          type: "field_input",
-          name: "TEXT",
+          type: 'field_input',
+          name: 'TEXT',
         },
       ],
-      output: "String",
-      extensions: ["colours_textfield"],
-    });
+      output: 'String',
+      extensions: ['colours_textfield'],
+    })
   },
-};
+}

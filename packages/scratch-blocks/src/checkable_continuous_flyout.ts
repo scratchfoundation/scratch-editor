@@ -2,12 +2,11 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-
-import * as Blockly from "blockly/core";
-import { ContinuousFlyout } from "@blockly/continuous-toolbox";
-import { CheckboxBubble } from "./checkbox_bubble";
-import { StatusIndicatorLabel } from "./status_indicator_label";
-import { STATUS_INDICATOR_LABEL_TYPE } from "./status_indicator_label_flyout_inflater";
+import * as Blockly from 'blockly/core'
+import { ContinuousFlyout } from '@blockly/continuous-toolbox'
+import { CheckboxBubble } from './checkbox_bubble'
+import { StatusIndicatorLabel } from './status_indicator_label'
+import { STATUS_INDICATOR_LABEL_TYPE } from './status_indicator_label_flyout_inflater'
 
 export class CheckableContinuousFlyout extends ContinuousFlyout {
   /**
@@ -15,11 +14,11 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
    * @param workspaceOptions Configuration options for the flyout workspace.
    */
   constructor(workspaceOptions: Blockly.Options) {
-    workspaceOptions.modalInputs = false;
-    super(workspaceOptions);
-    this.tabWidth_ = 0;
-    this.MARGIN = 12;
-    this.GAP_Y = 12;
+    workspaceOptions.modalInputs = false
+    super(workspaceOptions)
+    this.tabWidth_ = 0
+    this.MARGIN = 12
+    this.GAP_Y = 12
   }
 
   /**
@@ -28,13 +27,13 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
    * @returns A JSON representation of the block.
    */
   protected serializeBlock(block: Blockly.BlockSvg) {
-    const json = super.serializeBlock(block);
+    const json = super.serializeBlock(block)
     // Delete the serialized block's ID so that a new one is generated when it is
     // placed on the workspace. Otherwise, the block on the workspace may be
     // indistinguishable from the one in the flyout, which can cause reporter blocks
     // to have their value dropdown shown in the wrong place.
-    delete json.id;
-    return json;
+    delete json.id
+    return json
   }
 
   /**
@@ -43,22 +42,19 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
    * @param value Value to set the checkbox to.
    */
   setCheckboxState(blockId: string, value: boolean) {
-    this.getWorkspace()
-      .getBlockById(blockId)
-      ?.getIcon("checkbox")
-      ?.setChecked(value);
+    this.getWorkspace().getBlockById(blockId)?.getIcon('checkbox')?.setChecked(value)
   }
 
   getFlyoutScale() {
-    return 0.675;
+    return 0.675
   }
 
   getWidth() {
-    return 250;
+    return 250
   }
 
   protected reflowInternal_() {
-    super.reflowInternal_();
+    super.reflowInternal_()
 
     if (this.RTL) {
       // The parent implementation assumes that the flyout grows to fit its
@@ -66,18 +62,13 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
       // flyout width is fixed (and blocks may exceed it), so re-adjust blocks
       // accordingly based on the actual fixed width.
       for (const item of this.getContents()) {
-        const oldX = item.getElement().getBoundingRectangle().left;
+        const oldX = item.getElement().getBoundingRectangle().left
         let newX =
-          this.getWidth() / this.workspace_.scale -
-          item.getElement().getBoundingRectangle().getWidth() -
-          this.MARGIN;
-        if (
-          "checkboxInFlyout" in item.getElement() &&
-          item.getElement().checkboxInFlyout
-        ) {
-          newX -= CheckboxBubble.CHECKBOX_SIZE + CheckboxBubble.CHECKBOX_MARGIN;
+          this.getWidth() / this.workspace_.scale - item.getElement().getBoundingRectangle().getWidth() - this.MARGIN
+        if ('checkboxInFlyout' in item.getElement() && item.getElement().checkboxInFlyout) {
+          newX -= CheckboxBubble.CHECKBOX_SIZE + CheckboxBubble.CHECKBOX_MARGIN
         }
-        item.getElement().moveBy(newX - oldX, 0);
+        item.getElement().moveBy(newX - oldX, 0)
       }
     }
   }
@@ -88,10 +79,7 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
    * @returns True if the item represents a label in the flyout.
    */
   protected toolboxItemIsLabel(item: Blockly.FlyoutItem) {
-    return (
-      item.getType() === STATUS_INDICATOR_LABEL_TYPE ||
-      super.toolboxItemIsLabel(item)
-    );
+    return item.getType() === STATUS_INDICATOR_LABEL_TYPE || super.toolboxItemIsLabel(item)
   }
 
   /**
@@ -100,12 +88,12 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
   refreshStatusButtons() {
     for (const item of this.contents) {
       if (item.element instanceof StatusIndicatorLabel) {
-        item.element.refreshStatus();
+        item.element.refreshStatus()
       }
     }
   }
 
   scrollTo(position: number) {
-    super.scrollTo(Math.ceil(position));
+    super.scrollTo(Math.ceil(position))
   }
 }

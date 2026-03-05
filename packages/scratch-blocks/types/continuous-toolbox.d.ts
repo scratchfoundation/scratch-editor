@@ -1,1 +1,1 @@
-declare module "@blockly/continuous-toolbox";
+declare module '@blockly/continuous-toolbox'

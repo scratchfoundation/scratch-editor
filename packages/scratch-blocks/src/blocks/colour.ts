@@ -16,21 +16,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * @file Colour blocks for Blockly.
  * @author fraser@google.com (Neil Fraser)
  */
-import * as Blockly from "blockly/core";
-import * as Constants from "../constants";
+import * as Blockly from 'blockly/core'
+import * as Constants from '../constants'
 
 /**
  * Pick a random colour.
  * @returns #RRGGBB for random colour.
  */
 function randomColour(): string {
-  const num = Math.floor(Math.random() * Math.pow(2, 24));
-  return "#" + ("00000" + num.toString(16)).substr(-6);
+  const num = Math.floor(Math.random() * Math.pow(2, 24))
+  return '#' + ('00000' + num.toString(16)).substr(-6)
 }
 
 Blockly.Blocks.colour_picker = {
@@ -39,16 +38,16 @@ Blockly.Blocks.colour_picker = {
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
-      message0: "%1",
+      message0: '%1',
       args0: [
         {
-          type: "field_colour_slider",
-          name: "COLOUR",
+          type: 'field_colour_slider',
+          name: 'COLOUR',
           colour: randomColour(),
         },
       ],
       outputShape: Constants.OUTPUT_SHAPE_ROUND,
-      output: "Colour",
-    });
+      output: 'Colour',
+    })
   },
-};
+}

@@ -16,13 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * @file Math blocks for Blockly.
  * @author q.neutron@gmail.com (Quynh Neutron)
  */
-import * as Blockly from "blockly/core";
-import * as Constants from "../constants";
+import * as Blockly from 'blockly/core'
+import * as Constants from '../constants'
 
 Blockly.Blocks.math_number = {
   /**
@@ -30,20 +29,20 @@ Blockly.Blocks.math_number = {
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
-      message0: "%1",
+      message0: '%1',
       args0: [
         {
-          type: "field_number",
-          name: "NUM",
-          value: "0",
+          type: 'field_number',
+          name: 'NUM',
+          value: '0',
         },
       ],
-      output: "Number",
+      output: 'Number',
       outputShape: Constants.OUTPUT_SHAPE_ROUND,
-      extensions: ["colours_textfield"],
-    });
+      extensions: ['colours_textfield'],
+    })
   },
-};
+}
 
 Blockly.Blocks.math_integer = {
   /**
@@ -51,20 +50,20 @@ Blockly.Blocks.math_integer = {
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
-      message0: "%1",
+      message0: '%1',
       args0: [
         {
-          type: "field_number",
-          name: "NUM",
+          type: 'field_number',
+          name: 'NUM',
           precision: 1,
         },
       ],
-      output: "Number",
+      output: 'Number',
       outputShape: Constants.OUTPUT_SHAPE_ROUND,
-      extensions: ["colours_textfield"],
-    });
+      extensions: ['colours_textfield'],
+    })
   },
-};
+}
 
 Blockly.Blocks.math_whole_number = {
   /**
@@ -72,21 +71,21 @@ Blockly.Blocks.math_whole_number = {
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
-      message0: "%1",
+      message0: '%1',
       args0: [
         {
-          type: "field_number",
-          name: "NUM",
+          type: 'field_number',
+          name: 'NUM',
           min: 0,
           precision: 1,
         },
       ],
-      output: "Number",
+      output: 'Number',
       outputShape: Constants.OUTPUT_SHAPE_ROUND,
-      extensions: ["colours_textfield"],
-    });
+      extensions: ['colours_textfield'],
+    })
   },
-};
+}
 
 Blockly.Blocks.math_positive_number = {
   /**
@@ -94,20 +93,20 @@ Blockly.Blocks.math_positive_number = {
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
-      message0: "%1",
+      message0: '%1',
       args0: [
         {
-          type: "field_number",
-          name: "NUM",
+          type: 'field_number',
+          name: 'NUM',
           min: 0,
         },
       ],
-      output: "Number",
+      output: 'Number',
       outputShape: Constants.OUTPUT_SHAPE_ROUND,
-      extensions: ["colours_textfield"],
-    });
+      extensions: ['colours_textfield'],
+    })
   },
-};
+}
 
 Blockly.Blocks.math_angle = {
   /**
@@ -115,17 +114,17 @@ Blockly.Blocks.math_angle = {
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
-      message0: "%1",
+      message0: '%1',
       args0: [
         {
-          type: "field_angle",
-          name: "NUM",
+          type: 'field_angle',
+          name: 'NUM',
           value: 90,
         },
       ],
-      output: "Number",
+      output: 'Number',
       outputShape: Constants.OUTPUT_SHAPE_ROUND,
-      extensions: ["colours_textfield"],
-    });
+      extensions: ['colours_textfield'],
+    })
   },
-};
+}

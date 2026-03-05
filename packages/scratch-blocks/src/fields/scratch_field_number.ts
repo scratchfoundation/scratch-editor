@@ -16,13 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * @file Field for numbers. Includes validator and numpad on touch.
  * @author tmickel@mit.edu (Tim Mickel)
  */
-import * as Blockly from "blockly/core";
-import { Colours } from "../colours";
+import * as Blockly from 'blockly/core'
+import { Colours } from '../colours'
 
 /**
  * Class for an editable number field.
@@ -43,13 +42,13 @@ import { Colours } from "../colours";
  *     the change.
  */
 class ScratchFieldNumber extends Blockly.FieldTextInput {
-  private negativeAllowed_ = true;
-  private decimalAllowed_ = true;
-  private exponentialAllowed_ = true;
+  private negativeAllowed_ = true
+  private decimalAllowed_ = true
+  private exponentialAllowed_ = true
   /**
    * Fixed width of the num-pad drop-down, in px.
    */
-  static DROPDOWN_WIDTH = 168;
+  static DROPDOWN_WIDTH = 168
 
   /**
    * Buttons for the num-pad, in order from the top left.
@@ -57,49 +56,34 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    * when the button is pressed.
    */
   // Calculator order
-  static NUMPAD_BUTTONS = [
-    "7",
-    "8",
-    "9",
-    "4",
-    "5",
-    "6",
-    "1",
-    "2",
-    "3",
-    ".",
-    "0",
-    "-",
-    " ",
-  ];
+  static NUMPAD_BUTTONS = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '.', '0', '-', ' ']
 
   /**
    * Src for the delete icon to be shown on the num-pad.
    */
   static NUMPAD_DELETE_ICON =
-    "data:image/svg+xml;utf8," +
-    "<svg " +
+    'data:image/svg+xml;utf8,' +
+    '<svg ' +
     'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">' +
     '<path d="M28.89,11.45H16.79a2.86,2.86,0,0,0-2,.84L9.09,1' +
-    "8a2.85,2.85,0,0,0,0,4l5.69,5.69a2.86,2.86,0,0,0,2,.84h12" +
-    ".1a2.86,2.86,0,0,0,2.86-2.86V14.31A2.86,2.86,0,0,0,28.89" +
-    ",11.45ZM27.15,22.73a1,1,0,0,1,0,1.41,1,1,0,0,1-.71.3,1,1" +
-    ",0,0,1-.71-0.3L23,21.41l-2.73,2.73a1,1,0,0,1-1.41,0,1,1," +
-    "0,0,1,0-1.41L21.59,20l-2.73-2.73a1,1,0,0,1,0-1.41,1,1,0," +
+    '8a2.85,2.85,0,0,0,0,4l5.69,5.69a2.86,2.86,0,0,0,2,.84h12' +
+    '.1a2.86,2.86,0,0,0,2.86-2.86V14.31A2.86,2.86,0,0,0,28.89' +
+    ',11.45ZM27.15,22.73a1,1,0,0,1,0,1.41,1,1,0,0,1-.71.3,1,1' +
+    ',0,0,1-.71-0.3L23,21.41l-2.73,2.73a1,1,0,0,1-1.41,0,1,1,' +
+    '0,0,1,0-1.41L21.59,20l-2.73-2.73a1,1,0,0,1,0-1.41,1,1,0,' +
     '0,1,1.41,0L23,18.59l2.73-2.73a1,1,0,1,1,1.42,1.41L24.42,20Z" fill="' +
     Colours.numPadText +
-    '"/></svg>';
+    '"/></svg>'
 
   configure_(config: Blockly.FieldNumberFromJsonConfig) {
-    super.configure_(config);
+    super.configure_(config)
     this.decimalAllowed_ =
-      typeof config.precision == "undefined" ||
+      typeof config.precision == 'undefined' ||
       isNaN(config.precision) ||
       config.precision == 0 ||
-      Math.floor(config.precision) != config.precision;
-    this.negativeAllowed_ =
-      typeof config.min == "undefined" || isNaN(config.min) || config.min < 0;
-    this.exponentialAllowed_ = this.decimalAllowed_;
+      Math.floor(config.precision) != config.precision
+    this.negativeAllowed_ = typeof config.min == 'undefined' || isNaN(config.min) || config.min < 0
+    this.exponentialAllowed_ = this.decimalAllowed_
   }
 
   /**
@@ -108,17 +92,17 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    * @returns Regular expression for this FieldNumber's restrictor.
    */
   getNumRestrictor() {
-    let pattern = "[\\d]"; // Always allow digits.
+    let pattern = '[\\d]' // Always allow digits.
     if (this.decimalAllowed_) {
-      pattern += "|[\\.]";
+      pattern += '|[\\.]'
     }
     if (this.negativeAllowed_) {
-      pattern += "|[-]";
+      pattern += '|[-]'
     }
     if (this.exponentialAllowed_) {
-      pattern += "|[eE]";
+      pattern += '|[eE]'
     }
-    return new RegExp(pattern);
+    return new RegExp(pattern)
   }
 
   /**
@@ -128,24 +112,24 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    */
   showEditor_(e: PointerEvent) {
     // Do not focus on mobile devices so we can show the num-pad
-    const showNumPad = e?.pointerType === "touch";
-    super.showEditor_(e, showNumPad);
+    const showNumPad = e?.pointerType === 'touch'
+    super.showEditor_(e, showNumPad)
 
     // Show a numeric keypad in the drop-down on touch
     if (showNumPad) {
-      this.htmlInput_!.select();
-      this.showNumPad_();
+      this.htmlInput_!.select()
+      this.showNumPad_()
     }
   }
 
   onHtmlInputKeyDown_(e: KeyboardEvent) {
-    super.onHtmlInputKeyDown_(e);
+    super.onHtmlInputKeyDown_(e)
     // key can be things like "Backspace", so only validate when it represents a single
     // character so as to allow non-textual input to work as normal.
     if (e.key.length === 1) {
-      const validator = this.getNumRestrictor();
+      const validator = this.getNumRestrictor()
       if (!e.key.match(validator)) {
-        e.preventDefault();
+        e.preventDefault()
       }
     }
   }
@@ -154,23 +138,20 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    * Show the number pad.
    */
   private showNumPad_() {
-    const contentDiv = Blockly.DropDownDiv.getContentDiv();
+    const contentDiv = Blockly.DropDownDiv.getContentDiv()
 
     // Accessibility properties
-    contentDiv.setAttribute("role", "menu");
-    contentDiv.setAttribute("aria-haspopup", "true");
+    contentDiv.setAttribute('role', 'menu')
+    contentDiv.setAttribute('aria-haspopup', 'true')
 
-    this.addButtons_(contentDiv);
+    this.addButtons_(contentDiv)
 
     // Set colour and size of drop-down
-    const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg;
-    Blockly.DropDownDiv.setColour(
-      (sourceBlock.getParent()!).getColour(),
-      sourceBlock.getColourTertiary()
-    );
-    contentDiv.style.width = ScratchFieldNumber.DROPDOWN_WIDTH + "px";
+    const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg
+    Blockly.DropDownDiv.setColour(sourceBlock.getParent()!.getColour(), sourceBlock.getColourTertiary())
+    contentDiv.style.width = ScratchFieldNumber.DROPDOWN_WIDTH + 'px'
 
-    this.position_();
+    this.position_()
   }
 
   /**
@@ -179,22 +160,20 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
   private position_() {
     // Calculate positioning for the drop-down
     // sourceBlock_ is the rendered shadow field input box
-    const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg;
-    const scale = sourceBlock.workspace.scale;
-    const bBox = sourceBlock.getHeightWidth();
-    bBox.width *= scale;
-    bBox.height *= scale;
-    const position = this.getAbsoluteXY_();
+    const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg
+    const scale = sourceBlock.workspace.scale
+    const bBox = sourceBlock.getHeightWidth()
+    bBox.width *= scale
+    bBox.height *= scale
+    const position = this.getAbsoluteXY_()
     // If we can fit it, render below the shadow block
-    const primaryX = position.x + bBox.width / 2;
-    const primaryY = position.y + bBox.height;
+    const primaryX = position.x + bBox.width / 2
+    const primaryY = position.y + bBox.height
     // If we can't fit it, render above the entire parent block
-    const secondaryX = primaryX;
-    const secondaryY = position.y;
+    const secondaryX = primaryX
+    const secondaryY = position.y
 
-    Blockly.DropDownDiv.setBoundsElement(
-      sourceBlock.workspace.getParentSvg().parentElement
-    );
+    Blockly.DropDownDiv.setBoundsElement(sourceBlock.workspace.getParentSvg().parentElement)
     Blockly.DropDownDiv.show(
       this,
       this.getSourceBlock()!.RTL,
@@ -203,8 +182,8 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
       secondaryX,
       secondaryY,
       false,
-      this.onHide_.bind(this)
-    );
+      this.onHide_.bind(this),
+    )
   }
 
   /**
@@ -213,71 +192,51 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    * @param contentDiv The div for the numeric keypad.
    */
   private addButtons_(contentDiv: Element) {
-    const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg;
-    const buttonColour = (sourceBlock.getParent()!).getColour();
-    const buttonBorderColour = (sourceBlock.getParent()!).getColourTertiary();
+    const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg
+    const buttonColour = sourceBlock.getParent()!.getColour()
+    const buttonBorderColour = sourceBlock.getParent()!.getColourTertiary()
 
     // Add numeric keypad buttons
-    const buttons = ScratchFieldNumber.NUMPAD_BUTTONS;
+    const buttons = ScratchFieldNumber.NUMPAD_BUTTONS
     for (let i = 0, buttonText; (buttonText = buttons[i]); i++) {
-      const button = document.createElement("button");
-      button.setAttribute("role", "menuitem");
-      button.setAttribute("class", "blocklyNumPadButton");
+      const button = document.createElement('button')
+      button.setAttribute('role', 'menuitem')
+      button.setAttribute('class', 'blocklyNumPadButton')
       button.setAttribute(
-        "style",
-        "background:" +
-          buttonColour +
-          ";" +
-          "border: 1px solid " +
-          buttonBorderColour +
-          ";"
-      );
-      button.title = buttonText;
-      button.innerHTML = buttonText;
-      Blockly.browserEvents.bind(
-        button,
-        "mousedown",
-        button,
-        this.numPadButtonTouch.bind(this)
-      );
-      if (buttonText == "." && !this.decimalAllowed_) {
+        'style',
+        'background:' + buttonColour + ';' + 'border: 1px solid ' + buttonBorderColour + ';',
+      )
+      button.title = buttonText
+      button.innerHTML = buttonText
+      Blockly.browserEvents.bind(button, 'mousedown', button, this.numPadButtonTouch.bind(this))
+      if (buttonText == '.' && !this.decimalAllowed_) {
         // Don't show the decimal point for inputs that must be round numbers
-        button.setAttribute("style", "visibility: hidden");
-      } else if (buttonText == "-" && !this.negativeAllowed_) {
-        continue;
-      } else if (buttonText == " " && !this.negativeAllowed_) {
-        continue;
-      } else if (buttonText == " " && this.negativeAllowed_) {
-        button.setAttribute("style", "visibility: hidden");
+        button.setAttribute('style', 'visibility: hidden')
+      } else if (buttonText == '-' && !this.negativeAllowed_) {
+        continue
+      } else if (buttonText == ' ' && !this.negativeAllowed_) {
+        continue
+      } else if (buttonText == ' ' && this.negativeAllowed_) {
+        button.setAttribute('style', 'visibility: hidden')
       }
-      contentDiv.appendChild(button);
+      contentDiv.appendChild(button)
     }
     // Add erase button to the end
-    const eraseButton = document.createElement("button");
-    eraseButton.setAttribute("role", "menuitem");
-    eraseButton.setAttribute("class", "blocklyNumPadButton");
+    const eraseButton = document.createElement('button')
+    eraseButton.setAttribute('role', 'menuitem')
+    eraseButton.setAttribute('class', 'blocklyNumPadButton')
     eraseButton.setAttribute(
-      "style",
-      "background:" +
-        buttonColour +
-        ";" +
-        "border: 1px solid " +
-        buttonBorderColour +
-        ";"
-    );
-    eraseButton.title = "Delete";
+      'style',
+      'background:' + buttonColour + ';' + 'border: 1px solid ' + buttonBorderColour + ';',
+    )
+    eraseButton.title = 'Delete'
 
-    const eraseImage = document.createElement("img");
-    eraseImage.src = ScratchFieldNumber.NUMPAD_DELETE_ICON;
-    eraseButton.appendChild(eraseImage);
+    const eraseImage = document.createElement('img')
+    eraseImage.src = ScratchFieldNumber.NUMPAD_DELETE_ICON
+    eraseButton.appendChild(eraseImage)
 
-    Blockly.browserEvents.bind(
-      eraseButton,
-      "mousedown",
-      null,
-      this.numPadEraseButtonTouch.bind(this)
-    );
-    contentDiv.appendChild(eraseButton);
+    Blockly.browserEvents.bind(eraseButton, 'mousedown', null, this.numPadEraseButtonTouch.bind(this))
+    contentDiv.appendChild(eraseButton)
   }
 
   /**
@@ -287,27 +246,24 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    */
   numPadButtonTouch(e: PointerEvent) {
     // String of the button (e.g., '7')
-    const spliceValue = (e.target as HTMLElement).innerText;
+    const spliceValue = (e.target as HTMLElement).innerText
     // Old value of the text field
-    const oldValue = this.htmlInput_!.value;
+    const oldValue = this.htmlInput_!.value
     // Determine the selected portion of the text field
-    const selectionStart = this.htmlInput_!.selectionStart ?? 0;
-    const selectionEnd = this.htmlInput_!.selectionEnd ?? 0;
+    const selectionStart = this.htmlInput_!.selectionStart ?? 0
+    const selectionEnd = this.htmlInput_!.selectionEnd ?? 0
 
     // Splice in the new value
-    const newValue =
-      oldValue.slice(0, selectionStart) +
-      spliceValue +
-      oldValue.slice(selectionEnd);
+    const newValue = oldValue.slice(0, selectionStart) + spliceValue + oldValue.slice(selectionEnd)
 
     // Set new value and advance the cursor
-    this.updateDisplay_(newValue, selectionStart + spliceValue.length);
+    this.updateDisplay_(newValue, selectionStart + spliceValue.length)
 
     // This is just a click.
-    Blockly.Touch.clearTouchIdentifier();
+    Blockly.Touch.clearTouchIdentifier()
 
     // Prevent default to not lose input focus
-    e.preventDefault();
+    e.preventDefault()
   }
 
   /**
@@ -317,27 +273,26 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    */
   numPadEraseButtonTouch(e: PointerEvent) {
     // Old value of the text field
-    const oldValue = this.htmlInput_!.value;
+    const oldValue = this.htmlInput_!.value
     // Determine what is selected to erase (if anything)
-    let selectionStart = this.htmlInput_!.selectionStart ?? 0;
-    const selectionEnd = this.htmlInput_!.selectionEnd ?? 0;
+    let selectionStart = this.htmlInput_!.selectionStart ?? 0
+    const selectionEnd = this.htmlInput_!.selectionEnd ?? 0
 
     // If selection is zero-length, shift start to the left 1 character
     if (selectionStart == selectionEnd) {
-      selectionStart = Math.max(0, selectionStart - 1);
+      selectionStart = Math.max(0, selectionStart - 1)
     }
 
     // Cut out selected range
-    const newValue =
-      oldValue.slice(0, selectionStart) + oldValue.slice(selectionEnd);
+    const newValue = oldValue.slice(0, selectionStart) + oldValue.slice(selectionEnd)
 
-    this.updateDisplay_(newValue, selectionStart);
+    this.updateDisplay_(newValue, selectionStart)
 
     // This is just a click.
-    Blockly.Touch.clearTouchIdentifier();
+    Blockly.Touch.clearTouchIdentifier()
 
     // Prevent default to not lose input focus which resets cursors in Chrome
-    e.preventDefault();
+    e.preventDefault()
   }
 
   /**
@@ -346,11 +301,11 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    * @param newSelection The new index to put the cursor
    */
   private updateDisplay_(newValue: string, newSelection: number) {
-    this.setEditorValue_(newValue);
+    this.setEditorValue_(newValue)
     // Resize and scroll the text field appropriately
-    const htmlInput = this.htmlInput_!;
-    htmlInput.setSelectionRange(newSelection, newSelection);
-    htmlInput.scrollLeft = htmlInput.scrollWidth;
+    const htmlInput = this.htmlInput_!
+    htmlInput.setSelectionRange(newSelection, newSelection)
+    htmlInput.scrollLeft = htmlInput.scrollWidth
   }
 
   /**
@@ -358,17 +313,17 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    */
   onHide_() {
     // Clear accessibility properties
-    Blockly.DropDownDiv.getContentDiv().removeAttribute("role");
-    Blockly.DropDownDiv.getContentDiv().removeAttribute("aria-haspopup");
+    Blockly.DropDownDiv.getContentDiv().removeAttribute('role')
+    Blockly.DropDownDiv.getContentDiv().removeAttribute('aria-haspopup')
   }
 }
 
-ScratchFieldNumber.prototype.DEFAULT_VALUE = "";
+ScratchFieldNumber.prototype.DEFAULT_VALUE = ''
 
 /**
  * Register the field and any dependencies.
  */
 export function registerScratchFieldNumber() {
-  Blockly.fieldRegistry.unregister("field_number");
-  Blockly.fieldRegistry.register("field_number", ScratchFieldNumber);
+  Blockly.fieldRegistry.unregister('field_number')
+  Blockly.fieldRegistry.register('field_number', ScratchFieldNumber)
 }

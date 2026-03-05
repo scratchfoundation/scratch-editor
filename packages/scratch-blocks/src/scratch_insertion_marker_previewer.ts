@@ -2,8 +2,7 @@
  * Copyright 2025 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-
-import * as Blockly from "blockly/core";
+import * as Blockly from 'blockly/core'
 
 /**
  * Displays an indicator of where a block being dragged will be connected.
@@ -23,15 +22,13 @@ class ScratchInsertionMarkerPreviewer extends Blockly.InsertionMarkerPreviewer {
       addInputBlocks: true,
       addNextBlocks: false,
       doFullSerialization: false,
-    });
+    })
 
     if (!blockJson) {
-      throw new Error(
-        `Failed to serialize source block. ${block.toDevString()}`
-      );
+      throw new Error(`Failed to serialize source block. ${block.toDevString()}`)
     }
 
-    return blockJson;
+    return blockJson
   }
 }
 
@@ -39,5 +36,5 @@ Blockly.registry.register(
   Blockly.registry.Type.CONNECTION_PREVIEWER,
   Blockly.registry.DEFAULT,
   ScratchInsertionMarkerPreviewer,
-  true
-);
+  true,
+)

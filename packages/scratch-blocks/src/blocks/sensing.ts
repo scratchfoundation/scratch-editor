@@ -16,9 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import * as Blockly from "blockly/core";
-import * as Constants from "../constants";
+import * as Blockly from 'blockly/core'
+import * as Constants from '../constants'
 
 Blockly.Blocks.sensing_touchingobject = {
   /**
@@ -29,19 +28,19 @@ Blockly.Blocks.sensing_touchingobject = {
       message0: Blockly.Msg.SENSING_TOUCHINGOBJECT,
       args0: [
         {
-          type: "input_value",
-          name: "TOUCHINGOBJECTMENU",
+          type: 'input_value',
+          name: 'TOUCHINGOBJECTMENU',
         },
       ],
-      extensions: ["colours_sensing", "output_boolean"],
-    });
+      extensions: ['colours_sensing', 'output_boolean'],
+    })
   },
-};
+}
 
 /**
  * "Touching [Object]" Block Menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks.sensing_touchingobjectmenu = {};
+Blockly.Blocks.sensing_touchingobjectmenu = {}
 
 Blockly.Blocks.sensing_touchingcolor = {
   /**
@@ -52,14 +51,14 @@ Blockly.Blocks.sensing_touchingcolor = {
       message0: Blockly.Msg.SENSING_TOUCHINGCOLOR,
       args0: [
         {
-          type: "input_value",
-          name: "COLOR",
+          type: 'input_value',
+          name: 'COLOR',
         },
       ],
-      extensions: ["colours_sensing", "output_boolean"],
-    });
+      extensions: ['colours_sensing', 'output_boolean'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_coloristouchingcolor = {
   /**
@@ -70,18 +69,18 @@ Blockly.Blocks.sensing_coloristouchingcolor = {
       message0: Blockly.Msg.SENSING_COLORISTOUCHINGCOLOR,
       args0: [
         {
-          type: "input_value",
-          name: "COLOR",
+          type: 'input_value',
+          name: 'COLOR',
         },
         {
-          type: "input_value",
-          name: "COLOR2",
+          type: 'input_value',
+          name: 'COLOR2',
         },
       ],
-      extensions: ["colours_sensing", "output_boolean"],
-    });
+      extensions: ['colours_sensing', 'output_boolean'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_distanceto = {
   /**
@@ -92,19 +91,19 @@ Blockly.Blocks.sensing_distanceto = {
       message0: Blockly.Msg.SENSING_DISTANCETO,
       args0: [
         {
-          type: "input_value",
-          name: "DISTANCETOMENU",
+          type: 'input_value',
+          name: 'DISTANCETOMENU',
         },
       ],
-      extensions: ["colours_sensing", "output_number"],
-    });
+      extensions: ['colours_sensing', 'output_number'],
+    })
   },
-};
+}
 
 /**
  * "Distance to [Object]" Block Menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks.sensing_distancetomenu = {};
+Blockly.Blocks.sensing_distancetomenu = {}
 
 Blockly.Blocks.sensing_askandwait = {
   /**
@@ -115,14 +114,14 @@ Blockly.Blocks.sensing_askandwait = {
       message0: Blockly.Msg.SENSING_ASKANDWAIT,
       args0: [
         {
-          type: "input_value",
-          name: "QUESTION",
+          type: 'input_value',
+          name: 'QUESTION',
         },
       ],
-      extensions: ["colours_sensing", "shape_statement"],
-    });
+      extensions: ['colours_sensing', 'shape_statement'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_answer = {
   /**
@@ -131,10 +130,10 @@ Blockly.Blocks.sensing_answer = {
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_ANSWER,
-      extensions: ["colours_sensing", "output_number", "monitor_block"],
-    });
+      extensions: ['colours_sensing', 'output_number', 'monitor_block'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_keypressed = {
   /**
@@ -145,14 +144,14 @@ Blockly.Blocks.sensing_keypressed = {
       message0: Blockly.Msg.SENSING_KEYPRESSED,
       args0: [
         {
-          type: "input_value",
-          name: "KEY_OPTION",
+          type: 'input_value',
+          name: 'KEY_OPTION',
         },
       ],
-      extensions: ["colours_sensing", "output_boolean"],
-    });
+      extensions: ['colours_sensing', 'output_boolean'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_keyoptions = {
   /**
@@ -160,61 +159,61 @@ Blockly.Blocks.sensing_keyoptions = {
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
-      message0: "%1",
+      message0: '%1',
       args0: [
         {
-          type: "field_dropdown",
-          name: "KEY_OPTION",
+          type: 'field_dropdown',
+          name: 'KEY_OPTION',
           options: [
-            [Blockly.Msg.EVENT_WHENKEYPRESSED_SPACE, "space"],
-            [Blockly.Msg.EVENT_WHENKEYPRESSED_UP, "up arrow"],
-            [Blockly.Msg.EVENT_WHENKEYPRESSED_DOWN, "down arrow"],
-            [Blockly.Msg.EVENT_WHENKEYPRESSED_RIGHT, "right arrow"],
-            [Blockly.Msg.EVENT_WHENKEYPRESSED_LEFT, "left arrow"],
-            [Blockly.Msg.EVENT_WHENKEYPRESSED_ANY, "any"],
-            ["a", "a"],
-            ["b", "b"],
-            ["c", "c"],
-            ["d", "d"],
-            ["e", "e"],
-            ["f", "f"],
-            ["g", "g"],
-            ["h", "h"],
-            ["i", "i"],
-            ["j", "j"],
-            ["k", "k"],
-            ["l", "l"],
-            ["m", "m"],
-            ["n", "n"],
-            ["o", "o"],
-            ["p", "p"],
-            ["q", "q"],
-            ["r", "r"],
-            ["s", "s"],
-            ["t", "t"],
-            ["u", "u"],
-            ["v", "v"],
-            ["w", "w"],
-            ["x", "x"],
-            ["y", "y"],
-            ["z", "z"],
-            ["0", "0"],
-            ["1", "1"],
-            ["2", "2"],
-            ["3", "3"],
-            ["4", "4"],
-            ["5", "5"],
-            ["6", "6"],
-            ["7", "7"],
-            ["8", "8"],
-            ["9", "9"],
+            [Blockly.Msg.EVENT_WHENKEYPRESSED_SPACE, 'space'],
+            [Blockly.Msg.EVENT_WHENKEYPRESSED_UP, 'up arrow'],
+            [Blockly.Msg.EVENT_WHENKEYPRESSED_DOWN, 'down arrow'],
+            [Blockly.Msg.EVENT_WHENKEYPRESSED_RIGHT, 'right arrow'],
+            [Blockly.Msg.EVENT_WHENKEYPRESSED_LEFT, 'left arrow'],
+            [Blockly.Msg.EVENT_WHENKEYPRESSED_ANY, 'any'],
+            ['a', 'a'],
+            ['b', 'b'],
+            ['c', 'c'],
+            ['d', 'd'],
+            ['e', 'e'],
+            ['f', 'f'],
+            ['g', 'g'],
+            ['h', 'h'],
+            ['i', 'i'],
+            ['j', 'j'],
+            ['k', 'k'],
+            ['l', 'l'],
+            ['m', 'm'],
+            ['n', 'n'],
+            ['o', 'o'],
+            ['p', 'p'],
+            ['q', 'q'],
+            ['r', 'r'],
+            ['s', 's'],
+            ['t', 't'],
+            ['u', 'u'],
+            ['v', 'v'],
+            ['w', 'w'],
+            ['x', 'x'],
+            ['y', 'y'],
+            ['z', 'z'],
+            ['0', '0'],
+            ['1', '1'],
+            ['2', '2'],
+            ['3', '3'],
+            ['4', '4'],
+            ['5', '5'],
+            ['6', '6'],
+            ['7', '7'],
+            ['8', '8'],
+            ['9', '9'],
           ],
         },
       ],
-      extensions: ["colours_sensing", "output_string"],
-    });
+      extensions: ['colours_sensing', 'output_string'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_mousedown = {
   /**
@@ -223,10 +222,10 @@ Blockly.Blocks.sensing_mousedown = {
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_MOUSEDOWN,
-      extensions: ["colours_sensing", "output_boolean"],
-    });
+      extensions: ['colours_sensing', 'output_boolean'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_mousex = {
   /**
@@ -235,10 +234,10 @@ Blockly.Blocks.sensing_mousex = {
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_MOUSEX,
-      extensions: ["colours_sensing", "output_number"],
-    });
+      extensions: ['colours_sensing', 'output_number'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_mousey = {
   /**
@@ -247,10 +246,10 @@ Blockly.Blocks.sensing_mousey = {
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_MOUSEY,
-      extensions: ["colours_sensing", "output_number"],
-    });
+      extensions: ['colours_sensing', 'output_number'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_setdragmode = {
   /**
@@ -261,18 +260,18 @@ Blockly.Blocks.sensing_setdragmode = {
       message0: Blockly.Msg.SENSING_SETDRAGMODE,
       args0: [
         {
-          type: "field_dropdown",
-          name: "DRAG_MODE",
+          type: 'field_dropdown',
+          name: 'DRAG_MODE',
           options: [
-            [Blockly.Msg.SENSING_SETDRAGMODE_DRAGGABLE, "draggable"],
-            [Blockly.Msg.SENSING_SETDRAGMODE_NOTDRAGGABLE, "not draggable"],
+            [Blockly.Msg.SENSING_SETDRAGMODE_DRAGGABLE, 'draggable'],
+            [Blockly.Msg.SENSING_SETDRAGMODE_NOTDRAGGABLE, 'not draggable'],
           ],
         },
       ],
-      extensions: ["colours_sensing", "shape_statement"],
-    });
+      extensions: ['colours_sensing', 'shape_statement'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_loudness = {
   /**
@@ -281,10 +280,10 @@ Blockly.Blocks.sensing_loudness = {
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_LOUDNESS,
-      extensions: ["colours_sensing", "output_number", "monitor_block"],
-    });
+      extensions: ['colours_sensing', 'output_number', 'monitor_block'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_loud = {
   /**
@@ -295,10 +294,10 @@ Blockly.Blocks.sensing_loud = {
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_LOUD,
-      extensions: ["colours_sensing", "output_boolean"],
-    });
+      extensions: ['colours_sensing', 'output_boolean'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_timer = {
   /**
@@ -307,10 +306,10 @@ Blockly.Blocks.sensing_timer = {
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_TIMER,
-      extensions: ["colours_sensing", "output_number", "monitor_block"],
-    });
+      extensions: ['colours_sensing', 'output_number', 'monitor_block'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_resettimer = {
   /**
@@ -319,20 +318,20 @@ Blockly.Blocks.sensing_resettimer = {
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_RESETTIMER,
-      extensions: ["colours_sensing", "shape_statement"],
-    });
+      extensions: ['colours_sensing', 'shape_statement'],
+    })
   },
-};
+}
 
 /**
  * "* of _" object menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks.sensing_of_object_menu = {};
+Blockly.Blocks.sensing_of_object_menu = {}
 
 /**
  * Block to report properties of sprites. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks.sensing_of = {};
+Blockly.Blocks.sensing_of = {}
 
 Blockly.Blocks.sensing_current = {
   /**
@@ -343,23 +342,23 @@ Blockly.Blocks.sensing_current = {
       message0: Blockly.Msg.SENSING_CURRENT,
       args0: [
         {
-          type: "field_dropdown",
-          name: "CURRENTMENU",
+          type: 'field_dropdown',
+          name: 'CURRENTMENU',
           options: [
-            [Blockly.Msg.SENSING_CURRENT_YEAR, "YEAR"],
-            [Blockly.Msg.SENSING_CURRENT_MONTH, "MONTH"],
-            [Blockly.Msg.SENSING_CURRENT_DATE, "DATE"],
-            [Blockly.Msg.SENSING_CURRENT_DAYOFWEEK, "DAYOFWEEK"],
-            [Blockly.Msg.SENSING_CURRENT_HOUR, "HOUR"],
-            [Blockly.Msg.SENSING_CURRENT_MINUTE, "MINUTE"],
-            [Blockly.Msg.SENSING_CURRENT_SECOND, "SECOND"],
+            [Blockly.Msg.SENSING_CURRENT_YEAR, 'YEAR'],
+            [Blockly.Msg.SENSING_CURRENT_MONTH, 'MONTH'],
+            [Blockly.Msg.SENSING_CURRENT_DATE, 'DATE'],
+            [Blockly.Msg.SENSING_CURRENT_DAYOFWEEK, 'DAYOFWEEK'],
+            [Blockly.Msg.SENSING_CURRENT_HOUR, 'HOUR'],
+            [Blockly.Msg.SENSING_CURRENT_MINUTE, 'MINUTE'],
+            [Blockly.Msg.SENSING_CURRENT_SECOND, 'SECOND'],
           ],
         },
       ],
-      extensions: ["colours_sensing", "output_number", "monitor_block"],
-    });
+      extensions: ['colours_sensing', 'output_number', 'monitor_block'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_dayssince2000 = {
   /**
@@ -368,22 +367,22 @@ Blockly.Blocks.sensing_dayssince2000 = {
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_DAYSSINCE2000,
-      extensions: ["colours_sensing", "output_number"],
-    });
+      extensions: ['colours_sensing', 'output_number'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_online = {
   /**
    * Block to report whether or not the system is online
    */
-  init: function(this: Blockly.Block) {
+  init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_ONLINE,
-      extensions: ["colours_sensing", "output_boolean", "monitor_block"],
-    });
+      extensions: ['colours_sensing', 'output_boolean', 'monitor_block'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_username = {
   /**
@@ -392,10 +391,10 @@ Blockly.Blocks.sensing_username = {
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_USERNAME,
-      extensions: ["colours_sensing", "output_number", "monitor_block"],
-    });
+      extensions: ['colours_sensing', 'output_number', 'monitor_block'],
+    })
   },
-};
+}
 
 Blockly.Blocks.sensing_userid = {
   /**
@@ -406,7 +405,7 @@ Blockly.Blocks.sensing_userid = {
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SENSING_USERID,
-      extensions: ["colours_sensing", "output_number"],
-    });
+      extensions: ['colours_sensing', 'output_number'],
+    })
   },
-};
+}

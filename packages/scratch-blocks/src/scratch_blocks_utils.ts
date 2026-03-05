@@ -16,12 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * @file Utility methods for Scratch Blocks but not Blockly.
  * @author fenichel@google.com (Rachel Fenichel)
  */
-import * as Blockly from "blockly/core";
+import * as Blockly from 'blockly/core'
 
 /**
  * Compare strings with natural number sorting.
@@ -31,7 +30,7 @@ import * as Blockly from "blockly/core";
  */
 export function compareStrings(str1: string, str2: string): number {
   return str1.localeCompare(str2, [], {
-    sensitivity: "base",
+    sensitivity: 'base',
     numeric: true,
-  });
+  })
 }

@@ -22,11 +22,7 @@
     "forceConsistentCasingInFileNames": true,
 
     /* Language and Environment */
-    "target": "es2020",
+    "target": "es2020"
   },
-  "include": [
-    "./src/",
-    "./tests/",
-    "./types/",
-  ]
+  "include": ["./src/", "./tests/", "./types/"]
 }

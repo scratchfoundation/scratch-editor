@@ -16,13 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
  * @file Note block.
  * @author ericr@media.mit.edu (Eric Rosenbaum)
  */
-import * as Blockly from "blockly/core";
-import * as Constants from "../constants";
+import * as Blockly from 'blockly/core'
+import * as Constants from '../constants'
 
 Blockly.Blocks.note = {
   /**
@@ -30,17 +29,17 @@ Blockly.Blocks.note = {
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
-      message0: "%1",
+      message0: '%1',
       args0: [
         {
-          type: "field_note",
-          name: "NOTE",
+          type: 'field_note',
+          name: 'NOTE',
           value: 60,
         },
       ],
       outputShape: Constants.OUTPUT_SHAPE_ROUND,
-      output: "Number",
-      extensions: ["colours_textfield"],
-    });
+      output: 'Number',
+      extensions: ['colours_textfield'],
+    })
   },
-};
+}
