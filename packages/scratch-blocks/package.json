@@ -37,7 +37,7 @@
     "husky": "9.1.7",
     "scratch-semantic-release-config": "4.0.1",
     "semantic-release": "22.0.12",
-    "source-map-loader": "4.0.1",
+    "source-map-loader": "4.0.2",
     "ts-loader": "9.5.1",
     "typescript": "5.6.3",
     "webpack": "5.104.1",
