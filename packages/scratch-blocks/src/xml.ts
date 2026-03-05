@@ -26,8 +26,8 @@ export function clearWorkspaceAndLoadFromXml(
   for (const variable of xml.querySelectorAll("variables variable")) {
     const id = variable.getAttribute("id");
     if (!id) continue;
-    const type = variable.getAttribute("type");
-    const name = variable.textContent;
+    const type = variable.getAttribute("type") ?? "";
+    const name = variable.textContent ?? "";
     const isLocal = variable.getAttribute("islocal") === "true";
     const isCloud = variable.getAttribute("iscloud") === "true";
 
@@ -47,7 +47,7 @@ export function clearWorkspaceAndLoadFromXml(
 
   // Remove the `variables` element from the XML to prevent Blockly from
   // throwing or stomping on the variables we created.
-  xml.querySelector("variables").remove();
+  xml.querySelector("variables")?.remove();
 
   // Defer to core for the rest of the deserialization.
   const blockIds = Blockly.Xml.domToWorkspace(xml, workspace);

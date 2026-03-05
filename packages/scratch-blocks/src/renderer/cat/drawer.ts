@@ -12,8 +12,8 @@ import { type RenderInfo } from "./render_info";
 import { CatFace } from "./cat_face";
 
 export class Drawer extends ClassicDrawer {
-  constants_: ConstantProvider;
-  info_: RenderInfo;
+  declare constants_: ConstantProvider;
+  declare info_: RenderInfo;
 
   override draw() {
     // Make sure the face exists if we need it.
@@ -57,7 +57,7 @@ export class Drawer extends ClassicDrawer {
     const pathObject = this.block_.pathObject as PathObject;
     return this.constants_.makeCatPath(
       this.info_.width,
-      pathObject.catFace.pathEarState
+      pathObject.catFace!.pathEarState
     );
   }
 }

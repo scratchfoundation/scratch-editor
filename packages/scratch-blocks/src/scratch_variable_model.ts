@@ -13,8 +13,8 @@ export class ScratchVariableModel extends Blockly.VariableModel {
   constructor(
     workspace: Blockly.Workspace,
     name: string,
-    type: string,
-    id: string,
+    type?: string,
+    id?: string,
     public isLocal = false,
     public isCloud = false
   ) {

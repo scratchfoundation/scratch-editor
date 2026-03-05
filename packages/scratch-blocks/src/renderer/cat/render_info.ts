@@ -10,6 +10,6 @@ import { ConstantProvider } from "./constants";
 import { CatScratchRenderer } from "./renderer";
 
 export class RenderInfo extends ClassicRenderInfo {
-  override constants_: ConstantProvider;
-  override renderer_: CatScratchRenderer;
+  declare constants_: ConstantProvider;
+  declare renderer_: CatScratchRenderer;
 }

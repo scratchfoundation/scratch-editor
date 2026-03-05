@@ -7,15 +7,15 @@
 import * as Blockly from "blockly/core";
 
 export class BlockDragEnd extends Blockly.Events.BlockBase {
-  isOutside: boolean;
-  xml: Element | DocumentFragment;
+  isOutside!: boolean;
+  xml!: Element | DocumentFragment;
 
   constructor(block?: Blockly.Block, isOutside?: boolean) {
     super(block);
     this.type = "endDrag";
-    this.isOutside = isOutside;
+    if (isOutside !== undefined) this.isOutside = isOutside;
     this.recordUndo = false;
-    this.xml = Blockly.Xml.blockToDom(block, true);
+    if (block) this.xml = Blockly.Xml.blockToDom(block, true);
   }
 
   toJson(): BlockDragEndJson {

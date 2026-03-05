@@ -12,8 +12,8 @@ import {
 import type { ScratchCommentBubble } from "../scratch_comment_bubble";
 
 class BlockCommentMove extends BlockCommentBase {
-  oldCoordinate_: Blockly.utils.Coordinate;
-  newCoordinate_: Blockly.utils.Coordinate;
+  oldCoordinate_!: Blockly.utils.Coordinate;
+  newCoordinate_!: Blockly.utils.Coordinate;
 
   constructor(
     opt_blockComment?: ScratchCommentBubble,
@@ -22,8 +22,8 @@ class BlockCommentMove extends BlockCommentBase {
   ) {
     super(opt_blockComment);
     this.type = "block_comment_move";
-    this.oldCoordinate_ = oldCoordinate;
-    this.newCoordinate_ = newCoordinate;
+    if (oldCoordinate !== undefined) this.oldCoordinate_ = oldCoordinate;
+    if (newCoordinate !== undefined) this.newCoordinate_ = newCoordinate;
   }
 
   toJson(): BlockCommentMoveJson {

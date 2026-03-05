@@ -104,8 +104,8 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
       this.wouldDeleteDraggable(event, this.draggable.getRootBlock())
     ) {
       const prototype = this.draggable
-        .getInput("custom_block")
-        .connection.targetBlock();
+        .getInput("custom_block")!
+        .connection!.targetBlock();
       const hasCaller =
         prototype instanceof Blockly.BlockSvg &&
         isProcedureBlock(prototype) &&

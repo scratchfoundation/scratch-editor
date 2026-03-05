@@ -12,20 +12,20 @@ import * as Blockly from "blockly/core";
 export function registerDeleteBlock() {
   const deleteOption = {
     displayText(scope: Blockly.ContextMenuRegistry.Scope) {
-      const descendantCount = getDeletableBlocksInStack(scope.block).length;
+      const descendantCount = getDeletableBlocksInStack(scope.block!).length;
       return descendantCount === 1
         ? Blockly.Msg["DELETE_BLOCK"]
         : Blockly.Msg["DELETE_X_BLOCKS"].replace("%1", `${descendantCount}`);
     },
     preconditionFn(scope: Blockly.ContextMenuRegistry.Scope) {
-      if (!scope.block.isInFlyout && scope.block.isDeletable()) {
+      if (!scope.block!.isInFlyout && scope.block!.isDeletable()) {
         return "enabled";
       }
       return "hidden";
     },
     callback(scope: Blockly.ContextMenuRegistry.Scope) {
       Blockly.Events.setGroup(true);
-      scope.block.dispose(true, true);
+      scope.block!.dispose(true, true);
       Blockly.Events.setGroup(false);
     },
     scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
@@ -42,7 +42,7 @@ function getDeletableBlocksInStack(
   if (block.getNextBlock()) {
     // Next blocks are not deleted.
     const nextDescendants = block
-      .getNextBlock()
+      .getNextBlock()!
       .getDescendants(false)
       .filter(isDeletable);
     descendants = descendants.filter((b) => !nextDescendants.includes(b));
@@ -161,10 +161,10 @@ function deleteNext(deleteList: Blockly.BlockSvg[], eventGroup?: string) {
  */
 export function registerDuplicateBlock() {
   const original =
-    Blockly.ContextMenuRegistry.registry.getItem("blockDuplicate");
+    Blockly.ContextMenuRegistry.registry.getItem("blockDuplicate")!;
   const duplicateOption = {
-    displayText: original.displayText,
-    preconditionFn: original.preconditionFn,
+    displayText: original.displayText!,
+    preconditionFn: original.preconditionFn!,
     callback(scope: Blockly.ContextMenuRegistry.Scope) {
       if (!scope.block) return;
       const data = scope.block.toCopyData(true);

@@ -8,8 +8,8 @@ import * as Blockly from "blockly/core";
 import { ScratchVariableModel } from "../scratch_variable_model";
 
 class ScratchVariableCreate extends Blockly.Events.VarCreate {
-  isLocal: boolean;
-  isCloud: boolean;
+  isLocal!: boolean;
+  isCloud!: boolean;
 
   constructor(variable?: ScratchVariableModel) {
     super(variable);
@@ -46,6 +46,17 @@ class ScratchVariableCreate extends Blockly.Events.VarCreate {
     const workspace = this.getEventWorkspace_();
     const variableMap = workspace.getVariableMap();
     if (forward) {
+      if (this.varName == null || this.varType == null || this.varId == null) {
+        console.error(
+          "ScratchVariableCreate.run: missing variable data for create",
+          {
+            varName: this.varName,
+            varType: this.varType,
+            varId: this.varId,
+          }
+        );
+        return;
+      }
       const variable = new ScratchVariableModel(
         workspace,
         this.varName,
@@ -59,6 +70,13 @@ class ScratchVariableCreate extends Blockly.Events.VarCreate {
         new (Blockly.Events.get(Blockly.Events.VAR_CREATE))(variable)
       );
     } else {
+      if (this.varId == null) {
+        console.error(
+          "ScratchVariableCreate.run: missing varId for delete",
+          this
+        );
+        return;
+      }
       const variable = variableMap.getVariableById(this.varId);
       if (variable) {
         variableMap.deleteVariable(variable);

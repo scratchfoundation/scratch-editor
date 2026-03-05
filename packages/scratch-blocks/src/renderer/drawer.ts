@@ -9,8 +9,8 @@ import type { RenderInfo } from "./render_info";
 import { ConstantProvider } from "./constants";
 
 export class Drawer extends Blockly.zelos.Drawer {
-  constants_: ConstantProvider;
-  info_: RenderInfo;
+  declare constants_: ConstantProvider;
+  declare info_: RenderInfo;
 
   override drawStatementInput_(row: Blockly.blockRendering.Row) {
     if (this.info_.isBowlerHatBlock()) {

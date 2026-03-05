@@ -32,8 +32,8 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    *     block.
    * @returns The drawer.
    */
-  override makeDrawer_(block: Blockly.BlockSvg, info: RenderInfo): Drawer {
-    return new Drawer(block, info);
+  override makeDrawer_(block: Blockly.BlockSvg, info: Blockly.blockRendering.RenderInfo): Drawer {
+    return new Drawer(block, info as RenderInfo);
   }
 
   /**

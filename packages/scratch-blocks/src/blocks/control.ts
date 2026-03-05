@@ -179,8 +179,15 @@ Blockly.Blocks["control_stop"] = {
           [Blockly.Msg.CONTROL_STOP_OTHER, OTHER_SCRIPTS],
         ];
       },
-      function (option) {
-        this.getSourceBlock().setNextStatement(option === OTHER_SCRIPTS);
+      function (this: Blockly.FieldDropdown, option: string) {
+        const sourceBlock = this.getSourceBlock();
+        if (sourceBlock) {
+          sourceBlock.setNextStatement(option === OTHER_SCRIPTS);
+        } else {
+          console.warn(
+            "control_stop dropdown callback: source block not found"
+          );
+        }
         return option;
       }
     );

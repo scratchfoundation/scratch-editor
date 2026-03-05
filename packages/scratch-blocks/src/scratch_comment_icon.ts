@@ -196,7 +196,7 @@ export class ScratchCommentIcon
     this.commentBubble.setCollapsed(!visible);
   }
 
-  getBubble() {
+  getBubble(): ScratchCommentBubble | null {
     return this.commentBubble;
   }
 

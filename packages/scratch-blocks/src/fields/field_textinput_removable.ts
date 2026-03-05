@@ -40,13 +40,13 @@ export class FieldTextInputRemovable extends Blockly.FieldTextInput {
     Blockly.renderManagement.finishQueuedRenders().then(() => {
       super.showEditor_();
 
-      const div = Blockly.WidgetDiv.getDiv();
+      const div = Blockly.WidgetDiv.getDiv()!;
       div.className += " removableTextInput";
       const removeButton = document.createElement("img");
       removeButton.className = "blocklyTextRemoveIcon";
       removeButton.setAttribute(
         "src",
-        this.sourceBlock_.workspace.options.pathToMedia + "icons/remove.svg"
+        this.sourceBlock_!.workspace.options.pathToMedia + "icons/remove.svg"
       );
       this.removeButtonMouseWrapper_ = Blockly.browserEvents.bind(
         removeButton,

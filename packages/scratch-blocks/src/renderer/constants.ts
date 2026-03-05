@@ -64,7 +64,7 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
    * drawn with the rounded shape that matches what they accept, not the
    * hexagonal shape of their parent block's output.
    */
-  override shapeFor(connection: Blockly.RenderedConnection) {
+  override shapeFor(connection: Blockly.RenderedConnection): ReturnType<Blockly.zelos.ConstantProvider["shapeFor"]> {
     let checks = connection.getCheck();
     if (!checks && connection.targetConnection) {
       checks = connection.targetConnection.getCheck();
@@ -75,19 +75,19 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
       if (outputShape !== null) {
         switch (outputShape) {
           case this.SHAPES.HEXAGONAL:
-            return this.HEXAGONAL;
+            return this.HEXAGONAL!;
           case this.SHAPES.ROUND:
-            return this.ROUNDED;
+            return this.ROUNDED!;
           case this.SHAPES.SQUARE:
-            return this.SQUARED;
+            return this.SQUARED!;
         }
       }
     }
 
     // For INPUT_VALUE (and OUTPUT_VALUE fallthrough), use connection checks.
-    if (checks?.includes("Boolean")) return this.HEXAGONAL;
-    if (checks?.includes("Number")) return this.ROUNDED;
-    if (checks?.includes("String")) return this.ROUNDED;
+    if (checks?.includes("Boolean")) return this.HEXAGONAL!;
+    if (checks?.includes("Number")) return this.ROUNDED!;
+    if (checks?.includes("String")) return this.ROUNDED!;
     // For INPUT_VALUE or OUTPUT_VALUE with unrecognized checks, default to
     // ROUNDED. Don't call super.shapeFor() here: the base implementation
     // uses getSourceBlock().getOutputShape(), which would incorrectly return
@@ -96,7 +96,7 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
       connection.type === Blockly.ConnectionType.INPUT_VALUE ||
       connection.type === Blockly.ConnectionType.OUTPUT_VALUE
     ) {
-      return this.ROUNDED;
+      return this.ROUNDED!;
     }
     return super.shapeFor(connection);
   }

@@ -7,7 +7,7 @@
 import * as Blockly from "blockly/core";
 
 class ScratchFieldDropdown extends Blockly.FieldDropdown {
-  private originalStyle: string;
+  private originalStyle!: string;
 
   showEditor_(event: PointerEvent) {
     super.showEditor_(event);
@@ -28,7 +28,7 @@ class ScratchFieldDropdown extends Blockly.FieldDropdown {
 
   dropdownDispose_() {
     super.dropdownDispose_();
-    const sourceBlock = this.getSourceBlock();
+    const sourceBlock = this.getSourceBlock()!;
     if (sourceBlock.isShadow()) {
       sourceBlock.setStyle(this.originalStyle);
     }

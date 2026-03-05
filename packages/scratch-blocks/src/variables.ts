@@ -98,7 +98,7 @@ export function createVariable(
   const validate = nameValidator.bind(null, opt_type);
 
   // Prompt the user to enter a name for the variable
-  prompt(
+  prompt!(
     newMsg,
     "",
     function (
@@ -127,7 +127,7 @@ export function createVariable(
           workspace,
           validatedText,
           opt_type,
-          null,
+          undefined,
           isLocal,
           isCloud
         );
@@ -137,7 +137,7 @@ export function createVariable(
         );
 
         const toolbox = workspace.getToolbox();
-        const flyout = toolbox.getFlyout();
+        const flyout = toolbox?.getFlyout();
         const variableBlockId = variable.getId();
         if (
           toolbox instanceof ScratchContinuousToolbox &&
@@ -154,7 +154,7 @@ export function createVariable(
       } else {
         // User canceled prompt without a value.
         if (opt_callback) {
-          opt_callback(null);
+          opt_callback(undefined);
         }
       }
     },
@@ -193,7 +193,7 @@ function nameValidator(
   additionalVars: string[],
   isCloud: boolean,
   opt_callback?: (id?: string) => void
-): string {
+): string | null {
   // The validators for the different variable types require slightly different
   // arguments. For broadcast messages, if a broadcast message of the provided
   // name already exists, the validator needs to call a function that updates
@@ -345,7 +345,7 @@ export function renameVariable(
     promptDefaultText = promptDefaultText.substring(CLOUD_PREFIX.length);
   }
 
-  prompt(
+  prompt!(
     promptText,
     promptDefaultText,
     (newName: string, additionalVars: string[]) => {
@@ -373,7 +373,7 @@ export function renameVariable(
       } else {
         // User canceled prompt without a value.
         if (opt_callback) {
-          opt_callback(null);
+          opt_callback(undefined);
         }
       }
     },

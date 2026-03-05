@@ -12,8 +12,8 @@ import {
 import type { ScratchCommentBubble } from "../scratch_comment_bubble";
 
 class BlockCommentResize extends BlockCommentBase {
-  oldSize: Blockly.utils.Size;
-  newSize: Blockly.utils.Size;
+  oldSize!: Blockly.utils.Size;
+  newSize!: Blockly.utils.Size;
 
   constructor(
     opt_blockComment?: ScratchCommentBubble,
@@ -22,8 +22,8 @@ class BlockCommentResize extends BlockCommentBase {
   ) {
     super(opt_blockComment);
     this.type = "block_comment_resize";
-    this.oldSize = oldSize;
-    this.newSize = newSize;
+    if (oldSize !== undefined) this.oldSize = oldSize;
+    if (newSize !== undefined) this.newSize = newSize;
   }
 
   toJson(): BlockCommentResizeJson {

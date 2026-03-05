@@ -29,7 +29,7 @@ import { createVariable, renameVariable } from "../variables";
 import type { ScratchVariableModel } from "../scratch_variable_model";
 
 export class ScratchFieldVariable extends Blockly.FieldVariable {
-  private originalStyle: string;
+  private originalStyle!: string;
 
   constructor(
     varName: string | null | typeof Blockly.Field.SKIP_SETUP,
@@ -39,7 +39,10 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
     config?: Blockly.FieldVariableConfig
   ) {
     super(varName, validator, variableTypes, defaultType, config);
-    this.menuGenerator_ = ScratchFieldVariable.dropdownCreate;
+    // dropdownCreate returns MenuOption[] rather than Blockly.MenuGenerator's
+    // MenuOption[][] variant; the cast is needed to satisfy FieldVariable's
+    // menuGenerator_ type while the actual runtime shape is compatible.
+    this.menuGenerator_ = ScratchFieldVariable.dropdownCreate as unknown as Blockly.MenuGenerator;
   }
 
   initModel() {
@@ -73,7 +76,7 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
    */
   initFlyoutBroadcast(
     workspace: Blockly.WorkspaceSvg
-  ): Blockly.IVariableModel<Blockly.IVariableState> {
+  ): Blockly.IVariableModel<Blockly.IVariableState> | undefined {
     const broadcastVars = workspace.getVariablesOfType(
       Constants.BROADCAST_MESSAGE_VARIABLE_TYPE
     );
@@ -154,7 +157,7 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
 
   showEditor_(event: PointerEvent) {
     super.showEditor_(event);
-    const sourceBlock = this.getSourceBlock();
+    const sourceBlock = this.getSourceBlock()!;
     const styleName = sourceBlock.getStyleName();
     const style = (sourceBlock.workspace as Blockly.WorkspaceSvg)
       .getRenderer()
@@ -175,7 +178,7 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
 
   dropdownDispose_() {
     super.dropdownDispose_();
-    const sourceBlock = this.getSourceBlock();
+    const sourceBlock = this.getSourceBlock()!;
     if (sourceBlock.isShadow()) {
       sourceBlock.setStyle(this.originalStyle);
     }

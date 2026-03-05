@@ -5,8 +5,8 @@ export function reportValue(id: string, value: string) {
   const block = (Blockly.getMainWorkspace().getBlockById(id) ||
     (Blockly.getMainWorkspace() as Blockly.WorkspaceSvg)
       .getFlyout()
-      .getWorkspace()
-      .getBlockById(id)) as Blockly.BlockSvg;
+      ?.getWorkspace()
+      ?.getBlockById(id)) as Blockly.BlockSvg;
   if (!block) {
     throw "Tried to report value on block that does not exist.";
   }

@@ -16,7 +16,7 @@ export class ScratchCommentBubble
   implements Blockly.IBubble, Blockly.ISelectable
 {
   id: string;
-  private sourceBlock: Blockly.BlockSvg;
+  private sourceBlock: Blockly.BlockSvg | null;
   private anchor?: Blockly.utils.Coordinate;
   private anchorChain?: SVGLineElement;
   private dragStartLocation?: Blockly.utils.Coordinate;
@@ -71,7 +71,7 @@ export class ScratchCommentBubble
     const destination =
       xOrCoordinate instanceof Blockly.utils.Coordinate
         ? xOrCoordinate
-        : new Blockly.utils.Coordinate(xOrCoordinate, y);
+        : new Blockly.utils.Coordinate(xOrCoordinate, y!);
     super.moveTo(destination);
     this.redrawAnchorChain();
   }
@@ -79,7 +79,9 @@ export class ScratchCommentBubble
   startGesture(e: PointerEvent) {
     const gesture = this.workspace.getGesture(e);
     if (gesture) {
-      gesture.handleBubbleStart(e, this);
+      // ScratchCommentBubble implements IBubble structurally but TypeScript
+      // cannot verify it because IBubble.drag has a different signature here.
+      gesture.handleBubbleStart(e, this as unknown as Blockly.IBubble);
       Blockly.common.setSelected(this);
     }
   }
@@ -91,7 +93,7 @@ export class ScratchCommentBubble
     Blockly.utils.dom.addClass(this.getSvgRoot(), "blocklyDragging");
   }
 
-  drag(newLocation: Blockly.utils.Coordinate, event: Event) {
+  drag(newLocation: Blockly.utils.Coordinate, event?: PointerEvent) {
     this.moveTo(newLocation);
   }
 
@@ -111,7 +113,7 @@ export class ScratchCommentBubble
   }
 
   revertDrag() {
-    this.moveTo(this.dragStartLocation);
+    this.moveTo(this.dragStartLocation!);
   }
 
   setAnchorLocation(newAnchor: Blockly.utils.Coordinate) {
@@ -122,7 +124,7 @@ export class ScratchCommentBubble
       this.dropAnchor();
     } else {
       const oldLocation = this.getRelativeToSurfaceXY();
-      const delta = Blockly.utils.Coordinate.difference(this.anchor, oldAnchor);
+      const delta = Blockly.utils.Coordinate.difference(this.anchor, oldAnchor!);
       const newLocation = Blockly.utils.Coordinate.sum(oldLocation, delta);
       this.moveTo(newLocation);
     }
@@ -131,18 +133,18 @@ export class ScratchCommentBubble
   dropAnchor() {
     const verticalOffset = 16;
     this.moveTo(
-      this.anchor.x + 40 * (this.workspace.RTL ? -1 : 1),
-      this.anchor.y - verticalOffset
+      this.anchor!.x + 40 * (this.workspace.RTL ? -1 : 1),
+      this.anchor!.y - verticalOffset
     );
     const location = this.getRelativeToSurfaceXY();
     this.anchorChain = Blockly.utils.dom.createSvgElement(
       Blockly.utils.Svg.LINE,
       {
-        x1: this.anchor.x - location.x,
-        y1: this.anchor.y - location.y,
+        x1: this.anchor!.x - location.x,
+        y1: this.anchor!.y - location.y,
         x2: (this.getSize().width / 2) * (this.workspace.RTL ? -1 : 1),
         y2: verticalOffset,
-        style: `stroke: ${this.sourceBlock.getColourTertiary()}; stroke-width: 1`,
+        style: `stroke: ${this.sourceBlock!.getColourTertiary()}; stroke-width: 1`,
       },
       this.getSvgRoot()
     );
@@ -156,8 +158,8 @@ export class ScratchCommentBubble
     if (!this.anchorChain) return;
 
     const location = this.getRelativeToSurfaceXY();
-    this.anchorChain.setAttribute("x1", `${this.anchor.x - location.x}`);
-    this.anchorChain.setAttribute("y1", `${this.anchor.y - location.y}`);
+    this.anchorChain!.setAttribute("x1", `${this.anchor!.x - location.x}`);
+    this.anchorChain!.setAttribute("y1", `${this.anchor!.y - location.y}`);
   }
 
   getId() {
@@ -170,7 +172,7 @@ export class ScratchCommentBubble
 
   dispose() {
     this.disposing = true;
-    Blockly.utils.dom.removeNode(this.anchorChain);
+    Blockly.utils.dom.removeNode(this.anchorChain ?? null);
     if (this.sourceBlock) {
       Blockly.Events.fire(
         new (Blockly.Events.get("block_comment_delete"))(this, this.sourceBlock)

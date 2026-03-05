@@ -18,8 +18,8 @@ export class CatScratchRenderer extends ScratchRenderer {
     return new ConstantProvider();
   }
 
-  override makeDrawer_(block: Blockly.BlockSvg, info: RenderInfo) {
-    return new Drawer(block, info);
+  override makeDrawer_(block: Blockly.BlockSvg, info: Blockly.blockRendering.RenderInfo) {
+    return new Drawer(block, info as RenderInfo);
   }
 
   override makeRenderInfo_(block: Blockly.BlockSvg): RenderInfo {

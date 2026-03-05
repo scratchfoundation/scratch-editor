@@ -14,7 +14,7 @@ export class FlyoutCheckboxIcon
   extends Blockly.icons.Icon
   implements Blockly.IHasBubble
 {
-  private checkboxBubble: CheckboxBubble;
+  private checkboxBubble!: CheckboxBubble;
   private type = new Blockly.icons.IconType("checkbox");
 
   constructor(protected override sourceBlock: Blockly.BlockSvg) {

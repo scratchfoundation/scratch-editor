@@ -481,14 +481,14 @@ function addCreateButton(
   let msg = Blockly.Msg.NEW_VARIABLE;
   let callbackKey = "CREATE_VARIABLE";
   let callback = function (button: Blockly.FlyoutButton) {
-    createVariable(button.getTargetWorkspace(), null, SCALAR_VARIABLE_TYPE);
+    createVariable(button.getTargetWorkspace(), undefined, SCALAR_VARIABLE_TYPE);
   };
 
   if (type === "LIST") {
     msg = Blockly.Msg.NEW_LIST;
     callbackKey = "CREATE_LIST";
     callback = function (button: Blockly.FlyoutButton) {
-      createVariable(button.getTargetWorkspace(), null, LIST_VARIABLE_TYPE);
+      createVariable(button.getTargetWorkspace(), undefined, LIST_VARIABLE_TYPE);
     };
   }
   button.setAttribute("text", msg);
@@ -551,7 +551,7 @@ function addBlock(
           ${secondValueField}
         </block>
       </xml>`;
-    var block = Blockly.utils.xml.textToDom(blockText).firstElementChild;
+    var block = Blockly.utils.xml.textToDom(blockText).firstElementChild!;
     xmlList.push(block);
   }
 }
@@ -617,6 +617,6 @@ function createValue(valueName: string, type: string, value: string): string {
  */
 function addSep(xmlList: Element[]) {
   const sepText = `<xml><sep gap="36"/></xml>`;
-  const sep = Blockly.utils.xml.textToDom(sepText).firstElementChild;
+  const sep = Blockly.utils.xml.textToDom(sepText).firstElementChild!;
   xmlList.push(sep);
 }
