@@ -40,7 +40,7 @@
     "prettier": "3.8.1",
     "scratch-semantic-release-config": "4.0.1",
     "semantic-release": "22.0.12",
-    "source-map-loader": "4.0.2",
+    "source-map-loader": "5.0.0",
     "ts-loader": "9.5.4",
     "typescript": "5.9.3",
     "webpack": "5.105.3",
