@@ -20,10 +20,11 @@
   },
   "scripts": {
     "build": "webpack --mode production",
+    "format": "prettier --write . && eslint --fix",
     "prepare": "husky || true",
     "start": "webpack serve --open --mode development",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test:lint": "eslint ."
+    "test:lint": "eslint && prettier --check ."
   },
   "dependencies": {
     "@blockly/continuous-toolbox": "^7.0.8",
@@ -33,8 +34,10 @@
   "devDependencies": {
     "@commitlint/cli": "17.8.1",
     "@commitlint/config-conventional": "17.8.1",
-    "eslint": "4.19.1",
+    "eslint": "^9.39.3",
+    "eslint-config-scratch": "^13.0.0",
     "husky": "9.1.7",
+    "prettier": "3.8.1",
     "scratch-semantic-release-config": "4.0.1",
     "semantic-release": "22.0.12",
     "source-map-loader": "4.0.2",

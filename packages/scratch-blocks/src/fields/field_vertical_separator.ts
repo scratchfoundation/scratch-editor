@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2017 Massachusetts Institute of Technology
@@ -17,25 +16,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
- * @fileoverview Vertical separator field. Draws a vertical line.
+ * @file Vertical separator field. Draws a vertical line.
  * @author ericr@media.mit.edu (Eric Rosenbaum)
  */
-import * as Blockly from "blockly/core";
+import * as Blockly from 'blockly/core'
 
 /**
  * Class for a vertical separator line.
  */
 class FieldVerticalSeparator extends Blockly.Field {
-  private lineElement?: SVGLineElement;
+  private lineElement?: SVGLineElement
 
   constructor() {
-    super(Blockly.Field.SKIP_SETUP);
+    super(Blockly.Field.SKIP_SETUP)
     /**
      * Editable fields are saved by the XML renderer, non-editable fields are not.
      */
-    this.EDITABLE = false;
+    this.EDITABLE = false
   }
 
   /**
@@ -43,29 +41,28 @@ class FieldVerticalSeparator extends Blockly.Field {
    * @returns The new field instance.
    */
   static fromJson = function () {
-    return new FieldVerticalSeparator();
-  };
+    return new FieldVerticalSeparator()
+  }
 
   /**
    * Install this field on a block.
    */
   initView() {
-    const height =
-      10 * (this.getConstants() as Blockly.zelos.ConstantProvider).GRID_UNIT;
-    this.size_ = new Blockly.utils.Size(1, height);
+    const height = 10 * (this.getConstants() as Blockly.zelos.ConstantProvider).GRID_UNIT
+    this.size_ = new Blockly.utils.Size(1, height)
 
     this.lineElement = Blockly.utils.dom.createSvgElement(
-      "line",
+      'line',
       {
         stroke: (this.sourceBlock_ as Blockly.BlockSvg).getColourSecondary(),
-        "stroke-linecap": "round",
+        'stroke-linecap': 'round',
         x1: 0,
         y1: 0,
         x2: 0,
         y2: height,
       },
-      this.fieldGroup_
-    );
+      this.fieldGroup_,
+    )
   }
 
   /**
@@ -76,25 +73,26 @@ class FieldVerticalSeparator extends Blockly.Field {
    * @package
    */
   setLineHeight(newHeight: number) {
-    this.lineElement!.setAttribute("y2", `${newHeight}`);
+    this.lineElement!.setAttribute('y2', `${newHeight}`)
   }
 
   /**
    * Get the value of this field. A no-op in this case.
+   * @returns Always null.
    */
   getValue(): string | null {
-    return null;
+    return null
   }
 
   getText() {
-    return "";
+    return ''
   }
 
   /**
    * Set the value of this field. A no-op in this case.
    */
   setValue() {
-    return;
+    return
   }
 
   /**
@@ -116,8 +114,5 @@ class FieldVerticalSeparator extends Blockly.Field {
  * Register the field and any dependencies.
  */
 export function registerFieldVerticalSeparator() {
-  Blockly.fieldRegistry.register(
-    "field_vertical_separator",
-    FieldVerticalSeparator
-  );
+  Blockly.fieldRegistry.register('field_vertical_separator', FieldVerticalSeparator)
 }

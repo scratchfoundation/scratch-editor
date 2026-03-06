@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2017 Google Inc.
@@ -17,104 +16,100 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
- * @fileoverview Variable getter field.  Appears as a label but has a variable
+ * @file Variable getter field.  Appears as a label but has a variable
  *     picker in the right-click menu.
  * @author fenichel@google.com (Rachel Fenichel)
  */
-import * as Blockly from "blockly/core";
+import * as Blockly from 'blockly/core'
 
 /**
  * Class for a variable getter field.
  */
 class FieldVariableGetter extends Blockly.FieldLabel {
-  private variable: Blockly.IVariableModel<Blockly.IVariableState> | null =
-    null;
+  private variable: Blockly.IVariableModel<Blockly.IVariableState> | null = null
 
   /**
    * Creates a new FieldVariableGetter.
-   *
    * @param allowedVariableType The type of variables this field can display.
    */
-  constructor(private allowedVariableType = "") {
-    super(Blockly.Field.SKIP_SETUP);
-    this.SERIALIZABLE = true;
+  constructor(private allowedVariableType = '') {
+    super(Blockly.Field.SKIP_SETUP)
+    this.SERIALIZABLE = true
   }
 
   /**
    * Returns the ID of this field's variable.
-   *
    * @returns The ID of this field's variable.
    */
   getValue(): string {
-    return this.variable?.getId() ?? "";
+    return this.variable?.getId() ?? ''
   }
 
   /**
    * Returns the name of this field's variable.
-   *
    * @returns The name of this field's variable.
    */
   getText(): string {
-    return this.variable?.getName() ?? "";
+    return this.variable?.getName() ?? ''
   }
 
   /**
    * Get the variable model for the variable associated with this field.
    * Not guaranteed to be in the variable map on the workspace (e.g. if accessed
    * after the variable has been deleted).
-   *
    * @returns the selected variable, or null if none was selected.
    */
   getVariable(): Blockly.IVariableModel<Blockly.IVariableState> | null {
-    return this.variable;
+    return this.variable
   }
 
   /**
    * Updates this field's variable to one with the given ID.
-   *
    * @param newVariableId ID of a variable this field should represent.
    */
   doValueUpdate_(newVariableId: string) {
-    super.doValueUpdate_(newVariableId);
-    const workspace = this.getSourceBlock()!.workspace;
-    this.variable = Blockly.Variables.getVariable(workspace, newVariableId);
+    super.doValueUpdate_(newVariableId)
+    const workspace = this.getSourceBlock()!.workspace
+    this.variable = Blockly.Variables.getVariable(workspace, newVariableId)
   }
 
-  /** Informs Blockly that this field depends on a variable. */
+  /**
+   * Informs Blockly that this field depends on a variable.
+   * @returns Always true.
+   */
   referencesVariables() {
-    return true;
+    return true
   }
 
   /** Rerenders this field when the underlying variable's name changes. */
   refreshVariableName() {
-    this.forceRerender();
+    this.forceRerender()
   }
 
   static fromJson(options: FieldVariableGetterConfig) {
-    return new FieldVariableGetter(options["allowedVariableType"]);
+    return new FieldVariableGetter(options.allowedVariableType)
   }
 
   fromXml(element: Element) {
-    this.setValue(element.getAttribute("id")!);
+    this.setValue(element.getAttribute('id')!)
   }
 
   toXml(element: Element): Element {
-    element.setAttribute("id", this.variable!.getId());
-    element.setAttribute("variabletype", this.variable!.getType());
-    element.textContent = this.variable!.getName();
-    return element;
+    element.setAttribute('id', this.variable!.getId())
+    element.setAttribute('variabletype', this.variable!.getType())
+    element.textContent = this.variable!.getName()
+    return element
   }
 }
 
 interface FieldVariableGetterConfig extends Blockly.FieldLabelConfig {
-  allowedVariableType?: string;
+  allowedVariableType?: string
 }
 
 /**
  * Register the field and any dependencies.
  */
 export function registerFieldVariableGetter() {
-  Blockly.fieldRegistry.register("field_variable_getter", FieldVariableGetter);
+  Blockly.fieldRegistry.register('field_variable_getter', FieldVariableGetter)
 }

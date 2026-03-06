@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
@@ -17,30 +16,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
- * @fileoverview Matrix blocks for Blockly.
+ * @file Matrix blocks for Blockly.
  * @author khanning@gmail.com (Kreg Hanning)
  */
-import * as Blockly from "blockly/core";
-import * as Constants from "../constants";
+import * as Blockly from 'blockly/core'
+import * as Constants from '../constants'
 
-Blockly.Blocks["matrix"] = {
+Blockly.Blocks.matrix = {
   /**
    * Block for matrix value.
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
-      message0: "%1",
+      message0: '%1',
       args0: [
         {
-          type: "field_matrix",
-          name: "MATRIX",
+          type: 'field_matrix',
+          name: 'MATRIX',
         },
       ],
       outputShape: Constants.OUTPUT_SHAPE_ROUND,
-      output: "Number",
-      extensions: ["colours_pen"],
-    });
+      output: 'Number',
+      extensions: ['colours_pen'],
+    })
   },
-};
+}

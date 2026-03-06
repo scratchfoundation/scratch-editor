@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2018 Google Inc.
@@ -17,14 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
- * @fileoverview Class for a category header in the flyout for Scratch
+ * @file Class for a category header in the flyout for Scratch
  * extensions which can display a textual label and a status button.
  * @author ericr@media.mit.edu (Eric Rosenbaum)
  */
-
-import * as Blockly from "blockly/core";
+import * as Blockly from 'blockly/core'
 
 /**
  * Class for a category header in the flyout for Scratch extensions which can
@@ -34,26 +31,25 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
   /**
    * The ID of the Scratch extension whose status is indicated by this label.
    */
-  extensionId: string;
+  extensionId: string
 
   /**
    * DOM element that displays the status indicator dot.
    */
-  imageElement: SVGImageElement;
+  imageElement: SVGImageElement
 
   /**
    * Opaque data for mouse up listener used to unbind it in dispose().
    */
-  mouseUpWrapper: Blockly.browserEvents.Data;
+  mouseUpWrapper: Blockly.browserEvents.Data
 
   /**
    * Function to be invoked when the status indicator is clicked.
    */
-  static statusButtonCallback: (extensionId: string) => void;
+  static statusButtonCallback: (extensionId: string) => void
 
   /**
    * Creates a new StatusIndicatorLabel.
-   *
    * @param workspace The workspace in which to place this header.
    * @param targetWorkspace The flyout's target workspace.
    * @param json The JSON specifying the header.
@@ -61,74 +57,69 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
   constructor(
     workspace: Blockly.WorkspaceSvg,
     targetWorkspace: Blockly.WorkspaceSvg,
-    json: Blockly.utils.toolbox.LabelInfo
+    json: Blockly.utils.toolbox.LabelInfo,
   ) {
-    super(workspace, targetWorkspace, json, true);
-    this.extensionId = json["id"]!;
+    super(workspace, targetWorkspace, json, true)
+    this.extensionId = json.id!
 
-    const heightDelta = 40 - this.height;
-    this.height = 40;
-    const text = this.getSvgRoot().querySelector("text")!;
-    const previousY = Number(text.getAttribute("y"));
+    const heightDelta = 40 - this.height
+    this.height = 40
+    const text = this.getSvgRoot().querySelector('text')!
+    const previousY = Number(text.getAttribute('y'))
 
-    text.setAttribute("y", `${previousY + heightDelta / 2}`);
+    text.setAttribute('y', `${previousY + heightDelta / 2}`)
 
-    const statusButtonWidth = 30;
-    const marginX = 20;
-    const marginY = 5;
-    const touchPadding = 16;
-    const flyoutWidth = targetWorkspace.getFlyout()!.getWidth();
+    const statusButtonWidth = 30
+    const marginX = 20
+    const marginY = 5
+    const touchPadding = 16
+    const flyoutWidth = targetWorkspace.getFlyout()!.getWidth()
 
     const statusButtonX = workspace.RTL
       ? marginX - flyoutWidth + statusButtonWidth
-      : (flyoutWidth - statusButtonWidth - marginX) / workspace.scale;
+      : (flyoutWidth - statusButtonWidth - marginX) / workspace.scale
 
     this.imageElement = Blockly.utils.dom.createSvgElement(
-      "image",
+      'image',
       {
-        class: "blocklyFlyoutButton",
-        height: statusButtonWidth + "px",
-        width: statusButtonWidth + "px",
-        x: statusButtonX + "px",
-        y: marginY + "px",
+        class: 'blocklyFlyoutButton',
+        height: statusButtonWidth + 'px',
+        width: statusButtonWidth + 'px',
+        x: statusButtonX + 'px',
+        y: marginY + 'px',
       },
-      this.getSvgRoot()
-    );
+      this.getSvgRoot(),
+    )
     const imageElementBackground = Blockly.utils.dom.createSvgElement(
-      "rect",
+      'rect',
       {
-        class: "blocklyTouchTargetBackground",
-        height: statusButtonWidth + 2 * touchPadding + "px",
-        width: statusButtonWidth + 2 * touchPadding + "px",
-        x: statusButtonX - touchPadding + "px",
-        y: marginY - touchPadding + "px",
+        class: 'blocklyTouchTargetBackground',
+        height: statusButtonWidth + 2 * touchPadding + 'px',
+        width: statusButtonWidth + 2 * touchPadding + 'px',
+        x: statusButtonX - touchPadding + 'px',
+        y: marginY - touchPadding + 'px',
       },
-      this.getSvgRoot()
-    );
+      this.getSvgRoot(),
+    )
 
-    this.refreshStatus();
+    this.refreshStatus()
 
-    this.mouseUpWrapper = Blockly.browserEvents.bind(
-      imageElementBackground,
-      "mouseup",
-      null,
-      () => {
-        StatusIndicatorLabel.statusButtonCallback?.call(this, this.extensionId);
-      }
-    );
+    this.mouseUpWrapper = Blockly.browserEvents.bind(imageElementBackground, 'mouseup', null, () => {
+      StatusIndicatorLabel.statusButtonCallback?.call(this, this.extensionId)
+    })
   }
 
   /**
    * Set the image on the status button using a status string.
    */
   refreshStatus() {
-    var status = this.getExtensionState(this.extensionId);
-    var basePath = Blockly.getMainWorkspace().options.pathToMedia;
+    const status = this.getExtensionState(this.extensionId)
+    const basePath = Blockly.getMainWorkspace().options.pathToMedia
     if (status == StatusButtonState.READY) {
-      this.setImageSrc(basePath + "status-ready.svg");
+      this.setImageSrc(basePath + 'status-ready.svg')
     }
     if (status == StatusButtonState.NOT_READY) {
-      this.setImageSrc(basePath + "status-not-ready.svg");
+      this.setImageSrc(basePath + 'status-not-ready.svg')
     }
   }
 
@@ -139,29 +130,25 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
    */
   setImageSrc(src: string) {
     if (this.imageElement) {
-      this.imageElement.setAttributeNS(
-        "http://www.w3.org/1999/xlink",
-        "xlink:href",
-        src
-      );
+      this.imageElement.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', src)
     }
   }
 
   /**
    * Gets the extension state. Overridden externally.
-   * @param extensionId The ID of the extension in question.
-   * @return The state of the extension.
+   * @param extensionId A string identifying which extension's state to retrieve.
+   * @returns Whether the extension is ready to be used.
    */
   getExtensionState(extensionId: string): StatusButtonState {
-    return StatusButtonState.NOT_READY;
+    return StatusButtonState.NOT_READY
   }
 
   /**
    * Disposes of this status indicator label.
    */
   dispose() {
-    Blockly.browserEvents.unbind(this.mouseUpWrapper);
-    super.dispose();
+    Blockly.browserEvents.unbind(this.mouseUpWrapper)
+    super.dispose()
   }
 }
 
@@ -169,6 +156,6 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
  * Set of available states for a status indicator.
  */
 export enum StatusButtonState {
-  READY = "ready",
-  NOT_READY = "not ready",
+  READY = 'ready',
+  NOT_READY = 'not ready',
 }

@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
@@ -17,26 +16,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 /**
- * @fileoverview Utility functions for handling variables.
+ * @file Utility functions for handling variables.
  * @author fraser@google.com (Neil Fraser)
  */
-import * as Blockly from "blockly/core";
-import {
-  LIST_VARIABLE_TYPE,
-  BROADCAST_MESSAGE_VARIABLE_TYPE,
-} from "./constants";
-import { ScratchVariableModel } from "./scratch_variable_model";
-import { ScratchContinuousToolbox } from "./scratch_continuous_toolbox";
-import { CheckableContinuousFlyout } from "./checkable_continuous_flyout";
+import * as Blockly from 'blockly/core'
+import { CheckableContinuousFlyout } from './checkable_continuous_flyout'
+import { LIST_VARIABLE_TYPE, BROADCAST_MESSAGE_VARIABLE_TYPE } from './constants'
+import { ScratchContinuousToolbox } from './scratch_continuous_toolbox'
+import { ScratchVariableModel } from './scratch_variable_model'
 
 /**
  * Constant prefix to differentiate cloud variable names from other types of
  * variables.
  * This is the \u2601 cloud unicode character followed by a space.
  */
-const CLOUD_PREFIX = "☁ ";
+const CLOUD_PREFIX = '☁ '
 
 type PromptType = (
   message: string,
@@ -44,26 +39,24 @@ type PromptType = (
   callback: (
     variableName: string,
     additionalVars: string[],
-    variableOptions?: { scope?: string; isCloud?: boolean }
+    variableOptions?: { scope?: string; isCloud?: boolean },
   ) => void,
   title?: string,
-  varType?: string
-) => void;
+  varType?: string,
+) => void
 
-let prompt: PromptType | undefined = undefined;
+let prompt: PromptType | undefined = undefined
 
 /**
  * Sets the handler for calls to prompt().
- *
  * @param handler The new prompt function.
  */
 export function setPromptHandler(handler: PromptType) {
-  prompt = handler;
+  prompt = handler
 }
 
 /**
  * Create a new variable on the given workspace.
- *
  * @param workspace The workspace on which to create the variable.
  * @param opt_callback An optional callback function to act on the id of the
  *     variable that is created from the user's input, or null if the change is
@@ -74,93 +67,71 @@ export function setPromptHandler(handler: PromptType) {
 export function createVariable(
   workspace: Blockly.WorkspaceSvg,
   opt_callback?: (id?: string) => void,
-  opt_type?: string
+  opt_type?: string,
 ) {
   // Decide on a modal message based on the opt_type. If opt_type was not
   // provided, default to the original message for scalar variables.
-  let newMsg, modalTitle;
+  let newMsg, modalTitle
   if (opt_type === BROADCAST_MESSAGE_VARIABLE_TYPE) {
-    newMsg = Blockly.Msg.NEW_BROADCAST_MESSAGE_TITLE;
-    modalTitle = Blockly.Msg.BROADCAST_MODAL_TITLE;
+    newMsg = Blockly.Msg.NEW_BROADCAST_MESSAGE_TITLE
+    modalTitle = Blockly.Msg.BROADCAST_MODAL_TITLE
   } else if (opt_type === LIST_VARIABLE_TYPE) {
-    newMsg = Blockly.Msg.NEW_LIST_TITLE;
-    modalTitle = Blockly.Msg.LIST_MODAL_TITLE;
+    newMsg = Blockly.Msg.NEW_LIST_TITLE
+    modalTitle = Blockly.Msg.LIST_MODAL_TITLE
   } else {
     // Note: this case covers 1) scalar variables, 2) any new type of
     // variable not explicitly checked for above, and 3) a null or undefined
     // opt_type -- turns a falsey opt_type into ''
     // TODO (#1251) Warn developers that they didn't provide an opt_type/
     // provided a falsey opt_type
-    opt_type = opt_type ? opt_type : "";
-    newMsg = Blockly.Msg.NEW_VARIABLE_TITLE;
-    modalTitle = Blockly.Msg.VARIABLE_MODAL_TITLE;
+    opt_type = opt_type ? opt_type : ''
+    newMsg = Blockly.Msg.NEW_VARIABLE_TITLE
+    modalTitle = Blockly.Msg.VARIABLE_MODAL_TITLE
   }
-  const validate = nameValidator.bind(null, opt_type);
+  const validate = nameValidator.bind(null, opt_type)
 
   // Prompt the user to enter a name for the variable
   prompt!(
     newMsg,
-    "",
-    function (
-      text: string,
-      additionalVars: string[],
-      variableOptions?: { scope?: string; isCloud?: boolean }
-    ) {
-      variableOptions = variableOptions || {};
-      const scope = variableOptions.scope;
-      const isLocal = scope === "local" || false;
-      const isCloud = variableOptions.isCloud || false;
+    '',
+    (text: string, additionalVars: string[], variableOptions?: { scope?: string; isCloud?: boolean }) => {
+      variableOptions = variableOptions || {}
+      const scope = variableOptions.scope
+      const isLocal = scope === 'local' || false
+      const isCloud = variableOptions.isCloud || false
       // Default to [] if additionalVars is not provided
-      additionalVars = additionalVars || [];
+      additionalVars = additionalVars || []
       // Only use additionalVars for global variable creation.
-      const additionalVarNames = isLocal ? [] : additionalVars;
+      const additionalVarNames = isLocal ? [] : additionalVars
 
-      const validatedText = validate(
-        text,
-        workspace,
-        additionalVarNames,
-        isCloud,
-        opt_callback
-      );
+      const validatedText = validate(text, workspace, additionalVarNames, isCloud, opt_callback)
       if (validatedText) {
-        const variable = new ScratchVariableModel(
-          workspace,
-          validatedText,
-          opt_type,
-          undefined,
-          isLocal,
-          isCloud
-        );
-        workspace.getVariableMap().addVariable(variable);
-        Blockly.Events.fire(
-          new (Blockly.Events.get(Blockly.Events.VAR_CREATE))(variable)
-        );
+        const variable = new ScratchVariableModel(workspace, validatedText, opt_type, undefined, isLocal, isCloud)
+        workspace.getVariableMap().addVariable(variable)
+        Blockly.Events.fire(new (Blockly.Events.get(Blockly.Events.VAR_CREATE))(variable))
 
-        const toolbox = workspace.getToolbox();
-        const flyout = toolbox?.getFlyout();
-        const variableBlockId = variable.getId();
-        if (
-          toolbox instanceof ScratchContinuousToolbox &&
-          flyout instanceof CheckableContinuousFlyout
-        ) {
+        const toolbox = workspace.getToolbox()
+        const flyout = toolbox?.getFlyout()
+        const variableBlockId = variable.getId()
+        if (toolbox instanceof ScratchContinuousToolbox && flyout instanceof CheckableContinuousFlyout) {
           toolbox.runAfterRerender(() => {
-            flyout.setCheckboxState(variableBlockId, true);
-          });
+            flyout.setCheckboxState(variableBlockId, true)
+          })
         }
 
         if (opt_callback) {
-          opt_callback(variableBlockId);
+          opt_callback(variableBlockId)
         }
       } else {
         // User canceled prompt without a value.
         if (opt_callback) {
-          opt_callback(undefined);
+          opt_callback(undefined)
         }
       }
     },
     modalTitle,
-    opt_type
-  );
+    opt_type,
+  )
 }
 
 /**
@@ -168,7 +139,6 @@ export function createVariable(
  * agnostic of type. This is so that functions like  createVariable and
  * renameVariable can call a single function (with a single type signature) to
  * validate the user-provided name for a variable.
- *
  * @param type The type of the variable for which the provided name should be
  *     validated.
  * @param text The user-provided text that should be validated as a variable
@@ -192,7 +162,7 @@ function nameValidator(
   workspace: Blockly.WorkspaceSvg,
   additionalVars: string[],
   isCloud: boolean,
-  opt_callback?: (id?: string) => void
+  opt_callback?: (id?: string) => void,
 ): string | null {
   // The validators for the different variable types require slightly different
   // arguments. For broadcast messages, if a broadcast message of the provided
@@ -204,16 +174,9 @@ function nameValidator(
   // a variable of the given name and type already exists.
 
   if (type === BROADCAST_MESSAGE_VARIABLE_TYPE) {
-    return validateBroadcastMessageName(text, workspace, opt_callback);
+    return validateBroadcastMessageName(text, workspace, opt_callback)
   } else if (type === LIST_VARIABLE_TYPE) {
-    return validateScalarVarOrListName(
-      text,
-      workspace,
-      additionalVars,
-      false,
-      type,
-      Blockly.Msg.LIST_ALREADY_EXISTS
-    );
+    return validateScalarVarOrListName(text, workspace, additionalVars, false, type, Blockly.Msg.LIST_ALREADY_EXISTS)
   } else {
     return validateScalarVarOrListName(
       text,
@@ -221,14 +184,13 @@ function nameValidator(
       additionalVars,
       isCloud,
       type,
-      Blockly.Msg.VARIABLE_ALREADY_EXISTS
-    );
+      Blockly.Msg.VARIABLE_ALREADY_EXISTS,
+    )
   }
 }
 
 /**
  * Validate the given name as a broadcast message type.
- *
  * @param name The name to validate
  * @param workspace The workspace the name should be validated against.
  * @param opt_callback An optional function to call if a broadcast message
@@ -239,35 +201,34 @@ function nameValidator(
 function validateBroadcastMessageName(
   name: string,
   workspace: Blockly.WorkspaceSvg,
-  opt_callback?: (id?: string) => void
+  opt_callback?: (id?: string) => void,
 ): string | null {
   if (!name) {
     // no name was provided or the user cancelled the prompt
-    return null;
+    return null
   }
-  const variable = workspace.getVariable(name, BROADCAST_MESSAGE_VARIABLE_TYPE);
+  const variable = workspace.getVariable(name, BROADCAST_MESSAGE_VARIABLE_TYPE)
   if (variable) {
     // If the user provided a name for a broadcast message that already exists,
     // use the provided callback function to update the selected option in
     // the field of the block that was used to create
     // this message.
     if (opt_callback) {
-      opt_callback(variable.getId());
+      opt_callback(variable.getId())
     }
     // Return null to signal to the calling function that we do not want to create
     // a new variable since one already exists.
-    return null;
+    return null
   } else {
     // The name provided is actually a new name, so the calling
     // function should go ahead and create it as a new variable.
-    return name;
+    return name
   }
 }
 
 /**
  * Validate the given name as a scalar variable or list type.
  * This function is also responsible for any user facing error-handling.
- *
  * @param name The name to validate
  * @param workspace The workspace the name should be validated against.
  * @param additionalVars A list of additional variable names to check for
@@ -285,29 +246,28 @@ function validateScalarVarOrListName(
   additionalVars: string[],
   isCloud: boolean,
   type: string,
-  errorMsg: string
+  errorMsg: string,
 ): string | null {
   // For scalar variables, we don't want leading or trailing white space
-  name = name.trim();
+  name = name.trim()
   if (!name) {
-    return null;
+    return null
   }
   if (isCloud) {
-    name = CLOUD_PREFIX + name;
+    name = CLOUD_PREFIX + name
   }
-  if (workspace.getVariable(name, type) || additionalVars.indexOf(name) >= 0) {
+  if (workspace.getVariable(name, type) || additionalVars.includes(name)) {
     // error
-    Blockly.dialog.alert(errorMsg.replace("%1", name));
-    return null;
+    Blockly.dialog.alert(errorMsg.replace('%1', name))
+    return null
   } else {
     // trimmed name is valid
-    return name;
+    return name
   }
 }
 
 /**
  * Rename a variable with the given workspace, variableType, and oldName.
- *
  * @param workspace The workspace on which to rename the variable.
  * @param variable Variable to rename.
  * @param opt_callback A callback. It will be passed an acceptable new variable
@@ -317,69 +277,60 @@ function validateScalarVarOrListName(
 export function renameVariable(
   workspace: Blockly.WorkspaceSvg,
   variable: ScratchVariableModel,
-  opt_callback?: (id?: string) => void
+  opt_callback?: (id?: string) => void,
 ) {
   // Validation and modal message/title depends on the variable type
-  let promptMsg, modalTitle;
-  const varType = variable.getType();
+  let promptMsg, modalTitle
+  const varType = variable.getType()
   if (varType === BROADCAST_MESSAGE_VARIABLE_TYPE) {
     console.warn(
       `Unexpected attempt to rename a broadcast message with
-      id: "${variable.getId()} and name: ${variable.getName()}`
-    );
-    return;
+      id: "${variable.getId()} and name: ${variable.getName()}`,
+    )
+    return
   }
   if (varType === LIST_VARIABLE_TYPE) {
-    promptMsg = Blockly.Msg.RENAME_LIST_TITLE;
-    modalTitle = Blockly.Msg.RENAME_LIST_MODAL_TITLE;
+    promptMsg = Blockly.Msg.RENAME_LIST_TITLE
+    modalTitle = Blockly.Msg.RENAME_LIST_MODAL_TITLE
   } else {
     // Default for all other types of variables
-    promptMsg = Blockly.Msg.RENAME_VARIABLE_TITLE;
-    modalTitle = Blockly.Msg.RENAME_VARIABLE_MODAL_TITLE;
+    promptMsg = Blockly.Msg.RENAME_VARIABLE_TITLE
+    modalTitle = Blockly.Msg.RENAME_VARIABLE_MODAL_TITLE
   }
-  const validate = nameValidator.bind(null, varType);
+  const validate = nameValidator.bind(null, varType)
 
-  const promptText = promptMsg.replace("%1", variable.getName());
-  let promptDefaultText = variable.getName();
-  if (variable.isCloud && variable.getName().indexOf(CLOUD_PREFIX) == 0) {
-    promptDefaultText = promptDefaultText.substring(CLOUD_PREFIX.length);
+  const promptText = promptMsg.replace('%1', variable.getName())
+  let promptDefaultText = variable.getName()
+  if (variable.isCloud && variable.getName().startsWith(CLOUD_PREFIX)) {
+    promptDefaultText = promptDefaultText.substring(CLOUD_PREFIX.length)
   }
 
   prompt!(
     promptText,
     promptDefaultText,
     (newName: string, additionalVars: string[]) => {
-      if (
-        variable.isCloud &&
-        newName.length > 0 &&
-        newName.indexOf(CLOUD_PREFIX) == 0
-      ) {
-        newName = newName.substring(CLOUD_PREFIX.length);
+      if (variable.isCloud && newName.length > 0 && newName.startsWith(CLOUD_PREFIX)) {
+        newName = newName.substring(CLOUD_PREFIX.length)
         // The name validator will add the prefix back
       }
-      additionalVars = additionalVars || [];
-      const additionalVarNames = variable.isLocal ? [] : additionalVars;
-      const validatedText = validate(
-        newName,
-        workspace,
-        additionalVarNames,
-        variable.isCloud
-      );
+      additionalVars = additionalVars || []
+      const additionalVarNames = variable.isLocal ? [] : additionalVars
+      const validatedText = validate(newName, workspace, additionalVarNames, variable.isCloud)
       if (validatedText) {
-        workspace.renameVariableById(variable.getId(), validatedText);
+        workspace.renameVariableById(variable.getId(), validatedText)
         if (opt_callback) {
-          opt_callback(newName);
+          opt_callback(newName)
         }
       } else {
         // User canceled prompt without a value.
         if (opt_callback) {
-          opt_callback(undefined);
+          opt_callback(undefined)
         }
       }
     },
     modalTitle,
-    varType
-  );
+    varType,
+  )
 }
 
-export { getVariablesCategory } from "./data_category";
+export { getVariablesCategory } from './data_category'

@@ -1,15 +1,12 @@
 /**
- * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-
-import * as Blockly from "blockly/core";
-import { Colours } from "./colours";
+import * as Blockly from 'blockly/core'
+import { Colours } from './colours'
 
 /**
  * Glow/unglow a stack in the workspace.
- *
  * @param id ID of block which starts the stack.
  * @param isGlowingStack Whether to glow the stack.
  */
@@ -18,16 +15,16 @@ export function glowStack(id: string, isGlowingStack: boolean) {
     (Blockly.getMainWorkspace() as Blockly.WorkspaceSvg)
       .getFlyout()
       ?.getWorkspace()
-      ?.getBlockById(id)) as Blockly.BlockSvg;
+      ?.getBlockById(id)) as Blockly.BlockSvg
   if (!block) {
-    throw "Tried to glow block that does not exist.";
+    throw new Error('Tried to glow block that does not exist.')
   }
 
-  const svg = block.getSvgRoot();
-  if (isGlowingStack && !svg.hasAttribute("filter")) {
-    svg.setAttribute("filter", "url(#blocklyStackGlowFilter)");
-  } else if (!isGlowingStack && svg.hasAttribute("filter")) {
-    svg.removeAttribute("filter");
+  const svg = block.getSvgRoot()
+  if (isGlowingStack && !svg.hasAttribute('filter')) {
+    svg.setAttribute('filter', 'url(#blocklyStackGlowFilter)')
+  } else if (!isGlowingStack && svg.hasAttribute('filter')) {
+    svg.removeAttribute('filter')
   }
 }
 
@@ -36,74 +33,70 @@ export function glowStack(id: string, isGlowingStack: boolean) {
  * @param workspace The workspace whose DOM the filter will be inserted in.
  */
 export function buildGlowFilter(workspace: Blockly.WorkspaceSvg) {
-  const svg = workspace.getParentSvg();
-  const defs = Blockly.utils.dom.createSvgElement(
-    Blockly.utils.Svg.DEFS,
-    {},
-    svg
-  );
+  const svg = workspace.getParentSvg()
+  const defs = Blockly.utils.dom.createSvgElement(Blockly.utils.Svg.DEFS, {}, svg)
   // Using a dilate distorts the block shape.
   // Instead use a gaussian blur, and then set all alpha to 1 with a transfer.
   const stackGlowFilter = Blockly.utils.dom.createSvgElement(
-    "filter",
+    'filter',
     {
-      id: "blocklyStackGlowFilter",
-      height: "160%",
-      width: "180%",
-      y: "-30%",
-      x: "-40%",
+      id: 'blocklyStackGlowFilter',
+      height: '160%',
+      width: '180%',
+      y: '-30%',
+      x: '-40%',
     },
-    defs
-  );
+    defs,
+  )
   Blockly.utils.dom.createSvgElement(
-    "feGaussianBlur",
+    'feGaussianBlur',
     {
-      in: "SourceGraphic",
+      in: 'SourceGraphic',
       stdDeviation: Colours.stackGlowSize,
     },
-    stackGlowFilter
-  );
+    stackGlowFilter,
+  )
   // Set all gaussian blur pixels to 1 opacity before applying flood
   const componentTransfer = Blockly.utils.dom.createSvgElement(
-    "feComponentTransfer",
-    { result: "outBlur" },
-    stackGlowFilter
-  );
+    'feComponentTransfer',
+    { result: 'outBlur' },
+    stackGlowFilter,
+  )
   Blockly.utils.dom.createSvgElement(
-    "feFuncA",
+    'feFuncA',
     {
-      type: "table",
-      tableValues: "0" + " 1".repeat(16),
+      type: 'table',
+      tableValues: '0' + ' 1'.repeat(16),
     },
-    componentTransfer
-  );
+    componentTransfer,
+  )
   // Color the highlight
   Blockly.utils.dom.createSvgElement(
-    "feFlood",
+    'feFlood',
     {
-      "flood-color": Colours.stackGlow,
-      "flood-opacity": Colours.stackGlowOpacity,
-      result: "outColor",
+      'flood-color': Colours.stackGlow,
+      'flood-opacity': Colours.stackGlowOpacity,
+      result: 'outColor',
     },
-    stackGlowFilter
-  );
+    stackGlowFilter,
+  )
   Blockly.utils.dom.createSvgElement(
-    "feComposite",
+    'feComposite',
     {
-      in: "outColor",
-      in2: "outBlur",
-      operator: "in",
-      result: "outGlow",
+      in: 'outColor',
+      in2: 'outBlur',
+      operator: 'in',
+      result: 'outGlow',
     },
-    stackGlowFilter
-  );
+    stackGlowFilter,
+  )
   Blockly.utils.dom.createSvgElement(
-    "feComposite",
+    'feComposite',
     {
-      in: "SourceGraphic",
-      in2: "outGlow",
-      operator: "over",
+      in: 'SourceGraphic',
+      in2: 'outGlow',
+      operator: 'over',
     },
-    stackGlowFilter
-  );
+    stackGlowFilter,
+  )
 }

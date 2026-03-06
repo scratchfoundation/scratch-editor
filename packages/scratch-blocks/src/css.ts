@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2013 Google Inc.
@@ -17,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as Blockly from "blockly/core";
+import * as Blockly from 'blockly/core'
 
 const styles = `
   .blocklySvg {
@@ -1209,6 +1208,6 @@ const styles = `
   .blocklyInsertionMarker > g:not(:last-child) {
     visibility: hidden;
   }
-`;
+`
 
-Blockly.Css.register(styles);
+Blockly.Css.register(styles)

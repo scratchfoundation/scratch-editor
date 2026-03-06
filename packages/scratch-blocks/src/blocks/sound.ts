@@ -1,5 +1,4 @@
 /**
- * @license
  * Visual Blocks Editor
  *
  * Copyright 2016 Massachusetts Institute of Technology
@@ -17,15 +16,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import * as Blockly from "blockly/core";
+import * as Blockly from 'blockly/core'
 
 /**
  * Sound effects drop-down menu. Populated dynamically by scratch-gui.
  */
-Blockly.Blocks["sound_sounds_menu"] = {};
+Blockly.Blocks.sound_sounds_menu = {}
 
-Blockly.Blocks["sound_play"] = {
+Blockly.Blocks.sound_play = {
   /**
    * Block to play sound.
    */
@@ -34,16 +32,16 @@ Blockly.Blocks["sound_play"] = {
       message0: Blockly.Msg.SOUND_PLAY,
       args0: [
         {
-          type: "input_value",
-          name: "SOUND_MENU",
+          type: 'input_value',
+          name: 'SOUND_MENU',
         },
       ],
-      extensions: ["colours_sounds", "shape_statement"],
-    });
+      extensions: ['colours_sounds', 'shape_statement'],
+    })
   },
-};
+}
 
-Blockly.Blocks["sound_playuntildone"] = {
+Blockly.Blocks.sound_playuntildone = {
   /**
    * Block to play sound until done.
    */
@@ -52,28 +50,28 @@ Blockly.Blocks["sound_playuntildone"] = {
       message0: Blockly.Msg.SOUND_PLAYUNTILDONE,
       args0: [
         {
-          type: "input_value",
-          name: "SOUND_MENU",
+          type: 'input_value',
+          name: 'SOUND_MENU',
         },
       ],
-      extensions: ["colours_sounds", "shape_statement"],
-    });
+      extensions: ['colours_sounds', 'shape_statement'],
+    })
   },
-};
+}
 
-Blockly.Blocks["sound_stopallsounds"] = {
+Blockly.Blocks.sound_stopallsounds = {
   /**
    * Block to stop all sounds
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SOUND_STOPALLSOUNDS,
-      extensions: ["colours_sounds", "shape_statement"],
-    });
+      extensions: ['colours_sounds', 'shape_statement'],
+    })
   },
-};
+}
 
-Blockly.Blocks["sound_seteffectto"] = {
+Blockly.Blocks.sound_seteffectto = {
   /**
    * Block to set the audio effect
    */
@@ -82,24 +80,24 @@ Blockly.Blocks["sound_seteffectto"] = {
       message0: Blockly.Msg.SOUND_SETEFFECTO,
       args0: [
         {
-          type: "field_dropdown",
-          name: "EFFECT",
+          type: 'field_dropdown',
+          name: 'EFFECT',
           options: [
-            [Blockly.Msg.SOUND_EFFECTS_PITCH, "PITCH"],
-            [Blockly.Msg.SOUND_EFFECTS_PAN, "PAN"],
+            [Blockly.Msg.SOUND_EFFECTS_PITCH, 'PITCH'],
+            [Blockly.Msg.SOUND_EFFECTS_PAN, 'PAN'],
           ],
         },
         {
-          type: "input_value",
-          name: "VALUE",
+          type: 'input_value',
+          name: 'VALUE',
         },
       ],
-      extensions: ["colours_sounds", "shape_statement"],
-    });
+      extensions: ['colours_sounds', 'shape_statement'],
+    })
   },
-};
+}
 
-Blockly.Blocks["sound_changeeffectby"] = {
+Blockly.Blocks.sound_changeeffectby = {
   /**
    * Block to change the audio effect
    */
@@ -108,36 +106,36 @@ Blockly.Blocks["sound_changeeffectby"] = {
       message0: Blockly.Msg.SOUND_CHANGEEFFECTBY,
       args0: [
         {
-          type: "field_dropdown",
-          name: "EFFECT",
+          type: 'field_dropdown',
+          name: 'EFFECT',
           options: [
-            [Blockly.Msg.SOUND_EFFECTS_PITCH, "PITCH"],
-            [Blockly.Msg.SOUND_EFFECTS_PAN, "PAN"],
+            [Blockly.Msg.SOUND_EFFECTS_PITCH, 'PITCH'],
+            [Blockly.Msg.SOUND_EFFECTS_PAN, 'PAN'],
           ],
         },
         {
-          type: "input_value",
-          name: "VALUE",
+          type: 'input_value',
+          name: 'VALUE',
         },
       ],
-      extensions: ["colours_sounds", "shape_statement"],
-    });
+      extensions: ['colours_sounds', 'shape_statement'],
+    })
   },
-};
+}
 
-Blockly.Blocks["sound_cleareffects"] = {
+Blockly.Blocks.sound_cleareffects = {
   /**
    * Block to clear audio effects
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SOUND_CLEAREFFECTS,
-      extensions: ["colours_sounds", "shape_statement"],
-    });
+      extensions: ['colours_sounds', 'shape_statement'],
+    })
   },
-};
+}
 
-Blockly.Blocks["sound_changevolumeby"] = {
+Blockly.Blocks.sound_changevolumeby = {
   /**
    * Block to change the sprite's volume by a certain value
    */
@@ -146,16 +144,16 @@ Blockly.Blocks["sound_changevolumeby"] = {
       message0: Blockly.Msg.SOUND_CHANGEVOLUMEBY,
       args0: [
         {
-          type: "input_value",
-          name: "VOLUME",
+          type: 'input_value',
+          name: 'VOLUME',
         },
       ],
-      extensions: ["colours_sounds", "shape_statement"],
-    });
+      extensions: ['colours_sounds', 'shape_statement'],
+    })
   },
-};
+}
 
-Blockly.Blocks["sound_setvolumeto"] = {
+Blockly.Blocks.sound_setvolumeto = {
   /**
    * Block to set the sprite's volume to a certain percent
    */
@@ -164,23 +162,23 @@ Blockly.Blocks["sound_setvolumeto"] = {
       message0: Blockly.Msg.SOUND_SETVOLUMETO,
       args0: [
         {
-          type: "input_value",
-          name: "VOLUME",
+          type: 'input_value',
+          name: 'VOLUME',
         },
       ],
-      extensions: ["colours_sounds", "shape_statement"],
-    });
+      extensions: ['colours_sounds', 'shape_statement'],
+    })
   },
-};
+}
 
-Blockly.Blocks["sound_volume"] = {
+Blockly.Blocks.sound_volume = {
   /**
    * Block to report volume
    */
   init: function (this: Blockly.Block) {
     this.jsonInit({
       message0: Blockly.Msg.SOUND_VOLUME,
-      extensions: ["colours_sounds", "output_number", "monitor_block"],
-    });
+      extensions: ['colours_sounds', 'output_number', 'monitor_block'],
+    })
   },
-};
+}
