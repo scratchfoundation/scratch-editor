@@ -20,8 +20,8 @@
  * @file Colour input field.
  * @author fraser@google.com (Neil Fraser)
  */
-import * as Blockly from 'blockly/core'
 import { FieldColour, FieldColourFromJsonConfig } from '@blockly/field-colour'
+import * as Blockly from 'blockly/core'
 
 enum ColourChannel {
   HUE = 'hue',

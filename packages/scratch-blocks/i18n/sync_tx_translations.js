@@ -104,7 +104,7 @@ Promise.all(Object.keys(locales).map(getLocaleData))
     // write combined file
     fs.writeFileSync(`${PATH_OUTPUT}/scratch_msgs.js`, file)
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err)
     process.exit(1)
   })

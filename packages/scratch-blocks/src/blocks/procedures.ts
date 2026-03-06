@@ -800,7 +800,7 @@ function updateArgumentReporterNames_(
     if (prevName !== this.displayNames_[i]) {
       nameChanges.push({
         newName: this.displayNames_[i],
-        blocks: argReporters.filter(block => block.getFieldValue('VALUE') === prevName),
+        blocks: argReporters.filter((block) => block.getFieldValue('VALUE') === prevName),
       })
     }
   }

@@ -35,7 +35,7 @@
     "@commitlint/cli": "20.4.3",
     "@commitlint/config-conventional": "20.4.3",
     "eslint": "9.39.3",
-    "eslint-config-scratch": "13.0.5",
+    "eslint-config-scratch": "14.0.0",
     "husky": "9.1.7",
     "prettier": "3.8.1",
     "scratch-semantic-release-config": "4.0.1",

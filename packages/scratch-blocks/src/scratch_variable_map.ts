@@ -14,7 +14,7 @@ class ScratchVariableMap extends Blockly.VariableMap {
     // is identical to the one requested.
     const variables = this.getVariablesOfType(type ?? '')
     if (!variables.length) return null
-    return variables.find(v => v.getName() === name) ?? null
+    return variables.find((v) => v.getName() === name) ?? null
   }
 }
 

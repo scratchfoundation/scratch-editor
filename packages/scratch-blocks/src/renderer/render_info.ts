@@ -36,16 +36,16 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
       // bowler hat block.
       // Bowler hat blocks always have exactly one statement row and one input
       // element, so these find() calls are guaranteed to succeed.
-      const statementRow = this.rows.find(r => r.hasStatement)!
+      const statementRow = this.rows.find((r) => r.hasStatement)!
       this.width =
         statementRow.widthWithConnectedBlocks -
-        statementRow.elements.find(e => Blockly.blockRendering.Types.isInput(e))!.width +
+        statementRow.elements.find((e) => Blockly.blockRendering.Types.isInput(e))!.width +
         this.constants_.MEDIUM_PADDING
 
       // The bowler hat's width is the same as the block's width, so it can't
       // be derived from the constants like a normal hat and has to be set here.
       // populateTopRow_ always adds a hat element for bowler hat blocks.
-      const hat = this.topRow.elements.find(e => Blockly.blockRendering.Types.isHat(e))!
+      const hat = this.topRow.elements.find((e) => Blockly.blockRendering.Types.isHat(e))!
       hat.width = this.width
       this.topRow.measure()
     }

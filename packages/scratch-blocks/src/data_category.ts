@@ -36,7 +36,7 @@ export function getVariablesCategory(workspace: Blockly.WorkspaceSvg): Element[]
 
   addCreateButton(xmlList, workspace, 'VARIABLE')
 
-  scalarVariables.forEach(variable => addDataVariable(xmlList, variable))
+  scalarVariables.forEach((variable) => addDataVariable(xmlList, variable))
 
   if (scalarVariables.length > 0) {
     xmlList[xmlList.length - 1].setAttribute('gap', '24')
@@ -52,7 +52,7 @@ export function getVariablesCategory(workspace: Blockly.WorkspaceSvg): Element[]
   addCreateButton(xmlList, workspace, 'LIST')
   const listVariables = workspace.getVariablesOfType(LIST_VARIABLE_TYPE)
   listVariables.sort(Blockly.Variables.compareByName)
-  listVariables.forEach(variable => addDataList(xmlList, variable))
+  listVariables.forEach((variable) => addDataList(xmlList, variable))
 
   if (listVariables.length > 0) {
     xmlList[xmlList.length - 1].setAttribute('gap', '24')
@@ -387,7 +387,7 @@ function addCreateButton(xmlList: Element[], workspace: Blockly.WorkspaceSvg, ty
   }
   button.setAttribute('text', msg)
   button.setAttribute('callbackKey', callbackKey)
-  workspace.registerButtonCallback(callbackKey, b => {
+  workspace.registerButtonCallback(callbackKey, (b) => {
     // Run the callback after a delay to avoid it getting captured by the React
     // modal in scratch-gui and being registered as a click on the scrim that
     // dismisses the dialog.

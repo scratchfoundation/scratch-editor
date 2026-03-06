@@ -255,10 +255,10 @@ export class FieldNote extends Blockly.FieldTextInput {
    */
   dispose() {
     super.dispose()
-    this.mouseDownWrappers_.forEach(wrapper => {
+    this.mouseDownWrappers_.forEach((wrapper) => {
       Blockly.browserEvents.unbind(wrapper)
     })
-    this.mouseEnterWrappers_.forEach(wrapper => {
+    this.mouseEnterWrappers_.forEach((wrapper) => {
       Blockly.browserEvents.unbind(wrapper)
     })
     if (this.mouseUpWrapper_) {
@@ -722,7 +722,7 @@ export class FieldNote extends Blockly.FieldTextInput {
     const index = this.noteNumToKeyIndex_(noteNum)
 
     // Clear the highlight on all keys
-    this.keySVGs_.forEach(svg => {
+    this.keySVGs_.forEach((svg) => {
       const isBlack = svg.getAttribute('data-isBlack')
       if (isBlack === 'true') {
         svg.setAttribute('fill', FieldNote.BLACK_KEY_COLOR)

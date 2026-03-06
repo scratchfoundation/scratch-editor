@@ -38,7 +38,7 @@ function getDeletableBlocksInStack(block: Blockly.BlockSvg): Blockly.BlockSvg[] 
   if (block.getNextBlock()) {
     // Next blocks are not deleted.
     const nextDescendants = block.getNextBlock()!.getDescendants(false).filter(isDeletable)
-    descendants = descendants.filter(b => !nextDescendants.includes(b))
+    descendants = descendants.filter((b) => !nextDescendants.includes(b))
   }
   return descendants
 }

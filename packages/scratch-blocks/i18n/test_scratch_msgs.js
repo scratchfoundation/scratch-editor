@@ -50,8 +50,8 @@ const validateKeys = function () {
   // ignore empty keys first time through
   if (keys.length === 0) return
   assert.strictEqual(keys.length, Object.keys(en).length, `scratch_msgs-${locale}: number of keys doesn't match`)
-  keys.map(item => assert(enKeys.includes(item), `scratch_msgs-${locale}: has key ${item} not in en`))
-  enKeys.map(item => assert(keys.includes(item), `scratch_msgs-${locale}: is missing key ${item}`))
+  keys.map((item) => assert(enKeys.includes(item), `scratch_msgs-${locale}: has key ${item} not in en`))
+  enKeys.map((item) => assert(keys.includes(item), `scratch_msgs-${locale}: is missing key ${item}`))
 }
 
 // Stream input and push each match to the storage object

@@ -2,8 +2,8 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import * as Blockly from 'blockly/core'
 import { ContinuousCategory } from '@blockly/continuous-toolbox'
+import * as Blockly from 'blockly/core'
 
 type StatusIndicatorCategoryInfo = Blockly.utils.toolbox.CategoryInfo & {
   showStatusButton?: string

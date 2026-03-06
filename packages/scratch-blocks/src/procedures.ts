@@ -32,8 +32,8 @@ import * as Constants from './constants'
 function allProcedureMutations(root: Blockly.WorkspaceSvg): Element[] {
   const blocks = root.getAllBlocks()
   return blocks
-    .filter(b => b.type === Constants.PROCEDURES_PROTOTYPE_BLOCK_TYPE)
-    .map(b => b.mutationToDom!(/* opt_generateShadows */ true))
+    .filter((b) => b.type === Constants.PROCEDURES_PROTOTYPE_BLOCK_TYPE)
+    .map((b) => b.mutationToDom!(/* opt_generateShadows */ true))
 }
 
 /**
@@ -118,7 +118,7 @@ export function getCallers(
   definitionRoot: Blockly.BlockSvg,
   allowRecursive: boolean,
 ): Blockly.BlockSvg[] {
-  return workspace.getTopBlocks().flatMap(block => {
+  return workspace.getTopBlocks().flatMap((block) => {
     if (block.id === definitionRoot.id && !allowRecursive) {
       return []
     }
@@ -126,7 +126,7 @@ export function getCallers(
     return block
       .getDescendants(false)
       .filter(
-        descendant =>
+        (descendant) =>
           isProcedureBlock(descendant) &&
           descendant.type === Constants.PROCEDURES_CALL_BLOCK_TYPE &&
           descendant.getProcCode() === name,
@@ -151,7 +151,7 @@ function mutateCallersAndPrototype(name: string, workspace: Blockly.WorkspaceSvg
   const callers = getCallers(name, defineBlock.workspace, defineBlock, true /* allowRecursive */)
   callers.push(prototypeBlock)
   Blockly.Events.setGroup(true)
-  callers.forEach(caller => {
+  callers.forEach((caller) => {
     const oldMutationDom = caller.mutationToDom!()
     const oldMutation = oldMutationDom && Blockly.Xml.domToText(oldMutationDom)
     caller.domToMutation!(mutation)
@@ -174,7 +174,7 @@ function mutateCallersAndPrototype(name: string, workspace: Blockly.WorkspaceSvg
  */
 function getDefineBlock(procCode: string, workspace: Blockly.WorkspaceSvg): Blockly.BlockSvg | undefined {
   // Assume that a procedure definition is a top block.
-  return workspace.getTopBlocks(false).find(block => {
+  return workspace.getTopBlocks(false).find((block) => {
     if (block.type === Constants.PROCEDURES_DEFINITION_BLOCK_TYPE) {
       const prototypeBlock = block.getInput('custom_block')!.connection!.targetBlock() as Blockly.BlockSvg
       return isProcedureBlock(prototypeBlock) && prototypeBlock.getProcCode() === procCode
@@ -285,7 +285,7 @@ function editProcedureCallback(block: Blockly.BlockSvg) {
       return
     }
     const innerBlock = conn.targetBlock()
-    if (!innerBlock || innerBlock.type !== Constants.PROCEDURES_PROTOTYPE_BLOCK_TYPE) {
+    if (innerBlock?.type !== Constants.PROCEDURES_PROTOTYPE_BLOCK_TYPE) {
       alert('Bad inner block') // TODO: Decide what to do about this.
       return
     }

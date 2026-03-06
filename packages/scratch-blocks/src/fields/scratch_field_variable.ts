@@ -92,7 +92,7 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
     if (type === Constants.BROADCAST_MESSAGE_VARIABLE_TYPE) {
       options.splice(-2, 2, [ScratchMsgs.translate('NEW_BROADCAST_MESSAGE'), Constants.NEW_BROADCAST_MESSAGE_ID])
     } else if (type === Constants.LIST_VARIABLE_TYPE) {
-      options = options.map(option => {
+      options = options.map((option) => {
         if (option[1] === Blockly.RENAME_VARIABLE_ID) {
           return [ScratchMsgs.translate('RENAME_LIST'), option[1]]
         } else if (option[1] === Blockly.DELETE_VARIABLE_ID) {
@@ -120,7 +120,7 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
       if (selectedItem === Constants.NEW_BROADCAST_MESSAGE_ID) {
         createVariable(
           sourceBlock.workspace as Blockly.WorkspaceSvg,
-          varId => {
+          (varId) => {
             if (varId) {
               this.setValue(varId)
             }

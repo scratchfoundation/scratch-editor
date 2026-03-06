@@ -2,8 +2,8 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import * as Blockly from 'blockly/core'
 import { ContinuousFlyout } from '@blockly/continuous-toolbox'
+import * as Blockly from 'blockly/core'
 import { CheckboxBubble } from './checkbox_bubble'
 import { StatusIndicatorLabel } from './status_indicator_label'
 import { STATUS_INDICATOR_LABEL_TYPE } from './status_indicator_label_flyout_inflater'

@@ -52,7 +52,7 @@ var runTests = async function () {
   }
 }
 
-runTests().catch(e => {
+runTests().catch((e) => {
   console.error(e)
   process.exit(1)
 })
