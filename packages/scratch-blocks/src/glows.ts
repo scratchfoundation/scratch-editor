@@ -17,7 +17,7 @@ export function glowStack(id: string, isGlowingStack: boolean) {
       ?.getWorkspace()
       ?.getBlockById(id)) as Blockly.BlockSvg
   if (!block) {
-    throw 'Tried to glow block that does not exist.'
+    throw new Error('Tried to glow block that does not exist.')
   }
 
   const svg = block.getSvgRoot()

@@ -8,7 +8,7 @@ export function reportValue(id: string, value: string) {
       ?.getWorkspace()
       ?.getBlockById(id)) as Blockly.BlockSvg
   if (!block) {
-    throw 'Tried to report value on block that does not exist.'
+    throw new Error('Tried to report value on block that does not exist.')
   }
 
   let field

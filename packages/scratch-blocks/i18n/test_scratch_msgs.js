@@ -82,7 +82,7 @@ stream
   .pipe(
     es.wait(function (err) {
       if (err) {
-        console.err(err)
+        console.error(err)
         process.exit(1)
       }
       process.exit(0)
