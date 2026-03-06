@@ -9,6 +9,7 @@ import { ScratchVariableModel } from './scratch_variable_model'
  * Clears the workspace and loads the given serialized state.
  * @param xml XML representation of a Blockly workspace.
  * @param workspace The workspace to load the serialized data onto.
+ * @returns An array of variable IDs created during loading.
  */
 export function clearWorkspaceAndLoadFromXml(xml: Element, workspace: Blockly.WorkspaceSvg): string[] {
   workspace.setResizesEnabled(false)

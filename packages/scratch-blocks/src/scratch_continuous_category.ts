@@ -65,6 +65,7 @@ export class ScratchContinuousCategory extends ContinuousCategory {
   /**
    * Returns whether or not this category's label in the flyout should display
    * status indicators.
+   * @returns True if the status indicator button should be shown.
    */
   shouldShowStatusButton() {
     return this.showStatusButton

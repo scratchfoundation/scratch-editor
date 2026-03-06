@@ -55,6 +55,7 @@ class DuplicateOnDragDraggable implements Blockly.IDraggable {
 
   /**
    * Returns whether or not this draggable is movable.
+   * @returns Always true.
    */
   isMovable(): boolean {
     return true
@@ -309,7 +310,7 @@ function deleteShadows_(this: ProcedureBlock, connectionMap: ConnectionMap) {
 /**
  * Add a label field with the given text to a procedures_call or
  * procedures_prototype block.
- * @param text The label text.
+ * @param text The string to display in the block's label field.
  */
 function addLabelField_(this: ProcedureCallBlock | ProcedurePrototypeBlock, text: string) {
   this.appendDummyInput().appendField(text)
@@ -319,7 +320,7 @@ function addLabelField_(this: ProcedureCallBlock | ProcedurePrototypeBlock, text
  * Add a label editor with the given text to a procedures_declaration
  * block.  Editing the text in the label editor updates the text of the
  * corresponding label fields on function calls.
- * @param text The label text.
+ * @param text The initial string to show in the label editor.
  */
 function addLabelEditor_(this: ProcedureDeclarationBlock, text: string) {
   if (text) {

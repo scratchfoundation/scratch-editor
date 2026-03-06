@@ -48,7 +48,8 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
    * that input slots inside a Boolean reporter (like `<a = b>`) are still
    * drawn with the rounded shape that matches what they accept, not the
    * hexagonal shape of their parent block's output.
-   * @param connection
+   * @param connection The connection whose shape to determine.
+   * @returns The shape object for the given connection.
    */
   override shapeFor(connection: Blockly.RenderedConnection): ReturnType<Blockly.zelos.ConstantProvider['shapeFor']> {
     let checks = connection.getCheck()

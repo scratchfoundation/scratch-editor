@@ -78,6 +78,7 @@ class FieldVerticalSeparator extends Blockly.Field {
 
   /**
    * Get the value of this field. A no-op in this case.
+   * @returns Always null.
    */
   getValue(): string | null {
     return null

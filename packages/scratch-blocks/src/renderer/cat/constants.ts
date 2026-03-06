@@ -89,6 +89,7 @@ export class ConstantProvider extends ClassicConstantProvider {
    * Make the starting portion of a block's hat.
    * The return value will be stored as START_HAT.
    * In the case of cat blocks, this is just a placeholder for sizing.
+   * @returns An object containing the hat's height and width dimensions.
    */
   override makeStartHat() {
     return {

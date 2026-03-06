@@ -74,7 +74,10 @@ class FieldVariableGetter extends Blockly.FieldLabel {
     this.variable = Blockly.Variables.getVariable(workspace, newVariableId)
   }
 
-  /** Informs Blockly that this field depends on a variable. */
+  /**
+   * Informs Blockly that this field depends on a variable.
+   * @returns Always true.
+   */
   referencesVariables() {
     return true
   }

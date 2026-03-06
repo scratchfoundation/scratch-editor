@@ -108,7 +108,7 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
   /**
    * Show the inline free-text editor on top of the text and the num-pad if
    * appropriate.
-   * @param e
+   * @param e The triggering pointer event.
    */
   showEditor_(e: PointerEvent) {
     // Do not focus on mobile devices so we can show the num-pad

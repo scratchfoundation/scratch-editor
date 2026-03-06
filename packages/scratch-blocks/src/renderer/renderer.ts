@@ -15,7 +15,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
   /**
    * Get the CSS class name associated with this renderer.
    * Note that all Scratch renderers share the same CSS class name.
-   * @returns The class name.
+   * @returns The CSS class name shared by all Scratch-style renderers.
    */
   override getClassName(): string {
     return 'scratch-renderer'
@@ -24,9 +24,8 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
   /**
    * Create a new instance of the renderer's drawer.
    * @param block The block to render.
-   * @param infoAn object containing all the information needed to render this
+   * @param info An object containing all the information needed to render this
    *     block.
-   * @param info
    * @returns The drawer.
    */
   override makeDrawer_(block: Blockly.BlockSvg, info: Blockly.blockRendering.RenderInfo): Drawer {
@@ -54,7 +53,7 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    * Create a new instance of a renderer path object.
    * @param root The root SVG element.
    * @param style The style object to use for colouring.
-   * @returns The renderer path object.
+   * @returns A new path object configured for the given SVG root and block style.
    */
   override makePathObject(root: SVGElement, style: Blockly.Theme.BlockStyle): PathObject {
     return new PathObject(root, style, this.getConstants())

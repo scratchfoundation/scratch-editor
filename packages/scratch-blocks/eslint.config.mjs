@@ -1,5 +1,4 @@
 import { eslintConfigScratch } from 'eslint-config-scratch'
-import jsdoc from 'eslint-plugin-jsdoc'
 import { globalIgnores } from 'eslint/config'
 import tseslint from 'typescript-eslint'
 
@@ -43,21 +42,6 @@ export default eslintConfigScratch.defineConfig(
       '@typescript-eslint/restrict-plus-operands': 'warn',
       '@typescript-eslint/prefer-for-of': 'warn',
       '@typescript-eslint/restrict-template-expressions': 'warn',
-    },
-  },
-  {
-    // JSDoc rule overrides
-    plugins: { jsdoc },
-    rules: {
-      // TODO: fix incrementally
-      'jsdoc/check-param-names': 'warn',
-      'jsdoc/informative-docs': 'warn',
-      'jsdoc/multiline-blocks': 'warn',
-      'jsdoc/no-types': 'warn',
-      'jsdoc/reject-function-type': 'warn',
-      'jsdoc/require-param': 'warn',
-      'jsdoc/require-param-description': 'warn',
-      'jsdoc/require-returns': 'warn',
     },
   },
   globalIgnores([

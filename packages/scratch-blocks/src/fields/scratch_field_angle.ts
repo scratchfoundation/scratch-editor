@@ -151,7 +151,7 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
 
   /**
    * Show the inline free-text editor on top of the text.
-   * @param event
+   * @param event The triggering pointer event.
    */
   showEditor_(event: PointerEvent) {
     // Mobile browsers have issues with in-line textareas (focus & keyboards).

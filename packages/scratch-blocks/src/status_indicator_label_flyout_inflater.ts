@@ -14,9 +14,7 @@ class StatusIndicatorLabelFlyoutInflater extends Blockly.LabelFlyoutInflater {
   /**
    * Creates a status indicator label on the flyout from the given state.
    * @param state JSON representation of a status indicator label.
-   * @param flyoutWorkspace The workspace to create the
-   *     label on.
-   * @param flyout
+   * @param flyout The flyout on which to create the label.
    * @returns The newly created status indicator label.
    */
   load(state: Blockly.utils.toolbox.LabelInfo, flyout: Blockly.IFlyout): Blockly.FlyoutItem {
@@ -27,7 +25,7 @@ class StatusIndicatorLabelFlyoutInflater extends Blockly.LabelFlyoutInflater {
 }
 
 /**
- * Register the status indicator label flyout inflater.
+ * Adds the status indicator label flyout inflater to the Blockly component registry.
  */
 export function registerStatusIndicatorLabelFlyoutInflater() {
   Blockly.registry.register(

@@ -8,7 +8,7 @@ import { Colours } from './colours'
 /**
  * Creates an SVG filter to apply drop shadows to blocks being dragged and
  * inserts it into the DOM.
- * @param workspace
+ * @param workspace The workspace whose SVG will receive the filter definition.
  */
 export function buildShadowFilter(workspace: Blockly.WorkspaceSvg) {
   const svg = workspace.getParentSvg()

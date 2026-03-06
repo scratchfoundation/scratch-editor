@@ -279,8 +279,8 @@ export class FieldNote extends Blockly.FieldTextInput {
 
   /**
    * Show a field with piano keys.
-   * @param event
-   * @param quietInput
+   * @param event The triggering pointer event.
+   * @param quietInput If true, suppress the sound preview while the editor opens.
    */
   showEditor_(event: PointerEvent, quietInput = false) {
     super.showEditor_(event, quietInput, false)
@@ -446,8 +446,8 @@ export class FieldNote extends Blockly.FieldTextInput {
    * corners at the bottom.
    * @param x the x position for the key.
    * @param y the y position for the key.
-   * @param width the width of the key.
-   * @param height the height of the key.
+   * @param width the horizontal extent of the key in pixels.
+   * @param height the vertical extent of the key in pixels.
    * @returns the SVG path as a string.
    */
   private getPianoKeyPath_(x: number, y: number, width: number, height: number): string {

@@ -24,7 +24,7 @@ export class ScratchContinuousToolbox extends ContinuousToolbox {
   /**
    * Converts the given toolbox item to a corresponding array of items that
    * should appear in the flyout.
-   * @param toolboxItem The toolbox item to convert.
+   * @param toolboxItem The toolbox item to translate into flyout content.
    * @returns An array of flyout item definitions.
    */
   protected convertToolboxItemToFlyoutItems(

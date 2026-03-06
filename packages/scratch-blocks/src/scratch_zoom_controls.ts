@@ -124,6 +124,7 @@ export class ScratchZoomControls implements Blockly.IPositionable {
   /**
    * Returns the bounding rectangle of the zoom controls in pixels relative to
    * the Blockly injection div.
+   * @returns The bounding rectangle, or null if not yet positioned.
    */
   getBoundingRectangle(): Blockly.utils.Rect | null {
     let height = this.SMALL_SPACING + 2 * this.SIZE
@@ -136,8 +137,8 @@ export class ScratchZoomControls implements Blockly.IPositionable {
   /**
    * Positions the zoom controls in the corner opposite the toolbox, bumping
    * down (or up) to avoid overlapping other positioned UI elements.
-   * @param metrics
-   * @param savedPositions
+   * @param metrics The current workspace UI metrics.
+   * @param savedPositions Bounding rectangles of already-placed UI elements to avoid overlapping.
    */
   position(metrics: Blockly.MetricsManager.UiMetrics, savedPositions: Blockly.utils.Rect[]) {
     if (!this.initialized) return

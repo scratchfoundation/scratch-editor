@@ -369,8 +369,8 @@ class FieldMatrix extends Blockly.Field<string> {
   }
 
   /**
-   * Clear the matrix.
-   * @param e Mouse event.
+   * Resets all LED values to zero.
+   * @param e Checked to allow only left-button clicks (button 0).
    */
   clearMatrix_(e: PointerEvent) {
     if (e.button != 0) return
@@ -378,8 +378,8 @@ class FieldMatrix extends Blockly.Field<string> {
   }
 
   /**
-   * Fill the matrix.
-   * @param e Mouse event.
+   * Sets all LED values to one.
+   * @param e Checked to allow only left-button clicks (button 0).
    */
   fillMatrix_(e: PointerEvent) {
     if (e.button != 0) return

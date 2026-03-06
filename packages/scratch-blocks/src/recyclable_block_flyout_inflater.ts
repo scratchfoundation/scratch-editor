@@ -13,7 +13,7 @@ export class RecyclableBlockFlyoutInflater extends BlocklyRecyclableBlockFlyoutI
   /**
    * Creates a block on the flyout workspace from the given block definition.
    * @param state A JSON representation of a block to load.
-   * @param flyoutWorkspace The flyout's workspace.
+   * @param flyoutWorkspace The workspace on which the block will be inflated.
    * @returns The newly created block.
    */
   load(state: Blockly.utils.toolbox.BlockInfo, flyoutWorkspace: Blockly.WorkspaceSvg): Blockly.FlyoutItem {

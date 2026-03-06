@@ -217,12 +217,18 @@ export class CheckboxBubble implements Blockly.IBubble, Blockly.IRenderedElement
     Blockly.browserEvents.unbind(this.clickListener)
   }
 
-  /** See IFocusableNode.getFocusableElement. */
+  /**
+   * See IFocusableNode.getFocusableElement.
+   * @returns The SVG root element of this bubble.
+   */
   getFocusableElement(): HTMLElement | SVGElement {
     return this.svgRoot
   }
 
-  /** See IFocusableNode.getFocusableTree. */
+  /**
+   * See IFocusableNode.getFocusableTree.
+   * @returns The workspace containing this bubble's source block.
+   */
   getFocusableTree(): Blockly.IFocusableTree {
     return this.sourceBlock.workspace
   }
@@ -233,7 +239,10 @@ export class CheckboxBubble implements Blockly.IBubble, Blockly.IRenderedElement
   /** See IFocusableNode.onNodeBlur. */
   onNodeBlur(): void {}
 
-  /** See IFocusableNode.canBeFocused. */
+  /**
+   * See IFocusableNode.canBeFocused.
+   * @returns Always true; this bubble can always receive focus.
+   */
   canBeFocused(): boolean {
     return true
   }

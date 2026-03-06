@@ -136,8 +136,8 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
 
   /**
    * Gets the extension state. Overridden externally.
-   * @param extensionId The ID of the extension in question.
-   * @returns The state of the extension.
+   * @param extensionId A string identifying which extension's state to retrieve.
+   * @returns Whether the extension is ready to be used.
    */
   getExtensionState(extensionId: string): StatusButtonState {
     return StatusButtonState.NOT_READY

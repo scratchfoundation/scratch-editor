@@ -15,6 +15,7 @@ class ScratchBlockPaster extends Blockly.clipboard.BlockPaster {
    *     workspace.
    * @param workspace The workspace to paste the block onto.
    * @param coordinate The location to paste the block.
+   * @returns The newly pasted block, or undefined if pasting failed.
    */
   paste(
     copyData: Blockly.clipboard.BlockCopyData,

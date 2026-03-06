@@ -53,7 +53,7 @@ export class CatFace {
 
   /**
    * Initializes the face SVG elements if they haven't been created yet.
-   * @param parent
+   * @param parent The SVG element to attach the face geometry to.
    */
   init(parent: SVGElement) {
     if (this.faceGroup_) return
@@ -64,7 +64,7 @@ export class CatFace {
 
   /**
    * Updates the transform of the entire face group.
-   * @param transform
+   * @param transform The SVG transform attribute value to apply.
    */
   setTransform(transform: string) {
     if (this.faceGroup_) {
