@@ -43,7 +43,7 @@
     "source-map-loader": "4.0.2",
     "ts-loader": "9.5.4",
     "typescript": "5.9.3",
-    "webpack": "5.104.1",
+    "webpack": "5.105.3",
     "webpack-cli": "4.10.0",
     "webpack-dev-server": "5.2.3"
   },
