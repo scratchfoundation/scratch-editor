@@ -135,7 +135,7 @@
     "fastestsmallesttextencoderdecoder": "1.0.22",
     "get-float-time-domain-data": "0.1.0",
     "get-user-media-promise": "1.1.4",
-    "immutable": "3.8.2",
+    "immutable": "3.8.3",
     "intl": "1.2.5",
     "js-base64": "2.6.4",
     "keymirror": "0.1.1",

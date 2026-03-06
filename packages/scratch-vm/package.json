@@ -71,7 +71,7 @@
     "diff-match-patch": "1.0.5",
     "format-message": "6.2.4",
     "htmlparser2": "3.10.1",
-    "immutable": "3.8.2",
+    "immutable": "3.8.3",
     "jszip": "3.10.1",
     "scratch-audio": "2.0.268",
     "scratch-parser": "6.0.0",
