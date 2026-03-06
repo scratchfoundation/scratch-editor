@@ -34,8 +34,8 @@
   "devDependencies": {
     "@commitlint/cli": "17.8.1",
     "@commitlint/config-conventional": "17.8.1",
-    "eslint": "^9.39.3",
-    "eslint-config-scratch": "^13.0.0",
+    "eslint": "9.39.3",
+    "eslint-config-scratch": "13.0.2",
     "husky": "9.1.7",
     "prettier": "3.8.1",
     "scratch-semantic-release-config": "4.0.1",
