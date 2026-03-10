@@ -44,6 +44,41 @@ enum ArgumentType {
 }
 
 /**
+ * A drag strategy for the procedures_prototype block that delegates all drag
+ * operations to its parent (the procedures_definition block). This lets the
+ * prototype act as a non-shadow block (so its argument-reporter children can
+ * also be non-shadow and therefore clickable/draggable) while still causing
+ * the entire definition to move when the prototype area is dragged.
+ */
+class DelegateToParentDraggable implements Blockly.IDraggable {
+  constructor(private block: Blockly.BlockSvg) {}
+
+  isMovable(): boolean {
+    return this.block.getParent()?.isMovable() ?? false
+  }
+
+  startDrag(e: PointerEvent) {
+    this.block.getParent()?.startDrag(e)
+  }
+
+  drag(newLoc: Blockly.utils.Coordinate, e?: PointerEvent) {
+    this.block.getParent()?.drag(newLoc, e)
+  }
+
+  endDrag(e: PointerEvent) {
+    this.block.getParent()?.endDrag(e)
+  }
+
+  revertDrag() {
+    this.block.getParent()?.revertDrag()
+  }
+
+  getRelativeToSurfaceXY() {
+    return (this.block.getParent() ?? this.block).getRelativeToSurfaceXY()
+  }
+}
+
+/**
  * Class representing a draggable block that copies itself on drag.
  */
 class DuplicateOnDragDraggable implements Blockly.IDraggable {
@@ -76,6 +111,8 @@ class DuplicateOnDragDraggable implements Blockly.IDraggable {
       return
     }
     this.copy = Blockly.clipboard.paste(data, this.block.workspace) as Blockly.BlockSvg
+    this.copy.setDeletable(true)
+    this.copy.setDragStrategy(new Blockly.dragging.BlockDragStrategy(this.copy))
     this.copy.startDrag(e)
   }
 
@@ -200,7 +237,7 @@ function updateDisplay_(this: ProcedureBlock) {
   const connectionMap = this.disconnectOldBlocks_()
   this.removeAllInputs_()
   this.createAllInputs_(connectionMap)
-  this.deleteShadows_(connectionMap)
+  this.disposeObsoleteBlocks_(connectionMap)
 }
 
 /**
@@ -284,23 +321,27 @@ function createAllInputs_(this: ProcedureBlock, connectionMap: ConnectionMap) {
 }
 
 /**
- * Delete all shadow blocks in the given map.
+ * Dispose of blocks that were disconnected from the block (and not reconnected) during mutation.
+ * This includes:
+ * - shadow blocks for default argument values (on call blocks)
+ * - shadow argument editor blocks (on declaration blocks in the procedure editor)
+ * - non-shadow argument reporter blocks (on the prototype)
  * @param connectionMap An object mapping argument IDs to the blocks that were
  *     connected to those IDs at the beginning of the mutation.
  */
-function deleteShadows_(this: ProcedureBlock, connectionMap: ConnectionMap) {
-  // Get rid of all of the old shadow blocks if they aren't connected.
-  if (connectionMap) {
-    for (const id in connectionMap) {
-      const saveInfo = connectionMap[id]
-      if (saveInfo) {
-        const block = saveInfo.block
-        if (block && block.isShadow()) {
-          block.dispose()
-          connectionMap[id] = null
-          // At this point we know which shadow DOMs are about to be orphaned in
-          // the VM.  What do we do with that information?
-        }
+function disposeObsoleteBlocks_(this: ProcedureBlock, connectionMap: ConnectionMap) {
+  for (const id in connectionMap) {
+    const saveInfo = connectionMap[id]
+    if (saveInfo) {
+      const block = saveInfo.block
+      const isOrphanedArgumentReporter =
+        this.type === 'procedures_prototype' &&
+        (block.type === 'argument_reporter_string_number' || block.type === 'argument_reporter_boolean')
+      if (block.isShadow() || isOrphanedArgumentReporter) {
+        block.dispose()
+        connectionMap[id] = null
+        // At this point we know which shadow DOMs are about to be orphaned in
+        // the VM.  What do we do with that information?
       }
     }
   }
@@ -409,7 +450,7 @@ function createArgumentReporter_(
   let newBlock
   try {
     newBlock = this.workspace.newBlock(blockType)
-    newBlock.setShadow(true)
+    newBlock.setDeletable(false)
     newBlock.setFieldValue(displayName, 'VALUE')
     if (!this.isInsertionMarker()) {
       newBlock.initSvg()
@@ -780,12 +821,13 @@ function updateArgumentReporterNames_(
   if (!definitionBlock) return
 
   // Create a list of argument reporters that are descendants of the definition stack (see above comment)
-  definitionBlock.getDescendants(false).forEach((block: Blockly.BlockSvg) => {
+  // Exclude arg reporters in the prototype block itself (they're owned by the prototype, not the user).
+  const protoDescendants = new Set(this.getDescendants(false))
+  definitionBlock.getDescendants(false).forEach((block) => {
     if (
       (block.type === 'argument_reporter_string_number' || block.type === 'argument_reporter_boolean') &&
-      !block.isShadow()
+      !protoDescendants.has(block)
     ) {
-      // Exclude arg reporters in the prototype block, which are shadows.
       argReporters.push(block)
     }
   })
@@ -848,7 +890,7 @@ Blockly.Blocks.procedures_call = {
     this.getProcCode = getProcCode.bind(this)
     this.removeAllInputs_ = removeAllInputs_.bind(this)
     this.disconnectOldBlocks_ = disconnectOldBlocks_.bind(this)
-    this.deleteShadows_ = deleteShadows_.bind(this)
+    this.disposeObsoleteBlocks_ = disposeObsoleteBlocks_.bind(this)
     this.createAllInputs_ = createAllInputs_.bind(this)
     this.updateDisplay_ = updateDisplay_.bind(this)
 
@@ -874,6 +916,13 @@ Blockly.Blocks.procedures_prototype = {
       extensions: ['colours_more', 'shape_statement'],
     })
 
+    // Previously this block was a shadow, which is non-deletable and
+    // non-movable by default. Now that it's a regular block, explicitly
+    // replicate those properties and add a drag strategy that delegates all
+    // drag operations to the parent (procedures_definition) block.
+    this.setDeletable(false)
+    this.setDragStrategy(new DelegateToParentDraggable(this))
+
     /* Data known about the procedure. */
     this.procCode_ = ''
     this.displayNames_ = []
@@ -885,7 +934,7 @@ Blockly.Blocks.procedures_prototype = {
     this.getProcCode = getProcCode.bind(this)
     this.removeAllInputs_ = removeAllInputs_.bind(this)
     this.disconnectOldBlocks_ = disconnectOldBlocks_.bind(this)
-    this.deleteShadows_ = deleteShadows_.bind(this)
+    this.disposeObsoleteBlocks_ = disposeObsoleteBlocks_.bind(this)
     this.createAllInputs_ = createAllInputs_.bind(this)
     this.updateDisplay_ = updateDisplay_.bind(this)
     // Exist on all three blocks, but have different implementations.
@@ -919,7 +968,7 @@ Blockly.Blocks.procedures_declaration = {
     this.getProcCode = getProcCode.bind(this)
     this.removeAllInputs_ = removeAllInputs_.bind(this)
     this.disconnectOldBlocks_ = disconnectOldBlocks_.bind(this)
-    this.deleteShadows_ = deleteShadows_.bind(this)
+    this.disposeObsoleteBlocks_ = disposeObsoleteBlocks_.bind(this)
     this.createAllInputs_ = createAllInputs_.bind(this)
     this.updateDisplay_ = updateDisplay_.bind(this)
 
@@ -941,6 +990,17 @@ Blockly.Blocks.procedures_declaration = {
     this.addBooleanExternal = addBooleanExternal.bind(this)
     this.addStringNumberExternal = addStringNumberExternal.bind(this)
     this.onChangeFn = updateDeclarationProcCode_.bind(this)
+  },
+  // The procedures_declaration block lives in the ephemeral Custom Procedures
+  // dialog workspace, which is disposed (and unregistered from FocusManager)
+  // when the dialog closes. If FocusManager tracks this block as the focused
+  // node while the WidgetDiv is open, the `returnEphemeralFocus` callback
+  // schedules a setTimeout that tries to re-focus it after the dialog workspace
+  // has been disposed — throwing "Attempted to focus unregistered node". Making
+  // this block non-focusable prevents FocusManager from ever storing it as the
+  // focused node, so the setTimeout is never scheduled.
+  canBeFocused: function () {
+    return false
   },
 }
 
@@ -1023,7 +1083,7 @@ interface ProcedureBlock extends Blockly.BlockSvg {
   getProcCode: () => string
   removeAllInputs_: () => void
   disconnectOldBlocks_: () => ConnectionMap
-  deleteShadows_: (connectionMap: ConnectionMap) => void
+  disposeObsoleteBlocks_: (connectionMap: ConnectionMap) => void
   createAllInputs_: (connectionMap: ConnectionMap) => void
   updateDisplay_: () => void
   populateArgument_: (

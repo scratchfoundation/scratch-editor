@@ -8,6 +8,21 @@ import * as Blockly from 'blockly/core'
  * Custom connection checker to restrict which blocks can be connected.
  */
 class ScratchConnectionChecker extends Blockly.ConnectionChecker {
+  override canConnectWithReason(
+    a: Blockly.Connection | null,
+    b: Blockly.Connection | null,
+    isDragging: boolean,
+    opt_distance?: number,
+  ): number {
+    // The prototype block is visual-only and should not accept any connections.
+    const isPrototypeConnection = (c: Blockly.Connection | null) =>
+      c?.getSourceBlock().type === 'procedures_prototype'
+    if (isPrototypeConnection(a) || isPrototypeConnection(b)) {
+      return Blockly.Connection.REASON_CHECKS_FAILED
+    }
+    return super.canConnectWithReason(a, b, isDragging, opt_distance)
+  }
+
   /**
    * Returns whether or not the two connections should be allowed to connect.
    * @param a One of the connections to check.

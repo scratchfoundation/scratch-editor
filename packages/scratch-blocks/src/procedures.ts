@@ -237,9 +237,9 @@ function createProcedureCallbackFactory(workspace: Blockly.WorkspaceSvg): (mutat
       <xml>
         <block type="procedures_definition">
           <statement name="custom_block">
-            <shadow type="procedures_prototype">
+            <block type="procedures_prototype">
               ${Blockly.Xml.domToText(mutation)}
-            </shadow>
+            </block>
           </statement>
         </block>
       </xml>`

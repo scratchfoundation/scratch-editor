@@ -84,16 +84,20 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
    * @param event The event that ended the drag.
    */
   onDragEnd(event: PointerEvent) {
+    // When the prototype block is dragged (via its DelegateToParentDraggable
+    // strategy), this.draggable is the prototype, but getDragRoot returns the
+    // definition. Handle both cases for the "procedure is in use" check.
+    const dragRoot = this.getDragRoot(this.draggable)
     if (
-      this.draggable instanceof Blockly.BlockSvg &&
-      this.draggable.type === 'procedures_definition' &&
-      this.wouldDeleteDraggable(event, this.draggable.getRootBlock())
+      dragRoot instanceof Blockly.BlockSvg &&
+      dragRoot.type === 'procedures_definition' &&
+      this.wouldDeleteDraggable(event, dragRoot.getRootBlock())
     ) {
-      const prototype = this.draggable.getInput('custom_block')!.connection!.targetBlock()
+      const prototype = dragRoot.getInput('custom_block')!.connection!.targetBlock()
       const hasCaller =
         prototype instanceof Blockly.BlockSvg &&
         isProcedureBlock(prototype) &&
-        getCallers(prototype.getProcCode(), this.draggable.workspace, this.draggable.getRootBlock(), false).length > 0
+        getCallers(prototype.getProcCode(), dragRoot.workspace, dragRoot.getRootBlock(), false).length > 0
 
       if (hasCaller) {
         Blockly.dialog.alert(Blockly.Msg.PROCEDURE_USED)
@@ -140,8 +144,8 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
   }
 
   /**
-   * Returns the root element being dragged. For shadow blocks, this is the
-   * parent block.
+   * Returns the root element being dragged. For shadow blocks and the
+   * procedures_prototype block, this is the parent block.
    * @param draggable The element being dragged directly.
    * @returns The element being dragged, or its parent.
    */
@@ -149,7 +153,10 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
     // We can't just use getRootBlock() here because, when blocks are detached
     // from a stack via dragging, getRootBlock() still returns the root of that
     // stack.
-    if (draggable instanceof Blockly.BlockSvg && draggable.isShadow()) {
+    if (
+      draggable instanceof Blockly.BlockSvg &&
+      (draggable.isShadow() || draggable.type === 'procedures_prototype')
+    ) {
       return draggable.getParent()
     }
 
