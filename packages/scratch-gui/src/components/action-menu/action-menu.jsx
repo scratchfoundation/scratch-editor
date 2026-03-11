@@ -30,14 +30,18 @@ const ActionMenu = ({
             item.focus();
         }
     }, []);
+
+    const refocusActiveElement = useCallback(() => {
+        setTimeout(() => {
+            const focusedElement = document.activeElement;
+            focusedElement.blur();
+            focusItem(focusedElement);
+        }, CLOSE_DELAY * 1.5);
+    }, []);
    
     useEffect(() => {
         if (isExpanded) {
-            setTimeout(() => {
-                const focusedElement = document.activeElement;
-                focusedElement.blur();
-                focusItem(focusedElement);
-            }, CLOSE_DELAY * 1.5);
+            refocusActiveElement();
         }
     }, [isExpanded]);
 
@@ -147,11 +151,7 @@ const ActionMenu = ({
 
     const handleItemClick = useCallback(onClickItem => e => {
         onClickItem(e);
-        setTimeout(() => {
-            const focusedElement = document.activeElement;
-            focusedElement.blur();
-            focusItem(focusedElement);
-        }, CLOSE_DELAY * 1.5);
+        refocusActiveElement();
     }, []);
 
     return (
