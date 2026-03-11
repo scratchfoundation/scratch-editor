@@ -28,6 +28,10 @@ import * as Constants from '../constants'
 import { FlyoutCheckboxIcon } from '../flyout_checkbox_icon'
 import { ScratchProcedures } from '../procedures'
 
+interface ScratchBlockSvg extends Blockly.BlockSvg {
+  hatStylePersisted?: boolean
+}
+
 /**
  * Helper function that generates an extension based on a category name.
  * The generated function will set the block's style based on the category name.
@@ -62,25 +66,45 @@ const SHAPE_STATEMENT = function (this: Blockly.Block) {
 }
 
 /**
+ * Build an extension to make a block be shaped as a hat block, based on the given hat type.
+ * Replaces the block's setStyle function to ensure that the hat shape is preserved
+ * even if the style is changed or rebuilt.
+ * @param hatType the type of hat: 'cap' for regular Scratch hat blocks, or 'bowler' for procedure definitions.
+ * @returns A Blockly extension implementing the requested hat type.
+ */
+const makeHatExtension = function (hatType: string) {
+  return function (this: Blockly.Block) {
+    this.setInputsInline(true)
+    this.setNextStatement(true, null)
+    this.hat = hatType
+    // When the workspace theme is refreshed (e.g. when an extension is loaded),
+    // Blockly calls setStyle() on all workspace blocks. This resets block.hat to
+    // the style's hat value, which is '' for most styles, erasing the hat set
+    // above. Override setStyle on this instance to re-apply the hat afterward.
+    const blockSvg = this as ScratchBlockSvg
+    if (!blockSvg.hatStylePersisted) {
+      const origSetStyle = blockSvg.setStyle.bind(blockSvg)
+      blockSvg.setStyle = function (blockStyleName: string) {
+        origSetStyle(blockStyleName)
+        blockSvg.hat = hatType
+      }
+      blockSvg.hatStylePersisted = true
+    }
+  }
+}
+
+/**
  * Extension to make a block be shaped as a hat block, regardless of its
  * inputs.  That means the block should have a next connection and have inline
  * inputs, but have no previous connection.
  */
-const SHAPE_HAT = function (this: Blockly.Block) {
-  this.setInputsInline(true)
-  this.setNextStatement(true, null)
-  this.hat = 'cap'
-}
+const SHAPE_HAT = makeHatExtension('cap')
 
 /**
  * Extension to make a block be shaped as a bowler hat block, with rounded
  * corners on both sides and no indentation for statement blocks.
  */
-const SHAPE_BOWLER_HAT = function (this: Blockly.Block) {
-  this.setInputsInline(true)
-  this.setNextStatement(true, null)
-  this.hat = 'bowler'
-}
+const SHAPE_BOWLER_HAT = makeHatExtension('bowler')
 
 /**
  * Extension to make a block be shaped as an end block, regardless of its
