@@ -163,6 +163,7 @@ export function registerCopyShortcut() {
   Blockly.ShortcutRegistry.registry.register(
     {
       ...original,
+      allowCollision: true, // we're intentionally overriding the default handler
       callback(workspace, e, shortcut, scope) {
         const focused = scope.focusedNode
         if (focused instanceof Blockly.BlockSvg && !focused.isInFlyout) {
@@ -178,7 +179,7 @@ export function registerCopyShortcut() {
         return original.callback?.(workspace, e, shortcut, scope) ?? false
       },
     },
-    true,
+    true, // allowOverrides: we're intentionally overriding the default handler
   )
 }
 
@@ -191,6 +192,7 @@ export function registerCutShortcut() {
   Blockly.ShortcutRegistry.registry.register(
     {
       ...original,
+      allowCollision: true, // we're intentionally overriding the default handler
       callback(workspace, e, shortcut, scope) {
         const focused = scope.focusedNode
         if (focused instanceof Blockly.BlockSvg && !focused.isInFlyout) {
@@ -207,6 +209,6 @@ export function registerCutShortcut() {
         return original.callback?.(workspace, e, shortcut, scope) ?? false
       },
     },
-    true,
+    true, // allowOverrides: we're intentionally overriding the default handler
   )
 }
