@@ -1,5 +1,5 @@
 import React, {useState, useCallback, useEffect} from 'react';
-import {defineMessages, FormattedMessage} from 'react-intl';
+import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
 import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
 import classNames from 'classnames';
@@ -19,6 +19,16 @@ const messages = defineMessages({
         id: 'gui.debugModal.title',
         defaultMessage: 'Debugging | Getting Unstuck',
         description: 'title for the debugging modal'
+    },
+    previous: {
+        id: 'gui.debugModal.previous',
+        defaultMessage: 'Previous',
+        description: 'Button to go to previous debugging topic'
+    },
+    next: {
+        id: 'gui.debugModal.next',
+        defaultMessage: 'Next',
+        description: 'Button to go to next debugging topic'
     }
 });
 
@@ -95,18 +105,6 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
         return () => document.removeEventListener('keydown', handleKeyDownSlides);
     }, [isOpen, handleKeyDownSlides]);
 
-    const handleKeyDownPrevious = useCallback(e => {
-        if (e.key === KEY.SPACE) {
-            handlePrevious();
-        }
-    }, [handlePrevious]);
-
-    const handleKeyDownNext = useCallback(e => {
-        if (e.key === KEY.SPACE) {
-            handleNext();
-        }
-    }, [handleNext]);
-
     useEffect(() => {
         if (isOpen) {
             GA4.event({
@@ -117,6 +115,8 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
     }, [isOpen]);
 
     if (!isOpen) return null;
+
+    const intl = useIntl();
 
     return (
         <ReactModal
@@ -193,11 +193,10 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
                             className={classNames(styles.buttonStyleRemover,
                                 styles.previousIcon,
                                 {[styles.hidden]: selectedTopicIndex === 0})}
-                            onKeyDown={handleKeyDownPrevious}
                         >
                             <img
                                 src={prevIcon}
-                                alt="Previous"
+                                alt={intl.formatMessage(messages.previous)}
                             />
                         </button>
                         <button
@@ -207,11 +206,10 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
                                 {
                                     [styles.hidden]: selectedTopicIndex === sections.length - 1
                                 })}
-                            onKeyDown={handleKeyDownNext}
                         >
                             <img
                                 src={nextIcon}
-                                alt="Next"
+                                alt={intl.formatMessage(messages.next)}
                             />
                         </button>
                     </div>
