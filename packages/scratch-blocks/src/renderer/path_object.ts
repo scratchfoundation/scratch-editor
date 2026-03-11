@@ -17,11 +17,15 @@ export class PathObject extends Blockly.zelos.PathObject {
   override applyColour(block: Blockly.BlockSvg) {
     super.applyColour(block)
 
-    // These blocks are special in that, while they are technically shadow
-    // blocks when contained in a procedure definition/prototype, their parent
-    // (the sample procedure caller block embedded in the definition block) is
-    // also a shadow, so they need to use normal block colors in order to
-    // provide contrast with it.
+    // The prototype block is no longer a Blockly shadow, but it should still
+    // visually appear as one (using colourSecondary, the shadow fill colour).
+    if (block.type === 'procedures_prototype') {
+      this.svgPath.setAttribute('fill', this.style.colourSecondary)
+    }
+
+    // Argument reporter blocks sit inside the prototype (which now renders with
+    // the shadow/secondary colour), so they need the full primary colour to
+    // stand out, just as they did when the prototype was a real shadow block.
     if (block.type === 'argument_reporter_string_number' || block.type === 'argument_reporter_boolean') {
       this.svgPath.setAttribute('fill', this.style.colourPrimary)
     }
