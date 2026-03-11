@@ -157,3 +157,18 @@ contextMenuItems.registerDuplicateBlock()
 Blockly.ContextMenuRegistry.registry.unregister('workspaceDelete')
 contextMenuItems.registerDeleteAll()
 Blockly.comments.CommentView.defaultCommentSize = new Blockly.utils.Size(200, 200)
+
+// When the focused block is deleted and has no parent or nearby neighbor,
+// Blockly falls back to focusing the first/topmost block in the workspace,
+// which triggers a scroll to that block. In Scratch, focus should fall back
+// to the workspace itself (whose onNodeFocus is a no-op) rather than to a
+// specific block, so deleting a block doesn't reset the scroll position.
+// We may need to re-evaluate this when we explicitly work on keyboard navigation.
+const originalGetRestoredFocusableNode =
+  Blockly.WorkspaceSvg.prototype.getRestoredFocusableNode
+Blockly.WorkspaceSvg.prototype.getRestoredFocusableNode = function (
+  previousNode,
+) {
+  if (!previousNode && !this.isFlyout) return null
+  return originalGetRestoredFocusableNode.call(this, previousNode)
+}
