@@ -14,10 +14,11 @@ class ScratchConnectionChecker extends Blockly.ConnectionChecker {
     isDragging: boolean,
     opt_distance?: number,
   ): number {
-    // The prototype block is visual-only and should not accept any connections.
-    const isPrototypeConnection = (c: Blockly.Connection | null) =>
-      c?.getSourceBlock().type === 'procedures_prototype'
-    if (isPrototypeConnection(a) || isPrototypeConnection(b)) {
+    // The prototype's next connection is visual-only and should not accept any connections.
+    const isPrototypeNextConn = (c: Blockly.Connection | null) =>
+      c?.type === Blockly.ConnectionType.NEXT_STATEMENT &&
+      c.getSourceBlock().type === 'procedures_prototype'
+    if (isPrototypeNextConn(a) || isPrototypeNextConn(b)) {
       return Blockly.Connection.REASON_CHECKS_FAILED
     }
     return super.canConnectWithReason(a, b, isDragging, opt_distance)
