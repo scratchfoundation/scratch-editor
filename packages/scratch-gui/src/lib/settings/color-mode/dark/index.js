@@ -1,69 +1,69 @@
 const blockColors = {
     motion: {
-        primary: '#0F1E33',
-        secondary: '#4C4C4C',
-        tertiary: '#4C97FF',
-        quaternary: '#4C97FF'
+        colourPrimary: '#0F1E33',
+        colourSecondary: '#4C4C4C',
+        colourTertiary: '#4C97FF',
+        colorQuaternary: '#4C97FF'
     },
     looks: {
-        primary: '#1E1433',
-        secondary: '#4C4C4C',
-        tertiary: '#9966FF',
-        quaternary: '#9966FF'
+        colourPrimary: '#1E1433',
+        colourSecondary: '#4C4C4C',
+        colourTertiary: '#9966FF',
+        colorQuaternary: '#9966FF'
     },
     sounds: {
-        primary: '#291329',
-        secondary: '#4C4C4C',
-        tertiary: '#CF63CF',
-        quaternary: '#CF63CF'
+        colourPrimary: '#291329',
+        colourSecondary: '#4C4C4C',
+        colourTertiary: '#CF63CF',
+        colorQuaternary: '#CF63CF'
     },
     control: {
-        primary: '#332205',
-        secondary: '#4C4C4C',
-        tertiary: '#FFAB19',
-        quaternary: '#FFAB19'
+        colourPrimary: '#332205',
+        colourSecondary: '#4C4C4C',
+        colourTertiary: '#FFAB19',
+        colorQuaternary: '#FFAB19'
     },
     event: {
-        primary: '#332600',
-        secondary: '#4C4C4C',
-        tertiary: '#FFBF00',
-        quaternary: '#FFBF00'
+        colourPrimary: '#332600',
+        colourSecondary: '#4C4C4C',
+        colourTertiary: '#FFBF00',
+        colorQuaternary: '#FFBF00'
     },
     sensing: {
-        primary: '#12232A',
-        secondary: '#4C4C4C',
-        tertiary: '#5CB1D6',
-        quaternary: '#5CB1D6'
+        colourPrimary: '#12232A',
+        colourSecondary: '#4C4C4C',
+        colourTertiary: '#5CB1D6',
+        colorQuaternary: '#5CB1D6'
     },
     pen: {
-        primary: '#03251C',
-        secondary: '#4C4C4C',
-        tertiary: '#0fBD8C',
-        quaternary: '#0fBD8C'
+        colourPrimary: '#03251C',
+        colourSecondary: '#4C4C4C',
+        colourTertiary: '#0fBD8C',
+        colorQuaternary: '#0fBD8C'
     },
     operators: {
-        primary: '#112611',
-        secondary: '#4C4C4C',
-        tertiary: '#59C059',
-        quaternary: '#59C059'
+        colourPrimary: '#112611',
+        colourSecondary: '#4C4C4C',
+        colourTertiary: '#59C059',
+        colorQuaternary: '#59C059'
     },
     data: {
-        primary: '#331C05',
-        secondary: '#4C4C4C',
-        tertiary: '#FF8C1A',
-        quaternary: '#FF8C1A'
+        colourPrimary: '#331C05',
+        colourSecondary: '#4C4C4C',
+        colourTertiary: '#FF8C1A',
+        colorQuaternary: '#FF8C1A'
     },
     data_lists: {
-        primary: '#331405',
-        secondary: '#4C4C4C',
-        tertiary: '#FF661A',
-        quaternary: '#FF661A'
+        colourPrimary: '#331405',
+        colourSecondary: '#4C4C4C',
+        colourTertiary: '#FF661A',
+        colorQuaternary: '#FF661A'
     },
     more: {
-        primary: '#331419',
-        secondary: '#4C4C4C',
-        tertiary: '#FF6680',
-        quaternary: '#FF6680'
+        colourPrimary: '#331419',
+        colourSecondary: '#4C4C4C',
+        colourTertiary: '#FF6680',
+        colorQuaternary: '#FF6680'
     },
     text: 'rgba(255, 255, 255, .7)',
     textFieldText: '#E5E5E5',

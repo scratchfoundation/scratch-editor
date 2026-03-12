@@ -280,7 +280,7 @@ class MenuBar extends React.Component {
         default: {
             return (<FormattedMessage
                 defaultMessage="Restore"
-                description="Menu bar item for restoring the last deleted item in its disabled state." /* eslint-disable-line max-len */
+                description="Menu bar item for restoring the last deleted item in its disabled state." /* eslint-disable-line @stylistic/max-len */
                 id="gui.menuBar.restore"
             />);
         }

@@ -230,7 +230,7 @@ test('deleteSprite deletes a sprite when given id is associated with a known spr
     t.end();
 });
 
-// eslint-disable-next-line max-len
+// eslint-disable-next-line @stylistic/max-len
 test('deleteSprite sets editing target as null when given sprite is current editing target, and the only target in the runtime', t => {
     const vm = new VirtualMachine();
     const spr = new Sprite(null, vm.runtime);
@@ -246,7 +246,7 @@ test('deleteSprite sets editing target as null when given sprite is current edit
     t.end();
 });
 
-// eslint-disable-next-line max-len
+// eslint-disable-next-line @stylistic/max-len
 test('deleteSprite updates editingTarget when sprite being deleted is current editing target, and there is another target in the runtime', t => {
     const vm = new VirtualMachine();
     const spr1 = new Sprite(null, vm.runtime);

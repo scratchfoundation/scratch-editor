@@ -9,10 +9,8 @@ const MockScratchBlocks = {
 };
 
 const categoryInfo = {
-    name: 'test category',
-    color1: '#111',
-    color2: '#222',
-    color3: '#333'
+    name: 'motion category',
+    id: 'motion'
 };
 
 const penIconURI = 'data:image/svg+xml;base64,fake_pen_icon_svg_base64_data';
@@ -101,9 +99,7 @@ describe('defineDynamicBlock', () => {
         const block = new MockBlock(testBlockInfo.commandWithIcon, extendedOpcode);
         expect(block.result).toEqual({
             category: categoryInfo.name,
-            colour: categoryInfo.color1,
-            colourSecondary: categoryInfo.color2,
-            colourTertiary: categoryInfo.color3,
+            style: categoryInfo.id,
             extensions: ['scratch_extension'],
             inputsInline: true,
             nextConnection: true,
@@ -117,9 +113,7 @@ describe('defineDynamicBlock', () => {
         const block = new MockBlock(testBlockInfo.commandWithoutIcon, extendedOpcode);
         expect(block.result).toEqual({
             category: categoryInfo.name,
-            colour: categoryInfo.color1,
-            colourSecondary: categoryInfo.color2,
-            colourTertiary: categoryInfo.color3,
+            style: categoryInfo.id,
             // extensions: undefined, // no icon means no extension
             inputsInline: true,
             nextConnection: true,
@@ -133,9 +127,7 @@ describe('defineDynamicBlock', () => {
         const block = new MockBlock(testBlockInfo.terminalCommand, extendedOpcode);
         expect(block.result).toEqual({
             category: categoryInfo.name,
-            colour: categoryInfo.color1,
-            colourSecondary: categoryInfo.color2,
-            colourTertiary: categoryInfo.color3,
+            style: categoryInfo.id,
             // extensions: undefined, // no icon means no extension
             inputsInline: true,
             nextConnection: false, // terminal
@@ -149,10 +141,8 @@ describe('defineDynamicBlock', () => {
         const block = new MockBlock(testBlockInfo.reporter, extendedOpcode);
         expect(block.result).toEqual({
             category: categoryInfo.name,
+            style: categoryInfo.id,
             checkboxInFlyout_: true,
-            colour: categoryInfo.color1,
-            colourSecondary: categoryInfo.color2,
-            colourTertiary: categoryInfo.color3,
             // extensions: undefined, // no icon means no extension
             inputsInline: true,
             // nextConnection: undefined, // reporter
@@ -167,10 +157,8 @@ describe('defineDynamicBlock', () => {
         const block = new MockBlock(testBlockInfo.boolean, extendedOpcode);
         expect(block.result).toEqual({
             category: categoryInfo.name,
+            style: categoryInfo.id,
             // checkboxInFlyout_: undefined,
-            colour: categoryInfo.color1,
-            colourSecondary: categoryInfo.color2,
-            colourTertiary: categoryInfo.color3,
             // extensions: undefined, // no icon means no extension
             inputsInline: true,
             // nextConnection: undefined, // reporter
@@ -185,9 +173,7 @@ describe('defineDynamicBlock', () => {
         const block = new MockBlock(testBlockInfo.hat, extendedOpcode);
         expect(block.result).toEqual({
             category: categoryInfo.name,
-            colour: categoryInfo.color1,
-            colourSecondary: categoryInfo.color2,
-            colourTertiary: categoryInfo.color3,
+            style: categoryInfo.id,
             // extensions: undefined, // no icon means no extension
             inputsInline: true,
             nextConnection: true,

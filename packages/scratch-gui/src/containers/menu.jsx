@@ -25,10 +25,12 @@ class Menu extends React.Component {
         this.removeListeners();
     }
     addListeners () {
-        document.addEventListener('mouseup', this.handleClick);
+        // The Blockly workspace suppresses compat events like `mouseup`.
+        // Listen for `pointerup` instead.
+        document.addEventListener('pointerup', this.handleClick);
     }
     removeListeners () {
-        document.removeEventListener('mouseup', this.handleClick);
+        document.removeEventListener('pointerup', this.handleClick);
     }
     handleClick (e) {
         if (this.props.open && !this.menu.contains(e.target)) {

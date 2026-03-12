@@ -4,6 +4,7 @@ import {StaleElementReferenceError} from 'selenium-webdriver/lib/error';
 import until from 'selenium-webdriver/lib/until';
 
 const {
+    clickBlocksCategory,
     clickText,
     clickXpath,
     elementIsVisible,
@@ -35,7 +36,7 @@ describe('Working with sprites', () => {
         await clickXpath('//button[@aria-label="Choose a Sprite"]');
         await clickText('Apple', scope.modal); // Closes modal
         await rightClickText('Apple', scope.spriteTile); // Make sure it is there
-        await clickText('Motion'); // Make sure we are back to the code tab
+        await clickBlocksCategory('Motion'); // Make sure we are back to the code tab
         const logs = await getLogs();
         await expect(logs).toEqual([]);
     });

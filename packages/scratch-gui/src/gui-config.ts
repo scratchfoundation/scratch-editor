@@ -28,7 +28,7 @@ export interface GUIStorage {
             isRemix?: boolean | 1;
             title?: string;
         }
-    ): Promise<{ id: ProjectId }>;
+    ): Promise<{id: ProjectId}>;
 
     saveProjectThumbnail?(projectId: ProjectId, thumbnail: Blob): void;
 
@@ -37,7 +37,7 @@ export interface GUIStorage {
 
 export type TranslatorFunction = (
     msgObj: MessageObject,
-    options?: { index: number }
+    options?: {index: number}
 ) => string;
 
 export interface MessageObject {

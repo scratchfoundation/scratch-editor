@@ -159,7 +159,7 @@ const FileMenu = ({
                         >
                             <FormattedMessage
                                 defaultMessage="Save to your computer"
-                                description="Menu bar item for downloading a project to your computer" // eslint-disable-line max-len
+                                description="Menu bar item for downloading a project to your computer" // eslint-disable-line @stylistic/max-len
                                 id="gui.menuBar.downloadToComputer"
                             />
                         </MenuItem>

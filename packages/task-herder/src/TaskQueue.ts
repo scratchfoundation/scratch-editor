@@ -106,7 +106,7 @@ export class TaskQueue {
    * @returns True if the task was found and cancelled, false otherwise.
    */
   cancel(taskPromise: Promise<unknown>, reason?: Error): boolean {
-    const taskIndex = this.pendingTaskRecords.findIndex(record => record.promise === taskPromise)
+    const taskIndex = this.pendingTaskRecords.findIndex((record) => record.promise === taskPromise)
     if (taskIndex !== -1) {
       const [taskRecord] = this.pendingTaskRecords.splice(taskIndex, 1)
       taskRecord.cancel(reason ?? new Error(CancelReason.Cancel))
@@ -124,7 +124,7 @@ export class TaskQueue {
     const oldTasks = this.pendingTaskRecords
     this.pendingTaskRecords = []
     reason = reason ?? new Error(CancelReason.Cancel)
-    oldTasks.forEach(taskRecord => {
+    oldTasks.forEach((taskRecord) => {
       taskRecord.cancel(reason)
     })
     return oldTasks.length
@@ -202,7 +202,7 @@ export class TaskQueue {
         this.pendingTaskRecords.unshift(nextRecord)
         const tokensNeeded = Math.max(nextRecord.cost - this.tokenCount, 0)
         const estimatedWait = Math.ceil((1000 * tokensNeeded) / this.sustainRate)
-        await new Promise(resolve => setTimeout(resolve, estimatedWait))
+        await new Promise((resolve) => setTimeout(resolve, estimatedWait))
       }
     }
   }

@@ -14,7 +14,8 @@ const {
     Key,
     loadUri,
     rightClickText,
-    scope
+    scope,
+    scopeForFlyoutBlock
 } = new SeleniumHelper();
 
 const uri = path.resolve(__dirname, '../../build/index.html');
@@ -131,7 +132,7 @@ describe('Working with the blocks', () => {
         await clickText('list1', scope.monitors); // Blur the input to submit
 
         // Check that the list value has been propagated.
-        await clickText('list1', scope.blocksTab);
+        await clickText('list1', scopeForFlyoutBlock('data_listcontents'));
         await findByText('thing thing thing thing2', scope.reportedValue); // Tooltip with result
 
         // Hiding the monitor via context menu should work
@@ -297,7 +298,6 @@ describe('Working with the blocks', () => {
 
     test('Use variable blocks after switching languages', async () => {
         const myVariable = 'my\u00A0variable';
-        const changeVariableByScope = "*[@data-id='data_changevariableby']";
 
         await loadUri(uri);
 
@@ -305,10 +305,10 @@ describe('Working with the blocks', () => {
         await clickBlocksCategory('Variables');
 
         // change "my variable" by 1
-        await clickText('change', changeVariableByScope);
+        await clickText('change', scopeForFlyoutBlock('data_changevariableby'));
 
         // check reported value 1
-        await clickText(myVariable, scope.blocksTab);
+        await clickText(myVariable, scopeForFlyoutBlock('data_variable'));
         await findByText('1', scope.reportedValue);
 
         // change language
@@ -320,20 +320,20 @@ describe('Working with the blocks', () => {
         await clickBlocksCategory('Variablen');
 
         // make sure "my variable" is still 1
-        await clickText(myVariable);
+        await clickText(myVariable, scopeForFlyoutBlock('data_variable'));
         await findByText('1', scope.reportedValue);
 
         // change step from 1 to 10
-        await clickText('1', changeVariableByScope);
+        await clickText('1', scopeForFlyoutBlock('data_changevariableby'));
         await driver.actions()
             .sendKeys('10')
             .perform();
 
         // change "my variable" by 10
-        await clickText('ändere', changeVariableByScope);
+        await clickText('ändere', scopeForFlyoutBlock('data_changevariableby'));
 
         // check it is turned up to 11
-        await clickText(myVariable);
+        await clickText(myVariable, scopeForFlyoutBlock('data_variable'));
         await findByText('11', scope.reportedValue);
     });
 });

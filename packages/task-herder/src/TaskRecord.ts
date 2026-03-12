@@ -26,7 +26,7 @@ export class TaskRecord<T> {
     const { promise, resolve, reject } = PromiseWithResolvers<T>()
 
     this.promise = promise
-    this.cancel = e => {
+    this.cancel = (e) => {
       reject(e)
     }
     this.run = async () => {

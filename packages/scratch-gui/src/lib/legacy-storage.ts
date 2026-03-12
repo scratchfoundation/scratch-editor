@@ -67,8 +67,8 @@ export class LegacyStorage implements GUIStorage {
     saveProject (
         projectId: number,
         vmState: string,
-        params: { originalId: string; isCopy: boolean; isRemix: boolean; title: string; }
-    ): Promise<{ id: string | number; }> {
+        params: {originalId: string; isCopy: boolean; isRemix: boolean; title: string;}
+    ): Promise<{id: string | number;}> {
         const host = this.projectHost;
 
         if (!host) {

@@ -92,12 +92,32 @@ const enhanceError = async (outerError, cause, driver) => {
     return outerError;
 };
 
+const scopes = {
+    blocklyFlyoutScope: '*[contains(concat(" ", @class, " "), " blocklyFlyout ")]',
+    blocksTab: "*[@id='panel:r0:0']",
+    categoryContainer: '*[contains(concat(" ", @class, " "), " blocklyToolboxCategoryContainer ")]',
+    costumesTab: "*[@id='panel:r0:1']",
+    modal: '*[contains(concat(" ", @class, " "), " ReactModalPortal ")]',
+    reportedValue: '*[contains(concat(" ", @class, " "), " blocklyDropDownContent ")]',
+    soundsTab: "*[@id='panel:r0:2']",
+    spriteTile: '*[contains(concat(" ", @class), " sprite-selector-item")]',
+    menuBar: '*[contains(concat(" ", @class), " menu-bar_menu-bar_")]',
+    monitors: '*[contains(concat(" ", @class), " stage_monitor-wrapper_")]',
+    contextMenu: '*[contains(concat(" ", @class), " context-menu")]'
+};
+
+
 class SeleniumHelper {
     constructor () {
         bindAll(this, [
             'clickText',
             'clickButton',
             'clickXpath',
+            'scopeForBlockId',
+            'scopeForBlockText',
+            'scopeForCategoryId',
+            'scopeForCategoryText',
+            'scopeForFlyoutBlock',
             'clickBlocksCategory',
             'clickKey',
             'clickKeys',
@@ -154,17 +174,7 @@ class SeleniumHelper {
      * work if the whole "class" attribute starts with "foo" -- it will fail if another class is listed first.
      */
     get scope () {
-        return {
-            blocksTab: "*[@id='panel:r0:0']",
-            costumesTab: "*[@id='panel:r0:1']",
-            modal: '*[contains(concat(" ", @class, " "), " ReactModalPortal ")]',
-            reportedValue: '*[contains(concat(" ", @class, " "), " blocklyDropDownContent ")]',
-            soundsTab: "*[@id='panel:r0:2']",
-            spriteTile: '*[contains(concat(" ", @class), " sprite-selector-item")]',
-            menuBar: '*[contains(concat(" ", @class), " menu-bar_menu-bar_")]',
-            monitors: '*[contains(concat(" ", @class), " stage_monitor-wrapper_")]',
-            contextMenu: '*[contains(concat(" ", @class), " context-menu")]'
-        };
+        return scopes;
     }
 
     /**
@@ -339,7 +349,58 @@ class SeleniumHelper {
     }
 
     /**
-     * Click a category in the blocks pane.
+     * Calculate an XPath expression to find a block in the blocks panel.
+     * Clicking this the element at this XPath should run the block.
+     * @param {string} blockId The identifier (opcode) of the block to find. Example: 'motion_movesteps'.
+     * @returns {string} An XPath expression that finds the block.
+     */
+    scopeForBlockId (blockId) {
+        return `*[contains(concat(" ", @class, " "), " blocklyBlock ") and contains(concat(" ", @class, " "), " ${
+            blockId} ")]`;
+    }
+
+    /**
+     * Calculate an XPath expression to find a block in the flyout.
+     * Clicking this the element at this XPath should run the block.
+     * @param {string} blockId The identifier (opcode) of the block to find. Example: 'motion_movesteps'.
+     * @returns {string} An XPath expression that finds the block in the flyout.
+     */
+    scopeForFlyoutBlock (blockId) {
+        return `${scopes.blocklyFlyoutScope}//${this.scopeForBlockId(blockId)}`;
+    }
+
+    /**
+     * Calculate an XPath expression to find a block in the blocks panel.
+     * Clicking this the element at this XPath should run the block.
+     * @param {string} blockText The text of the block to find. Depends on the current language!
+     * @returns {string} An XPath expression that finds the block.
+     */
+    scopeForBlockText (blockText) {
+        return `*[contains(text(), "${blockText}")]/ancestor::*[contains(concat(" ", @class, " "), " blocklyBlock ")]`;
+    }
+
+    /**
+     * Calculate an XPath expression to find a category in the blocks panel.
+     * Clicking this the element at this XPath should scroll the category into view.
+     * @param {string} categoryId The ID of the category to find. Example: 'motion'.
+     * @returns {string} An XPath expression that finds the category.
+     */
+    scopeForCategoryId (categoryId) {
+        return `*[@id="${categoryId}"]/ancestor::${scopes.categoryContainer}`;
+    }
+
+    /**
+     * Calculate an XPath expression to find a category in the blocks panel.
+     * Clicking this the element at this XPath should scroll the category into view.
+     * @param {string} categoryText The text of the category to find. Depends on the current language!
+     * @returns {string} An XPath expression that finds the category.
+     */
+    scopeForCategoryText (categoryText) {
+        return `*[contains(text(), "${categoryText}")]/ancestor::${scopes.categoryContainer}`;
+    }
+
+    /**
+     * Click a category in the blocks pane, then wait to allow scroll time.
      * @param {string} categoryText The text of the category to click.
      * @returns {Promise<void>} A promise that resolves when the category is clicked.
      */
@@ -350,9 +411,10 @@ class SeleniumHelper {
         // then finally click the toolbox text.
         try {
             await this.setTitle(`clickBlocksCategory ${categoryText}`);
-            await this.findByXpath('//div[contains(concat(" ", @class), " blocks_blocks_")]');
-            await this.driver.sleep(100);
-            await this.clickText(categoryText, 'div[contains(concat(" ", @class), " blocks_blocks_")]');
+
+            const desiredCategoryContainer = this.scopeForCategoryText(categoryText);
+            await this.clickXpath(`//${desiredCategoryContainer}`);
+
             await this.driver.sleep(500); // Wait for scroll to finish
         } catch (cause) {
             throw await enhanceError(outerError, cause);
