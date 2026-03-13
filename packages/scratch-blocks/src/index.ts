@@ -157,8 +157,7 @@ export function inject(container: Element, options: ScratchBlocksOptions) {
  * @returns True if a content node has focus, false otherwise.
  */
 export function isContentNodeFocused(): boolean {
-  const node = Blockly.getFocusManager().getFocusedNode()
-  return node !== null && !(node instanceof Blockly.WorkspaceSvg)
+  return Blockly.getFocusManager().getFocusedNode() !== null
 }
 
 registerContinuousToolbox()
