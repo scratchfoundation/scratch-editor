@@ -144,6 +144,23 @@ export function inject(container: Element, options: ScratchBlocksOptions) {
   return workspace
 }
 
+/**
+ * Returns true when a specific content node (block, comment, etc.) within the
+ * Blockly workspace has keyboard focus, as opposed to the workspace background
+ * itself or nothing at all.
+ *
+ * Host applications can use this to decide whether to handle a keyboard event
+ * themselves or defer to Blockly. When this returns false and the workspace SVG
+ * has DOM focus, key presses should be treated as if the workspace background
+ * is focused and the host UI hierarchy should handle them normally (e.g. for
+ * Scratch's key-sensing).
+ * @returns True if a content node has focus, false otherwise.
+ */
+export function isContentNodeFocused(): boolean {
+  const node = Blockly.getFocusManager().getFocusedNode()
+  return node !== null && !(node instanceof Blockly.WorkspaceSvg)
+}
+
 registerContinuousToolbox()
 Blockly.Scrollbar.scrollbarThickness = Blockly.Touch.TOUCH_ENABLED ? 14 : 11
 Blockly.FlyoutButton.TEXT_MARGIN_X = 40
