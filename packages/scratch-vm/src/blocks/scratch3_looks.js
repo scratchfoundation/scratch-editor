@@ -392,7 +392,7 @@ class Scratch3LooksBlocks {
             target.setCostume(optZeroIndex ? requestedCostume : requestedCostume - 1);
         } else {
             // Strings should be treated as costume names, where possible
-            const costumeIndex = target.getCostumeIndexByName(requestedCostume.toString());
+            const costumeIndex = target.getCostumeIndexByName(String(requestedCostume));
 
             if (costumeIndex !== -1) {
                 target.setCostume(costumeIndex);
@@ -426,7 +426,7 @@ class Scratch3LooksBlocks {
             stage.setCostume(optZeroIndex ? requestedBackdrop : requestedBackdrop - 1);
         } else {
             // Strings should be treated as backdrop names where possible
-            const costumeIndex = stage.getCostumeIndexByName(requestedBackdrop.toString());
+            const costumeIndex = stage.getCostumeIndexByName(String(requestedBackdrop));
 
             if (costumeIndex !== -1) {
                 stage.setCostume(costumeIndex);
