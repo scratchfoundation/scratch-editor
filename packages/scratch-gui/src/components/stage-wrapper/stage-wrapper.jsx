@@ -74,7 +74,7 @@ StageWrapperComponent.propTypes = {
     loading: PropTypes.bool,
     manuallySaveThumbnails: PropTypes.bool,
     isInEditor: PropTypes.bool,
-    isOwner: PropTypes.bool,
+    userOwnsProject: PropTypes.bool,
     onUpdateProjectThumbnail: PropTypes.func,
     stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired,
     vm: PropTypes.instanceOf(VM).isRequired
