@@ -83,7 +83,7 @@
     "scratch-webpack-configuration": "3.1.2",
     "semantic-release": "25.0.3",
     "tap": "21.6.2",
-    "terser-webpack-plugin": "5.3.17",
+    "terser-webpack-plugin": "5.4.0",
     "typedoc": "0.28.16",
     "webpack": "5.105.4",
     "webpack-cli": "5.1.4",
