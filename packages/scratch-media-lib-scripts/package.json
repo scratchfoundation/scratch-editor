@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-media-lib-scripts",
-  "version": "13.0.2",
+  "version": "13.2.0-build-media-scripts",
   "description": "Build scripts for Scratch media library assets",
   "main": "scripts/build_media_libraries.js",
   "bin": {

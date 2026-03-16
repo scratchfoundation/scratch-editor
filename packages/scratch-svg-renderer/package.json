@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-svg-renderer",
-  "version": "13.1.1",
+  "version": "13.2.0-build-media-scripts",
   "description": "SVG renderer for Scratch",
   "keywords": [],
   "homepage": "https://github.com/scratchfoundation/scratch-svg-renderer#readme",
