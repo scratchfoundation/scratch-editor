@@ -127,7 +127,7 @@ export default class WebHelper extends Helper {
      */
     async load (assetType: AssetType, assetId: AssetId, dataFormat: DataFormat): Promise<Asset | null> {
 
-        /** @type {Array.<{url:string, result:*}>} List of URLs attempted & errors encountered. */
+        /** @type {unknown[]} List of errors encountered while attempting to load the asset. */
         const errors: unknown[] = [];
         const stores = this.stores.slice()
             .filter(store => store.types.indexOf(assetType.name) >= 0);
