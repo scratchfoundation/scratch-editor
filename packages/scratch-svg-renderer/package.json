@@ -65,7 +65,7 @@
     "eslint": "9.39.4",
     "eslint-config-scratch": "14.0.8",
     "globals": "16.5.0",
-    "jsdom": "13.2.0",
+    "jsdom": "29.0.0",
     "mkdirp": "2.1.6",
     "rimraf": "3.0.2",
     "scratch-render-fonts": "1.0.252",
