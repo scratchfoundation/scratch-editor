@@ -70,7 +70,7 @@
     <xml id="main_ws_blocks" style="display: none">
       <block id="]){{Y!7N9ezN+j@Vr`8p" type="procedures_definition" x="25" y="25">
         <statement name="custom_block">
-          <shadow type="procedures_prototype" id="caller_internal">
+          <block type="procedures_prototype" id="caller_internal">
             <mutation
               proccode="say %s %n times if %b"
               argumentnames='["something","this many","this is true"]'
@@ -78,7 +78,7 @@
               warp="false"
               argumentids='["a42", "b23", "c99"]'
             />
-          </shadow>
+          </block>
         </statement>
         <next>
           <block id="caller_external" type="procedures_call">
@@ -107,7 +107,7 @@
     <xml id="main_ws_blocks_simpler" style="display: none">
       <block id="]){{Y!7N9ezN+j@Vr`8p" type="procedures_definition" x="25" y="25">
         <statement name="custom_block">
-          <shadow type="procedures_prototype" id="caller_internal">
+          <block type="procedures_prototype" id="caller_internal">
             <mutation
               proccode="say %s %n times if %b"
               argumentnames='["something","this many","this is true"]'
@@ -115,7 +115,7 @@
               warp="false"
               argumentids='["a42", "b23", "c99"]'
             />
-          </shadow>
+          </block>
         </statement>
         <next>
           <block id="caller_external" type="procedures_call"> </block>
@@ -126,7 +126,7 @@
     <xml id="main_ws_blocks_simplest" style="display: none">
       <block id="]){{Y!7N9ezN+j@Vr`8p" type="procedures_definition" x="25" y="25">
         <statement name="custom_block">
-          <shadow type="procedures_prototype" id="caller_internal">
+          <block type="procedures_prototype" id="caller_internal">
             <mutation
               proccode="my first function"
               argumentnames="[]"
@@ -134,7 +134,7 @@
               warp="false"
               argumentids="[]"
             />
-          </shadow>
+          </block>
         </statement>
         <next>
           <block id="caller_external" type="procedures_call">

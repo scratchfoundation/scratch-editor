@@ -570,10 +570,7 @@ function populateArgumentOnDeclaration_(
     oldBlock = saveInfo?.block ?? null
   }
 
-  // TODO: This always returns false, because it checks for argument reporter
-  // blocks instead of argument editor blocks.  Create a new version for argument
-  // editors.
-  const oldTypeMatches = checkOldTypeMatches_(oldBlock, type)
+  const oldTypeMatches = checkOldEditorTypeMatches_(oldBlock, type)
   const displayName = this.displayNames_[index]
 
   // Decide which block to attach.
@@ -591,13 +588,13 @@ function populateArgumentOnDeclaration_(
 }
 
 /**
- * Check whether the type of the old block corresponds to the given argument
- * type.
+ * Check whether the type of the old argument reporter block corresponds to the
+ * given argument type.
  * @param oldBlock The old block to check.
- * @param type The argument type.  One of 'n', 'n', or 's'.
+ * @param type The argument type.  One of 'n', 'b', or 's'.
  * @returns True if the type matches, false otherwise.
  */
-function checkOldTypeMatches_(oldBlock: Blockly.BlockSvg | null, type: string): boolean {
+function checkOldTypeMatches_(oldBlock: Blockly.BlockSvg | null, type: ArgumentType): boolean {
   if (!oldBlock) {
     return false
   }
@@ -608,6 +605,29 @@ function checkOldTypeMatches_(oldBlock: Blockly.BlockSvg | null, type: string): 
     return true
   }
   if (type === ArgumentType.BOOLEAN && oldBlock.type === 'argument_reporter_boolean') {
+    return true
+  }
+  return false
+}
+
+/**
+ * Check whether the type of the old argument editor block corresponds to the
+ * given argument type.
+ * @param oldBlock The old block to check.
+ * @param type The argument type.  One of 'n', 'b', or 's'.
+ * @returns True if the type matches, false otherwise.
+ */
+function checkOldEditorTypeMatches_(oldBlock: Blockly.BlockSvg | null, type: ArgumentType): boolean {
+  if (!oldBlock) {
+    return false
+  }
+  if (
+    (type === ArgumentType.NUMBER || type === ArgumentType.STRING) &&
+    oldBlock.type === 'argument_editor_string_number'
+  ) {
+    return true
+  }
+  if (type === ArgumentType.BOOLEAN && oldBlock.type === 'argument_editor_boolean') {
     return true
   }
   return false
