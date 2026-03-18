@@ -32,8 +32,8 @@
     "blockly": "^12.4.1"
   },
   "devDependencies": {
-    "@commitlint/cli": "20.4.4",
-    "@commitlint/config-conventional": "20.4.4",
+    "@commitlint/cli": "20.5.0",
+    "@commitlint/config-conventional": "20.5.0",
     "eslint": "9.39.4",
     "eslint-config-scratch": "14.0.8",
     "husky": "9.1.7",
