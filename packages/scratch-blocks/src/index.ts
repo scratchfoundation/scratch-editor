@@ -56,7 +56,6 @@ import './scratch_insertion_marker_previewer'
 import './scratch_variable_map'
 import './scratch_variable_model'
 import { ScratchZoomControls } from './scratch_zoom_controls'
-import { buildShadowFilter } from './shadows'
 import { registerStatusIndicatorLabelFlyoutInflater } from './status_indicator_label_flyout_inflater'
 import * as ScratchVariables from './variables'
 
@@ -120,7 +119,6 @@ export function inject(container: Element, options: ScratchBlocksOptions) {
   const workspace = Blockly.inject(container, options)
 
   buildGlowFilter(workspace)
-  buildShadowFilter(workspace)
 
   // Replace Blockly's sprite-sheet zoom controls with SVG-file-based ones so
   // each button is a separate file and the correct set is picked up via

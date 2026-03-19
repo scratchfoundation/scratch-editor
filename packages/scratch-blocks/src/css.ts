@@ -17,6 +17,7 @@
  * limitations under the License.
  */
 import * as Blockly from 'blockly/core'
+import { Colours } from './colours'
 
 const styles = `
   .blocklySvg {
@@ -287,9 +288,12 @@ const styles = `
     cursor: -moz-grabbing;
   }
 
-  /* All the blocks being dragged get the blocklyDragging class, so match only the root one */
+  /* All the blocks being dragged get the blocklyDragging class, so match only the root one.
+     Using a CSS drop-shadow rather than an SVG filter reference avoids a Safari bug where
+     url("#blocklyDragShadowFilter") fails to resolve across SVG document boundaries when
+     the block is on the drag surface (a separate <svg> from the main workspace). */
   :not(.blocklyDragging) > .blocklyDragging {
-    filter: url(#blocklyDragShadowFilter);
+    filter: drop-shadow(0px 0px 6px rgba(0, 0, 0, ${Colours.dragShadowOpacity}));
   }
 
   /* Changes cursor on mouse down. Not effective in Firefox because of
@@ -1207,6 +1211,15 @@ const styles = `
 
   .blocklyInsertionMarker > g:not(:last-child) {
     visibility: hidden;
+  }
+
+  /* Safari does not expand SVG elements to fill their absolutely-positioned
+     container using top/left/right/bottom alone — it uses the SVG intrinsic
+     size (300x150) instead. Explicit width/height ensures the drag surface SVG
+     fills the injection div so dragged blocks are not clipped. */
+  .blocklyBlockDragSurface, .blocklyAnimationLayer {
+    width: 100%;
+    height: 100%;
   }
 `
 
