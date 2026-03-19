@@ -38,6 +38,13 @@ class ScratchConnectionChecker extends Blockly.ConnectionChecker {
       return false
     }
 
+    // Prevent dragging any block into a procedures_prototype input. Argument
+    // reporters inside the prototype are managed programmatically and should
+    // not be displaceable by user drag-and-drop.
+    if (b.getSourceBlock().type === 'procedures_prototype') {
+      return false
+    }
+
     return super.doDragChecks(a, b, distance)
   }
 }
