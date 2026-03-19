@@ -1,6 +1,6 @@
 {
   "name": "@scratch/task-herder",
-  "version": "13.1.1",
+  "version": "13.3.0-build-media-scripts",
   "description": "An asynchronous task runner with configurable rate limiting / throttling and concurrency control.",
   "keywords": [
     "rate limit",
