@@ -2,7 +2,7 @@ import React, {useRef, useCallback, useEffect} from 'react';
 import debounce from 'lodash.debounce';
 import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
-import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
+import {defineMessages, FormattedMessage} from 'react-intl';
 
 import Box from '../box/box.jsx';
 
@@ -55,7 +55,6 @@ const ConfirmationPrompt = ({
     align,
     config
 }) => {
-    const intl = useIntl();
     const {
         modalWidth,
         spaceForArrow,
