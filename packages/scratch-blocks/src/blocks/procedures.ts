@@ -130,6 +130,10 @@ class DuplicateOnDragDraggable implements Blockly.IDraggable {
     } else {
       // Not in a prototype: drag the original block normally and replace this
       // drag strategy so future drags also behave normally.
+      // Also ensure the block is deletable — reporters created by createArgumentReporter_
+      // are non-deletable by default, but one that has escaped a prototype should be
+      // cleanable by the user.
+      this.block.setDeletable(true)
       const normalStrategy = new Blockly.dragging.BlockDragStrategy(this.block)
       this.block.setDragStrategy(normalStrategy)
       this.copy = this.block
@@ -255,9 +259,12 @@ function definitionDomToMutation(this: ProcedurePrototypeBlock | ProcedureDeclar
   if (hasXmlArgReporters) {
     ;(this as ProcedurePrototypeBlock).skipArgumentReporters_ = true
   }
-  this.updateDisplay_()
-  if (hasXmlArgReporters) {
-    ;(this as ProcedurePrototypeBlock).skipArgumentReporters_ = false
+  try {
+    this.updateDisplay_()
+  } finally {
+    if (hasXmlArgReporters) {
+      ;(this as ProcedurePrototypeBlock).skipArgumentReporters_ = false
+    }
   }
 
   if ('updateArgumentReporterNames_' in this) {
