@@ -24,7 +24,8 @@
     "prepare": "husky || true",
     "start": "webpack serve --open --mode development",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "test:lint": "eslint && prettier --check ."
+    "test:lint": "eslint && prettier --check .",
+    "watch": "webpack --mode development --watch"
   },
   "dependencies": {
     "@blockly/continuous-toolbox": "^7.0.8",
