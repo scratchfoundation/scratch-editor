@@ -26,7 +26,7 @@ const config = {
     rules: /** @type {RuleSetRule[]} */ ([
       {
         test: /\.ts$/,
-        use: 'ts-loader',
+        use: { loader: 'ts-loader', options: { configFile: 'tsconfig.build.json' } },
         exclude: /node_modules/,
       },
     ]),
