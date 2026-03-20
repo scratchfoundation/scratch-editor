@@ -79,13 +79,20 @@ class DelegateToParentDraggable implements Blockly.IDraggable {
 }
 
 /**
- * Class representing a draggable block that copies itself on drag.
+ * Class representing a draggable block that copies itself on drag, but only
+ * when the block is directly connected to a procedures_prototype block.
+ * When dragged from any other position, it behaves like a normal block.
  */
 class DuplicateOnDragDraggable implements Blockly.IDraggable {
   /**
-   * The newly-created duplicate block.
+   * The block being dragged: a newly-created duplicate when dragging from a
+   * prototype, or the original block when dragging from elsewhere.
    */
   private copy?: Blockly.BlockSvg
+  /**
+   * Whether this drag is duplicating the block (true) or moving it (false).
+   */
+  private isDuplicating_ = false
   constructor(private block: Blockly.BlockSvg) {}
 
   /**
@@ -97,23 +104,41 @@ class DuplicateOnDragDraggable implements Blockly.IDraggable {
   }
 
   /**
-   * Handles the start of a drag.
+   * Handles the start of a drag. If the block is directly connected to a
+   * procedures_prototype, creates a duplicate and drags that. Otherwise,
+   * switches to a normal drag strategy and drags the original block.
    * @param e The event that triggered the drag.
    */
   startDrag(e: PointerEvent) {
-    const data = this.block.toCopyData()
-    if (!data) {
-      console.warn(
-        'DuplicateOnDragDraggable.startDrag: failed to serialize block for copy',
-        this.block.type,
-        this.block.id,
-      )
-      return
+    const parent = this.block.getParent()
+    this.isDuplicating_ = parent?.type === 'procedures_prototype'
+
+    if (this.isDuplicating_) {
+      const data = this.block.toCopyData()
+      if (!data) {
+        console.warn(
+          'DuplicateOnDragDraggable.startDrag: failed to serialize block for copy',
+          this.block.type,
+          this.block.id,
+        )
+        return
+      }
+      this.copy = Blockly.clipboard.paste(data, this.block.workspace) as Blockly.BlockSvg
+      this.copy.setDeletable(true)
+      this.copy.setDragStrategy(new Blockly.dragging.BlockDragStrategy(this.copy))
+      this.copy.startDrag(e)
+    } else {
+      // Not in a prototype: drag the original block normally and replace this
+      // drag strategy so future drags also behave normally.
+      // Also ensure the block is deletable — reporters created by createArgumentReporter_
+      // are non-deletable by default, but one that has escaped a prototype should be
+      // cleanable by the user.
+      this.block.setDeletable(true)
+      const normalStrategy = new Blockly.dragging.BlockDragStrategy(this.block)
+      this.block.setDragStrategy(normalStrategy)
+      this.copy = this.block
+      normalStrategy.startDrag(e)
     }
-    this.copy = Blockly.clipboard.paste(data, this.block.workspace) as Blockly.BlockSvg
-    this.copy.setDeletable(true)
-    this.copy.setDragStrategy(new Blockly.dragging.BlockDragStrategy(this.copy))
-    this.copy.startDrag(e)
   }
 
   drag(newLoc: Blockly.utils.Coordinate, e?: PointerEvent) {
@@ -135,7 +160,11 @@ class DuplicateOnDragDraggable implements Blockly.IDraggable {
   }
 
   revertDrag() {
-    this.copy?.dispose()
+    if (this.isDuplicating_) {
+      this.copy?.dispose()
+    } else {
+      this.copy?.revertDrag()
+    }
   }
 
   getRelativeToSurfaceXY() {
@@ -210,7 +239,34 @@ function definitionDomToMutation(this: ProcedurePrototypeBlock | ProcedureDeclar
   this.argumentIds_ = JSON.parse(xmlElement.getAttribute('argumentids')!)
   this.displayNames_ = JSON.parse(xmlElement.getAttribute('argumentnames')!)
   this.argumentDefaults_ = JSON.parse(xmlElement.getAttribute('argumentdefaults')!)
-  this.updateDisplay_()
+
+  // During full XML deserialization (Blockly.Xml.domToWorkspace), the mutation element
+  // is part of the parsed XML tree and its parent element also contains <value> children
+  // for the argument reporters. Blockly will connect those child blocks AFTER the
+  // mutation runs. To avoid creating duplicate reporters here that would immediately
+  // be orphaned when the XML children connect, skip reporter creation and let the
+  // XML children provide them.
+  // We detect this case by checking that the parent element has <value> children.
+  // This distinguishes full deserialization from:
+  //   - Programmatic mutation (xmlElement.parentElement is null — freshly created element)
+  //   - Block creation from partial XML with no <value> children (e.g. createProcedureCallbackFactory)
+  //   - JSON serialization / undo-redo (xmlElement.parentElement is null — textToDom result)
+  const xmlParent = xmlElement.parentElement
+  const hasXmlArgReporters =
+    this.type === 'procedures_prototype' &&
+    xmlParent !== null &&
+    Array.from(xmlParent.children).some((el) => el.tagName.toLowerCase() === 'value')
+  if (hasXmlArgReporters) {
+    ;(this as ProcedurePrototypeBlock).skipArgumentReporters_ = true
+  }
+  try {
+    this.updateDisplay_()
+  } finally {
+    if (hasXmlArgReporters) {
+      ;(this as ProcedurePrototypeBlock).skipArgumentReporters_ = false
+    }
+  }
+
   if ('updateArgumentReporterNames_' in this) {
     this.updateArgumentReporterNames_(prevArgIds, prevDisplayNames)
   }
@@ -521,6 +577,12 @@ function populateArgumentOnPrototype_(
   id: string,
   input: Blockly.Input,
 ) {
+  // During XML deserialization, skip connecting argument reporters here.
+  // The block's <value> XML children will connect the reporters after the mutation runs.
+  if (this.skipArgumentReporters_) {
+    return
+  }
+
   let oldBlock: Blockly.BlockSvg | null = null
   if (connectionMap && id in connectionMap) {
     const saveInfo = connectionMap[id]
@@ -981,6 +1043,7 @@ Blockly.Blocks.procedures_prototype = {
     this.argumentIds_ = []
     this.argumentDefaults_ = []
     this.warp_ = false
+    this.skipArgumentReporters_ = false
 
     // Shared.
     this.getProcCode = getProcCode.bind(this)
@@ -1173,6 +1236,7 @@ interface ProcedureCallBlock extends ProcedureBlock {
 interface ProcedurePrototypeBlock extends ProcedureBlock {
   displayNames_: string[]
   argumentDefaults_: string[]
+  skipArgumentReporters_: boolean
   createArgumentReporter_: (argumentType: ArgumentType, displayName: string) => Blockly.BlockSvg
   updateArgumentReporterNames_: (prevArgIds: string[], prevDisplayNames: string[]) => void
 }

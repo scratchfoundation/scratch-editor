@@ -165,6 +165,16 @@ Blockly.FlyoutButton.TEXT_MARGIN_Y = 10
 Blockly.ContextMenuRegistry.registry.unregister('blockDisable')
 Blockly.ContextMenuRegistry.registry.unregister('blockInline')
 Blockly.ContextMenuItems.registerCommentOptions()
+// Blockly hides "Add Comment" for simple reporters because comments can't be
+// read in the default renderer. In Scratch they're shown differently, so
+// remove that restriction by dropping the isFullBlockField check.
+Blockly.ContextMenuRegistry.registry.getItem('blockComment')!.preconditionFn = (scope) => {
+  const block = scope.block
+  if (block && !block.isInFlyout && block.workspace.options.comments && !block.isCollapsed() && block.isEditable()) {
+    return 'enabled'
+  }
+  return 'hidden'
+}
 Blockly.ContextMenuRegistry.registry.unregister('blockDelete')
 contextMenuItems.registerDeleteBlock()
 contextMenuItems.registerDuplicateBlock()
