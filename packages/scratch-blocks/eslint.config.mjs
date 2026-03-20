@@ -1,6 +1,16 @@
-import { eslintConfigScratch } from 'eslint-config-scratch'
-import { globalIgnores } from 'eslint/config'
-import tseslint from 'typescript-eslint'
+import { eslintConfigScratch } from 'eslint-config-scratch';
+import { globalIgnores } from 'eslint/config';
+import tseslint from 'typescript-eslint';
+
+
+
+
+
+
+
+
+
+
 
 export default eslintConfigScratch.defineConfig(
   eslintConfigScratch.recommended,
@@ -13,9 +23,13 @@ export default eslintConfigScratch.defineConfig(
     },
   },
   {
-    // TypeScript rule overrides (type-checked rules must be scoped to TS files)
     files: ['**/*.{ts,tsx,mts,cts}'],
     plugins: { '@typescript-eslint': tseslint.plugin },
+  },
+  {
+    // TypeScript rule overrides (type-checked rules must be scoped to TS files)
+    // Fixing these requires non-trivial adjustments to code that was written before these rules were in place.
+    files: ['src/**/*.{ts,tsx,mts,cts}'],
     rules: {
       // TODO: improve TypeScript type annotations to remove `any` usage
       '@typescript-eslint/no-explicit-any': 'warn',

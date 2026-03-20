@@ -24,13 +24,6 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
-      # - name: Deploy playground to GitHub Pages
-      #   uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847 # v3
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_dir: ./gh-pages
-      #     full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
-      #     enable_jekyll: true
       - name: Run semantic-release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

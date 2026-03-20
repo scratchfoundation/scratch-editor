@@ -40,6 +40,46 @@ We provide [Scratch](https://scratch.mit.edu) free of charge, and want to keep i
 [donation](https://secure.donationpay.org/scratchfoundation/) to support our continued engineering, design, community,
 and resource development efforts. Donations of any size are appreciated. Thank you!
 
+## Development
+
+```bash
+npm ci
+npm run build
+```
+
+### Testing
+
+Unit tests run in jsdom and need no additional setup:
+
+```bash
+npm run test:unit
+```
+
+Browser tests run in Chromium via Playwright. Install the browser once after `npm ci`:
+
+```bash
+npx playwright install chromium
+npm run test:browser
+```
+
+To run all tests:
+
+```bash
+npm test
+```
+
+To debug a failing browser test with a visible browser window:
+
+```bash
+npm run test:browser -- --browser.headless=false
+```
+
+or, to also pause on startup and open devtools:
+
+```bash
+PWDEBUG=1 npm run test:browser
+```
+
 ## Committing
 
 This project uses [semantic release](https://github.com/semantic-release/semantic-release) to ensure version bumps
