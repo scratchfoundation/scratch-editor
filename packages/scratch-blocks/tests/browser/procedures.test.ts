@@ -4,13 +4,11 @@
  */
 import * as Blockly from 'blockly/core'
 import { afterEach, assert, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-
 // Load scratch-specific messages (required before block registration).
 import { ScratchMsgs } from '../../msg/scratch_msgs'
-
+import '../../src/blocks/procedures'
 // Import scratch-specific block registrations.
 import '../../src/blocks/vertical_extensions'
-import '../../src/blocks/procedures'
 import '../../src/scratch_connection_checker'
 
 beforeAll(() => {
@@ -247,9 +245,7 @@ describe('context menu delegation', () => {
         </xml>
       `)
 
-      const reporter = workspace.getAllBlocks(false).find(
-        (b) => b.type === 'argument_reporter_string_number',
-      )
+      const reporter = workspace.getAllBlocks(false).find((b) => b.type === 'argument_reporter_string_number')
       assert(reporter, 'Expected argument_reporter_string_number block')
 
       // The reporter has no prototype parent, so its own handler should run.

@@ -110,4 +110,3 @@ describe('registerDeleteBlock — shadow exclusion from delete count', () => {
     }
   })
 })
-

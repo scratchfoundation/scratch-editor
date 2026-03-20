@@ -50,16 +50,10 @@ export function undefineGetVarBlock(): void {
  * @param type Expected variable type.
  * @param id Expected variable id.
  */
-export function checkVariableValues(
-  container: Blockly.VariableMap,
-  name: string,
-  type: string,
-  id: string,
-): void {
+export function checkVariableValues(container: Blockly.VariableMap, name: string, type: string, id: string): void {
   const variable = container.getVariableById(id)
   if (!variable) throw new Error(`Expected variable with id '${id}' to exist`)
-  if (variable.getName() !== name)
-    throw new Error(`Expected variable name '${name}', got '${variable.getName()}'`)
+  if (variable.getName() !== name) throw new Error(`Expected variable name '${name}', got '${variable.getName()}'`)
   if (variable.type !== type) throw new Error(`Expected variable type '${type}', got '${variable.type}'`)
   if (variable.getId() !== id) throw new Error(`Expected variable id '${id}', got '${variable.getId()}'`)
 }

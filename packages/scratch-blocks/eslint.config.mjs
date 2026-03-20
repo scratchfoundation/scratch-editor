@@ -1,16 +1,6 @@
-import { eslintConfigScratch } from 'eslint-config-scratch';
-import { globalIgnores } from 'eslint/config';
-import tseslint from 'typescript-eslint';
-
-
-
-
-
-
-
-
-
-
+import { eslintConfigScratch } from 'eslint-config-scratch'
+import { globalIgnores } from 'eslint/config'
+import tseslint from 'typescript-eslint'
 
 export default eslintConfigScratch.defineConfig(
   eslintConfigScratch.recommended,
