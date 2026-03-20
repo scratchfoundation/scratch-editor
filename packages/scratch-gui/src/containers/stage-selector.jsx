@@ -25,6 +25,9 @@ import backdropLibraryContent from '../lib/libraries/backdrops.json';
 import {handleFileUpload, costumeUpload} from '../lib/file-uploader.js';
 import {ModalFocusContext} from '../contexts/modal-focus-context.jsx';
 
+import {costumeShape as backdropShape} from '../lib/assets-prop-types.js';
+import mergeDynamicAssets from '../lib/merge-dynamic-assets.js';
+
 const dragTypes = [
     DragConstants.COSTUME,
     DragConstants.SOUND,
@@ -54,8 +57,11 @@ class StageSelector extends React.Component {
             'handleTouchEnd',
             'handleDrop',
             'setFileInput',
-            'setRef'
+            'setRef',
+            'mergeDynamicAssets'
         ]);
+
+        this.processedBackdrops = {};
     }
     componentDidMount () {
         document.addEventListener('touchend', this.handleTouchEnd);
@@ -66,6 +72,16 @@ class StageSelector extends React.Component {
 
     static contextType = ModalFocusContext;
 
+    mergeDynamicAssets () {
+        if (this.processedBackdrops.source === this.props.dynamicBackdrops) {
+            return this.processedBackdrops.data;
+        }
+        this.processedBackdrops = mergeDynamicAssets(
+            backdropLibraryContent,
+            this.props.dynamicBackdrops
+        );
+        return this.processedBackdrops.data;
+    }
     handleTouchEnd (e) {
         const {x, y} = getEventXY(e);
         const {top, left, bottom, right} = this.ref.getBoundingClientRect();
@@ -107,7 +123,9 @@ class StageSelector extends React.Component {
     handleSurpriseBackdrop (e) {
         e.stopPropagation(); // Prevent click from falling through to selecting stage.
         // @todo should this not add a backdrop you already have?
-        const item = backdropLibraryContent[Math.floor(Math.random() * backdropLibraryContent.length)];
+        const backdrops = this.mergeDynamicAssets();
+        
+        const item = backdrops[Math.floor(Math.random() * backdrops.length)];
         this.addBackdropFromLibraryItem(item, false);
     }
     handleEmptyBackdrop (e) {
@@ -198,7 +216,8 @@ StageSelector.propTypes = {
     intl: intlShape.isRequired,
     onCloseImporting: PropTypes.func,
     onSelect: PropTypes.func,
-    onShowImporting: PropTypes.func
+    onShowImporting: PropTypes.func,
+    dynamicBackdrops: PropTypes.arrayOf(backdropShape)
 };
 
 const mapStateToProps = (state, {asset, id}) => ({
@@ -206,7 +225,8 @@ const mapStateToProps = (state, {asset, id}) => ({
     vm: state.scratchGui.vm,
     receivedBlocks: state.scratchGui.hoveredTarget.receivedBlocks &&
             state.scratchGui.hoveredTarget.sprite === id,
-    raised: state.scratchGui.blockDrag
+    raised: state.scratchGui.blockDrag,
+    dynamicBackdrops: state.scratchGui.dynamicAssets.backdrops
 });
 
 const mapDispatchToProps = dispatch => ({

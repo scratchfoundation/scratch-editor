@@ -35,6 +35,7 @@ class Controls extends React.Component {
             isStarted,
             projectRunning,
             turbo,
+            isFullScreen,
             ...props
         } = this.props;
         return (
@@ -44,12 +45,14 @@ class Controls extends React.Component {
                 turbo={turbo}
                 onGreenFlagClick={this.handleGreenFlagClick}
                 onStopAllClick={this.handleStopAllClick}
+                isFullScreen={isFullScreen}
             />
         );
     }
 }
 
 Controls.propTypes = {
+    isFullScreen: PropTypes.bool,
     isStarted: PropTypes.bool.isRequired,
     projectRunning: PropTypes.bool.isRequired,
     turbo: PropTypes.bool.isRequired,

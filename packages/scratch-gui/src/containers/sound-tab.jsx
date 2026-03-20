@@ -41,6 +41,9 @@ import {setRestore} from '../reducers/restore-deletion';
 import {showStandardAlert, closeAlertWithId} from '../reducers/alerts';
 import {ModalFocusContext} from '../contexts/modal-focus-context.jsx';
 
+import {soundShape} from '../lib/assets-prop-types.js';
+import mergeDynamicAssets from '../lib/merge-dynamic-assets.js';
+
 class SoundTab extends React.Component {
     constructor (props) {
         super(props);
@@ -55,9 +58,11 @@ class SoundTab extends React.Component {
             'handleSoundUpload',
             'handleNewSoundFromLibraryClick',
             'handleDrop',
-            'setFileInput'
+            'setFileInput',
+            'mergeDynamicAssets'
         ]);
         this.state = {selectedSoundIndex: 0};
+        this.processedSounds = {};
     }
 
     componentWillReceiveProps (nextProps) {
@@ -81,6 +86,17 @@ class SoundTab extends React.Component {
     }
 
     static contextType = ModalFocusContext;
+
+    mergeDynamicAssets () {
+        if (this.processedSounds.source === this.props.dynamicSounds) {
+            return this.processedSounds.data;
+        }
+        this.processedSounds = mergeDynamicAssets(
+            soundLibraryContent,
+            this.props.dynamicSounds
+        );
+        return this.processedSounds.data;
+    }
 
     handleSelectSound (soundIndex) {
         this.setState({selectedSoundIndex: soundIndex});
@@ -116,7 +132,9 @@ class SoundTab extends React.Component {
     }
 
     handleSurpriseSound () {
-        const soundItem = soundLibraryContent[Math.floor(Math.random() * soundLibraryContent.length)];
+        const sounds = this.mergeDynamicAssets();
+        
+        const soundItem = sounds[Math.floor(Math.random() * sounds.length)];
         const vmSound = {
             format: soundItem.dataFormat,
             md5: soundItem.md5ext,
@@ -317,7 +335,8 @@ SoundTab.propTypes = {
             name: PropTypes.string.isRequired
         }))
     }),
-    vm: PropTypes.instanceOf(VM).isRequired
+    vm: PropTypes.instanceOf(VM).isRequired,
+    dynamicSounds: PropTypes.arrayOf(soundShape)
 };
 
 const mapStateToProps = state => ({
@@ -326,7 +345,8 @@ const mapStateToProps = state => ({
     sprites: state.scratchGui.targets.sprites,
     stage: state.scratchGui.targets.stage,
     soundLibraryVisible: state.scratchGui.modals.soundLibrary,
-    soundRecorderVisible: state.scratchGui.modals.soundRecorder
+    soundRecorderVisible: state.scratchGui.modals.soundRecorder,
+    dynamicSounds: state.scratchGui.dynamicAssets.sounds
 });
 
 const mapDispatchToProps = dispatch => ({

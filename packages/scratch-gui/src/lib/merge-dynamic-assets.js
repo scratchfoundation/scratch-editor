@@ -21,7 +21,10 @@ const mapDynamicAsset = item => {
 };
 
 /**
- * Merge static and dynamic assets, using name as key, giving precedence to dynamic assets
+ * Merge static and dynamic assets, using name as key. If both a static and a dynamic
+ * asset share the same name, the static asset is kept and the dynamic asset is skipped.
+ * This intentionally gives precedence to static (bundled) assets so that dynamic assets
+ * do not override them.
  * @param {Array} staticAssets the static assets bundled with the editor
  * @param {Array} dynamicAssets an array of dynamic assets loaded at runtime
  * @returns {Object} an object containing `source` and `data` properties, where:
@@ -35,7 +38,11 @@ const mergeDynamicAssets = (staticAssets, dynamicAssets) => {
     if (effectiveDynamicAssets.length > 0) {
         const map = new Map();
         staticAssets.forEach(item => map.set(item.name, item));
-        effectiveDynamicAssets.forEach(item => map.set(item.name, mapDynamicAsset(item)));
+        effectiveDynamicAssets.forEach(item => {
+            if (!map.has(item.name)) {
+                map.set(item.name, mapDynamicAsset(item));
+            }
+        });
         data = Array.from(map.values());
         data.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
     }

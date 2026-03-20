@@ -61,8 +61,6 @@ class ExtensionLibrary extends React.PureComponent {
                 visible={this.props.visible}
                 onItemSelected={this.handleItemSelect}
                 onRequestClose={this.props.onRequestClose}
-                showNewFeatureCallouts={this.props.showNewFeatureCallouts}
-                username={this.props.username}
             />
         );
     }
@@ -73,9 +71,7 @@ ExtensionLibrary.propTypes = {
     onCategorySelected: PropTypes.func,
     onRequestClose: PropTypes.func,
     visible: PropTypes.bool,
-    vm: PropTypes.instanceOf(VM).isRequired,
-    username: PropTypes.string,
-    showNewFeatureCallouts: PropTypes.bool
+    vm: PropTypes.instanceOf(VM).isRequired
 };
 
 export default injectIntl(ExtensionLibrary);

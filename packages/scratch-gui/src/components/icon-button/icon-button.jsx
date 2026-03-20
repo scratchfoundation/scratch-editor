@@ -16,7 +16,8 @@ const IconButton = ({
             className,
             disabled ? styles.disabled : null
         )}
-        onClick={disabled ? null : onClick}
+        onClick={onClick}
+        disabled={disabled}
     >
         <img
             className={styles.icon}

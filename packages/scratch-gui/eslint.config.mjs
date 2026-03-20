@@ -1,8 +1,7 @@
 import {eslintConfigScratch} from 'eslint-config-scratch';
 import {globalIgnores} from 'eslint/config';
 import globals from 'globals';
-import importPlugin from 'eslint-plugin-import';
-import path from 'path';
+import importPlugin from 'eslint-plugin-import-x';
 
 export default eslintConfigScratch.defineConfig(
     eslintConfigScratch.legacy.base,
@@ -15,13 +14,6 @@ export default eslintConfigScratch.defineConfig(
         },
         rules: {
             'no-console': 'off'
-        },
-        settings: {
-            // TODO: figure out why this is needed...
-            // probably something with eslint-plugin-import's parser or resolver
-            'import/core-modules': [
-                'eslint/config'
-            ]
         }
     },
     {
@@ -49,13 +41,17 @@ export default eslintConfigScratch.defineConfig(
             'react': {
                 version: 'detect'
             },
-            'import/resolver': {
-                webpack: {
-                    config: path.resolve(import.meta.dirname, 'webpack.config.js')
+            'import-x/resolver': {
+                typescript: {
+                    project: 'tsconfig.eslint.json'
                 }
             }
         },
         rules: {
+            // webpack inline loader syntax (e.g. `!raw-loader!./file.svg`) is not resolvable by the
+            // TypeScript resolver; these are valid at runtime via webpack's loader pipeline
+            'import-x/no-unresolved': ['error', {ignore: ['^!']}],
+
             // BEGIN: these caused trouble after upgrading eslint-plugin-react from 7.24.0 to 7.33.2
             'react/forbid-prop-types': 'warn',
             'react/no-unknown-property': 'warn',
@@ -83,7 +79,7 @@ export default eslintConfigScratch.defineConfig(
             }
         },
         rules: {
-            'max-len': [
+            '@stylistic/max-len': [
                 'warn',
                 // settings copied from eslint-config-scratch.legacy.base
                 {
@@ -93,13 +89,6 @@ export default eslintConfigScratch.defineConfig(
                 }
             ],
             'react/prop-types': 'off' // don't worry about prop types in tests
-        }
-    },
-    {
-        files: ['{src,test}/**/*.{ts,tsx}'],
-        rules: {
-            // TODO: get TS parsing to work with eslint-plugin-import
-            'import/named': 'off'
         }
     },
     {
@@ -117,16 +106,6 @@ export default eslintConfigScratch.defineConfig(
         rules: {
             // the way these files are built makes duplicate imports the natural way to do things
             'no-duplicate-imports': 'off'
-        }
-    },
-    {
-        files: ['test/unit/util/define-dynamic-block.test.js'],
-        settings: {
-            // TODO: figure out why this is needed...
-            // probably something with eslint-plugin-import's parser or resolver
-            'import/core-modules': [
-                '@scratch/scratch-vm/src/extension-support/block-type'
-            ]
         }
     },
     globalIgnores([

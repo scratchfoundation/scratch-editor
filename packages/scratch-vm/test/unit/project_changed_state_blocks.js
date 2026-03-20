@@ -255,11 +255,11 @@ test('Creating a block comment should emit a project changed event', t => {
         type: 'comment_create',
         blockId: 'a new block',
         commentId: 'a new comment',
-        height: 250,
-        width: 400,
-        xy: {
+        json: {
             x: -40,
-            y: 27
+            y: 27,
+            height: 250,
+            width: 400
         },
         minimized: false,
         text: 'comment'
@@ -274,11 +274,11 @@ test('Creating a workspace comment should emit a project changed event', t => {
         type: 'comment_create',
         blockId: null,
         commentId: 'a new comment',
-        height: 250,
-        width: 400,
-        xy: {
+        json: {
             x: -40,
-            y: 27
+            y: 27,
+            height: 250,
+            width: 400
         },
         minimized: false,
         text: 'comment'
@@ -293,11 +293,11 @@ test('Changing a comment should emit a project changed event', t => {
         type: 'comment_create',
         blockId: null,
         commentId: 'a new comment',
-        height: 250,
-        width: 400,
-        xy: {
+        json: {
             x: -40,
-            y: 27
+            y: 27,
+            height: 250,
+            width: 400
         },
         minimized: false,
         text: 'comment'
@@ -343,11 +343,11 @@ test('Deleting a block comment should emit a project changed event', t => {
         type: 'comment_create',
         blockId: 'a new block',
         commentId: 'a new comment',
-        height: 250,
-        width: 400,
-        xy: {
+        json: {
             x: -40,
-            y: 27
+            y: 27,
+            height: 250,
+            width: 400
         },
         minimized: false,
         text: 'comment'
@@ -378,11 +378,11 @@ test('Deleting a workspace comment should emit a project changed event', t => {
         type: 'comment_create',
         blockId: null,
         commentId: 'a new comment',
-        height: 250,
-        width: 400,
-        xy: {
+        json: {
             x: -40,
-            y: 27
+            y: 27,
+            height: 250,
+            width: 400
         },
         minimized: false,
         text: 'comment'
@@ -432,11 +432,11 @@ test('Moving a comment should emit a project changed event', t => {
         type: 'comment_create',
         blockId: null,
         commentId: 'a new comment',
-        height: 250,
-        width: 400,
-        xy: {
+        json: {
             x: -40,
-            y: 27
+            y: 27,
+            height: 250,
+            width: 400
         },
         minimized: false,
         text: 'comment'

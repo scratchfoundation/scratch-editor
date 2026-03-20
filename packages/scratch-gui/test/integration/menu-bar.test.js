@@ -9,16 +9,17 @@ const {
     getDriver,
     loadUri,
     rightClickText,
-    scope
+    scope,
+    scopeForCategoryId
 } = new SeleniumHelper();
 
 const uri = path.resolve(__dirname, '../../build/index.html');
 
 let driver;
 
-const FILE_MENU_XPATH = '//div[contains(@class, "menu-bar_menu-bar-item")]' +
+const FILE_MENU_XPATH = '//button[contains(@class, "menu-bar_menu-bar-item")]' +
     '[*[contains(@class, "menu-bar_collapsible-label")]//*[text()="File"]]';
-const SETTINGS_MENU_XPATH = '//div[contains(@class, "menu-bar_menu-bar-item")]' +
+const SETTINGS_MENU_XPATH = '//button[contains(@class, "menu-bar_menu-bar-item")]' +
     '[*[contains(@class, "settings-menu_dropdown-label")]//*[text()="Settings"]]';
 
 describe('Menu bar settings', () => {
@@ -110,12 +111,12 @@ describe('Menu bar settings', () => {
         await clickText('Color Mode', scope.menuBar);
         await clickText('High Contrast', scope.menuBar);
 
+        const motionBubblePath = `//${scopeForCategoryId('motion')}//*[contains(@class, "categoryBubble")]`;
+
         // There is a tiny delay for the color color mode to be applied to the categories.
         await driver.wait(async () => {
-            const motionCategoryDiv = await findByXpath(
-                '//div[contains(@class, "scratchCategoryMenuItem") and ' +
-                'contains(@class, "scratchCategoryId-motion")]/*[1]');
-            const color = await motionCategoryDiv.getCssValue('background-color');
+            const motionCategoryBubble = await findByXpath(motionBubblePath);
+            const color = await motionCategoryBubble.getCssValue('background-color');
 
             // Documentation for getCssValue says it depends on how the browser
             // returns the value. Locally I am seeing 'rgba(128, 181, 255, 1)',

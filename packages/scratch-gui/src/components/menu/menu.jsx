@@ -4,12 +4,11 @@ import React from 'react';
 
 import styles from './menu.css';
 
-const MenuComponent = ({
+const MenuComponent = React.forwardRef(({
     className = '',
     children,
-    componentRef,
     place = 'right'
-}) => (
+}, ref) => (
     <ul
         className={classNames(
             styles.menu,
@@ -19,19 +18,19 @@ const MenuComponent = ({
                 [styles.right]: place === 'right'
             }
         )}
-        ref={componentRef}
+        ref={ref}
     >
         {children}
     </ul>
-);
+));
+
+MenuComponent.displayName = 'MenuComponent';
 
 MenuComponent.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
-    componentRef: PropTypes.func,
     place: PropTypes.oneOf(['left', 'right'])
 };
-
 
 const Submenu = ({children, className, place, ...props}) => (
     <ul
@@ -59,32 +58,58 @@ Submenu.propTypes = {
     place: PropTypes.oneOf(['left', 'right'])
 };
 
-const MenuItem = ({
+const MenuItem = React.forwardRef(({
     children,
     className,
-    expanded = false,
-    onClick
-}) => (
+    isExpanded = false,
+    isSelected = false,
+    isDisabled = false,
+    isDataMenuItem = false,
+    isDataMenuItemWrapper = false,
+    onClick,
+    ariaLabel,
+    ariaRole,
+    onParentKeyDown,
+    ...props
+}, ref) => (
     <li
+        ref={ref}
         className={classNames(
             styles.menuItem,
             styles.hoverable,
             className,
-            {[styles.expanded]: expanded}
+            {[styles.expanded]: isExpanded}
         )}
         onClick={onClick}
+        tabIndex={-1}
+        aria-label={ariaLabel}
+        aria-selected={isSelected}
+        aria-disabled={isDisabled}
+        role={ariaRole}
+        onKeyDown={onParentKeyDown}
+        data-menu-item={isDataMenuItem}
+        data-menu-item-wrapper={isDataMenuItemWrapper}
+        {...props}
     >
         {children}
     </li>
-);
+));
+
+MenuItem.displayName = 'MenuItem';
 
 MenuItem.propTypes = {
+    ariaLabel: PropTypes.string,
+    ariaRole: PropTypes.string,
     children: PropTypes.node,
     className: PropTypes.string,
-    expanded: PropTypes.bool,
-    onClick: PropTypes.func
+    isExpanded: PropTypes.bool,
+    isSelected: PropTypes.bool,
+    isDisabled: PropTypes.bool,
+    isDataMenuItem: PropTypes.bool,
+    isDataMenuItemWrapper: PropTypes.bool,
+    onClick: PropTypes.func,
+    onParentKeyDown: PropTypes.func
 };
-
 
 const addDividerClassToFirstChild = (child, id) => (
     child && React.cloneElement(child, {

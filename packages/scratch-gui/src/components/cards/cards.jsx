@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, {Fragment} from 'react';
+import React, {Fragment, useRef, useEffect} from 'react';
 import classNames from 'classnames';
 import {FormattedMessage} from 'react-intl';
 import Draggable from 'react-draggable';
@@ -354,6 +354,21 @@ const Cards = props => {
 
     if (activeDeckId === null) return;
 
+    const cardRef = useRef(null);
+
+    useEffect(() => {
+        // Only focus if there’s an actual tutorial step (image/video)
+        const steps = content[activeDeckId]?.steps;
+        const isTutorialStep = steps?.[step]?.video;
+
+        if (isTutorialStep && cardRef.current) {
+            // Defer focus to next animation frame for layout stability
+            requestAnimationFrame(() => {
+                cardRef.current.focus();
+            });
+        }
+    }, [activeDeckId, step, content]);
+
     // Tutorial cards need to calculate their own dragging bounds
     // to allow for dragging the cards off the left, right and bottom
     // edges of the workspace.
@@ -385,6 +400,8 @@ const Cards = props => {
                 top: `${menuBarHeight}px`,
                 left: `${-cardHorizontalDragOffset}px`
             }}
+            ref={cardRef}
+            tabIndex={-1}
         >
             <Draggable
                 bounds="parent"

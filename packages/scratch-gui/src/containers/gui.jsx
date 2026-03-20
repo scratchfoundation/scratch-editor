@@ -152,7 +152,8 @@ GUI.propTypes = {
     platform: PropTypes.oneOf(Object.keys(PLATFORM)),
     setPlatform: PropTypes.func.isRequired,
     /**
-     * Whether to highlight new editor features in the UI.
+     * Indicates whether we should highlight new editor features in the UI.
+     * Used only when there are new features to highlight.
      */
     showNewFeatureCallouts: PropTypes.bool,
     projectHost: PropTypes.string,

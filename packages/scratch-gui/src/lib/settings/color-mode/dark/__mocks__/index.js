@@ -1,11 +1,11 @@
 const blockColors = {
     motion: {
-        primary: '#AAAAAA'
+        colourPrimary: '#AAAAAA'
     },
     pen: {
-        primary: '#FFFFFF',
-        secondary: '#EEEEEE',
-        tertiary: '#DDDDDD'
+        colourPrimary: '#FFFFFF',
+        colourSecondary: '#EEEEEE',
+        colourTertiary: '#DDDDDD'
     },
     text: '#BBBBBB'
 };

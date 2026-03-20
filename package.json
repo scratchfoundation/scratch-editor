@@ -1,22 +1,33 @@
 {
   "name": "scratch-editor",
-  "version": "12.5.0",
+  "version": "13.0.2",
   "private": "true",
   "description": "Scratch editor mono-repository",
-  "author": "Scratch Foundation",
-  "license": "AGPL-3.0-only",
+  "keywords": [],
   "homepage": "https://github.com/scratchfoundation/scratch-editor#readme",
+  "bugs": {
+    "url": "https://github.com/scratchfoundation/scratch-editor/issues"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/scratchfoundation/scratch-editor.git"
+    "url": "git+https://github.com/scratchfoundation/scratch-editor.git"
   },
+  "license": "AGPL-3.0-only",
+  "author": "Scratch Foundation",
+  "workspaces": [
+    "packages/task-herder",
+    "packages/scratch-svg-renderer",
+    "packages/scratch-render",
+    "packages/scratch-vm",
+    "packages/scratch-gui"
+  ],
   "scripts": {
     "build": "cross-env NODE_ENV=production npm run --workspaces build",
     "build-monorepo": "cross-env-shell ./scripts/build-monorepo.sh",
     "clean": "npm run --workspaces clean",
     "prepare": "husky install",
-    "test": "npm test --workspaces",
     "refresh-gh-workflow": "ts-node scripts/build-gha-workflows.ts",
+    "test": "npm test --workspaces",
     "update-legal": "npm --workspaces exec -c 'rm -f ./{LICENSE,TRADEMARK} && cp -f ../../{LICENSE,TRADEMARK} .'",
     "version": "cross-env-shell ./scripts/npm-version.sh"
   },
@@ -25,20 +36,13 @@
       "path": "cz-conventional-changelog"
     }
   },
-  "workspaces": [
-    "packages/task-herder",
-    "packages/scratch-svg-renderer",
-    "packages/scratch-render",
-    "packages/scratch-vm",
-    "packages/scratch-gui"
-  ],
   "devDependencies": {
     "@commitlint/cli": "17.8.1",
     "@commitlint/config-conventional": "17.8.1",
     "cross-env": "7.0.3",
     "globals": "16.5.0",
     "husky": "8.0.3",
-    "npm": "10.9.4",
+    "npm": "10.9.5",
     "ts-node": "10.9.2"
   }
 }

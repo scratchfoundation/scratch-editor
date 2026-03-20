@@ -38,6 +38,8 @@ import searchIcon from '../components/action-menu/icon--search.svg';
 import costumeLibraryContent from '../lib/libraries/costumes.json';
 import backdropLibraryContent from '../lib/libraries/backdrops.json';
 import {ModalFocusContext} from '../contexts/modal-focus-context.jsx';
+import {costumeShape} from '../lib/assets-prop-types.js';
+import mergeDynamicAssets from '../lib/merge-dynamic-assets.js';
 
 let messages = defineMessages({
     addLibraryBackdropMsg: {
@@ -91,7 +93,9 @@ class CostumeTab extends React.Component {
             'handleFileUploadClick',
             'handleCostumeUpload',
             'handleDrop',
-            'setFileInput'
+            'setFileInput',
+            'mergeDynamicCostumes',
+            'mergeDynamicBackdrops'
         ]);
         const {
             editingTarget,
@@ -104,7 +108,20 @@ class CostumeTab extends React.Component {
         } else {
             this.state = {selectedCostumeIndex: 0};
         }
+        this.processedCostumes = {};
+        this.processedBackdrops = {};
     }
+    componentDidMount () {
+        this.handleDocumentClick = () => {
+            // If the costume tab is focused and the user clicks outside of it, unfocus the costume tab.
+            // This is to prevent keypresses from affecting the tabs when users try to interact with the paint editor
+            if (document.activeElement instanceof HTMLLIElement && document.activeElement.role === 'tab') {
+                document.activeElement.blur();
+            }
+        };
+        document.addEventListener('mousedown', this.handleDocumentClick);
+    }
+
     componentWillReceiveProps (nextProps) {
         const {
             editingTarget,
@@ -133,8 +150,32 @@ class CostumeTab extends React.Component {
             this.setState({selectedCostumeIndex: target.currentCostume});
         }
     }
+
+    componentWillUnmount () {
+        document.removeEventListener('mousedown', this.handleDocumentClick);
+    }
     static contextType = ModalFocusContext;
 
+    mergeDynamicCostumes () {
+        if (this.processedCostumes.source === this.props.dynamicCostumes) {
+            return this.processedCostumes.data;
+        }
+        this.processedCostumes = mergeDynamicAssets(
+            costumeLibraryContent,
+            this.props.dynamicCostumes
+        );
+        return this.processedCostumes.data;
+    }
+    mergeDynamicBackdrops () {
+        if (this.processedBackdrops.source === this.props.dynamicBackdrops) {
+            return this.processedBackdrops.data;
+        }
+        this.processedBackdrops = mergeDynamicAssets(
+            backdropLibraryContent,
+            this.props.dynamicBackdrops
+        );
+        return this.processedBackdrops.data;
+    }
     handleSelectCostume (costumeIndex) {
         this.props.vm.editingTarget.setCostume(costumeIndex);
         this.setState({selectedCostumeIndex: costumeIndex});
@@ -190,7 +231,9 @@ class CostumeTab extends React.Component {
         this.handleNewCostume(emptyCostume(name));
     }
     handleSurpriseCostume () {
-        const item = costumeLibraryContent[Math.floor(Math.random() * costumeLibraryContent.length)];
+        const costumes = this.mergeDynamicCostumes();
+
+        const item = costumes[Math.floor(Math.random() * costumes.length)];
         const vmCostume = {
             name: item.name,
             md5: item.md5ext,
@@ -202,7 +245,9 @@ class CostumeTab extends React.Component {
         this.handleNewCostume(vmCostume, true /* fromCostumeLibrary */);
     }
     handleSurpriseBackdrop () {
-        const item = backdropLibraryContent[Math.floor(Math.random() * backdropLibraryContent.length)];
+        const backdrops = this.mergeDynamicBackdrops();
+
+        const item = backdrops[Math.floor(Math.random() * backdrops.length)];
         const vmCostume = {
             name: item.name,
             md5: item.md5ext,
@@ -375,7 +420,9 @@ CostumeTab.propTypes = {
             name: PropTypes.string.isRequired
         }))
     }),
-    vm: PropTypes.instanceOf(VM)
+    vm: PropTypes.instanceOf(VM),
+    dynamicCostumes: PropTypes.arrayOf(costumeShape),
+    dynamicBackdrops: PropTypes.arrayOf(costumeShape)
 };
 
 const mapStateToProps = state => ({
@@ -383,7 +430,9 @@ const mapStateToProps = state => ({
     isRtl: state.locales.isRtl,
     sprites: state.scratchGui.targets.sprites,
     stage: state.scratchGui.targets.stage,
-    dragging: state.scratchGui.assetDrag.dragging
+    dragging: state.scratchGui.assetDrag.dragging,
+    dynamicCostumes: state.scratchGui.dynamicAssets.costumes,
+    dynamicBackdrops: state.scratchGui.dynamicAssets.backdrops
 });
 
 const mapDispatchToProps = dispatch => ({

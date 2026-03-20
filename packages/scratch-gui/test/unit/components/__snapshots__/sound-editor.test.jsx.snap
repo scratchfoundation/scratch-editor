@@ -10,13 +10,13 @@ exports[`Sound Editor Component matches snapshot 1`] = `
         </span>
         <input
           class=""
-          tabindex="1"
           type="text"
           value="sound name"
         />
       </label>
       <div>
         <button
+          aria-label="Undo"
           title="Undo"
         >
           <img
@@ -25,6 +25,7 @@ exports[`Sound Editor Component matches snapshot 1`] = `
           />
         </button>
         <button
+          aria-label="Redo"
           title="Redo"
         >
           <img
@@ -161,6 +162,7 @@ exports[`Sound Editor Component matches snapshot 1`] = `
   >
     <div>
       <button
+        aria-label="Stop"
         class=""
         title="Stop"
       >

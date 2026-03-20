@@ -4,9 +4,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import {defineMessages, injectIntl} from 'react-intl';
 import intlShape from '../../lib/intlShape.js';
-// eslint-disable-next-line import/no-unresolved
-import {driver} from 'driver.js';
-import 'driver.js/dist/driver.css';
 
 import LibraryItem from '../../containers/library-item.jsx';
 import Modal from '../../containers/modal.jsx';
@@ -16,13 +13,9 @@ import TagButton from '../../containers/tag-button.jsx';
 import {legacyConfig} from '../../legacy-config';
 import Spinner from '../spinner/spinner.jsx';
 import {CATEGORIES} from '../../../src/lib/libraries/decks/index.jsx';
-import {getLocalStorageValue, setLocalStorageValue} from '../../lib/local-storage.js';
 
 import styles from './library.css';
 import {ModalFocusContext} from '../../contexts/modal-focus-context.jsx';
-
-const localStorageAvailable =
-    'localStorage' in window && window.localStorage !== null;
 
 const messages = defineMessages({
     filterPlaceholder: {
@@ -34,12 +27,6 @@ const messages = defineMessages({
         id: 'gui.library.allTag',
         defaultMessage: 'All',
         description: 'Label for library tag to revert to all items after filtering by tag.'
-    },
-    faceSensingModalCallout: {
-        id: 'gui.library.faceSensingCallout',
-        description: 'Description for Face Sensing callout',
-        // eslint-disable-next-line max-len
-        defaultMessage: 'You can now use your face to control your projects, like making a sprite follow wherever your nose goes!'
     },
     // Strings here need to be defined statically
     // https://formatjs.io/docs/getting-started/message-declaration/#pre-declaring-using-definemessage-for-later-consumption-less-recommended
@@ -135,18 +122,6 @@ const getItemIcons = function (item) {
     }
 };
 
-// Default to true to make sure we don't end up showing the feature
-// callouts multiple times if localStorage isn't available.
-const hasUsedFaceSensing = (username = 'guest') => {
-    if (!localStorageAvailable) return true;
-    return getLocalStorageValue('hasUsedFaceSensing', username) === true;
-};
-
-const setHasUsedFaceSensing = (username = 'guest') => {
-    if (!localStorageAvailable) return;
-    setLocalStorageValue('hasUsedFaceSensing', username, true);
-};
-
 const getMemberOnlyTags = data => (data && data.some(item => item.isMemberOnly) ? [MEMBERSHIP_TAG] : []);
 
 class LibraryComponent extends React.Component {
@@ -161,7 +136,6 @@ class LibraryComponent extends React.Component {
             'handlePlayingEnd',
             'handleSelect',
             'handleTagClick',
-            'handleScroll',
             'setFilteredDataRef'
         ]);
         this.state = {
@@ -169,11 +143,8 @@ class LibraryComponent extends React.Component {
             filterQuery: '',
             selectedTag: ALL_TAG.tag,
             loaded: false,
-            shouldShowFaceSensingCallout: props.showNewFeatureCallouts && !hasUsedFaceSensing(props.username),
             memberTags: getMemberOnlyTags(props.data)
         };
-
-        this.driver = null;
     }
     componentDidMount () {
         // Allow the spinner to display before loading the content
@@ -193,88 +164,12 @@ class LibraryComponent extends React.Component {
             prevState.selectedTag !== this.state.selectedTag) {
             this.scrollToTop();
         }
-
-        // We need to create the driver when the content is loaded for the target element to exist
-        if (!prevState.loaded && this.state.loaded && this.state.shouldShowFaceSensingCallout) {
-            const onFirstInteraction = e => {
-                // Make sure to clean up event listeners after first interaction
-                window.removeEventListener('click', onFirstInteraction);
-                window.removeEventListener('keydown', onFirstInteraction);
-
-                const isExtensionItemVisible = document.getElementById('faceSensing');
-                if (!isExtensionItemVisible) return;
-
-                if (e.type === 'keydown') {
-                    // Prevent focus from jumping to the next element in the tab order after keydown finishes
-                    e.preventDefault();
-                }
-
-                const tooltip = driver({
-                    allowClose: false,
-                    allowInteraction: true,
-                    overlayColor: 'transparent',
-                    popoverOffset: -2,
-                    steps: [{
-                        element: 'button[id="faceSensing"]',
-                        popover: {
-                            description: this.props.intl.formatMessage(messages.faceSensingModalCallout),
-                            side: 'left',
-                            align: 'start',
-                            popoverClass: 'tooltip-face-sensing-modal',
-                            showButtons: []
-                        }
-                    }]
-                });
-
-                this.driver = tooltip;
-                tooltip.drive();
-            };
-
-            window.addEventListener('click', onFirstInteraction, {once: true});
-            window.addEventListener('keydown', onFirstInteraction, {once: true});
-            
-            this.filteredDataRef.addEventListener('scroll', this.handleScroll);
-        }
-    }
-    componentWillUnmount () {
-        if (this.driver) {
-            this.driver.destroy();
-            this.driver = null;
-        }
-
-        if (this.animationFrameId) {
-            window.cancelAnimationFrame(this.animationFrameId);
-        }
-
-        this.filteredDataRef.removeEventListener('scroll', this.handleScroll);
     }
 
     static contextType = ModalFocusContext;
 
-    handleScroll () {
-        if (this.animationFrameId) return;
-
-        this.animationFrameId = window.requestAnimationFrame(() => {
-            if (this.driver) {
-                this.driver.refresh();
-            }
-
-            this.animationFrameId = null;
-        });
-    }
     handleSelect (id) {
         const selectedItem = this.getFilteredData().find(item => this.constructKey(item) === id);
-
-        if (this.state.shouldShowFaceSensingCallout && selectedItem.extensionId === 'faceSensing') {
-            if (!this.driver) {
-                return;
-            }
-
-            setHasUsedFaceSensing(this.props.username);
-            this.setState({
-                shouldShowFaceSensingCallout: false
-            });
-        }
 
         this.handleClose();
         this.props.onItemSelected(selectedItem);
@@ -399,7 +294,6 @@ class LibraryComponent extends React.Component {
             onMouseEnter={this.handleMouseEnter}
             onMouseLeave={this.handleMouseLeave}
             onSelect={this.handleSelect}
-            showItemCallout={this.state.shouldShowFaceSensingCallout && data.extensionId === 'faceSensing'}
             isMemberOnly={data.isMemberOnly}
         />);
     }
@@ -528,9 +422,7 @@ LibraryComponent.propTypes = {
     setStopHandler: PropTypes.func,
     showPlayButton: PropTypes.bool,
     tags: PropTypes.arrayOf(PropTypes.shape(TagButton.propTypes)),
-    title: PropTypes.string.isRequired,
-    username: PropTypes.string,
-    showNewFeatureCallouts: PropTypes.bool
+    title: PropTypes.string.isRequired
 };
 
 LibraryComponent.defaultProps = {

@@ -40,6 +40,7 @@ describe('Controls component', () => {
 
         test('when stop all button clicked triggers the right callback', () => {
             const props = defaultProps();
+            props.active = true;
             const {container} = renderWithIntl(<Controls {...props} />);
 
             const stopAllButton = container.querySelector('img[title="Stop"]');

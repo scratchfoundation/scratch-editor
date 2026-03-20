@@ -1,6 +1,6 @@
 {
   "name": "@scratch/task-herder",
-  "version": "12.5.0",
+  "version": "13.0.2",
   "description": "An asynchronous task runner with configurable rate limiting / throttling and concurrency control.",
   "keywords": [
     "rate limit",
@@ -10,16 +10,9 @@
     "concurrency",
     "concurrent"
   ],
-  "author": "Scratch Foundation",
   "license": "AGPL-3.0-only",
+  "author": "Scratch Foundation",
   "type": "module",
-  "files": [
-    "LICENSE",
-    "README.md",
-    "dist"
-  ],
-  "main": "dist/task-herder.umd.cjs",
-  "module": "dist/task-herder.js",
   "exports": {
     ".": {
       "import": "./dist/task-herder.js",
@@ -27,27 +20,37 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "main": "dist/task-herder.umd.cjs",
+  "module": "dist/task-herder.js",
+  "directories": {
+    "test": "test"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist"
+  ],
   "scripts": {
+    "build": "tsc --project tsconfig.build.json && vite build",
     "clean": "rimraf dist",
     "dev": "vite",
-    "build": "tsc --project tsconfig.build.json && vite build",
     "format": "prettier --write . && eslint --fix",
     "lint": "eslint && prettier --check .",
     "preview": "vite preview",
     "test": "npm run lint && vitest run --coverage"
   },
+  "overrides": {
+    "vite": "npm:rolldown-vite@7.3.1"
+  },
   "devDependencies": {
     "@vitest/coverage-v8": "4.0.18",
-    "eslint": "9.39.2",
-    "eslint-config-scratch": "12.0.49",
+    "eslint": "9.39.4",
+    "eslint-config-scratch": "14.0.4",
     "prettier": "3.8.1",
     "rimraf": "6.1.2",
     "typescript": "5.9.3",
     "unplugin-dts": "1.0.0-beta.6",
     "vite": "npm:rolldown-vite@7.3.1",
     "vitest": "4.0.18"
-  },
-  "overrides": {
-    "vite": "npm:rolldown-vite@7.3.1"
   }
 }

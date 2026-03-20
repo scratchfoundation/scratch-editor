@@ -25,9 +25,9 @@ const __blendColor = new Uint8ClampedArray(4);
 const __cpuTouchingColorPixelCount = 4e4;
 
 /**
- * @callback RenderWebGL#idFilterFunc
- * @param {int} drawableID The ID to filter.
- * @returns {bool} True if the ID passes the filter, otherwise false.
+ * @callback idFilterFunc
+ * @param {number} drawableID The ID to filter.
+ * @returns {boolean} True if the ID passes the filter, otherwise false.
  */
 
 /**

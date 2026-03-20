@@ -11,7 +11,7 @@ const externalDeps = [
   ...Object.keys(packageJson.dependencies || {}),
   ...Object.keys(packageJson.peerDependencies || {}),
   ...Object.keys(packageJson.optionalDependencies || {}),
-].map(name => new RegExp(`^${name}(?:/.*)?$`))
+].map((name) => new RegExp(`^${name}(?:/.*)?$`))
 
 export default defineConfig({
   build: {
@@ -28,7 +28,7 @@ export default defineConfig({
          * @param {string} depName - The name of a dependency
          * @returns {string} - The global variable name to use for the dependency
          */
-        globals: depName => {
+        globals: (depName) => {
           switch (depName) {
             case 'p-limit':
               return 'pLimit'

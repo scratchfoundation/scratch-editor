@@ -3,7 +3,8 @@ import defaultsDeep from 'lodash.defaultsdeep';
 import PropTypes from 'prop-types';
 import React from 'react';
 import CustomProceduresComponent from '../components/custom-procedures/custom-procedures.jsx';
-import ScratchBlocks from 'scratch-blocks';
+import {getColorsForMode, colorModeMap} from '../lib/settings/color-mode';
+import * as ScratchBlocks from 'scratch-blocks';
 import {connect} from 'react-redux';
 
 class CustomProcedures extends React.Component {
@@ -37,11 +38,12 @@ class CustomProcedures extends React.Component {
             {rtl: this.props.isRtl}
         );
 
-        // @todo This is a hack to make there be no toolbox.
-        const oldDefaultToolbox = ScratchBlocks.Blocks.defaultToolbox;
-        ScratchBlocks.Blocks.defaultToolbox = null;
+        const theme = new ScratchBlocks.Theme(
+            this.props.colorMode,
+            getColorsForMode(this.props.colorMode)
+        );
+        workspaceConfig.theme = theme;
         this.workspace = ScratchBlocks.inject(this.blocks, workspaceConfig);
-        ScratchBlocks.Blocks.defaultToolbox = oldDefaultToolbox;
 
         // Create the procedure declaration block for editing the mutation.
         this.mutationRoot = this.workspace.newBlock('procedures_declaration');
@@ -158,6 +160,7 @@ CustomProcedures.propTypes = {
     isRtl: PropTypes.bool,
     mutator: PropTypes.instanceOf(Element),
     onRequestClose: PropTypes.func.isRequired,
+    colorMode: PropTypes.oneOf(Object.keys(colorModeMap)),
     options: PropTypes.shape({
         media: PropTypes.string,
         zoom: PropTypes.shape({
@@ -178,7 +181,9 @@ CustomProcedures.defaultOptions = {
     },
     comments: false,
     collapse: false,
-    scrollbars: true
+    scrollbars: true,
+    modalInputs: false,
+    sounds: false
 };
 
 CustomProcedures.defaultProps = {

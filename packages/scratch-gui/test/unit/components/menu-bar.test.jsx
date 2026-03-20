@@ -11,6 +11,7 @@ import {PLATFORM} from '../../../src/lib/platform';
 import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux';
 import VM from '@scratch/scratch-vm';
+import {MenuRefProvider} from '../../../src/contexts/menu-ref-context.jsx';
 
 describe('MenuBar Component', () => {
     const store = configureStore()({
@@ -37,19 +38,23 @@ describe('MenuBar Component', () => {
     });
 
     const getComponent = function (props = {}) {
-        return <Provider store={store}><MenuBar {...props} /></Provider>;
+        return (<Provider store={store}>
+            <MenuRefProvider>
+                <MenuBar {...props} />
+            </MenuRefProvider>
+        </Provider>);
     };
 
     test('menu bar with no About handler has no About button', () => {
         const {container} = renderWithIntl(getComponent());
-        const button = container.querySelector('button');
+        const button = container.querySelector('button[aria-label="About menu"]');
         expect(button).toBeFalsy();
     });
 
     test('menu bar with an About handler has an About button', () => {
         const onClickAbout = jest.fn();
         const {container} = renderWithIntl(getComponent({onClickAbout}));
-        const button = container.querySelector('button');
+        const button = container.querySelector('button[aria-label="About menu"]');
         expect(button).toBeTruthy();
     });
 
@@ -57,7 +62,7 @@ describe('MenuBar Component', () => {
         test('clicking on About button calls the handler', () => {
             const onClickAbout = jest.fn();
             const {container} = renderWithIntl(getComponent({onClickAbout}));
-            const button = container.querySelector('button');
+            const button = container.querySelector('button[aria-label="About menu"]');
     
             fireEvent.click(button);
             expect(onClickAbout).toHaveBeenCalledTimes(1);
@@ -66,7 +71,7 @@ describe('MenuBar Component', () => {
         test('not clicking on About button does not call the handler', () => {
             const onClickAbout = jest.fn();
             const {container} = renderWithIntl(getComponent({onClickAbout}));
-            const button = container.querySelector('button');
+            const button = container.querySelector('button[aria-label="About menu"]');
     
             expect(onClickAbout).toHaveBeenCalledTimes(0);
         });
