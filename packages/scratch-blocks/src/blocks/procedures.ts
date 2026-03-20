@@ -876,6 +876,26 @@ function updateArgumentReporterNames_(
   }
 }
 
+/**
+ * Override showContextMenu on an argument reporter block so that right-clicks
+ * while the block is seated inside a procedures_prototype delegate up to the
+ * prototype (which in turn delegates to the parent procedures_definition).
+ * When the reporter has been dragged out and lives elsewhere, it keeps its
+ * normal context menu.
+ * @param block The argument reporter block to configure.
+ */
+function delegateContextMenuToPrototypeParent(block: Blockly.BlockSvg) {
+  const origShowContextMenu = block.showContextMenu.bind(block)
+  block.showContextMenu = function (this: Blockly.BlockSvg, e: Event) {
+    const parent = this.getParent()
+    if (parent?.type === 'procedures_prototype') {
+      parent.showContextMenu(e)
+    } else {
+      origShowContextMenu(e)
+    }
+  }
+}
+
 Blockly.Blocks.procedures_definition = {
   /**
    * Block for defining a procedure with no return value.
@@ -942,6 +962,18 @@ Blockly.Blocks.procedures_prototype = {
     // drag operations to the parent (procedures_definition) block.
     this.setDeletable(false)
     this.setDragStrategy(new DelegateToParentDraggable(this))
+
+    // Delegate right-clicks to the parent define block so that "Add Comment",
+    // "Edit", etc. act on the definition rather than the prototype itself.
+    const protoOrigShowContextMenu = this.showContextMenu.bind(this)
+    this.showContextMenu = function (this: Blockly.BlockSvg, e: Event) {
+      const parent = this.getParent()
+      if (parent) {
+        parent.showContextMenu(e)
+      } else {
+        protoOrigShowContextMenu(e)
+      }
+    }
 
     /* Data known about the procedure. */
     this.procCode_ = ''
@@ -1038,6 +1070,7 @@ Blockly.Blocks.argument_reporter_boolean = {
       extensions: ['colours_more', 'output_boolean'],
     })
     this.setDragStrategy(new DuplicateOnDragDraggable(this))
+    delegateContextMenuToPrototypeParent(this)
   },
 }
 
@@ -1055,6 +1088,7 @@ Blockly.Blocks.argument_reporter_string_number = {
       extensions: ['colours_more', 'output_number', 'output_string'],
     })
     this.setDragStrategy(new DuplicateOnDragDraggable(this))
+    delegateContextMenuToPrototypeParent(this)
   },
 }
 
