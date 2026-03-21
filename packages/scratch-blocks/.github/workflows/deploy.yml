@@ -3,34 +3,34 @@ on:
   push: # Runs whenever a commit is pushed to the repository
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
 jobs:
-  setup:
+  lint:
     runs-on: ubuntu-latest
-    env:
-      PROJECT_PATH: ./scratch-blocks
     steps:
-      - run: |
-          for F in chrome chromium chromedriver; do
-            which $F && $F --version || echo Not found: $F
-          done
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-      - name: Check Python version
-        run: python --version
       - name: Setup Node
         uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6
         with:
           node-version-file: '.nvmrc'
-      # TODO: tests
+      - name: Install Node Dependencies
+        run: npm ci
+      - name: Run lint
+        run: npm run test:lint
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+      - name: Setup Node
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6
+        with:
+          node-version-file: '.nvmrc'
       - name: Install Node Dependencies
         run: npm ci
       - name: Build
         run: npm run build
-      # - name: Deploy playground to GitHub Pages
-      #   uses: peaceiris/actions-gh-pages@373f7f263a76c20808c831209c920827a82a2847 # v3
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     publish_dir: ./gh-pages
-      #     full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
-      #     enable_jekyll: true
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+      - name: Run tests
+        run: npm test
       - name: Run semantic-release
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

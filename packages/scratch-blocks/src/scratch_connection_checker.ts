@@ -16,8 +16,7 @@ class ScratchConnectionChecker extends Blockly.ConnectionChecker {
   ): number {
     // The prototype's next connection is visual-only and should not accept any connections.
     const isPrototypeNextConn = (c: Blockly.Connection | null) =>
-      c?.type === Blockly.ConnectionType.NEXT_STATEMENT &&
-      c.getSourceBlock().type === 'procedures_prototype'
+      c?.type === Blockly.ConnectionType.NEXT_STATEMENT && c.getSourceBlock().type === 'procedures_prototype'
     if (isPrototypeNextConn(a) || isPrototypeNextConn(b)) {
       return Blockly.Connection.REASON_CHECKS_FAILED
     }

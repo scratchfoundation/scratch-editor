@@ -1,47 +1,28 @@
-# OSX
+# macOS
 .DS_Store
 
-# NPM
+# npm
 /node_modules
 npm-*
-
-# Localization / I18N
-common.pyc
-.settings
-.project
-*.pyc
-*.komodoproject
-/nbproject/private/
-
-# Unused by scratch-blocks
-dart_compressed.js
-javascript_compressed.js
-lua_compressed.js
-php_compressed.js
-python_compressed.js
 
 # Editor
 .vscode
 
-/accessible/*
+# Build output
 /build
 /dist
+
+# Locale message files (all locales except English are generated)
 /msg/js/*
 !/msg/js/en.js
 /msg/json/*
 !/msg/json/en.json
-/blockly_compressed_horizontal.js
-/blockly_compressed_vertical.js
-/blockly_uncompressed_horizontal.js
-/blockly_uncompressed_vertical.js
-/blocks_compressed_horizontal.js
-/blocks_compressed_vertical.js
-/blocks_compressed.js
-/gh-pages/main.js
-/gh-pages/playgrounds
+
+# GitHub Pages (Jekyll)
 /gh-pages/Gemfile.lock
-/gh-pages/closure-library
 /gh-pages/_site
-/*compiler*.jar
-/local_blockly_compressed_vertical.js
-/chromedriver
+/gh-pages/main.js
+
+# Browser test artifacts like failure screenshots
+/.vitest-attachments/
+/tests/browser/__screenshots__/
