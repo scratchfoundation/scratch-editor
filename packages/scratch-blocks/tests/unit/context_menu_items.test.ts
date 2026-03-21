@@ -3,13 +3,42 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import * as Blockly from 'blockly/core'
-import { afterEach, assert, beforeEach, describe, expect, it } from 'vitest'
-import '../../src/context_menu_items'
+import { afterAll, afterEach, assert, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { registerDeleteBlock } from '../../src/context_menu_items'
 
-// Tests for scratch-specific context menu overrides.
-// Covers issue #3470 (copy/cut/paste includes "next" blocks).
+// Tests for the scratch-specific delete context menu override (registerDeleteBlock).
+// The copy/cut/paste override (registerDuplicateBlock, issue #3470) is tested
+// in tests/browser/context_menu_items.test.ts.
 
 let workspace: Blockly.Workspace
+let originalDeleteBlock: string
+let originalDeleteXBlocks: string
+let originalDeleteItem: Blockly.ContextMenuRegistry.RegistryItem | null = null
+
+beforeAll(() => {
+  // Save and override messages used by the delete option's displayText.
+  // Restored in afterAll to avoid polluting other test files.
+  originalDeleteBlock = Blockly.Msg.DELETE_BLOCK
+  originalDeleteXBlocks = Blockly.Msg.DELETE_X_BLOCKS
+  Blockly.Msg.DELETE_BLOCK = 'Delete Block'
+  Blockly.Msg.DELETE_X_BLOCKS = 'Delete %1 Blocks'
+  // Capture and unregister the default 'blockDelete' item so we can register
+  // the scratch-specific override. Restored in afterAll.
+  originalDeleteItem = Blockly.ContextMenuRegistry.registry.getItem('blockDelete')
+  if (originalDeleteItem) {
+    Blockly.ContextMenuRegistry.registry.unregister('blockDelete')
+  }
+  registerDeleteBlock()
+})
+
+afterAll(() => {
+  Blockly.ContextMenuRegistry.registry.unregister('blockDelete')
+  if (originalDeleteItem) {
+    Blockly.ContextMenuRegistry.registry.register(originalDeleteItem)
+  }
+  Blockly.Msg.DELETE_BLOCK = originalDeleteBlock
+  Blockly.Msg.DELETE_X_BLOCKS = originalDeleteXBlocks
+})
 
 beforeEach(() => {
   workspace = new Blockly.Workspace()
@@ -20,31 +49,33 @@ beforeEach(() => {
       previousStatement: null,
       nextStatement: null,
     },
-    {
-      type: 'test_shadow_block',
-      message0: 'shadow',
-      output: null,
-    },
   ])
 })
 
 afterEach(() => {
   workspace.dispose()
   delete Blockly.Blocks.test_stack_block
-  delete Blockly.Blocks.test_shadow_block
 })
 
 // ---------------------------------------------------------------------------
-// getDeletableBlocksInStack — shadow exclusion (scratch-specific behavior)
+// registerDeleteBlock — shadow exclusion and next-block exclusion
 // ---------------------------------------------------------------------------
 
-describe('registerDeleteBlock — shadow exclusion from delete count', () => {
-  it('counts non-shadow descendants only', () => {
-    // registerDeleteBlock registers a 'blockDelete' option that uses
-    // getDeletableBlocksInStack, which excludes shadow blocks.
-    // We test this indirectly: Blockly's default counts shadows; scratch does not.
-    //
-    // Create a block with a value input whose shadow is attached.
+describe('registerDeleteBlock', () => {
+  it('registers an item with id "blockDelete"', () => {
+    expect(Blockly.ContextMenuRegistry.registry.getItem('blockDelete')).not.toBeNull()
+  })
+
+  it('displayText uses singular form for a single deletable block', () => {
+    const block = workspace.newBlock('test_stack_block')
+    const item = Blockly.ContextMenuRegistry.registry.getItem('blockDelete')
+    assert(item, 'Expected blockDelete item to be registered')
+    const displayFn = item.displayText as (scope: Blockly.ContextMenuRegistry.Scope) => string
+    const text = displayFn({ block: block as unknown as Blockly.BlockSvg })
+    expect(text).toBe('Delete Block')
+  })
+
+  it('displayText excludes shadow blocks from count (shadow is not deletable)', () => {
     Blockly.defineBlocksWithJsonArray([
       {
         type: 'test_value_block',
@@ -53,34 +84,55 @@ describe('registerDeleteBlock — shadow exclusion from delete count', () => {
         previousStatement: null,
         nextStatement: null,
       },
+      {
+        type: 'test_output_block',
+        message0: 'output',
+        output: null,
+      },
     ])
-
     try {
       const parent = workspace.newBlock('test_value_block')
-      const shadow = workspace.newBlock('test_shadow_block')
+      const shadow = workspace.newBlock('test_output_block')
       shadow.setShadow(true)
-      const inputConn = parent.getInput('VALUE')?.connection
-      const outputConn = shadow.outputConnection
-      assert(inputConn, 'Expected VALUE input connection')
-      assert(outputConn, 'Expected output connection')
-      inputConn.connect(outputConn)
+      const shadowInputConn = parent.getInput('VALUE')?.connection
+      const shadowOutputConn = shadow.outputConnection
+      assert(shadowInputConn, 'Expected VALUE input connection')
+      assert(shadowOutputConn, 'Expected shadow output connection')
+      shadowInputConn.connect(shadowOutputConn)
 
-      // getAllBlocks returns 2 (parent + shadow).
+      // getAllBlocks returns 2 (parent + shadow), but the scratch delete option
+      // excludes shadows — getDeletableBlocksInStack counts only 1.
       expect(workspace.getAllBlocks(false)).toHaveLength(2)
-
-      // scratch's getDeletableBlocksInStack: shadow is !isDeletable(), so count = 1.
-      // Verify that the shadow block reports as not deletable.
-      expect(shadow.isDeletable()).toBe(false)
-      expect(parent.isDeletable()).toBe(true)
+      const item = Blockly.ContextMenuRegistry.registry.getItem('blockDelete')
+      assert(item, 'Expected blockDelete item to be registered')
+      const displayFn = item.displayText as (scope: Blockly.ContextMenuRegistry.Scope) => string
+      const text = displayFn({ block: parent as unknown as Blockly.BlockSvg })
+      expect(text).toBe('Delete Block')
     } finally {
       delete Blockly.Blocks.test_value_block
+      delete Blockly.Blocks.test_output_block
     }
   })
 
-  it('excludes next-block descendants from the delete count of the top block', () => {
-    // getDeletableBlocksInStack: if block has a next block, the next block and
-    // its descendants are excluded from the count (next blocks are not deleted
-    // when you delete a single block via the context menu).
+  it('displayText excludes next-block descendants from count', () => {
+    const first = workspace.newBlock('test_stack_block')
+    const second = workspace.newBlock('test_stack_block')
+    const nextConn = first.nextConnection
+    const prevConn = second.previousConnection
+    assert(nextConn, 'Expected next connection')
+    assert(prevConn, 'Expected previous connection')
+    nextConn.connect(prevConn)
+
+    // first + second = 2 deletable blocks connected via next.
+    // getDeletableBlocksInStack excludes next-block descendants → count = 1.
+    const item = Blockly.ContextMenuRegistry.registry.getItem('blockDelete')
+    assert(item, 'Expected blockDelete item to be registered')
+    const displayFn = item.displayText as (scope: Blockly.ContextMenuRegistry.Scope) => string
+    const text = displayFn({ block: first as unknown as Blockly.BlockSvg })
+    expect(text).toBe('Delete Block')
+  })
+
+  it('displayText uses plural form when stack has multiple deletable blocks', () => {
     Blockly.defineBlocksWithJsonArray([
       {
         type: 'test_value_block',
@@ -89,24 +141,30 @@ describe('registerDeleteBlock — shadow exclusion from delete count', () => {
         previousStatement: null,
         nextStatement: null,
       },
+      {
+        type: 'test_output_block',
+        message0: 'output',
+        output: null,
+      },
     ])
-
     try {
-      const first = workspace.newBlock('test_stack_block')
-      const second = workspace.newBlock('test_stack_block')
-      const nextConn = first.nextConnection
-      const prevConn = second.previousConnection
-      assert(nextConn, 'Expected next connection')
-      assert(prevConn, 'Expected previous connection')
-      nextConn.connect(prevConn)
+      // A non-shadow child attached to a value input → 2 deletable blocks.
+      const parent = workspace.newBlock('test_value_block')
+      const child = workspace.newBlock('test_output_block')
+      const childInputConn = parent.getInput('VALUE')?.connection
+      const childOutputConn = child.outputConnection
+      assert(childInputConn, 'Expected VALUE input connection')
+      assert(childOutputConn, 'Expected child output connection')
+      childInputConn.connect(childOutputConn)
 
-      // first has a next block (second). getDeletableBlocksInStack should
-      // return only [first], not [first, second].
-      // We verify this by checking that the next block is actually connected.
-      expect(first.getNextBlock()).toBe(second)
-      expect(second.getPreviousBlock()).toBe(first)
+      const item = Blockly.ContextMenuRegistry.registry.getItem('blockDelete')
+      assert(item, 'Expected blockDelete item to be registered')
+      const displayFn = item.displayText as (scope: Blockly.ContextMenuRegistry.Scope) => string
+      const text = displayFn({ block: parent as unknown as Blockly.BlockSvg })
+      expect(text).toBe('Delete 2 Blocks')
     } finally {
       delete Blockly.Blocks.test_value_block
+      delete Blockly.Blocks.test_output_block
     }
   })
 })

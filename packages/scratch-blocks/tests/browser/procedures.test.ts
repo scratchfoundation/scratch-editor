@@ -227,37 +227,24 @@ describe('context menu delegation', () => {
   })
 
   it('right-clicking a reporter that has been dragged out keeps its own context menu', () => {
-    // Create a reporter that is NOT inside a prototype (no parent of type procedures_prototype).
-    Blockly.defineBlocksWithJsonArray([
-      {
-        type: 'argument_reporter_string_number_outer',
-        message0: '%1',
-        args0: [{ type: 'field_label', name: 'VALUE', text: 'x' }],
-      },
-    ])
-    try {
-      // Load a standalone reporter (not connected to a prototype).
-      loadXml(`
-        <xml>
-          <block type="argument_reporter_string_number">
-            <field name="VALUE">x</field>
-          </block>
-        </xml>
-      `)
+    // Load a standalone reporter (not connected to a prototype).
+    // argument_reporter_string_number is already registered via src/blocks/procedures.
+    loadXml(`
+      <xml>
+        <block type="argument_reporter_string_number">
+          <field name="VALUE">x</field>
+        </block>
+      </xml>
+    `)
 
-      const reporter = workspace.getAllBlocks(false).find((b) => b.type === 'argument_reporter_string_number')
-      assert(reporter, 'Expected argument_reporter_string_number block')
+    const reporter = workspace.getAllBlocks(false).find((b) => b.type === 'argument_reporter_string_number')
+    assert(reporter, 'Expected argument_reporter_string_number block')
 
-      // The reporter has no prototype parent, so its own handler should run.
-      // delegateContextMenuToPrototypeParent captures the original in closure;
-      // we verify it falls through by checking getParent() returns null.
-      expect(reporter.getParent()).toBeNull()
+    // The reporter has no prototype parent, so its own handler should run.
+    expect(reporter.getParent()).toBeNull()
 
-      // showContextMenu should not throw (calls original handler).
-      const mockEvent = new PointerEvent('pointerdown')
-      expect(() => reporter.showContextMenu(mockEvent)).not.toThrow()
-    } finally {
-      delete Blockly.Blocks.argument_reporter_string_number_outer
-    }
+    // showContextMenu should not throw (calls original handler).
+    const mockEvent = new PointerEvent('pointerdown')
+    expect(() => reporter.showContextMenu(mockEvent)).not.toThrow()
   })
 })

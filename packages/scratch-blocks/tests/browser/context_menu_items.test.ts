@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import * as Blockly from 'blockly/core'
-import { afterEach, assert, beforeEach, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, assert, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { registerDuplicateBlock } from '../../src/context_menu_items'
 
 // Browser test for registerDuplicateBlock — verifies that the scratch-specific
 // duplicate behavior includes blocks connected via the "next" connection.
@@ -11,6 +12,28 @@ import { afterEach, assert, beforeEach, describe, expect, it } from 'vitest'
 
 let container: HTMLElement
 let workspace: Blockly.WorkspaceSvg
+let originalDuplicateItem: Blockly.ContextMenuRegistry.RegistryItem | null = null
+
+beforeAll(() => {
+  // Blockly.inject registers the default 'blockDuplicate' item; capture it
+  // first so we can restore it after the suite.
+  // We use a temporary container to force item registration.
+  const tmp = document.createElement('div')
+  document.body.appendChild(tmp)
+  const tmpWs = Blockly.inject(tmp, {})
+  originalDuplicateItem = Blockly.ContextMenuRegistry.registry.getItem('blockDuplicate')
+  tmpWs.dispose()
+  tmp.remove()
+
+  registerDuplicateBlock()
+})
+
+afterAll(() => {
+  Blockly.ContextMenuRegistry.registry.unregister('blockDuplicate')
+  if (originalDuplicateItem) {
+    Blockly.ContextMenuRegistry.registry.register(originalDuplicateItem)
+  }
+})
 
 beforeEach(() => {
   container = document.createElement('div')
@@ -34,9 +57,37 @@ afterEach(() => {
   workspace.dispose()
   container.remove()
   delete Blockly.Blocks.test_stack_block
+  vi.restoreAllMocks()
 })
 
-describe('registerDuplicateBlock — toCopyData includes next connection (issue #3470)', () => {
+// ---------------------------------------------------------------------------
+// registerDuplicateBlock — callback calls toCopyData(true)
+// ---------------------------------------------------------------------------
+
+describe('registerDuplicateBlock — scratch override (issue #3470)', () => {
+  it('the registered callback calls toCopyData(true) on the block', () => {
+    Blockly.Xml.domToWorkspace(
+      Blockly.utils.xml.textToDom(`
+        <xml>
+          <block type="test_stack_block">
+            <field name="NUM">1</field>
+          </block>
+        </xml>
+      `),
+      workspace,
+    )
+
+    const block = workspace.getAllBlocks(false)[0]
+    const toCopyDataSpy = vi.spyOn(block, 'toCopyData').mockReturnValue(null)
+
+    const item = Blockly.ContextMenuRegistry.registry.getItem('blockDuplicate')
+    assert(item, 'Expected blockDuplicate item to be registered')
+    const callback = item.callback as (scope: Blockly.ContextMenuRegistry.Scope) => void
+    callback({ block })
+
+    expect(toCopyDataSpy).toHaveBeenCalledWith(true)
+  })
+
   it('toCopyData(true) serialises the next block; toCopyData(false) does not', () => {
     Blockly.Xml.domToWorkspace(
       Blockly.utils.xml.textToDom(`
@@ -58,8 +109,6 @@ describe('registerDuplicateBlock — toCopyData includes next connection (issue 
     const first = blocks.find((b) => b.getNextBlock() !== null)
     assert(first, 'Expected a block with a next connection')
 
-    // registerDuplicateBlock calls toCopyData(true) to include subsequent blocks
-    // (the scratch-specific behaviour that fixed #3470).
     const withNext = first.toCopyData(true)
     const withoutNext = first.toCopyData(false)
 
