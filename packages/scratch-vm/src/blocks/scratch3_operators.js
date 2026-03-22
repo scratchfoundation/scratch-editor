@@ -55,7 +55,7 @@ class Scratch3OperatorsBlocks {
     }
 
     power (args) {
-        return Cast.toNumber(args.NUM1) ** Cast.toNumber(args.NUM2);
+        return Math.pow(Cast.toNumber(args.NUM1), Cast.toNumber(args.NUM2));
     }
 
     lt (args) {
