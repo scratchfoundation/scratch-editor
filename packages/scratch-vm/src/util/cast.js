@@ -167,7 +167,7 @@ class Cast {
             return true;
         } else if (typeof val === 'string') {
             // If it contains an 'e' (scientific notation), parse it numerically to check if it's an int.
-            if (val.toLowerCase().split('e').length <= 2) {
+            if (val.toLowerCase().split('e').length === 2) {
                 return Number(val) === parseInt(Number(val), 10);
             } else {
                 // If it contains a decimal point, don't consider it an int.
