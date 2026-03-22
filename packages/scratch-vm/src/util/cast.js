@@ -166,8 +166,13 @@ class Cast {
             // `True` and `false` always represent integer after Scratch cast.
             return true;
         } else if (typeof val === 'string') {
-            // If it contains a decimal point, don't consider it an int.
-            return val.indexOf('.') < 0;
+            // If it contains an 'e' (scientific notation), parse it numerically to check if it's an int.
+            if (val.toLowerCase().split('e').length <= 2) {
+                return Number(val) === parseInt(Number(val), 10);
+            } else {
+                // If it contains a decimal point, don't consider it an int.
+                return val.indexOf('.') < 0;
+            }
         }
         return false;
     }
