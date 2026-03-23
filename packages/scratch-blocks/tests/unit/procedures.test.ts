@@ -11,14 +11,22 @@ import { getCallers, ScratchProcedures } from '../../src/procedures'
 // PRs #3492 (context menu delegation) and #3493 (arg reporter duplication).
 
 // The old tests used new Blockly.Workspace() and cast as needed.
-// getCallers() takes WorkspaceSvg/BlockSvg by type signature, but at runtime
-// it only calls methods available on headless Workspace/Block too.
+// getCallers() only relies on workspace/block traversal APIs, which are
+// available on headless Workspace/Block too.
 type HeadlessWorkspace = Blockly.Workspace & {
   getTopBlocks(): Blockly.Block[]
   hideChaff(): void
 }
 
 let workspace: HeadlessWorkspace
+
+function getRequiredBlock(id: string): Blockly.Block {
+  const block = workspace.getBlockById(id)
+  if (!block) {
+    throw new Error(`Expected block with id ${id}`)
+  }
+  return block
+}
 
 function setUp() {
   // Register stub procedure call block with getProcCode.
@@ -49,7 +57,7 @@ function setUp() {
       })
     },
   }
-  workspace = new Blockly.Workspace() as unknown as HeadlessWorkspace
+  workspace = new Blockly.Workspace() as HeadlessWorkspace
   // BlockSvg.prototype.checkAndDelete calls workspace.hideChaff(), which only
   // exists on WorkspaceSvg. Add a no-op stub so the headless workspace works.
   workspace.hideChaff = () => undefined
@@ -89,12 +97,7 @@ describe('getCallers', () => {
       </xml>`,
     )
     setCode('test_1', 'test_procedure')
-    const callers = getCallers(
-      'test_procedure',
-      workspace as unknown as Blockly.WorkspaceSvg,
-      { id: '' } as unknown as Blockly.BlockSvg,
-      false,
-    )
+    const callers = getCallers('test_procedure', workspace, { id: '' }, false)
     expect(callers).toHaveLength(1)
     expect(callers[0].id).toBe('test_1')
   })
@@ -106,12 +109,7 @@ describe('getCallers', () => {
       </xml>`,
     )
     const rootBlock = setCode('test_1', 'test_procedure')
-    const callers = getCallers(
-      'test_procedure',
-      workspace as unknown as Blockly.WorkspaceSvg,
-      rootBlock as unknown as Blockly.BlockSvg,
-      false,
-    )
+    const callers = getCallers('test_procedure', workspace, rootBlock, false)
     expect(callers).toHaveLength(0)
   })
 
@@ -122,12 +120,7 @@ describe('getCallers', () => {
       </xml>`,
     )
     const rootBlock = setCode('test_1', 'test_procedure')
-    const callers = getCallers(
-      'test_procedure',
-      workspace as unknown as Blockly.WorkspaceSvg,
-      rootBlock as unknown as Blockly.BlockSvg,
-      true,
-    )
+    const callers = getCallers('test_procedure', workspace, rootBlock, true)
     expect(callers).toHaveLength(1)
     expect(callers[0].id).toBe('test_1')
   })
@@ -138,12 +131,7 @@ describe('getCallers', () => {
         <block type="foo" id="test_1" x="0" y="0"></block>
       </xml>`,
     )
-    const callers = getCallers(
-      'test_procedure',
-      workspace as unknown as Blockly.WorkspaceSvg,
-      { id: '' } as unknown as Blockly.BlockSvg,
-      false,
-    )
+    const callers = getCallers('test_procedure', workspace, { id: '' }, false)
     expect(callers).toHaveLength(0)
   })
 
@@ -154,12 +142,7 @@ describe('getCallers', () => {
       </xml>`,
     )
     setCode('test_1', 'wrong procedure')
-    const callers = getCallers(
-      'test_procedure',
-      workspace as unknown as Blockly.WorkspaceSvg,
-      { id: '' } as unknown as Blockly.BlockSvg,
-      false,
-    )
+    const callers = getCallers('test_procedure', workspace, { id: '' }, false)
     expect(callers).toHaveLength(0)
   })
 
@@ -178,12 +161,7 @@ describe('getCallers', () => {
       </xml>`,
     )
     setCode('test_3', 'test_procedure')
-    const callers = getCallers(
-      'test_procedure',
-      workspace as unknown as Blockly.WorkspaceSvg,
-      { id: '' } as unknown as Blockly.BlockSvg,
-      false,
-    )
+    const callers = getCallers('test_procedure', workspace, { id: '' }, false)
     expect(callers).toHaveLength(1)
     expect(callers[0].id).toBe('test_3')
   })
@@ -197,12 +175,7 @@ describe('getCallers', () => {
       </xml>`,
     )
     setCode('test_2', 'test_procedure')
-    const callers = getCallers(
-      'test_procedure',
-      workspace as unknown as Blockly.WorkspaceSvg,
-      { id: '' } as unknown as Blockly.BlockSvg,
-      false,
-    )
+    const callers = getCallers('test_procedure', workspace, { id: '' }, false)
     expect(callers).toHaveLength(1)
     expect(callers[0].id).toBe('test_2')
   })
@@ -216,12 +189,7 @@ describe('getCallers', () => {
     )
     setCode('test_1', 'test_procedure')
     setCode('test_2', 'test_procedure')
-    const callers = getCallers(
-      'test_procedure',
-      workspace as unknown as Blockly.WorkspaceSvg,
-      { id: '' } as unknown as Blockly.BlockSvg,
-      false,
-    )
+    const callers = getCallers('test_procedure', workspace, { id: '' }, false)
     expect(callers).toHaveLength(2)
     const ids = callers.map((c) => c.id)
     expect(ids).toContain('test_1')
@@ -246,12 +214,9 @@ describe('deleteProcedureDefCallback', () => {
       </xml>`,
     )
     setCode('test_1', 'test_procedure')
-    const rootBlock = workspace.getBlockById('test_1') as Blockly.BlockSvg
+    const rootBlock = getRequiredBlock('test_1')
 
-    const result = ScratchProcedures.deleteProcedureDefCallback(
-      'test_procedure',
-      rootBlock as unknown as Blockly.BlockSvg,
-    )
+    const result = ScratchProcedures.deleteProcedureDefCallback('test_procedure', rootBlock)
 
     expect(result).toBe(true)
     // The other two blocks should remain.
@@ -273,12 +238,9 @@ describe('deleteProcedureDefCallback', () => {
       </xml>`,
     )
     setCode('test_3', 'test_procedure')
-    const rootBlock = workspace.getBlockById('test_1') as Blockly.BlockSvg
+    const rootBlock = getRequiredBlock('test_1')
 
-    const result = ScratchProcedures.deleteProcedureDefCallback(
-      'test_procedure',
-      rootBlock as unknown as Blockly.BlockSvg,
-    )
+    const result = ScratchProcedures.deleteProcedureDefCallback('test_procedure', rootBlock)
 
     expect(result).toBe(true)
     expect(workspace.getTopBlocks()).toHaveLength(0)
@@ -294,12 +256,9 @@ describe('deleteProcedureDefCallback', () => {
     )
     setCode('test_1', 'test_procedure')
     // The definition root is test_2 (a non-caller block) while test_1 is the caller.
-    const rootBlock = workspace.getBlockById('test_2') as Blockly.BlockSvg
+    const rootBlock = getRequiredBlock('test_2')
 
-    const result = ScratchProcedures.deleteProcedureDefCallback(
-      'test_procedure',
-      rootBlock as unknown as Blockly.BlockSvg,
-    )
+    const result = ScratchProcedures.deleteProcedureDefCallback('test_procedure', rootBlock)
 
     expect(result).toBe(false)
     // All three blocks should remain.
