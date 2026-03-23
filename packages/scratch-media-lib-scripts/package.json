@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-media-lib-scripts",
-  "version": "13.3.0",
+  "version": "14.0.0-accessibility-improvements",
   "description": "Build scripts for Scratch media library assets",
   "main": "index.js",
   "bin": {
