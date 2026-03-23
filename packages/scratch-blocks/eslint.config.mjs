@@ -17,35 +17,19 @@ export default eslintConfigScratch.defineConfig(
     plugins: { '@typescript-eslint': tseslint.plugin },
   },
   {
-    // TypeScript rule overrides (type-checked rules must be scoped to TS files)
-    // Fixing these requires non-trivial adjustments to code that was written before these rules were in place.
-    files: ['src/**/*.{ts,tsx,mts,cts}'],
+    // TODO: upstream to eslint-config-scratch
+    files: ['**/*.{ts,tsx,mts,cts}'],
     rules: {
-      // TODO: improve TypeScript type annotations to remove `any` usage
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
-      '@typescript-eslint/no-unsafe-assignment': 'warn',
-      '@typescript-eslint/no-unsafe-call': 'warn',
-      '@typescript-eslint/no-unsafe-enum-comparison': 'warn',
-      '@typescript-eslint/no-unsafe-member-access': 'warn',
-      '@typescript-eslint/no-unsafe-return': 'warn',
-      '@typescript-eslint/unbound-method': 'warn',
-
-      // TODO: fix incrementally
-      '@typescript-eslint/no-non-null-assertion': 'warn',
-      '@typescript-eslint/no-unnecessary-condition': 'warn',
-      '@typescript-eslint/prefer-nullish-coalescing': 'warn',
-      '@typescript-eslint/no-base-to-string': 'warn',
-      '@typescript-eslint/no-empty-function': 'warn',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
-      '@typescript-eslint/no-unused-vars': 'warn',
-      '@typescript-eslint/only-throw-error': 'warn',
-      '@typescript-eslint/prefer-optional-chain': 'warn',
-      '@typescript-eslint/require-await': 'warn',
-      '@typescript-eslint/restrict-plus-operands': 'warn',
-      '@typescript-eslint/prefer-for-of': 'warn',
-      '@typescript-eslint/restrict-template-expressions': 'warn',
+      '@typescript-eslint/no-empty-function': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+          destructuredArrayIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
     },
   },
   {

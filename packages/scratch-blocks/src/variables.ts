@@ -84,23 +84,27 @@ export function createVariable(
     // opt_type -- turns a falsey opt_type into ''
     // TODO (#1251) Warn developers that they didn't provide an opt_type/
     // provided a falsey opt_type
-    opt_type = opt_type ? opt_type : ''
+    opt_type = opt_type ?? ''
     newMsg = Blockly.Msg.NEW_VARIABLE_TITLE
     modalTitle = Blockly.Msg.VARIABLE_MODAL_TITLE
   }
   const validate = nameValidator.bind(null, opt_type)
+  if (!prompt) {
+    console.warn('createVariable: prompt handler is not set')
+    return
+  }
 
   // Prompt the user to enter a name for the variable
-  prompt!(
+  prompt(
     newMsg,
     '',
-    (text: string, additionalVars: string[], variableOptions?: { scope?: string; isCloud?: boolean }) => {
-      variableOptions = variableOptions || {}
+    (text: string, additionalVars?: string[], variableOptions?: { scope?: string; isCloud?: boolean }) => {
+      variableOptions = variableOptions ?? {}
       const scope = variableOptions.scope
-      const isLocal = scope === 'local' || false
-      const isCloud = variableOptions.isCloud || false
+      const isLocal = scope === 'local'
+      const isCloud = variableOptions.isCloud ?? false
       // Default to [] if additionalVars is not provided
-      additionalVars = additionalVars || []
+      additionalVars = additionalVars ?? []
       // Only use additionalVars for global variable creation.
       const additionalVarNames = isLocal ? [] : additionalVars
 
@@ -159,7 +163,7 @@ export function createVariable(
 function nameValidator(
   type: string,
   text: string,
-  workspace: Blockly.WorkspaceSvg,
+  workspace: Blockly.Workspace,
   additionalVars: string[],
   isCloud: boolean,
   opt_callback?: (id?: string) => void,
@@ -200,7 +204,7 @@ function nameValidator(
  */
 function validateBroadcastMessageName(
   name: string,
-  workspace: Blockly.WorkspaceSvg,
+  workspace: Blockly.Workspace,
   opt_callback?: (id?: string) => void,
 ): string | null {
   if (!name) {
@@ -242,7 +246,7 @@ function validateBroadcastMessageName(
  */
 function validateScalarVarOrListName(
   name: string,
-  workspace: Blockly.WorkspaceSvg,
+  workspace: Blockly.Workspace,
   additionalVars: string[],
   isCloud: boolean,
   type: string,
@@ -275,7 +279,7 @@ function validateScalarVarOrListName(
  *     an existing variable was chosen.
  */
 export function renameVariable(
-  workspace: Blockly.WorkspaceSvg,
+  workspace: Blockly.Workspace,
   variable: ScratchVariableModel,
   opt_callback?: (id?: string) => void,
 ) {
@@ -305,15 +309,20 @@ export function renameVariable(
     promptDefaultText = promptDefaultText.substring(CLOUD_PREFIX.length)
   }
 
-  prompt!(
+  if (!prompt) {
+    console.warn('renameVariable: prompt handler is not set')
+    return
+  }
+
+  prompt(
     promptText,
     promptDefaultText,
-    (newName: string, additionalVars: string[]) => {
+    (newName: string, additionalVars?: string[]) => {
       if (variable.isCloud && newName.length > 0 && newName.startsWith(CLOUD_PREFIX)) {
         newName = newName.substring(CLOUD_PREFIX.length)
         // The name validator will add the prefix back
       }
-      additionalVars = additionalVars || []
+      additionalVars = additionalVars ?? []
       const additionalVarNames = variable.isLocal ? [] : additionalVars
       const validatedText = validate(newName, workspace, additionalVarNames, variable.isCloud)
       if (validatedText) {

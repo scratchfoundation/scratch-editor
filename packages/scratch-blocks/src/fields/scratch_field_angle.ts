@@ -47,17 +47,17 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
   /**
    * Opaque identifier used to unbind event listener in dispose().
    */
-  private mouseDownWrapper_!: Blockly.browserEvents.Data
+  private mouseDownWrapper_?: Blockly.browserEvents.Data
 
   /**
    * Opaque identifier used to unbind event listener in dispose().
    */
-  private mouseMoveWrapper!: Blockly.browserEvents.Data
+  private mouseMoveWrapper?: Blockly.browserEvents.Data
 
   /**
    * Opaque identifier used to unbind event listener in dispose().
    */
-  private mouseUpWrapper!: Blockly.browserEvents.Data
+  private mouseUpWrapper?: Blockly.browserEvents.Data
 
   /**
    * Round angles to the nearest 15 degrees when using mouse.
@@ -164,6 +164,14 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
     Blockly.DropDownDiv.hideWithoutAnimation()
     Blockly.DropDownDiv.clearContent()
     const div = Blockly.DropDownDiv.getContentDiv()
+    const sourceBlock = this.getSourceBlock()
+    if (!(sourceBlock instanceof Blockly.BlockSvg)) {
+      throw new Error('[scratch_field_angle] Missing source BlockSvg for showEditor_')
+    }
+    const parentBlock = sourceBlock.getParent()
+    if (!parentBlock) {
+      throw new Error('[scratch_field_angle] Missing parent block for showEditor_')
+    }
     // Build the SVG DOM.
     const svg = Blockly.utils.dom.createSvgElement(
       'svg',
@@ -183,8 +191,8 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
         cx: this.HALF,
         cy: this.HALF,
         r: this.RADIUS,
-        fill: (this.getSourceBlock()!.getParent() as Blockly.BlockSvg).getColourSecondary(),
-        stroke: (this.getSourceBlock()!.getParent() as Blockly.BlockSvg).getColourTertiary(),
+        fill: parentBlock.getColourSecondary(),
+        stroke: parentBlock.getColourTertiary(),
         class: 'blocklyAngleCircle',
       },
       svg,
@@ -268,13 +276,10 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
       Blockly.getMainWorkspace().options.pathToMedia + this.ARROW_SVG_PATH,
     )
 
-    Blockly.DropDownDiv.setColour(
-      (this.getSourceBlock()!.getParent() as Blockly.BlockSvg).getColour(),
-      (this.getSourceBlock()!.getParent() as Blockly.BlockSvg).getColourTertiary(),
-    )
-    Blockly.DropDownDiv.showPositionedByBlock(this, this.getSourceBlock() as Blockly.BlockSvg)
+    Blockly.DropDownDiv.setColour(parentBlock.getColour(), parentBlock.getColourTertiary())
+    Blockly.DropDownDiv.showPositionedByBlock(this as Blockly.Field<string | number | null>, sourceBlock)
 
-    this.mouseDownWrapper_ = Blockly.browserEvents.bind(this.handle, 'mousedown', this, this.onMouseDown)
+    this.mouseDownWrapper_ = Blockly.browserEvents.bind(this.handle, 'mousedown', this, this.onMouseDown.bind(this))
 
     this.updateGraph()
   }
@@ -283,16 +288,20 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
    * Set the angle to match the mouse's position.
    */
   onMouseDown() {
-    this.mouseMoveWrapper = Blockly.browserEvents.bind(document.body, 'mousemove', this, this.onMouseMove)
-    this.mouseUpWrapper = Blockly.browserEvents.bind(document.body, 'mouseup', this, this.onMouseUp)
+    this.mouseMoveWrapper = Blockly.browserEvents.bind(document.body, 'mousemove', this, this.onMouseMove.bind(this))
+    this.mouseUpWrapper = Blockly.browserEvents.bind(document.body, 'mouseup', this, this.onMouseUp.bind(this))
   }
 
   /**
    * Set the angle to match the mouse's position.
    */
   onMouseUp() {
-    Blockly.browserEvents.unbind(this.mouseMoveWrapper)
-    Blockly.browserEvents.unbind(this.mouseUpWrapper)
+    if (this.mouseMoveWrapper) {
+      Blockly.browserEvents.unbind(this.mouseMoveWrapper)
+    }
+    if (this.mouseUpWrapper) {
+      Blockly.browserEvents.unbind(this.mouseUpWrapper)
+    }
   }
 
   /**
@@ -301,7 +310,9 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
    */
   onMouseMove(e: PointerEvent) {
     e.preventDefault()
-    const bBox = this.gauge!.ownerSVGElement!.getBoundingClientRect()
+    const ownerSvg = this.gauge?.ownerSVGElement
+    if (!ownerSvg) return
+    const bBox = ownerSvg.getBoundingClientRect()
     const dx = e.clientX - bBox.left - this.HALF
     const dy = e.clientY - bBox.top - this.HALF
     let angle = Math.atan(-dy / dx)
@@ -383,12 +394,12 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
       } else {
         imageRotation = -angleDegrees
       }
-      this.arrow!.setAttribute('transform', 'rotate(' + imageRotation + ')')
+      this.arrow?.setAttribute('transform', 'rotate(' + imageRotation + ')')
     }
     this.gauge.setAttribute('d', path.join(''))
-    this.line!.setAttribute('x2', `${x2}`)
-    this.line!.setAttribute('y2', `${y2}`)
-    this.handle!.setAttribute('transform', 'translate(' + x2 + ',' + y2 + ')')
+    this.line?.setAttribute('x2', `${x2}`)
+    this.line?.setAttribute('y2', `${y2}`)
+    this.handle?.setAttribute('transform', 'translate(' + x2 + ',' + y2 + ')')
   }
 
   /**
@@ -396,7 +407,7 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
    * @param text The user's text.
    * @returns A string representing a valid angle, or null if invalid.
    */
-  doClassValidation_(text: string): number | null {
+  doClassValidation_(text: string | null): number | null {
     if (text === null) {
       return null
     }

@@ -10,20 +10,26 @@ import * as Blockly from 'blockly/core'
 export function registerDeleteBlock() {
   const deleteOption = {
     displayText(scope: Blockly.ContextMenuRegistry.Scope) {
-      const descendantCount = getDeletableBlocksInStack(scope.block!).length
+      if (!scope.block) {
+        return Blockly.Msg.DELETE_BLOCK
+      }
+      const descendantCount = getDeletableBlocksInStack(scope.block).length
       return descendantCount === 1
         ? Blockly.Msg.DELETE_BLOCK
         : Blockly.Msg.DELETE_X_BLOCKS.replace('%1', `${descendantCount}`)
     },
     preconditionFn(scope: Blockly.ContextMenuRegistry.Scope) {
-      if (!scope.block!.isInFlyout && scope.block!.isDeletable()) {
+      if (scope.block && !scope.block.isInFlyout && scope.block.isDeletable()) {
         return 'enabled'
       }
       return 'hidden'
     },
     callback(scope: Blockly.ContextMenuRegistry.Scope) {
+      if (!scope.block) {
+        return
+      }
       Blockly.Events.setGroup(true)
-      scope.block!.dispose(true, true)
+      scope.block.dispose(true, true)
       Blockly.Events.setGroup(false)
     },
     scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
@@ -33,17 +39,18 @@ export function registerDeleteBlock() {
   Blockly.ContextMenuRegistry.registry.register(deleteOption)
 }
 
-function getDeletableBlocksInStack(block: Blockly.BlockSvg): Blockly.BlockSvg[] {
+function getDeletableBlocksInStack(block: Blockly.Block): Blockly.Block[] {
   let descendants = block.getDescendants(false).filter(isDeletable)
-  if (block.getNextBlock()) {
+  const nextBlock = block.getNextBlock()
+  if (nextBlock) {
     // Next blocks are not deleted.
-    const nextDescendants = block.getNextBlock()!.getDescendants(false).filter(isDeletable)
+    const nextDescendants = nextBlock.getDescendants(false).filter(isDeletable)
     descendants = descendants.filter((b) => !nextDescendants.includes(b))
   }
   return descendants
 }
 
-function isDeletable(block: Blockly.BlockSvg): boolean {
+function isDeletable(block: Blockly.Block): boolean {
   return block.isDeletable() && !block.isShadow()
 }
 
@@ -101,8 +108,8 @@ export function registerDeleteAll() {
  * @param workspace to delete all blocks from.
  * @returns list of blocks to delete.
  */
-function getDeletableBlocksInWorkspace(workspace: Blockly.WorkspaceSvg): Blockly.BlockSvg[] {
-  return workspace.getTopBlocks(true).flatMap((b: Blockly.BlockSvg) => b.getDescendants(false).filter(isDeletable))
+function getDeletableBlocksInWorkspace(workspace: Blockly.Workspace): Blockly.Block[] {
+  return workspace.getTopBlocks(true).flatMap((b) => b.getDescendants(false).filter(isDeletable))
 }
 
 /**
@@ -111,7 +118,7 @@ function getDeletableBlocksInWorkspace(workspace: Blockly.WorkspaceSvg): Blockly
  * @param eventGroup Event group ID with which all delete events should be
  *     associated.  If not specified, create a new group.
  */
-function deleteNext(deleteList: Blockly.BlockSvg[], eventGroup?: string) {
+function deleteNext(deleteList: Blockly.Block[], eventGroup?: string) {
   const DELAY = 10
   if (eventGroup) {
     Blockly.Events.setGroup(eventGroup)
@@ -136,10 +143,14 @@ function deleteNext(deleteList: Blockly.BlockSvg[], eventGroup?: string) {
  * all subsequent blocks in the stack.
  */
 export function registerDuplicateBlock() {
-  const original = Blockly.ContextMenuRegistry.registry.getItem('blockDuplicate')!
+  const original = Blockly.ContextMenuRegistry.registry.getItem('blockDuplicate')
+  if (!original) {
+    console.error('[context_menu_items] Missing required blockDuplicate menu item')
+    return
+  }
   const duplicateOption = {
-    displayText: original.displayText!,
-    preconditionFn: original.preconditionFn!,
+    displayText: original.displayText,
+    preconditionFn: original.preconditionFn,
     callback(scope: Blockly.ContextMenuRegistry.Scope) {
       if (!scope.block) return
       const data = scope.block.toCopyData(true)
