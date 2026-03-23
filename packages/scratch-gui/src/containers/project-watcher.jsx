@@ -23,24 +23,33 @@ class ProjectWatcher extends React.Component {
         ]);
 
         this.state = {
-            waiting: false
+            saving: false,
+            sharing: false
         };
     }
     componentDidUpdate (prevProps) {
-        if (this.state.waiting && this.props.isShowingWithId && !prevProps.isShowingWithId) {
+        if (
+            this.state.saving &&
+            (!this.state.sharing || this.props.isShared) &&
+            this.props.isShowingWithId && !prevProps.isShowingWithId
+        ) {
             this.fulfill();
         }
     }
     fulfill () {
         this.props.onDoneUpdating();
         this.setState({
-            waiting: false
+            saving: false,
+            sharing: false
         });
     }
-    waitForUpdate (isUpdating) {
-        if (isUpdating) {
+    waitForUpdate (updates = {isUpdating: false, isSharing: false}) {
+        const {isUpdating, isSharing} = updates;
+
+        if (isUpdating || isSharing) {
             this.setState({
-                waiting: true
+                saving: isUpdating,
+                sharing: isSharing
             });
         } else { // fulfill immediately
             this.fulfill();
@@ -56,10 +65,12 @@ class ProjectWatcher extends React.Component {
 ProjectWatcher.propTypes = {
     children: PropTypes.func,
     isShowingWithId: PropTypes.bool,
+    isShared: PropTypes.bool,
     onDoneUpdating: PropTypes.func
 };
 
 ProjectWatcher.defaultProps = {
+    isShared: false,
     onDoneUpdating: () => {}
 };
 
