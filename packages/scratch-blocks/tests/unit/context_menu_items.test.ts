@@ -15,6 +15,10 @@ let originalDeleteBlock: string
 let originalDeleteXBlocks: string
 let originalDeleteItem: Blockly.ContextMenuRegistry.RegistryItem | null = null
 
+function asBlockSvg(block: unknown): Blockly.BlockSvg {
+  return block as Blockly.BlockSvg
+}
+
 beforeAll(() => {
   // Save and override messages used by the delete option's displayText.
   // Restored in afterAll to avoid polluting other test files.
@@ -71,7 +75,7 @@ describe('registerDeleteBlock', () => {
     const item = Blockly.ContextMenuRegistry.registry.getItem('blockDelete')
     assert(item, 'Expected blockDelete item to be registered')
     const displayFn = item.displayText as (scope: Blockly.ContextMenuRegistry.Scope) => string
-    const text = displayFn({ block: block as unknown as Blockly.BlockSvg })
+    const text = displayFn({ block: asBlockSvg(block) })
     expect(text).toBe('Delete Block')
   })
 
@@ -106,7 +110,7 @@ describe('registerDeleteBlock', () => {
       const item = Blockly.ContextMenuRegistry.registry.getItem('blockDelete')
       assert(item, 'Expected blockDelete item to be registered')
       const displayFn = item.displayText as (scope: Blockly.ContextMenuRegistry.Scope) => string
-      const text = displayFn({ block: parent as unknown as Blockly.BlockSvg })
+      const text = displayFn({ block: asBlockSvg(parent) })
       expect(text).toBe('Delete Block')
     } finally {
       delete Blockly.Blocks.test_value_block
@@ -128,7 +132,7 @@ describe('registerDeleteBlock', () => {
     const item = Blockly.ContextMenuRegistry.registry.getItem('blockDelete')
     assert(item, 'Expected blockDelete item to be registered')
     const displayFn = item.displayText as (scope: Blockly.ContextMenuRegistry.Scope) => string
-    const text = displayFn({ block: first as unknown as Blockly.BlockSvg })
+    const text = displayFn({ block: asBlockSvg(first) })
     expect(text).toBe('Delete Block')
   })
 
@@ -160,7 +164,7 @@ describe('registerDeleteBlock', () => {
       const item = Blockly.ContextMenuRegistry.registry.getItem('blockDelete')
       assert(item, 'Expected blockDelete item to be registered')
       const displayFn = item.displayText as (scope: Blockly.ContextMenuRegistry.Scope) => string
-      const text = displayFn({ block: parent as unknown as Blockly.BlockSvg })
+      const text = displayFn({ block: asBlockSvg(parent) })
       expect(text).toBe('Delete 2 Blocks')
     } finally {
       delete Blockly.Blocks.test_value_block
