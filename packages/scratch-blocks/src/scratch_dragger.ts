@@ -93,7 +93,7 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
       dragRoot.type === 'procedures_definition' &&
       this.wouldDeleteDraggable(event, dragRoot.getRootBlock())
     ) {
-      const prototype = dragRoot.getInput('custom_block')!.connection!.targetBlock()
+      const prototype = dragRoot.getInput('custom_block')?.connection?.targetBlock()
       const hasCaller =
         prototype instanceof Blockly.BlockSvg &&
         isProcedureBlock(prototype) &&
@@ -118,7 +118,7 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
       // on the workspace in order to depict the block mid-drag needs to be
       // deleted.
       if (this.originatedFromFlyout && this.draggedOutOfBounds) {
-        Blockly.renderManagement.finishQueuedRenders().then(() => {
+        void Blockly.renderManagement.finishQueuedRenders().then(() => {
           const rootBlock = this.getDragRoot(this.draggable)
           if (rootBlock instanceof Blockly.BlockSvg) {
             rootBlock.dispose()

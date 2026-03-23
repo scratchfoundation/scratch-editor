@@ -21,7 +21,11 @@ export class BlockDragOutside extends Blockly.Events.BlockBase {
     }
   }
 
-  static fromJson(json: BlockDragOutsideJson, workspace: Blockly.Workspace, event?: any): BlockDragOutside {
+  static fromJson(
+    json: BlockDragOutsideJson,
+    workspace: Blockly.Workspace,
+    event?: Blockly.Events.Abstract,
+  ): BlockDragOutside {
     const newEvent = super.fromJson(json, workspace, event ?? new BlockDragOutside()) as BlockDragOutside
     newEvent.isOutside = json.isOutside
 

@@ -31,7 +31,11 @@ class BlockCommentResize extends BlockCommentBase {
     }
   }
 
-  static fromJson(json: BlockCommentResizeJson, workspace: Blockly.Workspace, event?: any): BlockCommentResize {
+  static fromJson(
+    json: BlockCommentResizeJson,
+    workspace: Blockly.Workspace,
+    event?: Blockly.Events.Abstract,
+  ): BlockCommentResize {
     const newEvent = super.fromJson(json, workspace, event ?? new BlockCommentResize()) as BlockCommentResize
     newEvent.newSize = new Blockly.utils.Size(json.newSize.width, json.newSize.height)
     newEvent.oldSize = new Blockly.utils.Size(json.oldSize.width, json.oldSize.height)
@@ -41,7 +45,7 @@ class BlockCommentResize extends BlockCommentBase {
 
   run(forward: boolean) {
     const workspace = this.getEventWorkspace_()
-    const block = workspace?.getBlockById(this.blockId)
+    const block = workspace.getBlockById(this.blockId)
     const comment = block?.getIcon(Blockly.icons.IconType.COMMENT)
     comment?.setBubbleSize(forward ? this.newSize : this.oldSize)
   }

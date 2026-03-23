@@ -17,7 +17,6 @@
  * limitations under the License.
  */
 import * as Blockly from 'blockly/core'
-import * as Constants from '../constants'
 
 Blockly.Blocks.sensing_touchingobject = {
   /**

@@ -96,7 +96,7 @@ export class FieldColourSlider extends FieldColour {
           stops.push(Blockly.utils.colour.hsvToHex(this.hue_, this.saturation_, (255 * n) / 360))
           break
         default:
-          throw new Error('Unknown channel for colour sliders: ' + channel)
+          throw new Error(`Unknown channel for colour sliders: ${String(channel)}`)
       }
     }
     return stops
@@ -198,9 +198,7 @@ export class FieldColourSlider extends FieldColour {
           break
       }
       const colour = Blockly.utils.colour.hsvToHex(this.hue_, this.saturation_, this.brightness_)
-      if (colour !== null) {
-        this.setValue(colour, true)
-      }
+      this.setValue(colour, true)
     }
   }
 
@@ -279,7 +277,7 @@ export class FieldColourSlider extends FieldColour {
         button,
         'click',
         this,
-        this.activateEyedropperInternal_,
+        this.activateEyedropperInternal_.bind(this),
       )
     }
 

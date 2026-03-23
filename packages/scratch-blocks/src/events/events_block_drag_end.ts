@@ -24,7 +24,11 @@ export class BlockDragEnd extends Blockly.Events.BlockBase {
     }
   }
 
-  static fromJson(json: BlockDragEndJson, workspace: Blockly.Workspace, event?: any): BlockDragEnd {
+  static fromJson(
+    json: BlockDragEndJson,
+    workspace: Blockly.Workspace,
+    event?: Blockly.Events.Abstract,
+  ): BlockDragEnd {
     const newEvent = super.fromJson(json, workspace, event ?? new BlockDragEnd()) as BlockDragEnd
     newEvent.isOutside = json.isOutside
     newEvent.xml = Blockly.utils.xml.textToDom(json.xml)

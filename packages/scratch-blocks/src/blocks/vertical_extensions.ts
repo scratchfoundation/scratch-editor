@@ -156,7 +156,7 @@ const OUTPUT_BOOLEAN = function (this: Blockly.Block) {
  */
 const MONITOR_BLOCK = function (this: Blockly.BlockSvg) {
   this.addIcon(new FlyoutCheckboxIcon(this))
-  ;(this as any).checkboxInFlyout = true
+  ;(this as Blockly.BlockSvg & { checkboxInFlyout?: boolean }).checkboxInFlyout = true
 }
 
 /**
@@ -172,6 +172,7 @@ const PROCEDURE_DEF_CONTEXTMENU = function (this: Blockly.Block) {
   this.mixin(
     {
       customContextMenu: function (
+        this: Blockly.Block,
         menuOptions: (
           | Blockly.ContextMenuRegistry.ContextMenuOption
           | Blockly.ContextMenuRegistry.LegacyContextMenuOption
@@ -181,18 +182,20 @@ const PROCEDURE_DEF_CONTEXTMENU = function (this: Blockly.Block) {
         menuOptions.push(ScratchProcedures.makeEditOption(this))
 
         // Find and remove the duplicate option
-        for (let i = 0, option; (option = menuOptions[i]); i++) {
-          if (option.text == Blockly.Msg.DUPLICATE_BLOCK) {
+        for (let i = 0; i < menuOptions.length; i++) {
+          if (menuOptions[i].text == Blockly.Msg.DUPLICATE_BLOCK) {
             menuOptions.splice(i, 1)
             break
           }
         }
       },
-      checkAndDelete: function () {
+      checkAndDelete: function (this: Blockly.BlockSvg) {
         const input = this.getInput('custom_block')
         // this is the root block, not the shadow block.
-        if (input?.connection?.targetBlock()) {
-          const procCode = input.connection.targetBlock().getProcCode()
+        const targetBlock = input?.connection?.targetBlock()
+        const targetWithProcCode = targetBlock as (Blockly.Block & { getProcCode?(): string }) | null
+        if (targetWithProcCode?.getProcCode) {
+          const procCode = targetWithProcCode.getProcCode()
           const didDelete = ScratchProcedures.deleteProcedureDefCallback(procCode, this)
           if (!didDelete) {
             alert(Blockly.Msg.PROCEDURE_USED)
@@ -227,7 +230,7 @@ const PROCEDURE_CALL_CONTEXTMENU = {
 }
 
 const SCRATCH_EXTENSION = function (this: Blockly.Block) {
-  ;(this as any).isScratchExtension = true
+  ;(this as Blockly.Block & { isScratchExtension?: boolean }).isScratchExtension = true
 }
 
 /**

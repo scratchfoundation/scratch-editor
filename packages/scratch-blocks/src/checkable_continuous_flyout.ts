@@ -8,6 +8,22 @@ import { CheckboxBubble } from './checkbox_bubble'
 import { StatusIndicatorLabel } from './status_indicator_label'
 import { STATUS_INDICATOR_LABEL_TYPE } from './status_indicator_label_flyout_inflater'
 
+interface ReflowElement extends Blockly.BlockSvg {
+  checkboxInFlyout?: boolean
+}
+
+interface ReflowItem {
+  getElement: () => ReflowElement
+}
+
+interface RefreshItem {
+  element: unknown
+}
+
+interface CheckboxIcon {
+  setChecked: (value: boolean) => void
+}
+
 export class CheckableContinuousFlyout extends ContinuousFlyout {
   /**
    * Creates a new CheckableContinuousFlyout.
@@ -42,7 +58,8 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
    * @param value Value to set the checkbox to.
    */
   setCheckboxState(blockId: string, value: boolean) {
-    this.getWorkspace().getBlockById(blockId)?.getIcon('checkbox')?.setChecked(value)
+    const icon = this.getWorkspace().getBlockById(blockId)?.getIcon('checkbox') as CheckboxIcon | null
+    icon?.setChecked(value)
   }
 
   getFlyoutScale() {
@@ -61,7 +78,8 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
       // contents, and adjusts blocks in RTL mode accordingly. In Scratch, the
       // flyout width is fixed (and blocks may exceed it), so re-adjust blocks
       // accordingly based on the actual fixed width.
-      for (const item of this.getContents()) {
+      const flyoutItems = this.getContents() as ReflowItem[]
+      for (const item of flyoutItems) {
         const oldX = item.getElement().getBoundingRectangle().left
         let newX =
           this.getWidth() / this.workspace_.scale - item.getElement().getBoundingRectangle().getWidth() - this.MARGIN
@@ -86,7 +104,7 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
    * Updates the state of status indicators for hardware-based extensions.
    */
   refreshStatusButtons() {
-    for (const item of this.contents) {
+    for (const item of this.contents as RefreshItem[]) {
       if (item.element instanceof StatusIndicatorLabel) {
         item.element.refreshStatus()
       }

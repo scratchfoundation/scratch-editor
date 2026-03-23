@@ -24,7 +24,7 @@ Blockly.Blocks.control_forever = {
    * https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#5eke39
    */
   init: function (this: Blockly.Block) {
-    const ws = this.workspace.options.parentWorkspace || this.workspace
+    const ws = this.workspace.options.parentWorkspace ?? this.workspace
     this.jsonInit({
       id: 'control_forever',
       message0: Blockly.Msg.CONTROL_FOREVER,
@@ -58,7 +58,7 @@ Blockly.Blocks.control_repeat = {
    * https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#so57n9
    */
   init: function (this: Blockly.Block) {
-    const ws = this.workspace.options.parentWorkspace || this.workspace
+    const ws = this.workspace.options.parentWorkspace ?? this.workspace
     this.jsonInit({
       id: 'control_repeat',
       message0: Blockly.Msg.CONTROL_REPEAT,
@@ -164,7 +164,7 @@ Blockly.Blocks.control_stop = {
     const OTHER_SCRIPTS = 'other scripts in sprite'
     const stopDropdown = new Blockly.FieldDropdown(
       function () {
-        if (this.sourceBlock_ && this.sourceBlock_.nextConnection && this.sourceBlock_.nextConnection.isConnected()) {
+        if (this.sourceBlock_?.nextConnection?.isConnected()) {
           return [[Blockly.Msg.CONTROL_STOP_OTHER, OTHER_SCRIPTS]]
         }
         return [
@@ -232,7 +232,7 @@ Blockly.Blocks.control_repeat_until = {
    * Block to repeat until a condition becomes true.
    */
   init: function (this: Blockly.Block) {
-    const ws = this.workspace.options.parentWorkspace || this.workspace
+    const ws = this.workspace.options.parentWorkspace ?? this.workspace
     this.jsonInit({
       message0: Blockly.Msg.CONTROL_REPEATUNTIL,
       message1: '%1',
@@ -272,7 +272,7 @@ Blockly.Blocks.control_while = {
    * (This is an obsolete "hacked" block, for compatibility with 2.0.)
    */
   init: function (this: Blockly.Block) {
-    const ws = this.workspace.options.parentWorkspace || this.workspace
+    const ws = this.workspace.options.parentWorkspace ?? this.workspace
     this.jsonInit({
       message0: Blockly.Msg.CONTROL_WHILE,
       message1: '%1',

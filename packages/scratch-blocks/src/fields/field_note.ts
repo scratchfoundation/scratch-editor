@@ -284,6 +284,9 @@ export class FieldNote extends Blockly.FieldTextInput {
    */
   showEditor_(event: PointerEvent, quietInput = false) {
     super.showEditor_(event, quietInput, false)
+    const parentBlock = this.getSourceBlock()?.getParent() as Blockly.BlockSvg | undefined
+    const parentTertiary = parentBlock?.getColourTertiary() ?? ''
+    const parentColour = parentBlock?.getColour() ?? ''
 
     // Build the SVG DOM.
     const div = Blockly.DropDownDiv.getContentDiv()
@@ -341,7 +344,7 @@ export class FieldNote extends Blockly.FieldTextInput {
     Blockly.utils.dom.createSvgElement(
       'line',
       {
-        stroke: (this.sourceBlock_!.getParent() as Blockly.BlockSvg).getColourTertiary(),
+        stroke: parentTertiary,
         x1: 0,
         y1: FieldNote.TOP_MENU_HEIGHT,
         x2: this.fieldEditorWidth_,
@@ -379,7 +382,7 @@ export class FieldNote extends Blockly.FieldTextInput {
       this.changeOctaveBy_(1)
     })
     const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg
-    Blockly.DropDownDiv.setColour(sourceBlock.getParent()!.getColour(), sourceBlock.getParent()!.getColourTertiary())
+    Blockly.DropDownDiv.setColour(parentColour, parentTertiary)
     Blockly.DropDownDiv.showPositionedByBlock(this, sourceBlock)
 
     this.updateSelection_()
@@ -398,6 +401,8 @@ export class FieldNote extends Blockly.FieldTextInput {
     blackKeyGroup: SVGElement,
     keySVGarray: SVGElement[] | null,
   ) {
+    const parentTertiary =
+      (this.getSourceBlock()?.getParent() as Blockly.BlockSvg | undefined)?.getColourTertiary() ?? ''
     let xIncrement, width, height, fill, stroke, group
     x += FieldNote.EDGE_PADDING / 2
     const y = FieldNote.TOP_MENU_HEIGHT
@@ -417,7 +422,7 @@ export class FieldNote extends Blockly.FieldTextInput {
         width = FieldNote.WHITE_KEY_WIDTH
         height = FieldNote.WHITE_KEY_HEIGHT
         fill = FieldNote.WHITE_KEY_COLOR
-        stroke = (this.sourceBlock_!.getParent() as Blockly.BlockSvg).getColourTertiary()
+        stroke = parentTertiary
         group = whiteKeyGroup
       }
       const attr = {
@@ -435,8 +440,18 @@ export class FieldNote extends Blockly.FieldTextInput {
         keySVG.setAttribute('data-name', `${FieldNote.KEY_INFO[i].name}`)
         keySVG.setAttribute('data-isBlack', `${FieldNote.KEY_INFO[i].isBlack}`)
 
-        this.mouseDownWrappers_[i] = Blockly.browserEvents.bind(keySVG, 'mousedown', this, this.onMouseDownOnKey_)
-        this.mouseEnterWrappers_[i] = Blockly.browserEvents.bind(keySVG, 'mouseenter', this, this.onMouseEnter_)
+        this.mouseDownWrappers_[i] = Blockly.browserEvents.bind(
+          keySVG,
+          'mousedown',
+          this,
+          this.onMouseDownOnKey_.bind(this),
+        )
+        this.mouseEnterWrappers_[i] = Blockly.browserEvents.bind(
+          keySVG,
+          'mouseenter',
+          this,
+          this.onMouseEnter_.bind(this),
+        )
       }
     }
   }
@@ -505,6 +520,8 @@ export class FieldNote extends Blockly.FieldTextInput {
    * @returns A group containing the button SVG elements.
    */
   private addOctaveButton_(x: number, flipped: boolean, svg: SVGElement): SVGElement {
+    const parentTertiary =
+      (this.getSourceBlock()?.getParent() as Blockly.BlockSvg | undefined)?.getColourTertiary() ?? ''
     const group = Blockly.utils.dom.createSvgElement('g', {}, svg)
     const imageSize = FieldNote.OCTAVE_BUTTON_SIZE
     const arrow = Blockly.utils.dom.createSvgElement(
@@ -525,7 +542,7 @@ export class FieldNote extends Blockly.FieldTextInput {
     Blockly.utils.dom.createSvgElement(
       'line',
       {
-        stroke: (this.sourceBlock_!.getParent() as Blockly.BlockSvg).getColourTertiary(),
+        stroke: parentTertiary,
         x1: x - FieldNote.INSET,
         y1: 0,
         x2: x - FieldNote.INSET,
@@ -588,7 +605,7 @@ export class FieldNote extends Blockly.FieldTextInput {
    */
   private onMouseDownOnKey_(e: PointerEvent) {
     this.mouseIsDown_ = true
-    this.mouseUpWrapper_ = Blockly.browserEvents.bind(document.body, 'mouseup', this, this.onMouseUp_)
+    this.mouseUpWrapper_ = Blockly.browserEvents.bind(document.body, 'mouseup', this, this.onMouseUp_.bind(this))
     this.selectNoteWithMouseEvent_(e)
   }
 
@@ -628,18 +645,19 @@ export class FieldNote extends Blockly.FieldTextInput {
    * Play a note, by calling the externally overriden play note function.
    */
   private playNoteInternal_() {
-    if (FieldNote.playNote_) {
-      FieldNote.playNote_(Number(this.getValue()!), 'Music')
+    const noteNum = this.getValue()
+    if (FieldNote.playNote_ && noteNum !== null) {
+      FieldNote.playNote_(Number(noteNum), 'Music')
     }
   }
 
   /**
    * Function to play a musical note corresponding to the key selected.
    * Overridden externally.
-   * @param noteNum the MIDI note number to play.
-   * @param id An id to select a scratch extension to play the note.
+   * @param _noteNum the MIDI note number to play.
+   * @param _id An id to select a scratch extension to play the note.
    */
-  static playNote_ = function (noteNum: number, id: string) {
+  static playNote_: ((noteNum: number, id: string) => void) | null = function (_noteNum: number, _id: string) {
     return
   }
 
@@ -739,7 +757,7 @@ export class FieldNote extends Blockly.FieldTextInput {
         this.noteNameText_.textContent = noteName + ' (' + Math.floor(noteNum) + ')'
       }
       // Update the low and high C note names
-      const lowCNum = (this.displayedOctave_ ?? 0) * 12
+      const lowCNum = this.displayedOctave_ * 12
       if (this.lowCText_) this.lowCText_.textContent = 'C(' + lowCNum + ')'
       if (this.highCText_) this.highCText_.textContent = 'C(' + (lowCNum + 12) + ')'
     }
@@ -750,7 +768,7 @@ export class FieldNote extends Blockly.FieldTextInput {
    * @param text The user's text.
    * @returns A string representing a valid note number, or null if invalid.
    */
-  doClassValidation_(text: string): string | null {
+  doClassValidation_(text: string | null): string | null {
     if (text === null) {
       return null
     }

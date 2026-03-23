@@ -41,7 +41,7 @@ Blockly.Blocks.motion_turnright = {
    * Block to turn right.
    */
   init: function (this: Blockly.Block) {
-    const ws = this.workspace.options.parentWorkspace || this.workspace
+    const ws = this.workspace.options.parentWorkspace ?? this.workspace
     this.jsonInit({
       message0: Blockly.Msg.MOTION_TURNRIGHT,
       args0: [
@@ -66,7 +66,7 @@ Blockly.Blocks.motion_turnleft = {
    * Block to turn left.
    */
   init: function (this: Blockly.Block) {
-    const ws = this.workspace.options.parentWorkspace || this.workspace
+    const ws = this.workspace.options.parentWorkspace ?? this.workspace
     this.jsonInit({
       message0: Blockly.Msg.MOTION_TURNLEFT,
       args0: [

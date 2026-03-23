@@ -17,14 +17,18 @@ class ScratchFieldDropdown extends Blockly.FieldDropdown {
     } else if (this.borderRect_) {
       this.borderRect_.setAttribute(
         'fill',
-        'colourQuaternary' in style ? `${style.colourQuaternary}` : style.colourTertiary,
+        'colourQuaternary' in style ? String(style.colourQuaternary) : style.colourTertiary,
       )
     }
   }
 
   dropdownDispose_() {
     super.dropdownDispose_()
-    const sourceBlock = this.getSourceBlock()!
+    const sourceBlock = this.getSourceBlock()
+    if (!sourceBlock) {
+      console.error('[scratch_field_dropdown] Missing source block in dropdownDispose_')
+      return
+    }
     if (sourceBlock.isShadow()) {
       sourceBlock.setStyle(this.originalStyle)
     }

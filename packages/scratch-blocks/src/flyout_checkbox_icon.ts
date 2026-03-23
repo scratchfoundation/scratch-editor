@@ -36,25 +36,29 @@ export class FlyoutCheckboxIcon extends Blockly.icons.Icon implements Blockly.IH
     return this.sourceBlock.workspace.isFlyout
   }
 
-  onLocationChange(blockOrigin: Blockly.utils.Coordinate) {
-    this.checkboxBubble?.updateLocation()
+  onLocationChange(_blockOrigin: Blockly.utils.Coordinate) {
+    this.checkboxBubble.updateLocation()
   }
 
   setChecked(checked: boolean) {
-    this.checkboxBubble?.setChecked(checked)
+    this.checkboxBubble.setChecked(checked)
   }
 
   dispose() {
-    this.checkboxBubble?.dispose()
+    this.checkboxBubble.dispose()
     super.dispose()
   }
 
   // These methods are required by the interfaces, but intentionally have no
   // implementation, largely because this icon has no visual representation.
 
-  async setBubbleVisible(visible: boolean) {}
+  setBubbleVisible(_visible: boolean): Promise<void> {
+    return Promise.resolve()
+  }
 
-  initView(pointerDownListener: (e: PointerEvent) => void) {}
+  initView(_pointerDownListener: (e: PointerEvent) => void) {
+    return
+  }
 
   canBeFocused() {
     return false

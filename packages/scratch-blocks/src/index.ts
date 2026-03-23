@@ -159,7 +159,7 @@ export function isContentNodeFocused(): boolean {
   return Blockly.getFocusManager().getFocusedNode() !== null
 }
 
-registerContinuousToolbox()
+;(registerContinuousToolbox as () => void)()
 Blockly.Scrollbar.scrollbarThickness = Blockly.Touch.TOUCH_ENABLED ? 14 : 11
 Blockly.FlyoutButton.TEXT_MARGIN_X = 40
 Blockly.FlyoutButton.TEXT_MARGIN_Y = 10
@@ -169,12 +169,23 @@ Blockly.ContextMenuItems.registerCommentOptions()
 // Blockly hides "Add Comment" for simple reporters because comments can't be
 // read in the default renderer. In Scratch they're shown differently, so
 // remove that restriction by dropping the isFullBlockField check.
-Blockly.ContextMenuRegistry.registry.getItem('blockComment')!.preconditionFn = (scope) => {
-  const block = scope.block
-  if (block && !block.isInFlyout && block.workspace.options.comments && !block.isCollapsed() && block.isEditable()) {
-    return 'enabled'
+const blockCommentMenuItem = Blockly.ContextMenuRegistry.registry.getItem('blockComment')
+if (!blockCommentMenuItem) {
+  console.error('[index] Missing context menu item: blockComment')
+} else {
+  blockCommentMenuItem.preconditionFn = (scope) => {
+    const block = scope.block
+    if (
+      block &&
+      !block.isInFlyout &&
+      block.workspace.options.comments &&
+      !block.isCollapsed() &&
+      block.isEditable()
+    ) {
+      return 'enabled'
+    }
+    return 'hidden'
   }
-  return 'hidden'
 }
 Blockly.ContextMenuRegistry.registry.unregister('blockDelete')
 contextMenuItems.registerDeleteBlock()
@@ -191,8 +202,9 @@ Blockly.comments.CommentView.defaultCommentSize = new Blockly.utils.Size(200, 20
 // to the workspace itself (whose onNodeFocus is a no-op) rather than to a
 // specific block, so deleting a block doesn't reset the scroll position.
 // We may need to re-evaluate this when we explicitly work on keyboard navigation.
+// eslint-disable-next-line @typescript-eslint/unbound-method -- preserve original prototype method for patched wrapper
 const originalGetRestoredFocusableNode = Blockly.WorkspaceSvg.prototype.getRestoredFocusableNode
 Blockly.WorkspaceSvg.prototype.getRestoredFocusableNode = function (previousNode) {
   if (!previousNode && !this.isFlyout) return null
-  return originalGetRestoredFocusableNode.call(this, previousNode)
+  return originalGetRestoredFocusableNode.bind(this)(previousNode)
 }

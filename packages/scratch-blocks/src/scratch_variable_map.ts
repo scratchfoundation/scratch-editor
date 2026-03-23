@@ -12,7 +12,7 @@ class ScratchVariableMap extends Blockly.VariableMap {
     // Variable names in Blockly are case-insensitive, but case sensitive in
     // Scratch. Override the implementation to only return a variable whose name
     // is identical to the one requested.
-    const variables = this.getVariablesOfType(type ?? '')
+    const variables = this.getVariablesOfType(type)
     if (!variables.length) return null
     return variables.find((v) => v.getName() === name) ?? null
   }

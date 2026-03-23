@@ -29,7 +29,11 @@ class BlockCommentChange extends BlockCommentBase {
     }
   }
 
-  static fromJson(json: BlockCommentChangeJson, workspace: Blockly.Workspace, event?: any): BlockCommentChange {
+  static fromJson(
+    json: BlockCommentChangeJson,
+    workspace: Blockly.Workspace,
+    event?: Blockly.Events.Abstract,
+  ): BlockCommentChange {
     const newEvent = super.fromJson(json, workspace, event ?? new BlockCommentChange()) as BlockCommentChange
     newEvent.newContents_ = json.newContents
     newEvent.oldContents_ = json.oldContents

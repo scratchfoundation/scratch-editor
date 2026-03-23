@@ -13,13 +13,14 @@ export class RecyclableBlockFlyoutInflater extends BlocklyRecyclableBlockFlyoutI
   /**
    * Creates a block on the flyout workspace from the given block definition.
    * @param state A JSON representation of a block to load.
-   * @param flyoutWorkspace The workspace on which the block will be inflated.
+   * @param flyout The flyout on which the block will be inflated.
    * @returns The newly created block.
    */
-  load(state: Blockly.utils.toolbox.BlockInfo, flyoutWorkspace: Blockly.WorkspaceSvg): Blockly.FlyoutItem {
-    const flyoutItem = super.load(state, flyoutWorkspace)
+  load(state: object, flyout: Blockly.IFlyout): Blockly.FlyoutItem {
+    const flyoutItem = super.load(state, flyout)
     const block = flyoutItem.getElement()
-    if ('checkboxInFlyout' in block && block.checkboxInFlyout) {
+    const flyoutWorkspace = flyout.getWorkspace()
+    if (block instanceof Blockly.BlockSvg && 'checkboxInFlyout' in block && block.checkboxInFlyout === true) {
       block.moveBy(
         (flyoutWorkspace.RTL ? -1 : 1) * (CheckboxBubble.CHECKBOX_SIZE + CheckboxBubble.CHECKBOX_MARGIN),
         0,

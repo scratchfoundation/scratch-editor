@@ -64,7 +64,7 @@ Blockly.Blocks.event_whenflagclicked = {
    * Block for when flag clicked.
    */
   init: function (this: Blockly.Block) {
-    const ws = this.workspace.options.parentWorkspace || this.workspace
+    const ws = this.workspace.options.parentWorkspace ?? this.workspace
     this.jsonInit({
       id: 'event_whenflagclicked',
       message0: Blockly.Msg.EVENT_WHENFLAGCLICKED,

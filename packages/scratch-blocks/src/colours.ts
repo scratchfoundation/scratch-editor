@@ -62,13 +62,15 @@ const Colours = {
  * @param prefix A prefix to prepend to the CSS variables.
  * @returns A string containing CSS variable definitions for the colours.
  */
-function varify(coloursObj: object, prefix = '--colour'): string {
+function varify(coloursObj: Record<string, unknown>, prefix = '--colour'): string {
   return Object.entries(coloursObj)
     .map(([key, colour]) => {
       if (typeof colour === 'string') {
         return `${prefix}-${key}: ${colour};`
+      } else if (typeof colour === 'object' && colour !== null) {
+        return varify(colour as Record<string, unknown>, `${prefix}-${key}`)
       } else {
-        return varify(colour, `${prefix}-${key}`)
+        return ''
       }
     })
     .join('\n')

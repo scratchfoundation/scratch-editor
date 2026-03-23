@@ -73,7 +73,11 @@ class FieldVerticalSeparator extends Blockly.Field {
    * @package
    */
   setLineHeight(newHeight: number) {
-    this.lineElement!.setAttribute('y2', `${newHeight}`)
+    if (!this.lineElement) {
+      console.error('[field_vertical_separator] Missing lineElement in setLineHeight')
+      return
+    }
+    this.lineElement.setAttribute('y2', `${newHeight}`)
   }
 
   /**

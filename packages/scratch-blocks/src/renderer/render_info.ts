@@ -36,16 +36,22 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
       // bowler hat block.
       // Bowler hat blocks always have exactly one statement row and one input
       // element, so these find() calls are guaranteed to succeed.
-      const statementRow = this.rows.find((r) => r.hasStatement)!
-      this.width =
-        statementRow.widthWithConnectedBlocks -
-        statementRow.elements.find((e) => Blockly.blockRendering.Types.isInput(e))!.width +
-        this.constants_.MEDIUM_PADDING
+      const statementRow = this.rows.find((r) => r.hasStatement)
+      const input = statementRow?.elements.find((e) => Blockly.blockRendering.Types.isInput(e))
+      if (!statementRow || !input) {
+        console.error('[renderer/render_info] Missing statement row or input for bowler hat block')
+        return
+      }
+      this.width = statementRow.widthWithConnectedBlocks - input.width + this.constants_.MEDIUM_PADDING
 
       // The bowler hat's width is the same as the block's width, so it can't
       // be derived from the constants like a normal hat and has to be set here.
       // populateTopRow_ always adds a hat element for bowler hat blocks.
-      const hat = this.topRow.elements.find((e) => Blockly.blockRendering.Types.isHat(e))!
+      const hat = this.topRow.elements.find((e) => Blockly.blockRendering.Types.isHat(e))
+      if (!hat) {
+        console.error('[renderer/render_info] Missing hat measurable for bowler hat block')
+        return
+      }
       hat.width = this.width
       this.topRow.measure()
     }
@@ -57,7 +63,7 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
   ): number {
     if (
       this.isBowlerHatBlock() &&
-      ((prev && Blockly.blockRendering.Types.isHat(prev)) || (next && Blockly.blockRendering.Types.isHat(next)))
+      (Blockly.blockRendering.Types.isHat(prev) || Blockly.blockRendering.Types.isHat(next))
     ) {
       // Bowler hat rows have no spacing/gaps, just the hat.
       return 0
@@ -82,8 +88,7 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
       this.block_.isScratchExtension &&
       Blockly.blockRendering.Types.isField(elem) &&
       elem.field instanceof Blockly.FieldImage &&
-      elem.field === this.block_.inputList[0].fieldRow[0] &&
-      this.block_.previousConnection
+      elem.field === this.block_.inputList[0].fieldRow[0]
     ) {
       // Vertically center the icon on extension blocks.
       return super.getElemCenterline_(row, elem) + this.constants_.GRID_UNIT

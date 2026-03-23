@@ -92,26 +92,51 @@ When adding runtime checks for states that should never happen (including guard-
 
 ## TypeScript guidelines
 
-### When using non-null assertions (`!`)
+### Avoid `any`
 
-Use sparingly and only when you genuinely know — in a way the compiler cannot prove — that a value is not null or
-undefined. Prefer type guards (`if (!x) return`), optional chaining (`?.`), or nullish coalescing (`??`) instead. The
-`!` operator silences the compiler without adding any runtime safety, so a misplaced one becomes a runtime crash.
+Do not use `any` as a type annotation. Prefer proper types, `unknown`, or a union. When calling into Blockly APIs
+that have weak types, add a local cast (`as ConcreteType`) with a comment explaining the narrowing rather than
+propagating `any` throughout the caller.
 
-Before adding a new `!`, quickly check these alternatives:
+### Non-null assertions (`!`)
 
-- Can you narrow once and reuse a local (`const x = ...; if (!x) return;`)?
-- Can the type carry the uncertainty directly (`prop?: T`, `T | null`) and be assigned conditionally?
-- Can you use optional chaining for best-effort UI updates (`node?.setAttribute(...)`)?
-- If data is required (e.g., mutation XML attrs), can you validate and fail clearly instead of asserting?
+Do not use `!` unless you genuinely know — in a way the compiler cannot prove — that a value is non-null. Prefer:
 
-Prefer narrowing once and reusing a local variable over repeating assertions at each use site.
+- A type guard with early return: `if (!x) return;`
+- Optional chaining for best-effort reads: `node?.getAttribute(...)`
+- Nullish coalescing for fallbacks: `value ?? default`
 
-### When using type assertions (`as`)
+If data is required (e.g., deserialized event fields), validate and fail with a logged error rather than asserting.
 
-Rely on TypeScript's inference and explicit type annotations first. Use `as SomeType` only when necessary (e.g., when
-narrowing a union that inference can't resolve). Treat `as unknown as Type` as a last resort, and add a comment
-explaining why it is both necessary and safe.
+Prefer narrowing once into a local variable over repeating `!` at each use site.
+
+### Type assertions (`as`)
+
+Rely on TypeScript's inference and explicit annotations first. Use `as SomeType` only when necessary (e.g., narrowing
+a union inference can't resolve). Treat `as unknown as Type` as a last resort; add a comment explaining why it is
+both necessary and safe.
+
+### Nullish coalescing and optional chaining
+
+Prefer `??` over `|| default` for null/undefined fallbacks, and `?.` over `x && x.y` for optional member access.
+Both are safer (they don't coerce falsy values) and trigger lint errors if the left-hand side is provably non-null.
+
+### Promises
+
+Do not leave promises floating. Either `await` the result, return it, or prefix with `void` to explicitly discard it.
+Unhandled promise rejections are silent failures.
+
+### Loop style
+
+Prefer `for...of` over index-based `for` loops when the index is not needed.
+
+### Unused values
+
+Keep `no-unused-vars` enabled. Preferred handling:
+
+- Remove dead locals/imports when possible.
+- For intentionally unused function parameters, prefix with `_` (e.g. `_event`).
+- For required locals in no-op/interface-conformance paths, use `void value` to mark the discard explicitly.
 
 ## Common patterns
 

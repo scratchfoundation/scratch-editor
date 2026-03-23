@@ -39,7 +39,7 @@ export class ScratchCommentIcon extends Blockly.icons.Icon implements Blockly.IS
     return Blockly.icons.IconType.COMMENT
   }
 
-  initView(pointerDownListener: (e: PointerEvent) => void) {
+  initView(_pointerDownListener: (e: PointerEvent) => void) {
     // Scratch comments have no indicator icon on the block.
     return
   }
@@ -57,8 +57,6 @@ export class ScratchCommentIcon extends Blockly.icons.Icon implements Blockly.IS
   }
 
   onLocationChange(blockOrigin: Blockly.utils.Coordinate) {
-    if (!this.sourceBlock || !this.commentBubble) return
-
     if (this.sourceBlock.isInsertionMarker()) {
       this.commentBubble.dispose()
       return
@@ -74,11 +72,11 @@ export class ScratchCommentIcon extends Blockly.icons.Icon implements Blockly.IS
   }
 
   setText(text: string) {
-    this.commentBubble?.setText(text)
+    this.commentBubble.setText(text)
   }
 
   getText(): string {
-    return this.commentBubble?.getText() ?? ''
+    return this.commentBubble.getText()
   }
 
   onTextChanged(oldText: string, newText: string) {
@@ -97,26 +95,24 @@ export class ScratchCommentIcon extends Blockly.icons.Icon implements Blockly.IS
   }
 
   setBubbleSize(size: Blockly.utils.Size) {
-    this.commentBubble?.setSize(size)
+    this.commentBubble.setSize(size)
   }
 
   getBubbleSize(): Blockly.utils.Size {
-    return this.commentBubble?.getSize() ?? new Blockly.utils.Size(0, 0)
+    return this.commentBubble.getSize()
   }
 
   setBubbleLocation(newLocation: Blockly.utils.Coordinate) {
     const oldLocation = this.getBubbleLocation()
-    this.commentBubble?.moveTo(newLocation)
+    this.commentBubble.moveTo(newLocation)
     Blockly.Events.fire(new (Blockly.Events.get('block_comment_move'))(this.commentBubble, oldLocation, newLocation))
   }
 
   getBubbleLocation(): Blockly.utils.Coordinate {
-    return this.commentBubble?.getRelativeToSurfaceXY()
+    return this.commentBubble.getRelativeToSurfaceXY()
   }
 
   saveState(): CommentState | null {
-    if (!this.commentBubble) return null
-
     const size = this.getBubbleSize()
     const bubbleLocation = this.commentBubble.getRelativeToSurfaceXY()
     const delta = Blockly.utils.Coordinate.difference(bubbleLocation, this.workspaceLocation)
@@ -145,8 +141,9 @@ export class ScratchCommentIcon extends Blockly.icons.Icon implements Blockly.IS
     return true
   }
 
-  async setBubbleVisible(visible: boolean) {
+  setBubbleVisible(visible: boolean) {
     this.commentBubble.setCollapsed(!visible)
+    return Promise.resolve()
   }
 
   getBubble(): ScratchCommentBubble | null {

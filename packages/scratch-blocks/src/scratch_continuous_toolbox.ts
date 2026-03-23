@@ -16,6 +16,10 @@ export class ScratchContinuousToolbox extends ContinuousToolbox {
    */
   private postRenderCallbacks: (() => void)[] = []
 
+  private getInitialFlyoutContents_(): Blockly.utils.toolbox.FlyoutItemInfoArray {
+    return this.getToolboxItems().flatMap((item) => this.convertToolboxItemToFlyoutItems(item))
+  }
+
   refreshSelection() {
     // Intentionally a no-op, Scratch manually manages refreshing the toolbox
     // via forceRerender().
@@ -45,9 +49,14 @@ export class ScratchContinuousToolbox extends ContinuousToolbox {
    * Forcibly rerenders the toolbox, preserving selection when possible.
    */
   forceRerender() {
-    const selectedCategoryName = this.selectedItem_?.getName()
-    this.getFlyout().show(this.getInitialFlyoutContents())
-    this.selectCategoryByName(selectedCategoryName)
+    const selectedCategoryName = this.getSelectedItem()?.getName()
+    if (selectedCategoryName === '') {
+      throw new Error('Expected selected category name to be non-empty')
+    }
+    this.getFlyout().show(this.getInitialFlyoutContents_())
+    if (selectedCategoryName) {
+      this.selectCategoryByName(selectedCategoryName)
+    }
     let callback
     while ((callback = this.postRenderCallbacks.shift())) {
       callback()

@@ -29,7 +29,11 @@ class BlockCommentMove extends BlockCommentBase {
     }
   }
 
-  static fromJson(json: BlockCommentMoveJson, workspace: Blockly.Workspace, event?: any): BlockCommentMove {
+  static fromJson(
+    json: BlockCommentMoveJson,
+    workspace: Blockly.Workspace,
+    event?: Blockly.Events.Abstract,
+  ): BlockCommentMove {
     const newEvent = super.fromJson(json, workspace, event ?? new BlockCommentMove()) as BlockCommentMove
     newEvent.newCoordinate_ = new Blockly.utils.Coordinate(json.newCoordinate.x, json.newCoordinate.y)
     newEvent.oldCoordinate_ = new Blockly.utils.Coordinate(json.oldCoordinate.x, json.oldCoordinate.y)
@@ -39,7 +43,7 @@ class BlockCommentMove extends BlockCommentBase {
 
   run(forward: boolean) {
     const workspace = this.getEventWorkspace_()
-    const block = workspace?.getBlockById(this.blockId)
+    const block = workspace.getBlockById(this.blockId)
     const comment = block?.getIcon(Blockly.icons.IconType.COMMENT)
     comment?.setBubbleLocation(forward ? this.newCoordinate_ : this.oldCoordinate_)
   }
