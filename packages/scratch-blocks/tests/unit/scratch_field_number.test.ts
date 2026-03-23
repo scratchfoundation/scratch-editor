@@ -22,7 +22,7 @@ function makeField(config: Record<string, unknown> = {}): AnyField {
   // defaults). This is equivalent to the original new FieldClass() pattern.
   const field = Blockly.fieldRegistry.TEST_ONLY.fromJsonInternal({
     type: 'field_number',
-  }) as unknown as AnyField
+  }) as AnyField
   field.configure_(config)
   return field
 }

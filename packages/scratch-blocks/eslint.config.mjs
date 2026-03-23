@@ -48,6 +48,15 @@ export default eslintConfigScratch.defineConfig(
       '@typescript-eslint/restrict-template-expressions': 'warn',
     },
   },
+  {
+    // Tests frequently introspect internals and invoke prototype methods directly.
+    files: ['tests/**/*.{ts,tsx,mts,cts}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+    },
+  },
   globalIgnores([
     '*_compressed*.js',
     '*_uncompressed*.js',

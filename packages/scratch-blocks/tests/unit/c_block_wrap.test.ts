@@ -97,7 +97,6 @@ describe('C-block wrapping', () => {
     markerStatementConn.connect(b2.previousConnection)
 
     // The original hideInsertionMarker does not use `this`, so any object works as context.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call -- tested function does not use `this`
     ;(Blockly.InsertionMarkerPreviewer.prototype as any).hideInsertionMarker.call({}, marker.previousConnection)
 
     // After cleanup, the stack should be healed: B1 → B2 (marker was disposed)
