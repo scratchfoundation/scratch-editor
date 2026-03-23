@@ -9,7 +9,8 @@ Use these defaults unless the user asks otherwise:
 3. Never edit `node_modules/blockly/`; extend/override from `src/` instead.
 4. When adding runtime guards for states that should never happen, log actionable context unless the path is expected
    control flow.
-5. Run `npm run test:lint` after meaningful code changes.
+5. When fixing a bug, start by adding one or more tests to reproduce the issue, then implement the fix. Iterate until
+   all tests pass, including but not limited to the new tests.
 
 ## What this repository is
 
@@ -23,11 +24,13 @@ palette and workspace.
 ## Build and lint
 
 ```sh
-npm run build      # Compile TypeScript and bundle with webpack → dist/main.mjs
-npm run test:lint  # Run ESLint
+npm run build        # Compile TypeScript and bundle with webpack → dist/main.mjs
+npm run format       # Auto-format code
+npm run test:lint    # Check for lint and formatting issues (does not run other tests)
+npm run test         # Run unit and browser tests (but not lint)
+npm run test:unit    # Run unit tests only
+npm run test:browser # Run browser tests only
 ```
-
-There are test files under `tests/` but no `npm test` script is wired up yet.
 
 ## Repository layout
 
@@ -133,8 +136,13 @@ explaining why it is both necessary and safe.
 
 ## Before submitting changes
 
-- Confirm changes are confined to requested scope.
-- Confirm no edits were made under `node_modules/blockly/`.
-- If you added runtime checks for states that should never happen (especially early-outs), confirm diagnostics were
-  added where appropriate.
-- Run `npm run test:lint`.
+Review all changes and confirm:
+
+- **Scope**: Changes are confined to the user request; nothing extra was added or modified.
+- **Correctness**: Changes make sense and edge cases were considered.
+- **Comments**: Comments are necessary, short, and clear; self-explanatory code has no comment.
+- **Simplicity**: Implementation is as simple as possible; no unnecessary code remains.
+- **`node_modules/`**: No changes within this directory. In particular, no direct edits to Blockly source files.
+- **Runtime checks**: Any new guards for states that should never happen include diagnostic logging.
+- **Tests pass**: `npm run test` completes with no failures.
+- **No lint errors**: `npm run test:lint` passes. Iterate with `npm run format` and/or manual changes as needed.
