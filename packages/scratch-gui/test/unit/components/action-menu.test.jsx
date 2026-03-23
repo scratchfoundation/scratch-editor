@@ -30,7 +30,7 @@ describe('ActionMenu keyboard navigation', () => {
         mockMoreButtonClick.mockClear();
     });
 
-    test('focus on main button expands menu', () => {
+    test('expands menu upon focus on main button', () => {
         render(<ActionMenu {...defaultProps} />);
         const mainButton = screen.getByRole('button', {name: 'Main Button'});
 
@@ -41,7 +41,7 @@ describe('ActionMenu keyboard navigation', () => {
         expect(mainButton.parentElement).toHaveClass('expanded');
     });
 
-    test('arrow_down focuses first item, arrow_up focuses last item', async () => {
+    test('focuses first item on arrow_down', async () => {
         render(<ActionMenu {...defaultProps} />);
         const mainButton = screen.getByRole('button', {name: 'Main Button'});
 
@@ -53,6 +53,11 @@ describe('ActionMenu keyboard navigation', () => {
         await waitFor(() => {
             expect(document.activeElement).toBe(screen.getByRole('button', {name: 'Button 1'}));
         });
+    });
+
+    test('focuses last item on arrow_up', async () => {
+        render(<ActionMenu {...defaultProps} />);
+        const mainButton = screen.getByRole('button', {name: 'Main Button'});
 
         act(() => {
             mainButton.focus();
@@ -64,7 +69,7 @@ describe('ActionMenu keyboard navigation', () => {
         });
     });
 
-    test('arrow_up from first item cycles to last, arrow_down from last cycles to first', async () => {
+    test('cycles from first item to last on arrow_up', async () => {
         render(<ActionMenu {...defaultProps} />);
 
         const firstItem = screen.getByRole('button', {name: 'Button 1'});
@@ -78,8 +83,16 @@ describe('ActionMenu keyboard navigation', () => {
         await waitFor(() => {
             expect(document.activeElement).toBe(lastItem);
         });
+    });
+
+    test('cycles from last item to first on arrow_down', async () => {
+        render(<ActionMenu {...defaultProps} />);
+
+        const firstItem = screen.getByRole('button', {name: 'Button 1'});
+        const lastItem = screen.getByRole('button', {name: 'Button 3'});
 
         act(() => {
+            lastItem.focus();
             fireEvent.keyDown(lastItem, {key: KEY.ARROW_DOWN});
         });
 
@@ -88,7 +101,7 @@ describe('ActionMenu keyboard navigation', () => {
         });
     });
     
-    test('escape returns focus to main button', async () => {
+    test('focuses to main button on escape', async () => {
         render(<ActionMenu {...defaultProps} />);
         const mainButton = screen.getByRole('button', {name: 'Main Button'});
         const firstItem = screen.getByRole('button', {name: 'Button 1'});
@@ -103,7 +116,7 @@ describe('ActionMenu keyboard navigation', () => {
         });
     });
 
-    test('tab closes menu and focuses next element', async () => {
+    test('closes menu and focuses next element on tab', async () => {
         render(
             <>
                 <ActionMenu {...defaultProps} />
@@ -126,7 +139,7 @@ describe('ActionMenu keyboard navigation', () => {
         });
     });
 
-    test('shift + tab closes menu and focuses previous element', async () => {
+    test('closes menu and focuses previous element on shift + tab', async () => {
         render(
             <>
                 <button>Before Menu</button>
