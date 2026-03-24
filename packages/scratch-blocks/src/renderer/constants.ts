@@ -27,10 +27,10 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
         root.style.setProperty(varKey, colour)
       } else {
         const style = {
-          colourPrimary: 'colourQuaternary' in colour ? `${colour.colourQuaternary}` : colour.colourTertiary,
-          colourSecondary: 'colourQuaternary' in colour ? `${colour.colourQuaternary}` : colour.colourTertiary,
-          colourTertiary: 'colourQuaternary' in colour ? `${colour.colourQuaternary}` : colour.colourTertiary,
-          colourQuaternary: 'colourQuaternary' in colour ? `${colour.colourQuaternary}` : colour.colourTertiary,
+          colourPrimary: 'colourQuaternary' in colour ? String(colour.colourQuaternary) : colour.colourTertiary,
+          colourSecondary: 'colourQuaternary' in colour ? String(colour.colourQuaternary) : colour.colourTertiary,
+          colourTertiary: 'colourQuaternary' in colour ? String(colour.colourQuaternary) : colour.colourTertiary,
+          colourQuaternary: 'colourQuaternary' in colour ? String(colour.colourQuaternary) : colour.colourTertiary,
           hat: '',
         }
         theme.setBlockStyle(`${key}_selected`, style)
@@ -52,38 +52,43 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
    * @returns The shape object for the given connection.
    */
   override shapeFor(connection: Blockly.RenderedConnection): ReturnType<Blockly.zelos.ConstantProvider['shapeFor']> {
+    const connectionType = connection.type as Blockly.ConnectionType
     let checks = connection.getCheck()
+    const hexagonal = this.HEXAGONAL
+    const rounded = this.ROUNDED
+    const squared = this.SQUARED
+    if (!hexagonal || !rounded || !squared) return super.shapeFor(connection)
     if (!checks && connection.targetConnection) {
       checks = connection.targetConnection.getCheck()
     }
 
-    if (connection.type === Blockly.ConnectionType.OUTPUT_VALUE) {
+    if (connectionType === Blockly.ConnectionType.OUTPUT_VALUE) {
       const outputShape = connection.getSourceBlock().getOutputShape()
       if (outputShape !== null) {
         switch (outputShape) {
           case this.SHAPES.HEXAGONAL:
-            return this.HEXAGONAL!
+            return hexagonal
           case this.SHAPES.ROUND:
-            return this.ROUNDED!
+            return rounded
           case this.SHAPES.SQUARE:
-            return this.SQUARED!
+            return squared
         }
       }
     }
 
     // For INPUT_VALUE (and OUTPUT_VALUE fallthrough), use connection checks.
-    if (checks?.includes('Boolean')) return this.HEXAGONAL!
-    if (checks?.includes('Number')) return this.ROUNDED!
-    if (checks?.includes('String')) return this.ROUNDED!
+    if (checks?.includes('Boolean')) return hexagonal
+    if (checks?.includes('Number')) return rounded
+    if (checks?.includes('String')) return rounded
     // For INPUT_VALUE or OUTPUT_VALUE with unrecognized checks, default to
     // ROUNDED. Don't call super.shapeFor() here: the base implementation
     // uses getSourceBlock().getOutputShape(), which would incorrectly return
     // HEXAGONAL for inputs inside Boolean reporters (e.g. `<a = b>`).
     if (
-      connection.type === Blockly.ConnectionType.INPUT_VALUE ||
-      connection.type === Blockly.ConnectionType.OUTPUT_VALUE
+      connectionType === Blockly.ConnectionType.INPUT_VALUE ||
+      connectionType === Blockly.ConnectionType.OUTPUT_VALUE
     ) {
-      return this.ROUNDED!
+      return rounded
     }
     return super.shapeFor(connection)
   }

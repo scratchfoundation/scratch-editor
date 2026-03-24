@@ -20,8 +20,6 @@
  * @file Utility methods for Scratch Blocks but not Blockly.
  * @author fenichel@google.com (Rachel Fenichel)
  */
-import * as Blockly from 'blockly/core'
-
 /**
  * Compare strings with natural number sorting.
  * @param str1 First input.

@@ -4,6 +4,7 @@
  */
 import * as Blockly from 'blockly/core'
 import { Colours } from './colours'
+import { getBlockSvgById, getRequiredMainWorkspaceSvg } from './workspace_block_lookup'
 
 /**
  * Glow/unglow a stack in the workspace.
@@ -11,11 +12,10 @@ import { Colours } from './colours'
  * @param isGlowingStack Whether to glow the stack.
  */
 export function glowStack(id: string, isGlowingStack: boolean) {
-  const block = (Blockly.getMainWorkspace().getBlockById(id) ||
-    (Blockly.getMainWorkspace() as Blockly.WorkspaceSvg)
-      .getFlyout()
-      ?.getWorkspace()
-      ?.getBlockById(id)) as Blockly.BlockSvg
+  const mainWorkspace = getRequiredMainWorkspaceSvg()
+  const flyout = mainWorkspace.getFlyout()
+  const flyoutBlock = flyout ? getBlockSvgById(flyout.getWorkspace(), id) : null
+  const block = getBlockSvgById(mainWorkspace, id) ?? flyoutBlock
   if (!block) {
     throw new Error('Tried to glow block that does not exist.')
   }

@@ -35,19 +35,28 @@ export class FieldTextInputRemovable extends Blockly.FieldTextInput {
   showEditor_() {
     // Wait for our parent block to render so we can examine its metrics to
     // calculate rounded corners on the editor as needed.
-    Blockly.renderManagement.finishQueuedRenders().then(() => {
+    void Blockly.renderManagement.finishQueuedRenders().then(() => {
       super.showEditor_()
 
-      const div = Blockly.WidgetDiv.getDiv()!
+      const div = Blockly.WidgetDiv.getDiv()
+      if (!div) {
+        console.error('[field_textinput_removable] Missing WidgetDiv for removable text input')
+        return
+      }
+      if (!this.sourceBlock_) {
+        console.error('[field_textinput_removable] Missing source block for removable text input')
+        return
+      }
+
       div.className += ' removableTextInput'
       const removeButton = document.createElement('img')
       removeButton.className = 'blocklyTextRemoveIcon'
-      removeButton.setAttribute('src', this.sourceBlock_!.workspace.options.pathToMedia + 'icons/remove.svg')
+      removeButton.setAttribute('src', this.sourceBlock_.workspace.options.pathToMedia + 'icons/remove.svg')
       this.removeButtonMouseWrapper_ = Blockly.browserEvents.bind(
         removeButton,
         'mousedown',
         this,
-        this.removeCallback_,
+        this.removeCallback_.bind(this),
       )
       div.appendChild(removeButton)
     })

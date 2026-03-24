@@ -2,13 +2,29 @@
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-import { ContinuousFlyout } from '@blockly/continuous-toolbox'
+import { ContinuousFlyout, type LabelFlyoutItem } from '@blockly/continuous-toolbox'
 import * as Blockly from 'blockly/core'
 import { CheckboxBubble } from './checkbox_bubble'
 import { StatusIndicatorLabel } from './status_indicator_label'
 import { STATUS_INDICATOR_LABEL_TYPE } from './status_indicator_label_flyout_inflater'
 
+interface ReflowElement extends Blockly.BlockSvg {
+  checkboxInFlyout?: boolean
+}
+
+interface CheckboxIcon {
+  setChecked: (value: boolean) => void
+}
+
+function isCheckboxIcon(icon: Blockly.IIcon | undefined): icon is Blockly.IIcon & CheckboxIcon {
+  return !!icon && typeof (icon as { setChecked?: unknown }).setChecked === 'function'
+}
+
 export class CheckableContinuousFlyout extends ContinuousFlyout {
+  declare protected tabWidth_: number
+  declare MARGIN: number
+  declare GAP_Y: number
+
   /**
    * Creates a new CheckableContinuousFlyout.
    * @param workspaceOptions Configuration options for the flyout workspace.
@@ -42,7 +58,16 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
    * @param value Value to set the checkbox to.
    */
   setCheckboxState(blockId: string, value: boolean) {
-    this.getWorkspace().getBlockById(blockId)?.getIcon('checkbox')?.setChecked(value)
+    const icon = this.getWorkspace().getBlockById(blockId)?.getIcon('checkbox')
+    if (!icon) {
+      return
+    }
+    if (!isCheckboxIcon(icon)) {
+      throw new Error(
+        `[CheckableContinuousFlyout.setCheckboxState] Expected checkbox icon with setChecked for block ${blockId}`,
+      )
+    }
+    icon.setChecked(value)
   }
 
   getFlyoutScale() {
@@ -61,14 +86,18 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
       // contents, and adjusts blocks in RTL mode accordingly. In Scratch, the
       // flyout width is fixed (and blocks may exceed it), so re-adjust blocks
       // accordingly based on the actual fixed width.
-      for (const item of this.getContents()) {
-        const oldX = item.getElement().getBoundingRectangle().left
-        let newX =
-          this.getWidth() / this.workspace_.scale - item.getElement().getBoundingRectangle().getWidth() - this.MARGIN
-        if ('checkboxInFlyout' in item.getElement() && item.getElement().checkboxInFlyout) {
+      const flyoutItems = this.getContents()
+      for (const item of flyoutItems) {
+        const element = item.getElement()
+        if (!(element instanceof Blockly.BlockSvg)) {
+          continue
+        }
+        const oldX = element.getBoundingRectangle().left
+        let newX = this.getWidth() / this.workspace_.scale - element.getBoundingRectangle().getWidth() - this.MARGIN
+        if ('checkboxInFlyout' in element && (element as ReflowElement).checkboxInFlyout) {
           newX -= CheckboxBubble.CHECKBOX_SIZE + CheckboxBubble.CHECKBOX_MARGIN
         }
-        item.getElement().moveBy(newX - oldX, 0)
+        element.moveBy(newX - oldX, 0)
       }
     }
   }
@@ -78,8 +107,11 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
    * @param item The toolbox item to check.
    * @returns True if the item represents a label in the flyout.
    */
-  protected toolboxItemIsLabel(item: Blockly.FlyoutItem) {
-    return item.getType() === STATUS_INDICATOR_LABEL_TYPE || super.toolboxItemIsLabel(item)
+  protected toolboxItemIsLabel(item: Blockly.FlyoutItem): item is LabelFlyoutItem {
+    if (item.getType() === STATUS_INDICATOR_LABEL_TYPE) {
+      return true
+    }
+    return super.toolboxItemIsLabel(item)
   }
 
   /**
@@ -87,8 +119,9 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
    */
   refreshStatusButtons() {
     for (const item of this.contents) {
-      if (item.element instanceof StatusIndicatorLabel) {
-        item.element.refreshStatus()
+      const element = item.getElement()
+      if (element instanceof StatusIndicatorLabel) {
+        element.refreshStatus()
       }
     }
   }

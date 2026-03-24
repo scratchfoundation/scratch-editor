@@ -22,7 +22,7 @@ export function clearWorkspaceAndLoadFromXml(xml: Element, workspace: Blockly.Wo
     const id = variable.getAttribute('id')
     if (!id) continue
     const type = variable.getAttribute('type') ?? ''
-    const name = variable.textContent ?? ''
+    const name = variable.textContent
     const isLocal = variable.getAttribute('islocal') === 'true'
     const isCloud = variable.getAttribute('iscloud') === 'true'
 

@@ -33,7 +33,12 @@ function allProcedureMutations(root: Blockly.WorkspaceSvg): Element[] {
   const blocks = root.getAllBlocks()
   return blocks
     .filter((b) => b.type === Constants.PROCEDURES_PROTOTYPE_BLOCK_TYPE)
-    .map((b) => b.mutationToDom!(/* opt_generateShadows */ true))
+    .map((b) => {
+      if (!b.mutationToDom) {
+        throw new Error(`Expected mutationToDom on procedure prototype block ${b.id}`)
+      }
+      return b.mutationToDom(/* opt_generateShadows */ true)
+    })
 }
 
 /**
@@ -44,8 +49,11 @@ function allProcedureMutations(root: Blockly.WorkspaceSvg): Element[] {
  */
 function sortProcedureMutations(mutations: Element[]): Element[] {
   return mutations.slice().sort((a, b) => {
-    const procCodeA = a.getAttribute('proccode')!
-    const procCodeB = b.getAttribute('proccode')!
+    const procCodeA = a.getAttribute('proccode')
+    const procCodeB = b.getAttribute('proccode')
+    if (!procCodeA || !procCodeB) {
+      throw new Error('Expected proccode attribute in procedure mutation element')
+    }
 
     return scratchBlocksUtils.compareStrings(procCodeA, procCodeB)
   })
@@ -114,23 +122,19 @@ function addCreateButton(workspace: Blockly.WorkspaceSvg, xmlList: Element[]) {
  */
 export function getCallers(
   name: string,
-  workspace: Blockly.WorkspaceSvg,
-  definitionRoot: Blockly.BlockSvg,
+  workspace: Blockly.Workspace,
+  definitionRoot: Pick<Blockly.Block, 'id'>,
   allowRecursive: boolean,
-): Blockly.BlockSvg[] {
+): ProcedureBlock[] {
   return workspace.getTopBlocks().flatMap((block) => {
     if (block.id === definitionRoot.id && !allowRecursive) {
       return []
     }
 
-    return block
-      .getDescendants(false)
-      .filter(
-        (descendant) =>
-          isProcedureBlock(descendant) &&
-          descendant.type === Constants.PROCEDURES_CALL_BLOCK_TYPE &&
-          descendant.getProcCode() === name,
-      )
+    const procedureDescendants = block.getDescendants(false).filter(isProcedureBlock)
+    return procedureDescendants.filter(
+      (descendant) => descendant.type === Constants.PROCEDURES_CALL_BLOCK_TYPE && descendant.getProcCode() === name,
+    )
   })
 }
 
@@ -147,16 +151,22 @@ function mutateCallersAndPrototype(name: string, workspace: Blockly.WorkspaceSvg
     alert('No define block on workspace') // TODO decide what to do about this.
     return
   }
+  if (!isProcedureBlock(prototypeBlock)) {
+    throw new Error(`Expected procedure prototype block for procCode ${name}`)
+  }
 
   const callers = getCallers(name, defineBlock.workspace, defineBlock, true /* allowRecursive */)
   callers.push(prototypeBlock)
   Blockly.Events.setGroup(true)
   callers.forEach((caller) => {
-    const oldMutationDom = caller.mutationToDom!()
-    const oldMutation = oldMutationDom && Blockly.Xml.domToText(oldMutationDom)
-    caller.domToMutation!(mutation)
-    const newMutationDom = caller.mutationToDom!()
-    const newMutation = newMutationDom && Blockly.Xml.domToText(newMutationDom)
+    if (!caller.mutationToDom || !caller.domToMutation) {
+      throw new Error(`Expected mutation APIs on block ${caller.id} (${caller.type})`)
+    }
+    const oldMutationDom = caller.mutationToDom()
+    const oldMutation = Blockly.Xml.domToText(oldMutationDom)
+    caller.domToMutation(mutation)
+    const newMutationDom = caller.mutationToDom()
+    const newMutation = Blockly.Xml.domToText(newMutationDom)
     if (oldMutation !== newMutation) {
       Blockly.Events.fire(
         new (Blockly.Events.get(Blockly.Events.BLOCK_CHANGE))(caller, 'mutation', null, oldMutation, newMutation),
@@ -172,16 +182,31 @@ function mutateCallersAndPrototype(name: string, workspace: Blockly.WorkspaceSvg
  * @param workspace The workspace to search.
  * @returns The procedure definition block, or undefined if not found.
  */
-function getDefineBlock(procCode: string, workspace: Blockly.WorkspaceSvg): Blockly.BlockSvg | undefined {
+function getDefineBlock(procCode: string, workspace: Blockly.Workspace): Blockly.BlockSvg | undefined {
   // Assume that a procedure definition is a top block.
-  return workspace.getTopBlocks(false).find((block) => {
+  for (const block of workspace.getTopBlocks(false)) {
     if (block.type === Constants.PROCEDURES_DEFINITION_BLOCK_TYPE) {
-      const prototypeBlock = block.getInput('custom_block')!.connection!.targetBlock() as Blockly.BlockSvg
-      return isProcedureBlock(prototypeBlock) && prototypeBlock.getProcCode() === procCode
+      const input = block.getInput('custom_block')
+      if (!input?.connection) {
+        throw new Error(`Expected custom_block input connection on block ${block.id}`)
+      }
+      const raw = input.connection.targetBlock()
+      if (!raw) {
+        throw new Error(`Expected custom_block target block on block ${block.id}`)
+      }
+      if (!(raw instanceof Blockly.BlockSvg)) {
+        throw new Error(`Expected custom_block target BlockSvg on block ${block.id}`)
+      }
+      const prototypeBlock = raw
+      if (isProcedureBlock(prototypeBlock) && prototypeBlock.getProcCode() === procCode) {
+        if (!(block instanceof Blockly.BlockSvg)) {
+          throw new Error(`Expected procedure definition BlockSvg for block ${block.id}`)
+        }
+        return block
+      }
     }
-
-    return false
-  })
+  }
+  return undefined
 }
 
 /**
@@ -190,10 +215,21 @@ function getDefineBlock(procCode: string, workspace: Blockly.WorkspaceSvg): Bloc
  * @param workspace The workspace to search.
  * @returns The procedure prototype block, or undefined if not found.
  */
-function getPrototypeBlock(procCode: string, workspace: Blockly.WorkspaceSvg): Blockly.BlockSvg | undefined {
+function getPrototypeBlock(procCode: string, workspace: Blockly.Workspace): Blockly.BlockSvg | undefined {
   const defineBlock = getDefineBlock(procCode, workspace)
   if (defineBlock) {
-    return defineBlock.getInput('custom_block')!.connection!.targetBlock() as Blockly.BlockSvg
+    const input = defineBlock.getInput('custom_block')
+    if (!input?.connection) {
+      throw new Error(`Expected custom_block input connection on block ${defineBlock.id}`)
+    }
+    const target = input.connection.targetBlock()
+    if (!target) {
+      throw new Error(`Expected custom_block target block on block ${defineBlock.id}`)
+    }
+    if (!(target instanceof Blockly.BlockSvg)) {
+      throw new Error(`Expected custom_block target BlockSvg on block ${defineBlock.id}`)
+    }
+    return target
   }
   return undefined
 }
@@ -213,7 +249,9 @@ function newProcedureMutation(): Element {
         warp="false">
       </mutation>
     </xml>`
-  return Blockly.utils.xml.textToDom(mutationText).firstElementChild!
+  const el = Blockly.utils.xml.textToDom(mutationText).firstElementChild
+  if (!el) throw new Error('Failed to parse mutation XML')
+  return el
 }
 
 /**
@@ -221,7 +259,11 @@ function newProcedureMutation(): Element {
  * @param workspace The workspace to create the new procedure on.
  */
 function createProcedureDefCallback(workspace: Blockly.WorkspaceSvg) {
-  ScratchProcedures.externalProcedureDefCallback!(newProcedureMutation(), createProcedureCallbackFactory(workspace))
+  const callback = ScratchProcedures.externalProcedureDefCallback
+  if (!callback) {
+    throw new Error('ScratchProcedures.externalProcedureDefCallback is not set')
+  }
+  callback(newProcedureMutation(), createProcedureCallbackFactory(workspace))
 }
 
 /**
@@ -243,10 +285,13 @@ function createProcedureCallbackFactory(workspace: Blockly.WorkspaceSvg): (mutat
           </statement>
         </block>
       </xml>`
-    const blockDom = Blockly.utils.xml.textToDom(blockText).firstElementChild!
+    const blockDom = Blockly.utils.xml.textToDom(blockText).firstElementChild
+    if (!blockDom) {
+      throw new Error('Failed to parse procedure definition XML')
+    }
     Blockly.Events.setGroup(true)
     const block = Blockly.Xml.domToBlock(blockDom, workspace) as Blockly.BlockSvg
-    Blockly.renderManagement.finishQueuedRenders().then(() => {
+    void Blockly.renderManagement.finishQueuedRenders().then(() => {
       // To convert from pixel units to workspace units
       const scale = workspace.scale
       // Position the block so that it is at the top left of the visible
@@ -293,7 +338,9 @@ function editProcedureCallback(block: Blockly.BlockSvg) {
   } else if (block.type === Constants.PROCEDURES_CALL_BLOCK_TYPE && isProcedureBlock(block)) {
     // This is a call block, find the prototype corresponding to the procCode.
     // Make sure to search the correct workspace, call block can be in flyout.
-    const workspaceToSearch = block.workspace.isFlyout ? block.workspace.targetWorkspace! : block.workspace
+    const workspaceToSearch = block.workspace.isFlyout
+      ? (block.workspace.targetWorkspace ?? block.workspace)
+      : block.workspace
     const foundBlock = getPrototypeBlock(block.getProcCode(), workspaceToSearch)
     if (!foundBlock) {
       console.warn('editProcedureCallback: could not find prototype for', block.getProcCode())
@@ -304,10 +351,14 @@ function editProcedureCallback(block: Blockly.BlockSvg) {
     prototypeBlock = block
   }
   // Block now refers to the procedure prototype block, it is safe to proceed.
-  ScratchProcedures.externalProcedureDefCallback!(
-    prototypeBlock.mutationToDom!(),
-    editProcedureCallbackFactory(prototypeBlock),
-  )
+  const callback = ScratchProcedures.externalProcedureDefCallback
+  if (!callback) {
+    throw new Error('ScratchProcedures.externalProcedureDefCallback is not set')
+  }
+  if (!prototypeBlock.mutationToDom) {
+    throw new Error(`Expected mutationToDom on block ${prototypeBlock.id} (${prototypeBlock.type})`)
+  }
+  callback(prototypeBlock.mutationToDom(), editProcedureCallbackFactory(prototypeBlock))
 }
 
 /**
@@ -349,15 +400,14 @@ function makeEditOption(block: Blockly.BlockSvg): Blockly.ContextMenuRegistry.Co
  *     procedure.
  * @returns True if the custom procedure was deleted, false otherwise.
  */
-function deleteProcedureDefCallback(procCode: string, definitionRoot: Blockly.BlockSvg): boolean {
+function deleteProcedureDefCallback(procCode: string, definitionRoot: Blockly.Block): boolean {
   const callers = getCallers(procCode, definitionRoot.workspace, definitionRoot, false /* allowRecursive */)
   if (callers.length > 0) {
     return false
   }
 
-  const workspace = definitionRoot.workspace
   // Bypass the checkAndDelete provided by the procedure block mixin
-  Blockly.BlockSvg.prototype.checkAndDelete.call(definitionRoot)
+  Blockly.BlockSvg.prototype.checkAndDelete.call(definitionRoot as Blockly.BlockSvg)
   return true
 }
 
@@ -366,7 +416,7 @@ function deleteProcedureDefCallback(procCode: string, definitionRoot: Blockly.Bl
  * @param block The block to check.
  * @returns True if the block is a procedure block, otherwise false.
  */
-export function isProcedureBlock(block: Blockly.BlockSvg): block is ProcedureBlock {
+export function isProcedureBlock(block: Blockly.Block): block is ProcedureBlock {
   return (
     block.type === Constants.PROCEDURES_CALL_BLOCK_TYPE ||
     block.type === Constants.PROCEDURES_DECLARATION_BLOCK_TYPE ||
@@ -378,7 +428,7 @@ export function isProcedureBlock(block: Blockly.BlockSvg): block is ProcedureBlo
  * Interface for procedure blocks, which have the getProcCode method added
  * through an extension.
  */
-interface ProcedureBlock extends Blockly.BlockSvg {
+interface ProcedureBlock extends Blockly.Block {
   getProcCode(): string
 }
 

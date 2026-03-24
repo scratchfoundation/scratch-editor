@@ -440,7 +440,11 @@ function addBlock(
           ${secondValueField}
         </block>
       </xml>`
-    const block = Blockly.utils.xml.textToDom(blockText).firstElementChild!
+    const block = Blockly.utils.xml.textToDom(blockText).firstElementChild
+    if (!block) {
+      console.error(`[data_category/addBlock] Failed to create block XML for type ${blockType}`)
+      return
+    }
     xmlList.push(block)
   }
 }
@@ -456,7 +460,7 @@ function generateVariableFieldXml(
   opt_name?: string,
 ): string {
   const field = document.createElement('field')
-  field.setAttribute('name', opt_name || 'VARIABLE')
+  field.setAttribute('name', opt_name ?? 'VARIABLE')
   field.setAttribute('id', variableModel.getId())
   field.setAttribute('variabletype', variableModel.getType())
   field.textContent = variableModel.getName()
@@ -503,6 +507,10 @@ function createValue(valueName: string, type: string, value: string): string {
  */
 function addSep(xmlList: Element[]) {
   const sepText = `<xml><sep gap="36"/></xml>`
-  const sep = Blockly.utils.xml.textToDom(sepText).firstElementChild!
+  const sep = Blockly.utils.xml.textToDom(sepText).firstElementChild
+  if (!sep) {
+    console.error('[data_category/addSep] Failed to create separator XML')
+    return
+  }
   xmlList.push(sep)
 }

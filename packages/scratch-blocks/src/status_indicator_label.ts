@@ -46,7 +46,7 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
   /**
    * Function to be invoked when the status indicator is clicked.
    */
-  static statusButtonCallback: (extensionId: string) => void
+  static statusButtonCallback: ((extensionId: string) => void) | null = null
 
   /**
    * Creates a new StatusIndicatorLabel.
@@ -60,11 +60,17 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
     json: Blockly.utils.toolbox.LabelInfo,
   ) {
     super(workspace, targetWorkspace, json, true)
-    this.extensionId = json.id!
+    if (!json.id) {
+      throw new Error('StatusIndicatorLabel: missing required extension id in toolbox JSON')
+    }
+    this.extensionId = json.id
 
     const heightDelta = 40 - this.height
     this.height = 40
-    const text = this.getSvgRoot().querySelector('text')!
+    const text = this.getSvgRoot().querySelector('text')
+    if (!text) {
+      throw new Error('StatusIndicatorLabel: missing flyout text element')
+    }
     const previousY = Number(text.getAttribute('y'))
 
     text.setAttribute('y', `${previousY + heightDelta / 2}`)
@@ -73,7 +79,7 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
     const marginX = 20
     const marginY = 5
     const touchPadding = 16
-    const flyoutWidth = targetWorkspace.getFlyout()!.getWidth()
+    const flyoutWidth = targetWorkspace.getFlyout()?.getWidth() ?? 0
 
     const statusButtonX = workspace.RTL
       ? marginX - flyoutWidth + statusButtonWidth
@@ -129,17 +135,15 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
    * @package
    */
   setImageSrc(src: string) {
-    if (this.imageElement) {
-      this.imageElement.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', src)
-    }
+    this.imageElement.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', src)
   }
 
   /**
    * Gets the extension state. Overridden externally.
-   * @param extensionId A string identifying which extension's state to retrieve.
+   * @param _extensionId A string identifying which extension's state to retrieve.
    * @returns Whether the extension is ready to be used.
    */
-  getExtensionState(extensionId: string): StatusButtonState {
+  getExtensionState(_extensionId: string): StatusButtonState {
     return StatusButtonState.NOT_READY
   }
 

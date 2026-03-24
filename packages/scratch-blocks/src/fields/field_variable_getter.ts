@@ -70,8 +70,13 @@ class FieldVariableGetter extends Blockly.FieldLabel {
    */
   doValueUpdate_(newVariableId: string) {
     super.doValueUpdate_(newVariableId)
-    const workspace = this.getSourceBlock()!.workspace
-    this.variable = Blockly.Variables.getVariable(workspace, newVariableId)
+    const sourceBlock = this.getSourceBlock()
+    if (!sourceBlock) {
+      console.error('[field_variable_getter] Missing source block in doValueUpdate_')
+      this.variable = null
+      return
+    }
+    this.variable = Blockly.Variables.getVariable(sourceBlock.workspace, newVariableId)
   }
 
   /**
@@ -92,13 +97,22 @@ class FieldVariableGetter extends Blockly.FieldLabel {
   }
 
   fromXml(element: Element) {
-    this.setValue(element.getAttribute('id')!)
+    const id = element.getAttribute('id')
+    if (!id) {
+      console.error('[field_variable_getter] Missing variable id in XML')
+      return
+    }
+    this.setValue(id)
   }
 
   toXml(element: Element): Element {
-    element.setAttribute('id', this.variable!.getId())
-    element.setAttribute('variabletype', this.variable!.getType())
-    element.textContent = this.variable!.getName()
+    if (!this.variable) {
+      console.error('[field_variable_getter] Missing variable in toXml')
+      return element
+    }
+    element.setAttribute('id', this.variable.getId())
+    element.setAttribute('variabletype', this.variable.getType())
+    element.textContent = this.variable.getName()
     return element
   }
 }

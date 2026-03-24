@@ -19,6 +19,8 @@ export class ScratchContinuousCategory extends ContinuousCategory {
    * devices.
    */
   private showStatusButton = false
+  private iconURI?: string
+  private secondaryColour?: string
 
   /**
    * Creates a new ScratchContinuousCategory.
@@ -33,21 +35,29 @@ export class ScratchContinuousCategory extends ContinuousCategory {
   ) {
     super(toolboxItemDef, parentToolbox, opt_parent)
     this.showStatusButton = toolboxItemDef.showStatusButton === 'true'
+    const iconURI = 'iconURI' in toolboxItemDef ? toolboxItemDef.iconURI : undefined
+    const secondaryColour = 'secondaryColour' in toolboxItemDef ? toolboxItemDef.secondaryColour : undefined
+    this.iconURI = typeof iconURI === 'string' ? iconURI : undefined
+    this.secondaryColour = typeof secondaryColour === 'string' ? secondaryColour : undefined
   }
 
   /**
    * Creates a DOM element for this category's icon.
    * @returns A DOM element for this category's icon.
    */
-  createIconDom_(): HTMLElement {
-    if (this.toolboxItemDef_.iconURI) {
+  createIconDom_(): Element {
+    if (this.iconURI) {
       const icon = document.createElement('img')
-      icon.src = this.toolboxItemDef_.iconURI
+      icon.src = this.iconURI
       icon.className = 'categoryIconBubble'
       return icon
     } else {
       const icon = super.createIconDom_()
-      icon.style.border = `1px solid ${this.toolboxItemDef_.secondaryColour}`
+      if (icon instanceof HTMLElement) {
+        if (this.secondaryColour) {
+          icon.style.border = `1px solid ${this.secondaryColour}`
+        }
+      }
       return icon
     }
   }
@@ -59,7 +69,9 @@ export class ScratchContinuousCategory extends ContinuousCategory {
   setSelected(isSelected: boolean) {
     super.setSelected(isSelected)
     // Prevent hardcoding the background color to grey.
-    this.rowDiv_.style.backgroundColor = ''
+    if (this.rowDiv_) {
+      this.rowDiv_.style.backgroundColor = ''
+    }
   }
 
   /**
@@ -74,10 +86,7 @@ export class ScratchContinuousCategory extends ContinuousCategory {
 
 /** Registers this toolbox category and unregisters the default one. */
 export function registerScratchContinuousCategory() {
-  Blockly.registry.unregister(Blockly.registry.Type.TOOLBOX_ITEM, ScratchContinuousCategory.registrationName)
-  Blockly.registry.register(
-    Blockly.registry.Type.TOOLBOX_ITEM,
-    ScratchContinuousCategory.registrationName,
-    ScratchContinuousCategory,
-  )
+  const registrationName = ScratchContinuousCategory.registrationName
+  Blockly.registry.unregister(Blockly.registry.Type.TOOLBOX_ITEM, registrationName)
+  Blockly.registry.register(Blockly.registry.Type.TOOLBOX_ITEM, registrationName, ScratchContinuousCategory)
 }

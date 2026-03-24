@@ -155,10 +155,10 @@ export class CheckboxBubble implements Blockly.IBubble, Blockly.IRenderedElement
    * Returns whether or not the specified block has its checkbox checked.
    *
    * This method is patched by scratch-gui to query the VM state.
-   * @param blockId The ID of the block in question.
+   * @param _blockId The ID of the block in question.
    * @returns True if the block's checkbox should be checked.
    */
-  isChecked(blockId: string): boolean {
+  isChecked(_blockId: string): boolean {
     return false
   }
 
@@ -252,17 +252,17 @@ export class CheckboxBubble implements Blockly.IBubble, Blockly.IRenderedElement
   // to its block and is not draggable by the user.
   showContextMenu() {}
 
-  setDragging(dragging: boolean) {}
+  setDragging(_dragging: boolean) {}
 
-  startDrag(event: PointerEvent) {}
+  startDrag(_event: PointerEvent) {}
 
-  drag(newLocation: Blockly.utils.Coordinate, event: PointerEvent) {}
+  drag(_newLocation: Blockly.utils.Coordinate, _event: PointerEvent) {}
 
-  moveDuringDrag(newLocation: Blockly.utils.Coordinate) {}
+  moveDuringDrag(_newLocation: Blockly.utils.Coordinate) {}
 
   endDrag() {}
 
   revertDrag() {}
 
-  setDeleteStyle(enable: boolean) {}
+  setDeleteStyle(_enable: boolean) {}
 }

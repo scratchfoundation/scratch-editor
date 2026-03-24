@@ -210,7 +210,7 @@ class FieldMatrix extends Blockly.Field<string> {
       this.arrow_.setAttributeNS(
         'http://www.w3.org/1999/xlink',
         'xlink:href',
-        this.getConstants()!.FIELD_DROPDOWN_SVG_ARROW_DATAURI,
+        this.getConstants()?.FIELD_DROPDOWN_SVG_ARROW_DATAURI ?? '',
       )
       this.arrow_.style.cursor = 'default'
     }
@@ -241,7 +241,7 @@ class FieldMatrix extends Blockly.Field<string> {
     } else if (this.borderRect_) {
       this.borderRect_.setAttribute(
         'fill',
-        'colourQuaternary' in style ? `${style.colourQuaternary}` : style.colourTertiary,
+        'colourQuaternary' in style ? String(style.colourQuaternary) : style.colourTertiary,
       )
     }
 
@@ -299,17 +299,22 @@ class FieldMatrix extends Blockly.Field<string> {
 
     Blockly.DropDownDiv.showPositionedByBlock(this, sourceBlock, this.dropdownDispose_.bind(this))
 
-    this.matrixTouchWrapper_ = Blockly.browserEvents.bind(this.matrixStage_, 'mousedown', this, this.onMouseDown)
-    this.clearButtonWrapper_ = Blockly.browserEvents.bind(clearButton, 'click', this, this.clearMatrix_)
-    this.fillButtonWrapper_ = Blockly.browserEvents.bind(fillButton, 'click', this, this.fillMatrix_)
+    this.matrixTouchWrapper_ = Blockly.browserEvents.bind(
+      this.matrixStage_,
+      'mousedown',
+      this,
+      this.onMouseDown.bind(this),
+    )
+    this.clearButtonWrapper_ = Blockly.browserEvents.bind(clearButton, 'click', this, this.clearMatrix_.bind(this))
+    this.fillButtonWrapper_ = Blockly.browserEvents.bind(fillButton, 'click', this, this.fillMatrix_.bind(this))
 
     // Update the matrix for the current value
     this.updateMatrix_()
   }
 
   dropdownDispose_() {
-    const sourceBlock = this.getSourceBlock()!
-    if (sourceBlock.isShadow()) {
+    const sourceBlock = this.getSourceBlock()
+    if (sourceBlock?.isShadow()) {
       sourceBlock.setStyle(this.originalStyle)
     }
     this.updateMatrix_()
@@ -355,10 +360,12 @@ class FieldMatrix extends Blockly.Field<string> {
    * Redraw the matrix with the current value.
    */
   private updateMatrix_() {
-    const matrix = this.getValue()!
-    const sourceBlock = this.getSourceBlock()! as Blockly.BlockSvg
+    const matrix = this.getValue()
+    if (!matrix) return
+    const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg | null
+    if (!sourceBlock) return
     for (let i = 0; i < matrix.length; i++) {
-      if (matrix[i] === LEDState.OFF) {
+      if ((matrix[i] as LEDState) === LEDState.OFF) {
         this.fillMatrixNode_(this.ledButtons_, i, sourceBlock.getColourTertiary())
         this.fillMatrixNode_(this.ledThumbNodes_, i, sourceBlock.getColourSecondary())
       } else {
@@ -393,13 +400,14 @@ class FieldMatrix extends Blockly.Field<string> {
    * @param fill The fill colour in '#rrggbb' format.
    */
   fillMatrixNode_(node: SVGElement[], index: number, fill: string) {
-    if (!node?.[index] || !fill) return
+    if (!node[index] || !fill) return
     node[index].setAttribute('fill', fill)
   }
 
   setLEDNode_(led: number, state: LEDState) {
     if (led < 0 || led > 24) return
-    const oldMatrix = this.getValue()!
+    const oldMatrix = this.getValue()
+    if (!oldMatrix) return
     const newMatrix = oldMatrix.substr(0, led) + state + oldMatrix.substr(led + 1)
     this.setValue(newMatrix)
   }
@@ -416,7 +424,9 @@ class FieldMatrix extends Blockly.Field<string> {
 
   toggleLEDNode_(led: number) {
     if (led < 0 || led > 24) return
-    if (this.getValue()!.charAt(led) === LEDState.OFF) {
+    const value = this.getValue()
+    if (!value) return
+    if ((value.charAt(led) as LEDState) === LEDState.OFF) {
       this.setLEDNode_(led, LEDState.ON)
     } else {
       this.setLEDNode_(led, LEDState.OFF)
@@ -428,11 +438,17 @@ class FieldMatrix extends Blockly.Field<string> {
    * @param e Mouse event.
    */
   onMouseDown(e: PointerEvent) {
-    this.matrixMoveWrapper_ = Blockly.browserEvents.bind(document.body, 'mousemove', this, this.onMouseMove)
-    this.matrixReleaseWrapper_ = Blockly.browserEvents.bind(document.body, 'mouseup', this, this.onMouseUp)
+    this.matrixMoveWrapper_ = Blockly.browserEvents.bind(
+      document.body,
+      'mousemove',
+      this,
+      this.onMouseMove.bind(this),
+    )
+    this.matrixReleaseWrapper_ = Blockly.browserEvents.bind(document.body, 'mouseup', this, this.onMouseUp.bind(this))
     const ledHit = this.checkForLED_(e)
     if (ledHit > -1) {
-      if (this.getValue()!.charAt(ledHit) === LEDState.OFF) {
+      const value = this.getValue()
+      if (value && (value.charAt(ledHit) as LEDState) === LEDState.OFF) {
         this.paintStyle_ = PaintStyle.FILL
       } else {
         this.paintStyle_ = PaintStyle.CLEAR
@@ -470,7 +486,7 @@ class FieldMatrix extends Blockly.Field<string> {
       if (led < 0) return
       if (this.paintStyle_ === PaintStyle.CLEAR) {
         this.clearLEDNode_(led)
-      } else if (this.paintStyle_ === PaintStyle.FILL) {
+      } else {
         this.fillLEDNode_(led)
       }
     }

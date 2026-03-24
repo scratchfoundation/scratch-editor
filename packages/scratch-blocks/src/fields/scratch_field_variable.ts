@@ -29,6 +29,13 @@ import { createVariable, renameVariable } from '../variables'
 export class ScratchFieldVariable extends Blockly.FieldVariable {
   private originalStyle!: string
 
+  private getSourceWorkspaceSvg_(sourceBlock: Blockly.Block): Blockly.WorkspaceSvg {
+    if (!(sourceBlock.workspace instanceof Blockly.WorkspaceSvg)) {
+      throw new Error('[scratch_field_variable] Expected source block workspace to be a WorkspaceSvg')
+    }
+    return sourceBlock.workspace
+  }
+
   constructor(
     varName: string | null | typeof Blockly.Field.SKIP_SETUP,
     validator?: Blockly.FieldVariableValidator,
@@ -40,14 +47,15 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
     // dropdownCreate returns MenuOption[] rather than Blockly.MenuGenerator's
     // MenuOption[][] variant; the cast is needed to satisfy FieldVariable's
     // menuGenerator_ type while the actual runtime shape is compatible.
-    this.menuGenerator_ = ScratchFieldVariable.dropdownCreate as unknown as Blockly.MenuGenerator
+    this.menuGenerator_ = ScratchFieldVariable.dropdownCreate.bind(this) as unknown as Blockly.MenuGenerator
   }
 
   initModel() {
     if (!this.getVariable()) {
       const sourceBlock = this.getSourceBlock()
       if (sourceBlock) {
-        const broadcastVariable = this.initFlyoutBroadcast(sourceBlock.workspace as Blockly.WorkspaceSvg)
+        const sourceWorkspace = this.getSourceWorkspaceSvg_(sourceBlock)
+        const broadcastVariable = this.initFlyoutBroadcast(sourceWorkspace)
         if (broadcastVariable) {
           this.doValueUpdate_(broadcastVariable.getId())
           return
@@ -96,7 +104,8 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
         if (option[1] === Blockly.RENAME_VARIABLE_ID) {
           return [ScratchMsgs.translate('RENAME_LIST'), option[1]]
         } else if (option[1] === Blockly.DELETE_VARIABLE_ID) {
-          return [ScratchMsgs.translate('DELETE_LIST').replace('%1', this.getText()), option[1]]
+          const fieldText = (this as Blockly.FieldVariable).getText()
+          return [String(ScratchMsgs.translate('DELETE_LIST')).replace('%1', fieldText), option[1]]
         }
         return option
       })
@@ -118,8 +127,9 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
     if (sourceBlock && !sourceBlock.isDeadOrDying()) {
       const selectedItem = menuItem.getValue()
       if (selectedItem === Constants.NEW_BROADCAST_MESSAGE_ID) {
+        const sourceWorkspace = this.getSourceWorkspaceSvg_(sourceBlock)
         createVariable(
-          sourceBlock.workspace as Blockly.WorkspaceSvg,
+          sourceWorkspace,
           (varId) => {
             if (varId) {
               this.setValue(varId)
@@ -129,7 +139,7 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
         )
         return
       } else if (selectedItem === Blockly.RENAME_VARIABLE_ID) {
-        renameVariable(sourceBlock.workspace as Blockly.WorkspaceSvg, this.getVariable() as ScratchVariableModel)
+        renameVariable(sourceBlock.workspace, this.getVariable() as ScratchVariableModel)
         return
       }
     }
@@ -138,26 +148,30 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
 
   showEditor_(event: PointerEvent) {
     super.showEditor_(event)
-    const sourceBlock = this.getSourceBlock()!
+    const sourceBlock = this.getSourceBlock()
+    if (!sourceBlock) {
+      throw new Error('[scratch_field_variable] Missing source block in showEditor_')
+    }
+    const sourceWorkspace = this.getSourceWorkspaceSvg_(sourceBlock)
     const styleName = sourceBlock.getStyleName()
-    const style = (sourceBlock.workspace as Blockly.WorkspaceSvg)
-      .getRenderer()
-      .getConstants()
-      .getBlockStyle(styleName)
+    const style = sourceWorkspace.getRenderer().getConstants().getBlockStyle(styleName)
     if (sourceBlock.isShadow()) {
       this.originalStyle = styleName
       sourceBlock.setStyle(`${this.originalStyle}_selected`)
     } else if (this.borderRect_) {
       this.borderRect_.setAttribute(
         'fill',
-        'colourQuaternary' in style ? `${style.colourQuaternary}` : style.colourTertiary,
+        'colourQuaternary' in style ? String(style.colourQuaternary) : style.colourTertiary,
       )
     }
   }
 
   dropdownDispose_() {
     super.dropdownDispose_()
-    const sourceBlock = this.getSourceBlock()!
+    const sourceBlock = this.getSourceBlock()
+    if (!sourceBlock) {
+      throw new Error('[scratch_field_variable] Missing source block in dropdownDispose_')
+    }
     if (sourceBlock.isShadow()) {
       sourceBlock.setStyle(this.originalStyle)
     }

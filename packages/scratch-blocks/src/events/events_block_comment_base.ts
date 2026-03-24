@@ -33,7 +33,11 @@ export class BlockCommentBase extends Blockly.Events.Abstract {
     }
   }
 
-  static fromJson(json: BlockCommentBaseJson, workspace: Blockly.Workspace, event?: any): BlockCommentBase {
+  static fromJson(
+    json: BlockCommentBaseJson,
+    workspace: Blockly.Workspace,
+    event?: Blockly.Events.Abstract,
+  ): BlockCommentBase {
     const newEvent = super.fromJson(json, workspace, event ?? new BlockCommentBase()) as BlockCommentBase
     newEvent.commentId = json.commentId
     newEvent.blockId = json.blockId

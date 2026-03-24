@@ -25,7 +25,11 @@ class ScratchVariableCreate extends Blockly.Events.VarCreate {
     }
   }
 
-  static fromJson(json: ScratchVariableCreateJson, workspace: Blockly.Workspace, event?: any): ScratchVariableCreate {
+  static fromJson(
+    json: ScratchVariableCreateJson,
+    workspace: Blockly.Workspace,
+    event?: Blockly.Events.Abstract,
+  ): ScratchVariableCreate {
     const newEvent = super.fromJson(json, workspace, event ?? new ScratchVariableCreate()) as ScratchVariableCreate
     newEvent.isLocal = json.isLocal
     newEvent.isCloud = json.isCloud

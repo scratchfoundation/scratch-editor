@@ -1,12 +1,12 @@
 import * as Blockly from 'blockly/core'
 import { Colours } from './colours'
+import { getBlockSvgById, getRequiredMainWorkspaceSvg } from './workspace_block_lookup'
 
 export function reportValue(id: string, value: string) {
-  const block = (Blockly.getMainWorkspace().getBlockById(id) ||
-    (Blockly.getMainWorkspace() as Blockly.WorkspaceSvg)
-      .getFlyout()
-      ?.getWorkspace()
-      ?.getBlockById(id)) as Blockly.BlockSvg
+  const mainWorkspace = getRequiredMainWorkspaceSvg()
+  const flyout = mainWorkspace.getFlyout()
+  const flyoutBlock = flyout ? getBlockSvgById(flyout.getWorkspace(), id) : null
+  const block = getBlockSvgById(mainWorkspace, id) ?? flyoutBlock
   if (!block) {
     throw new Error('Tried to report value on block that does not exist.')
   }

@@ -33,7 +33,7 @@ const setVisibility = (element: SVGElement, visible: boolean) => {
  * Owned by the PathObject with similar lifetime.
  */
 export class CatFace {
-  faceGroup_!: SVGElement
+  faceGroup_: SVGElement | null = null
   parts_ = {} as Record<FacePart, SVGElement>
   pathEarState: CatPathState
   constants_: ConstantProvider

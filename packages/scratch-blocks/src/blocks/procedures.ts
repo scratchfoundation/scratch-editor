@@ -29,8 +29,8 @@ import type { ScratchDragger } from '../scratch_dragger'
 type ConnectionMap = Record<
   string,
   {
-    shadow: Element
-    block: Blockly.BlockSvg
+    shadow: Element | undefined
+    block: Blockly.BlockSvg | null
   } | null
 >
 
@@ -41,6 +41,86 @@ enum ArgumentType {
   STRING = 's',
   NUMBER = 'n',
   BOOLEAN = 'b',
+}
+
+/**
+ * Parse a serialized procedure argument type token.
+ * @param value Serialized token from procCode.
+ * @returns The matching argument type.
+ */
+function parseArgumentType(value: string): ArgumentType {
+  switch (value) {
+    case 'n':
+      return ArgumentType.NUMBER
+    case 'b':
+      return ArgumentType.BOOLEAN
+    case 's':
+      return ArgumentType.STRING
+    default:
+      throw new Error(`Found a custom procedure with an invalid type: ${value}`)
+  }
+}
+
+/**
+ * Read a required mutation attribute or throw if missing.
+ * @param xmlElement The mutation element that should contain required attributes.
+ * @param name The specific mutation attribute to retrieve.
+ * @returns Attribute value.
+ */
+function getRequiredMutationAttribute(xmlElement: Element, name: string): string {
+  const value = xmlElement.getAttribute(name)
+  if (value === null) {
+    throw new Error(`Missing required mutation attribute: ${name}`)
+  }
+  return value
+}
+
+/**
+ * Parse a required mutation attribute as JSON, then validate its type.
+ * @param xmlElement The mutation element that should contain required attributes.
+ * @param name The specific mutation attribute to retrieve and parse.
+ * @param parse Validates and narrows the parsed JSON value.
+ * @returns Parsed and validated mutation attribute value.
+ */
+function parseRequiredMutationJson<T>(
+  xmlElement: Element,
+  name: string,
+  parse: (value: unknown, name: string) => T,
+): T {
+  const rawValue = getRequiredMutationAttribute(xmlElement, name)
+  let parsedValue: unknown
+  try {
+    parsedValue = JSON.parse(rawValue)
+  } catch {
+    throw new Error(`Invalid JSON in mutation attribute: ${name}`)
+  }
+  return parse(parsedValue, name)
+}
+
+/**
+ * Validate a parsed mutation value as a boolean.
+ * @param value Parsed mutation value.
+ * @param name Attribute name used in error messages.
+ * @returns Validated boolean value.
+ */
+function parseBooleanMutationValue(value: unknown, name: string): boolean {
+  if (typeof value !== 'boolean') {
+    throw new Error(`Expected boolean JSON value in mutation attribute: ${name}`)
+  }
+  return value
+}
+
+/**
+ * Validate a parsed mutation value as a string array.
+ * @param value Parsed mutation value.
+ * @param name Attribute name used in error messages.
+ * @returns Validated string array value.
+ */
+function parseStringArrayMutationValue(value: unknown, name: string): string[] {
+  if (!Array.isArray(value) || !value.every((entry) => typeof entry === 'string')) {
+    throw new Error(`Expected string[] JSON value in mutation attribute: ${name}`)
+  }
+  return value
 }
 
 /**
@@ -193,10 +273,10 @@ function callerMutationToDom(this: ProcedureCallBlock): Element {
  * @param xmlElement XML storage element.
  */
 function callerDomToMutation(this: ProcedureCallBlock, xmlElement: Element) {
-  this.procCode_ = xmlElement.getAttribute('proccode')!
-  this.generateShadows_ = JSON.parse(xmlElement.getAttribute('generateshadows')!)
-  this.argumentIds_ = JSON.parse(xmlElement.getAttribute('argumentids')!)
-  this.warp_ = JSON.parse(xmlElement.getAttribute('warp')!)
+  this.procCode_ = getRequiredMutationAttribute(xmlElement, 'proccode')
+  this.generateShadows_ = parseRequiredMutationJson(xmlElement, 'generateshadows', parseBooleanMutationValue)
+  this.argumentIds_ = parseRequiredMutationJson(xmlElement, 'argumentids', parseStringArrayMutationValue)
+  this.warp_ = parseRequiredMutationJson(xmlElement, 'warp', parseBooleanMutationValue)
   this.updateDisplay_()
 }
 
@@ -230,15 +310,15 @@ function definitionMutationToDom(
  * @param xmlElement XML storage element.
  */
 function definitionDomToMutation(this: ProcedurePrototypeBlock | ProcedureDeclarationBlock, xmlElement: Element) {
-  this.procCode_ = xmlElement.getAttribute('proccode')!
-  this.warp_ = JSON.parse(xmlElement.getAttribute('warp')!)
+  this.procCode_ = getRequiredMutationAttribute(xmlElement, 'proccode')
+  this.warp_ = parseRequiredMutationJson(xmlElement, 'warp', parseBooleanMutationValue)
 
   const prevArgIds = this.argumentIds_
   const prevDisplayNames = this.displayNames_
 
-  this.argumentIds_ = JSON.parse(xmlElement.getAttribute('argumentids')!)
-  this.displayNames_ = JSON.parse(xmlElement.getAttribute('argumentnames')!)
-  this.argumentDefaults_ = JSON.parse(xmlElement.getAttribute('argumentdefaults')!)
+  this.argumentIds_ = parseRequiredMutationJson(xmlElement, 'argumentids', parseStringArrayMutationValue)
+  this.displayNames_ = parseRequiredMutationJson(xmlElement, 'argumentnames', parseStringArrayMutationValue)
+  this.argumentDefaults_ = parseRequiredMutationJson(xmlElement, 'argumentdefaults', parseStringArrayMutationValue)
 
   // During full XML deserialization (Blockly.Xml.domToWorkspace), the mutation element
   // is part of the parsed XML tree and its parent element also contains <value> children
@@ -308,13 +388,11 @@ function disconnectOldBlocks_(this: ProcedureBlock): ConnectionMap {
   const connectionMap: ConnectionMap = {}
   for (const input of this.inputList) {
     if (input.connection) {
-      const target = input.connection.targetBlock() as Blockly.BlockSvg
-      const saveInfo = {
-        shadow: input.connection.getShadowDom(true)!,
-        block: target,
+      const target = input.connection.targetBlock()
+      connectionMap[input.name] = {
+        shadow: input.connection.getShadowDom(true) ?? undefined,
+        block: target as Blockly.BlockSvg | null,
       }
-      connectionMap[input.name] = saveInfo
-
       if (target) {
         input.connection.disconnect()
       }
@@ -349,16 +427,7 @@ function createAllInputs_(this: ProcedureBlock, connectionMap: ConnectionMap) {
   for (const component of procComponents) {
     let labelText
     if (component.startsWith('%')) {
-      const argumentType = component.substring(1, 2)
-      if (
-        !(
-          argumentType === ArgumentType.NUMBER ||
-          argumentType === ArgumentType.BOOLEAN ||
-          argumentType === ArgumentType.STRING
-        )
-      ) {
-        throw new Error('Found an custom procedure with an invalid type: ' + argumentType)
-      }
+      const argumentType = parseArgumentType(component.substring(1, 2))
       labelText = component.substring(2).trim()
 
       const id = this.argumentIds_[argumentCount]
@@ -386,19 +455,20 @@ function createAllInputs_(this: ProcedureBlock, connectionMap: ConnectionMap) {
  *     connected to those IDs at the beginning of the mutation.
  */
 function disposeObsoleteBlocks_(this: ProcedureBlock, connectionMap: ConnectionMap) {
-  for (const id in connectionMap) {
-    const saveInfo = connectionMap[id]
-    if (saveInfo) {
-      const block = saveInfo.block
-      const isOrphanedArgumentReporter =
-        this.type === 'procedures_prototype' &&
-        (block.type === 'argument_reporter_string_number' || block.type === 'argument_reporter_boolean')
-      if (block.isShadow() || isOrphanedArgumentReporter) {
-        block.dispose()
-        connectionMap[id] = null
-        // At this point we know which shadow DOMs are about to be orphaned in
-        // the VM.  What do we do with that information?
-      }
+  for (const [id, saveInfo] of Object.entries(connectionMap)) {
+    const block = saveInfo?.block
+    if (!block) {
+      continue
+    }
+
+    const isOrphanedArgumentReporter =
+      this.type === 'procedures_prototype' &&
+      (block.type === 'argument_reporter_string_number' || block.type === 'argument_reporter_boolean')
+    if (block.isShadow() || isOrphanedArgumentReporter) {
+      block.dispose()
+      connectionMap[id] = null
+      // At this point we know which shadow DOMs are about to be orphaned in
+      // the VM.  What do we do with that information?
     }
   }
 }
@@ -458,6 +528,9 @@ function buildShadowDom_(type: ArgumentType): Element {
  */
 function attachShadow_(this: ProcedureCallBlock, input: Blockly.Input, argumentType: ArgumentType) {
   if (argumentType === ArgumentType.NUMBER || argumentType === ArgumentType.STRING) {
+    if (!input.connection) {
+      throw new Error(`Expected input connection for argument ${String(argumentType)}`)
+    }
     const blockType = argumentType === ArgumentType.NUMBER ? 'math_number' : 'text'
     Blockly.Events.disable()
     let newBlock
@@ -479,7 +552,7 @@ function attachShadow_(this: ProcedureCallBlock, input: Blockly.Input, argumentT
     if (Blockly.Events.isEnabled()) {
       Blockly.Events.fire(new (Blockly.Events.get(Blockly.Events.BLOCK_CREATE))(newBlock))
     }
-    newBlock.outputConnection.connect(input.connection!)
+    newBlock.outputConnection.connect(input.connection)
   }
 }
 
@@ -516,7 +589,7 @@ function createArgumentReporter_(
     Blockly.Events.enable()
   }
   if (Blockly.Events.isEnabled()) {
-    Blockly.Events.fire(new (Blockly.Events.get(Blockly.Events.BLOCK_CREATE))(newBlock))
+    void Blockly.Events.fire(new (Blockly.Events.get(Blockly.Events.BLOCK_CREATE))(newBlock))
   }
   return newBlock
 }
@@ -538,21 +611,25 @@ function populateArgumentOnCaller_(
   id: string,
   input: Blockly.Input,
 ) {
-  let oldBlock: Blockly.BlockSvg | undefined
+  let oldBlock: Blockly.BlockSvg | null | undefined
   let oldShadow: Element | undefined
-  if (connectionMap && id in connectionMap) {
+  if (id in connectionMap) {
     const saveInfo = connectionMap[id]
     oldBlock = saveInfo?.block
     oldShadow = saveInfo?.shadow
   }
 
-  if (connectionMap && oldBlock) {
+  const conn = input.connection
+  if (!conn) {
+    throw new Error(`Expected caller input connection for argument id ${id}`)
+  }
+  if (oldBlock) {
     // Reattach the old block and shadow DOM.
     connectionMap[input.name] = null
-    oldBlock.outputConnection.connect(input.connection!)
+    oldBlock.outputConnection.connect(conn)
     if (type !== ArgumentType.BOOLEAN && this.generateShadows_) {
-      const shadowDom = oldShadow || this.buildShadowDom_(type)
-      input.connection!.setShadowDom(shadowDom)
+      const shadowDom = oldShadow ?? this.buildShadowDom_(type)
+      conn.setShadowDom(shadowDom)
     }
   } else if (this.generateShadows_) {
     this.attachShadow_(input, type)
@@ -584,7 +661,12 @@ function populateArgumentOnPrototype_(
   }
 
   let oldBlock: Blockly.BlockSvg | null = null
-  if (connectionMap && id in connectionMap) {
+  const conn = input.connection
+  if (!conn) {
+    throw new Error(`Expected prototype input connection for argument id ${id}`)
+  }
+
+  if (id in connectionMap) {
     const saveInfo = connectionMap[id]
     oldBlock = saveInfo?.block ?? null
   }
@@ -594,7 +676,7 @@ function populateArgumentOnPrototype_(
 
   // Decide which block to attach.
   let argumentReporter: Blockly.BlockSvg
-  if (connectionMap && oldBlock && oldTypeMatches) {
+  if (oldBlock && oldTypeMatches) {
     // Update the text if needed. The old argument reporter is the same type,
     // and on the same input, but the argument's display name may have changed.
     argumentReporter = oldBlock
@@ -605,7 +687,7 @@ function populateArgumentOnPrototype_(
   }
 
   // Attach the block.
-  input.connection!.connect(argumentReporter.outputConnection)
+  conn.connect(argumentReporter.outputConnection)
 }
 
 /**
@@ -627,13 +709,17 @@ function populateArgumentOnDeclaration_(
   input: Blockly.Input,
 ) {
   let oldBlock: Blockly.BlockSvg | null = null
-  if (connectionMap && id in connectionMap) {
+  if (id in connectionMap) {
     const saveInfo = connectionMap[id]
     oldBlock = saveInfo?.block ?? null
   }
 
   const oldTypeMatches = checkOldEditorTypeMatches_(oldBlock, type)
   const displayName = this.displayNames_[index]
+  const conn = input.connection
+  if (!conn) {
+    throw new Error(`Expected declaration input connection for argument id ${id}`)
+  }
 
   // Decide which block to attach.
   let argumentEditor: Blockly.BlockSvg
@@ -646,7 +732,7 @@ function populateArgumentOnDeclaration_(
   }
 
   // Attach the block.
-  input.connection!.connect(argumentEditor.outputConnection)
+  conn.connect(argumentEditor.outputConnection)
 }
 
 /**
@@ -721,13 +807,13 @@ function createArgumentEditor_(
     newBlock.setShadow(true)
     if (!this.isInsertionMarker()) {
       newBlock.initSvg()
-      newBlock.queueRender()
+      void newBlock.queueRender()
     }
   } finally {
     Blockly.Events.enable()
   }
   if (Blockly.Events.isEnabled()) {
-    Blockly.Events.fire(new (Blockly.Events.get(Blockly.Events.BLOCK_CREATE))(newBlock))
+    void Blockly.Events.fire(new (Blockly.Events.get(Blockly.Events.BLOCK_CREATE))(newBlock))
   }
   return newBlock
 }
@@ -749,8 +835,11 @@ function updateDeclarationProcCode_(this: ProcedureDeclarationBlock) {
       this.procCode_ += input.fieldRow[0].getValue()
     } else if (input.type === Blockly.inputs.inputTypes.VALUE) {
       // Inspect the argument editor.
-      const target = input.connection!.targetBlock()!
-      this.displayNames_.push(target.getFieldValue('TEXT'))
+      const target = input.connection?.targetBlock()
+      if (!target) {
+        throw new Error(`Expected argument editor block on input ${input.name}`)
+      }
+      this.displayNames_.push(String(target.getFieldValue('TEXT')))
       this.argumentIds_.push(input.name)
       if (target.type === 'argument_editor_boolean') {
         this.procCode_ += '%b'
@@ -758,7 +847,7 @@ function updateDeclarationProcCode_(this: ProcedureDeclarationBlock) {
         this.procCode_ += '%s'
       }
     } else {
-      throw new Error('Unexpected input type on a procedure mutator root: ' + input.type)
+      throw new Error(`Unexpected input type on a procedure mutator root: ${String(input.type)}`)
     }
   }
 }
@@ -773,8 +862,15 @@ function focusLastEditor_(this: ProcedureDeclarationBlock) {
       newInput.fieldRow[0].showEditor()
     } else if (newInput.type === Blockly.inputs.inputTypes.VALUE) {
       // Inspect the argument editor.
-      const target = newInput.connection!.targetBlock()!
-      target.getField('TEXT')!.showEditor()
+      const target = newInput.connection?.targetBlock()
+      if (!target) {
+        throw new Error(`Expected argument editor block on input ${newInput.name}`)
+      }
+      const field = target.getField('TEXT')
+      if (!field) {
+        throw new Error(`Expected TEXT field on argument editor block ${target.id}`)
+      }
+      field.showEditor()
     }
   }
 }
@@ -843,16 +939,15 @@ function removeFieldCallback(this: ProcedureDeclarationBlock, field: Blockly.Fie
     return
   }
   let inputNameToRemove = null
-  for (let n = 0; n < this.inputList.length; n++) {
-    const input = this.inputList[n]
+  for (const input of this.inputList) {
     if (input.connection) {
-      const target = input.connection.targetBlock()!
-      if (field.name && target.getField(field.name) === field) {
+      const target = input.connection.targetBlock()
+      if (target && field.name && target.getField(field.name) === field) {
         inputNameToRemove = input.name
       }
     } else {
-      for (let j = 0; j < input.fieldRow.length; j++) {
-        if (input.fieldRow[j] === field) {
+      for (const inputField of input.fieldRow) {
+        if (inputField === field) {
           inputNameToRemove = input.name
         }
       }
@@ -875,9 +970,7 @@ function removeArgumentCallback_(
   field: Blockly.Field,
 ) {
   const parent = this.getParent()
-  if (parent && parent.removeFieldCallback) {
-    parent.removeFieldCallback(field)
-  }
+  ;(parent as ProcedureDeclarationBlock | null)?.removeFieldCallback(field)
 }
 
 /**

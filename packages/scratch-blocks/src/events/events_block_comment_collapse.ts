@@ -22,7 +22,11 @@ class BlockCommentCollapse extends BlockCommentBase {
     }
   }
 
-  static fromJson(json: BlockCommentCollapseJson, workspace: Blockly.Workspace, event?: any): BlockCommentCollapse {
+  static fromJson(
+    json: BlockCommentCollapseJson,
+    workspace: Blockly.Workspace,
+    event?: Blockly.Events.Abstract,
+  ): BlockCommentCollapse {
     const newEvent = super.fromJson(json, workspace, event ?? new BlockCommentCollapse()) as BlockCommentCollapse
     newEvent.newCollapsed = json.collapsed
 
@@ -41,7 +45,7 @@ class BlockCommentCollapse extends BlockCommentBase {
       console.warn('BlockCommentCollapse.run: comment icon not found', block.id)
       return
     }
-    comment.setBubbleVisible(forward ? !this.newCollapsed : this.newCollapsed)
+    void comment.setBubbleVisible(forward ? !this.newCollapsed : this.newCollapsed)
   }
 }
 
