@@ -1,18 +1,6 @@
 import * as Blockly from 'blockly/core'
 import { Colours } from './colours'
-
-function getRequiredMainWorkspaceSvg(): Blockly.WorkspaceSvg {
-  const mainWorkspace = Blockly.getMainWorkspace()
-  if (!(mainWorkspace instanceof Blockly.WorkspaceSvg)) {
-    throw new Error('Expected main workspace to be a WorkspaceSvg')
-  }
-  return mainWorkspace
-}
-
-function getBlockSvgById(workspace: Blockly.WorkspaceSvg, id: string): Blockly.BlockSvg | null {
-  const block = workspace.getBlockById(id)
-  return block instanceof Blockly.BlockSvg ? block : null
-}
+import { getBlockSvgById, getRequiredMainWorkspaceSvg } from './workspace_block_lookup'
 
 export function reportValue(id: string, value: string) {
   const mainWorkspace = getRequiredMainWorkspaceSvg()

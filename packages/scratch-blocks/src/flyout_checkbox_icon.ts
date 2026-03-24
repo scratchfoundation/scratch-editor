@@ -9,7 +9,7 @@ import { CheckboxBubble } from './checkbox_bubble'
  * Invisible icon that exists solely to host the corresponding checkbox bubble.
  */
 export class FlyoutCheckboxIcon extends Blockly.icons.Icon implements Blockly.IHasBubble {
-  private checkboxBubble!: CheckboxBubble
+  private checkboxBubble?: CheckboxBubble
   private type = new Blockly.icons.IconType('checkbox')
 
   constructor(protected override sourceBlock: Blockly.BlockSvg) {
@@ -37,15 +37,15 @@ export class FlyoutCheckboxIcon extends Blockly.icons.Icon implements Blockly.IH
   }
 
   onLocationChange(_blockOrigin: Blockly.utils.Coordinate) {
-    this.checkboxBubble.updateLocation()
+    this.checkboxBubble?.updateLocation()
   }
 
   setChecked(checked: boolean) {
-    this.checkboxBubble.setChecked(checked)
+    this.checkboxBubble?.setChecked(checked)
   }
 
   dispose() {
-    this.checkboxBubble.dispose()
+    this.checkboxBubble?.dispose()
     super.dispose()
   }
 
@@ -65,7 +65,7 @@ export class FlyoutCheckboxIcon extends Blockly.icons.Icon implements Blockly.IH
   }
 
   getBubble() {
-    return this.checkboxBubble
+    return this.checkboxBubble ?? null
   }
 }
 

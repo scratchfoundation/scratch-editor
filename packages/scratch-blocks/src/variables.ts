@@ -90,8 +90,7 @@ export function createVariable(
   }
   const validate = nameValidator.bind(null, opt_type)
   if (!prompt) {
-    console.warn('createVariable: prompt handler is not set')
-    return
+    throw new Error('createVariable: prompt handler is not set')
   }
 
   // Prompt the user to enter a name for the variable
@@ -310,8 +309,7 @@ export function renameVariable(
   }
 
   if (!prompt) {
-    console.warn('renameVariable: prompt handler is not set')
-    return
+    throw new Error('renameVariable: prompt handler is not set')
   }
 
   prompt(

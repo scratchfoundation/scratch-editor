@@ -74,27 +74,30 @@ Reflect.set(
   previewerProto,
   'hideInsertionMarker',
   function (this: Blockly.InsertionMarkerPreviewer, markerConn: Blockly.Connection) {
-    const marker = markerConn.getSourceBlock() as Blockly.BlockSvg
+    const marker = markerConn.getSourceBlock()
+    const markerPreviousConnection = marker.previousConnection
+    const markerNextConnection = marker.nextConnection
 
     // Restore a real block from a statement input to nextConnection so that
     // unplug(true) can heal the stack correctly.  Conditions:
     //   - marker is mid-stack (has a predecessor)
     //   - marker.nextConnection is empty (displaced block is NOT already there)
     //   - a non-marker block is sitting in a statement input
-    if (marker.previousConnection.isConnected() && !marker.nextConnection.isConnected()) {
+    if (markerPreviousConnection?.isConnected() && markerNextConnection && !markerNextConnection.isConnected()) {
       for (const input of marker.inputList) {
         const conn = input.connection
-        if (
-          (conn?.type as Blockly.ConnectionType | undefined) !== Blockly.ConnectionType.NEXT_STATEMENT ||
-          !conn?.isConnected()
-        ) {
+        const connType = conn?.type as Blockly.ConnectionType | undefined
+        if (connType !== Blockly.ConnectionType.NEXT_STATEMENT || !conn?.isConnected()) {
           continue
         }
-        const blockInInput = conn.targetBlock() as Blockly.BlockSvg | null
+        const blockInInput = conn.targetBlock()
         if (blockInInput && !blockInInput.isInsertionMarker()) {
           const prev = blockInInput.previousConnection
+          if (!prev) {
+            continue
+          }
           prev.disconnect()
-          marker.nextConnection.connect(prev)
+          markerNextConnection.connect(prev)
           break
         }
       }

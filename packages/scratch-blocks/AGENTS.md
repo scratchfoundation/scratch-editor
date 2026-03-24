@@ -110,6 +110,24 @@ If data is required (e.g., deserialized event fields), validate and fail with a 
 
 Prefer narrowing once into a local variable over repeating `!` at each use site.
 
+#### Removing non-null assertions
+
+When replacing `!` due to linting, preserve the fail-fast behavior. If code would have crashed on
+`maybeNull.property`, replace with explicit validation that throws, not silent degradation:
+
+```js
+// ❌ BAD: Silently masks an error that would have been loud before
+const badResult = maybeElement?.property ?? fallback
+
+// ✅ GOOD: Turns a generic crash into a specific, actionable error with context
+if (!maybeElement) throw new Error('Missing required element')
+const goodResult = maybeElement.property
+```
+
+Only use graceful degradation (`if (!x) return`) when the situation genuinely warrants it (e.g., optional UI
+updates). For required data (configuration, mutations, required relationships), preserve the crash behavior with an
+explicit error.
+
 ### Type assertions (`as`)
 
 Rely on TypeScript's inference and explicit annotations first. Use `as SomeType` only when necessary (e.g., narrowing

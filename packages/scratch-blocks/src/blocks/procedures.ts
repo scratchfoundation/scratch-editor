@@ -57,7 +57,7 @@ function parseArgumentType(value: string): ArgumentType {
     case 's':
       return ArgumentType.STRING
     default:
-      throw new Error(`Found an custom procedure with an invalid type: ${value}`)
+      throw new Error(`Found a custom procedure with an invalid type: ${value}`)
   }
 }
 

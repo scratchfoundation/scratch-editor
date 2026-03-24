@@ -60,7 +60,10 @@ export class StatusIndicatorLabel extends Blockly.FlyoutButton {
     json: Blockly.utils.toolbox.LabelInfo,
   ) {
     super(workspace, targetWorkspace, json, true)
-    this.extensionId = json.id ?? ''
+    if (!json.id) {
+      throw new Error('StatusIndicatorLabel: missing required extension id in toolbox JSON')
+    }
+    this.extensionId = json.id
 
     const heightDelta = 40 - this.height
     this.height = 40

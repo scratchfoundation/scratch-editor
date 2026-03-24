@@ -110,9 +110,9 @@ class ScratchFieldNumber extends Blockly.FieldTextInput {
    * appropriate.
    * @param e The triggering pointer event.
    */
-  showEditor_(e: PointerEvent) {
+  showEditor_(e?: PointerEvent) {
     // Do not focus on mobile devices so we can show the num-pad
-    const showNumPad = e.pointerType === 'touch'
+    const showNumPad = e?.pointerType === 'touch'
     super.showEditor_(e, showNumPad)
 
     // Show a numeric keypad in the drop-down on touch

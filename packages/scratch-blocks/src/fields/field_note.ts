@@ -285,8 +285,11 @@ export class FieldNote extends Blockly.FieldTextInput {
   showEditor_(event: PointerEvent, quietInput = false) {
     super.showEditor_(event, quietInput, false)
     const parentBlock = this.getSourceBlock()?.getParent() as Blockly.BlockSvg | undefined
-    const parentTertiary = parentBlock?.getColourTertiary() ?? ''
-    const parentColour = parentBlock?.getColour() ?? ''
+    if (!parentBlock) {
+      throw new Error('[field_note] Missing parent block for note field editor')
+    }
+    const parentColour = parentBlock.getColour()
+    const parentTertiary = parentBlock.getColourTertiary()
 
     // Build the SVG DOM.
     const div = Blockly.DropDownDiv.getContentDiv()
@@ -317,9 +320,21 @@ export class FieldNote extends Blockly.FieldTextInput {
     // Add three piano octaves, so we can animate moving up or down an octave.
     // Only the middle octave gets bound to events.
     this.keySVGs_ = []
-    this.addPianoOctave_(-this.fieldEditorWidth_ + FieldNote.EDGE_PADDING, whiteKeyGroup, blackKeyGroup, null)
-    this.addPianoOctave_(0, whiteKeyGroup, blackKeyGroup, this.keySVGs_)
-    this.addPianoOctave_(this.fieldEditorWidth_ - FieldNote.EDGE_PADDING, whiteKeyGroup, blackKeyGroup, null)
+    this.addPianoOctave_(
+      -this.fieldEditorWidth_ + FieldNote.EDGE_PADDING,
+      whiteKeyGroup,
+      blackKeyGroup,
+      null,
+      parentBlock,
+    )
+    this.addPianoOctave_(0, whiteKeyGroup, blackKeyGroup, this.keySVGs_, parentBlock)
+    this.addPianoOctave_(
+      this.fieldEditorWidth_ - FieldNote.EDGE_PADDING,
+      whiteKeyGroup,
+      blackKeyGroup,
+      null,
+      parentBlock,
+    )
 
     // Note name indicator at the top of the field
     this.noteNameText_ = Blockly.utils.dom.createSvgElement(
@@ -368,11 +383,12 @@ export class FieldNote extends Blockly.FieldTextInput {
     )
 
     // Octave buttons
-    const octaveDownButton = this.addOctaveButton_(0, true, svg)
+    const octaveDownButton = this.addOctaveButton_(0, true, svg, parentBlock)
     const octaveUpButton = this.addOctaveButton_(
       this.fieldEditorWidth_ + FieldNote.INSET * 2 - FieldNote.OCTAVE_BUTTON_SIZE,
       false,
       svg,
+      parentBlock,
     )
 
     this.octaveDownMouseDownWrapper_ = Blockly.browserEvents.bind(octaveDownButton, 'mousedown', this, () => {
@@ -395,16 +411,17 @@ export class FieldNote extends Blockly.FieldTextInput {
    * @param whiteKeyGroup The group for all white piano keys.
    * @param blackKeyGroup The group for all black piano keys.
    * @param keySVGarray An array containing all the key SVGs.
+   * @param parentBlock The validated parent block providing styling.
    */
   private addPianoOctave_(
     x: number,
     whiteKeyGroup: SVGElement,
     blackKeyGroup: SVGElement,
     keySVGarray: SVGElement[] | null,
+    parentBlock: Blockly.BlockSvg,
   ) {
-    const parentTertiary =
-      (this.getSourceBlock()?.getParent() as Blockly.BlockSvg | undefined)?.getColourTertiary() ?? ''
     let xIncrement, width, height, fill, stroke, group
+    const parentTertiary = parentBlock.getColourTertiary()
     x += FieldNote.EDGE_PADDING / 2
     const y = FieldNote.TOP_MENU_HEIGHT
     for (let i = 0; i < FieldNote.KEY_INFO.length; i++) {
@@ -518,12 +535,12 @@ export class FieldNote extends Blockly.FieldTextInput {
    * @param x The x position of the button.
    * @param flipped If true, the icon should be flipped.
    * @param svg The svg element to add the buttons to.
+   * @param parentBlock The validated parent block providing styling.
    * @returns A group containing the button SVG elements.
    */
-  private addOctaveButton_(x: number, flipped: boolean, svg: SVGElement): SVGElement {
-    const parentTertiary =
-      (this.getSourceBlock()?.getParent() as Blockly.BlockSvg | undefined)?.getColourTertiary() ?? ''
+  private addOctaveButton_(x: number, flipped: boolean, svg: SVGElement, parentBlock: Blockly.BlockSvg): SVGElement {
     const group = Blockly.utils.dom.createSvgElement('g', {}, svg)
+    const parentTertiary = parentBlock.getColourTertiary()
     const imageSize = FieldNote.OCTAVE_BUTTON_SIZE
     const arrow = Blockly.utils.dom.createSvgElement(
       'image',

@@ -49,8 +49,11 @@ function allProcedureMutations(root: Blockly.WorkspaceSvg): Element[] {
  */
 function sortProcedureMutations(mutations: Element[]): Element[] {
   return mutations.slice().sort((a, b) => {
-    const procCodeA = a.getAttribute('proccode') ?? ''
-    const procCodeB = b.getAttribute('proccode') ?? ''
+    const procCodeA = a.getAttribute('proccode')
+    const procCodeB = b.getAttribute('proccode')
+    if (!procCodeA || !procCodeB) {
+      throw new Error('Expected proccode attribute in procedure mutation element')
+    }
 
     return scratchBlocksUtils.compareStrings(procCodeA, procCodeB)
   })

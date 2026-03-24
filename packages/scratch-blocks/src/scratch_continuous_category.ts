@@ -54,7 +54,9 @@ export class ScratchContinuousCategory extends ContinuousCategory {
     } else {
       const icon = super.createIconDom_()
       if (icon instanceof HTMLElement) {
-        icon.style.border = `1px solid ${this.secondaryColour ?? ''}`
+        if (this.secondaryColour) {
+          icon.style.border = `1px solid ${this.secondaryColour}`
+        }
       }
       return icon
     }

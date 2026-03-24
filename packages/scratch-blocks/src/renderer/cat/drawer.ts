@@ -53,8 +53,7 @@ export class Drawer extends ClassicDrawer {
     }
     const pathObject = this.block_.pathObject as PathObject
     if (!pathObject.catFace) {
-      console.error('[renderer/cat/drawer] Missing catFace while drawing hat block')
-      return super.makeReplacementTop_()
+      throw new Error('[renderer/cat/drawer] Missing catFace while drawing hat block')
     }
     return this.constants_.makeCatPath(this.info_.width, pathObject.catFace.pathEarState)
   }

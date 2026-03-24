@@ -59,14 +59,15 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
    */
   setCheckboxState(blockId: string, value: boolean) {
     const icon = this.getWorkspace().getBlockById(blockId)?.getIcon('checkbox')
-    if (icon && !isCheckboxIcon(icon)) {
+    if (!icon) {
+      return
+    }
+    if (!isCheckboxIcon(icon)) {
       throw new Error(
         `[CheckableContinuousFlyout.setCheckboxState] Expected checkbox icon with setChecked for block ${blockId}`,
       )
     }
-    if (isCheckboxIcon(icon)) {
-      icon.setChecked(value)
-    }
+    icon.setChecked(value)
   }
 
   getFlyoutScale() {
@@ -110,7 +111,7 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
     if (item.getType() === STATUS_INDICATOR_LABEL_TYPE) {
       return true
     }
-    return item.getType() === STATUS_INDICATOR_LABEL_TYPE || super.toolboxItemIsLabel(item)
+    return super.toolboxItemIsLabel(item)
   }
 
   /**

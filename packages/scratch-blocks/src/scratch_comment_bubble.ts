@@ -56,8 +56,7 @@ export class ScratchCommentBubble
       destination = xOrCoordinate
     } else {
       if (y === undefined) {
-        console.error('ScratchCommentBubble.moveTo: missing y coordinate')
-        return
+        throw new Error('ScratchCommentBubble.moveTo: missing y coordinate')
       }
       destination = new Blockly.utils.Coordinate(xOrCoordinate, y)
     }
@@ -97,8 +96,7 @@ export class ScratchCommentBubble
 
   revertDrag() {
     if (!this.dragStartLocation) {
-      console.warn('ScratchCommentBubble.revertDrag: missing drag start location')
-      return
+      throw new Error('ScratchCommentBubble.revertDrag: missing drag start location')
     }
     this.moveTo(this.dragStartLocation)
   }
@@ -119,8 +117,7 @@ export class ScratchCommentBubble
 
   dropAnchor() {
     if (!this.anchor || !this.sourceBlock) {
-      console.warn('ScratchCommentBubble.dropAnchor: missing anchor or source block')
-      return
+      throw new Error('ScratchCommentBubble.dropAnchor: missing anchor or source block')
     }
     const verticalOffset = 16
     this.moveTo(this.anchor.x + 40 * (this.workspace.RTL ? -1 : 1), this.anchor.y - verticalOffset)

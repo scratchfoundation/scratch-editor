@@ -206,5 +206,5 @@ Blockly.comments.CommentView.defaultCommentSize = new Blockly.utils.Size(200, 20
 const originalGetRestoredFocusableNode = Blockly.WorkspaceSvg.prototype.getRestoredFocusableNode
 Blockly.WorkspaceSvg.prototype.getRestoredFocusableNode = function (previousNode) {
   if (!previousNode && !this.isFlyout) return null
-  return originalGetRestoredFocusableNode.bind(this)(previousNode)
+  return originalGetRestoredFocusableNode.call(this, previousNode)
 }

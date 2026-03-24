@@ -39,8 +39,7 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
       const statementRow = this.rows.find((r) => r.hasStatement)
       const input = statementRow?.elements.find((e) => Blockly.blockRendering.Types.isInput(e))
       if (!statementRow || !input) {
-        console.error('[renderer/render_info] Missing statement row or input for bowler hat block')
-        return
+        throw new Error('[renderer/render_info] Missing statement row or input for bowler hat block')
       }
       this.width = statementRow.widthWithConnectedBlocks - input.width + this.constants_.MEDIUM_PADDING
 
@@ -49,8 +48,7 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
       // populateTopRow_ always adds a hat element for bowler hat blocks.
       const hat = this.topRow.elements.find((e) => Blockly.blockRendering.Types.isHat(e))
       if (!hat) {
-        console.error('[renderer/render_info] Missing hat measurable for bowler hat block')
-        return
+        throw new Error('[renderer/render_info] Missing hat measurable for bowler hat block')
       }
       hat.width = this.width
       this.topRow.measure()
