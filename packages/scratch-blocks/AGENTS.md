@@ -169,5 +169,6 @@ Review all changes and confirm:
 - **Simplicity**: Implementation is as simple as possible; no unnecessary code remains.
 - **`node_modules/`**: No changes within this directory. In particular, no direct edits to Blockly source files.
 - **Runtime checks**: Any new guards for states that should never happen include diagnostic logging.
+- **Build passes**: `npm run build` completes successfully.
 - **Tests pass**: `npm run test` completes with no failures.
 - **No lint errors**: `npm run test:lint` passes. Iterate with `npm run format` and/or manual changes as needed.

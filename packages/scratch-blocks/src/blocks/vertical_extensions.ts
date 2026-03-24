@@ -163,7 +163,7 @@ const MONITOR_BLOCK = function (this: Blockly.BlockSvg) {
  * Mixin to add a context menu for a procedure definition block.
  * It adds the "edit" option and removes the "duplicate" option.
  */
-const PROCEDURE_DEF_CONTEXTMENU = function (this: Blockly.Block) {
+const PROCEDURE_DEF_CONTEXTMENU = function (this: Blockly.BlockSvg) {
   /**
    * Add the "edit" option and removes the "duplicate" option from the context
    * menu.
@@ -172,7 +172,7 @@ const PROCEDURE_DEF_CONTEXTMENU = function (this: Blockly.Block) {
   this.mixin(
     {
       customContextMenu: function (
-        this: Blockly.Block,
+        this: Blockly.BlockSvg,
         menuOptions: (
           | Blockly.ContextMenuRegistry.ContextMenuOption
           | Blockly.ContextMenuRegistry.LegacyContextMenuOption

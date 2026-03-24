@@ -382,8 +382,9 @@ export class FieldNote extends Blockly.FieldTextInput {
       this.changeOctaveBy_(1)
     })
     const sourceBlock = this.getSourceBlock() as Blockly.BlockSvg
+    const dropdownAnchor = this as unknown as Blockly.Field<string | null>
     Blockly.DropDownDiv.setColour(parentColour, parentTertiary)
-    Blockly.DropDownDiv.showPositionedByBlock(this, sourceBlock)
+    Blockly.DropDownDiv.showPositionedByBlock(dropdownAnchor, sourceBlock)
 
     this.updateSelection_()
   }

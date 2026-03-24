@@ -4,6 +4,12 @@
  */
 import * as Blockly from 'blockly/core'
 
+type ActionRegistryItem = Extract<Blockly.ContextMenuRegistry.RegistryItem, { callback: unknown }>
+
+function isActionRegistryItem(item: Blockly.ContextMenuRegistry.RegistryItem): item is ActionRegistryItem {
+  return 'callback' in item && 'displayText' in item && 'preconditionFn' in item
+}
+
 /**
  * Registers a block delete option that ignores shadows in the block count.
  */
@@ -129,8 +135,12 @@ function deleteNext(deleteList: Blockly.Block[], eventGroup?: string) {
   const block = deleteList.shift()
   if (block) {
     if (!block.isDeadOrDying()) {
-      block.dispose(false, true)
-      setTimeout(deleteNext, DELAY, deleteList, eventGroup)
+      if (block instanceof Blockly.BlockSvg) {
+        block.dispose(false, true)
+      } else {
+        block.dispose(false)
+      }
+      setTimeout(() => deleteNext(deleteList, eventGroup), DELAY)
     } else {
       deleteNext(deleteList, eventGroup)
     }
@@ -148,7 +158,11 @@ export function registerDuplicateBlock() {
     console.error('[context_menu_items] Missing required blockDuplicate menu item')
     return
   }
-  const duplicateOption = {
+  if (!isActionRegistryItem(original)) {
+    console.error('[context_menu_items] Expected blockDuplicate to be an action item')
+    return
+  }
+  const duplicateOption: ActionRegistryItem = {
     displayText: original.displayText,
     preconditionFn: original.preconditionFn,
     callback(scope: Blockly.ContextMenuRegistry.Scope) {
