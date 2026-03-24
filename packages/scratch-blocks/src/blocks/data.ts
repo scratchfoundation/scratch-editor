@@ -615,7 +615,7 @@ const RENAME_OPTION_CALLBACK_FACTORY = function (block: Blockly.Block, fieldName
   return () => {
     const workspace = block.workspace
     const variable = (block.getField(fieldName) as ScratchFieldVariable).getVariable() as ScratchVariableModel
-    renameVariable(workspace as Blockly.WorkspaceSvg, variable)
+    renameVariable(workspace, variable)
   }
 }
 
