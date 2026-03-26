@@ -161,4 +161,10 @@ PopupWithArrow.propTypes = {
     children: PropTypes.func.isRequired
 };
 
+PopupWithArrow.defaultProps = {
+    align: PopupAlign.CENTER,
+    onRequestClose: null,
+    asModal: false
+};
+
 export default PopupWithArrow;

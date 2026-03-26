@@ -65,20 +65,28 @@ const ConfirmationPrompt = ({
         arrowWidth
     } = {...defaultConfig, ...layoutConfig};
 
+    const memoizedLayoutConfig = React.useMemo(() => ({
+        popupWidth: modalWidth,
+        spaceForArrow,
+        counterOffset,
+        arrowOffsetFromBottom,
+        arrowHeight,
+        arrowWidth
+    }), [modalWidth,
+        spaceForArrow,
+        counterOffset,
+        arrowOffsetFromBottom,
+        arrowHeight,
+        arrowWidth
+    ]);
+
     return (
         <PopupWithArrow
             isOpen={isOpen}
             relativeElementRef={relativeElementRef}
             side={side}
             align={align}
-            layoutConfig={{
-                popupWidth: modalWidth,
-                spaceForArrow,
-                counterOffset,
-                arrowOffsetFromBottom,
-                arrowHeight,
-                arrowWidth
-            }}
+            layoutConfig={memoizedLayoutConfig}
             arrowConfig={arrowConfig}
         >
             {({popupRef, pos}) => (

@@ -1,10 +1,11 @@
 import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
-import React from 'react';
+import React, {useRef} from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
-
-import Box from '../box/box.jsx';
 import ReactModal from 'react-modal';
+import Box from '../box/box.jsx';
+import PopupWithArrow from '../popup-with-arrow/popup-with-arrow.jsx';
+import {PopupSide, PopupAlign} from '../../lib/calculatePopupPosition.js';
+
 import deleteIcon from './icon--delete.svg';
 import undoIcon from './icon--undo.svg';
 import arrowLeftIcon from './icon--arrow-left.svg';
@@ -47,24 +48,14 @@ const messages = defineMessages({
 });
 
 const modalWidth = 300;
-const calculateModalPosition = (relativeElemRef, modalPosition) => {
-    const refPosition = relativeElemRef.getBoundingClientRect();
+const arrowWidth = 25;
+const arrowHeight = 14;
 
-    if (modalPosition === 'left') {
-        return {
-            top: refPosition.top - refPosition.height,
-            left: refPosition.left - modalWidth - 25
-        };
-    }
-
-    if (modalPosition === 'right') {
-        return {
-            top: refPosition.top - refPosition.height,
-            left: refPosition.right + 25
-        };
-    }
-
-    return {};
+const arrowConfig = {
+    arrowDownIcon: null,
+    arrowUpIcon: null,
+    arrowLeftIcon,
+    arrowRightIcon
 };
 
 const getMessage = entityType => {
@@ -79,6 +70,11 @@ const getMessage = entityType => {
     return messages.shouldDeleteSpriteMessage;
 };
 
+const MODAL_POSITION_TO_SIDE = {
+    left: PopupSide.LEFT,
+    right: PopupSide.RIGHT
+};
+
 const DeleteConfirmationPrompt = ({
     onCancel,
     onOk,
@@ -87,88 +83,101 @@ const DeleteConfirmationPrompt = ({
     relativeElemRef
 }) => {
     const intl = useIntl();
-    const modalPositionValues = calculateModalPosition(relativeElemRef, modalPosition);
 
-    return (<ReactModal
-        isOpen
-        // We have to inline the styles, since a part
-        // of them are dynamically generated
-        style={{
-            content: {
-                ...modalPositionValues,
-                width: modalWidth,
-                border: 'none',
-                height: 'fit-content',
-                backgroundColor: 'transparent',
-                padding: 0,
-                margin: 0,
-                position: 'absolute',
-                overflowX: 'hidden',
-                zIndex: 1000
-            },
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                zIndex: 510,
-                backgroundColor: 'transparent'
-            }
-        }}
-        contentLabel={intl.formatMessage(messages.confirmDeletionHeading)}
-        onRequestClose={onCancel}
-    >
-        <Box className={styles.modalContainer}>
-            { modalPosition === 'right' ?
-                <Box className={classNames(styles.arrowContainer, styles.arrowContainerLeft)}>
-                    <img
-                        className={styles.deleteIcon}
-                        src={arrowLeftIcon}
-                    />
-                </Box> : null }
-            <Box className={styles.body}>
-                <Box className={styles.label}>
-                    <FormattedMessage {...getMessage(entityType)} />
-                </Box>
-                <Box className={styles.buttonRow}>
-                    <button
-                        className={styles.okButton}
-                        onClick={onOk}
-                        role="button"
+    const relativeElementRef = useRef(relativeElemRef);
+    relativeElementRef.current = relativeElemRef;
+
+    const side = MODAL_POSITION_TO_SIDE[modalPosition] ?? PopupSide.RIGHT;
+
+    return (
+        <PopupWithArrow
+            isOpen
+            onRequestClose={onCancel}
+            relativeElementRef={relativeElementRef}
+            side={side}
+            align={PopupAlign.CENTER}
+            layoutConfig={{
+                popupWidth: modalWidth,
+                spaceForArrow: arrowWidth,
+                arrowHeight,
+                arrowWidth,
+                counterOffset: 0,
+                arrowOffsetFromBottom: 2
+            }}
+            arrowConfig={arrowConfig}
+        >
+            {({popupRef, pos}) => (
+                <ReactModal
+                    isOpen
+                    style={{
+                        content: {
+                            top: pos.top,
+                            left: pos.left,
+                            width: modalWidth,
+                            border: 'none',
+                            height: 'fit-content',
+                            backgroundColor: 'transparent',
+                            padding: 0,
+                            margin: 0,
+                            position: 'fixed',
+                            overflowX: 'hidden',
+                            zIndex: 1000
+                        },
+                        overlay: {
+                            position: 'fixed',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            zIndex: 510,
+                            backgroundColor: 'transparent'
+                        }
+                    }}
+                    contentLabel={intl.formatMessage(messages.confirmDeletionHeading)}
+                    onRequestClose={onCancel}
+                >
+                    <Box
+                        className={styles.modalContainer}
+                        componentRef={popupRef}
                     >
-                        <img
-                            className={styles.deleteIcon}
-                            src={deleteIcon}
-                        />
-                        <div className={styles.message}>
-                            <FormattedMessage {...messages.confirmOption} />
-                        </div>
-                    </button>
-                    <button
-                        className={styles.cancelButton}
-                        onClick={onCancel}
-                        role="button"
-                    >
-                        <img
-                            className={styles.deleteIcon}
-                            src={undoIcon}
-                        />
-                        <div className={styles.message}>
-                            <FormattedMessage {...messages.cancelOption} />
-                        </div>
-                    </button>
-                </Box>
-            </Box>
-            {modalPosition === 'left' ?
-                <Box className={classNames(styles.arrowContainer, styles.arrowContainerRight)}>
-                    <img
-                        className={styles.deleteIcon}
-                        src={arrowRightIcon}
-                    />
-                </Box> : null }
-        </Box>
-    </ReactModal>);
+                        <Box className={styles.body}>
+                            <Box className={styles.label}>
+                                <FormattedMessage {...getMessage(entityType)} />
+                            </Box>
+                            <Box className={styles.buttonRow}>
+                                <button
+                                    className={styles.okButton}
+                                    onClick={onOk}
+                                    role="button"
+                                >
+                                    <img
+                                        className={styles.deleteIcon}
+                                        src={deleteIcon}
+                                    />
+                                    <div className={styles.message}>
+                                        <FormattedMessage {...messages.confirmOption} />
+                                    </div>
+                                </button>
+                                <button
+                                    className={styles.cancelButton}
+                                    onClick={onCancel}
+                                    role="button"
+                                >
+                                    <img
+                                        className={styles.deleteIcon}
+                                        src={undoIcon}
+                                    />
+                                    <div className={styles.message}>
+                                        <FormattedMessage {...messages.cancelOption} />
+                                    </div>
+                                </button>
+                            </Box>
+                        </Box>
+                    </Box>
+                </ReactModal>
+            )}
+        </PopupWithArrow>
+    );
 };
 
 DeleteConfirmationPrompt.propTypes = {

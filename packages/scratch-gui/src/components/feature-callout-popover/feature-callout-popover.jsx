@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useMemo} from 'react';
 import PropTypes from 'prop-types';
 import styles from './feature-callout-popover.css';
 import {PopupAlign, PopupSide} from '../../lib/calculatePopupPosition.js';
@@ -27,11 +27,48 @@ const arrowConfig = {
     arrowRightIcon
 };
 
+const FeatureCalloutContent = ({popupRef, pos, width, title, body}) => (
+    <Box
+        componentRef={popupRef}
+        className={styles.popover}
+        style={{
+            top: pos.top,
+            left: pos.left,
+            width,
+            zIndex: 1000,
+            position: 'fixed'
+        }}
+        tabIndex={0}
+        role="tooltip"
+    >
+        <Box className={styles.popoverTitle}>
+            {title}
+        </Box>
+        <Box className={styles.popoverBody}>
+            {body}
+        </Box>
+    </Box>
+);
+
+FeatureCalloutContent.propTypes = {
+    popupRef: PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.shape({current: PropTypes.instanceOf(Element)})
+    ]).isRequired,
+    pos: PropTypes.shape({
+        top: PropTypes.number,
+        left: PropTypes.number,
+        arrowTop: PropTypes.number,
+        arrowLeft: PropTypes.number
+    }).isRequired,
+    width: PropTypes.number.isRequired,
+    title: PropTypes.node,
+    body: PropTypes.node.isRequired
+};
+
 const FeatureCalloutPopover = ({
     isOpen,
     onRequestClose,
-    onRequestOpen,
-    isManualOnly = true,
     targetRef,
     side,
     align,
@@ -48,30 +85,21 @@ const FeatureCalloutPopover = ({
         arrowWidth
     } = {...defaultConfig, ...layoutConfig};
 
-    // Simulate hover and focus (normal) tooltip behavior
-    useEffect(() => {
-        if (isManualOnly) return;
-
-        const target = targetRef?.current;
-        if (!target) return;
-
-        const handleMouseEnter = () => onRequestOpen?.();
-        const handleMouseLeave = () => onRequestClose?.();
-        const handleFocus = () => onRequestOpen?.();
-        const handleBlur = () => onRequestClose?.();
-
-        target.addEventListener('mouseenter', handleMouseEnter);
-        target.addEventListener('mouseleave', handleMouseLeave);
-        target.addEventListener('focus', handleFocus);
-        target.addEventListener('blur', handleBlur);
-
-        return () => {
-            target.removeEventListener('mouseenter', handleMouseEnter);
-            target.removeEventListener('mouseleave', handleMouseLeave);
-            target.removeEventListener('focus', handleFocus);
-            target.removeEventListener('blur', handleBlur);
-        };
-    }, [isManualOnly, onRequestOpen, onRequestClose, targetRef?.current]);
+    const memoizedLayoutConfig = useMemo(() => ({
+        popupWidth: width,
+        spaceForArrow,
+        counterOffset,
+        arrowOffsetFromBottom,
+        arrowHeight,
+        arrowWidth
+    }), [
+        width,
+        spaceForArrow,
+        counterOffset,
+        arrowOffsetFromBottom,
+        arrowHeight,
+        arrowWidth
+    ]);
 
     return (
         <PopupWithArrow
@@ -80,37 +108,17 @@ const FeatureCalloutPopover = ({
             relativeElementRef={targetRef}
             side={side}
             align={align}
-            layoutConfig={{
-                popupWidth: width,
-                spaceForArrow,
-                counterOffset,
-                arrowOffsetFromBottom,
-                arrowHeight,
-                arrowWidth
-            }}
+            layoutConfig={memoizedLayoutConfig}
             arrowConfig={arrowConfig}
         >
             {({popupRef, pos}) => (
-                <Box
-                    componentRef={popupRef}
-                    className={styles.tooltip}
-                    style={{
-                        top: pos.top,
-                        left: pos.left,
-                        width,
-                        zIndex: 1000,
-                        position: 'fixed'
-                    }}
-                    tabIndex={0}
-                    role="tooltip"
-                >
-                    <Box className={styles.tooltipTitle}>
-                        {title}
-                    </Box>
-                    <Box className={styles.tooltipBody}>
-                        {body}
-                    </Box>
-                </Box>
+                <FeatureCalloutContent
+                    popupRef={popupRef}
+                    pos={pos}
+                    width={width}
+                    title={title}
+                    body={body}
+                />
             )}
         </PopupWithArrow>
     );
@@ -119,8 +127,6 @@ const FeatureCalloutPopover = ({
 FeatureCalloutPopover.propTypes = {
     isOpen: PropTypes.bool.isRequired,
     onRequestClose: PropTypes.func,
-    onRequestOpen: PropTypes.func,
-    isManualOnly: PropTypes.bool,
     targetRef: PropTypes.shape({current: PropTypes.instanceOf(Element)}).isRequired,
     side: PropTypes.oneOf(Object.values(PopupSide)).isRequired,
     align: PropTypes.oneOf(Object.values(PopupAlign)),
