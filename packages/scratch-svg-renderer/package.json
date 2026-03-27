@@ -77,7 +77,7 @@
     "webpack": "5.105.4",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.2.3",
-    "xmldom": "0.1.31"
+    "@xmldom/xmldom": "0.7.5"
   },
   "peerDependencies": {
     "scratch-render-fonts": "^1.0.0"
