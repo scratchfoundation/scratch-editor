@@ -268,6 +268,10 @@ git remote remove "$REMOTE_NAME"
 
 echo "    Merge complete."
 
+# Clean up the temporary clone now — before any `git add -A` can accidentally stage it
+echo "==> Cleaning up temporary clone..."
+rm -rf "$BUILD_TMP"
+
 ### Step 4: Fixup the new package ###
 
 echo "==> Fixing up ${PACKAGE_DIR}/package.json..."
@@ -302,7 +306,23 @@ if [ -r "${PACKAGE_PATH}/package.json" ]; then
         ) "${PACKAGE_PATH}/package.json" | sponge "${PACKAGE_PATH}/package.json"
 fi
 
-### Step 5: Rewire inter-package dependencies ###
+### Step 5: Update root workspaces list ###
+
+echo "==> Updating root package.json workspaces..."
+
+# Add the new package to the workspaces array BEFORE rewiring dependencies,
+# so npm can resolve it as a local workspace package rather than fetching from the registry.
+# NOTE: This prepends it to the beginning so it is built before packages that depend on it.
+WORKSPACE_ENTRY="packages/${REPO_NAME}"
+if ! jq -e ".workspaces | index(\"${WORKSPACE_ENTRY}\")" "${MONOREPO_ROOT}/package.json" > /dev/null 2>&1; then
+    jq ".workspaces |= [\"${WORKSPACE_ENTRY}\"] + ." "${MONOREPO_ROOT}/package.json" \
+        | sponge "${MONOREPO_ROOT}/package.json"
+    echo "    Added '${WORKSPACE_ENTRY}' to workspaces."
+else
+    echo "    '${WORKSPACE_ENTRY}' already in workspaces."
+fi
+
+### Step 6: Rewire inter-package dependencies ###
 
 echo "==> Rewiring inter-package dependencies..."
 
@@ -380,21 +400,6 @@ done
 # Also update references in existing packages that point to the new repo
 # (These are require/import statements in files that were already in the monorepo)
 
-### Step 6: Update root workspaces list ###
-
-echo "==> Updating root package.json workspaces..."
-
-# Add the new package to the workspaces array if not already present
-# NOTE: This prepends it to the beginning so it is built before packages that depend on it.
-WORKSPACE_ENTRY="packages/${REPO_NAME}"
-if ! jq -e ".workspaces | index(\"${WORKSPACE_ENTRY}\")" "${MONOREPO_ROOT}/package.json" > /dev/null 2>&1; then
-    jq ".workspaces |= [\"${WORKSPACE_ENTRY}\"] + ." "${MONOREPO_ROOT}/package.json" \
-        | sponge "${MONOREPO_ROOT}/package.json"
-    echo "    Added '${WORKSPACE_ENTRY}' to workspaces."
-else
-    echo "    '${WORKSPACE_ENTRY}' already in workspaces."
-fi
-
 ### Step 7: Install dependencies ###
 
 echo "==> Running npm install..."
@@ -413,7 +418,7 @@ if ! git diff --cached --quiet; then
 - Renamed package to ${NPM_ORGANIZATION}/${REPO_NAME}
 - Removed repo-level config (.husky, renovate, commitlint)
 - Rewired inter-package dependencies to use workspace versions
-- Updated root workspaces list
+- Added to root workspaces list
 - Regenerated package-lock.json"
 else
     echo "    No fixup changes to commit."
@@ -436,11 +441,7 @@ else
     echo "    Run 'npm run refresh-gh-workflow' manually when ready."
 fi
 
-### Step 10: Cleanup ###
-
-echo "==> Cleaning up..."
-
-rm -rf "$BUILD_TMP"
+### Step 10: Done ###
 
 echo ""
 echo "=========================================="
