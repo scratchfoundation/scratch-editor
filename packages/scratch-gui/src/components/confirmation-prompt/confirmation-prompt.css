@@ -3,7 +3,7 @@
 
 .modal-container {
     display: flex;
-    width: 12.5rem;
+    width: 100%;
     padding: 0.75rem;
     flex-direction: column;
     align-items: flex-start;
@@ -29,7 +29,8 @@
     width: 100%;
 }
 
-.button-row button {
+.confirm-button,
+.cancel-button {
     all: unset;
     display: flex;
     padding: 0.5rem 1rem;
@@ -40,27 +41,34 @@
     border-radius: 2.5rem;
     background: inherit;
     cursor: pointer;
+    color: $ui-white;
 }
 
-.button-row button:focus {
+.confirm-button:focus,
+.cancel-button:focus {
     outline: auto;
 }
 
-.button-row button span {
-    color: $ui-white;
+.confirm-button span,
+.cancel-button span {
     font-size: 0.75rem;
     font-weight: 700;
     line-height: 1rem;
 }
 
-.button-row button.confirm-button {
+.confirm-button {
     background: $ui-white;
 }
 
-.button-row button.confirm-button span {
+.confirm-button span {
     color: $looks-secondary;
 }
 
-.button-row button.cancel-button {
+.cancel-button {
     border: 0.0625rem solid $ui-white;
+}
+
+.button-icon {
+    height: 1.5rem;
+    width: 1.5rem;
 }

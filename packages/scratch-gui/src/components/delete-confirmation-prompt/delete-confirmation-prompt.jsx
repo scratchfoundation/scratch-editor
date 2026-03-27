@@ -1,19 +1,11 @@
 import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
-import React, {useMemo, useRef} from 'react';
+import React, {useRef} from 'react';
 import PropTypes from 'prop-types';
-import Box from '../box/box.jsx';
 import {PopupSide, PopupAlign} from '../../lib/calculatePopupPosition.js';
-
+import ConfirmationPrompt, {BUTTON_ORDER} from '../confirmation-prompt/confirmation-prompt.jsx';
+import styles from './delete-confirmation-prompt.css';
 import deleteIcon from './icon--delete.svg';
 import undoIcon from './icon--undo.svg';
-import arrowLeftIcon from './icon--arrow-left.svg';
-import arrowRightIcon from './icon--arrow-right.svg';
-
-import styles from './delete-confirmation-prompt.css';
-import ModalWithArrow from '../modal-with-arrow/modal-with-arrow.jsx';
-import modal from '../../containers/modal.jsx';
-
-// TODO: Parametrize from outside if we want more custom messaging
 const messages = defineMessages({
     shouldDeleteSpriteMessage: {
         defaultMessage: 'Are you sure you want to delete this sprite?',
@@ -30,33 +22,12 @@ const messages = defineMessages({
         description: 'Message to indicate whether selected sound should be deleted.',
         id: 'gui.gui.shouldDeleteSound'
     },
-    confirmOption: {
-        defaultMessage: 'yes',
-        description: 'Yes - should delete the sprite',
-        id: 'gui.gui.confirm'
-    },
-    cancelOption: {
-        defaultMessage: 'no',
-        description: 'No - cancel deletion',
-        id: 'gui.gui.cancel'
-    },
     confirmDeletionHeading: {
         defaultMessage: 'Confirm Asset Deletion',
         description: 'Heading of confirmation prompt to delete asset',
         id: 'gui.gui.deleteAssetHeading'
     }
 });
-
-const modalWidth = 300;
-const arrowWidth = 25;
-const arrowHeight = 14;
-
-const arrowConfig = {
-    arrowDownIcon: null,
-    arrowUpIcon: null,
-    arrowLeftIcon,
-    arrowRightIcon
-};
 
 const getMessage = entityType => {
     if (entityType === 'COSTUME') {
@@ -75,6 +46,15 @@ const MODAL_POSITION_TO_SIDE = {
     right: PopupSide.RIGHT
 };
 
+const layoutConfig = {
+    modalWidth: 290,
+    spaceForArrow: 30,
+    counterOffset: 0,
+    arrowOffsetFromBottom: 2,
+    arrowHeight: 14,
+    arrowWidth: 25
+};
+
 const DeleteConfirmationPrompt = ({
     onCancel,
     onOk,
@@ -89,62 +69,25 @@ const DeleteConfirmationPrompt = ({
 
     const side = MODAL_POSITION_TO_SIDE[modalPosition] ?? PopupSide.RIGHT;
 
-    const memorizedLayoutConfig = useMemo(() => ({
-        modalWidth,
-        spaceForArrow: 30,
-        counterOffset: 0,
-        arrowOffsetFromBottom: 2,
-        arrowHeight,
-        arrowWidth
-    }), [modalWidth, arrowWidth, arrowHeight]);
-
     return (
-        <ModalWithArrow
+        <ConfirmationPrompt
             isOpen
-            onRequestClose={onCancel}
+            title={intl.formatMessage(messages.confirmDeletionHeading)}
+            message={<FormattedMessage {...getMessage(entityType)} />}
+            onConfirm={onOk}
+            onCancel={onCancel}
             relativeElementRef={relativeElementRef}
             side={side}
             align={PopupAlign.CENTER}
-            title={intl.formatMessage(messages.confirmDeletionHeading)}
-            layoutConfig={memorizedLayoutConfig}
-            arrowConfig={arrowConfig}
-        >
-            <Box className={styles.modalContainer}>
-                <Box className={styles.body}>
-                    <Box className={styles.label}>
-                        <FormattedMessage {...getMessage(entityType)} />
-                    </Box>
-                    <Box className={styles.buttonRow}>
-                        <button
-                            className={styles.okButton}
-                            onClick={onOk}
-                            role="button"
-                        >
-                            <img
-                                className={styles.deleteIcon}
-                                src={deleteIcon}
-                            />
-                            <div className={styles.message}>
-                                <FormattedMessage {...messages.confirmOption} />
-                            </div>
-                        </button>
-                        <button
-                            className={styles.cancelButton}
-                            onClick={onCancel}
-                            role="button"
-                        >
-                            <img
-                                className={styles.deleteIcon}
-                                src={undoIcon}
-                            />
-                            <div className={styles.message}>
-                                <FormattedMessage {...messages.cancelOption} />
-                            </div>
-                        </button>
-                    </Box>
-                </Box>
-            </Box>
-        </ModalWithArrow>
+            layoutConfig={layoutConfig}
+            confirmIcon={deleteIcon}
+            cancelIcon={undoIcon}
+            buttonOrder={BUTTON_ORDER.CONFIRM_FIRST}
+            containerClassName={styles.body}
+            messageClassName={styles.label}
+            confirmButtonClassName={styles.buttonRowButton}
+            cancelButtonClassName={styles.buttonRowButton}
+        />
     );
 };
 

@@ -12,6 +12,7 @@ import arrowRightIcon from './icon--arrow-right.svg';
 
 import styles from './confirmation-prompt.css';
 import {PopupAlign, PopupSide} from '../../lib/calculatePopupPosition.js';
+import classNames from 'classnames';
 
 const messages = defineMessages({
     defaultConfirmLabel: {
@@ -42,18 +43,30 @@ const arrowConfig = {
     arrowRightIcon
 };
 
+const BUTTON_ORDER = {
+    CANCEL_FIRST: 'cancelFirst',
+    CONFIRM_FIRST: 'confirmFirst'
+};
+
 const ConfirmationPrompt = ({
     title,
     message,
     confirmLabel,
     cancelLabel,
+    confirmIcon,
+    cancelIcon,
+    buttonOrder = BUTTON_ORDER.CANCEL_FIRST,
     onConfirm,
     onCancel,
     isOpen,
     relativeElementRef,
     side,
     align,
-    layoutConfig
+    layoutConfig,
+    containerClassName,
+    messageClassName,
+    confirmButtonClassName,
+    cancelButtonClassName
 }) => {
     const {
         modalWidth,
@@ -79,6 +92,43 @@ const ConfirmationPrompt = ({
         arrowWidth
     ]);
 
+    const cancelButton = (
+        <button
+            onClick={onCancel}
+            className={classNames(styles.cancelButton, cancelButtonClassName)}
+        >
+            {cancelIcon && (
+                <img
+                    className={styles.buttonIcon}
+                    src={cancelIcon}
+                    aria-hidden="true"
+                    alt=""
+                />
+            )}
+            {cancelLabel ?? <FormattedMessage {...messages.defaultCancelLabel} />}
+        </button>
+    );
+
+    const confirmButton = (
+        <button
+            onClick={onConfirm}
+            className={classNames(styles.confirmButton, confirmButtonClassName)}
+        >
+            {confirmIcon && (
+                <img
+                    className={styles.buttonIcon}
+                    src={confirmIcon}
+                    aria-hidden="true"
+                    alt=""
+                />
+            )}
+            {confirmLabel ?? <FormattedMessage {...messages.defaultConfirmLabel} />}
+        </button>
+    );
+
+    const buttons = buttonOrder === BUTTON_ORDER.CONFIRM_FIRST ?
+        [confirmButton, cancelButton] : [cancelButton, confirmButton];
+
     return (
         <ModalWithArrow
             isOpen={isOpen}
@@ -90,23 +140,12 @@ const ConfirmationPrompt = ({
             arrowConfig={arrowConfig}
             title={title}
         >
-            <Box className={styles.modalContainer}>
-                <Box className={styles.label}>
+            <Box className={classNames(styles.modalContainer, containerClassName)}>
+                <Box className={classNames(styles.label, messageClassName)}>
                     {message}
                 </Box>
                 <Box className={styles.buttonRow}>
-                    <button
-                        onClick={onCancel}
-                        className={styles.cancelButton}
-                    >
-                        {cancelLabel ?? <FormattedMessage {...messages.defaultCancelLabel} />}
-                    </button>
-                    <button
-                        onClick={onConfirm}
-                        className={styles.confirmButton}
-                    >
-                        {confirmLabel ?? <FormattedMessage {...messages.defaultConfirmLabel} />}
-                    </button>
+                    {buttons}
                 </Box>
             </Box>
         </ModalWithArrow>
@@ -119,6 +158,9 @@ ConfirmationPrompt.propTypes = {
     message: PropTypes.node.isRequired,
     confirmLabel: PropTypes.node,
     cancelLabel: PropTypes.node,
+    confirmIcon: PropTypes.string,
+    cancelIcon: PropTypes.string,
+    buttonOrder: PropTypes.oneOf(Object.values(BUTTON_ORDER)),
     onConfirm: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     relativeElementRef: PropTypes.shape({current: PropTypes.instanceOf(Element)}),
@@ -131,7 +173,12 @@ ConfirmationPrompt.propTypes = {
         counterOffset: PropTypes.number,
         arrowHeight: PropTypes.number,
         arrowWidth: PropTypes.number
-    })
+    }),
+    containerClassName: PropTypes.string,
+    messageClassName: PropTypes.string,
+    confirmButtonClassName: PropTypes.string,
+    cancelButtonClassName: PropTypes.string
 };
 
+export {BUTTON_ORDER};
 export default ConfirmationPrompt;
