@@ -286,12 +286,15 @@ rm -rf "${PACKAGE_PATH}/.husky" \
        "${PACKAGE_PATH}/renovate.json" \
        "${PACKAGE_PATH}/renovate.json5"
 
-# Rewrite package.json: rename package, set monorepo URL, strip Husky/commitlint config
+# Rewrite package.json: rename package, set version, set monorepo URL, strip Husky/commitlint config
+MONOREPO_VERSION=$(jq -r '.version' "${MONOREPO_ROOT}/package.json")
 if [ -r "${PACKAGE_PATH}/package.json" ]; then
     jq -f --arg PACKAGE_NAME "${NPM_ORGANIZATION}/${REPO_NAME}" \
           --arg MONOREPO_URL "$MONOREPO_URL" \
+          --arg MONOREPO_VERSION "$MONOREPO_VERSION" \
         <(join_args ' | ' \
             '.name |= $PACKAGE_NAME' \
+            '.version |= $MONOREPO_VERSION' \
             '.repository.url |= $MONOREPO_URL' \
             'if .scripts.prepare == "husky install" then del(.scripts.prepare) else . end' \
             'if .scripts == {} then del(.scripts.prepare) else . end' \
