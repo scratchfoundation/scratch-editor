@@ -56,7 +56,7 @@
   "dependencies": {
     "@scratch/scratch-svg-renderer": "13.4.0-test.7",
     "grapheme-breaker": "0.3.2",
-    "hull.js": "0.2.10",
+    "hull.js": "1.0.6",
     "ify-loader": "1.1.0",
     "linebreak": "0.3.0",
     "raw-loader": "0.5.1",
