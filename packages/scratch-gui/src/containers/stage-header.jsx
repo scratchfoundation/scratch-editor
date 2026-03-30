@@ -9,7 +9,7 @@ import {setFullScreen} from '../reducers/mode';
 import {connect} from 'react-redux';
 
 import StageHeaderComponent from '../components/stage-header/stage-header.jsx';
-import {getIsProjectLoadedWithId} from '../reducers/project-state.js';
+import {getIsShowingWithId} from '../reducers/project-state.js';
 import {showAlertWithTimeout, showStandardAlert} from '../reducers/alerts.js';
 
 const ALERT_ID = {
@@ -69,7 +69,7 @@ const mapStateToProps = state => {
         isPlayerOnly: state.scratchGui.mode.isPlayerOnly,
 
         projectId: projectState.projectId,
-        isProjectLoaded: getIsProjectLoadedWithId(loadingState)
+        isProjectLoaded: getIsShowingWithId(loadingState)
     };
 
 };

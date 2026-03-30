@@ -1,6 +1,6 @@
 import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
 import PropTypes from 'prop-types';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import VM from '@scratch/scratch-vm';
 
 import Box from '../box/box.jsx';
@@ -63,7 +63,7 @@ const messages = defineMessages({
         id: 'gui.stageHeader.thumbnailTooltipTitle'
     },
     thumbnailTooltipBody: {
-        defaultMessage: 'The “{boldText}” has a new spot. The way it works is by ' +
+        defaultMessage: 'The <b>"Set Thumbnail"</b> has a new spot. The way it works is by ' +
             'taking a snapshot of your canvas and setting it as your project thumbnail.',
         description: 'Body text for the thumbnail tooltip',
         id: 'gui.stageHeader.thumbnailTooltipBody'
@@ -245,7 +245,7 @@ const StageHeaderComponent = function (props) {
                                 <FormattedMessage
                                     {...messages.thumbnailTooltipBody}
                                     values={{
-                                        boldText: <b>{intl.formatMessage(messages.setThumbnail)}</b>
+                                        b: chunks => <b>{chunks}</b>
                                     }}
                                 />
                             }
