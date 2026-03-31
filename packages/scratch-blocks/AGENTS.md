@@ -197,6 +197,8 @@ Review all changes and confirm:
 - **Correctness**: Changes make sense and edge cases were considered.
 - **Comments**: Comments are necessary, short, and clear; self-explanatory code has no comment.
 - **Simplicity**: Implementation is as simple as possible; no unnecessary code remains.
+- **Documentation**: Update `AGENTS.md` and any other documentation files whose content is affected by the change
+  (commands, repo structure, conventions, etc.).
 - **`node_modules/`**: No changes within this directory. In particular, no direct edits to Blockly source files.
 - **Build passes**: `npm run build` completes successfully.
 - **Tests pass**: `npm run test` completes with no failures.
