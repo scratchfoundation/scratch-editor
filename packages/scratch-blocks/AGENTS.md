@@ -1,16 +1,36 @@
 # Agent Guide: scratch-blocks
 
+## AI-assisted development policy
+
+See [CONTRIBUTING.AI.md](https://github.com/scratchfoundation/.github/blob/main/CONTRIBUTING.AI.md) for Scratch's
+org-wide policy on AI-assisted contributions. The short version: human developers remain responsible for all code
+they submit. Do not submit code you cannot explain and defend in a review.
+
 ## Agent defaults
 
 Use these defaults unless the user asks otherwise:
 
-1. Keep changes minimal and scoped to the user request.
-2. Prefer fixing root causes over adding surface-level assertions.
-3. Never edit `node_modules/blockly/`; extend/override from `src/` instead.
-4. When adding runtime guards for states that should never happen, log actionable context unless the path is expected
-   control flow.
-5. When fixing a bug, start by adding one or more tests to reproduce the issue, then implement the fix. Iterate until
-   all tests pass, including but not limited to the new tests.
+1. Keep changes minimal and scoped to the user request. Do not refactor surrounding code, add features, or clean up
+   style in areas you weren't asked to touch.
+2. Do not preserve backward compatibility when it isn't required. When all callers are internal to the repo, rename
+   or restructure freely rather than adding shims or aliases. scratch-blocks is published to npm and consumed
+   externally, so treat its public exports as a contract and preserve compatibility unless explicitly told otherwise.
+3. Write comments that explain the current code, not its history. Do not reference prior implementations,
+   intermediate states, or what the code "used to do." If an approach seems counterintuitive, explain why it is
+   correct now — not why it changed.
+4. Never edit `node_modules/blockly/`; extend or override from `src/` instead.
+5. Prefer fixing root causes over adding surface-level workarounds or assertions.
+6. When fixing a bug, start by adding one or more failing tests that reproduce it, then implement the fix. Iterate
+   until all tests pass, including but not limited to the new tests.
+7. When adding runtime guards for states that should never happen, log actionable context (function name, relevant
+   IDs, key flags) rather than failing silently. Use `console.warn` for recoverable states and `console.error` for
+   invalid required data.
+8. Preserve failure semantics when refactoring. An implicit crash (null dereference, `!` assertion) should become
+   an explicit `throw` with a useful message — not silent failure. Code that previously wouldn't crash still
+   shouldn't, but consider whether a warning is warranted. Replacing a potential null dereference with
+   `if (!foo) return` could make a bug harder to find; `if (!foo) throw new Error(...)` surfaces it.
+9. Do not add error handling, fallbacks, or validation for scenarios that cannot happen. Trust internal code and
+   framework guarantees. Only validate at system boundaries (user input, external APIs).
 
 ## What this repository is
 
@@ -31,6 +51,8 @@ npm run test         # Run unit and browser tests (but not lint)
 npm run test:unit    # Run unit tests only
 npm run test:browser # Run browser tests only
 ```
+
+Run `npm run test:lint` first when iterating — it is fast. Run `npm run test` before declaring work done.
 
 ## Repository layout
 
@@ -70,25 +92,15 @@ Blocks, so here are some definitions to clarify:
 - Scratch's "block palette" is called the "toolbox" in Blockly, and is implemented with the flyout, which hosts a
   secondary Blockly workspace (a concept that Scratch glosses over).
 
-## When managing npm dependencies
+## npm workflow
 
-To install existing dependencies, use `npm ci` rather than `npm install` to ensure you get the exact versions
-specified in `package-lock.json`.
+Use `npm ci` to install existing dependencies so you get the exact versions in `package-lock.json`.
 
 When installing a new dependency or updating an existing one, run `npm install some-package@new-version` to update
 both `package.json` and `package-lock.json` in one step.
 
 Keep `package.json` in canonical order. In particular, make sure to alphabetize each dependency block (e.g.,
 `dependencies`, `devDependencies`) and the `scripts` block.
-
-## When adding runtime safety checks
-
-When adding runtime checks for states that should never happen (including guard-driven early returns), avoid silent failure:
-
-- Log a warning or error with enough context to debug (function path, block/event id, key flags).
-- Use `console.warn` for recoverable states and `console.error` for invalid required data.
-- Keep logs specific and consistent (e.g., include function or class context in the message).
-- Do not add noisy logs for expected control flow (e.g., optional constructor args used by `fromJson`).
 
 ## TypeScript guidelines
 
@@ -186,7 +198,6 @@ Review all changes and confirm:
 - **Comments**: Comments are necessary, short, and clear; self-explanatory code has no comment.
 - **Simplicity**: Implementation is as simple as possible; no unnecessary code remains.
 - **`node_modules/`**: No changes within this directory. In particular, no direct edits to Blockly source files.
-- **Runtime checks**: Any new guards for states that should never happen include diagnostic logging.
 - **Build passes**: `npm run build` completes successfully.
 - **Tests pass**: `npm run test` completes with no failures.
 - **No lint errors**: `npm run test:lint` passes. Iterate with `npm run format` and/or manual changes as needed.
