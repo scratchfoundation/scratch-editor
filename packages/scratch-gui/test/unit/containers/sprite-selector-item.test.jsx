@@ -6,7 +6,7 @@ import VM from '@scratch/scratch-vm';
 
 import SpriteSelectorItemContainer from '../../../src/containers/sprite-selector-item';
 import {legacyConfig} from '../../../src/legacy-config';
-import DeleteConfirmationPrompt from '../../../src/components/delete-confirmation-prompt/delete-confirmation-prompt.jsx';
+import DeleteConfirmationPrompt from '../../../src/containers/delete-confirmation-prompt';
 import {screen, fireEvent, waitFor} from '@testing-library/react';
 
 global.MutationObserver = class {
@@ -14,7 +14,7 @@ global.MutationObserver = class {
     observe () { }
 };
 
-jest.mock('../../../src/components/delete-confirmation-prompt/delete-confirmation-prompt.jsx', () => jest.fn(() => null));
+jest.mock('../../../src/containers/delete-confirmation-prompt', () => jest.fn(() => null));
 describe('SpriteSelectorItem Container', () => {
     const mockStore = configureStore();
     let className;
@@ -63,6 +63,9 @@ describe('SpriteSelectorItem Container', () => {
                 hoveredTarget: {receivedBlocks: false, sprite: null},
                 assetDrag: {dragging: false},
                 vm
+            },
+            locales: {
+                isRtl: false
             }
         });
     });

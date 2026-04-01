@@ -84,7 +84,8 @@ const DeleteConfirmationPrompt = ({
     onOk,
     modalPosition,
     entityType,
-    relativeElemRef
+    relativeElemRef,
+    isRtl
 }) => {
     const intl = useIntl();
     const modalPositionValues = calculateModalPosition(relativeElemRef, modalPosition);
@@ -119,12 +120,15 @@ const DeleteConfirmationPrompt = ({
         contentLabel={intl.formatMessage(messages.confirmDeletionHeading)}
         onRequestClose={onCancel}
     >
-        <Box className={styles.modalContainer}>
-            { modalPosition === 'right' ?
+        <Box
+            className={styles.modalContainer}
+            dir={isRtl ? 'rtl' : 'ltr'}
+        >
+            {((modalPosition === 'right' && !isRtl) || (modalPosition === 'left' && isRtl)) ?
                 <Box className={classNames(styles.arrowContainer, styles.arrowContainerLeft)}>
                     <img
                         className={styles.deleteIcon}
-                        src={arrowLeftIcon}
+                        src={isRtl ? arrowRightIcon : arrowLeftIcon}
                     />
                 </Box> : null }
             <Box className={styles.body}>
@@ -160,11 +164,11 @@ const DeleteConfirmationPrompt = ({
                     </button>
                 </Box>
             </Box>
-            {modalPosition === 'left' ?
+            {((modalPosition === 'left' && !isRtl) || (modalPosition === 'right' && isRtl)) ?
                 <Box className={classNames(styles.arrowContainer, styles.arrowContainerRight)}>
                     <img
                         className={styles.deleteIcon}
-                        src={arrowRightIcon}
+                        src={isRtl ? arrowLeftIcon : arrowRightIcon}
                     />
                 </Box> : null }
         </Box>
@@ -176,7 +180,8 @@ DeleteConfirmationPrompt.propTypes = {
     onCancel: PropTypes.func.isRequired,
     relativeElemRef: PropTypes.object,
     entityType: PropTypes.string,
-    modalPosition: PropTypes.string
+    modalPosition: PropTypes.string,
+    isRtl: PropTypes.bool
 };
 
 export default DeleteConfirmationPrompt;

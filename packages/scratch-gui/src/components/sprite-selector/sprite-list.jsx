@@ -30,7 +30,8 @@ const SpriteList = function (props) {
         ordering,
         raised,
         selectedId,
-        items
+        items,
+        isRtl
     } = props;
 
     const isSpriteDrag = draggingType === DragConstants.SPRITE;
@@ -96,7 +97,7 @@ const SpriteList = function (props) {
                                 onDuplicateButtonClick={onDuplicateSprite}
                                 onExportButtonClick={onExportSprite}
                                 withDeleteConfirmation
-                                deleteConfirmationModalPosition={'left'}
+                                deleteConfirmationModalPosition={isRtl ? 'right' : 'left'}
                             />
                         </SortableAsset>
                     );
@@ -135,7 +136,8 @@ SpriteList.propTypes = {
     onSelectSprite: PropTypes.func,
     ordering: PropTypes.arrayOf(PropTypes.number),
     raised: PropTypes.bool,
-    selectedId: PropTypes.string
+    selectedId: PropTypes.string,
+    isRtl: PropTypes.bool
 };
 
 export default SortableHOC(SpriteList);
