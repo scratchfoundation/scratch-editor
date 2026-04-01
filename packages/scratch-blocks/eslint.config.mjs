@@ -17,22 +17,6 @@ export default eslintConfigScratch.defineConfig(
     plugins: { '@typescript-eslint': tseslint.plugin },
   },
   {
-    // TODO: upstream to eslint-config-scratch
-    files: ['**/*.{ts,tsx,mts,cts}'],
-    rules: {
-      '@typescript-eslint/no-empty-function': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-          destructuredArrayIgnorePattern: '^_',
-          ignoreRestSiblings: true,
-        },
-      ],
-    },
-  },
-  {
     // Tests frequently introspect internals and invoke prototype methods directly.
     files: ['tests/**/*.{ts,tsx,mts,cts}'],
     rules: {
