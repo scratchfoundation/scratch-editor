@@ -6,6 +6,13 @@ import * as Blockly from 'blockly/core'
 import { BowlerHat } from './bowler_hat'
 import { ConstantProvider } from './constants'
 
+// Blockly's BlockSvg types previousConnection as non-null, but blocks without a
+// previous connector (hat blocks) have it as null at runtime. This type corrects
+// that so null checks are recognized by the type system instead of suppressed.
+type BlockSvgWithNullableConnections = Omit<Blockly.BlockSvg, 'previousConnection'> & {
+  previousConnection: Blockly.RenderedConnection | null
+}
+
 export class RenderInfo extends Blockly.zelos.RenderInfo {
   declare constants_: ConstantProvider
 
@@ -86,7 +93,10 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
       this.block_.isScratchExtension &&
       Blockly.blockRendering.Types.isField(elem) &&
       elem.field instanceof Blockly.FieldImage &&
-      elem.field === this.block_.inputList[0].fieldRow[0]
+      elem.field === this.block_.inputList[0].fieldRow[0] &&
+      // Hat-style extension blocks have no previousConnection and use their
+      // own centering; only offset stack-style extensions.
+      (this.block_ as BlockSvgWithNullableConnections).previousConnection
     ) {
       // Vertically center the icon on extension blocks.
       return super.getElemCenterline_(row, elem) + this.constants_.GRID_UNIT

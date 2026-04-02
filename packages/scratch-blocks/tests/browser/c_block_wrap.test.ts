@@ -2,7 +2,6 @@
  * Copyright 2026 Scratch Foundation
  * SPDX-License-Identifier: Apache-2.0
  */
-
 // Browser-level regression tests for C-block wrapping (issue #3494).
 //
 // When a C-block (e.g. "repeat") is dropped onto a block in the middle of an
@@ -12,7 +11,6 @@
 // These tests use rendered BlockSvg blocks (via Blockly.inject) to exercise the
 // full connection path, including the connection checker and drag checks, not
 // just the patched getConnectionForOrphanedConnection in isolation.
-
 import * as Blockly from 'blockly/core'
 import { afterAll, afterEach, assert, beforeAll, describe, expect, it } from 'vitest'
 import { ScratchMsgs } from '../../msg/scratch_msgs'
@@ -170,10 +168,7 @@ describe('C-block wrapping in rendered workspace — issue #3494', () => {
     markerBlock.setInsertionMarker(true)
 
     // The orphan routing should work the same way for markers as for real blocks
-    const result = Blockly.Connection.getConnectionForOrphanedConnection(
-      markerBlock,
-      blockB.previousConnection,
-    )
+    const result = Blockly.Connection.getConnectionForOrphanedConnection(markerBlock, blockB.previousConnection)
 
     const substackConn = markerBlock.getInput('SUBSTACK')?.connection
     assert(substackConn, 'markerBlock should have a SUBSTACK connection')
