@@ -56,12 +56,12 @@ export class RenderInfo extends Blockly.zelos.RenderInfo {
   }
 
   override getInRowSpacing_(
-    prev: Blockly.blockRendering.Measurable,
-    next: Blockly.blockRendering.Measurable,
+    prev: Blockly.blockRendering.Measurable | null,
+    next: Blockly.blockRendering.Measurable | null,
   ): number {
     if (
       this.isBowlerHatBlock() &&
-      (Blockly.blockRendering.Types.isHat(prev) || Blockly.blockRendering.Types.isHat(next))
+      ((prev && Blockly.blockRendering.Types.isHat(prev)) || (next && Blockly.blockRendering.Types.isHat(next)))
     ) {
       // Bowler hat rows have no spacing/gaps, just the hat.
       return 0
