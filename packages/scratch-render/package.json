@@ -76,7 +76,7 @@
     "gh-pages": "1.2.0",
     "globals": "16.5.0",
     "html-webpack-plugin": "5.6.6",
-    "playwright-chromium": "1.58.2",
+    "playwright-chromium": "1.59.0",
     "scratch-render-fonts": "1.0.252",
     "scratch-semantic-release-config": "4.0.1",
     "scratch-storage": "6.2.0",
