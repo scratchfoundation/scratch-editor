@@ -81,7 +81,7 @@
     "redux-throttle": "0.1.1",
     "regenerator-runtime": "0.13.9",
     "rimraf": "2.7.1",
-    "scratch-l10n": "6.1.64",
+    "scratch-l10n": "6.1.65",
     "scratch-semantic-release-config": "4.0.1",
     "semantic-release": "19.0.5",
     "style-loader": "1.3.0",
