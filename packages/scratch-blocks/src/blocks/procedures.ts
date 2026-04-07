@@ -274,7 +274,8 @@ function callerMutationToDom(this: ProcedureCallBlock): Element {
  */
 function callerDomToMutation(this: ProcedureCallBlock, xmlElement: Element) {
   this.procCode_ = getRequiredMutationAttribute(xmlElement, 'proccode')
-  this.generateShadows_ = parseRequiredMutationJson(xmlElement, 'generateshadows', parseBooleanMutationValue)
+  const generateshadows = xmlElement.getAttribute('generateshadows')
+  this.generateShadows_ = generateshadows !== null ? JSON.parse(generateshadows) === true : false
   this.argumentIds_ = parseRequiredMutationJson(xmlElement, 'argumentids', parseStringArrayMutationValue)
   this.warp_ = parseRequiredMutationJson(xmlElement, 'warp', parseBooleanMutationValue)
   this.updateDisplay_()
