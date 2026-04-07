@@ -343,10 +343,10 @@ const GUIComponent = props => {
                         canChangeTheme={canChangeTheme}
                         canCreateCopy={canCreateCopy}
                         canCreateNew={canCreateNew}
-                        canEditTitle={canEditTitle}
+                        canEditTitle={canEditTitle && (!isReadOnly || !isShared)}
                         canManageFiles={canManageFiles}
                         canRemix={canRemix}
-                        canSave={canSave}
+                        canSave={canSave && (!isReadOnly || !isShared)}
                         canShare={canShare}
                         className={styles.menuBarPosition}
                         enableCommunity={enableCommunity}
