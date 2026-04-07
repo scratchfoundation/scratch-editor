@@ -351,6 +351,7 @@ const GUIComponent = props => {
                         className={styles.menuBarPosition}
                         enableCommunity={enableCommunity}
                         hasActiveMembership={hasActiveMembership}
+                        isReadOnly={isReadOnly}
                         isShared={isShared}
                         isTotallyNormal={isTotallyNormal}
                         logo={logo}
@@ -536,6 +537,7 @@ const GUIComponent = props => {
                             element="aside"
                         >
                             <StageWrapper
+                                isReadOnly={isReadOnly}
                                 isFullScreen={isFullScreen}
                                 isRendererSupported={isRendererSupported}
                                 isRtl={isRtl}

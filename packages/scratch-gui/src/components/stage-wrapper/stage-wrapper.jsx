@@ -17,6 +17,7 @@ const StageWrapperComponent = function (props) {
         ariaRole,
         isCreating,
         isFullScreen,
+        isReadOnly,
         isRtl,
         isRendererSupported,
         loading,
@@ -41,6 +42,7 @@ const StageWrapperComponent = function (props) {
         >
             <Box className={styles.stageMenuWrapper}>
                 <StageHeader
+                    isReadOnly={isReadOnly}
                     manuallySaveThumbnails={manuallySaveThumbnails}
                     username={username}
                     userOwnsProject={userOwnsProject}
@@ -73,6 +75,7 @@ StageWrapperComponent.propTypes = {
     ariaRole: PropTypes.string,
     isCreating: PropTypes.bool,
     isFullScreen: PropTypes.bool,
+    isReadOnly: PropTypes.bool,
     isRendererSupported: PropTypes.bool.isRequired,
     isRtl: PropTypes.bool.isRequired,
     loading: PropTypes.bool,

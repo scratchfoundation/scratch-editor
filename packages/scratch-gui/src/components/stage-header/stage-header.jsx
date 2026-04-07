@@ -82,6 +82,7 @@ const StageHeaderComponent = function (props) {
     const {
         isFullScreen,
         isPlayerOnly,
+        isReadOnly,
         manuallySaveThumbnails,
         loadingOrCreating,
         onKeyPress,
@@ -276,7 +277,7 @@ const StageHeaderComponent = function (props) {
                                     {[styles.stageButtonHighlighted]: isThumbnailTooltipOpen}
                                 )}
                                 onClick={onThumbnailPromptOpen}
-                                disabled={isUpdatingThumbnail}
+                                disabled={isUpdatingThumbnail || isReadOnly}
                                 componentRef={thumbnailButtonRef}
                             >
                                 <img
@@ -323,6 +324,7 @@ const StageHeaderComponent = function (props) {
 StageHeaderComponent.propTypes = {
     isFullScreen: PropTypes.bool.isRequired,
     isPlayerOnly: PropTypes.bool.isRequired,
+    isReadOnly: PropTypes.bool,
     manuallySaveThumbnails: PropTypes.bool,
     loadingOrCreating: PropTypes.bool,
     onKeyPress: PropTypes.func.isRequired,
