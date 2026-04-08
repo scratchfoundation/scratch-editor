@@ -14,6 +14,7 @@ const ModalWithArrow = ({
     align,
     layoutConfig,
     arrowConfig,
+    arrowStyle,
     modalContentStyle,
     modalOverlayStyle,
     title,
@@ -114,7 +115,7 @@ const ModalWithArrow = ({
                     src={arrowIcon}
                     alt=""
                     aria-hidden="true"
-                    className={styles.arrow}
+                    className={classNames(styles.arrow, arrowStyle)}
                     style={{
                         top: pos.arrowTop,
                         left: pos.arrowLeft,
@@ -149,6 +150,7 @@ ModalWithArrow.propTypes = {
         arrowRightIcon: PropTypes.string
     }).isRequired,
     children: PropTypes.node.isRequired,
+    arrowStyle: PropTypes.string,
     modalContentStyle: PropTypes.string,
     modalOverlayStyle: PropTypes.string,
     title: PropTypes.string
