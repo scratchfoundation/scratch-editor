@@ -66,6 +66,6 @@
 }
 
 .arrow {
-    z-index: $z-index-tooltip !important; /* otherwise it gets overridden in modal-with-arrow */
+    z-index: $z-index-tooltip;
 }
 
