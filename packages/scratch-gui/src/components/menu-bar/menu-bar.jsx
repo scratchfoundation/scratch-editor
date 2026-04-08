@@ -501,7 +501,7 @@ class MenuBar extends React.Component {
                                     </MenuSection>
                                     {(this.props.canSave || this.props.canCreateCopy || this.props.canRemix) && (
                                         <MenuSection>
-                                            {this.props.canSave && !this.props.isReadOnly && (
+                                            {this.props.canSave && (
                                                 <MenuItem onClick={this.handleClickSave}>
                                                     {saveNowMessage}
                                                 </MenuItem>
