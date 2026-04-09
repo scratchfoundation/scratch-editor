@@ -935,7 +935,6 @@ MenuBar.propTypes = {
     fileMenuOpen: PropTypes.bool,
     hasActiveMembership: PropTypes.bool,
     intl: intlShape,
-    isReadOnly: PropTypes.bool,
     isRtl: PropTypes.bool,
     isShared: PropTypes.bool,
     isShowingProject: PropTypes.bool,

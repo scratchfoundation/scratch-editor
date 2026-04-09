@@ -139,6 +139,7 @@ const GUIComponent = props => {
         canSave,
         canCreateCopy,
         canShare,
+        canUpdateThumbnail,
         canUseCloud,
         children,
         connectionModalVisible,
@@ -153,7 +154,6 @@ const GUIComponent = props => {
         isFetchingUserData,
         isFullScreen,
         isPlayerOnly,
-        isReadOnly,
         isRtl,
         isShared,
         isTelemetryEnabled,
@@ -351,7 +351,6 @@ const GUIComponent = props => {
                         className={styles.menuBarPosition}
                         enableCommunity={enableCommunity}
                         hasActiveMembership={hasActiveMembership}
-                        isReadOnly={isReadOnly}
                         isShared={isShared}
                         isTotallyNormal={isTotallyNormal}
                         logo={logo}
@@ -537,7 +536,6 @@ const GUIComponent = props => {
                             element="aside"
                         >
                             <StageWrapper
-                                isReadOnly={isReadOnly}
                                 isFullScreen={isFullScreen}
                                 isRendererSupported={isRendererSupported}
                                 isRtl={isRtl}
@@ -546,6 +544,7 @@ const GUIComponent = props => {
                                 vm={vm}
                                 ariaRole="region"
                                 ariaLabel={intl.formatMessage(ariaMessages.stage)}
+                                canUpdateThumbnail={canUpdateThumbnail}
                                 manuallySaveThumbnails={manuallySaveThumbnails}
                                 loading={loading}
                                 showNewFeatureCallouts={showNewFeatureCallouts}
@@ -600,6 +599,7 @@ GUIComponent.propTypes = {
     canRemix: PropTypes.bool,
     canSave: PropTypes.bool,
     canShare: PropTypes.bool,
+    canUpdateThumbnail: PropTypes.bool,
     canUseCloud: PropTypes.bool,
     cardsVisible: PropTypes.bool,
     children: PropTypes.node,
@@ -614,7 +614,6 @@ GUIComponent.propTypes = {
     isFetchingUserData: PropTypes.bool,
     isFullScreen: PropTypes.bool,
     isPlayerOnly: PropTypes.bool,
-    isReadOnly: PropTypes.bool,
     isRtl: PropTypes.bool,
     isShared: PropTypes.bool,
     isTotallyNormal: PropTypes.bool,
