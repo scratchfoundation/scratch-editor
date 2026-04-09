@@ -144,6 +144,55 @@ describe('skipArgumentReporters_ — XML round-trip', () => {
 })
 
 // ---------------------------------------------------------------------------
+// Procedure call block mutation round-trip (generateshadows tolerance)
+// ---------------------------------------------------------------------------
+
+describe('procedure call mutation round-trip', () => {
+  it('deserializing a call block without generateshadows does not throw', () => {
+    // When dragging a procedure call from the flyout, Blockly serializes the
+    // block (via callerMutationToDom, which omits generateshadows) then
+    // deserializes the copy (via callerDomToMutation). Previously
+    // callerDomToMutation required generateshadows, causing a crash.
+    expect(() =>
+      loadXml(`
+        <xml>
+          <block type="procedures_definition">
+            <statement name="custom_block">
+              <block type="procedures_prototype">
+                <mutation
+                  proccode="test %s"
+                  argumentids='["arg1"]'
+                  argumentnames='["x"]'
+                  argumentdefaults='[""]'
+                  warp="false">
+                </mutation>
+                <value name="arg1">
+                  <block type="argument_reporter_string_number">
+                    <field name="VALUE">x</field>
+                  </block>
+                </value>
+              </block>
+            </statement>
+          </block>
+          <block type="procedures_call">
+            <mutation
+              proccode="test %s"
+              argumentids='["arg1"]'
+              warp="false">
+            </mutation>
+          </block>
+        </xml>
+      `)
+    ).not.toThrow()
+
+    const callBlock = workspace.getAllBlocks(false).find((b) => b.type === 'procedures_call')
+    assert(callBlock, 'Expected procedures_call block')
+    // Without the generateshadows attribute, it should default to false.
+    expect((callBlock as any).generateShadows_).toBe(false)
+  })
+})
+
+// ---------------------------------------------------------------------------
 // PR #3492: context menu delegation
 // ---------------------------------------------------------------------------
 
