@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <mask id="myMask">
+            <rect fill="white" />
+        </mask>
+    </defs>
+
+    <!-- Custom namespace prefixes for href: blocked by DOMPurify's attribute whitelist -->
+    <image xmlns:abc="http://example.com/ns" abc:href="https://example.com/abc-href" />
+    <image xmlns:foo="http://example.com/ns" foo:href="https://example.com/foo-href" />
+
+    <!-- xlink namespace rebound to a different prefix -->
+    <image xmlns:notxlink="http://www.w3.org/1999/xlink" notxlink:href="https://example.com/notxlink-href" />
+
+    <!-- src is not in DOMPurify's SVG allowed attributes -->
+    <image src="https://example.com/image-src" />
+
+    <!-- xml:base could change how relative URLs resolve -->
+    <g xml:base="https://example.com/base">
+        <image href="#internal" />
+    </g>
+
+    <!-- xmlns declarations should be preserved -->
+    <rect fill="red" />
+</svg>

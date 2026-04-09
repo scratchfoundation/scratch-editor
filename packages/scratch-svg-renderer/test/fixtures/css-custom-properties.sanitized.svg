@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <mask id="myMask">
+            <rect fill="white"></rect>
+        </mask>
+    </defs>
+
+    <style>:root{}.attack{background-image:var(--external-url)!important}:root{--internal-ref: url(#myMask)}.safe{mask:var(--internal-ref)}:root{--data-url: url(data:image/png;base64,iVBORw0KGgo=)}</style>
+
+    <rect class="safe" fill="red"></rect>
+</svg>
