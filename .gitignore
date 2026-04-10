@@ -3,6 +3,9 @@
 /monorepo.tmp
 /monorepo.cache
 
+# add-repo.sh
+/add-repo.tmp
+
 # Logs
 logs
 *.log

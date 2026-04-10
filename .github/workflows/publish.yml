@@ -192,11 +192,7 @@ jobs:
         run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/task-herder
 
       - name: Publish scratch-media-lib-scripts
-        run: |
-          npm run build --workspace @scratch/scratch-media-lib-scripts
-          npm publish --access=public --tag="$NPM_TAG" --workspace=@scratch/scratch-media-lib-scripts
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-media-lib-scripts
 
       - name: Push to Develop
         shell: bash
