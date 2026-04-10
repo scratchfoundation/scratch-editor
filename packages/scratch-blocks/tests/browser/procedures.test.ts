@@ -182,7 +182,7 @@ describe('procedure call mutation round-trip', () => {
             </mutation>
           </block>
         </xml>
-      `)
+      `),
     ).not.toThrow()
 
     const callBlock = workspace.getAllBlocks(false).find((b) => b.type === 'procedures_call')
