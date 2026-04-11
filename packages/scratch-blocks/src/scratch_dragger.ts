@@ -59,9 +59,12 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
    * @param event The event that triggered this call.
    * @param totalDelta The change in pointer position since the last invocation.
    */
-  onDrag(event: PointerEvent, totalDelta: Blockly.utils.Coordinate) {
-    super.onDrag(event, totalDelta)
+  override onDrag(event: PointerEvent, totalDelta: Blockly.utils.Coordinate) {
+    // Update out-of-bounds state BEFORE the base onDrag so that
+    // wouldDeleteDraggable (called by super.onDrag to set the delete
+    // cursor) sees the current draggedOutOfBounds value.
     this.updateOutOfBoundsState(event)
+    super.onDrag(event, totalDelta)
   }
 
   /**
@@ -84,6 +87,11 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
    * @param event The event that ended the drag.
    */
   onDragEnd(event: PointerEvent) {
+    // Update out-of-bounds state BEFORE any wouldDeleteDraggable checks
+    // so the override sees the position from the pointerup event, not
+    // the last pointermove (which could be stale if the user moved fast).
+    this.updateOutOfBoundsState(event)
+
     // When the prototype block is dragged (via its DelegateToParentDraggable
     // strategy), this.draggable is the prototype, but getDragRoot returns the
     // definition. Handle both cases for the "procedure is in use" check.
@@ -108,8 +116,6 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
     }
 
     super.onDragEnd(event)
-
-    this.updateOutOfBoundsState(event)
     if (this.draggable instanceof Blockly.BlockSvg) {
       const event = new BlockDragEnd(this.getDragRoot(this.draggable) as Blockly.BlockSvg, this.draggedOutOfBounds)
       Blockly.Events.fire(event)
@@ -127,6 +133,21 @@ export class ScratchDragger extends Blockly.dragging.Dragger {
       }
     }
     this.workspace.removeClass(BOUNDLESS_CLASS)
+  }
+
+  /**
+   * Returns whether or not the dragged item would be deleted if dropped at
+   * the current location. When a block is dragged outside the workspace
+   * bounds (e.g. onto the backpack or a different sprite), the GUI handles
+   * the drop — the flyout should not delete the block even if the pointer
+   * happens to overlap the flyout's bounding rect.
+   * @param event The drag event that triggered this check.
+   * @param rootDraggable The topmost item being dragged.
+   * @returns True if the draggable would be deleted.
+   */
+  override wouldDeleteDraggable(event: PointerEvent, rootDraggable: Blockly.IDraggable & Blockly.IDeletable) {
+    if (this.draggedOutOfBounds) return false
+    return super.wouldDeleteDraggable(event, rootDraggable)
   }
 
   /**

@@ -1221,6 +1221,18 @@ const styles = `
     width: 100%;
     height: 100%;
   }
+
+  /* Prevent children of the drag surface from intercepting pointer
+     events. Blockly's field elements set pointer-events:auto for
+     click/edit interactions, but during a drag, Blockly's gesture
+     handler binds pointermove/pointerup on document so the dragged
+     block does not need to receive pointer events. Without this rule,
+     the field elements steal hover and pointer events from elements
+     underneath the dragged block (e.g. sprite selector tiles, the
+     backpack drop target). */
+  .blocklyBlockDragSurface * {
+    pointer-events: none;
+  }
 `
 
 Blockly.Css.register(styles)
