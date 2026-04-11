@@ -52,7 +52,12 @@ module.exports = defineConfig({
         },
         {
             name: 'firefox',
-            use: {...devices['Desktop Firefox']}
+            use: {
+                ...devices['Desktop Firefox'],
+                // Firefox's built-in headless mode doesn't support WebGL,
+                // which Scratch requires. Run headed under xvfb in CI.
+                headless: false
+            }
         }
     ]
 });

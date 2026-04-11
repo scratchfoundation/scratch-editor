@@ -25,9 +25,14 @@ runs:
       env:
         TAP_REPORTER: "junit"
         TAP_REPORTER_FILE: "test-results/junit.xml"
+      # xvfb-run provides a virtual display for browsers that need one.
+      # Firefox's non-headless mode (used because headless Firefox lacks
+      # WebGL support) requires an X server, and xvfb fills that role
+      # on the headless CI runner. Chromium doesn't need it but works
+      # fine under xvfb too.
       run: |
         mkdir -p test-results
-        npm run test
+        xvfb-run --auto-servernum npm run test
     - name: Store Test Results
       if: ${{ !cancelled() }}
       uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
