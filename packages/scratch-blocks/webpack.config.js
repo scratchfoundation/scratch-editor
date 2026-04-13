@@ -33,7 +33,7 @@ const config = {
   },
   // Enable webpack-dev-server to get hot refresh of the app.
   devServer: {
-    static: './build',
+    static: './dist',
   },
   devtool: /** @type {Configuration["devtool"]} */ (false),
   ignoreWarnings: /** @type {Configuration["ignoreWarnings"]} */ ([]),
@@ -44,10 +44,6 @@ const config = {
  */
 module.exports = (env, argv) => {
   if (argv.mode === 'development') {
-    // Set the output path to the `build` directory
-    // so we don't clobber production builds.
-    config.output.path = path.resolve(__dirname, 'build')
-
     // Generate source maps for our code for easier debugging.
     // Not suitable for production builds. If you want source maps in
     // production, choose a different one from https://webpack.js.org/configuration/devtool

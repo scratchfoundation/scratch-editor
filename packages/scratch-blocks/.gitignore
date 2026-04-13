@@ -9,7 +9,6 @@ npm-*
 .vscode
 
 # Build output
-/build
 /dist
 
 # Locale message files (all locales except English are generated)
