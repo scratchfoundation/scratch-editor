@@ -73,7 +73,7 @@
     "docdash": "0.4.0",
     "eslint": "9.39.4",
     "eslint-config-scratch": "14.1.6",
-    "globals": "16.5.0",
+    "globals": "17.4.0",
     "html-webpack-plugin": "5.6.6",
     "playwright-chromium": "1.59.1",
     "scratch-render-fonts": "1.0.252",

@@ -65,7 +65,7 @@
     "copy-webpack-plugin": "6.4.1",
     "eslint": "9.39.4",
     "eslint-config-scratch": "14.1.6",
-    "globals": "16.5.0",
+    "globals": "17.4.0",
     "jsdom": "13.2.0",
     "mkdirp": "2.1.6",
     "rimraf": "3.0.2",
