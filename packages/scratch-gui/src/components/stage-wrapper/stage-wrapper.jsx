@@ -21,6 +21,8 @@ const StageWrapperComponent = function (props) {
         isRendererSupported,
         loading,
         manuallySaveThumbnails,
+        onSetManualThumbnail,
+        onSetManualThumbnailButtonClick,
         onUpdateProjectThumbnail,
         username,
         userOwnsProject,
@@ -42,6 +44,8 @@ const StageWrapperComponent = function (props) {
             <Box className={styles.stageMenuWrapper}>
                 <StageHeader
                     manuallySaveThumbnails={manuallySaveThumbnails}
+                    onSetManualThumbnail={onSetManualThumbnail}
+                    onSetManualThumbnailButtonClick={onSetManualThumbnailButtonClick}
                     username={username}
                     userOwnsProject={userOwnsProject}
                     loadingOrCreating={loading || isCreating}
@@ -77,6 +81,8 @@ StageWrapperComponent.propTypes = {
     isRtl: PropTypes.bool.isRequired,
     loading: PropTypes.bool,
     manuallySaveThumbnails: PropTypes.bool,
+    onSetManualThumbnail: PropTypes.func,
+    onSetManualThumbnailButtonClick: PropTypes.func,
     showNewFeatureCallouts: PropTypes.bool,
     username: PropTypes.string,
     userOwnsProject: PropTypes.bool,
