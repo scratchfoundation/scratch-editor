@@ -63,7 +63,6 @@
     "@scratch/scratch-render": "13.6.4",
     "@scratch/scratch-svg-renderer": "13.6.4",
     "@vernier/godirect": "1.8.3",
-    "arraybuffer-loader": "1.0.8",
     "atob": "2.1.2",
     "btoa": "1.2.1",
     "canvas-toBlob": "1.0.0",
