@@ -763,6 +763,7 @@ class Blocks {
                 if (shadow && e.id !== shadow) {
                     oldParent.inputs[e.oldInput].block = shadow;
                     this._blocks[shadow].parent = oldParent.id;
+                    this._blocks[e.id].parent = null;
                 } else {
                     oldParent.inputs[e.oldInput].block = null;
                     if (e.id !== shadow) {
