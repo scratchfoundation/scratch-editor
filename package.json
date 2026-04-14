@@ -42,7 +42,7 @@
     "@commitlint/cli": "17.8.1",
     "@commitlint/config-conventional": "17.8.1",
     "cross-env": "7.0.3",
-    "globals": "16.5.0",
+    "globals": "17.4.0",
     "husky": "8.0.3",
     "npm": "10.9.8",
     "ts-node": "10.9.2"
