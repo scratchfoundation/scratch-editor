@@ -117,6 +117,50 @@ describe('clearWorkspaceAndLoadFromXml — isLocal and isCloud preservation', ()
     expect(global_.isCloud).toBe(false)
   })
 
+  it('wraps domToWorkspace errors with top-level element context', () => {
+    // A top-level <shadow> will cause Blockly to throw.
+    const xml = parseXml(`
+      <xml>
+        <shadow type="looks_costume" id="badShadow" x="0" y="0"></shadow>
+      </xml>
+    `)
+
+    let caught: unknown
+    try {
+      clearWorkspaceAndLoadFromXml(xml, workspace)
+    } catch (e) {
+      caught = e
+    }
+    expect(caught).toBeDefined()
+    expect((caught as Error).message).toMatch(/Failed to load workspace XML/)
+    expect((caught as Error).message).toMatch(/badShadow/)
+  })
+
+  it('closes the event group and re-enables resizes after a load failure', () => {
+    const xml = parseXml(`
+      <xml>
+        <shadow type="looks_costume" id="badShadow" x="0" y="0"></shadow>
+      </xml>
+    `)
+
+    try {
+      clearWorkspaceAndLoadFromXml(xml, workspace)
+    } catch (_e) {
+      // expected
+    }
+
+    // The event group opened by clearWorkspaceAndLoadFromXml should be closed.
+    // Firing an event outside of a group verifies that setGroup(false) was called.
+    // If the group were still open, this event would be part of it.
+    const event = new (Blockly.Events.get(Blockly.Events.VAR_CREATE))(
+      workspace.getVariableMap().createVariable('testVar', '', 'testId'),
+    )
+    expect(event.group).toBeFalsy()
+
+    // Resizes should be re-enabled after a load failure.
+    expect((workspace as unknown as { resizesEnabled: boolean }).resizesEnabled).toBe(true)
+  })
+
   it('clears the existing workspace before loading', () => {
     // Pre-load a variable.
     workspace.getVariableMap().createVariable('old', '', 'oldId')

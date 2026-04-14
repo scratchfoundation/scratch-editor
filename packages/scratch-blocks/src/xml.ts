@@ -36,8 +36,29 @@ export function clearWorkspaceAndLoadFromXml(xml: Element, workspace: Blockly.Wo
   xml.querySelector('variables')?.remove()
 
   // Defer to core for the rest of the deserialization.
-  const blockIds = Blockly.Xml.domToWorkspace(xml, workspace)
+  let blockIds: string[]
+  try {
+    blockIds = Blockly.Xml.domToWorkspace(xml, workspace)
+  } catch (error) {
+    const context =
+      Array.from(xml.children)
+        .map((el) => {
+          const type = el.getAttribute('type')
+          const id = el.getAttribute('id')
+          const attrs = [...(type ? [`type=${type}`] : []), ...(id ? [`id=${id}`] : [])]
+          return attrs.length ? `${el.tagName}[${attrs.join(', ')}]` : el.tagName
+        })
+        .join(', ') || '(none)'
+    const message = error instanceof Error ? error.message : String(error)
+    const wrapped = new Error(
+      `Failed to load workspace XML (${message}). Top-level elements: ${context}`,
+    ) as Error & { cause?: unknown }
+    wrapped.cause = error
+    throw wrapped
+  } finally {
+    Blockly.Events.setGroup(false)
+    workspace.setResizesEnabled(true)
+  }
 
-  workspace.setResizesEnabled(true)
   return blockIds
 }
