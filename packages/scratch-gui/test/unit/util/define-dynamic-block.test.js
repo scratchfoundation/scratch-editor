@@ -70,11 +70,8 @@ class MockBlock {
     jsonInit (json) {
         this.result = Object.assign({}, json);
     }
-    interpolate_ () {
+    interpolate () {
         // TODO: add tests for this?
-    }
-    setCheckboxInFlyout (isEnabled) {
-        this.result.checkboxInFlyout_ = isEnabled;
     }
     setOutput (isEnabled) {
         this.result.outputConnection = isEnabled; // Blockly calls `makeConnection_` here
@@ -89,6 +86,27 @@ class MockBlock {
         this.result.previousConnection = isEnabled; // Blockly calls `makeConnection_` here
     }
 }
+
+describe('defineDynamicBlock Blockly API contract', () => {
+    // These tests verify that the Blockly Block methods used by
+    // defineDynamicBlock actually exist on the scratch-blocks export.
+    // If Blockly renames or removes an API, these will fail before
+    // production does.
+    let BlockProto;
+    beforeAll(() => {
+        // eslint-disable-next-line global-require
+        BlockProto = require('scratch-blocks').Block.prototype;
+    });
+
+    test('Block methods used in domToMutation exist', () => {
+        expect(typeof BlockProto.jsonInit).toBe('function');
+        expect(typeof BlockProto.setOutput).toBe('function');
+        expect(typeof BlockProto.setOutputShape).toBe('function');
+        expect(typeof BlockProto.setPreviousStatement).toBe('function');
+        expect(typeof BlockProto.setNextStatement).toBe('function');
+        expect(typeof BlockProto.interpolate).toBe('function');
+    });
+});
 
 describe('defineDynamicBlock', () => {
     test('is a function', () => {
@@ -142,7 +160,6 @@ describe('defineDynamicBlock', () => {
         expect(block.result).toEqual({
             category: categoryInfo.name,
             style: categoryInfo.id,
-            checkboxInFlyout_: true,
             // extensions: undefined, // no icon means no extension
             inputsInline: true,
             // nextConnection: undefined, // reporter
@@ -151,6 +168,7 @@ describe('defineDynamicBlock', () => {
             // previousConnection: undefined, // reporter
             type: extendedOpcode
         });
+        expect(block.checkboxInFlyout).toBe(true);
     });
     test('can define a Boolean', () => {
         const extendedOpcode = 'test.boolean';

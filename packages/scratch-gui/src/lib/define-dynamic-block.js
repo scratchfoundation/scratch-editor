@@ -62,7 +62,7 @@ const defineDynamicBlock = (ScratchBlocks, categoryInfo, staticBlockInfo, extend
             this.setOutput(true);
             this.setOutputShape(ScratchBlocks.OUTPUT_SHAPE_ROUND);
             if (!blockInfo.disableMonitor) {
-                this.setCheckboxInFlyout(true);
+                this.checkboxInFlyout = true;
             }
             break;
         case BlockType.BOOLEAN:
@@ -93,7 +93,7 @@ const defineDynamicBlock = (ScratchBlocks, categoryInfo, staticBlockInfo, extend
             }
             return `%${++argCount}`;
         });
-        this.interpolate_(scratchBlocksStyleText, args);
+        this.interpolate(scratchBlocksStyleText, args);
     }
 });
 
