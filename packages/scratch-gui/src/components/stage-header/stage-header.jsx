@@ -66,8 +66,8 @@ const messages = defineMessages({
         id: 'gui.stageHeader.thumbnailTooltipTitle'
     },
     thumbnailTooltipBody: {
-        defaultMessage: 'The <b>"Set Thumbnail"</b> has a new spot. The way it works is by ' +
-            'taking a snapshot of your canvas and setting it as your project thumbnail.',
+        defaultMessage: '<b>"Set Thumbnail"</b> has a new spot. It works by ' +
+            'taking a snapshot of your stage and setting it as your project thumbnail.',
         description: 'Body text for the thumbnail tooltip',
         id: 'gui.stageHeader.thumbnailTooltipBody'
     },
