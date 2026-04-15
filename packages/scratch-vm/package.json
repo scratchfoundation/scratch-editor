@@ -109,7 +109,7 @@
     "stats.js": "0.17.0",
     "tap": "21.6.3",
     "tiny-worker": "2.3.0",
-    "typedoc": "0.28.18",
+    "typedoc": "0.28.19",
     "webpack": "5.106.1",
     "webpack-cli": "4.10.0",
     "webpack-dev-server": "5.2.3"
