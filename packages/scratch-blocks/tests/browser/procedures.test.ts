@@ -193,6 +193,151 @@ describe('procedure call mutation round-trip', () => {
 })
 
 // ---------------------------------------------------------------------------
+// Legacy project XML tolerance (scratchfoundation/scratch-editor#532)
+//
+// Older saved projects may omit mutation attributes that the current serializer
+// always writes. Treating every attribute as required breaks loading of
+// projects that predate (or selectively elide) those attributes. `proccode`
+// and the argument arrays (`argumentids`, `argumentnames`, `argumentdefaults`)
+// stay required: `proccode` is the block's identity, and the argument arrays'
+// lengths must match the proccode token count and each other, so silently
+// defaulting any of them to `[]` would turn an N-arg procedure into a 0-arg
+// block. `warp` is the one attribute recoverable with a sane default (`false`).
+// ---------------------------------------------------------------------------
+
+describe('legacy mutation tolerance', () => {
+  it('procedures_prototype mutation without warp loads with warp=false', () => {
+    expect(() =>
+      loadXml(`
+        <xml>
+          <block type="procedures_definition">
+            <statement name="custom_block">
+              <block type="procedures_prototype">
+                <mutation
+                  proccode="test %s"
+                  argumentids='["arg1"]'
+                  argumentnames='["x"]'
+                  argumentdefaults='[""]'>
+                </mutation>
+                <value name="arg1">
+                  <block type="argument_reporter_string_number">
+                    <field name="VALUE">x</field>
+                  </block>
+                </value>
+              </block>
+            </statement>
+          </block>
+        </xml>
+      `),
+    ).not.toThrow()
+
+    const proto = workspace.getAllBlocks(false).find((b) => b.type === 'procedures_prototype')
+    assert(proto, 'Expected procedures_prototype block')
+    expect((proto as any).warp_).toBe(false)
+  })
+
+  it('procedures_call mutation without warp loads with warp=false', () => {
+    expect(() =>
+      loadXml(`
+        <xml>
+          <block type="procedures_call">
+            <mutation
+              proccode="test %s"
+              argumentids='["arg1"]'>
+            </mutation>
+          </block>
+        </xml>
+      `),
+    ).not.toThrow()
+
+    const callBlock = workspace.getAllBlocks(false).find((b) => b.type === 'procedures_call')
+    assert(callBlock, 'Expected procedures_call block')
+    expect((callBlock as any).warp_).toBe(false)
+  })
+
+  it('procedures_prototype mutation without proccode still throws', () => {
+    // proccode is the block's identity and cannot be defaulted.
+    expect(() =>
+      loadXml(`
+        <xml>
+          <block type="procedures_definition">
+            <statement name="custom_block">
+              <block type="procedures_prototype">
+                <mutation warp="false"></mutation>
+              </block>
+            </statement>
+          </block>
+        </xml>
+      `),
+    ).toThrow(/proccode/)
+  })
+
+  // argumentids/argumentnames/argumentdefaults have a structural invariant:
+  // their lengths must equal the %s/%n/%b token count in proccode. Silently
+  // defaulting any of them to [] would turn an N-arg procedure into a 0-arg
+  // block, so keep them required and surface the problem loudly.
+  it('procedures_prototype mutation without argumentids still throws', () => {
+    expect(() =>
+      loadXml(`
+        <xml>
+          <block type="procedures_definition">
+            <statement name="custom_block">
+              <block type="procedures_prototype">
+                <mutation proccode="test %s" argumentnames='["x"]' argumentdefaults='[""]' warp="false"></mutation>
+              </block>
+            </statement>
+          </block>
+        </xml>
+      `),
+    ).toThrow(/argumentids/)
+  })
+
+  it('procedures_prototype mutation without argumentnames still throws', () => {
+    expect(() =>
+      loadXml(`
+        <xml>
+          <block type="procedures_definition">
+            <statement name="custom_block">
+              <block type="procedures_prototype">
+                <mutation proccode="test %s" argumentids='["arg1"]' argumentdefaults='[""]' warp="false"></mutation>
+              </block>
+            </statement>
+          </block>
+        </xml>
+      `),
+    ).toThrow(/argumentnames/)
+  })
+
+  it('procedures_prototype mutation without argumentdefaults still throws', () => {
+    expect(() =>
+      loadXml(`
+        <xml>
+          <block type="procedures_definition">
+            <statement name="custom_block">
+              <block type="procedures_prototype">
+                <mutation proccode="test %s" argumentids='["arg1"]' argumentnames='["x"]' warp="false"></mutation>
+              </block>
+            </statement>
+          </block>
+        </xml>
+      `),
+    ).toThrow(/argumentdefaults/)
+  })
+
+  it('procedures_call mutation without argumentids still throws', () => {
+    expect(() =>
+      loadXml(`
+        <xml>
+          <block type="procedures_call">
+            <mutation proccode="test %s" warp="false"></mutation>
+          </block>
+        </xml>
+      `),
+    ).toThrow(/argumentids/)
+  })
+})
+
+// ---------------------------------------------------------------------------
 // PR #3492: context menu delegation
 // ---------------------------------------------------------------------------
 
