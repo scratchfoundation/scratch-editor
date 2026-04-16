@@ -98,6 +98,38 @@ function parseRequiredMutationJson<T>(
 }
 
 /**
+ * Parse an optional mutation attribute as JSON, returning a fallback when the
+ * attribute is absent. Use this only for attributes that can be safely
+ * defaulted in isolation, without invalidating structural invariants that
+ * relate them to other attributes on the same mutation. A present-but-malformed
+ * attribute still throws, since that indicates corruption rather than an older
+ * schema.
+ * @param xmlElement The mutation element that may contain the attribute.
+ * @param name The specific mutation attribute to retrieve and parse.
+ * @param parse Validates and narrows the parsed JSON value.
+ * @param fallback Value to return when the attribute is absent.
+ * @returns Parsed and validated mutation attribute value, or `fallback`.
+ */
+function parseOptionalMutationJson<T>(
+  xmlElement: Element,
+  name: string,
+  parse: (value: unknown, name: string) => T,
+  fallback: T,
+): T {
+  const rawValue = xmlElement.getAttribute(name)
+  if (rawValue === null) {
+    return fallback
+  }
+  let parsedValue: unknown
+  try {
+    parsedValue = JSON.parse(rawValue)
+  } catch {
+    throw new Error(`Invalid JSON in mutation attribute: ${name}`)
+  }
+  return parse(parsedValue, name)
+}
+
+/**
  * Validate a parsed mutation value as a boolean.
  * @param value Parsed mutation value.
  * @param name Attribute name used in error messages.
@@ -277,7 +309,7 @@ function callerDomToMutation(this: ProcedureCallBlock, xmlElement: Element) {
   const generateshadows = xmlElement.getAttribute('generateshadows')
   this.generateShadows_ = generateshadows !== null ? JSON.parse(generateshadows) === true : false
   this.argumentIds_ = parseRequiredMutationJson(xmlElement, 'argumentids', parseStringArrayMutationValue)
-  this.warp_ = parseRequiredMutationJson(xmlElement, 'warp', parseBooleanMutationValue)
+  this.warp_ = parseOptionalMutationJson(xmlElement, 'warp', parseBooleanMutationValue, false)
   this.updateDisplay_()
 }
 
@@ -312,7 +344,7 @@ function definitionMutationToDom(
  */
 function definitionDomToMutation(this: ProcedurePrototypeBlock | ProcedureDeclarationBlock, xmlElement: Element) {
   this.procCode_ = getRequiredMutationAttribute(xmlElement, 'proccode')
-  this.warp_ = parseRequiredMutationJson(xmlElement, 'warp', parseBooleanMutationValue)
+  this.warp_ = parseOptionalMutationJson(xmlElement, 'warp', parseBooleanMutationValue, false)
 
   const prevArgIds = this.argumentIds_
   const prevDisplayNames = this.displayNames_
