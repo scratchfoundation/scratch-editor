@@ -57,9 +57,7 @@
     "@scratch/scratch-svg-renderer": "13.6.9",
     "grapheme-breaker": "0.3.2",
     "hull.js": "0.2.10",
-    "ify-loader": "1.1.0",
     "linebreak": "0.3.0",
-    "raw-loader": "0.5.1",
     "tslog": "4.10.2",
     "twgl.js": "4.24.0"
   },
@@ -73,9 +71,11 @@
     "docdash": "0.4.0",
     "eslint": "9.39.4",
     "eslint-config-scratch": "14.1.6",
+    "ify-loader": "1.1.0",
     "globals": "16.5.0",
     "html-webpack-plugin": "5.6.6",
     "playwright-chromium": "1.59.1",
+    "raw-loader": "0.5.1",
     "scratch-render-fonts": "1.0.252",
     "scratch-semantic-release-config": "4.0.1",
     "scratch-storage": "6.2.1",
@@ -89,6 +89,16 @@
     "webpack-dev-server": "5.2.3"
   },
   "peerDependencies": {
+    "ify-loader": "^1.0.0",
+    "raw-loader": ">=0.5.0",
     "scratch-render-fonts": "^1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ify-loader": {
+      "optional": true
+    },
+    "raw-loader": {
+      "optional": true
+    }
   }
 }

@@ -51,7 +51,6 @@
   },
   "dependencies": {
     "base64-js": "1.5.1",
-    "base64-loader": "1.0.0",
     "css-tree": "3.2.1",
     "fastestsmallesttextencoderdecoder": "1.0.22",
     "isomorphic-dompurify": "2.36.0",
