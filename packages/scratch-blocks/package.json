@@ -51,7 +51,7 @@
     "ts-loader": "9.5.7",
     "typescript": "5.9.3",
     "vitest": "4.1.4",
-    "webpack": "5.106.1",
+    "webpack": "5.106.2",
     "webpack-cli": "6.0.1",
     "webpack-dev-server": "5.2.3"
   },
