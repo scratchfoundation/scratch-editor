@@ -20,6 +20,27 @@ function isCheckboxIcon(icon: Blockly.IIcon | undefined): icon is Blockly.IIcon 
   return !!icon && typeof (icon as { setChecked?: unknown }).setChecked === 'function'
 }
 
+/**
+ * Recursively strip `id` properties from a serialized block state tree
+ * so that every block (including shadows and nested inputs) gets a fresh
+ * ID when deserialized onto the workspace.
+ * @param state A serialized block state object.
+ */
+function stripIds(state: Blockly.serialization.blocks.State): void {
+  delete state.id
+  if (state.inputs) {
+    for (const inputName in state.inputs) {
+      const conn = state.inputs[inputName]
+      if (conn.shadow) stripIds(conn.shadow)
+      if (conn.block) stripIds(conn.block)
+    }
+  }
+  if (state.next) {
+    if (state.next.shadow) stripIds(state.next.shadow)
+    if (state.next.block) stripIds(state.next.block)
+  }
+}
+
 export class CheckableContinuousFlyout extends ContinuousFlyout {
   declare protected tabWidth_: number
   declare MARGIN: number
@@ -44,11 +65,12 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
    */
   protected serializeBlock(block: Blockly.BlockSvg) {
     const json = super.serializeBlock(block)
-    // Delete the serialized block's ID so that a new one is generated when it is
-    // placed on the workspace. Otherwise, the block on the workspace may be
-    // indistinguishable from the one in the flyout, which can cause reporter blocks
-    // to have their value dropdown shown in the wrong place.
-    delete json.id
+    // Strip all IDs so every block in the tree (including shadows) gets a
+    // fresh ID when placed on the workspace. Without this, disposed shadows
+    // from a previous copy can reuse the flyout's IDs, causing two workspace
+    // blocks to share the same shadow in the VM. Deleting one then destroys
+    // the other's shadow (bug 878291).
+    stripIds(json)
     return json
   }
 

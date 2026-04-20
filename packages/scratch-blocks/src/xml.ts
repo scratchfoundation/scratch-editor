@@ -5,6 +5,75 @@
 import * as Blockly from 'blockly/core'
 import { ScratchVariableModel } from './scratch_variable_model'
 
+// Blockly's blockToDom has a bug where the `empty` flag for an input's
+// container element is only set to false when a non-shadow target block
+// exists. If a connection has shadow DOM but no target block (which can
+// happen transiently during connect/disconnect operations or if shadow
+// respawn fails), the shadow clone IS appended to the <value> container
+// but the container is never appended to the output because `empty`
+// stays true. This causes the input to silently disappear from the XML,
+// which corrupts the VM's block representation on the next save/load.
+//
+// We fix this by wrapping blockToDom: after the original runs, we check
+// each value/statement input. If the connection has shadow state but the
+// output XML is missing the corresponding <value>/<statement> element,
+// we serialize the shadow ourselves and inject it.
+const originalBlockToDom = Blockly.Xml.blockToDom.bind(Blockly.Xml)
+
+Blockly.Xml.blockToDom = function blockToDomFixed(
+  block: Blockly.Block,
+  opt_noId?: boolean,
+): Element | DocumentFragment {
+  const result = originalBlockToDom(block, opt_noId)
+  if (!(result instanceof Element)) return result
+
+  for (const input of block.inputList) {
+    if (!input.connection) continue
+
+    const name = input.name
+    // Check if this input already appears in the serialized XML.
+    // Use localName for case-insensitive comparison across DOM implementations.
+    const alreadySerialized = Array.from(result.children).some((child) => {
+      const tag = child.localName
+      return (tag === 'value' || tag === 'statement') && child.getAttribute('name') === name
+    })
+    if (alreadySerialized) continue
+
+    // The input is missing from the XML. Check if there's shadow state
+    // that should have been included.
+    if (!input.connection.getShadowState()) continue
+
+    // If shadow DOM is still available on the connection, clone that DOM
+    // into a new container and append it to the serialized output.
+    const existingShadowDom = input.connection.getShadowDom()
+    if (existingShadowDom) {
+      const tagName = input.type === Blockly.inputs.inputTypes.VALUE ? 'value' : 'statement'
+      const doc = result.ownerDocument
+      const container = doc.createElementNS(result.namespaceURI, tagName)
+      container.setAttribute('name', name)
+      const importedShadow = doc.importNode(existingShadowDom, true)
+      if (opt_noId) {
+        importedShadow.removeAttribute('id')
+        for (const el of importedShadow.querySelectorAll('[id]')) {
+          el.removeAttribute('id')
+        }
+      }
+      container.appendChild(importedShadow)
+      result.appendChild(container)
+      console.warn(
+        `[scratch-blocks] blockToDom fix: recovered missing input "${name}" on ${block.type} (${block.id})`,
+      )
+    } else {
+      console.warn(
+        `[scratch-blocks] blockToDom fix: input "${name}" on ${block.type} (${block.id}) has shadow state` +
+          ` but no shadow DOM — cannot recover`,
+      )
+    }
+  }
+
+  return result
+}
+
 /**
  * Clears the workspace and loads the given serialized state.
  * @param xml XML representation of a Blockly workspace.
