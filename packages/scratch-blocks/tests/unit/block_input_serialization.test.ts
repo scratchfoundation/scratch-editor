@@ -20,7 +20,7 @@ import '../../src/xml'
  * with `inputs: {}` in the saved project.
  */
 
-const BLOCK_TYPES = ['test_set_variable', 'test_text_shadow', 'test_reporter']
+const BLOCK_TYPES = ['test_set_variable', 'test_text_shadow', 'test_reporter', 'test_math_shadow', 'test_add']
 
 /**
  * Returns a block's named input, asserting that it exists.
@@ -66,11 +66,27 @@ beforeEach(() => {
       message0: 'answer',
       output: 'String',
     },
+    {
+      type: 'test_math_shadow',
+      message0: '%1',
+      args0: [{ type: 'field_number', name: 'NUM' }],
+      output: 'Number',
+    },
+    {
+      type: 'test_add',
+      message0: '%1 + %2',
+      args0: [
+        { type: 'input_value', name: 'NUM1' },
+        { type: 'input_value', name: 'NUM2' },
+      ],
+      output: 'Number',
+    },
   ])
   workspace = new Blockly.Workspace()
 })
 
 afterEach(() => {
+  vi.restoreAllMocks()
   workspace.dispose()
   for (const t of BLOCK_TYPES) {
     delete Blockly.Blocks[t]
@@ -144,35 +160,96 @@ describe('block input serialization round-trip', () => {
     block.dispose()
   })
 
-  it('flyout copy path: JSON save -> delete id -> append preserves shadow', () => {
-    const flyoutBlock = createTestBlock({
-      ...SHADOW_INPUT_STATE,
-      id: 'flyout-template',
-    })
+  it('flyout copy path: JSON save -> strip ids -> append preserves nested shadows', () => {
+    // Create a block tree with nested inputs and shadows, mirroring what
+    // the palette would produce for "set variable to ((0) + (0))":
+    //   test_set_variable
+    //     VALUE: test_add (non-shadow)
+    //       NUM1: test_math_shadow (shadow)
+    //       NUM2: test_math_shadow (shadow)
+    const nestedState: Blockly.serialization.blocks.State = {
+      type: 'test_set_variable',
+      id: 'flyout-root',
+      inputs: {
+        VALUE: {
+          block: {
+            type: 'test_add',
+            id: 'flyout-add',
+            inputs: {
+              NUM1: {
+                shadow: {
+                  type: 'test_math_shadow',
+                  id: 'flyout-num1-shadow',
+                  fields: { NUM: 1 },
+                },
+              },
+              NUM2: {
+                shadow: {
+                  type: 'test_math_shadow',
+                  id: 'flyout-num2-shadow',
+                  fields: { NUM: 2 },
+                },
+              },
+            },
+          },
+          shadow: {
+            type: 'test_text_shadow',
+            id: 'flyout-value-shadow',
+            fields: { TEXT: '0' },
+          },
+        },
+      },
+    }
+
+    const flyoutBlock = createTestBlock(nestedState)
 
     const json = Blockly.serialization.blocks.save(flyoutBlock)
     assert(json, 'Expected save to return state')
     delete json.id // CheckableContinuousFlyout deletes the root id
 
+    // Verify that nested IDs are present before stripping
+    assert(json.inputs, 'Expected inputs on saved state')
+    assert(json.inputs.VALUE, 'Expected VALUE in saved inputs')
+    const addState = json.inputs.VALUE.block
+    assert(addState, 'Expected add block in saved state')
+    expect(addState.id).toBeDefined()
+    assert(addState.inputs, 'Expected inputs on add block')
+    assert(addState.inputs.NUM1, 'Expected NUM1 in add block inputs')
+    assert(addState.inputs.NUM2, 'Expected NUM2 in add block inputs')
+    expect(addState.inputs.NUM1.shadow?.id).toBeDefined()
+    expect(addState.inputs.NUM2.shadow?.id).toBeDefined()
+
     const newBlock = Blockly.serialization.blocks.append(json, workspace, {
       recordUndo: true,
     })
 
-    const conn = getConnection(getInput(newBlock, 'VALUE'))
-    const target = conn.targetBlock()
-    assert(target, 'Expected shadow on copied block')
-    expect(target.isShadow()).toBe(true)
-    expect(conn.getShadowDom()).not.toBeNull()
-    expect(conn.getShadowState()).not.toBeNull()
+    // The root VALUE input should have its shadow state
+    const valueConn = getConnection(getInput(newBlock, 'VALUE'))
+    expect(valueConn.getShadowDom()).not.toBeNull()
+    expect(valueConn.getShadowState()).not.toBeNull()
 
+    // The nested add block should have shadows on both NUM inputs
+    const addBlock = valueConn.targetBlock()
+    assert(addBlock, 'Expected add block on VALUE')
+    expect(addBlock.type).toBe('test_add')
+
+    const num1Conn = getConnection(getInput(addBlock, 'NUM1'))
+    const num1Shadow = num1Conn.targetBlock()
+    assert(num1Shadow, 'Expected shadow on NUM1')
+    expect(num1Shadow.isShadow()).toBe(true)
+    expect(num1Shadow.type).toBe('test_math_shadow')
+
+    const num2Conn = getConnection(getInput(addBlock, 'NUM2'))
+    const num2Shadow = num2Conn.targetBlock()
+    assert(num2Shadow, 'Expected shadow on NUM2')
+    expect(num2Shadow.isShadow()).toBe(true)
+
+    // blockToDom should include all nested shadows
     const dom = Blockly.Xml.blockToDom(newBlock)
     const xmlStr = new XMLSerializer().serializeToString(dom)
     expect(xmlStr).toContain('name="VALUE"')
-    expect(xmlStr).toContain('<shadow')
-
-    // Note: in a headless test environment, Blockly's async event dispatch
-    // (requestAnimationFrame + setTimeout) doesn't fire. The workspace state
-    // and blockToDom output above verify correctness at the Blockly level.
+    expect(xmlStr).toContain('name="NUM1"')
+    expect(xmlStr).toContain('name="NUM2"')
 
     flyoutBlock.dispose()
     newBlock.dispose()
@@ -214,13 +291,39 @@ describe('block input serialization round-trip', () => {
 
     // Without the fix, blockToDom would produce XML without the VALUE input.
     // With the fix, the shadow is recovered (and a warning is logged).
-    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
     const dom = Blockly.Xml.blockToDom(block)
     const xmlStr = new XMLSerializer().serializeToString(dom)
     expect(xmlStr).toContain('name="VALUE"')
     expect(xmlStr).toContain('shadow')
-    expect(warnSpy).toHaveBeenCalledOnce()
-    warnSpy.mockRestore()
+    expect(console.warn).toHaveBeenCalledOnce()
+
+    block.dispose()
+  })
+
+  it('blockToDom recovery strips IDs when opt_noId is true', () => {
+    const block = createTestBlock(SHADOW_INPUT_STATE)
+    const conn = getConnection(getInput(block, 'VALUE'))
+
+    // Create the pathological state: shadowDom set, no targetBlock
+    const shadow = conn.targetBlock()
+    assert(shadow, 'Expected shadow block')
+    Blockly.Events.disable()
+    try {
+      shadow.dispose(false)
+    } finally {
+      Blockly.Events.enable()
+    }
+
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const dom = Blockly.Xml.blockToDom(block, true)
+    expect(dom).toBeInstanceOf(Element)
+
+    const xmlStr = new XMLSerializer().serializeToString(dom as Element)
+    expect(xmlStr).toContain('name="VALUE"')
+    expect(xmlStr).toContain('shadow')
+    // With opt_noId, no element should have an id attribute
+    expect(xmlStr).not.toMatch(/\bid="/)
 
     block.dispose()
   })

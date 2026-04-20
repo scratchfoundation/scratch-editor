@@ -51,15 +51,22 @@ Blockly.Xml.blockToDom = function blockToDomFixed(
       const doc = result.ownerDocument
       const container = doc.createElementNS(result.namespaceURI, tagName)
       container.setAttribute('name', name)
-      container.appendChild(doc.importNode(existingShadowDom, true))
+      const importedShadow = doc.importNode(existingShadowDom, true)
       if (opt_noId) {
-        for (const shadowEl of container.querySelectorAll('shadow')) {
-          shadowEl.removeAttribute('id')
+        importedShadow.removeAttribute('id')
+        for (const el of importedShadow.querySelectorAll('[id]')) {
+          el.removeAttribute('id')
         }
       }
+      container.appendChild(importedShadow)
       result.appendChild(container)
       console.warn(
         `[scratch-blocks] blockToDom fix: recovered missing input "${name}" on ${block.type} (${block.id})`,
+      )
+    } else {
+      console.warn(
+        `[scratch-blocks] blockToDom fix: input "${name}" on ${block.type} (${block.id}) has shadow state` +
+          ` but no shadow DOM — cannot recover`,
       )
     }
   }
