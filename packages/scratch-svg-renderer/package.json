@@ -73,7 +73,7 @@
     "scratch-semantic-release-config": "4.0.1",
     "scratch-webpack-configuration": "3.1.2",
     "semantic-release": "25.0.3",
-    "tap": "21.7.0",
+    "tap": "21.7.1",
     "webpack": "5.106.2",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.2.3"

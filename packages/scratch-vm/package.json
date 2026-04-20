@@ -107,7 +107,7 @@
     "script-loader": "0.7.2",
     "semantic-release": "25.0.3",
     "stats.js": "0.17.0",
-    "tap": "21.7.0",
+    "tap": "21.7.1",
     "tiny-worker": "2.3.0",
     "typedoc": "0.28.18",
     "webpack": "5.106.2",
