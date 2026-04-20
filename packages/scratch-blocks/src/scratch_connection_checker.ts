@@ -44,6 +44,32 @@ class ScratchConnectionChecker extends Blockly.ConnectionChecker {
       return false
     }
 
+    // Blockly's base doDragChecks rejects inserting a block with no
+    // nextConnection into the middle of a stack (NEXT_STATEMENT case) because
+    // it assumes the displaced blocks have nowhere to go. Our
+    // getConnectionForOrphanedConnection patch routes displaced blocks into
+    // statement inputs, so we allow the connection when a suitable statement
+    // input exists on the dragging block.
+    if (
+      (b.type as Blockly.ConnectionType) === Blockly.ConnectionType.NEXT_STATEMENT &&
+      b.isConnected() &&
+      !(a.getSourceBlock() as Blockly.Block).nextConnection
+    ) {
+      const orphan = b.targetBlock()
+      const orphanPrev = (orphan as Blockly.Block | null)?.previousConnection
+      if (orphan && !orphan.isShadow() && orphanPrev) {
+        const canWrap = !!Blockly.Connection.getConnectionForOrphanedConnection(a.getSourceBlock(), orphanPrev)
+        if (canWrap) {
+          // Skip the base class NEXT_STATEMENT check (which would reject
+          // this) but still apply the other generic guards it uses.
+          if ('distanceFrom' in a && a.distanceFrom(b) > distance) return false
+          if (b.getSourceBlock().isInsertionMarker()) return false
+          if (Blockly.common.draggingConnections.includes(b)) return false
+          return true
+        }
+      }
+    }
+
     return super.doDragChecks(a, b, distance)
   }
 }

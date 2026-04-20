@@ -81,9 +81,10 @@ Reflect.set(
     // Restore a real block from a statement input to nextConnection so that
     // unplug(true) can heal the stack correctly.  Conditions:
     //   - marker is mid-stack (has a predecessor)
-    //   - marker.nextConnection is empty (displaced block is NOT already there)
+    //   - marker.nextConnection is either empty or absent (cap blocks do not
+    //     have a bottom connector, so the displaced block is NOT already there)
     //   - a non-marker block is sitting in a statement input
-    if (markerPreviousConnection?.isConnected() && markerNextConnection && !markerNextConnection.isConnected()) {
+    if (markerPreviousConnection?.isConnected() && !markerNextConnection?.isConnected()) {
       for (const input of marker.inputList) {
         const conn = input.connection
         const connType = conn?.type as Blockly.ConnectionType | undefined
@@ -97,7 +98,19 @@ Reflect.set(
             continue
           }
           prev.disconnect()
-          markerNextConnection.connect(prev)
+          if (markerNextConnection) {
+            markerNextConnection.connect(prev)
+          } else {
+            // Blocks without a bottom connector (e.g. forever) have no nextConnection. Reconnect
+            // the displaced block directly to the connection the marker's
+            // previousConnection is plugged into, then detach the marker
+            // so unplug() has nothing left to heal.
+            const aboveConn = markerPreviousConnection.targetConnection
+            if (aboveConn) {
+              markerPreviousConnection.disconnect()
+              aboveConn.connect(prev)
+            }
+          }
           break
         }
       }

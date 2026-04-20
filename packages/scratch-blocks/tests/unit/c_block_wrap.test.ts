@@ -18,7 +18,7 @@ afterEach(() => {
 })
 
 describe('C-block wrapping', () => {
-  const BLOCK_TYPES = ['test_c_block_wrap', 'test_stmt_wrap_inner', 'test_stmt_wrap_outer']
+  const BLOCK_TYPES = ['test_c_block_wrap', 'test_c_cap_block', 'test_stmt_wrap_inner', 'test_stmt_wrap_outer']
 
   beforeEach(() => {
     Blockly.defineBlocksWithJsonArray([
@@ -28,6 +28,13 @@ describe('C-block wrapping', () => {
         args0: [{ type: 'input_statement', name: 'SUBSTACK' }],
         previousStatement: null,
         nextStatement: null,
+      },
+      {
+        type: 'test_c_cap_block',
+        message0: 'forever %1',
+        args0: [{ type: 'input_statement', name: 'SUBSTACK' }],
+        previousStatement: null,
+        // no nextStatement — like "forever", this block has no bottom connector
       },
       {
         type: 'test_stmt_wrap_inner',
@@ -101,6 +108,62 @@ describe('C-block wrapping', () => {
 
     // After cleanup, the stack should be healed: B1 → B2 (marker was disposed)
     expect(b1.nextConnection.targetBlock()).toBe(b2)
+  })
+
+  it('hideInsertionMarker restores displaced block when block has no bottom connector (e.g. forever)', () => {
+    // A block like "forever" has no nextConnection (no bottom connector).
+    // When its insertion marker is cleaned up, the displaced block must be
+    // reconnected directly to the connection above the marker.
+    const b1 = workspace.newBlock('test_stmt_wrap_outer')
+    const marker = workspace.newBlock('test_c_cap_block')
+    const b2 = workspace.newBlock('test_stmt_wrap_inner')
+
+    marker.setInsertionMarker(true)
+
+    // B1 → marker (marker is mid-stack)
+    assert(b1.nextConnection, 'b1 should have nextConnection')
+    assert(marker.previousConnection, 'marker should have previousConnection')
+    expect(marker.nextConnection).toBeNull()
+    b1.nextConnection.connect(marker.previousConnection)
+
+    // B2 is in the marker's statement input
+    const markerStatementConn = marker.getInput('SUBSTACK')?.connection
+    assert(markerStatementConn, 'marker should have a SUBSTACK statement input')
+    assert(b2.previousConnection, 'b2 should have previousConnection')
+    markerStatementConn.connect(b2.previousConnection)
+    ;(Blockly.InsertionMarkerPreviewer.prototype as any).hideInsertionMarker.call({}, marker.previousConnection)
+
+    // After cleanup, the stack should be healed: B1 → B2
+    expect(b1.nextConnection.targetBlock()).toBe(b2)
+  })
+
+  it('hideInsertionMarker restores displaced block when marker is inside a statement input (not a next-connection chain)', () => {
+    // When a forever marker is inside another C-block's statement input
+    // (rather than chained via nextConnection), targetConnection is the
+    // parent's statement input connection. The fix uses targetConnection
+    // generically, so this should work the same way.
+    const parent = workspace.newBlock('test_c_block_wrap')
+    const marker = workspace.newBlock('test_c_cap_block')
+    const b2 = workspace.newBlock('test_stmt_wrap_inner')
+
+    marker.setInsertionMarker(true)
+
+    // Parent's SUBSTACK → marker (marker is inside a statement input)
+    const parentSubstack = parent.getInput('SUBSTACK')?.connection
+    assert(parentSubstack, 'parent should have a SUBSTACK statement input')
+    assert(marker.previousConnection, 'marker should have previousConnection')
+    expect(marker.nextConnection).toBeNull()
+    parentSubstack.connect(marker.previousConnection)
+
+    // B2 is in the marker's statement input
+    const markerSubstack = marker.getInput('SUBSTACK')?.connection
+    assert(markerSubstack, 'marker should have a SUBSTACK statement input')
+    assert(b2.previousConnection, 'b2 should have previousConnection')
+    markerSubstack.connect(b2.previousConnection)
+    ;(Blockly.InsertionMarkerPreviewer.prototype as any).hideInsertionMarker.call({}, marker.previousConnection)
+
+    // After cleanup, B2 should be reconnected to the parent's SUBSTACK
+    expect(parentSubstack.targetBlock()).toBe(b2)
   })
 
   it('displaced block goes into statement input even when C-block is an insertion marker (preview matches drop)', () => {

@@ -4,6 +4,7 @@
  */
 import * as Blockly from 'blockly/core'
 import { afterEach, assert, beforeEach, describe, expect, it } from 'vitest'
+import '../../src/scratch_c_block_wrap'
 import '../../src/scratch_connection_checker'
 
 type ScratchCheckerCtor = new () => {
@@ -106,6 +107,103 @@ describe('ScratchConnectionChecker', () => {
       } finally {
         delete Blockly.Blocks.procedures_definition
         delete Blockly.Blocks.test_output_block
+      }
+    })
+  })
+
+  describe('doDragChecks — C-block without nextConnection (e.g. forever)', () => {
+    it('allows mid-stack insertion when the dragging block has a statement input for the orphan', () => {
+      Blockly.defineBlocksWithJsonArray([
+        {
+          type: 'test_forever',
+          message0: 'forever %1',
+          args0: [{ type: 'input_statement', name: 'SUBSTACK' }],
+          previousStatement: null,
+          // no nextStatement
+        },
+        {
+          type: 'test_stack',
+          message0: 'stack',
+          previousStatement: null,
+          nextStatement: null,
+        },
+      ])
+
+      try {
+        const foreverBlock = workspace.newBlock('test_forever')
+        const topBlock = workspace.newBlock('test_stack')
+        const bottomBlock = workspace.newBlock('test_stack')
+
+        assert(topBlock.nextConnection, 'topBlock should have nextConnection')
+        assert(bottomBlock.previousConnection, 'bottomBlock should have previousConnection')
+        topBlock.nextConnection.connect(bottomBlock.previousConnection)
+
+        // Dragging forever's previousConnection toward topBlock's nextConnection
+        // (which is occupied by bottomBlock). Base Blockly would reject this
+        // because forever has no nextConnection, but ScratchConnectionChecker
+        // should allow it because the orphan can go into the statement input.
+        const ScratchChecker = Blockly.registry.getClass(
+          Blockly.registry.Type.CONNECTION_CHECKER,
+          Blockly.registry.DEFAULT,
+        ) as ScratchCheckerCtor | null
+        assert(ScratchChecker, 'Expected ScratchConnectionChecker to be registered')
+        assert(foreverBlock.previousConnection, 'foreverBlock should have previousConnection')
+        assert(topBlock.nextConnection, 'topBlock should have nextConnection')
+        const result = new ScratchChecker().doDragChecks(
+          foreverBlock.previousConnection as unknown as Blockly.RenderedConnection,
+          topBlock.nextConnection as unknown as Blockly.RenderedConnection,
+          Infinity,
+        )
+        expect(result).toBe(true)
+      } finally {
+        delete Blockly.Blocks.test_forever
+        delete Blockly.Blocks.test_stack
+      }
+    })
+
+    it('rejects mid-stack insertion when the target block is an insertion marker', () => {
+      Blockly.defineBlocksWithJsonArray([
+        {
+          type: 'test_forever',
+          message0: 'forever %1',
+          args0: [{ type: 'input_statement', name: 'SUBSTACK' }],
+          previousStatement: null,
+        },
+        {
+          type: 'test_stack',
+          message0: 'stack',
+          previousStatement: null,
+          nextStatement: null,
+        },
+      ])
+
+      try {
+        const foreverBlock = workspace.newBlock('test_forever')
+        const topBlock = workspace.newBlock('test_stack')
+        const bottomBlock = workspace.newBlock('test_stack')
+
+        // Mark topBlock as an insertion marker
+        topBlock.setInsertionMarker(true)
+
+        assert(topBlock.nextConnection, 'topBlock should have nextConnection')
+        assert(bottomBlock.previousConnection, 'bottomBlock should have previousConnection')
+        topBlock.nextConnection.connect(bottomBlock.previousConnection)
+
+        const ScratchChecker = Blockly.registry.getClass(
+          Blockly.registry.Type.CONNECTION_CHECKER,
+          Blockly.registry.DEFAULT,
+        ) as ScratchCheckerCtor | null
+        assert(ScratchChecker, 'Expected ScratchConnectionChecker to be registered')
+        assert(foreverBlock.previousConnection, 'foreverBlock should have previousConnection')
+        const result = new ScratchChecker().doDragChecks(
+          foreverBlock.previousConnection as unknown as Blockly.RenderedConnection,
+          topBlock.nextConnection as unknown as Blockly.RenderedConnection,
+          Infinity,
+        )
+        expect(result).toBe(false)
+      } finally {
+        delete Blockly.Blocks.test_forever
+        delete Blockly.Blocks.test_stack
       }
     })
   })
