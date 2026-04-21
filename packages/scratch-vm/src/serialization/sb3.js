@@ -974,7 +974,9 @@ const deserializeBlocks = function (blocks) {
     // For broken references (case 1), fall back to a text shadow if no peer
     // is available. For missing shadows (case 2), only create a shadow if a
     // peer confirms one should exist — otherwise the input probably doesn't
-    // use shadows (e.g. custom procedure inputs).
+    // use shadows (e.g. statement inputs like SUBSTACK).
+    // Cache peer lookups per (opcode, inputName) to avoid repeated O(n) scans.
+    const peerShadowCache = Object.create(null);
     for (const blockId in blocks) {
         if (!Object.prototype.hasOwnProperty.call(blocks, blockId)) continue;
         const block = blocks[blockId];
@@ -992,7 +994,11 @@ const deserializeBlocks = function (blocks) {
             if (!shadowIsBroken && !shadowIsMissing) continue;
 
             // Try to find a peer block with a working shadow for this input.
-            const template = findPeerShadow(blocks, block.opcode, inputName);
+            const cacheKey = `${block.opcode}/${inputName}`;
+            if (!Object.prototype.hasOwnProperty.call(peerShadowCache, cacheKey)) {
+                peerShadowCache[cacheKey] = findPeerShadow(blocks, block.opcode, inputName);
+            }
+            const template = peerShadowCache[cacheKey];
             if (!template && !shadowIsBroken) {
                 // No peer has a shadow either — this input probably doesn't
                 // use one (e.g. custom procedure inputs). Leave it alone.
