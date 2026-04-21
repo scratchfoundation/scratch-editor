@@ -1145,3 +1145,53 @@ test('getAllVariableAndListReferences returns broadcast when we tell it to', t =
 
     t.end();
 });
+
+// Regression test for bug 878291: moveBlock should not crash when a
+// shadow reference points to a block that does not exist.
+test('moveBlock tolerates missing shadow block', t => {
+    const b = new Blocks(new Runtime());
+
+    // Create a parent block with an input whose shadow reference is stale
+    b.createBlock({
+        id: 'parent',
+        opcode: 'data_setvariableto',
+        next: null,
+        parent: null,
+        shadow: false,
+        topLevel: true,
+        inputs: {
+            VALUE: {
+                name: 'VALUE',
+                block: 'reporter',
+                shadow: 'nonexistent_shadow' // references a block that does not exist
+            }
+        },
+        fields: {}
+    });
+    b.createBlock({
+        id: 'reporter',
+        opcode: 'sensing_answer',
+        next: null,
+        parent: 'parent',
+        shadow: false,
+        topLevel: false,
+        inputs: {},
+        fields: {}
+    });
+
+    // Detaching the reporter should not throw even though the shadow is missing
+    t.doesNotThrow(() => {
+        b.moveBlock({
+            id: 'reporter',
+            oldParent: 'parent',
+            oldInput: 'VALUE',
+            newCoordinate: {x: 0, y: 0}
+        });
+    });
+
+    // The stale shadow reference should be cleared
+    t.equal(b.getBlock('parent').inputs.VALUE.shadow, null);
+    t.equal(b.getBlock('parent').inputs.VALUE.block, null);
+
+    t.end();
+});

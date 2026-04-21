@@ -775,8 +775,15 @@ class Blocks {
                 // this input, or null out the input's block.
                 const shadow = oldParent.inputs[e.oldInput].shadow;
                 if (shadow && e.id !== shadow) {
-                    oldParent.inputs[e.oldInput].block = shadow;
-                    this._blocks[shadow].parent = oldParent.id;
+                    if (this._blocks[shadow]) {
+                        oldParent.inputs[e.oldInput].block = shadow;
+                        this._blocks[shadow].parent = oldParent.id;
+                    } else {
+                        // Shadow block is referenced but missing — clear
+                        // the stale reference rather than crashing.
+                        oldParent.inputs[e.oldInput].block = null;
+                        oldParent.inputs[e.oldInput].shadow = null;
+                    }
                     this._blocks[e.id].parent = null;
                 } else {
                     oldParent.inputs[e.oldInput].block = null;

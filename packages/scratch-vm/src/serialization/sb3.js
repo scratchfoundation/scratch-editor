@@ -96,6 +96,85 @@ const primitiveOpcodeInfoMap = {
 };
 
 /**
+ * Build the fields object for a replacement shadow block. Simple primitives
+ * (text, numbers, colours) just need {name, value}. Variable, list, and
+ * broadcast shadows also need {id, variableType} for the dropdown to work.
+ * @param {string} shadowOpcode The shadow block's opcode.
+ * @param {?object} template A peer shadow block to copy field values from, or null.
+ * @returns {?object} A fields object for the new shadow, or null if the opcode is unknown.
+ */
+const buildShadowFields = function (shadowOpcode, template) {
+    const info = primitiveOpcodeInfoMap[shadowOpcode];
+    if (!info) return null;
+    const fieldName = info[1];
+    const templateField = template && template.fields && template.fields[fieldName];
+    const value = templateField ? templateField.value : '';
+
+    switch (shadowOpcode) {
+    case 'event_broadcast_menu':
+        return {
+            [fieldName]: {
+                name: fieldName,
+                value: value,
+                id: (templateField && templateField.id) || '',
+                variableType: Variable.BROADCAST_MESSAGE_TYPE
+            }
+        };
+    case 'data_variable':
+        return {
+            [fieldName]: {
+                name: fieldName,
+                value: value,
+                id: (templateField && templateField.id) || '',
+                variableType: Variable.SCALAR_TYPE
+            }
+        };
+    case 'data_listcontents':
+        return {
+            [fieldName]: {
+                name: fieldName,
+                value: value,
+                id: (templateField && templateField.id) || '',
+                variableType: Variable.LIST_TYPE
+            }
+        };
+    default:
+        // Simple primitives: text, math_number, math_angle, colour_picker, etc.
+        return {
+            [fieldName]: {
+                name: fieldName,
+                value: value
+            }
+        };
+    }
+};
+
+/**
+ * Find a working shadow block for the given (opcode, inputName) pair by
+ * looking at other blocks of the same opcode in the project. Returns the
+ * matching shadow block from the blocks map for use as a template, or
+ * null if no peer has a working shadow for that input.
+ * @param {object} blocks The full blocks map for the target.
+ * @param {string} opcode The parent block's opcode.
+ * @param {string} inputName The name of the input.
+ * @returns {?object} A template shadow block from the blocks map, or null.
+ */
+const findPeerShadow = function (blocks, opcode, inputName) {
+    for (const peerId in blocks) {
+        if (!hasOwnProperty.call(blocks, peerId)) continue;
+        const peer = blocks[peerId];
+        if (Array.isArray(peer) || peer.opcode !== opcode) continue;
+        const peerInput = peer.inputs[inputName];
+        if (!peerInput || !peerInput.shadow) continue;
+        const shadowBlock = blocks[peerInput.shadow];
+        if (!shadowBlock || Array.isArray(shadowBlock)) continue;
+        if (!hasOwnProperty.call(primitiveOpcodeInfoMap, shadowBlock.opcode)) continue;
+        return shadowBlock;
+    }
+    return null;
+};
+
+/**
  * Serializes primitives described above into a more compact format
  * @param {object} block the block to serialize
  * @returns {Array} An array representing the information in the block,
@@ -883,6 +962,73 @@ const deserializeBlocks = function (blocks) {
             if (inputInfo.shadow && inputInfo.shadow !== inputInfo.block) delete blocks[inputInfo.shadow];
         }
         block.inputs = {};
+    }
+
+    // Third pass: repair missing or broken shadow blocks. Shadows can be
+    // missing in two ways:
+    //   1. shadow is a stale ID pointing to a nonexistent block
+    //   2. shadow is null when it shouldn't be (lost before save)
+    // Both are leftovers from a serialization bug where shadow blocks were
+    // dropped during save. Recreate the shadow by finding a peer block of
+    // the same opcode with an intact shadow on the same input (peer lookup).
+    // For broken references (case 1), fall back to a text shadow if no peer
+    // is available. For missing shadows (case 2), only create a shadow if a
+    // peer confirms one should exist — otherwise the input probably doesn't
+    // use shadows (e.g. statement inputs like SUBSTACK).
+    // Cache peer lookups per (opcode, inputName) to avoid repeated O(n) scans.
+    const peerShadowCache = Object.create(null);
+    for (const blockId in blocks) {
+        if (!Object.prototype.hasOwnProperty.call(blocks, blockId)) continue;
+        const block = blocks[blockId];
+        if (Array.isArray(block)) continue;
+        for (const inputName in block.inputs) {
+            if (!Object.prototype.hasOwnProperty.call(block.inputs, inputName)) continue;
+            const input = block.inputs[inputName];
+
+            const shadowIsBroken = input.shadow &&
+                !Object.prototype.hasOwnProperty.call(blocks, input.shadow);
+            const shadowIsMissing = !input.shadow && input.block &&
+                Object.prototype.hasOwnProperty.call(blocks, input.block) &&
+                !blocks[input.block].shadow;
+
+            if (!shadowIsBroken && !shadowIsMissing) continue;
+
+            // Try to find a peer block with a working shadow for this input.
+            const cacheKey = `${block.opcode}/${inputName}`;
+            if (!Object.prototype.hasOwnProperty.call(peerShadowCache, cacheKey)) {
+                peerShadowCache[cacheKey] = findPeerShadow(blocks, block.opcode, inputName);
+            }
+            const template = peerShadowCache[cacheKey];
+            if (!template && !shadowIsBroken) {
+                // No peer has a shadow either — this input probably doesn't
+                // use one (e.g. custom procedure inputs). Leave it alone.
+                continue;
+            }
+            const shadowOpcode = template ? template.opcode : 'text';
+            const fields = buildShadowFields(shadowOpcode, template);
+            if (!fields) {
+                // Unknown shadow type — clear any stale reference
+                // so it doesn't cause crashes.
+                if (shadowIsBroken) input.shadow = null;
+                continue;
+            }
+            const newShadowId = uid();
+            blocks[newShadowId] = {
+                id: newShadowId,
+                opcode: shadowOpcode,
+                next: null,
+                parent: blockId,
+                shadow: true,
+                topLevel: false,
+                inputs: Object.create(null),
+                fields: fields
+            };
+            input.shadow = newShadowId;
+            // If no block is connected, also set block to the shadow
+            if (!input.block || !Object.prototype.hasOwnProperty.call(blocks, input.block)) {
+                input.block = newShadowId;
+            }
+        }
     }
 
     return blocks;
