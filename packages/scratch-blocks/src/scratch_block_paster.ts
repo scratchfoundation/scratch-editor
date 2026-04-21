@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import * as Blockly from 'blockly/core'
+import { stripIds } from './scratch_blocks_utils'
 import type { ScratchCommentIcon } from './scratch_comment_icon'
 
 /**
@@ -22,6 +23,12 @@ class ScratchBlockPaster extends Blockly.clipboard.BlockPaster {
     workspace: Blockly.WorkspaceSvg,
     coordinate: Blockly.utils.Coordinate,
   ) {
+    // Strip all block IDs so that every block in the pasted tree (including
+    // shadows) gets a fresh ID. Without this, disposed shadows from the
+    // original block can reuse the same ID, causing the VM to think both
+    // blocks share the same shadow. Deleting one then destroys the other's
+    // shadow (forum topic 878291).
+    stripIds(copyData.blockState)
     const block = super.paste(copyData, workspace, coordinate)
     if (block?.type === 'argument_reporter_boolean' || block?.type === 'argument_reporter_string_number') {
       block.setDragStrategy(new Blockly.dragging.BlockDragStrategy(block))

@@ -5,6 +5,7 @@
 import { ContinuousFlyout, type LabelFlyoutItem } from '@blockly/continuous-toolbox'
 import * as Blockly from 'blockly/core'
 import { CheckboxBubble } from './checkbox_bubble'
+import { stripIds } from './scratch_blocks_utils'
 import { StatusIndicatorLabel } from './status_indicator_label'
 import { STATUS_INDICATOR_LABEL_TYPE } from './status_indicator_label_flyout_inflater'
 
@@ -18,27 +19,6 @@ interface CheckboxIcon {
 
 function isCheckboxIcon(icon: Blockly.IIcon | undefined): icon is Blockly.IIcon & CheckboxIcon {
   return !!icon && typeof (icon as { setChecked?: unknown }).setChecked === 'function'
-}
-
-/**
- * Recursively strip `id` properties from a serialized block state tree
- * so that every block (including shadows and nested inputs) gets a fresh
- * ID when deserialized onto the workspace.
- * @param state A serialized block state object.
- */
-function stripIds(state: Blockly.serialization.blocks.State): void {
-  delete state.id
-  if (state.inputs) {
-    for (const inputName in state.inputs) {
-      const conn = state.inputs[inputName]
-      if (conn.shadow) stripIds(conn.shadow)
-      if (conn.block) stripIds(conn.block)
-    }
-  }
-  if (state.next) {
-    if (state.next.shadow) stripIds(state.next.shadow)
-    if (state.next.block) stripIds(state.next.block)
-  }
 }
 
 export class CheckableContinuousFlyout extends ContinuousFlyout {
