@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-vm",
-  "version": "13.6.10",
+  "version": "13.6.11",
   "description": "Virtual Machine for Scratch 3.0",
   "keywords": [],
   "homepage": "https://github.com/scratchfoundation/scratch-vm#readme",
@@ -60,8 +60,8 @@
     "allow-incomplete-coverage": true
   },
   "dependencies": {
-    "@scratch/scratch-render": "13.6.10",
-    "@scratch/scratch-svg-renderer": "13.6.10",
+    "@scratch/scratch-render": "13.6.11",
+    "@scratch/scratch-svg-renderer": "13.6.11",
     "@vernier/godirect": "1.8.3",
     "arraybuffer-loader": "1.0.8",
     "atob": "2.1.2",
