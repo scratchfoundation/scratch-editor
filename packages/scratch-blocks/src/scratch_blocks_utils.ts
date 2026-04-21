@@ -20,6 +20,31 @@
  * @file Utility methods for Scratch Blocks but not Blockly.
  * @author fenichel@google.com (Rachel Fenichel)
  */
+import type * as Blockly from 'blockly/core'
+
+/**
+ * Recursively strip `id` properties from a serialized block state tree
+ * so that every block (including shadows and nested inputs) gets a fresh
+ * ID when deserialized onto the workspace. This prevents two blocks from
+ * sharing the same shadow block in the VM, which would cause deleting
+ * one to destroy the other's shadow.
+ * @param state A serialized block state object.
+ */
+export function stripIds(state: Blockly.serialization.blocks.State): void {
+  delete state.id
+  if (state.inputs) {
+    for (const inputName in state.inputs) {
+      const conn = state.inputs[inputName]
+      if (conn.shadow) stripIds(conn.shadow)
+      if (conn.block) stripIds(conn.block)
+    }
+  }
+  if (state.next) {
+    if (state.next.shadow) stripIds(state.next.shadow)
+    if (state.next.block) stripIds(state.next.block)
+  }
+}
+
 /**
  * Compare strings with natural number sorting.
  * @param str1 First input.
