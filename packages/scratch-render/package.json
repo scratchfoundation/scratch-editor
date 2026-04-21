@@ -89,6 +89,6 @@
     "webpack-dev-server": "5.2.3"
   },
   "peerDependencies": {
-    "scratch-render-fonts": "^1.0.0"
+    "scratch-render-fonts": "1.0.252"
   }
 }
