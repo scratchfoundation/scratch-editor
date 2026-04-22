@@ -49,7 +49,51 @@ import gdxforConnectionSmallIconURL from './gdxfor/gdxfor-small.svg';
 import faceSensingIconURL from './faceSensing/faceSensing.png';
 import faceSensingInsetIconURL from './faceSensing/faceSensing-small.svg';
 
+import sparkIconURL from './spark/spark.png';
+import sparkInsetIconURL from './spark/spark-small.svg';
+import sparkConnectionIconURL from './spark/spark-illustration.svg';
+import sparkConnectionSmallIconURL from './spark/spark-small.svg';
+
 export default [
+    {
+        name: (
+            <FormattedMessage
+                defaultMessage="Spark"
+                description="Name for the Spark IoT extension"
+                id="gui.extension.spark.name"
+            />
+        ),
+        extensionId: 'spark',
+        iconURL: sparkIconURL,
+        insetIconURL: sparkInsetIconURL,
+        description: (
+            <FormattedMessage
+                defaultMessage="Control your Spark IoT kit."
+                description="Description for the Spark extension"
+                id="gui.extension.spark.description"
+            />
+        ),
+        featured: true,
+        disabled: false,
+        launchPeripheralConnectionFlow: true,
+        useAutoScan: true,
+        connectionIconURL: sparkConnectionIconURL,
+        connectionSmallIconURL: sparkConnectionSmallIconURL,
+        prescanMessage: (
+            <FormattedMessage
+                defaultMessage="Make sure your Spark kit is connected via USB and the Spark app is open."
+                description="Prompt before connecting to Spark"
+                id="gui.extension.spark.prescanMessage"
+            />
+        ),
+        connectingMessage: (
+            <FormattedMessage
+                defaultMessage="Connecting to Spark..."
+                description="Connecting message for Spark"
+                id="gui.extension.spark.connectingMessage"
+            />
+        )
+    },
     {
         name: (
             <FormattedMessage
@@ -412,5 +456,11 @@ export default [
             />
         ),
         helpLink: 'https://scratch.mit.edu/wedo'
+    },
+    {
+        name: 'Demo',
+        extensionId: 'demo',
+        description: 'Demo extension with example blocks.',
+        featured: true
     }
 ];
