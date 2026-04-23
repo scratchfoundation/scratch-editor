@@ -71,7 +71,8 @@ class SparkPeripheral {
     // send(cmd, data) — wraps into {protocol, type, id, cmd, data} per middleware schema
     send (cmd, data = {}) {
         if (!this.isConnected()) return Promise.resolve(null);
-        const id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+        const id = Math.random().toString(36)
+            .slice(2) + Date.now().toString(36);
         const msg = {protocol: '1.0', type: 'request', id, cmd, data};
         return new Promise(resolve => {
             const timer = setTimeout(() => {
@@ -140,10 +141,12 @@ class SparkPeripheral {
         ]).then(([resp0, resp1]) => {
             if (resp0 && resp0.status === 'ok') this._buttonState[0] = resp0.val ?? 0;
             if (resp1 && resp1.status === 'ok') this._buttonState[1] = resp1.val ?? 0;
-        }).catch(() => {}).finally(() => {
-            this._polling = false;
-            this._scheduleNextPoll();
-        });
+        })
+            .catch(() => {})
+            .finally(() => {
+                this._polling = false;
+                this._scheduleNextPoll();
+            });
     }
 
     _handleDisconnect () {
