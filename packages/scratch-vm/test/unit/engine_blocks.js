@@ -1195,3 +1195,93 @@ test('moveBlock tolerates missing shadow block', t => {
 
     t.end();
 });
+
+test('moveBlock clones shared obscured shadow when restoring input', t => {
+    const b = new Blocks(new Runtime());
+
+    b.createBlock({
+        id: 'originalParent',
+        opcode: 'data_setvariableto',
+        next: null,
+        parent: null,
+        shadow: false,
+        topLevel: true,
+        inputs: {
+            VALUE: {
+                name: 'VALUE',
+                block: 'originalReporter',
+                shadow: 'sharedShadow'
+            }
+        },
+        fields: {}
+    });
+    b.createBlock({
+        id: 'copyParent',
+        opcode: 'data_setvariableto',
+        next: null,
+        parent: null,
+        shadow: false,
+        topLevel: true,
+        inputs: {
+            VALUE: {
+                name: 'VALUE',
+                block: 'copyReporter',
+                shadow: 'sharedShadow'
+            }
+        },
+        fields: {}
+    });
+    b.createBlock({
+        id: 'originalReporter',
+        opcode: 'sensing_answer',
+        next: null,
+        parent: 'originalParent',
+        shadow: false,
+        topLevel: false,
+        inputs: {},
+        fields: {}
+    });
+    b.createBlock({
+        id: 'copyReporter',
+        opcode: 'sensing_answer',
+        next: null,
+        parent: 'copyParent',
+        shadow: false,
+        topLevel: false,
+        inputs: {},
+        fields: {}
+    });
+    b.createBlock({
+        id: 'sharedShadow',
+        opcode: 'text',
+        next: null,
+        parent: 'originalParent',
+        shadow: true,
+        topLevel: false,
+        inputs: {},
+        fields: {
+            TEXT: {
+                name: 'TEXT',
+                value: ''
+            }
+        }
+    });
+
+    b.moveBlock({
+        id: 'copyReporter',
+        oldParent: 'copyParent',
+        oldInput: 'VALUE',
+        newCoordinate: {x: 0, y: 0}
+    });
+
+    const copyInput = b.getBlock('copyParent').inputs.VALUE;
+    t.not(copyInput.shadow, 'sharedShadow');
+    t.equal(copyInput.block, copyInput.shadow);
+    t.equal(b.getBlock(copyInput.shadow).parent, 'copyParent');
+    t.equal(b.getBlock(copyInput.shadow).shadow, true);
+    t.equal(b.getBlock('sharedShadow').parent, 'originalParent');
+    t.equal(b.getBlock('originalParent').inputs.VALUE.shadow, 'sharedShadow');
+    t.equal(b.getBlock('copyReporter').parent, null);
+
+    t.end();
+});

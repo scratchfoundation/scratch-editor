@@ -9,6 +9,7 @@ const BlocksRuntimeCache = require('./blocks-runtime-cache');
 const log = require('../util/log');
 const Variable = require('./variable');
 const getMonitorIdForBlockWithArgs = require('../util/get-monitor-id');
+const uid = require('../util/uid');
 
 /**
  * @file
@@ -775,9 +776,23 @@ class Blocks {
                 // this input, or null out the input's block.
                 const shadow = oldParent.inputs[e.oldInput].shadow;
                 if (shadow && e.id !== shadow) {
-                    if (this._blocks[shadow]) {
-                        oldParent.inputs[e.oldInput].block = shadow;
-                        this._blocks[shadow].parent = oldParent.id;
+                    const shadowBlock = this._blocks[shadow];
+                    if (shadowBlock) {
+                        let restoredShadowId = shadow;
+                        if (shadowBlock.parent !== oldParent.id) {
+                            log.warn(`Blocks.moveBlock found shared shadow ownership: block=${e.id}, ` +
+                                `oldParent=${oldParent.id}, oldInput=${e.oldInput}, shadow=${shadow}, ` +
+                                `shadowParent=${shadowBlock.parent}`);
+                            const restoredShadow = Clone.simple(shadowBlock);
+                            restoredShadowId = uid();
+                            restoredShadow.id = restoredShadowId;
+                            restoredShadow.parent = oldParent.id;
+                            restoredShadow.topLevel = false;
+                            this._blocks[restoredShadowId] = restoredShadow;
+                            oldParent.inputs[e.oldInput].shadow = restoredShadowId;
+                        }
+                        oldParent.inputs[e.oldInput].block = restoredShadowId;
+                        this._blocks[restoredShadowId].parent = oldParent.id;
                     } else {
                         // Shadow block is referenced but missing — clear
                         // the stale reference rather than crashing.
