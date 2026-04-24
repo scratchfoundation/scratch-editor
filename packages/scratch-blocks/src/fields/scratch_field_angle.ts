@@ -140,12 +140,15 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
     this.gauge = undefined
     if (this.mouseDownWrapper_) {
       Blockly.browserEvents.unbind(this.mouseDownWrapper_)
+      this.mouseDownWrapper_ = undefined
     }
     if (this.mouseUpWrapper) {
       Blockly.browserEvents.unbind(this.mouseUpWrapper)
+      this.mouseUpWrapper = undefined
     }
     if (this.mouseMoveWrapper) {
       Blockly.browserEvents.unbind(this.mouseMoveWrapper)
+      this.mouseMoveWrapper = undefined
     }
   }
 
@@ -298,9 +301,11 @@ class ScratchFieldAngle extends Blockly.FieldNumber {
   onMouseUp() {
     if (this.mouseMoveWrapper) {
       Blockly.browserEvents.unbind(this.mouseMoveWrapper)
+      this.mouseMoveWrapper = undefined
     }
     if (this.mouseUpWrapper) {
       Blockly.browserEvents.unbind(this.mouseUpWrapper)
+      this.mouseUpWrapper = undefined
     }
   }
 
