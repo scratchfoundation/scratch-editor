@@ -50,8 +50,7 @@ export class CheckableContinuousFlyout extends ContinuousFlyout {
     // from a previous copy can reuse the flyout's IDs, causing two workspace
     // blocks to share the same shadow in the VM. Deleting one then destroys
     // the other's shadow (bug 878291).
-    stripIds(json)
-    return json
+    return stripIds(json)
   }
 
   /**

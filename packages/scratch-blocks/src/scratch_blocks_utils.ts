@@ -23,26 +23,38 @@
 import type * as Blockly from 'blockly/core'
 
 /**
- * Recursively strip `id` properties from a serialized block state tree
- * so that every block (including shadows and nested inputs) gets a fresh
- * ID when deserialized onto the workspace. This prevents two blocks from
- * sharing the same shadow block in the VM, which would cause deleting
- * one to destroy the other's shadow.
+ * Return a new serialized block state object with `id` properties removed
+ * from this block and recursively from nested `inputs`/`next` block and
+ * shadow states so they get fresh IDs when deserialized onto the workspace.
+ * The input state is NOT modified. Blockly's serialization shares shadow
+ * state objects by reference with the live workspace, so mutating the
+ * serialized tree in place would corrupt the original block's internal
+ * shadow state.
  * @param state A serialized block state object.
+ * @returns A new state object with `id` properties removed from serialized
+ *     block/shadow subtrees.
  */
-export function stripIds(state: Blockly.serialization.blocks.State): void {
-  delete state.id
-  if (state.inputs) {
-    for (const inputName in state.inputs) {
-      const conn = state.inputs[inputName]
-      if (conn.shadow) stripIds(conn.shadow)
-      if (conn.block) stripIds(conn.block)
+export function stripIds(state: Blockly.serialization.blocks.State): Blockly.serialization.blocks.State {
+  const copy: Blockly.serialization.blocks.State = { ...state }
+  delete copy.id
+  if (copy.inputs) {
+    const inputs: typeof copy.inputs = {}
+    for (const inputName in copy.inputs) {
+      const conn = copy.inputs[inputName]
+      inputs[inputName] = {
+        ...(conn.shadow && { shadow: stripIds(conn.shadow) }),
+        ...(conn.block && { block: stripIds(conn.block) }),
+      }
+    }
+    copy.inputs = inputs
+  }
+  if (copy.next) {
+    copy.next = {
+      ...(copy.next.shadow && { shadow: stripIds(copy.next.shadow) }),
+      ...(copy.next.block && { block: stripIds(copy.next.block) }),
     }
   }
-  if (state.next) {
-    if (state.next.shadow) stripIds(state.next.shadow)
-    if (state.next.block) stripIds(state.next.block)
-  }
+  return copy
 }
 
 /**

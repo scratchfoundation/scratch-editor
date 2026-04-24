@@ -28,7 +28,7 @@ class ScratchBlockPaster extends Blockly.clipboard.BlockPaster {
     // original block can reuse the same ID, causing the VM to think both
     // blocks share the same shadow. Deleting one then destroys the other's
     // shadow (forum topic 878291).
-    stripIds(copyData.blockState)
+    copyData = { ...copyData, blockState: stripIds(copyData.blockState) }
     const block = super.paste(copyData, workspace, coordinate)
     if (block?.type === 'argument_reporter_boolean' || block?.type === 'argument_reporter_string_number') {
       block.setDragStrategy(new Blockly.dragging.BlockDragStrategy(block))
