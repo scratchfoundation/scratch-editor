@@ -71,6 +71,7 @@ class Scratch3SensingBlocks {
             sensing_loud: this.isLoud,
             sensing_askandwait: this.askAndWait,
             sensing_answer: this.getAnswer,
+            sensing_mobile: this.getMobile,
             sensing_online: this.getOnline,
             sensing_username: this.getUsername,
             sensing_userid: () => {} // legacy no-op block
@@ -84,6 +85,9 @@ class Scratch3SensingBlocks {
             },
             sensing_loudness: {
                 getId: () => 'loudness'
+            },
+            sensing_mobile: {
+                getId: () => 'mobile'
             },
             sensing_online: {
                 getId: () => 'online'
@@ -331,6 +335,11 @@ class Scratch3SensingBlocks {
         // Otherwise, 0
         return 0;
     }
+
+   getMobile () {
+       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+       return isMobile;
+      }
 
     getOnline (args, util) {
         const status = window.navigator.onLine;
