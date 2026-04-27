@@ -336,13 +336,13 @@ class Scratch3SensingBlocks {
         return 0;
     }
 
-   getMobile () {       
+   getMobile () {
         if (navigator.userAgentData) {
             return navigator.userAgentData.mobile;
         }
         // fallback for safari, firefox and older browsers
         return /Mobi|iPhone|iPad|Silk|Android/i.test(navigator.userAgent);
-      }
+    }
 
     getOnline (args, util) {
         const status = window.navigator.onLine;
