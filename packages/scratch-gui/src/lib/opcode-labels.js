@@ -68,7 +68,7 @@ const messages = defineMessages({
         description: 'Label for the loudness monitor when shown on the stage',
         id: 'gui.opcodeLabels.loudness'
     },
-    sensing_online: {
+    sensing_mobile: {
         defaultMessage: 'mobile',
         description: 'Label for the mobile status monitor when shown on the stage',
         id: 'gui.opcodeLabels.mobile'
