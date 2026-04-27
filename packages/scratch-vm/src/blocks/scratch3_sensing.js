@@ -336,10 +336,7 @@ class Scratch3SensingBlocks {
         return 0;
     }
 
-   getMobile () {
-       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-       return isMobile;
-       
+   getMobile () {       
         if (navigator.userAgentData) {
             return navigator.userAgentData.mobile;
         }
