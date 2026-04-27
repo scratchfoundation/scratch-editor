@@ -336,7 +336,7 @@ class Scratch3SensingBlocks {
         return 0;
     }
 
-   getMobile () {
+    getMobile () {
         if (navigator.userAgentData) {
             return navigator.userAgentData.mobile;
         }
