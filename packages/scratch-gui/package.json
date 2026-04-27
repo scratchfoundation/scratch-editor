@@ -139,7 +139,7 @@
     "bowser": "1.9.4",
     "classnames": "2.5.1",
     "computed-style-to-inline-style": "3.0.0",
-    "cookie": "0.6.0",
+    "cookie": "0.7.0",
     "copy-webpack-plugin": "6.4.1",
     "core-js": "2.6.12",
     "css-loader": "5.2.7",
