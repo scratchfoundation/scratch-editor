@@ -1,7 +1,13 @@
 name: build-scratch-blocks
 on:
   push: # Runs whenever a commit is pushed to the repository
+  pull_request: # Runs on pull requests (including from forks)
   workflow_dispatch: # Allows you to run this workflow manually from the Actions tab
+
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   lint:
     runs-on: ubuntu-latest
