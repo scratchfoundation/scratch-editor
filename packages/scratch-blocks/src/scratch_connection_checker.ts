@@ -50,8 +50,9 @@ class ScratchConnectionChecker extends Blockly.ConnectionChecker {
     // getConnectionForOrphanedConnection patch routes displaced blocks into
     // statement inputs, so we allow the connection when a suitable statement
     // input exists on the dragging block.
+    const bType: Blockly.ConnectionType = b.type
     if (
-      (b.type as Blockly.ConnectionType) === Blockly.ConnectionType.NEXT_STATEMENT &&
+      bType === Blockly.ConnectionType.NEXT_STATEMENT &&
       b.isConnected() &&
       !(a.getSourceBlock() as Blockly.Block).nextConnection
     ) {

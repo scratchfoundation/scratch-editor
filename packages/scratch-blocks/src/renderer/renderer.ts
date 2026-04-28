@@ -65,7 +65,8 @@ export class ScratchRenderer extends Blockly.zelos.Renderer {
    * @returns True if we should highlight the connection.
    */
   override shouldHighlightConnection(connection: Blockly.RenderedConnection): boolean {
-    return (connection.type as Blockly.ConnectionType) === Blockly.ConnectionType.INPUT_VALUE
+    const connectionType: Blockly.ConnectionType = connection.type
+    return connectionType === Blockly.ConnectionType.INPUT_VALUE
   }
 }
 

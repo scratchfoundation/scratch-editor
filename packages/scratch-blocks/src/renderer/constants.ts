@@ -52,7 +52,7 @@ export class ConstantProvider extends Blockly.zelos.ConstantProvider {
    * @returns The shape object for the given connection.
    */
   override shapeFor(connection: Blockly.RenderedConnection): ReturnType<Blockly.zelos.ConstantProvider['shapeFor']> {
-    const connectionType = connection.type as Blockly.ConnectionType
+    const connectionType: Blockly.ConnectionType = connection.type
     let checks = connection.getCheck()
     const hexagonal = this.HEXAGONAL
     const rounded = this.ROUNDED
