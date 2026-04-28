@@ -150,8 +150,8 @@ describe('ScratchConnectionChecker', () => {
         assert(foreverBlock.previousConnection, 'foreverBlock should have previousConnection')
         assert(topBlock.nextConnection, 'topBlock should have nextConnection')
         const result = new ScratchChecker().doDragChecks(
-          foreverBlock.previousConnection as unknown as Blockly.RenderedConnection,
-          topBlock.nextConnection as unknown as Blockly.RenderedConnection,
+          foreverBlock.previousConnection,
+          topBlock.nextConnection,
           Infinity,
         )
         expect(result).toBe(true)
@@ -196,8 +196,8 @@ describe('ScratchConnectionChecker', () => {
         assert(ScratchChecker, 'Expected ScratchConnectionChecker to be registered')
         assert(foreverBlock.previousConnection, 'foreverBlock should have previousConnection')
         const result = new ScratchChecker().doDragChecks(
-          foreverBlock.previousConnection as unknown as Blockly.RenderedConnection,
-          topBlock.nextConnection as unknown as Blockly.RenderedConnection,
+          foreverBlock.previousConnection,
+          topBlock.nextConnection,
           Infinity,
         )
         expect(result).toBe(false)

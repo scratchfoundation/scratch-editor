@@ -319,7 +319,7 @@ describe('block input serialization round-trip', () => {
     const dom = Blockly.Xml.blockToDom(block, true)
     expect(dom).toBeInstanceOf(Element)
 
-    const xmlStr = new XMLSerializer().serializeToString(dom as Element)
+    const xmlStr = new XMLSerializer().serializeToString(dom)
     expect(xmlStr).toContain('name="VALUE"')
     expect(xmlStr).toContain('shadow')
     // With opt_noId, no element should have an id attribute

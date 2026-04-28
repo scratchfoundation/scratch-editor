@@ -28,7 +28,8 @@ Blockly.Connection.getConnectionForOrphanedConnection = function (
   // Apply the wrapping logic when the orphaned connection is a statement
   // connection (PREVIOUS_STATEMENT).  Value connections (OUTPUT_VALUE) are
   // already handled by the original implementation.
-  if ((orphanConnection.type as Blockly.ConnectionType) === Blockly.ConnectionType.PREVIOUS_STATEMENT) {
+  const orphanType: Blockly.ConnectionType = orphanConnection.type
+  if (orphanType === Blockly.ConnectionType.PREVIOUS_STATEMENT) {
     const checker = orphanConnection.getConnectionChecker()
     for (const input of startBlock.inputList) {
       const conn = input.connection
@@ -87,7 +88,7 @@ Reflect.set(
     if (markerPreviousConnection?.isConnected() && !markerNextConnection?.isConnected()) {
       for (const input of marker.inputList) {
         const conn = input.connection
-        const connType = conn?.type as Blockly.ConnectionType | undefined
+        const connType = conn?.type
         if (connType !== Blockly.ConnectionType.NEXT_STATEMENT || !conn?.isConnected()) {
           continue
         }

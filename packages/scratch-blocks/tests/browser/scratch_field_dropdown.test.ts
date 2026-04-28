@@ -25,9 +25,7 @@ import { registerScratchFieldDropdown } from '../../src/fields/scratch_field_dro
 let originalFieldDropdown: (new (...args: unknown[]) => Blockly.Field) | null = null
 
 beforeAll(() => {
-  originalFieldDropdown = Blockly.registry.getClass(Blockly.registry.Type.FIELD, 'field_dropdown') as
-    | (new (...args: unknown[]) => Blockly.Field)
-    | null
+  originalFieldDropdown = Blockly.registry.getClass(Blockly.registry.Type.FIELD, 'field_dropdown')
   registerScratchFieldDropdown()
   Blockly.Blocks.test_target_menu = {
     init(this: Blockly.Block) {

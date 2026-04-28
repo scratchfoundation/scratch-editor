@@ -159,7 +159,7 @@ export function isContentNodeFocused(): boolean {
   return Blockly.getFocusManager().getFocusedNode() !== null
 }
 
-;(registerContinuousToolbox as () => void)()
+registerContinuousToolbox()
 Blockly.Scrollbar.scrollbarThickness = Blockly.Touch.TOUCH_ENABLED ? 14 : 11
 Blockly.FlyoutButton.TEXT_MARGIN_X = 40
 Blockly.FlyoutButton.TEXT_MARGIN_Y = 10

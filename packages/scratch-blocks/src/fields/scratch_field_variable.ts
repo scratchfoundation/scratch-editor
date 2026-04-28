@@ -47,7 +47,7 @@ export class ScratchFieldVariable extends Blockly.FieldVariable {
     // dropdownCreate returns MenuOption[] rather than Blockly.MenuGenerator's
     // MenuOption[][] variant; the cast is needed to satisfy FieldVariable's
     // menuGenerator_ type while the actual runtime shape is compatible.
-    this.menuGenerator_ = ScratchFieldVariable.dropdownCreate.bind(this) as unknown as Blockly.MenuGenerator
+    this.menuGenerator_ = ScratchFieldVariable.dropdownCreate.bind(this)
   }
 
   initModel() {

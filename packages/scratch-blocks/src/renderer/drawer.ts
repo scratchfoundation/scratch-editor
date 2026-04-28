@@ -64,7 +64,7 @@ export class Drawer extends Blockly.zelos.Drawer {
    */
   override drawConnectionHighlightPath(measurable: Blockly.blockRendering.Connection) {
     const conn = measurable.connectionModel
-    const connectionType = conn.type as Blockly.ConnectionType
+    const connectionType: Blockly.ConnectionType = conn.type
     if (connectionType === Blockly.ConnectionType.INPUT_VALUE && measurable.isDynamicShape) {
       const input = measurable as Blockly.blockRendering.InlineInput
       const EXPAND_X = 0.5

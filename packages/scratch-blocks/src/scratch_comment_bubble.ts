@@ -69,7 +69,7 @@ export class ScratchCommentBubble
     if (gesture) {
       // ScratchCommentBubble implements IBubble structurally but TypeScript
       // cannot verify it because IBubble.drag has a different signature here.
-      gesture.handleBubbleStart(e, this as unknown as Blockly.IBubble)
+      gesture.handleBubbleStart(e, this)
       Blockly.common.setSelected(this)
     }
   }
