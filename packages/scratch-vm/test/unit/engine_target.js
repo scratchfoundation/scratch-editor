@@ -1199,7 +1199,7 @@ const captureLogWarn = (fn) => {
     return messages;
 };
 
-test('reconcileVariableReferences emits log.warn when it creates a stage definition', t => {
+test('reconcileVariableReferences with {logRepairs: true} emits log.warn on creation', t => {
     const runtime = new Runtime();
 
     const stage = new Target(runtime);
@@ -1213,7 +1213,7 @@ test('reconcileVariableReferences emits log.warn when it creates a stage definit
 
     addBroadcastBlocksTo(target);
 
-    const messages = captureLogWarn(() => target.reconcileVariableReferences());
+    const messages = captureLogWarn(() => target.reconcileVariableReferences({logRepairs: true}));
 
     t.equal(messages.length, 1, 'one log.warn fired');
     t.match(messages[0], /Reconciled.*'Target'.*created.*'mock broadcast message id'/,
@@ -1222,7 +1222,7 @@ test('reconcileVariableReferences emits log.warn when it creates a stage definit
     t.end();
 });
 
-test('reconcileVariableReferences emits log.warn when it remaps a reference', t => {
+test('reconcileVariableReferences with {logRepairs: true} emits log.warn on remap', t => {
     const runtime = new Runtime();
 
     const stage = new Target(runtime);
@@ -1237,7 +1237,7 @@ test('reconcileVariableReferences emits log.warn when it remaps a reference', t 
     stage.createVariable('pre-existing global var id', 'a mock variable', Variable.SCALAR_TYPE);
     target.blocks.createBlock(adapter(events.mockVariableBlock)[0]);
 
-    const messages = captureLogWarn(() => target.reconcileVariableReferences());
+    const messages = captureLogWarn(() => target.reconcileVariableReferences({logRepairs: true}));
 
     t.equal(messages.length, 1, 'one log.warn fired');
     t.match(messages[0], /Reconciled.*remapped.*'mock var id'.*'pre-existing global var id'/,
@@ -1416,6 +1416,77 @@ test('reconcileVariableReferences does not log on clean references', t => {
     const messages = captureLogWarn(() => target.reconcileVariableReferences());
 
     t.equal(messages.length, 0, 'no log.warn fired on a clean reference');
+
+    t.end();
+});
+
+test('reconcileVariableReferences tolerates null options without throwing', t => {
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    addBroadcastBlocksTo(target);
+
+    t.doesNotThrow(() => target.reconcileVariableReferences(null),
+        'destructuring is null-safe for the public API contract');
+    t.ok(stage.variables['mock broadcast message id'], 'broadcast still created on stage');
+
+    t.end();
+});
+
+test('reconcileVariableReferences without {logRepairs} is silent even when it repairs', t => {
+    // Sprite import / backpack paste calls reconcile via fixUpVariableReferences.
+    // Creating a stage broadcast for a backpacked sprite isn't corruption — it's
+    // the normal cross-project reference reconciliation. Default logging is off
+    // so the warning is reserved for the load-time-repair entry point.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    addBroadcastBlocksTo(target);
+
+    const messages = captureLogWarn(() => target.reconcileVariableReferences());
+
+    t.equal(messages.length, 0, 'no log.warn fired without {logRepairs}');
+    t.ok(stage.variables['mock broadcast message id'], 'broadcast still created on stage');
+
+    t.end();
+});
+
+test('fixUpVariableReferences does not log on sprite-import path', t => {
+    // Regression for the warning firing on every backpack-restore that referenced
+    // a broadcast — the case is normal, not corruption, and shouldn't read as one.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    addBroadcastBlocksTo(target);
+
+    const messages = captureLogWarn(() => target.fixUpVariableReferences());
+
+    t.equal(messages.length, 0, 'no log.warn fired during fixUpVariableReferences');
+    t.ok(stage.variables['mock broadcast message id'], 'broadcast still created on stage');
 
     t.end();
 });
