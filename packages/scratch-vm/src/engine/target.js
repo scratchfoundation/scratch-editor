@@ -714,8 +714,8 @@ class Target extends EventEmitter {
                     if (staleRef) {
                         conflictNamesToReplace[varId] = existing.name;
                         log.warn(
-                            `Reconciled dangling reference on '${this.getName()}': normalized displayed ` +
-                            `name to '${existing.name}' for id '${varId}' ` +
+                            `Reconciled stale displayed name on '${this.getName()}': updated to ` +
+                            `'${existing.name}' for id '${varId}' ` +
                             `(was '${staleRef.referencingField.value}').`
                         );
                     }

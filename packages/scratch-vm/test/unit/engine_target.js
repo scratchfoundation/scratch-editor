@@ -997,6 +997,61 @@ test('reconcileVariableReferences creates a stage variable for an undefined vari
     t.end();
 });
 
+test('reconcileVariableReferences creates a stage list for an undefined list reference', t => {
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    target.blocks.createBlock(adapter(events.mockListBlock)[0]);
+
+    t.equal(Object.keys(stage.variables).length, 0);
+    t.equal(target.blocks.getBlock('another block').fields.LIST.id, 'mock list id');
+    t.equal(target.blocks.getBlock('another block').fields.LIST.value, 'a mock list');
+
+    target.reconcileVariableReferences();
+
+    t.equal(Object.keys(stage.variables).length, 1, 'list created on stage');
+    const newList = stage.variables['mock list id'];
+    t.ok(newList, 'list preserves the original id');
+    t.equal(newList.name, 'a mock list');
+    t.equal(newList.type, Variable.LIST_TYPE);
+    t.equal(target.blocks.getBlock('another block').fields.LIST.id, 'mock list id');
+
+    t.end();
+});
+
+test('reconcileVariableReferences remaps a list reference to an existing same-name stage list', t => {
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    stage.createVariable('pre-existing list id', 'a mock list', Variable.LIST_TYPE);
+    target.blocks.createBlock(adapter(events.mockListBlock)[0]);
+
+    target.reconcileVariableReferences();
+
+    t.equal(Object.keys(stage.variables).length, 1, 'no duplicate list created');
+    t.ok(stage.variables['pre-existing list id'], 'existing list preserved');
+    t.equal(target.blocks.getBlock('another block').fields.LIST.id, 'pre-existing list id',
+        'block field id remapped to existing list');
+
+    t.end();
+});
+
 test('reconcileVariableReferences creates a stage broadcast for an undefined broadcast reference', t => {
     const runtime = new Runtime();
 
