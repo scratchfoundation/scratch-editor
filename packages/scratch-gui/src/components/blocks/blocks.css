@@ -83,11 +83,6 @@
 
 
 .blocks :global(.blocklyBlockDragSurface) {
-    /*
-        Fix an issue where the drag surface was preventing hover events for sharing blocks.
-        This does not prevent user interaction on the blocks themselves.
-    */
-    pointer-events: none;
     z-index: $z-index-drag-layer; /* make blocks match gui drag layer */
 }
 

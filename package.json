@@ -1,6 +1,6 @@
 {
   "name": "scratch-editor",
-  "version": "13.6.0",
+  "version": "13.7.1",
   "private": "true",
   "description": "Scratch editor mono-repository",
   "keywords": [],
@@ -28,6 +28,7 @@
     "clean": "npm run --workspaces clean",
     "prepare": "husky install",
     "refresh-gh-workflow": "ts-node scripts/build-gha-workflows.ts",
+    "start": "npm --workspace @scratch/scratch-gui start",
     "test": "npm test --workspaces",
     "update-legal": "npm --workspaces exec -c 'rm -f ./{LICENSE,TRADEMARK} && cp -f ../../{LICENSE,TRADEMARK} .'",
     "version": "cross-env-shell ./scripts/npm-version.sh"

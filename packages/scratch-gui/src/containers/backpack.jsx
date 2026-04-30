@@ -26,8 +26,8 @@ class Backpack extends React.Component {
             'handleToggle',
             'handleDelete',
             'getContents',
-            'handleMouseEnter',
-            'handleMouseLeave',
+            'handlePointerEnter',
+            'handlePointerLeave',
             'handleBlockDragEnd',
             'handleBlockDragUpdate',
             'handleMore'
@@ -200,14 +200,14 @@ class Backpack extends React.Component {
             blockDragOutsideWorkspace: isOutsideWorkspace
         });
     }
-    handleMouseEnter () {
+    handlePointerEnter () {
         if (this.state.blockDragOutsideWorkspace) {
             this.setState({
                 blockDragOverBackpack: true
             });
         }
     }
-    handleMouseLeave () {
+    handlePointerLeave () {
         this.setState({
             blockDragOverBackpack: false
         });
@@ -242,8 +242,8 @@ class Backpack extends React.Component {
                 onDelete={this.handleDelete}
                 onDrop={this.handleDrop}
                 onMore={this.handleMore}
-                onMouseEnter={this.handleMouseEnter}
-                onMouseLeave={this.handleMouseLeave}
+                onPointerEnter={this.handlePointerEnter}
+                onPointerLeave={this.handlePointerLeave}
                 onToggle={this.props.host ? this.handleToggle : null}
                 ariaRole={this.props.ariaRole}
                 ariaLabel={this.props.ariaLabel}

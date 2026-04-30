@@ -53,9 +53,9 @@ const Backpack = ({
     showMore,
     onToggle,
     onDelete,
-    onMouseEnter,
-    onMouseLeave,
-    onMore
+    onMore,
+    onPointerEnter,
+    onPointerLeave
 }) => {
     const intl = useIntl();
     return (
@@ -93,8 +93,8 @@ const Backpack = ({
                         [styles.dragOver]: dragOver || blockDragOver
                     })}
                     ref={containerRef}
-                    onMouseEnter={onMouseEnter}
-                    onMouseLeave={onMouseLeave}
+                    onPointerEnter={onPointerEnter}
+                    onPointerLeave={onPointerLeave}
                 >
                     {error ? (
                         <div className={styles.statusMessage}>
@@ -181,8 +181,8 @@ Backpack.propTypes = {
     loading: PropTypes.bool,
     onDelete: PropTypes.func,
     onMore: PropTypes.func,
-    onMouseEnter: PropTypes.func,
-    onMouseLeave: PropTypes.func,
+    onPointerEnter: PropTypes.func,
+    onPointerLeave: PropTypes.func,
     onToggle: PropTypes.func,
     showMore: PropTypes.bool
 };

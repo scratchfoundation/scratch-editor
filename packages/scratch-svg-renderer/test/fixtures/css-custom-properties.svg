@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <mask id="myMask">
+            <rect fill="white" />
+        </mask>
+    </defs>
+
+    <style>
+        /* External url() hidden in a custom property should be stripped */
+        :root {
+            --external-url: url(https://example.com/tracking.php);
+        }
+        .attack {
+            background-image: var(--external-url) !important;
+        }
+
+        /* Internal url() in a custom property should be preserved */
+        :root {
+            --internal-ref: url(#myMask);
+        }
+        .safe {
+            mask: var(--internal-ref);
+        }
+
+        /* data: url() in a custom property should be preserved */
+        :root {
+            --data-url: url(data:image/png;base64,iVBORw0KGgo=);
+        }
+    </style>
+
+    <rect class="safe" fill="red" />
+</svg>

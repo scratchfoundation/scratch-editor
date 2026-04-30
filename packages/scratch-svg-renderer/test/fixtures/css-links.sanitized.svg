@@ -17,9 +17,9 @@
     <rect></rect>
     <rect></rect>
 
-    <style>.url{fill:url(#myMask);stroke:url(#myMask);background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA")}.url .inner-2{}</style>
+    <style>.url{fill:url(#myMask);stroke:url(#myMask);background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA)}.url .inner-2{}</style>
 
     <rect class="url"></rect>
 
-    <style>@font-face{font-family:'ExternalFont'}@font-face{font-family:'DataFont';src:url("data:font/woff;base64,d09GRgABAAAAAAnSUhEUgAAAAUA") format('woff')}text{font-family:'DataFont'}</style>
+    <style>@font-face{font-family:"ExternalFont"}@font-face{font-family:"DataFont";src:url(data:font/woff;base64,d09GRgABAAAAAAnSUhEUgAAAAUA)format("woff")}text{font-family:"DataFont"}</style>
 </svg>

@@ -415,6 +415,72 @@ test('move - attaching new shadow', t => {
     t.end();
 });
 
+test('move out of input with shadow clears parent', t => {
+    const b = new Blocks(new Runtime());
+    // Create a stack block with an input that has a shadow
+    b.createBlock({
+        id: 'stack',
+        opcode: 'TEST_BLOCK',
+        next: null,
+        parent: null,
+        fields: {},
+        inputs: {
+            myInput: {
+                name: 'myInput',
+                block: 'myShadow',
+                shadow: 'myShadow'
+            }
+        },
+        topLevel: true
+    });
+    b.createBlock({
+        id: 'myShadow',
+        opcode: 'TEST_SHADOW',
+        next: null,
+        parent: 'stack',
+        fields: {},
+        inputs: {},
+        shadow: true
+    });
+    b.createBlock({
+        id: 'reporter',
+        opcode: 'TEST_REPORTER',
+        next: null,
+        parent: null,
+        fields: {},
+        inputs: {},
+        topLevel: true
+    });
+
+    // Move the reporter into the stack's input (covering the shadow)
+    b.moveBlock({
+        id: 'reporter',
+        newParent: 'stack',
+        newInput: 'myInput'
+    });
+    t.equal(b._blocks.reporter.parent, 'stack');
+    t.equal(b.getTopLevelScript('reporter'), 'stack');
+
+    // Detach the reporter from the stack's input
+    b.moveBlock({
+        id: 'reporter',
+        oldParent: 'stack',
+        oldInput: 'myInput',
+        newCoordinate: {x: 100, y: 100}
+    });
+
+    // The shadow should be restored
+    t.equal(b._blocks.stack.inputs.myInput.block, 'myShadow');
+
+    // The reporter's parent must be cleared so it is its own top-level script
+    t.equal(b._blocks.reporter.parent, null,
+        'reporter parent should be null after disconnect');
+    t.equal(b.getTopLevelScript('reporter'), 'reporter',
+        'reporter should be its own top-level script after disconnect');
+
+    t.end();
+});
+
 test('change', t => {
     const b = new Blocks(new Runtime());
     b.createBlock({
@@ -468,6 +534,47 @@ test('change', t => {
         value: 'final-value'
     });
     t.equal(b._blocks.foo.fields.someField.value, 'final-value');
+
+    t.end();
+});
+
+test('block_field_intermediate_change updates field value', t => {
+    const rt = new Runtime();
+    rt.addTarget({
+        id: 'target1',
+        isStage: true,
+        blocks: new Blocks(rt, true),
+        variables: {},
+        comments: {}
+    });
+    const b = new Blocks(rt);
+    b.createBlock({
+        id: 'foo',
+        opcode: 'TEST_BLOCK',
+        next: null,
+        fields: {
+            TEXT: {
+                name: 'TEXT',
+                value: 'Hello!'
+            }
+        },
+        inputs: {},
+        topLevel: true
+    });
+
+    t.equal(b._blocks.foo.fields.TEXT.value, 'Hello!');
+
+    // Simulate an intermediate field change (keystroke during editing)
+    b.blocklyListen({
+        type: 'block_field_intermediate_change',
+        blockId: 'foo',
+        name: 'TEXT',
+        oldValue: 'Hello!',
+        newValue: 'Hello world'
+    });
+
+    t.equal(b._blocks.foo.fields.TEXT.value, 'Hello world',
+        'field value should update on intermediate change');
 
     t.end();
 });
@@ -1036,5 +1143,80 @@ test('getAllVariableAndListReferences returns broadcast when we tell it to', t =
     t.equal(varListRefs['mock broadcast message id'][0].type, Variable.BROADCAST_MESSAGE_TYPE);
     t.equal(varListRefs['mock broadcast message id'][0].referencingField.value, 'my message');
 
+    t.end();
+});
+
+// Regression test for bug 878291: moveBlock should not crash when a
+// shadow reference points to a block that does not exist.
+test('moveBlock tolerates missing shadow block', t => {
+    const b = new Blocks(new Runtime());
+
+    // Create a parent block with an input whose shadow reference is stale
+    b.createBlock({
+        id: 'parent',
+        opcode: 'data_setvariableto',
+        next: null,
+        parent: null,
+        shadow: false,
+        topLevel: true,
+        inputs: {
+            VALUE: {
+                name: 'VALUE',
+                block: 'reporter',
+                shadow: 'nonexistent_shadow' // references a block that does not exist
+            }
+        },
+        fields: {}
+    });
+    b.createBlock({
+        id: 'reporter',
+        opcode: 'sensing_answer',
+        next: null,
+        parent: 'parent',
+        shadow: false,
+        topLevel: false,
+        inputs: {},
+        fields: {}
+    });
+
+    // Detaching the reporter should not throw even though the shadow is missing
+    t.doesNotThrow(() => {
+        b.moveBlock({
+            id: 'reporter',
+            oldParent: 'parent',
+            oldInput: 'VALUE',
+            newCoordinate: {x: 0, y: 0}
+        });
+    });
+
+    // The stale shadow reference should be cleared
+    t.equal(b.getBlock('parent').inputs.VALUE.shadow, null);
+    t.equal(b.getBlock('parent').inputs.VALUE.block, null);
+
+    t.end();
+});
+
+// Regression test: when Blockly respawns a shadow block (e.g. after
+// uncovering a duplicated input), the create event arrives with
+// topLevel:true because appendInternal creates the block before
+// connecting it. Shadow blocks must never be added to _scripts —
+// a top-level shadow in _scripts causes "Workspace Update Error"
+// on sprite switch because toXML serializes it as a root <shadow>
+// element that Blockly cannot load.
+test('createBlock does not add shadow blocks to _scripts', t => {
+    const b = new Blocks(new Runtime());
+    b.createBlock({
+        id: 'shadow_1',
+        opcode: 'math_number',
+        next: null,
+        fields: {NUM: {name: 'NUM', value: '0'}},
+        inputs: {},
+        topLevel: true,
+        shadow: true
+    });
+    t.equal(b._scripts.indexOf('shadow_1'), -1,
+        'shadow block should not be in _scripts even with topLevel:true');
+    t.ok(Object.prototype.hasOwnProperty.call(b._blocks, 'shadow_1'),
+        'shadow block should still be in _blocks');
     t.end();
 });

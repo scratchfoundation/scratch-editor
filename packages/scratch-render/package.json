@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-render",
-  "version": "13.6.0",
+  "version": "13.7.1",
   "description": "WebGL Renderer for Scratch 3.0",
   "keywords": [],
   "homepage": "https://github.com/scratchfoundation/scratch-render#readme",
@@ -54,7 +54,7 @@
     "allow-incomplete-coverage": true
   },
   "dependencies": {
-    "@scratch/scratch-svg-renderer": "13.6.0",
+    "@scratch/scratch-svg-renderer": "13.7.1",
     "grapheme-breaker": "0.3.2",
     "hull.js": "0.2.10",
     "ify-loader": "1.1.0",
@@ -67,29 +67,28 @@
     "@babel/core": "7.29.0",
     "@babel/polyfill": "7.12.1",
     "@babel/preset-env": "7.29.2",
-    "@scratch/scratch-vm": "13.6.0",
+    "@scratch/scratch-vm": "13.7.1",
     "babel-loader": "9.2.1",
     "copy-webpack-plugin": "6.4.1",
     "docdash": "0.4.0",
     "eslint": "9.39.4",
-    "eslint-config-scratch": "14.1.4",
-    "gh-pages": "1.2.0",
+    "eslint-config-scratch": "14.1.14",
     "globals": "16.5.0",
-    "html-webpack-plugin": "5.6.6",
+    "html-webpack-plugin": "5.6.7",
     "playwright-chromium": "1.59.1",
     "scratch-render-fonts": "1.0.252",
     "scratch-semantic-release-config": "4.0.1",
-    "scratch-storage": "6.2.0",
+    "scratch-storage": "6.2.1",
     "scratch-webpack-configuration": "3.1.2",
     "semantic-release": "25.0.3",
-    "tap": "21.6.2",
-    "terser-webpack-plugin": "5.4.0",
-    "typedoc": "0.28.16",
-    "webpack": "5.105.4",
+    "tap": "21.7.1",
+    "terser-webpack-plugin": "5.5.0",
+    "typedoc": "0.28.18",
+    "webpack": "5.106.2",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.2.3"
   },
   "peerDependencies": {
-    "scratch-render-fonts": "^1.0.0"
+    "scratch-render-fonts": "1.0.252"
   }
 }

@@ -35,8 +35,8 @@ const SpriteSelectorItem = props => {
                         [styles.isSelected]: props.selected
                     })}
                     onClick={props.onClick}
-                    onMouseEnter={props.onMouseEnter}
-                    onMouseLeave={props.onMouseLeave}
+                    onPointerEnter={props.onPointerEnter}
+                    onPointerLeave={props.onPointerLeave}
                     onMouseDown={props.onMouseDown}
                     onTouchStart={props.onMouseDown}
                     ref={props.componentRef}
@@ -123,8 +123,8 @@ SpriteSelectorItem.propTypes = {
     onDuplicateButtonClick: PropTypes.func,
     onExportButtonClick: PropTypes.func,
     onMouseDown: PropTypes.func,
-    onMouseEnter: PropTypes.func,
-    onMouseLeave: PropTypes.func,
+    onPointerEnter: PropTypes.func,
+    onPointerLeave: PropTypes.func,
     preventContextMenu: PropTypes.bool,
     selected: PropTypes.bool.isRequired,
     isDeleteConfirmationModalOpened: PropTypes.bool

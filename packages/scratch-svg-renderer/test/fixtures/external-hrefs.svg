@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <filter id="f">
+            <feImage href="https://example.com/feimage-href" />
+            <feImage xlink:href="https://example.com/feimage-xlink" />
+        </filter>
+        <pattern id="p" href="https://example.com/pattern-href" />
+        <linearGradient href="https://example.com/gradient-href" />
+    </defs>
+
+    <image href="https://example.com/image-href" />
+    <image xlink:href="https://example.com/image-xlink" />
+
+    <!-- data: and # refs should be preserved -->
+    <image href="data:image/png;base64,iVBORw0KGgo=" />
+    <image href="#internal" />
+
+    <text><textPath href="https://example.com/textpath-href">text</textPath></text>
+    <animateMotion><mpath href="https://example.com/mpath-href" /></animateMotion>
+</svg>

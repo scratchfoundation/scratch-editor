@@ -28,7 +28,7 @@
     background-color: transparent;
 }
 
-.root .arrow {
+.arrow {
     position: fixed;
     z-index: $z-index-modal;
     border: none;

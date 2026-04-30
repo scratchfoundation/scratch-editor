@@ -305,6 +305,20 @@ class Blocks {
             typeof e.commentId !== 'string') {
             return;
         }
+        // Intermediate field changes fire on every keystroke while editing
+        // a text input. Update the field value so running scripts see the
+        // change, but skip project-changed and other side effects. Handle
+        // this before the stage/editingTarget lookups to avoid per-keystroke
+        // overhead from getTargetForStage's linear scan.
+        if (e.type === 'block_field_intermediate_change') {
+            const block = this._blocks[e.blockId];
+            if (block && block.fields && block.fields[e.name]) {
+                block.fields[e.name].value = e.newValue;
+                this._cache._executeCached = {};
+            }
+            return;
+        }
+
         const stage = this.runtime.getTargetForStage();
         const editingTarget = this.runtime.getEditingTarget();
 
@@ -584,7 +598,7 @@ class Blocks {
         // Push block id to scripts array.
         // Blocks are added as a top-level stack if they are marked as a top-block
         // (if they were top-level XML in the event).
-        if (block.topLevel) {
+        if (block.topLevel && !block.shadow) {
             this._addScript(block.id);
         }
 
@@ -761,8 +775,16 @@ class Blocks {
                 // this input, or null out the input's block.
                 const shadow = oldParent.inputs[e.oldInput].shadow;
                 if (shadow && e.id !== shadow) {
-                    oldParent.inputs[e.oldInput].block = shadow;
-                    this._blocks[shadow].parent = oldParent.id;
+                    if (this._blocks[shadow]) {
+                        oldParent.inputs[e.oldInput].block = shadow;
+                        this._blocks[shadow].parent = oldParent.id;
+                    } else {
+                        // Shadow block is referenced but missing — clear
+                        // the stale reference rather than crashing.
+                        oldParent.inputs[e.oldInput].block = null;
+                        oldParent.inputs[e.oldInput].shadow = null;
+                    }
+                    this._blocks[e.id].parent = null;
                 } else {
                     oldParent.inputs[e.oldInput].block = null;
                     if (e.id !== shadow) {

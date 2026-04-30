@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <mask id="myMask">
+            <rect fill="white" />
+        </mask>
+    </defs>
+
+    <!-- use is in DOMPurify's svgDisallowed list -->
+    <use href="https://example.com/use-href" />
+    <use xlink:href="https://example.com/use-xlink" />
+
+    <!-- foreignObject can embed HTML with external resources -->
+    <foreignObject width="100" height="100">
+        <body xmlns="http://www.w3.org/1999/xhtml">
+            <img src="https://example.com/foreignobject-img" />
+        </body>
+    </foreignObject>
+
+    <!-- script is in svgDisallowed -->
+    <script href="https://example.com/script-href"></script>
+    <script xlink:href="https://example.com/script-xlink"></script>
+
+    <!-- animate is in svgDisallowed -->
+    <animate href="https://example.com/animate-href" attributeName="x" />
+
+    <!-- set is in svgDisallowed -->
+    <set href="https://example.com/set-href" attributeName="x" />
+
+    <!-- safe content that should survive -->
+    <rect fill="red" mask="url(#myMask)" />
+</svg>

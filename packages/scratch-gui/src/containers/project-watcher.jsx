@@ -33,7 +33,7 @@ class ProjectWatcher extends React.Component {
     }
     componentDidUpdate (prevProps) {
         if (this.state.saving && this.state.sharing) {
-            if (this.props.isShared && this.props.isShowingWithId) {
+            if (this.props.isShared && (this.props.isShowingWithId && !prevProps.isShowingWithId)) {
                 this.fulfill();
             }
         }

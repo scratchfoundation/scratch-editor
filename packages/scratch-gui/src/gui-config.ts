@@ -32,7 +32,7 @@ export interface GUIStorage {
         }
     ): Promise<{id: ProjectId}>;
 
-    saveProjectThumbnail?(projectId: ProjectId, thumbnail: Blob): void;
+    saveProjectThumbnail?(projectId: ProjectId, thumbnail: Blob, onSuccess?: () => void, onError?: () => void): void;
 }
 
 export interface GUIBackpackStorage {

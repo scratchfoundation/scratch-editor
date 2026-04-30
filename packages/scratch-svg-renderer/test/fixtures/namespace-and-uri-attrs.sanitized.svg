@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <mask id="myMask">
+            <rect fill="white"></rect>
+        </mask>
+    </defs>
+
+    
+    <image></image>
+    <image></image>
+
+    
+    <image></image>
+
+    
+    <image></image>
+
+    
+    <g>
+        <image href="#internal"></image>
+    </g>
+
+    
+    <rect fill="red"></rect>
+</svg>

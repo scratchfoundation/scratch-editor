@@ -4,49 +4,100 @@
  */
 const fixupSvgString = require('./fixup-svg-string');
 const {generate, parse, walk} = require('css-tree');
+const {ident} = require('css-tree/utils');
 const DOMPurify = require('isomorphic-dompurify');
 
 const sanitizeSvg = {};
 
-const isInternalRef = ref => ref.startsWith('#') || ref.startsWith('data:');
+const isInternalRef = ref => ref.startsWith('#') || ref.toLowerCase().startsWith('data:');
+
+/**
+ * Check if raw CSS text contains an external url() reference via regex.
+ * Used for Raw nodes (e.g. custom property values) that css-tree doesn't fully parse.
+ * @param {string} text - raw CSS text to check
+ * @returns {boolean} true if an external url() reference was found
+ */
+const rawTextHasExternalUrls = text => {
+    const normalized = text.toLowerCase().replace(/\s/g, '');
+    const urlPattern = /url\((.+?)\)/g;
+    let match;
+    while ((match = urlPattern.exec(normalized)) !== null) {
+        const ref = match[1].replace(/['"]/g, '');
+        if (!isInternalRef(ref)) return true;
+    }
+    return false;
+};
+
+/**
+ * Walk a css-tree AST and return true if any Url node references an external resource.
+ * Also checks Raw nodes, which css-tree produces for custom property values and other
+ * unparsed content that could still contain url() references.
+ * @param {import('css-tree').CssNode} ast - The CSS tree or subtree to walk
+ * @returns {boolean} True if an external url() reference was found
+ */
+const astHasExternalUrls = ast => {
+    let found = false;
+    walk(ast, node => {
+        if (node.type === 'Url') {
+            const urlValue = node.value.trim().replace(/['"]/g, '');
+            if (!isInternalRef(urlValue)) {
+                found = true;
+            }
+        }
+        if (node.type === 'Raw' && rawTextHasExternalUrls(node.value)) {
+            found = true;
+        }
+    });
+    return found;
+};
+
+/**
+ * Canonicalize a CSS string and check it for external url() references.
+ * Canonicalization: decode CSS escapes, then parse through css-tree so that all syntax
+ * variations (quoting, whitespace, comments, escapes) are normalized into AST nodes.
+ * @param {string} cssText - raw CSS text
+ * @param {string} parseContext - css-tree parse context: 'value' for a single CSS value
+ *   (presentation attributes like fill, stroke), or 'declarationList' for style attributes.
+ * @returns {boolean} true if an external url() reference was found
+ */
+const cssHasExternalUrls = (cssText, parseContext) => {
+    const decoded = ident.decode(cssText);
+    try {
+        return astHasExternalUrls(parse(decoded, {context: parseContext}));
+    } catch {
+        // If css-tree can't parse it, conservatively check the decoded text.
+        // This handles edge cases where creative syntax breaks the parser but
+        // a browser might still interpret a url() call.
+        return rawTextHasExternalUrls(decoded);
+    }
+};
+
+// Attributes that directly reference a URI (not via CSS url())
+const URI_ATTRIBUTES = new Set(['href', 'xlink:href']);
 
 DOMPurify.addHook(
     'beforeSanitizeAttributes',
     currentNode => {
+        if (!currentNode || !currentNode.attributes) return currentNode;
 
-        if (currentNode && currentNode.href && currentNode.href.baseVal) {
-            const href = currentNode.href.baseVal.replace(/\s/g, '');
-            // "data:" and "#" are valid hrefs
-            if (!isInternalRef(href)) {
-                // TODO: Those can be in different namespaces than `xlink:`
-                if (currentNode.attributes.getNamedItem('xlink:href')) {
-                    currentNode.attributes.removeNamedItem('xlink:href');
-                    delete currentNode['xlink:href'];
+        for (let i = currentNode.attributes.length - 1; i >= 0; i--) {
+            const attr = currentNode.attributes[i];
+            if (!attr.value) continue;
+
+            if (URI_ATTRIBUTES.has(attr.name)) {
+                // Direct URI: strip whitespace and check
+                if (!isInternalRef(attr.value.replace(/\s/g, ''))) {
+                    currentNode.removeAttribute(attr.name);
                 }
-                if (currentNode.attributes.getNamedItem('href')) {
-                    currentNode.attributes.removeNamedItem('href');
-                    delete currentNode.href;
+            } else {
+                // CSS value that might contain url()
+                const context = attr.name === 'style' ? 'declarationList' : 'value';
+                if (cssHasExternalUrls(attr.value, context)) {
+                    currentNode.removeAttribute(attr.name);
                 }
             }
         }
 
-        // Remove url(...) usages with external references
-        if (currentNode && currentNode.attributes) {
-            for (let i = currentNode.attributes.length - 1; i >= 0; i--) {
-                const attr = currentNode.attributes[i];
-                const rawValue = attr.value || '';
-                const value = rawValue.toLowerCase().replace(/\s/g, '');
-        
-                const urlMatch = value.match(/url\((.+?)\)/);
-                if (urlMatch) {
-                    const ref = urlMatch[1].replace(/['"]/g, '');
-                    if (!isInternalRef(ref)) {
-                        currentNode.removeAttribute(attr.name);
-                    }
-                }
-            }
-        }
-    
         return currentNode;
     }
 );
@@ -55,38 +106,34 @@ DOMPurify.addHook(
     'uponSanitizeElement',
     (node, data) => {
         if (data.tagName === 'style') {
-            const ast = parse(node.textContent);
-            let isModified = false;
+            try {
+                // Canonicalize: decode CSS escapes then parse, so css-tree sees
+                // normalized tokens (e.g. \75\72\6c becomes url).
+                const decodedCss = ident.decode(node.textContent);
+                const ast = parse(decodedCss);
+                let isModified = decodedCss !== node.textContent;
 
-            walk(ast, (astNode, item, list) => {
-                // @import rules
-                if (astNode.type === 'Atrule' && astNode.name.toLowerCase() === 'import') {
-                    list.remove(item);
-                    isModified = true;
-                }
-                
-                // Elements using url(...) for external resources
-                if (astNode.type === 'Declaration' && astNode.value) {
-                    let shouldRemove = false;
-                    walk(astNode.value, valueNode => {
-                        if (valueNode.type === 'Url') {
-                            const urlValue = (valueNode.value.value || '').trim().replace(/['"]/g, '');
-    
-                            if (!isInternalRef(urlValue)) {
-                                shouldRemove = true;
-                            }
-                        }
-                    });
-
-                    if (shouldRemove) {
+                walk(ast, (astNode, item, list) => {
+                    // @import rules
+                    if (astNode.type === 'Atrule' && astNode.name.toLowerCase() === 'import') {
                         list.remove(item);
                         isModified = true;
                     }
-                }
-            });
 
-            if (isModified) {
-                node.textContent = generate(ast);
+                    // Declarations using url(...) for external resources
+                    if (astNode.type === 'Declaration' && astNode.value && astHasExternalUrls(astNode.value)) {
+                        list.remove(item);
+                        isModified = true;
+                    }
+                });
+
+                if (isModified) {
+                    node.textContent = generate(ast);
+                }
+            } catch {
+                // If CSS parsing fails, remove the style content entirely
+                // rather than risk passing through unsanitized CSS.
+                node.textContent = '';
             }
         }
     }
@@ -98,7 +145,7 @@ let _TextDecoder;
 let _TextEncoder;
 if (typeof TextDecoder === 'undefined' || typeof TextEncoder === 'undefined') {
     // Wait to require the text encoding polyfill until we know it's needed.
-     
+
     const encoding = require('fastestsmallesttextencoderdecoder');
     _TextDecoder = encoding.TextDecoder;
     _TextEncoder = encoding.TextEncoder;

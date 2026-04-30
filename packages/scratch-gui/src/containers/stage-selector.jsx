@@ -52,8 +52,8 @@ class StageSelector extends React.Component {
             'addBackdropFromLibraryItem',
             'handleFileUploadClick',
             'handleBackdropUpload',
-            'handleMouseEnter',
-            'handleMouseLeave',
+            'handlePointerEnter',
+            'handlePointerLeave',
             'handleTouchEnd',
             'handleDrop',
             'setFileInput',
@@ -86,7 +86,7 @@ class StageSelector extends React.Component {
         const {x, y} = getEventXY(e);
         const {top, left, bottom, right} = this.ref.getBoundingClientRect();
         if (x >= left && x <= right && y >= top && y <= bottom) {
-            this.handleMouseEnter();
+            this.handlePointerEnter();
         }
     }
     addBackdropFromLibraryItem (item, shouldActivateTab = true) {
@@ -124,7 +124,7 @@ class StageSelector extends React.Component {
         e.stopPropagation(); // Prevent click from falling through to selecting stage.
         // @todo should this not add a backdrop you already have?
         const backdrops = this.mergeDynamicAssets();
-        
+
         const item = backdrops[Math.floor(Math.random() * backdrops.length)];
         this.addBackdropFromLibraryItem(item, false);
     }
@@ -154,10 +154,10 @@ class StageSelector extends React.Component {
         e.stopPropagation(); // Prevent click from selecting the stage, that is handled manually in backdrop upload
         this.fileInput.click();
     }
-    handleMouseEnter () {
+    handlePointerEnter () {
         this.props.dispatchSetHoveredSprite(this.props.id);
     }
-    handleMouseLeave () {
+    handlePointerLeave () {
         this.props.dispatchSetHoveredSprite(null);
     }
     handleDrop (dragInfo) {
@@ -201,8 +201,8 @@ class StageSelector extends React.Component {
                 onClick={this.handleClick}
                 onDrop={this.handleDrop}
                 onEmptyBackdropClick={this.handleEmptyBackdrop}
-                onMouseEnter={this.handleMouseEnter}
-                onMouseLeave={this.handleMouseLeave}
+                onPointerEnter={this.handlePointerEnter}
+                onPointerLeave={this.handlePointerLeave}
                 onSurpriseBackdropClick={this.handleSurpriseBackdrop}
                 onNewBackdropClick={this.handleNewBackdropClick}
                 {...componentProps}
