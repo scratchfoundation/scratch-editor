@@ -7,6 +7,22 @@ const events = require('../fixtures/events.json');
 const Renderer = require('../fixtures/fake-renderer');
 const Runtime = require('../../src/engine/runtime');
 const RenderedTarget = require('../../src/sprites/rendered-target');
+const log = require('../../src/util/log');
+
+const captureLogWarn = fn => {
+    const original = log.warn;
+    const messages = [];
+    log.warn = (...args) => messages.push(args.join(' '));
+    return Promise.resolve()
+        .then(fn)
+        .then(result => {
+            log.warn = original;
+            return {messages, result};
+        }, err => {
+            log.warn = original;
+            throw err;
+        });
+};
 
 const test = tap.test;
 
@@ -1209,6 +1225,56 @@ test('installTargets does NOT rename clean local-vs-global name collisions on wh
 
         t.end();
     });
+});
+
+test('installTargets does not log on sprite import that creates a stage broadcast', t => {
+    const vm = new VirtualMachine();
+    const runtime = vm.runtime;
+
+    const stageSprite = new Sprite(null, runtime);
+    const stage = stageSprite.createClone();
+    stage.isStage = true;
+    runtime.targets = [stage];
+
+    const importedSprite = new Sprite(null, runtime);
+    const importedTarget = importedSprite.createClone();
+    importedTarget.isStage = false;
+    importedTarget.getName = () => 'Imported';
+    adapter(events.mockBroadcastBlock).forEach(block => importedTarget.blocks.createBlock(block));
+
+    const extensions = {extensionIDs: new Set(), extensionURLs: new Map()};
+    captureLogWarn(() => vm.installTargets([importedTarget], extensions, false))
+        .then(({messages}) => {
+            t.ok(stage.variables['mock broadcast message id'],
+                'broadcast still created on stage during import');
+            t.equal(messages.length, 0, 'no log.warn fired on sprite import');
+            t.end();
+        });
+});
+
+test('installTargets logs on whole-project repair', t => {
+    const vm = new VirtualMachine();
+    const runtime = vm.runtime;
+
+    const stageSprite = new Sprite(null, runtime);
+    const stage = stageSprite.createClone();
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const spriteSprite = new Sprite(null, runtime);
+    const sprite = spriteSprite.createClone();
+    sprite.isStage = false;
+    sprite.getName = () => 'Sprite';
+    sprite.blocks.createBlock(adapter(events.mockVariableBlock)[0]);
+
+    const extensions = {extensionIDs: new Set(), extensionURLs: new Map()};
+    captureLogWarn(() => vm.installTargets([stage, sprite], extensions, true))
+        .then(({messages}) => {
+            t.ok(stage.variables['mock var id'], 'dangling variable reconciled');
+            t.equal(messages.length, 1, 'one log.warn fired during whole-project repair');
+            t.match(messages[0], /Reconciled.*'Sprite'.*created.*'mock var id'/);
+            t.end();
+        });
 });
 
 test('Setting turbo mode emits events', t => {

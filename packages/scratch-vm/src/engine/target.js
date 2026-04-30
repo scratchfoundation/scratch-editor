@@ -670,8 +670,19 @@ class Target extends EventEmitter {
      * Used during whole-project load to repair projects corrupted by historical
      * bugs that left dangling references, and as the definition-creation phase
      * of `fixUpVariableReferences` for sprite import and backpack paste.
+     *
+     * @param {object} [options]
+     * @param {boolean} [options.logRepairs=false] When true, emit a `log.warn`
+     * for each repair the helper performs: creating a missing stage definition,
+     * remapping a dangling reference to an existing global, normalizing a stale
+     * displayed name, or coalescing same-original-name dangling references onto
+     * one repaired definition. Reserved for the load-time-repair entry point,
+     * where reconciliation indicates project corruption worth surfacing. Off by
+     * default so that sprite import and backpack paste — both of which
+     * legitimately create stage definitions — stay quiet.
      */
-    reconcileVariableReferences () {
+    reconcileVariableReferences (options) {
+        const {logRepairs = false} = options || {};
         if (!this.runtime) return;
         const stage = this.runtime.getTargetForStage();
         if (!stage || !stage.variables) return;
@@ -713,11 +724,13 @@ class Target extends EventEmitter {
                     );
                     if (staleRef) {
                         conflictNamesToReplace[varId] = existing.name;
-                        log.warn(
-                            `Reconciled stale displayed name on '${this.getName()}': updated to ` +
-                            `'${existing.name}' for id '${varId}' ` +
-                            `(was '${staleRef.referencingField.value}').`
-                        );
+                        if (logRepairs) {
+                            log.warn(
+                                `Reconciled stale displayed name on '${this.getName()}': updated to ` +
+                                `'${existing.name}' for id '${varId}' ` +
+                                `(was '${staleRef.referencingField.value}').`
+                            );
+                        }
                     }
                 }
                 continue;
@@ -733,10 +746,12 @@ class Target extends EventEmitter {
             if (existingVar) {
                 if (!conflictIdsToReplace[varId]) {
                     conflictIdsToReplace[varId] = existingVar.id;
-                    log.warn(
-                        `Reconciled dangling reference on '${this.getName()}': remapped id '${varId}' ` +
-                        `(name '${varName}', type '${varType}') to existing stage variable '${existingVar.id}'.`
-                    );
+                    if (logRepairs) {
+                        log.warn(
+                            `Reconciled dangling reference on '${this.getName()}': remapped id '${varId}' ` +
+                            `(name '${varName}', type '${varType}') to existing stage variable '${existingVar.id}'.`
+                        );
+                    }
                 }
             } else {
                 const coalesceKey = originalNameKey(varName, varType);
@@ -749,11 +764,13 @@ class Target extends EventEmitter {
                     if (!conflictIdsToReplace[varId]) {
                         conflictIdsToReplace[varId] = earlierCreated.id;
                         conflictNamesToReplace[varId] = earlierCreated.freshName;
-                        log.warn(
-                            `Reconciled dangling reference on '${this.getName()}': coalesced id '${varId}' ` +
-                            `(name '${varName}', type '${varType}') with earlier-created stage variable ` +
-                            `'${earlierCreated.id}' (name '${earlierCreated.freshName}').`
-                        );
+                        if (logRepairs) {
+                            log.warn(
+                                `Reconciled dangling reference on '${this.getName()}': coalesced id '${varId}' ` +
+                                `(name '${varName}', type '${varType}') with earlier-created stage variable ` +
+                                `'${earlierCreated.id}' (name '${earlierCreated.freshName}').`
+                            );
+                        }
                     }
                 } else {
                     const allNames = allVarNames(varType);
@@ -766,10 +783,12 @@ class Target extends EventEmitter {
                     createdForOriginalName[coalesceKey] = {id: varId, freshName};
                     if (!conflictNamesToReplace[varId]) {
                         conflictNamesToReplace[varId] = freshName;
-                        log.warn(
-                            `Reconciled dangling reference on '${this.getName()}': created stage variable ` +
-                            `'${varId}' (name '${freshName}', type '${varType}').`
-                        );
+                        if (logRepairs) {
+                            log.warn(
+                                `Reconciled dangling reference on '${this.getName()}': created stage variable ` +
+                                `'${varId}' (name '${freshName}', type '${varType}').`
+                            );
+                        }
                     }
                 }
             }
