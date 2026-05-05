@@ -1,0 +1,27 @@
+{
+  "name": "@mediapipe/face_detection",
+  "version": "0.4.1646425229",
+  "description": "Mediapipe Face Detection Solution",
+  "main": "face_detection.js",
+  "module": "face_detection.js",
+  "jsdelivr": "face_detection.js",
+  "unpkg": "face_detection.js",
+  "types": "index.d.ts",
+  "author": "mhays@google.com",
+  "license": "Apache-2.0",
+  "homepage": "https://google.github.io/mediapipe/solutions/holistic",
+  "keywords": [ "AR", "ML", "Augmented" ],
+  "devDependencies": {
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+  },
+  "browser": {
+    "node-fetch": false,
+    "util": false,
+    "crypto": false
+  },
+  "sideEffects" : []
+}
