@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@scratch/paper": "^0.11.20221201200345",
-    "@scratch/scratch-svg-renderer": "13.7.2",
+    "@scratch/scratch-svg-renderer": "13.7.3",
     "classnames": "^2.2.5",
     "keymirror": "^0.1.1",
     "lodash.bindall": "^4.4.0",
