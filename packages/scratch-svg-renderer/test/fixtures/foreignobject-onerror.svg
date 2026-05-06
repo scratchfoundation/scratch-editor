@@ -1,0 +1,11 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0,0,100,100">
+    <foreignObject x="1" y="1" width="1" height="1">
+        <img
+            xmlns="http://www.w3.org/1999/xhtml"
+            src="data:image/png;base64,iVBORw0KGgo="
+            onerror="console.log('boo!')"
+        />
+    </foreignObject>
+
+    <rect x="10" y="10" width="80" height="80" fill="#9966ff"/>
+</svg>
