@@ -176,7 +176,13 @@ sanitizeSvg.sanitizeByteStream = function (rawData) {
 sanitizeSvg.sanitizeSvgText = function (rawSvgText) {
     let sanitizedText = DOMPurify.sanitize(rawSvgText, {
         USE_PROFILES: {svg: true},
-        FORBID_TAGS: ['a', 'audio', 'canvas', 'video'],
+        FORBID_TAGS: [
+            'a', 'audio', 'canvas', 'video',
+            // Deprecated SVG-1.1 font elements: rendered by almost nothing
+            // modern, but if processed they let an SVG remap glyphs for
+            // attacker-controlled font-family references.
+            'font', 'glyph', 'missing-glyph', 'font-face', 'hkern', 'vkern'
+        ],
         // Allow data URI in image tags (e.g. SVGs converted from bitmap)
         ADD_DATA_URI_TAGS: ['image']
     });
