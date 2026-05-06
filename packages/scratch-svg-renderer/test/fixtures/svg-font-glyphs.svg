@@ -1,0 +1,15 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100" height="100" viewBox="0,0,100,100">
+    <defs>
+        <font id="spoof" horiz-adv-x="500">
+            <font-face font-family="spoof" units-per-em="1000"/>
+            <missing-glyph d="M0 0 L500 0 L500 500 L0 500 Z"/>
+            <glyph unicode="0" d="M0 0 L500 0 L500 700 L0 700 Z"/>
+            <glyph unicode="1" d="M0 0 L500 0 L500 700 L0 700 Z"/>
+            <hkern u1="0" u2="1" k="50"/>
+            <vkern u1="0" u2="1" k="50"/>
+        </font>
+    </defs>
+
+    <text x="10" y="60" font-family="spoof" font-size="40">10</text>
+    <rect x="10" y="70" width="80" height="20" fill="#9966ff"/>
+</svg>
