@@ -131,21 +131,21 @@ describe('Paper.js JSON round-trip preserves editor-relevant scene-graph (Phase 
         // on the bad attribute and the import never reaches the circle.
         const svgPath = path.resolve(__dirname, '..', 'fixtures', 'invalid-paper-data.svg');
         const raw = fs.readFileSync(svgPath, 'utf8');
-        const rawDoc = new DOMParser().parseFromString(raw, 'text/xml');
-        expect(rawDoc.documentElement.getAttribute('data-paper-data')).toBe('not valid json');
+        const doc = new DOMParser().parseFromString(raw, 'text/xml');
+        expect(doc.documentElement.getAttribute('data-paper-data')).toBe('not valid json');
 
-        const stripped = stripInvalidPaperData(raw);
-        const strippedDoc = new DOMParser().parseFromString(stripped, 'text/xml');
+        expect(stripInvalidPaperData(doc)).toBe(true);
 
         // Bad attribute on the root is gone; valid sibling on <g> remains.
-        expect(strippedDoc.documentElement.hasAttribute('data-paper-data')).toBe(false);
-        const g = strippedDoc.querySelector('g');
+        expect(doc.documentElement.hasAttribute('data-paper-data')).toBe(false);
+        const g = doc.querySelector('g');
         expect(g).not.toBeNull();
         expect(JSON.parse(g.getAttribute('data-paper-data'))).toEqual({isPaintingLayer: false});
 
         // Circle still present in the markup paper will receive.
-        expect(strippedDoc.querySelector('circle')).not.toBeNull();
+        expect(doc.querySelector('circle')).not.toBeNull();
 
+        const stripped = new XMLSerializer().serializeToString(doc);
         const {before, after} = roundTripSceneGraphs(stripped);
 
         // <circle> with expandShapes: true becomes a Path. If paper had

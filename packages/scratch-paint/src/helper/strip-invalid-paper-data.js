@@ -4,14 +4,16 @@
  * throws on malformed values, taking down the whole import. The attribute
  * is paper's own serialization metadata; if it can't parse, paper wouldn't
  * have been able to use it.
- * @param {string} svgString - SVG markup.
- * @returns {string} markup with invalid data-paper-data attributes removed.
+ *
+ * Operates on a parsed Document in place so callers that already have one
+ * (e.g. for viewBox extraction) don't pay for a second parse-and-serialize.
+ * @param {Document} svgDoc - parsed SVG document; mutated in place.
+ * @returns {boolean} true if any attribute was removed (caller should
+ *   re-serialize); false if the document was untouched.
  */
-const stripInvalidPaperData = function (svgString) {
-    if (!svgString.includes('data-paper-data')) return svgString;
-    const doc = new DOMParser().parseFromString(svgString, 'text/xml');
+const stripInvalidPaperData = function (svgDoc) {
     let modified = false;
-    const els = doc.querySelectorAll('[data-paper-data]');
+    const els = svgDoc.querySelectorAll('[data-paper-data]');
     for (let i = 0; i < els.length; i++) {
         try {
             JSON.parse(els[i].getAttribute('data-paper-data'));
@@ -20,8 +22,7 @@ const stripInvalidPaperData = function (svgString) {
             modified = true;
         }
     }
-    if (!modified) return svgString;
-    return new XMLSerializer().serializeToString(doc);
+    return modified;
 };
 
 export {stripInvalidPaperData};
