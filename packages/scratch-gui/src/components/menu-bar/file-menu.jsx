@@ -16,7 +16,6 @@ import sharedMessages from '../../lib/shared-messages';
 
 import {
     manualUpdateProject,
-    remixProject,
     saveProjectAsCopy
 } from '../../reducers/project-state';
 
@@ -190,7 +189,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    onClickRemix: () => dispatch(remixProject()),
     onClickSave: () => dispatch(manualUpdateProject()),
     onClickSaveAsCopy: () => dispatch(saveProjectAsCopy())
 });

@@ -42,7 +42,8 @@ import {
     autoUpdateProject,
     getIsUpdating,
     getIsShowingProject,
-    requestNewProject
+    requestNewProject,
+    remixProject
 } from '../../reducers/project-state';
 import {
     openLoginMenu,
@@ -774,6 +775,7 @@ const mapDispatchToProps = (dispatch, ownProps) => ({
     onOpenDebugModal: () => dispatch(openDebugModal()),
     onClickNew: needSave => dispatch(requestNewProject(needSave)),
     onClickLogin: ownProps.onClickLogin ?? (() => dispatch(openLoginMenu())),
+    onClickRemix: () => dispatch(remixProject()),
     onRequestCloseLogin: () => dispatch(closeLoginMenu()),
     onSeeCommunity: ownProps.onSeeCommunity ?? (() => dispatch(setPlayer(true))),
     onSetTimeTravelMode: mode => dispatch(setTimeTravel(mode))
