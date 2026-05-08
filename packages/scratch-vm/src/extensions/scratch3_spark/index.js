@@ -38,6 +38,10 @@ class SparkPeripheral {
         this._polling = false;
         this._lastButtonAccess = 0;
         this._pending = new Map();
+        // Story 3.2 — last-known IMU values keyed by cmd; used as fallback when
+        // the firmware returns hw_busy or the WS round-trip times out.
+        this._imuCache = {imu_accel: null, imu_gyro: null, imu_angle: null};
+        this._imuDegraded = false;
         this._runtime.registerPeripheralExtension(extensionId, this);
     }
 
@@ -149,6 +153,36 @@ class SparkPeripheral {
             });
     }
 
+    // Story 3.2 — fetch a single IMU vector field. Sends `cmd` to the
+    // middleware (which serves from imuCache, not a fresh firmware round-trip)
+    // and returns the requested field. On any error / disconnect, falls back
+    // to the last-known cached value, or 0 if no prior sample.
+    _readImuField (cmd, field) {
+        if (!this.isConnected()) {
+            return Promise.resolve(this._imuCache[cmd]?.[field] ?? 0);
+        }
+        return this.send(cmd).then(resp => {
+            if (resp && resp.status === 'ok') {
+                if (cmd === 'imu_angle') {
+                    this._imuCache[cmd] = {pitch: resp.pitch, roll: resp.roll};
+                } else {
+                    this._imuCache[cmd] = {x: resp.x, y: resp.y, z: resp.z};
+                }
+                if (this._imuDegraded) {
+                    log.info(`spark: imu recovered (${cmd})`);
+                    this._imuDegraded = false;
+                }
+                return this._imuCache[cmd][field] ?? 0;
+            }
+            // Error response (or null timeout) → last-known good
+            if (!this._imuDegraded) {
+                log.warn(`spark: imu degraded — falling back to cached values (${resp?.error_code ?? 'timeout'})`);
+                this._imuDegraded = true;
+            }
+            return this._imuCache[cmd]?.[field] ?? 0;
+        });
+    }
+
     _handleDisconnect () {
         this._stopPolling();
         this._pending.forEach(resolve => resolve(null));
@@ -246,6 +280,48 @@ class Scratch3SparkBlocks {
                     opcode: 'capturePhoto',
                     blockType: BlockType.COMMAND,
                     text: formatMessage({id: 'spark.capturePhoto', default: 'capture photo to stage', description: 'Capture camera image to stage'})
+                },
+                '---',
+                // ── IMU ─────────────────────────────────────────────
+                {
+                    opcode: 'imuAccelX',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.imuAccelX', default: 'accel X', description: 'IMU accelerometer X axis (g)'})
+                },
+                {
+                    opcode: 'imuAccelY',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.imuAccelY', default: 'accel Y', description: 'IMU accelerometer Y axis (g)'})
+                },
+                {
+                    opcode: 'imuAccelZ',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.imuAccelZ', default: 'accel Z', description: 'IMU accelerometer Z axis (g)'})
+                },
+                {
+                    opcode: 'imuGyroX',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.imuGyroX', default: 'gyro X', description: 'IMU gyroscope X axis (deg/s)'})
+                },
+                {
+                    opcode: 'imuGyroY',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.imuGyroY', default: 'gyro Y', description: 'IMU gyroscope Y axis (deg/s)'})
+                },
+                {
+                    opcode: 'imuGyroZ',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.imuGyroZ', default: 'gyro Z', description: 'IMU gyroscope Z axis (deg/s)'})
+                },
+                {
+                    opcode: 'imuPitch',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.imuPitch', default: 'pitch', description: 'IMU tilt pitch (degrees)'})
+                },
+                {
+                    opcode: 'imuRoll',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.imuRoll', default: 'roll', description: 'IMU tilt roll (degrees)'})
                 }
             ],
             menus: {
@@ -303,6 +379,15 @@ class Scratch3SparkBlocks {
     stopBuzzer () {
         return this._peripheral.send('buzz', {freq: 0, dur: 0});
     }
+
+    imuAccelX () { return this._peripheral._readImuField('imu_accel', 'x'); }
+    imuAccelY () { return this._peripheral._readImuField('imu_accel', 'y'); }
+    imuAccelZ () { return this._peripheral._readImuField('imu_accel', 'z'); }
+    imuGyroX  () { return this._peripheral._readImuField('imu_gyro',  'x'); }
+    imuGyroY  () { return this._peripheral._readImuField('imu_gyro',  'y'); }
+    imuGyroZ  () { return this._peripheral._readImuField('imu_gyro',  'z'); }
+    imuPitch  () { return this._peripheral._readImuField('imu_angle', 'pitch'); }
+    imuRoll   () { return this._peripheral._readImuField('imu_angle', 'roll'); }
 
     capturePhoto () {
         return this._peripheral.send('capture', {}).then(resp => {

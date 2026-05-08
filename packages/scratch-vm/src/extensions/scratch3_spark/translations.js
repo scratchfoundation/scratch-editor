@@ -12,6 +12,14 @@ module.exports = {
         'spark.color.green':      'เขียว',
         'spark.color.blue':       'น้ำเงิน',
         'spark.color.white':      'ขาว',
-        'spark.color.off':        'ปิด'
+        'spark.color.off':        'ปิด',
+        'spark.imuAccelX':        'ความเร่งแกน X',
+        'spark.imuAccelY':        'ความเร่งแกน Y',
+        'spark.imuAccelZ':        'ความเร่งแกน Z',
+        'spark.imuGyroX':         'ความเร็วเชิงมุมแกน X',
+        'spark.imuGyroY':         'ความเร็วเชิงมุมแกน Y',
+        'spark.imuGyroZ':         'ความเร็วเชิงมุมแกน Z',
+        'spark.imuPitch':         'มุมก้มเงย',
+        'spark.imuRoll':          'มุมเอียงข้าง'
     }
 };
