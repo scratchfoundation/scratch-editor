@@ -10,10 +10,11 @@ import styles from './inline-message.css';
 const InlineMessageComponent = ({
     content,
     iconSpinner,
-    level
+    level,
+    className
 }) => (
     <div
-        className={classNames(styles.inlineMessage, styles[level])}
+        className={classNames(styles.inlineMessage, styles[level], className)}
         aria-label="inline message"
     >
         {/* TODO: implement Rtl handling */}
@@ -29,6 +30,7 @@ const InlineMessageComponent = ({
 );
 
 InlineMessageComponent.propTypes = {
+    className: PropTypes.string,
     content: PropTypes.element,
     iconSpinner: PropTypes.bool,
     level: PropTypes.string

@@ -492,7 +492,7 @@ class MenuBar extends React.Component {
                 <div className={styles.accountInfoGroup}>
                     <div className={styles.menuBarItem}>
                         {this.props.canSave && (
-                            <SaveStatus />
+                            <SaveStatus className={classNames(styles.hoverable, styles.menuBarItem)} />
                         )}
                     </div>
 

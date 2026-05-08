@@ -1,3 +1,5 @@
+import classNames from 'classnames';
+
 import {connect} from 'react-redux';
 import {FormattedMessage} from 'react-intl';
 import PropTypes from 'prop-types';
@@ -23,13 +25,14 @@ import styles from './save-status.css';
 const SaveStatus = ({
     alertsList,
     projectChanged,
-    onClickSave
+    onClickSave,
+    className
 }) => (
     filterInlineAlerts(alertsList).length > 0 ? (
-        <InlineMessages />
+        <InlineMessages className={styles.alert} />
     ) : projectChanged && (
-        <div
-            className={styles.saveNow}
+        <button
+            className={classNames(styles.saveNow, className)}
             onClick={onClickSave}
         >
             <FormattedMessage
@@ -37,10 +40,11 @@ const SaveStatus = ({
                 description="Title bar link for saving now"
                 id="gui.menuBar.saveNowLink"
             />
-        </div>
+        </button>
     ));
 
 SaveStatus.propTypes = {
+    className: PropTypes.string,
     alertsList: PropTypes.arrayOf(PropTypes.object),
     onClickSave: PropTypes.func,
     projectChanged: PropTypes.bool
