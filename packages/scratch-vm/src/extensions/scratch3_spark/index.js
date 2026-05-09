@@ -34,6 +34,10 @@ class SparkPeripheral {
         this._extensionId = extensionId;
         this._ws = null;
         this._buttonState = {0: 0, 1: 0};
+        // Story 2.3 (event-push): set by btn_press event; consumed by
+        // whenButtonPressed HAT so the script fires once per press, not
+        // every frame the button is held.
+        this._buttonEdgeLatch = {0: false, 1: false};
         this._pollIntervalId = null;
         this._polling = false;
         this._lastButtonAccess = 0;
@@ -107,8 +111,26 @@ class SparkPeripheral {
             const resolve = this._pending.get(msg.id);
             this._pending.delete(msg.id);
             resolve(msg);
+            return;
         }
-        // heartbeat and event messages are intentionally ignored here
+        if (msg.type === 'event') {
+            this._onEvent(msg);
+        }
+        // heartbeats are intentionally ignored
+    }
+
+    // Story 2.3 (event-push): firmware emits btn_press/btn_release events
+    // (one per debounced edge); cache the latched state so the
+    // whenButtonPressed HAT can fire once per press without continuous-fire
+    // (which the polling-only path produced).
+    _onEvent (msg) {
+        const pin = msg.pin ?? 0;
+        if (msg.event === 'btn_press') {
+            this._buttonState[pin] = 1;
+            this._buttonEdgeLatch[pin] = true;
+        } else if (msg.event === 'btn_release') {
+            this._buttonState[pin] = 0;
+        }
     }
 
     // Called by button blocks — records access time and starts polling if idle
@@ -358,9 +380,20 @@ class Scratch3SparkBlocks {
 
     whenButtonPressed (args) {
         if (!this._peripheral.isConnected()) return false;
-        this._peripheral.touchButtonPoll();
         const pin = args.BTN === 'A' ? 0 : 1;
-        return this._peripheral.getButtonState(pin) === 1;
+        // Story 2.3 (event-push): consume the edge latch set by the
+        // btn_press event. Returns true ONCE per debounced press, not
+        // every frame while held — matches AC (c) "no duplicate
+        // evt_button_pressed" expectation. Falls back to polled state
+        // if events haven't arrived yet (e.g. older firmware).
+        if (this._peripheral._buttonEdgeLatch[pin]) {
+            this._peripheral._buttonEdgeLatch[pin] = false;
+            return true;
+        }
+        // Keep the legacy polling alive for isButtonPressed (continuous-state
+        // boolean block) — touchButtonPoll() schedules the cmd:btn poller.
+        this._peripheral.touchButtonPoll();
+        return false;
     }
 
     isButtonPressed (args) {
@@ -380,14 +413,30 @@ class Scratch3SparkBlocks {
         return this._peripheral.send('buzz', {freq: 0, dur: 0});
     }
 
-    imuAccelX () { return this._peripheral._readImuField('imu_accel', 'x'); }
-    imuAccelY () { return this._peripheral._readImuField('imu_accel', 'y'); }
-    imuAccelZ () { return this._peripheral._readImuField('imu_accel', 'z'); }
-    imuGyroX  () { return this._peripheral._readImuField('imu_gyro',  'x'); }
-    imuGyroY  () { return this._peripheral._readImuField('imu_gyro',  'y'); }
-    imuGyroZ  () { return this._peripheral._readImuField('imu_gyro',  'z'); }
-    imuPitch  () { return this._peripheral._readImuField('imu_angle', 'pitch'); }
-    imuRoll   () { return this._peripheral._readImuField('imu_angle', 'roll'); }
+    imuAccelX () {
+        return this._peripheral._readImuField('imu_accel', 'x');
+    }
+    imuAccelY () {
+        return this._peripheral._readImuField('imu_accel', 'y');
+    }
+    imuAccelZ () {
+        return this._peripheral._readImuField('imu_accel', 'z');
+    }
+    imuGyroX () {
+        return this._peripheral._readImuField('imu_gyro', 'x');
+    }
+    imuGyroY () {
+        return this._peripheral._readImuField('imu_gyro', 'y');
+    }
+    imuGyroZ () {
+        return this._peripheral._readImuField('imu_gyro', 'z');
+    }
+    imuPitch () {
+        return this._peripheral._readImuField('imu_angle', 'pitch');
+    }
+    imuRoll () {
+        return this._peripheral._readImuField('imu_angle', 'roll');
+    }
 
     capturePhoto () {
         return this._peripheral.send('capture', {}).then(resp => {
