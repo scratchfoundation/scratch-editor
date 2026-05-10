@@ -135,7 +135,7 @@
 }
 
 .remix-button {
-    background-color: $pen-primary
+    background-color: $ui-green-dark;
 }
 
 .remix-button-icon {
