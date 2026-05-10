@@ -2,9 +2,10 @@
 
 .share-button {
     background: $ui-red-dark;
+    cursor: default;
 }
 
 .share-button-is-shared {
     background: $ui-black-transparent;
-    cursor: default;
+    cursor: not-allowed;
 }
