@@ -14,10 +14,13 @@
   "license": "AGPL-3.0-only",
   "author": "Massachusetts Institute of Technology",
   "exports": {
-    "webpack": "./src/index.js",
-    "browser": "./dist/web/scratch-svg-renderer.js",
-    "node": "./dist/node/scratch-svg-renderer.js",
-    "default": "./src/index.js"
+    ".": {
+      "webpack": "./src/index.js",
+      "browser": "./dist/web/scratch-svg-renderer.js",
+      "node": "./dist/node/scratch-svg-renderer.js",
+      "default": "./src/index.js"
+    },
+    "./sandbox": "./src/sandbox/index.js"
   },
   "main": "./dist/node/scratch-svg-renderer.js",
   "browser": "./dist/web/scratch-svg-renderer.js",
@@ -37,6 +40,7 @@
     "start": "webpack-dev-server",
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "eslint",
+    "test:playwright": "playwright test",
     "test:unit": "tap ./test/*.js",
     "watch": "webpack --watch"
   },
@@ -61,6 +65,7 @@
   "devDependencies": {
     "@babel/core": "7.29.0",
     "@babel/preset-env": "7.29.3",
+    "@playwright/test": "1.59.1",
     "babel-loader": "9.2.1",
     "canvas": "3.2.3",
     "copy-webpack-plugin": "6.4.1",
