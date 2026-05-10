@@ -381,18 +381,17 @@ class Scratch3SparkBlocks {
     whenButtonPressed (args) {
         if (!this._peripheral.isConnected()) return false;
         const pin = args.BTN === 'A' ? 0 : 1;
-        // Story 2.3 (event-push): consume the edge latch set by the
-        // btn_press event. Returns true ONCE per debounced press, not
-        // every frame while held — matches AC (c) "no duplicate
-        // evt_button_pressed" expectation. Falls back to polled state
-        // if events haven't arrived yet (e.g. older firmware).
+        // Story 2.3 (event-push): consume the edge latch set by btn_press.
+        // Returns true ONCE per debounced press, not every frame while held.
+        // Pure event path — no polling fallback. Firmware emits btn_press /
+        // btn_release per pin via task_button_gpio_input (Spark-Baseboard) or
+        // task_touch_input (Waveshare touchscreen, pin:0 only). The
+        // isButtonPressed BOOLEAN block keeps its own polling for
+        // continuous-state queries.
         if (this._peripheral._buttonEdgeLatch[pin]) {
             this._peripheral._buttonEdgeLatch[pin] = false;
             return true;
         }
-        // Keep the legacy polling alive for isButtonPressed (continuous-state
-        // boolean block) — touchButtonPoll() schedules the cmd:btn poller.
-        this._peripheral.touchButtonPoll();
         return false;
     }
 
