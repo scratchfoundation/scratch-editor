@@ -2,7 +2,7 @@
 
 .share-button {
     background: $ui-red-dark;
-    cursor: pointer;
+    cursor: default;
 }
 
 .share-button-is-shared {
