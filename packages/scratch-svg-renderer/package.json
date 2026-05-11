@@ -59,6 +59,7 @@
     "css-tree": "3.2.1",
     "fastestsmallesttextencoderdecoder": "1.0.22",
     "isomorphic-dompurify": "2.36.0",
+    "svgo": "^4.0.1",
     "transformation-matrix": "1.15.3",
     "tslog": "4.10.2"
   },

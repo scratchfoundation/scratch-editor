@@ -10,7 +10,7 @@ const findMonorepoRoot = () => {
     while (currentDir !== path.parse(currentDir).root) {
         if (fs.existsSync(path.join(currentDir, 'package.json'))) {
             try {
-                const pkg = require(path.join(currentDir, 'package.json')); // eslint-disable-line global-require
+                const pkg = require(path.join(currentDir, 'package.json'));
                 if (pkg.workspaces) {
                     return currentDir;
                 }

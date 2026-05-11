@@ -5,9 +5,9 @@
 // declarations don't collide with those in iframe-html.js when both scripts
 // share a single browser page scope.
 (function () {
-    const IFRAME_HTML = typeof module !== 'undefined' ?
-        require('./iframe-html').IFRAME_HTML :
-        window.IFRAME_HTML;
+    const IFRAME_HTML = typeof module === 'undefined' ?
+        window.IFRAME_HTML :
+        require('./iframe-html').IFRAME_HTML;
 
     const DEFAULT_TIMEOUT_MS = 30000;
 
