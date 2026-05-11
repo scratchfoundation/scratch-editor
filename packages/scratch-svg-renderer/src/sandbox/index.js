@@ -55,7 +55,16 @@
 
             const iframe = document.createElement('iframe');
             iframe.setAttribute('sandbox', 'allow-scripts');
-            iframe.style.display = 'none';
+            // Use visibility:hidden instead of display:none so the iframe's
+            // rendering tree stays active. This is required for DOM
+            // measurement APIs (e.g. getBBox) to return correct values.
+            iframe.style.position = 'absolute';
+            iframe.style.visibility = 'hidden';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = 'none';
+            iframe.style.overflow = 'hidden';
+            iframe.style.pointerEvents = 'none';
             this._iframe = iframe;
 
             this._onMessage = event => {

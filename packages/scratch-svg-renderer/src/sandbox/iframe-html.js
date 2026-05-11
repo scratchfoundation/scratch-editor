@@ -20,10 +20,13 @@
  * The caller's script must synchronously assign `window.onSandboxMessage` to a
  * function that accepts a payload and returns a result (or a Promise of a result).
  */
+const CSP = "default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; " +
+    "style-src 'unsafe-inline'; font-src data:;";
+
 const IFRAME_HTML = `<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval';">
+<meta http-equiv="Content-Security-Policy" content="${CSP}">
 </head>
 <body>
 <script>
