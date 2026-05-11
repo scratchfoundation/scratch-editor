@@ -10,19 +10,20 @@ const EXTENSION_ID = 'spark';
 const WS_URL = 'ws://localhost:8080';
 const POLL_INTERVAL_MS = 30;
 
+// R2 amendment (SCP 2026-05-08): closed 4-state enum matching the
+// Spark-Baseboard bi-color LED. Yellow = additive red+green.
+// Blue and White were dropped; the matrix has no blue channel.
 const LedColor = {
     RED: 'red',
     GREEN: 'green',
-    BLUE: 'blue',
-    WHITE: 'white',
+    YELLOW: 'yellow',
     OFF: 'off'
 };
 
 const LED_COLOR_MAP = {
     red: {r: 255, g: 0, b: 0},
     green: {r: 0, g: 255, b: 0},
-    blue: {r: 0, g: 0, b: 255},
-    white: {r: 255, g: 255, b: 255},
+    yellow: {r: 255, g: 255, b: 0},
     off: {r: 0, g: 0, b: 0}
 };
 
@@ -352,8 +353,7 @@ class Scratch3SparkBlocks {
                     items: [
                         {text: formatMessage({id: 'spark.color.red', default: 'red', description: 'LED red'}), value: LedColor.RED},
                         {text: formatMessage({id: 'spark.color.green', default: 'green', description: 'LED green'}), value: LedColor.GREEN},
-                        {text: formatMessage({id: 'spark.color.blue', default: 'blue', description: 'LED blue'}), value: LedColor.BLUE},
-                        {text: formatMessage({id: 'spark.color.white', default: 'white', description: 'LED white'}), value: LedColor.WHITE},
+                        {text: formatMessage({id: 'spark.color.yellow', default: 'yellow', description: 'LED yellow'}), value: LedColor.YELLOW},
                         {text: formatMessage({id: 'spark.color.off', default: 'off', description: 'LED off'}), value: LedColor.OFF}
                     ]
                 },
