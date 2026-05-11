@@ -19,6 +19,11 @@ module.exports = {
         'spark.imuGyroY':         'ความเร็วเชิงมุมแกน Y',
         'spark.imuGyroZ':         'ความเร็วเชิงมุมแกน Z',
         'spark.imuPitch':         'มุมก้มเงย',
-        'spark.imuRoll':          'มุมเอียงข้าง'
+        'spark.imuRoll':          'มุมเอียงข้าง',
+        'spark.whenShake':           'เมื่อเขย่า',
+        'spark.setShakeSensitivity': 'ตั้งความไวการเขย่าเป็น [LEVEL]',
+        'spark.shakeLevel.1':        'เบา',
+        'spark.shakeLevel.2':        'ปานกลาง',
+        'spark.shakeLevel.3':        'แรง'
     }
 };

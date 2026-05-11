@@ -47,6 +47,11 @@ class SparkPeripheral {
         // the firmware returns hw_busy or the WS round-trip times out.
         this._imuCache = {imu_accel: null, imu_gyro: null, imu_angle: null};
         this._imuDegraded = false;
+        // Story 3.3 (event-push): set by the firmware 'shake' event; consumed
+        // by whenShake HAT so the script fires once per debounced gesture, not
+        // every frame the threshold is exceeded. Mirror of _buttonEdgeLatch.
+        // Refractory (500 ms) is enforced firmware-side in task_imu_sampler.
+        this._shakeEdgeLatch = false;
         this._runtime.registerPeripheralExtension(extensionId, this);
     }
 
@@ -131,6 +136,10 @@ class SparkPeripheral {
             this._buttonEdgeLatch[pin] = true;
         } else if (msg.event === 'btn_release') {
             this._buttonState[pin] = 0;
+        } else if (msg.event === 'shake') {
+            // Story 3.3 — one event per debounced gesture (firmware enforces
+            // the 500 ms refractory). The whenShake HAT consumes the latch.
+            this._shakeEdgeLatch = true;
         }
     }
 
@@ -345,6 +354,33 @@ class Scratch3SparkBlocks {
                     opcode: 'imuRoll',
                     blockType: BlockType.REPORTER,
                     text: formatMessage({id: 'spark.imuRoll', default: 'roll', description: 'IMU tilt roll (degrees)'})
+                },
+                '---',
+                // ── IMU gesture (Story 3.3) ────────────────────────
+                {
+                    opcode: 'whenShake',
+                    blockType: BlockType.HAT,
+                    text: formatMessage({
+                        id: 'spark.whenShake',
+                        default: 'when shaken',
+                        description: 'Hat: when board is shaken'
+                    })
+                },
+                {
+                    opcode: 'setShakeSensitivity',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({
+                        id: 'spark.setShakeSensitivity',
+                        default: 'set shake sensitivity to [LEVEL]',
+                        description: 'Set shake threshold level 1/2/3'
+                    }),
+                    arguments: {
+                        LEVEL: {
+                            type: ArgumentType.STRING,
+                            menu: 'shakeLevels',
+                            defaultValue: '2'
+                        }
+                    }
                 }
             ],
             menus: {
@@ -362,6 +398,35 @@ class Scratch3SparkBlocks {
                     items: [
                         {text: 'A', value: SparkButton.A},
                         {text: 'B', value: SparkButton.B}
+                    ]
+                },
+                shakeLevels: {
+                    acceptReporters: true,
+                    items: [
+                        {
+                            text: formatMessage({
+                                id: 'spark.shakeLevel.1',
+                                default: 'gentle',
+                                description: 'Shake sensitivity level 1'
+                            }),
+                            value: '1'
+                        },
+                        {
+                            text: formatMessage({
+                                id: 'spark.shakeLevel.2',
+                                default: 'medium',
+                                description: 'Shake sensitivity level 2 (default)'
+                            }),
+                            value: '2'
+                        },
+                        {
+                            text: formatMessage({
+                                id: 'spark.shakeLevel.3',
+                                default: 'vigorous',
+                                description: 'Shake sensitivity level 3'
+                            }),
+                            value: '3'
+                        }
                     ]
                 }
             }
@@ -435,6 +500,25 @@ class Scratch3SparkBlocks {
     }
     imuRoll () {
         return this._peripheral._readImuField('imu_angle', 'roll');
+    }
+
+    whenShake () {
+        if (!this._peripheral.isConnected()) return false;
+        // Story 3.3 — pure event path mirroring whenButtonPressed (Story 2.3).
+        // Consume the latch set by the firmware 'shake' event so the HAT fires
+        // exactly once per debounced gesture. Refractory (500 ms) is enforced
+        // firmware-side in task_imu_sampler; this side just edge-latches.
+        if (this._peripheral._shakeEdgeLatch) {
+            this._peripheral._shakeEdgeLatch = false;
+            return true;
+        }
+        return false;
+    }
+
+    setShakeSensitivity (args) {
+        const level = parseInt(args.LEVEL, 10);
+        if (![1, 2, 3].includes(level)) return Promise.resolve(null);
+        return this._peripheral.send('set_shake_threshold', {level});
     }
 
     capturePhoto () {
