@@ -49,7 +49,7 @@ import gdxforConnectionSmallIconURL from './gdxfor/gdxfor-small.svg';
 import faceSensingIconURL from './faceSensing/faceSensing.png';
 import faceSensingInsetIconURL from './faceSensing/faceSensing-small.svg';
 
-import sparkIconURL from './spark/spark.png';
+import sparkIconURL from './spark/spark-banner.svg';
 import sparkInsetIconURL from './spark/spark-small.svg';
 import sparkConnectionIconURL from './spark/spark-illustration.svg';
 import sparkConnectionSmallIconURL from './spark/spark-small.svg';

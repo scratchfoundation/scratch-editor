@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 372" width="600" height="372"
+     role="img" aria-label="Spark IoT extension">
+  <title>Spark IoT extension</title>
+  <!-- Spark IoT extension banner — playful style matching Music/Pen siblings.
+       Warm amber gradient backdrop + stylized dev-board with LEDs/buttons/buzzer
+       so children recognize the kit silhouette inside the colorful library. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFB347"/>
+      <stop offset="100%" stop-color="#FF7A45"/>
+    </linearGradient>
+    <linearGradient id="board" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#243349"/>
+      <stop offset="100%" stop-color="#1A2436"/>
+    </linearGradient>
+    <radialGradient id="redGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#FF6B6B" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#FF6B6B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="yellowGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#FFD93D" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#FFD93D" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="372" fill="url(#bg)"/>
+
+  <!-- Decorative dot grid -->
+  <g fill="#FFFFFF" fill-opacity="0.12">
+    <circle cx="60"  cy="50"  r="3"/>
+    <circle cx="120" cy="80"  r="2"/>
+    <circle cx="540" cy="60"  r="3"/>
+    <circle cx="480" cy="40"  r="2"/>
+    <circle cx="80"  cy="320" r="3"/>
+    <circle cx="160" cy="340" r="2"/>
+    <circle cx="540" cy="310" r="3"/>
+    <circle cx="500" cy="340" r="2"/>
+  </g>
+
+  <!-- Sound waves emanating from buzzer area (left of board) -->
+  <g stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M 130 186 Q 110 186 110 156"/>
+    <path d="M 130 186 Q 100 186 100 146"/>
+    <path d="M 130 186 Q 90 186 90 136"/>
+  </g>
+
+  <!-- Dev board: stylized PCB -->
+  <g transform="translate(150 130)">
+    <!-- Board body -->
+    <rect x="0" y="0" width="300" height="120" rx="14" fill="url(#board)" stroke="#0F1722" stroke-width="2"/>
+
+    <!-- Top edge: USB-C cutout -->
+    <rect x="135" y="-8" width="30" height="14" rx="3" fill="#0F1722"/>
+    <rect x="139" y="-4" width="22" height="6" rx="2" fill="#36465E"/>
+
+    <!-- Two LEDs (red + yellow, active per R2 enum) -->
+    <circle cx="185" cy="56" r="11" fill="#FF6B6B" stroke="#FFFFFF" stroke-width="2"/>
+    <circle cx="185" cy="56" r="4"  fill="#FFFFFF" fill-opacity="0.9"/>
+    <circle cx="245" cy="56" r="11" fill="#FFD93D" stroke="#FFFFFF" stroke-width="2"/>
+    <circle cx="245" cy="56" r="4"  fill="#FFFFFF" fill-opacity="0.9"/>
+
+    <!-- Two push buttons (matrix on Spark-Baseboard) -->
+    <g>
+      <rect x="40" y="42" width="28" height="28" rx="4" fill="#3D5273" stroke="#0F1722" stroke-width="1.5"/>
+      <circle cx="54" cy="56" r="8" fill="#5C7BA8"/>
+      <circle cx="54" cy="56" r="4" fill="#7B97C2"/>
+    </g>
+    <g>
+      <rect x="80" y="42" width="28" height="28" rx="4" fill="#3D5273" stroke="#0F1722" stroke-width="1.5"/>
+      <circle cx="94" cy="56" r="8" fill="#5C7BA8"/>
+      <circle cx="94" cy="56" r="4" fill="#7B97C2"/>
+    </g>
+
+    <!-- Buzzer (round speaker on right) -->
+    <circle cx="265" cy="100" r="14" fill="#3D5273" stroke="#0F1722" stroke-width="1.5"/>
+    <circle cx="265" cy="100" r="8"  fill="#1A2436"/>
+    <circle cx="265" cy="100" r="3"  fill="#5C7BA8"/>
+
+    <!-- IMU chip (small QFN package, label dot) -->
+    <rect x="35" y="92" width="22" height="22" rx="2" fill="#0F1722"/>
+    <circle cx="40" cy="97" r="1.5" fill="#FFD93D"/>
+
+    <!-- Decorative traces (bumped to 2.8 stroke so they survive
+         downscaling to the ~232×163 card thumbnail). -->
+    <g stroke="#36465E" stroke-width="2.8" fill="none" stroke-linecap="round">
+      <path d="M 70 70 L 70 92"/>
+      <path d="M 110 70 L 110 92 L 200 92"/>
+      <path d="M 200 67 L 200 80 L 240 80 L 240 67"/>
+      <path d="M 252 100 L 220 100"/>
+    </g>
+  </g>
+
+  <!-- LED glows: drawn AFTER the board with screen blend so the lit
+       halo reads through the dark fill instead of being painted under it. -->
+  <g style="mix-blend-mode: screen">
+    <circle cx="335" cy="186" r="48" fill="url(#redGlow)"/>
+    <circle cx="395" cy="186" r="48" fill="url(#yellowGlow)"/>
+  </g>
+
+  <!-- Bottom-right: Spark wordmark with lightning-bolt accent -->
+  <g transform="translate(420 290)">
+    <path d="M 8 0 L 0 14 L 6 14 L 2 26 L 12 12 L 6 12 Z"
+          fill="#FFFFFF" stroke="#0F1722" stroke-width="1.2"/>
+    <!-- font-family chain prefers Archivo Black if loaded but falls back
+         to system bold-sans (which exists on every OS) so the wordmark
+         renders consistently on Linux/Chromebook classroom builds where
+         the design font isn't available. -->
+    <text x="22" y="20"
+          font-family="'Archivo Black', 'Arial Black', 'Helvetica Neue', Arial, sans-serif"
+          font-size="22" font-weight="900" font-stretch="condensed"
+          fill="#FFFFFF" letter-spacing="1">SPARK</text>
+  </g>
+</svg>
