@@ -1,106 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 355 278" width="355" height="278"
-     role="img" aria-label="Spark IoT Kit connected">
-  <title>Spark IoT Kit connected</title>
-  <!-- Connection-success illustration. Shown in the peripheral-connect
-       modal the moment a Spark kit is paired. Style mirrors the library
-       card banner (spark-banner.svg) but reframes the dev board centrally
-       with USB-cable hint at the top so children feel "the kit is alive
-       and plugged in." Palette stays in the warm-peach Spark family. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 90" width="120" height="90"
+     role="img" aria-label="Spark IoT Kit">
+  <title>Spark IoT Kit</title>
+  <!-- Compact hardware silhouette, microbit-illustration sized (~120×90) so
+       Scratch's connection modal scales + frames it consistently with sibling
+       extensions. Background, label, and decorative elements are owned by the
+       modal — keep this asset to the kit silhouette only. -->
   <defs>
-    <linearGradient id="boardGrad" x1="0" y1="0" x2="0" y2="1">
+    <linearGradient id="spkBoardGrad" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#243349"/>
       <stop offset="100%" stop-color="#1A2436"/>
     </linearGradient>
-    <radialGradient id="redLit" cx="0.5" cy="0.5" r="0.5">
+    <radialGradient id="spkRedLit" cx="0.5" cy="0.5" r="0.5">
       <stop offset="0%" stop-color="#FF6B6B" stop-opacity="0.95"/>
       <stop offset="100%" stop-color="#FF6B6B" stop-opacity="0"/>
     </radialGradient>
-    <radialGradient id="yellowLit" cx="0.5" cy="0.5" r="0.5">
+    <radialGradient id="spkYellowLit" cx="0.5" cy="0.5" r="0.5">
       <stop offset="0%" stop-color="#FFD93D" stop-opacity="0.95"/>
       <stop offset="100%" stop-color="#FFD93D" stop-opacity="0"/>
     </radialGradient>
   </defs>
 
-  <!-- Warm peach background (preserves current Spark brand color so the
-       modal still reads as "Spark"). Rounded corners match the host modal. -->
-  <rect width="355" height="278" rx="12" fill="#FFF3EE"/>
+  <!-- Dev board: 96×56 centered around (60, 50) -->
+  <g transform="translate(12 22)">
+    <rect x="0" y="0" width="96" height="56" rx="6" fill="url(#spkBoardGrad)" stroke="#0F1722" stroke-width="1.2"/>
 
-  <!-- Decorative connection dots fanning out from top -->
-  <g fill="#FF8A50" fill-opacity="0.25">
-    <circle cx="60"  cy="40"  r="3"/>
-    <circle cx="100" cy="60"  r="2"/>
-    <circle cx="295" cy="40"  r="3"/>
-    <circle cx="255" cy="60"  r="2"/>
-    <circle cx="40"  cy="240" r="3"/>
-    <circle cx="315" cy="240" r="3"/>
-  </g>
+    <!-- USB-C jack on top edge -->
+    <rect x="40" y="-3" width="16" height="5" rx="1" fill="#0F1722"/>
 
-  <!-- USB cable trailing off the top edge — suggests "plugged in" -->
-  <g stroke="#FF6B35" stroke-width="6" stroke-linecap="round" fill="none">
-    <path d="M 177 -10 Q 177 30 177 60"/>
-  </g>
-  <!-- USB-C connector entering board top -->
-  <rect x="160" y="55"  width="34" height="14" rx="3" fill="#FF6B35"/>
-  <rect x="164" y="58"  width="26" height="8"  rx="1.5" fill="#0F1722"/>
-
-  <!-- Dev board centerpiece -->
-  <g transform="translate(60 70)">
-    <!-- Board body -->
-    <rect x="0" y="0" width="235" height="135" rx="12" fill="url(#boardGrad)" stroke="#0F1722" stroke-width="2"/>
-
-    <!-- Two LEDs, lit -->
-    <circle cx="135" cy="55" r="11" fill="#FF6B6B" stroke="#FFFFFF" stroke-width="2"/>
-    <circle cx="135" cy="55" r="4"  fill="#FFFFFF" fill-opacity="0.95"/>
-    <circle cx="180" cy="55" r="11" fill="#FFD93D" stroke="#FFFFFF" stroke-width="2"/>
-    <circle cx="180" cy="55" r="4"  fill="#FFFFFF" fill-opacity="0.95"/>
+    <!-- Two LEDs (red + yellow) -->
+    <circle cx="56" cy="22" r="5"   fill="#FF6B6B" stroke="#FFFFFF" stroke-width="1"/>
+    <circle cx="56" cy="22" r="1.6" fill="#FFFFFF" fill-opacity="0.95"/>
+    <circle cx="74" cy="22" r="5"   fill="#FFD93D" stroke="#FFFFFF" stroke-width="1"/>
+    <circle cx="74" cy="22" r="1.6" fill="#FFFFFF" fill-opacity="0.95"/>
 
     <!-- Two push buttons -->
     <g>
-      <rect x="30" y="42" width="26" height="26" rx="4" fill="#3D5273" stroke="#0F1722" stroke-width="1.5"/>
-      <circle cx="43" cy="55" r="7" fill="#5C7BA8"/>
-      <circle cx="43" cy="55" r="3" fill="#7B97C2"/>
+      <rect x="11" y="17" width="11" height="11" rx="1.5" fill="#3D5273" stroke="#0F1722" stroke-width="0.8"/>
+      <circle cx="16.5" cy="22.5" r="3"   fill="#5C7BA8"/>
+      <circle cx="16.5" cy="22.5" r="1.2" fill="#7B97C2"/>
     </g>
     <g>
-      <rect x="65" y="42" width="26" height="26" rx="4" fill="#3D5273" stroke="#0F1722" stroke-width="1.5"/>
-      <circle cx="78" cy="55" r="7" fill="#5C7BA8"/>
-      <circle cx="78" cy="55" r="3" fill="#7B97C2"/>
+      <rect x="25" y="17" width="11" height="11" rx="1.5" fill="#3D5273" stroke="#0F1722" stroke-width="0.8"/>
+      <circle cx="30.5" cy="22.5" r="3"   fill="#5C7BA8"/>
+      <circle cx="30.5" cy="22.5" r="1.2" fill="#7B97C2"/>
     </g>
 
     <!-- Buzzer (right) -->
-    <circle cx="200" cy="105" r="14" fill="#3D5273" stroke="#0F1722" stroke-width="1.5"/>
-    <circle cx="200" cy="105" r="8"  fill="#1A2436"/>
-    <circle cx="200" cy="105" r="3"  fill="#5C7BA8"/>
+    <circle cx="82" cy="44" r="6.5" fill="#3D5273" stroke="#0F1722" stroke-width="0.8"/>
+    <circle cx="82" cy="44" r="3.5" fill="#1A2436"/>
+    <circle cx="82" cy="44" r="1.4" fill="#5C7BA8"/>
 
     <!-- IMU chip -->
-    <rect x="28" y="92" width="22" height="22" rx="2" fill="#0F1722"/>
-    <circle cx="33" cy="97" r="1.5" fill="#FFD93D"/>
+    <rect x="11" y="38" width="9" height="9" rx="1" fill="#0F1722"/>
+    <circle cx="13" cy="40" r="0.8" fill="#FFD93D"/>
 
     <!-- Decorative traces -->
-    <g stroke="#36465E" stroke-width="2.8" fill="none" stroke-linecap="round">
-      <path d="M 56 70 L 56 92"/>
-      <path d="M 91 70 L 91 92 L 150 92"/>
-      <path d="M 150 67 L 150 80 L 175 80 L 175 67"/>
-      <path d="M 188 105 L 158 105"/>
+    <g stroke="#36465E" stroke-width="1.2" fill="none" stroke-linecap="round">
+      <path d="M 22 28 L 22 38"/>
+      <path d="M 36 28 L 36 38 L 64 38"/>
+      <path d="M 64 27 L 64 33 L 72 33 L 72 27"/>
+      <path d="M 76 44 L 67 44"/>
     </g>
   </g>
 
-  <!-- LED glows over the board with screen blend so halos read through dark fill -->
+  <!-- LED glows over the board with screen blend -->
   <g style="mix-blend-mode: screen">
-    <circle cx="195" cy="125" r="36" fill="url(#redLit)"/>
-    <circle cx="240" cy="125" r="36" fill="url(#yellowLit)"/>
+    <circle cx="68" cy="44" r="13" fill="url(#spkRedLit)"/>
+    <circle cx="86" cy="44" r="13" fill="url(#spkYellowLit)"/>
   </g>
-
-  <!-- Subtle "connected" sound waves from buzzer -->
-  <g stroke="#FF8A50" stroke-opacity="0.55" stroke-width="2.5" fill="none" stroke-linecap="round">
-    <path d="M 285 175 Q 300 175 300 158"/>
-    <path d="M 285 175 Q 308 175 308 148"/>
-  </g>
-
-  <!-- Bottom label: keep Spark IoT Kit name; system bold-sans fallback chain
-       so Linux/Chromebook classroom builds render the wordmark consistently
-       even without Archivo Black available. -->
-  <text x="177" y="245" text-anchor="middle"
-        font-family="'Archivo Black', 'Arial Black', 'Helvetica Neue', Arial, sans-serif"
-        font-size="20" font-weight="900" fill="#FF6B35" letter-spacing="0.5">SPARK IoT KIT</text>
 </svg>
