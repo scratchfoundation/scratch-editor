@@ -29,6 +29,15 @@ const LED_COLOR_MAP = {
 
 const SparkButton = {A: 'A', B: 'B'};
 
+// Story 3.4 (FR16) — Thai one-shot warning toast copy per sensor-stub family.
+// Shown once per family per session when a Mic/Light/TOF reporter is first read
+// (the firmware always answers hw_not_present; the block returns the mock 0).
+const STUB_TOAST_TH = {
+    mic: 'ไมโครโฟนยังไม่พร้อม - แสดงค่าจำลอง 0',
+    light: 'เซ็นเซอร์แสงยังไม่พร้อม - แสดงค่าจำลอง 0',
+    tof: 'เซ็นเซอร์ระยะยังไม่พร้อม - แสดงค่าจำลอง 0'
+};
+
 class SparkPeripheral {
     constructor (runtime, extensionId) {
         this._runtime = runtime;
@@ -52,6 +61,10 @@ class SparkPeripheral {
         // every frame the threshold is exceeded. Mirror of _buttonEdgeLatch.
         // Refractory (500 ms) is enforced firmware-side in task_imu_sampler.
         this._shakeEdgeLatch = false;
+        // Story 3.4 (FR16): block-families (mic/light/tof) whose Thai
+        // sensor-pending toast has already been shown this session. Cleared on
+        // disconnect so a re-connect re-arms the one-shot warnings.
+        this._stubWarningShown = new Set();
         this._runtime.registerPeripheralExtension(extensionId, this);
     }
 
@@ -76,6 +89,7 @@ class SparkPeripheral {
 
     disconnect () {
         this._stopPolling();
+        this._stubWarningShown.clear(); // Story 3.4: re-arm one-shot toasts for the next session
         if (this._ws) {
             this._ws.close();
             this._ws = null;
@@ -215,8 +229,35 @@ class SparkPeripheral {
         });
     }
 
+    // Story 3.4 (FR16) — Mic/Light/TOF stub-mode reporter. Sends `cmd` to the
+    // middleware; the firmware always answers {status:"error",
+    // error_code:"hw_not_present"}. We surface the declared mock value (0) and
+    // show one Thai warning toast per block-family per session.
+    _readStubField (cmd, family) {
+        if (!this.isConnected()) return Promise.resolve(0);
+        return this.send(cmd).then(() => {
+            if (!this._stubWarningShown.has(family)) {
+                this._stubWarningShown.add(family);
+                log.warn(`spark: stub_family_warned (${family}) — hardware not present, returning mock 0`);
+                this._showStubToast(family);
+            }
+            return 0;
+        });
+    }
+
+    _showStubToast (family) {
+        const text = STUB_TOAST_TH[family];
+        if (!text) return;
+        // No native toast bus in scratch-vm yet — emit an in-VM event that the
+        // scratch-gui side can subscribe to render a snackbar (downstream),
+        // plus a console fallback. The once-per-family-per-session discipline
+        // is enforced by the caller's _stubWarningShown Set.
+        this._runtime.emit('SPARK_STUB_WARNING', {text, family});
+    }
+
     _handleDisconnect () {
         this._stopPolling();
+        this._stubWarningShown.clear(); // Story 3.4: re-arm one-shot toasts for the next session
         this._pending.forEach(resolve => resolve(null));
         this._pending.clear();
         this._ws = null;
@@ -381,6 +422,42 @@ class Scratch3SparkBlocks {
                             defaultValue: '2'
                         }
                     }
+                },
+                '---',
+                // ── Sensor stubs — Mic / Light / TOF (Story 3.4, FR16 — pending HW) ──
+                // Reporters return the declared mock 0 + a one-shot Thai toast
+                // per family; HATs are inert (never fire). The "(stub)" token in
+                // the label is the UX-DR10 fallback "pending HW" indicator until
+                // a real badge design is confirmed.
+                {
+                    opcode: 'micLevel',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.micLevel', default: '(stub) ระดับเสียง', description: 'Mic level reporter (stub — pending HW)'})
+                },
+                {
+                    opcode: 'whenLoud',
+                    blockType: BlockType.HAT,
+                    text: formatMessage({id: 'spark.whenLoud', default: '(stub) เมื่อมีเสียงดัง', description: 'Hat: when loud (stub — pending HW)'})
+                },
+                {
+                    opcode: 'lightLevel',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.lightLevel', default: '(stub) ระดับแสง', description: 'Light level reporter (stub — pending HW)'})
+                },
+                {
+                    opcode: 'whenBright',
+                    blockType: BlockType.HAT,
+                    text: formatMessage({id: 'spark.whenBright', default: '(stub) เมื่อสว่างขึ้น', description: 'Hat: when bright (stub — pending HW)'})
+                },
+                {
+                    opcode: 'tofDistance',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.tofDistance', default: '(stub) ระยะใกล้สุด', description: 'TOF distance reporter (stub — pending HW)'})
+                },
+                {
+                    opcode: 'whenNear',
+                    blockType: BlockType.HAT,
+                    text: formatMessage({id: 'spark.whenNear', default: '(stub) เมื่อมีของใกล้', description: 'Hat: when object near (stub — pending HW)'})
                 }
             ],
             menus: {
@@ -519,6 +596,28 @@ class Scratch3SparkBlocks {
         const level = parseInt(args.LEVEL, 10);
         if (![1, 2, 3].includes(level)) return Promise.resolve(null);
         return this._peripheral.send('set_shake_threshold', {level});
+    }
+
+    // ── Sensor stubs (Story 3.4, FR16) — reporters return mock 0 (+ a one-shot
+    //    Thai toast per family); HATs never fire. Forward-compatible: when
+    //    Spark-Sensors ships, only the firmware driver changes. ──
+    micLevel () {
+        return this._peripheral._readStubField('mic_level', 'mic');
+    }
+    lightLevel () {
+        return this._peripheral._readStubField('light_level', 'light');
+    }
+    tofDistance () {
+        return this._peripheral._readStubField('tof_distance', 'tof');
+    }
+    whenLoud () {
+        return false;
+    }
+    whenBright () {
+        return false;
+    }
+    whenNear () {
+        return false;
     }
 
     capturePhoto () {
