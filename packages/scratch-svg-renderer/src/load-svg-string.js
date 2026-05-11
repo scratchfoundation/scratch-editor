@@ -2,6 +2,30 @@ const SvgElement = require('./svg-element');
 const convertFonts = require('./font-converter');
 const transformStrokeWidths = require('./transform-applier');
 const {sanitizeSvgText} = require('./sanitize-svg');
+const {Sandbox} = require('./sandbox/index');
+const {createMeasureSvgScript} = require('./sandbox/measure-svg-script');
+const getFonts = require('scratch-render-fonts');
+
+/**
+ * Singleton sandbox for measuring SVG bounding boxes inside a sandboxed
+ * iframe. Lazily created on the first call to `transformMeasurements`.
+ * @type {Sandbox | null}
+ */
+let measurementSandbox = null;
+
+/**
+ * Get (or create) the singleton measurement sandbox.
+ * @returns {Sandbox} The shared sandbox instance for SVG measurement.
+ */
+const getMeasurementSandbox = () => {
+    if (!measurementSandbox) {
+        const fonts = getFonts();
+        const fontCSS = Object.values(fonts).join('');
+        const script = createMeasureSvgScript(fontCSS);
+        measurementSandbox = new Sandbox(script);
+    }
+    return measurementSandbox;
+};
 
 /**
  * @param {SVGElement} svgTag the tag to search within
@@ -191,39 +215,22 @@ const findLargestStrokeWidth = rootNode => {
  * In Scratch 2.0, SVGs are drawn without respect to the width,
  * height, and viewBox attribute on the tag. The exporter
  * does output these properties - but they appear to be incorrect often.
- * To address the incorrect measurements, we append the DOM to the
- * document, and then use SVG's native `getBBox` to find the real
- * drawn dimensions. This ensures things drawn in negative dimensions,
+ * To address the incorrect measurements, we send the SVG to a
+ * sandboxed iframe and use `getBBox` there to find the real drawn
+ * dimensions. This ensures things drawn in negative dimensions,
  * outside the given viewBox, etc., are all eventually drawn to the canvas.
- * I tried to do this several other ways: stripping the width/height/viewBox
- * attributes and then drawing (Firefox won't draw anything),
- * or inflating them and then measuring a canvas. But this seems to be
- * a natural and performant way.
  * @param {SVGSVGElement} svgTag the SVG tag to apply the transformation to
+ * @returns {Promise<void>} Resolves once the measurements have been applied.
  */
-const transformMeasurements = svgTag => {
-    // Append the SVG dom to the document.
-    // This allows us to use `getBBox` on the page,
-    // which returns the full bounding-box of all drawn SVG
-    // elements, similar to how Scratch 2.0 did measurement.
-    const svgSpot = document.createElement('span');
-    let bbox;
-    try {
-        // Insert sanitized value.
-        svgSpot.innerHTML = svgTag.outerHTML;
-        document.body.appendChild(svgSpot);
-        // Take the bounding box. We have to get elements via svgSpot
-        // because we added it via innerHTML.
-        bbox = svgSpot.children[0].getBBox();
-    } finally {
-        // Always destroy the element, even if, for example, getBBox throws.
-        document.body.removeChild(svgSpot);
-    }
+const transformMeasurements = async svgTag => {
+    const sandbox = getMeasurementSandbox();
+    const svgString = svgTag.outerHTML;
+    const bbox = await sandbox.send(svgString);
 
-    // Enlarge the bbox from the largest found stroke width
-    // This may have false-positives, but at least the bbox will always
-    // contain the full graphic including strokes.
-    // If the width or height is zero however, don't enlarge since
+    // Enlarge the bbox from the largest found stroke width.
+    // Stroke-width enlargement stays in the parent because it
+    // walks the SVG DOM which is already parsed in-process.
+    // If the width or height is zero, don't enlarge since
     // they won't have a stroke width that needs to be enlarged.
     let halfStrokeWidth;
     if (bbox.width === 0 || bbox.height === 0) {
@@ -263,10 +270,13 @@ const setGradientStrokeRoundedness = svgTag => {
 
 /**
  * In-place, convert passed SVG to something consistent that will be rendered the way we want them to be.
- * @param {SVGSvgElement} svgTag root SVG node to operate upon
+ * All synchronous DOM transforms run first; the async iframe measurement
+ * (if needed) runs last.
+ * @param {SVGSVGElement} svgTag root SVG node to operate upon
  * @param {boolean} [fromVersion2] True if we should perform conversion from version 2 to version 3 svg.
+ * @returns {Promise<void>} Resolves when normalization (including any async measurement) is complete.
  */
-const normalizeSvg = (svgTag, fromVersion2) => {
+const normalizeSvg = async (svgTag, fromVersion2) => {
     if (fromVersion2) {
         // Fix gradients. Scratch 2 exports no x2 when x2 = 0, but
         // SVG default is that x2 is 1. This must be done before
@@ -279,13 +289,13 @@ const normalizeSvg = (svgTag, fromVersion2) => {
     if (fromVersion2) {
         // Transform all text elements.
         transformText(svgTag);
-        // Transform measurements.
-        transformMeasurements(svgTag);
         // Fix stroke roundedness.
         setGradientStrokeRoundedness(svgTag);
+        // Transform measurements
+        await transformMeasurements(svgTag);
     } else if (!svgTag.getAttribute('viewBox')) {
         // Renderer expects a view box.
-        transformMeasurements(svgTag);
+        await transformMeasurements(svgTag);
     } else if (!svgTag.getAttribute('width') || !svgTag.getAttribute('height')) {
         svgTag.setAttribute('width', svgTag.viewBox.baseVal.width);
         svgTag.setAttribute('height', svgTag.viewBox.baseVal.height);
@@ -300,14 +310,13 @@ const normalizeSvg = (svgTag, fromVersion2) => {
  * mimic Scratch 2.0's SVG rendering.
  * @param {!string} svgString String of SVG data to draw in quirks-mode.
  * @param {boolean} [fromVersion2] True if we should perform conversion from version 2 to version 3 svg.
- * @returns {SVGSVGElement} The normalized SVG element.
+ * @returns {Promise<SVGSVGElement>} Resolves with the normalized SVG element.
  */
-const loadSvgString = (svgString, fromVersion2) => {
+const loadSvgString = async (svgString, fromVersion2) => {
     // Parse string into SVG XML.
     const parser = new DOMParser();
 
-    // Since we're adding user-provided SVG to document.body as part of normalization,
-    // sanitization is required. This should not affect bounding box calculation.
+    // Sanitization is required before any processing.
     const sanitizedSvgString = sanitizeSvgText(svgString);
     const svgDom = parser.parseFromString(sanitizedSvgString, 'text/xml');
     if (svgDom.childNodes.length < 1 ||
@@ -315,7 +324,7 @@ const loadSvgString = (svgString, fromVersion2) => {
         throw new Error('Document does not appear to be SVG.');
     }
     const svgTag = svgDom.documentElement;
-    normalizeSvg(svgTag, fromVersion2);
+    await normalizeSvg(svgTag, fromVersion2);
     return svgTag;
 };
 
