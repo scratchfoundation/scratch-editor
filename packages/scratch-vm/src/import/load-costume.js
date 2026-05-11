@@ -3,13 +3,14 @@ const log = require('../util/log');
 const {loadSvgString, serializeSvgToString} = require('@scratch/scratch-svg-renderer');
 
 const loadVector_ = function (costume, runtime, rotationCenter, optVersion) {
-    return new Promise(resolve => {
+    return (async () => {
         let svgString = costume.asset.decodeText();
         // SVG Renderer load fixes "quirks" associated with Scratch 2 projects
         if (optVersion && optVersion === 2) {
             // scratch-svg-renderer fixes syntax that causes loading issues,
             // and if optVersion is 2, fixes "quirks" associated with Scratch 2 SVGs,
-            const fixedSvgString = serializeSvgToString(loadSvgString(svgString, true /* fromVersion2 */));
+            const svgTag = await loadSvgString(svgString, true /* fromVersion2 */);
+            const fixedSvgString = serializeSvgToString(svgTag);
 
             // If the string changed, put back into storage
             if (svgString !== fixedSvgString) {
@@ -19,10 +20,19 @@ const loadVector_ = function (costume, runtime, rotationCenter, optVersion) {
                 costume.assetId = costume.asset.assetId;
                 costume.md5 = `${costume.assetId}.${costume.dataFormat}`;
             }
+        } else if (!/<svg[^>]*\bviewBox\s*=/i.test(svgString)) {
+            // SVGs without a viewBox require async iframe measurement (via transformMeasurements)
+            // to determine their dimensions. Pre-process the SVG here so that the resulting string
+            // already has viewBox+width+height set before it reaches SVGSkin.setSVG. This ensures
+            // the synchronous pre-parse in setSVG reads the correct dimensions, and therefore
+            // getSkinSize() returns the right value immediately after createSVGSkin() returns.
+            const svgTag = await loadSvgString(svgString);
+            svgString = serializeSvgToString(svgTag);
         }
 
         // createSVGSkin does the right thing if rotationCenter isn't provided, so it's okay if it's
         // undefined here
+        // eslint-disable-next-line require-atomic-updates -- costume is call-site-owned; no concurrent modification
         costume.skinId = runtime.renderer.createSVGSkin(svgString, rotationCenter);
         costume.size = runtime.renderer.getSkinSize(costume.skinId);
         // Now we should have a rotationCenter even if we didn't before
@@ -33,8 +43,8 @@ const loadVector_ = function (costume, runtime, rotationCenter, optVersion) {
             costume.bitmapResolution = 1;
         }
 
-        resolve(costume);
-    });
+        return costume;
+    })();
 };
 
 const canvasPool = (function () {

@@ -54,6 +54,14 @@ class SVGSkin extends Skin {
          * @type {number}
          */
         this._maxTextureScale = 1;
+
+        /**
+         * Generation counter for cancelling stale setSVG loads.
+         * Incremented each time setSVG is called; async callbacks
+         * compare their captured generation to skip outdated results.
+         * @type {number}
+         */
+        this._svgGeneration = 0;
     }
 
     /**
@@ -192,46 +200,64 @@ class SVGSkin extends Skin {
      * @fires Skin.event:WasAltered
      */
     setSVG (svgData, rotationCenter) {
-        const svgTag = loadSvgString(svgData);
-        const svgText = serializeSvgToString(svgTag, true /* shouldInjectFonts */);
         this._svgImageLoaded = false;
 
-        const {x, y, width, height} = svgTag.viewBox.baseVal;
-        // While we're setting the size before the image is loaded, this doesn't cause the skin to appear with the wrong
-        // size for a few frames while the new image is loading, because we don't emit the `WasAltered` event, telling
-        // drawables using this skin to update, until the image is loaded.
-        // We need to do this because the VM reads the skin's `size` directly after calling `setSVG`.
-        // TODO: return a Promise so that the VM can read the skin's `size` after the image is loaded.
-        this._size[0] = width;
-        this._size[1] = height;
+        // Pre-parse the SVG to extract viewBox synchronously so that
+        // `_size` is available immediately after `createSVGSkin` returns.
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgData, 'text/xml');
+        const svgEl = svgDoc.documentElement;
+        if (svgEl.localName === 'svg' && svgEl.viewBox.baseVal) {
+            this._size[0] = svgEl.viewBox.baseVal.width;
+            this._size[1] = svgEl.viewBox.baseVal.height;
+        }
 
-        // If there is another load already in progress, replace the old onload to effectively cancel the old load
-        this._svgImage.onload = () => {
-            if (width === 0 || height === 0) {
-                super.setEmptyImageData();
-                return;
-            }
+        // Increment generation so that if setSVG is called again before
+        // the async pipeline finishes, the stale result is discarded.
+        const generation = ++this._svgGeneration;
 
-            const maxDimension = Math.ceil(Math.max(width, height));
-            let testScale = 2;
-            for (testScale; maxDimension * testScale <= MAX_TEXTURE_DIMENSION; testScale *= 2) {
-                this._maxTextureScale = testScale;
-            }
+        // Full async pipeline: sanitize, normalize, serialize, render.
+        loadSvgString(svgData).then(svgTag => {
+            // A newer setSVG call supersedes this one.
+            if (this._svgGeneration !== generation) return;
 
-            this.resetMIPs();
+            const svgText = serializeSvgToString(svgTag, true /* shouldInjectFonts */);
+            const {x, y, width, height} = svgTag.viewBox.baseVal;
 
-            if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
-            // Compensate for viewbox offset.
-            // See https://github.com/LLK/scratch-render/pull/90.
-            this._rotationCenter[0] = rotationCenter[0] - x;
-            this._rotationCenter[1] = rotationCenter[1] - y;
+            // Update size from the normalized SVG (normalization may have
+            // changed dimensions, e.g. for Scratch 2 quirks-mode SVGs).
+            this._size[0] = width;
+            this._size[1] = height;
 
-            this._svgImageLoaded = true;
+            this._svgImage.onload = () => {
+                if (this._svgGeneration !== generation) return;
 
-            this.emit(Skin.Events.WasAltered);
-        };
+                if (width === 0 || height === 0) {
+                    super.setEmptyImageData();
+                    return;
+                }
 
-        this._svgImage.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
+                const maxDimension = Math.ceil(Math.max(width, height));
+                let testScale = 2;
+                for (testScale; maxDimension * testScale <= MAX_TEXTURE_DIMENSION; testScale *= 2) {
+                    this._maxTextureScale = testScale;
+                }
+
+                this.resetMIPs();
+
+                if (typeof rotationCenter === 'undefined') rotationCenter = this.calculateRotationCenter();
+                // Compensate for viewbox offset.
+                // See https://github.com/LLK/scratch-render/pull/90.
+                this._rotationCenter[0] = rotationCenter[0] - x;
+                this._rotationCenter[1] = rotationCenter[1] - y;
+
+                this._svgImageLoaded = true;
+
+                this.emit(Skin.Events.WasAltered);
+            };
+
+            this._svgImage.src = `data:image/svg+xml;utf8,${encodeURIComponent(svgText)}`;
+        });
     }
 
 }
