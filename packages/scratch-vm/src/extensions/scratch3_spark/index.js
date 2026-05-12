@@ -235,14 +235,16 @@ class SparkPeripheral {
     // show one Thai warning toast per block-family per session.
     _readStubField (cmd, family) {
         if (!this.isConnected()) return Promise.resolve(0);
-        return this.send(cmd).then(() => {
-            if (!this._stubWarningShown.has(family)) {
-                this._stubWarningShown.add(family);
-                log.warn(`spark: stub_family_warned (${family}) — hardware not present, returning mock 0`);
-                this._showStubToast(family);
-            }
-            return 0;
-        });
+        const warnOnce = () => {
+            if (this._stubWarningShown.has(family)) return;
+            this._stubWarningShown.add(family);
+            log.warn(`spark: stub_family_warned (${family}) — hardware not present, returning mock 0`);
+            this._showStubToast(family);
+        };
+        // The middleware forwards the firmware's {status:'error', error_code:'hw_not_present'}
+        // frame, so send() resolves promptly (no 3 s timeout). If a future change ever makes
+        // send() reject, still treat it as first-touch → fire the toast once (Story 3.4 contract).
+        return this.send(cmd).then(warnOnce, warnOnce).then(() => 0);
     }
 
     _showStubToast (family) {
