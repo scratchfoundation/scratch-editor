@@ -272,7 +272,7 @@ class SparkPeripheral {
         return this.send(cmd).then(resp => {
             if (resp && resp.status === 'ok') {
                 if (cmd === 'imu_angle') {
-                    this._imuCache[cmd] = {pitch: resp.pitch, roll: resp.roll};
+                    this._imuCache[cmd] = {pitch: resp.pitch, roll: resp.roll, yaw: resp.yaw};
                 } else {
                     this._imuCache[cmd] = {x: resp.x, y: resp.y, z: resp.z};
                 }
@@ -480,6 +480,29 @@ class Scratch3SparkBlocks {
                     blockType: BlockType.REPORTER,
                     text: formatMessage({id: 'spark.imuRoll', default: 'roll', description: 'IMU tilt roll (degrees)'})
                 },
+                {
+                    // Story 3.11 — tilt-compensated magnetic heading (degrees, -180..180).
+                    opcode: 'imuYaw',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.imuYaw', default: 'yaw', description: 'IMU heading / yaw (degrees, -180..180)'})
+                },
+                {
+                    // Story 3.11 — pick the orientation sensor-fusion algorithm.
+                    opcode: 'setImuFusion',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({
+                        id: 'spark.setImuFusion',
+                        default: 'set IMU fusion to [ALGO]',
+                        description: 'Select the orientation sensor-fusion algorithm'
+                    }),
+                    arguments: {
+                        ALGO: {
+                            type: ArgumentType.STRING,
+                            menu: 'fusionAlgos',
+                            defaultValue: 'complementary'
+                        }
+                    }
+                },
                 '---',
                 // ── IMU gesture (Story 3.3) ────────────────────────
                 {
@@ -618,6 +641,19 @@ class Scratch3SparkBlocks {
                         {text: formatMessage({id: 'spark.sensorLevel.2', default: 'medium', description: 'Sensor sensitivity level 2 (default)'}), value: '2'},
                         {text: formatMessage({id: 'spark.sensorLevel.3', default: 'low', description: 'Sensor sensitivity level 3 (least sensitive)'}), value: '3'}
                     ]
+                },
+                // Story 3.11 — orientation sensor-fusion algorithm for pitch/roll/yaw.
+                // 'raw'/'smooth' are friendly names for none/complementary; Kalman/
+                // Madgwick/Mahony keep their (proper-noun) names.
+                fusionAlgos: {
+                    acceptReporters: true,
+                    items: [
+                        {text: formatMessage({id: 'spark.fusionAlgo.none', default: 'raw', description: 'Fusion: none (accel/mag only)'}), value: 'none'},
+                        {text: formatMessage({id: 'spark.fusionAlgo.complementary', default: 'smooth', description: 'Fusion: complementary (default)'}), value: 'complementary'},
+                        {text: formatMessage({id: 'spark.fusionAlgo.kalman', default: 'Kalman', description: 'Fusion: 1-D Kalman'}), value: 'kalman'},
+                        {text: formatMessage({id: 'spark.fusionAlgo.madgwick', default: 'Madgwick', description: 'Fusion: Madgwick'}), value: 'madgwick'},
+                        {text: formatMessage({id: 'spark.fusionAlgo.mahony', default: 'Mahony', description: 'Fusion: Mahony'}), value: 'mahony'}
+                    ]
                 }
             }
         };
@@ -690,6 +726,16 @@ class Scratch3SparkBlocks {
     }
     imuRoll () {
         return this._peripheral._readImuField('imu_angle', 'roll');
+    }
+    imuYaw () {
+        // Story 3.11 — tilt-compensated magnetic heading (degrees, -180..180).
+        return this._peripheral._readImuField('imu_angle', 'yaw');
+    }
+    setImuFusion (args) {
+        // Story 3.11 — pick the orientation fusion algorithm at runtime.
+        const algo = args.ALGO;
+        if (!['none', 'complementary', 'kalman', 'madgwick', 'mahony'].includes(algo)) return Promise.resolve(null);
+        return this._peripheral.send('set_imu_fusion', {algo});
     }
 
     whenShake () {
