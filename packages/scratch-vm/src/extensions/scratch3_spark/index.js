@@ -4,7 +4,31 @@ const formatMessage = require('format-message');
 const log = require('../../util/log');
 
 const translations = require('./translations');
-formatMessage.setup({translations: {th: translations.th}});
+
+// Merge this extension's block-label translations into format-message's current
+// table, preserving every other locale/key already registered.
+//
+// We can't just call `formatMessage.setup({translations: {th: ...}})` once at
+// module load: scratch-vm's `VirtualMachine.setLocale(locale, messages)` does
+// `formatMessage.setup({translations: {[locale]: messages}})`, and
+// format-message's `setup` *replaces* the whole `translations` object — so the
+// GUI's locale init/change (which passes the scratch-l10n editor messages, with
+// no `spark.*` keys) wipes our strings and the blocks fall back to their English
+// `default:` text. Re-applying the merge at the top of `getInfo()` (called by
+// the GUI after `setLocale`, on every palette refresh) keeps our translations
+// alive regardless of ordering. Idempotent.
+const applySparkTranslations = () => {
+    const current = formatMessage.setup().translations || {};
+    const merged = {};
+    Object.keys(current).forEach(loc => {
+        merged[loc] = Object.assign({}, current[loc]);
+    });
+    Object.keys(translations).forEach(loc => {
+        merged[loc] = Object.assign({}, merged[loc] || {}, translations[loc]);
+    });
+    formatMessage.setup({translations: merged});
+};
+applySparkTranslations();
 
 const EXTENSION_ID = 'spark';
 const WS_URL = 'ws://localhost:8080';
@@ -331,6 +355,11 @@ class Scratch3SparkBlocks {
     }
 
     getInfo () {
+        // Re-apply our translations every time the palette is built — the GUI's
+        // setLocale (which the VM forwards to format-message) replaces the whole
+        // translations table, so without this our Thai strings get wiped and the
+        // blocks render their English `default:` text. See applySparkTranslations.
+        applySparkTranslations();
         return {
             id: EXTENSION_ID,
             name: formatMessage({id: 'spark.categoryName', default: 'Spark', description: 'Extension name'}),
