@@ -23,8 +23,7 @@ const loadVector_ = function (costume, runtime, rotationCenter, optVersion) {
         }
 
         // createSVGSkin does the right thing if rotationCenter isn't provided, so it's okay if it's
-        // undefined here. costume is call-site-owned with no concurrent modification; the
-        // require-atomic-updates warning is a false positive.
+        // undefined here.
         // eslint-disable-next-line require-atomic-updates
         costume.skinId = await runtime.renderer.createSVGSkin(svgString, rotationCenter);
         costume.size = runtime.renderer.getSkinSize(costume.skinId);
