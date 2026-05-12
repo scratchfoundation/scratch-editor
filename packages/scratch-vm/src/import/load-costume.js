@@ -20,20 +20,13 @@ const loadVector_ = function (costume, runtime, rotationCenter, optVersion) {
                 costume.assetId = costume.asset.assetId;
                 costume.md5 = `${costume.assetId}.${costume.dataFormat}`;
             }
-        } else if (!/<svg[^>]*\bviewBox\s*=/i.test(svgString)) {
-            // SVGs without a viewBox require async iframe measurement (via transformMeasurements)
-            // to determine their dimensions. Pre-process the SVG here so that the resulting string
-            // already has viewBox+width+height set before it reaches SVGSkin.setSVG. This ensures
-            // the synchronous pre-parse in setSVG reads the correct dimensions, and therefore
-            // getSkinSize() returns the right value immediately after createSVGSkin() returns.
-            const svgTag = await loadSvgString(svgString);
-            svgString = serializeSvgToString(svgTag);
         }
 
         // createSVGSkin does the right thing if rotationCenter isn't provided, so it's okay if it's
-        // undefined here
-        // eslint-disable-next-line require-atomic-updates -- costume is call-site-owned; no concurrent modification
-        costume.skinId = runtime.renderer.createSVGSkin(svgString, rotationCenter);
+        // undefined here. costume is call-site-owned with no concurrent modification; the
+        // require-atomic-updates warning is a false positive.
+        // eslint-disable-next-line require-atomic-updates
+        costume.skinId = await runtime.renderer.createSVGSkin(svgString, rotationCenter);
         costume.size = runtime.renderer.getSkinSize(costume.skinId);
         // Now we should have a rotationCenter even if we didn't before
         if (!rotationCenter) {

@@ -14,8 +14,8 @@ const indexHTML = path.resolve(__dirname, 'index.html');
 
     await test('SVG skin size set properly', async t => {
         t.plan(1);
-        const skinSize = await page.evaluate(() => {
-            const skinID = render.createSVGSkin(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 100"></svg>`);
+        const skinSize = await page.evaluate(async () => {
+            const skinID = await render.createSVGSkin(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 100"></svg>`);
             return render.getSkinSize(skinID);
         });
         t.same(skinSize, [50, 100]);

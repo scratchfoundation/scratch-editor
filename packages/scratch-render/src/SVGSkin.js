@@ -202,22 +202,14 @@ class SVGSkin extends Skin {
     setSVG (svgData, rotationCenter) {
         this._svgImageLoaded = false;
 
-        // Pre-parse the SVG to extract viewBox synchronously so that
-        // `_size` is available immediately after `createSVGSkin` returns.
-        const parser = new DOMParser();
-        const svgDoc = parser.parseFromString(svgData, 'text/xml');
-        const svgEl = svgDoc.documentElement;
-        if (svgEl.localName === 'svg' && svgEl.viewBox.baseVal) {
-            this._size[0] = svgEl.viewBox.baseVal.width;
-            this._size[1] = svgEl.viewBox.baseVal.height;
-        }
-
         // Increment generation so that if setSVG is called again before
         // the async pipeline finishes, the stale result is discarded.
         const generation = ++this._svgGeneration;
 
         // Full async pipeline: sanitize, normalize, serialize, render.
-        loadSvgString(svgData).then(svgTag => {
+        // Resolves after _size is updated; callers that need correct dimensions
+        // must await the returned Promise.
+        return loadSvgString(svgData).then(svgTag => {
             // A newer setSVG call supersedes this one.
             if (this._svgGeneration !== generation) return;
 

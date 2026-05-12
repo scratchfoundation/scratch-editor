@@ -355,14 +355,14 @@ class RenderWebGL extends EventEmitter {
      * @param {!string} svgData - new SVG to use.
      * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
      * skin will be used
-     * @returns {!int} the ID for the new skin.
+     * @returns {Promise<number>} A promise that resolves with the skin ID once the skin's
+     *     dimensions are available via getSkinSize.
      */
     createSVGSkin (svgData, rotationCenter) {
         const skinId = this._nextSkinId++;
         const newSkin = new SVGSkin(skinId, this);
-        newSkin.setSVG(svgData, rotationCenter);
         this._allSkins[skinId] = newSkin;
-        return skinId;
+        return newSkin.setSVG(svgData, rotationCenter).then(() => skinId);
     }
 
     /**
@@ -398,16 +398,16 @@ class RenderWebGL extends EventEmitter {
      * @param {!string} svgData - new SVG to use.
      * @param {?Array<number>} rotationCenter Optional: rotation center of the skin. If not supplied, the center of the
      * skin will be used
+     * @returns {Promise<void>} A promise that resolves once the skin's dimensions are updated.
      */
     updateSVGSkin (skinId, svgData, rotationCenter) {
         if (this._allSkins[skinId] instanceof SVGSkin) {
-            this._allSkins[skinId].setSVG(svgData, rotationCenter);
-            return;
+            return this._allSkins[skinId].setSVG(svgData, rotationCenter);
         }
 
         const newSkin = new SVGSkin(skinId, this);
-        newSkin.setSVG(svgData, rotationCenter);
         this._reskin(skinId, newSkin);
+        return newSkin.setSVG(svgData, rotationCenter);
     }
 
     /**
