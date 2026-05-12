@@ -487,12 +487,12 @@ class Scratch3SparkBlocks {
                 {
                     opcode: 'micLevel',
                     blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.micLevel', default: 'ระดับเสียง', description: 'Mic level reporter (RMS)'})
+                    text: formatMessage({id: 'spark.micLevel', default: 'sound level', description: 'Mic level reporter (RMS)'})
                 },
                 {
                     opcode: 'whenLoud',
                     blockType: BlockType.HAT,
-                    text: formatMessage({id: 'spark.whenLoud', default: 'เมื่อมีเสียงดัง', description: 'Hat: when a loud sound happens'})
+                    text: formatMessage({id: 'spark.whenLoud', default: 'when loud', description: 'Hat: when a loud sound happens'})
                 },
                 {
                     opcode: 'setMicThreshold',
@@ -503,12 +503,12 @@ class Scratch3SparkBlocks {
                 {
                     opcode: 'lightLevel',
                     blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.lightLevel', default: 'ระดับแสง', description: 'Light level reporter (lux)'})
+                    text: formatMessage({id: 'spark.lightLevel', default: 'light level', description: 'Light level reporter (lux)'})
                 },
                 {
                     opcode: 'whenBright',
                     blockType: BlockType.HAT,
-                    text: formatMessage({id: 'spark.whenBright', default: 'เมื่อสว่างขึ้น', description: 'Hat: when it gets bright'})
+                    text: formatMessage({id: 'spark.whenBright', default: 'when bright', description: 'Hat: when it gets bright'})
                 },
                 {
                     opcode: 'setLightThreshold',
@@ -519,12 +519,12 @@ class Scratch3SparkBlocks {
                 {
                     opcode: 'tofDistance',
                     blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.tofDistance', default: 'ระยะใกล้สุด', description: 'TOF distance reporter (mm; 9999 = no target)'})
+                    text: formatMessage({id: 'spark.tofDistance', default: 'nearest distance', description: 'TOF distance reporter (mm; 9999 = no target)'})
                 },
                 {
                     opcode: 'whenNear',
                     blockType: BlockType.HAT,
-                    text: formatMessage({id: 'spark.whenNear', default: 'เมื่อมีของใกล้', description: 'Hat: when an object comes near'})
+                    text: formatMessage({id: 'spark.whenNear', default: 'when object near', description: 'Hat: when an object comes near'})
                 },
                 {
                     opcode: 'setTofThreshold',
