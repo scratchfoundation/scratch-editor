@@ -29,13 +29,23 @@ const LED_COLOR_MAP = {
 
 const SparkButton = {A: 'A', B: 'B'};
 
-// Story 3.4 (FR16) — Thai one-shot warning toast copy per sensor-stub family.
-// Shown once per family per session when a Mic/Light/TOF reporter is first read
-// (the firmware always answers hw_not_present; the block returns the mock 0).
+// Story 3.4 (FR16) → 3.7/3.8/3.9 (SCP #4) — Thai one-shot warning toast copy
+// per Mic/Light/TOF family. The firmware now returns a live {value} on a board
+// with Spark-Sensors; on a board without it (or if init failed) it still
+// answers hw_not_present, and the reporter falls back to the mock 0 + this
+// once-per-family-per-session toast. Branch is on the *response*, not a build
+// flag — the same .scratch project works on both substrates.
 const STUB_TOAST_TH = {
     mic: 'ไมโครโฟนยังไม่พร้อม - แสดงค่าจำลอง 0',
     light: 'เซ็นเซอร์แสงยังไม่พร้อม - แสดงค่าจำลอง 0',
     tof: 'เซ็นเซอร์ระยะยังไม่พร้อม - แสดงค่าจำลอง 0'
+};
+
+// Map a sensor family to its firmware threshold cmd (whenLoud/whenBright/whenNear).
+const SENSOR_THRESHOLD_CMD = {
+    mic: 'set_mic_threshold',
+    light: 'set_light_threshold',
+    tof: 'set_tof_threshold'
 };
 
 class SparkPeripheral {
@@ -61,6 +71,13 @@ class SparkPeripheral {
         // every frame the threshold is exceeded. Mirror of _buttonEdgeLatch.
         // Refractory (500 ms) is enforced firmware-side in task_imu_sampler.
         this._shakeEdgeLatch = false;
+        // Stories 3.7/3.8/3.9 (SCP #4): edge latches for the Spark-Sensors
+        // HAT blocks, set by the firmware mic_loud / light_bright / tof_near
+        // events (firmware enforces a 500 ms refractory + rising-edge). Same
+        // pattern as _shakeEdgeLatch / _buttonEdgeLatch. Reset on disconnect.
+        this._loudEdgeLatch = false;
+        this._brightEdgeLatch = false;
+        this._nearEdgeLatch = false;
         // Story 3.4 (FR16): block-families (mic/light/tof) whose Thai
         // sensor-pending toast has already been shown this session. Cleared on
         // disconnect so a re-connect re-arms the one-shot warnings.
@@ -90,10 +107,22 @@ class SparkPeripheral {
     disconnect () {
         this._stopPolling();
         this._stubWarningShown.clear(); // Story 3.4: re-arm one-shot toasts for the next session
+        this._resetEdgeLatches();
         if (this._ws) {
             this._ws.close();
             this._ws = null;
         }
+    }
+
+    // Stories 3.7/3.8/3.9 (+ the deferred _shakeEdgeLatch follow-up): clear all
+    // HAT edge latches on disconnect so a stale latch from before the drop
+    // doesn't fire a HAT once on reconnect.
+    _resetEdgeLatches () {
+        this._shakeEdgeLatch = false;
+        this._loudEdgeLatch = false;
+        this._brightEdgeLatch = false;
+        this._nearEdgeLatch = false;
+        this._buttonEdgeLatch = {0: false, 1: false};
     }
 
     // send(cmd, data) — wraps into {protocol, type, id, cmd, data} per middleware schema
@@ -154,6 +183,15 @@ class SparkPeripheral {
             // Story 3.3 — one event per debounced gesture (firmware enforces
             // the 500 ms refractory). The whenShake HAT consumes the latch.
             this._shakeEdgeLatch = true;
+        } else if (msg.event === 'mic_loud') {
+            // Stories 3.7/3.8/3.9 — Spark-Sensors HAT events; firmware enforces
+            // a rising-edge + 500 ms refractory. The whenLoud/whenBright/whenNear
+            // HATs consume the latch (one fire per event).
+            this._loudEdgeLatch = true;
+        } else if (msg.event === 'light_bright') {
+            this._brightEdgeLatch = true;
+        } else if (msg.event === 'tof_near') {
+            this._nearEdgeLatch = true;
         }
     }
 
@@ -229,22 +267,36 @@ class SparkPeripheral {
         });
     }
 
-    // Story 3.4 (FR16) — Mic/Light/TOF stub-mode reporter. Sends `cmd` to the
-    // middleware; the firmware always answers {status:"error",
-    // error_code:"hw_not_present"}. We surface the declared mock value (0) and
-    // show one Thai warning toast per block-family per session.
-    _readStubField (cmd, family) {
+    // Stories 3.7/3.8/3.9 (SCP #4) — Mic/Light/TOF reporter. Branch on the
+    // *response* (not a build flag, so one .scratch works on both substrates):
+    //  - {status:"ok", value:<number>}  → Spark-Sensors present: return the
+    //    live value, no toast.
+    //  - {status:"error", error_code:"hw_not_present"} (or timeout) → no
+    //    Spark-Sensors / init failed: return the declared mock 0 and show the
+    //    one-shot Thai warning toast for this family (Story 3.4 fallback path).
+    _readSensorField (cmd, family) {
         if (!this.isConnected()) return Promise.resolve(0);
-        const warnOnce = () => {
-            if (this._stubWarningShown.has(family)) return;
-            this._stubWarningShown.add(family);
-            log.warn(`spark: stub_family_warned (${family}) — hardware not present, returning mock 0`);
-            this._showStubToast(family);
+        const fallback = () => {
+            if (!this._stubWarningShown.has(family)) {
+                this._stubWarningShown.add(family);
+                log.warn(`spark: sensor_hw_not_present (${family}) — returning mock 0`);
+                this._showStubToast(family);
+            }
+            return 0;
         };
-        // The middleware forwards the firmware's {status:'error', error_code:'hw_not_present'}
-        // frame, so send() resolves promptly (no 3 s timeout). If a future change ever makes
-        // send() reject, still treat it as first-touch → fire the toast once (Story 3.4 contract).
-        return this.send(cmd).then(warnOnce, warnOnce).then(() => 0);
+        return this.send(cmd).then(resp => {
+            if (resp && resp.status === 'ok' && typeof resp.value === 'number') return resp.value;
+            return fallback();
+        }, fallback);
+    }
+
+    // Stories 3.7/3.8/3.9 — set a HAT threshold (whenLoud/whenBright/whenNear),
+    // level 1/2/3. Mirrors setShakeSensitivity. No-op (resolves null) if the
+    // family is unknown or the level isn't 1-3.
+    _setSensorThreshold (family, level) {
+        const cmd = SENSOR_THRESHOLD_CMD[family];
+        if (!cmd || ![1, 2, 3].includes(level)) return Promise.resolve(null);
+        return this.send(cmd, {level});
     }
 
     _showStubToast (family) {
@@ -260,6 +312,7 @@ class SparkPeripheral {
     _handleDisconnect () {
         this._stopPolling();
         this._stubWarningShown.clear(); // Story 3.4: re-arm one-shot toasts for the next session
+        this._resetEdgeLatches();
         this._pending.forEach(resolve => resolve(null));
         this._pending.clear();
         this._ws = null;
@@ -426,40 +479,58 @@ class Scratch3SparkBlocks {
                     }
                 },
                 '---',
-                // ── Sensor stubs — Mic / Light / TOF (Story 3.4, FR16 — pending HW) ──
-                // Reporters return the declared mock 0 + a one-shot Thai toast
-                // per family; HATs are inert (never fire). The "(stub)" token in
-                // the label is the UX-DR10 fallback "pending HW" indicator until
-                // a real badge design is confirmed.
+                // ── Spark-Sensors — Mic / Light / TOF (Stories 3.7/3.8/3.9, SCP #4) ──
+                // Live on a board with the Spark-Sensors module; on a board
+                // without it the reporters return mock 0 + a one-shot Thai
+                // toast and the HATs stay inert (firmware sends no events). The
+                // branch is on the response, so one .scratch works on both.
                 {
                     opcode: 'micLevel',
                     blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.micLevel', default: '(stub) ระดับเสียง', description: 'Mic level reporter (stub — pending HW)'})
+                    text: formatMessage({id: 'spark.micLevel', default: 'ระดับเสียง', description: 'Mic level reporter (RMS)'})
                 },
                 {
                     opcode: 'whenLoud',
                     blockType: BlockType.HAT,
-                    text: formatMessage({id: 'spark.whenLoud', default: '(stub) เมื่อมีเสียงดัง', description: 'Hat: when loud (stub — pending HW)'})
+                    text: formatMessage({id: 'spark.whenLoud', default: 'เมื่อมีเสียงดัง', description: 'Hat: when a loud sound happens'})
+                },
+                {
+                    opcode: 'setMicThreshold',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({id: 'spark.setMicThreshold', default: 'set loud sensitivity to [LEVEL]', description: 'Set whenLoud threshold level 1/2/3'}),
+                    arguments: {LEVEL: {type: ArgumentType.STRING, menu: 'sensorLevels', defaultValue: '2'}}
                 },
                 {
                     opcode: 'lightLevel',
                     blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.lightLevel', default: '(stub) ระดับแสง', description: 'Light level reporter (stub — pending HW)'})
+                    text: formatMessage({id: 'spark.lightLevel', default: 'ระดับแสง', description: 'Light level reporter (lux)'})
                 },
                 {
                     opcode: 'whenBright',
                     blockType: BlockType.HAT,
-                    text: formatMessage({id: 'spark.whenBright', default: '(stub) เมื่อสว่างขึ้น', description: 'Hat: when bright (stub — pending HW)'})
+                    text: formatMessage({id: 'spark.whenBright', default: 'เมื่อสว่างขึ้น', description: 'Hat: when it gets bright'})
+                },
+                {
+                    opcode: 'setLightThreshold',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({id: 'spark.setLightThreshold', default: 'set bright sensitivity to [LEVEL]', description: 'Set whenBright threshold level 1/2/3'}),
+                    arguments: {LEVEL: {type: ArgumentType.STRING, menu: 'sensorLevels', defaultValue: '2'}}
                 },
                 {
                     opcode: 'tofDistance',
                     blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.tofDistance', default: '(stub) ระยะใกล้สุด', description: 'TOF distance reporter (stub — pending HW)'})
+                    text: formatMessage({id: 'spark.tofDistance', default: 'ระยะใกล้สุด', description: 'TOF distance reporter (mm; 9999 = no target)'})
                 },
                 {
                     opcode: 'whenNear',
                     blockType: BlockType.HAT,
-                    text: formatMessage({id: 'spark.whenNear', default: '(stub) เมื่อมีของใกล้', description: 'Hat: when object near (stub — pending HW)'})
+                    text: formatMessage({id: 'spark.whenNear', default: 'เมื่อมีของใกล้', description: 'Hat: when an object comes near'})
+                },
+                {
+                    opcode: 'setTofThreshold',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({id: 'spark.setTofThreshold', default: 'set near sensitivity to [LEVEL]', description: 'Set whenNear threshold level 1/2/3'}),
+                    arguments: {LEVEL: {type: ArgumentType.STRING, menu: 'sensorLevels', defaultValue: '2'}}
                 }
             ],
             menus: {
@@ -506,6 +577,17 @@ class Scratch3SparkBlocks {
                             }),
                             value: '3'
                         }
+                    ]
+                },
+                // Stories 3.7/3.8/3.9 — shared 1/2/3 sensitivity menu for the
+                // whenLoud / whenBright / whenNear threshold blocks. Level 1 =
+                // most sensitive (triggers easily), 3 = least.
+                sensorLevels: {
+                    acceptReporters: true,
+                    items: [
+                        {text: formatMessage({id: 'spark.sensorLevel.1', default: 'high', description: 'Sensor sensitivity level 1 (most sensitive)'}), value: '1'},
+                        {text: formatMessage({id: 'spark.sensorLevel.2', default: 'medium', description: 'Sensor sensitivity level 2 (default)'}), value: '2'},
+                        {text: formatMessage({id: 'spark.sensorLevel.3', default: 'low', description: 'Sensor sensitivity level 3 (least sensitive)'}), value: '3'}
                     ]
                 }
             }
@@ -600,26 +682,48 @@ class Scratch3SparkBlocks {
         return this._peripheral.send('set_shake_threshold', {level});
     }
 
-    // ── Sensor stubs (Story 3.4, FR16) — reporters return mock 0 (+ a one-shot
-    //    Thai toast per family); HATs never fire. Forward-compatible: when
-    //    Spark-Sensors ships, only the firmware driver changes. ──
+    // ── Mic / Light / TOF (Stories 3.7/3.8/3.9, SCP #4) — live on a board with
+    //    Spark-Sensors; on a board without it the reporters return mock 0 + a
+    //    one-shot Thai toast and the HATs stay inert (no firmware events). The
+    //    branch is on the response, so the same .scratch works on both. ──
     micLevel () {
-        return this._peripheral._readStubField('mic_level', 'mic');
+        return this._peripheral._readSensorField('mic_level', 'mic');
     }
     lightLevel () {
-        return this._peripheral._readStubField('light_level', 'light');
+        return this._peripheral._readSensorField('light_level', 'light');
     }
     tofDistance () {
-        return this._peripheral._readStubField('tof_distance', 'tof');
+        return this._peripheral._readSensorField('tof_distance', 'tof');
     }
     whenLoud () {
+        if (!this._peripheral.isConnected()) return false;
+        if (this._peripheral._loudEdgeLatch) {
+            this._peripheral._loudEdgeLatch = false; return true;
+        }
         return false;
     }
     whenBright () {
+        if (!this._peripheral.isConnected()) return false;
+        if (this._peripheral._brightEdgeLatch) {
+            this._peripheral._brightEdgeLatch = false; return true;
+        }
         return false;
     }
     whenNear () {
+        if (!this._peripheral.isConnected()) return false;
+        if (this._peripheral._nearEdgeLatch) {
+            this._peripheral._nearEdgeLatch = false; return true;
+        }
         return false;
+    }
+    setMicThreshold (args) {
+        return this._peripheral._setSensorThreshold('mic', parseInt(args.LEVEL, 10));
+    }
+    setLightThreshold (args) {
+        return this._peripheral._setSensorThreshold('light', parseInt(args.LEVEL, 10));
+    }
+    setTofThreshold (args) {
+        return this._peripheral._setSensorThreshold('tof', parseInt(args.LEVEL, 10));
     }
 
     capturePhoto () {

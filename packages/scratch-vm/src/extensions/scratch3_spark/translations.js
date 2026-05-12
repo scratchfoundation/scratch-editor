@@ -25,14 +25,20 @@ module.exports = {
         'spark.shakeLevel.1':        'เบา',
         'spark.shakeLevel.2':        'ปานกลาง',
         'spark.shakeLevel.3':        'แรง',
-        // Story 3.4 (FR16) — Mic/Light/TOF sensor stubs (pending HW). The
-        // "(stub)" prefix is the UX-DR10 fallback "pending HW" indicator,
-        // replaced by a real badge once the canonical design is confirmed.
-        'spark.micLevel':            '(stub) ระดับเสียง',
-        'spark.lightLevel':          '(stub) ระดับแสง',
-        'spark.tofDistance':         '(stub) ระยะใกล้สุด',
-        'spark.whenLoud':            '(stub) เมื่อมีเสียงดัง',
-        'spark.whenBright':          '(stub) เมื่อสว่างขึ้น',
-        'spark.whenNear':            '(stub) เมื่อมีของใกล้'
+        // Stories 3.7/3.8/3.9 (SCP #4) — Mic/Light/TOF, live on a board with
+        // Spark-Sensors (mock 0 + one-shot warning toast otherwise). Previously
+        // these carried a "(stub) " prefix (Story 3.4 pending-HW indicator).
+        'spark.micLevel':            'ระดับเสียง',
+        'spark.lightLevel':          'ระดับแสง',
+        'spark.tofDistance':         'ระยะใกล้สุด',
+        'spark.whenLoud':            'เมื่อมีเสียงดัง',
+        'spark.whenBright':          'เมื่อสว่างขึ้น',
+        'spark.whenNear':            'เมื่อมีของใกล้',
+        'spark.setMicThreshold':     'ตั้งความไวเสียงดังเป็น [LEVEL]',
+        'spark.setLightThreshold':   'ตั้งความไวความสว่างเป็น [LEVEL]',
+        'spark.setTofThreshold':     'ตั้งความไวระยะใกล้เป็น [LEVEL]',
+        'spark.sensorLevel.1':       'สูง',
+        'spark.sensorLevel.2':       'ปานกลาง',
+        'spark.sensorLevel.3':       'ต่ำ'
     }
 };
