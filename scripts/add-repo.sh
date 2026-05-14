@@ -1,530 +1,606 @@
 #!/bin/bash
 
-### Configuration ###
-
-# All repositories are assumed to be hosted in this GitHub org
-GITHUB_ORG="scratchfoundation"
-
-# This is the list of repositories to merge into the monorepo
-# Current thinking: this should be all Scratch Editor repos excluding forks
-ALL_REPOS="
-    scratch-gui \
-    scratch-render \
-    scratch-svg-renderer \
-    scratch-vm \
-"
-
-DEST_BRANCHES="
-    develop \
-    scratch-android \
-    scratch-desktop \
-"
-#ALL_REPOS="scratch-audio \
-#     scratch-desktop \
-#     scratch-gui \
-#     scratch-l10n \
-#     scratch-paint \
-#     scratch-parser \
-#     scratch-render \
-#     scratch-sb1-converter \
-#     scratch-semantic-release-config \
-#     scratch-storage \
-#     scratch-svg-renderer \
-#     scratch-translate-extension-languages \
-#     scratch-vm \
-#     eslint-config-scratch \
-# "
-
-# This is the directory where you have a copy of all the repositories you want to merge.
-# This script will run `git fetch` on these repos, but otherwise will not modify them.
-BUILD_CACHE="./.."
-
-# The monorepo will be built here. Delete it to start over.
-BUILD_OUT="./monorepo.out"
-
-# Temporary clones will be placed here. If the script completes successfully, this directory will be deleted.
-BUILD_TMP="./monorepo.tmp"
-
-# Use ${BASE_COMMIT} from ${BASE_REPO} as the starting point for the monorepo.
-BASE_COMMIT="$(git rev-parse develop)"
-BASE_REPO="scratch-editor"
-MONOREPO_URL="https://github.com/scratchfoundation/scratch-editor.git"
-
-# Limit the threads and memory used by git repack & git gc. This script only uses these values in final optimization.
-# If you see "error: pack-objects died of signal 9" or an out-of-memory error, try reducing one or both.
-# In my experiments, the maximum memory used was around 2.2 * GIT_PACK_THREADS * GIT_PACK_WINDOW_MEMORY.
-# Values above 512m did not seem to improve compression in my tests. The cutoff is somewhere between 256m and 512m.
-# See git documentation for pack.threads and pack.windowMemory for more information.
-# Increasing threads speeds up the operation, but uses more CPU and memory.
-# Increasing windowMemory may compress the .git directory better, but takes more time and uses more memory.
-# Setting threads to zero will tell git to detect your CPU count.
-# Setting window memory to zero will remove the limit.
-# WARNING: on some configurations, window memory is stored in a signed 32-bit integer, so the maximum value is ~2047m.
-GIT_PACK_THREADS="8"
-GIT_PACK_WINDOW_MEMORY="512m"
-
-# Options to speed up `npm install` during the fixup phase
-NPM_QUICK_OPTS="--prefer-offline --no-audit --no-fund"
-
-### End configuration ###
+# add-repo.sh — Add an existing GitHub repository into the scratch-editor monorepo.
+#
+# Imports a single repo with full git history. Rewrites the source repo's history
+# so all files live under packages/<repo-name>/, merges it into the current branch,
+# rewires inter-package dependencies, updates the root workspaces list, and (by
+# default) regenerates CI workflows.
+#
+# Prerequisites:
+#   - git-filter-repo   (brew install git-filter-repo  | sudo apt install git-filter-repo)
+#   - moreutils         (brew install moreutils        | sudo apt install moreutils)
+#   - jq                (brew install jq               | sudo apt install jq)
+#   - perl              (pre-installed on macOS, NixOS, and most Linux distributions)
+#
+# Usage:
+#   ./scripts/add-repo.sh <repo-name> [options]
+#
+# Options:
+#   --source-branch <branch>   Branch to import (default: auto-detect develop, then main, then master)
+#   --org <github-org>         GitHub organization (default: scratchfoundation)
+#   --cache-dir <path>         Local cache dir holding clones of source repos (default: ./..)
+#   --no-ci                    Skip CI workflow regeneration at the end
+#   --continue-on-error        If a per-dep package.json rewrite fails during the
+#                              cross-workspace dep rewire step, log the failure to
+#                              add-repo.errors.log and keep going (default: hard-fail
+#                              on the first failure). Does not affect the final
+#                              lockfile install at the end of the script, which
+#                              always hard-fails.
+#   --help, -h                 Show this help message
+#
+# Examples:
+#   ./scripts/add-repo.sh scratch-paint
+#   ./scripts/add-repo.sh scratch-storage --source-branch develop
+#   ./scripts/add-repo.sh scratch-audio --org myfork --cache-dir ~/GitHub
+#
+# Failure recovery:
+#   The script makes its destructive changes against the current branch. If
+#   anything goes wrong, the simplest recovery is:
+#       git branch -D <this-branch>   (if you made a fresh branch for the import)
+#     or
+#       git reset --hard <pre-script-commit>
+#     and remove any leftover temp dir:
+#       rm -rf ./add-repo.tmp
 
 set -e
 
+### Anchor to monorepo root ###
+
+# Resolve MONOREPO_ROOT (and any path defaults derived from it) to absolute
+# paths up front so behavior is independent of the caller's CWD. User-supplied
+# relative paths (e.g. via --cache-dir) are resolved against the caller's CWD
+# at parse time and stored absolute thereafter.
+if ! MONOREPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"; then
+    echo "Error: must be run inside a git repository." >&2
+    exit 1
+fi
+
+### Defaults (all paths absolute) ###
+
+GITHUB_ORG="scratchfoundation"
+MONOREPO_URL="https://github.com/scratchfoundation/scratch-editor.git"
+NPM_ORGANIZATION="@scratch"
+BUILD_CACHE="$(cd "${MONOREPO_ROOT}/.." && pwd)"   # parent of monorepo root
+BUILD_TMP="${MONOREPO_ROOT}/add-repo.tmp"
+SOURCE_BRANCH=""                                   # empty means "auto-detect"
+SKIP_CI=false
+CONTINUE_ON_ERROR=false
+
+### Argument parsing ###
+
+usage() {
+    sed -n '/^# Usage:/,/^[^#]/{ /^#/s/^# \{0,1\}//p; }' "$0"
+    exit "${1:-0}"
+}
+
+# Reject a flag whose value is missing or itself another flag.
+require_value() {
+    local flag="$1"
+    local value="$2"
+    if [ -z "$value" ] || [[ "$value" == --* ]]; then
+        echo "Error: ${flag} requires a value." >&2
+        usage 1
+    fi
+}
+
+REPO_NAME=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --source-branch)
+            require_value "$1" "${2-}"
+            SOURCE_BRANCH="$2"
+            shift 2
+            ;;
+        --org)
+            require_value "$1" "${2-}"
+            GITHUB_ORG="$2"
+            shift 2
+            ;;
+        --cache-dir)
+            require_value "$1" "${2-}"
+            # Resolve to absolute path against the caller's CWD. If the dir
+            # doesn't exist yet, leave the value as the user typed it; the
+            # pre-flight check below will print a clear error.
+            if [ -d "$2" ]; then
+                BUILD_CACHE="$(cd "$2" && pwd)"
+            else
+                BUILD_CACHE="$2"
+            fi
+            shift 2
+            ;;
+        --no-ci)
+            SKIP_CI=true
+            shift
+            ;;
+        --continue-on-error)
+            CONTINUE_ON_ERROR=true
+            shift
+            ;;
+        --help|-h)
+            usage 0
+            ;;
+        -*)
+            echo "Unknown option: $1" >&2
+            usage 1
+            ;;
+        *)
+            if [ -z "$REPO_NAME" ]; then
+                REPO_NAME="$1"
+            else
+                echo "Unexpected argument: $1" >&2
+                usage 1
+            fi
+            shift
+            ;;
+    esac
+done
+
+if [ -z "$REPO_NAME" ]; then
+    echo "Error: repository name is required." >&2
+    usage 1
+fi
+
+# MONOREPO_ROOT was computed at the top of the script (we've already cd'd there).
+PACKAGE_DIR="packages/${REPO_NAME}"
+PACKAGE_PATH="${MONOREPO_ROOT}/${PACKAGE_DIR}"
+
+### Prerequisite checks ###
+
+echo "==> Checking prerequisites..."
+
+require_command() {
+    local cmd="$1"
+    local hint="$2"
+    if ! command -v "$cmd" &> /dev/null; then
+        echo "Error: '${cmd}' is required but not installed." >&2
+        echo "${hint}" >&2
+        exit 1
+    fi
+}
+
 if ! git filter-repo -h &> /dev/null; then
-    echo "Please install git-filter-repo. One of these commands might work:"
-    echo "- brew install git-filter-repo"
-    echo "- sudo apt install git-filter-repo"
+    echo "Error: git-filter-repo is required but not installed." >&2
+    echo "Try: brew install git-filter-repo   or: sudo apt install git-filter-repo" >&2
     exit 1
 fi
 
-if ! sponge --help &> /dev/null; then
-    echo "Please install the 'sponge' command."
-    echo "You may want: sudo apt install moreutils"
-    exit 1
-fi
+require_command sponge "Try: brew install moreutils   or: sudo apt install moreutils"
+require_command jq     "Try: brew install jq          or: sudo apt install jq"
+require_command perl   "Perl is used for portable in-place file rewrites and should already be present on macOS, NixOS, and Linux."
 
-if [ ! -d "$BUILD_CACHE" ]; then
-    echo "Please link $BUILD_CACHE to a directory with a copy of all the repositories you want to merge."
-    echo "For example, if you have ~/GitHub/scratch-audio, ~/GitHub/scratch-blocks, etc., then run:"
-    echo "ln -s ~/GitHub $BUILD_CACHE"
+if [ -d "$PACKAGE_PATH" ]; then
+    echo "Error: ${PACKAGE_DIR} already exists in the monorepo." >&2
+    echo "If you want to re-add it, remove it first." >&2
     exit 1
 fi
 
 if [ -d "$BUILD_TMP" ]; then
-    echo "Please remove $BUILD_TMP before running this script."
-    echo "You may want: rm -rf $BUILD_TMP $BUILD_OUT"
+    echo "Error: Temporary directory ${BUILD_TMP} already exists." >&2
+    echo "A previous run may have failed. Remove it with: rm -rf ${BUILD_TMP}" >&2
     exit 1
 fi
 
-if [ -d "$BUILD_OUT" ]; then
-    echo "Please remove $BUILD_OUT before running this script."
-    echo "You may want: rm -rf $BUILD_TMP $BUILD_OUT"
+if [ ! -d "$BUILD_CACHE" ]; then
+    echo "Error: Cache directory ${BUILD_CACHE} does not exist." >&2
+    echo "Either pass --cache-dir <path-to-existing-dir>, or symlink one, e.g.:" >&2
+    echo "  ln -s ~/GitHub ${BUILD_CACHE}" >&2
     exit 1
 fi
+
+if [ -n "$(git status --porcelain)" ]; then
+    echo "Error: Working tree is not clean. Please commit or stash your changes." >&2
+    exit 1
+fi
+
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+echo "    Monorepo root:    ${MONOREPO_ROOT}"
+echo "    Current branch:   ${CURRENT_BRANCH}"
+echo "    Target package:   ${PACKAGE_DIR}"
+echo "    GitHub org:       ${GITHUB_ORG}"
+echo "    Source repo:      ${GITHUB_ORG}/${REPO_NAME}"
+
+### Helper functions ###
 
 # Thanks to https://stackoverflow.com/a/17841619
-join_args () {
+join_args() {
     local d=${1-} f=${2-}
     if shift 2; then
         printf %s "$f" "${@/#/$d}"
     fi
 }
 
-init_monorepo () {
-    git init "$BUILD_OUT"
-    git -C "$BUILD_OUT" remote add origin "git@github.com:${GITHUB_ORG}/${BASE_REPO}.git"
-    git -C "$BUILD_OUT" fetch --all # to make sure BASE_COMMIT is available
-}
+# Clone a repository into BUILD_TMP as a bare repo.
+# Uses a local cache directory for speed when available.
+clone_repository() {
+    local repo="$1"
+    local org_and_repo="${GITHUB_ORG}/${repo}"
 
-add_repo_to_monorepo () {
-    REPO_NAME="$1"
-    ORG_AND_REPO_NAME="${GITHUB_ORG}/${REPO_NAME}"
-    echo "Working on $ORG_AND_REPO_NAME"
+    echo "==> Cloning ${org_and_repo}..."
 
-    clone_repository $REPO_NAME
+    mkdir -p "$BUILD_TMP"
 
-    move_repository_subdirectory $REPO_NAME "packages/${REPO_NAME}"
-
-    #
-    # Merge branches in
-    #
-
-    REMOTE_NAME="temp-$REPO_NAME"
-    git -C "$BUILD_OUT" remote add "$REMOTE_NAME" "$(realpath "${BUILD_TMP}")/${REPO_NAME}"
-    git -C "$BUILD_OUT" fetch --no-tags "$REMOTE_NAME"
-
-    for DEST_BRANCH in $DEST_BRANCHES; do
-        BRANCH=""
-        case "$DEST_BRANCH" in
-            develop|main)
-                if [ -z "$(git -C "${BUILD_TMP}/${REPO_NAME}" branch --list "$DEST_BRANCH")" ]; then
-                    BRANCH=$(default_branch)
-                else
-                    BRANCH="$DEST_BRANCH"
-                fi
-                ;;
-            scratch-android)
-                if [ "$REPO_NAME" = "scratch-gui" ]; then
-                    BRANCH="native"
-                elif [ "$(git -C "${BUILD_TMP}/${REPO_NAME}" branch --list "develop")" ]; then
-                    BRANCH="develop"
-                else
-                    BRANCH=$(default_branch)
-                fi
-                ;;
-            scratch-desktop)
-                if [ "$REPO_NAME" = "scratch-gui" ]; then
-                    BRANCH="$DEST_BRANCH"
-                elif [ "$(git -C "${BUILD_TMP}/${REPO_NAME}" branch --list "develop")" ]; then
-                    BRANCH="develop"
-                else
-                    BRANCH=$(default_branch)
-                fi
-                ;;
-        esac
-
-        # checkout needs `-f` to get past CRLF problems
-        if [ -z "$(git -C "$BUILD_OUT" branch --list "$DEST_BRANCH")" ]; then
-            # create the destination branch if it doesn't exist
-            git -C "$BUILD_OUT" checkout -f --no-guess -b "$DEST_BRANCH" "$BASE_COMMIT"
-        else
-            # switch to existing branch
-            git -C "$BUILD_OUT" checkout -f --no-guess "$DEST_BRANCH"
-        fi
-
-        MERGE_MESSAGE="chore(deps): add ${REPO_NAME}#${BRANCH} as packages/${REPO_NAME}"
-        git -C "$BUILD_OUT" merge --no-ff --allow-unrelated-histories "${REMOTE_NAME}/${BRANCH}" -m "$MERGE_MESSAGE"
-    done
-
-    git -C "$BUILD_OUT" remote remove "$REMOTE_NAME"
-    rm -rf "${BUILD_TMP}/${REPO_NAME}"
-}
-
-add_gh_pages () {
-    REPO_NAME="$1"
-    ORG_AND_REPO_NAME="${GITHUB_ORG}/${REPO_NAME}"
-    echo "Working on $ORG_AND_REPO_NAME"
-
-    GH_PAGES_BRANCH="gh-pages"
-
-    clone_repository $REPO_NAME
-
-    move_repository_subdirectory $REPO_NAME "${REPO_NAME}/"
-
-    #
-    # Merge branches in
-    #
-
-    REMOTE_NAME="temp-$REPO_NAME"
-    git -C "$BUILD_OUT" remote add "$REMOTE_NAME" "$(realpath "${BUILD_TMP}")/${REPO_NAME}"
-    git -C "$BUILD_OUT" fetch --no-tags "$REMOTE_NAME"
-
-    if [ -z "$(git -C "$BUILD_OUT" branch --list "$GH_PAGES_BRANCH")" ]; then
-        # create the destination branch if it doesn't exist
-        git -C "$BUILD_OUT" symbolic-ref HEAD "refs/heads/${GH_PAGES_BRANCH}"
-        rm -rf "${BUILD_OUT}/.git/index"
-        git -C "$BUILD_OUT" clean -fdx
-        git -C "$BUILD_OUT" checkout develop .gitignore
-        git -C "$BUILD_OUT" add .
-        git -C "$BUILD_OUT" commit --allow-empty -m "Initial commit for github pages"
+    if [ -d "${BUILD_CACHE}/${repo}" ]; then
+        echo "    Using local cache at ${BUILD_CACHE}/${repo}"
+        git -C "${BUILD_CACHE}/${repo}" fetch --all
+        git -C "$BUILD_TMP" clone --bare --dissociate \
+            --reference "$(realpath "$BUILD_CACHE")/${repo}" \
+            "git@github.com:${org_and_repo}.git" "${repo}"
     else
-        # switch to existing branch
-        git -C "$BUILD_OUT" checkout -f --no-guess "$GH_PAGES_BRANCH"
+        echo "    No local cache for ${repo}; cloning directly from GitHub..."
+        git -C "$BUILD_TMP" clone --bare "git@github.com:${org_and_repo}.git" "${repo}"
     fi
 
-    MERGE_MESSAGE="chore(deps): add ${REPO_NAME}#${GH_PAGES_BRANCH} as ${REPO_NAME}"
-    git -C "$BUILD_OUT" merge --no-ff --allow-unrelated-histories "${REMOTE_NAME}/${GH_PAGES_BRANCH}" -m "$MERGE_MESSAGE"
-
-    git -C "$BUILD_OUT" remote remove "$REMOTE_NAME"
-    rm -rf "${BUILD_TMP}/${REPO_NAME}"
+    # Disconnect from the reference repo so we can safely rewrite history.
+    # `--dissociate` on the clone above already detaches from the reference repo,
+    # but `repack -a` ensures everything is locally packed, and removing the
+    # alternates file (note: bare repos have it directly under `objects/info/`,
+    # without a `.git/` prefix) is a defensive belt-and-braces step.
+    git -C "${BUILD_TMP}/${repo}" repack -a
+    rm -f "${BUILD_TMP}/${repo}/objects/info/alternates"
 }
 
-# Repack the local git repository to save space, for example 4.4 GB -> 3.1GB.
-# This does not affect the remote repository, so if local size is not a major concern, you can skip this step.
-optimize_git_repo () {
-    du -sh "$BUILD_OUT"
-    #git -C "$BUILD_OUT" -c pack.threads="$GIT_PACK_THREADS" -c pack.windowMemory="$GIT_PACK_WINDOW_MEMORY" gc --prune=now --aggressive
-    #du -sh "$BUILD_OUT"
+# Detect a sensible default source branch in the cloned bare repo.
+# Tries develop, then main, then master.
+detect_default_branch() {
+    local repo="$1"
+    local b
+    for b in develop main master; do
+        if git -C "${BUILD_TMP}/${repo}" show-ref --verify --quiet "refs/heads/${b}"; then
+            echo "$b"
+            return 0
+        fi
+    done
+    return 1
 }
 
-clone_repository() {
-    REPO_NAME="$1"
-    ORG_AND_REPO_NAME="${GITHUB_ORG}/${REPO_NAME}"
-
-    #
-    # Clone
-    #
-
-    # refresh the cache
-    git -C "${BUILD_CACHE}/${REPO_NAME}" fetch --all
-    # reference = go faster
-    git -C "$BUILD_TMP" clone --bare --dissociate --reference "$(realpath "$BUILD_CACHE")/${REPO_NAME}" "git@github.com:${ORG_AND_REPO_NAME}.git" "${REPO_NAME}"
-    # get ready to disconnect reference repo
-    git -C "${BUILD_TMP}/${REPO_NAME}" repack -a
-    # actually disconnect the reference repo
-    rm -f "${BUILD_TMP}/${REPO_NAME}/.git/objects/info/alternates"
-}
-
+# Rewrite all paths in the cloned repo to live under a subdirectory.
 move_repository_subdirectory() {
-    REPO_NAME="$1"
-    SUBDIRECTORY="$2"
+    local repo="$1"
+    local subdirectory="$2"
 
-    #
-    # Move to subdirectory
-    #
+    echo "==> Rewriting history to move files under ${subdirectory}..."
 
-    # make filter-repo accept this as a fresh clone
-    git -C "${BUILD_TMP}/${REPO_NAME}" gc
+    # Make filter-repo accept this as a fresh clone.
+    git -C "${BUILD_TMP}/${repo}" gc
 
-    HAS_SUBMODULES=$(
-        git -C "${BUILD_TMP}/${REPO_NAME}" branch --format="%(refname:short)" | while read BRANCH; do
-            if git -C "${BUILD_TMP}/${REPO_NAME}" cat-file -e "${BRANCH}:.gitmodules" &> /dev/null; then
+    local has_submodules
+    has_submodules=$(
+        git -C "${BUILD_TMP}/${repo}" branch --format="%(refname:short)" | while read -r branch; do
+            if git -C "${BUILD_TMP}/${repo}" cat-file -e "${branch}:.gitmodules" &> /dev/null; then
                 echo "yep"
-                break;
+                break
             fi
         done
     )
 
-    # rewrite history as if all this work happened in a subdirectory
-    # "git mv" is simpler but makes history much less visible
-    if [ "$HAS_SUBMODULES" != "yep" ]; then
-        echo "Repository ${REPO_NAME} does NOT have submodules"
-        # this is significantly faster than the special case below
-        git -C "${BUILD_TMP}/${REPO_NAME}" filter-repo --to-subdirectory-filter $SUBDIRECTORY
+    if [ "$has_submodules" != "yep" ]; then
+        echo "    Repository does NOT have submodules"
+        git -C "${BUILD_TMP}/${repo}" filter-repo --to-subdirectory-filter "$subdirectory"
     else
-        echo "Repository ${REPO_NAME} DOES have submodules"
-        # the .gitmodules file must stay in the repository root, but the paths inside it must be rewritten
-        # this is complicated for the reasons described here: https://github.com/newren/git-filter-repo/issues/158
-        # this is also slower, so we only do it for repositories that have submodules
-        # if we have more than one, this will cause merge conflicts
-        git -C "${BUILD_TMP}/${REPO_NAME}" filter-repo \
-            --filename-callback "return filename if filename == b'.gitmodules' else b'${SUBDIRECTORY}'+filename" \
-            --blob-callback "if blob.data.startswith(b'[submodule '): blob.data = blob.data.replace(b'path = ', b'path = ${SUBDIRECTORY}')"
+        # TODO(submodules): this branch was carried over from build-monorepo.sh.
+        # It has never been exercised against a real submodules-bearing repo since the
+        # monorepo migration began. When the first repo with submodules lands, run it
+        # carefully on a throwaway clone first.
+        echo "    Repository DOES have submodules"
+        # The .gitmodules file must stay in the repository root, but the paths inside
+        # it must be rewritten; see https://github.com/newren/git-filter-repo/issues/158
+        git -C "${BUILD_TMP}/${repo}" filter-repo \
+            --filename-callback "return filename if filename == b'.gitmodules' else b'${subdirectory}'+filename" \
+            --blob-callback "if blob.data.startswith(b'[submodule '): blob.data = blob.data.replace(b'path = ', b'path = ${subdirectory}')"
     fi
 }
 
-default_branch () {
-    BRANCH="master"
-
-    if [ -z "$(git -C "${BUILD_TMP}/${REPO_NAME}" branch --list "$BRANCH")" ]; then
-        BRANCH="main"
-
-        if [ -z "$(git -C "${BUILD_TMP}/${REPO_NAME}" branch --list "$BRANCH")" ]; then
-            BRANCH="develop"
-        fi
-    fi
-
-    echo "$BRANCH"
+# Get the existing monorepo workspace package names (without the @scratch/ prefix).
+get_existing_packages() {
+    jq -r '.workspaces[]' "${MONOREPO_ROOT}/package.json" | sed 's|^packages/||'
 }
 
-# Perform monorepo fixups on a branch.
-# Mostly: remove "global" files from subdirectories and localize dependencies.
-#   $1: the name of the branch to fix up
-fixup_branch () {
-    BRANCH="$1"
-    NPM_ORGANIZATION="@scratch"
+# Handle a failed dep replacement. Default: hard-fail. --continue-on-error: log and continue.
+package_replacement_error () {
+    local package="$1"
+    local dep="$2"
+    echo "***ERROR*** Could not replace ${dep} in ${package} with the local workspace version." >&2
+    echo "${package}: ${dep}" >> "${MONOREPO_ROOT}/add-repo.errors.log"
+    if [ "$CONTINUE_ON_ERROR" = false ]; then
+        echo "(re-run with --continue-on-error to log and keep going instead of failing)" >&2
+        exit 1
+    fi
+    echo "Continuing despite the error because --continue-on-error is set." >&2
+}
 
-    git -C "$BUILD_OUT" checkout -f --no-guess "$BRANCH"
+### Run ###
 
-    # submodules could be necessary for build/test scripts
-    git -C "$BUILD_OUT" submodule update --init --recursive
+echo ""
+echo "=========================================="
+echo "  Adding ${REPO_NAME} to the monorepo"
+echo "=========================================="
+echo ""
 
-    # remove repository-level configuration and dependencies, like Renovate and Husky
-    # do not remove configuration and dependencies that could vary between packages, like semantic-release
-    # do not remove content like .github/ that may be useful as reference when building the monorepo equivalent
-    # it would be nice to merge all the package-lock.json files into one but it's not clear how to do that
-    # just remove the package-lock.json files for now, and build a new one with "npm i" later
-    rm -rf "$BUILD_OUT"/packages/*/{.husky,package-lock.json,renovate.json*}
-    for REPO in $ALL_REPOS; do
-        if [ ! -r "${BUILD_OUT}/packages/${REPO}/package.json" ]; then
-            # This repository doesn't exist in this branch
-            continue
-        fi
+# 1. Clone the source repo into a bare temp checkout.
+clone_repository "$REPO_NAME"
 
-        jq -f --arg PACKAGE_NAME "$NPM_ORGANIZATION/$REPO" --arg MONOREPO_URL "$MONOREPO_URL" <(join_args ' | ' \
+# 2. Resolve the source branch.
+if [ -z "$SOURCE_BRANCH" ]; then
+    if SOURCE_BRANCH="$(detect_default_branch "$REPO_NAME")"; then
+        echo "==> Auto-detected source branch: ${SOURCE_BRANCH}"
+    else
+        echo "Error: Could not auto-detect a source branch (tried develop, main, master)." >&2
+        echo "Available branches:" >&2
+        git -C "${BUILD_TMP}/${REPO_NAME}" branch --list | sed 's/^/  /' >&2
+        echo "Pass --source-branch <branch> explicitly." >&2
+        rm -rf "$BUILD_TMP"
+        exit 1
+    fi
+else
+    if ! git -C "${BUILD_TMP}/${REPO_NAME}" show-ref --verify --quiet "refs/heads/${SOURCE_BRANCH}"; then
+        echo "Error: Branch '${SOURCE_BRANCH}' not found in ${REPO_NAME}." >&2
+        echo "Available branches:" >&2
+        git -C "${BUILD_TMP}/${REPO_NAME}" branch --list | sed 's/^/  /' >&2
+        rm -rf "$BUILD_TMP"
+        exit 1
+    fi
+    echo "==> Using specified source branch: ${SOURCE_BRANCH}"
+fi
+
+# 3. Rewrite history so everything lives under packages/<repo-name>/.
+move_repository_subdirectory "$REPO_NAME" "${PACKAGE_DIR}/"
+
+# 4. Merge the rewritten history into the current branch.
+echo "==> Merging ${REPO_NAME}#${SOURCE_BRANCH} into ${CURRENT_BRANCH}..."
+
+REMOTE_NAME="temp-${REPO_NAME}"
+git remote add "$REMOTE_NAME" "$(realpath "${BUILD_TMP}")/${REPO_NAME}"
+git fetch --no-tags "$REMOTE_NAME"
+
+MERGE_MESSAGE="feat: add ${REPO_NAME}#${SOURCE_BRANCH} as ${PACKAGE_DIR}"
+git merge --no-ff --allow-unrelated-histories "${REMOTE_NAME}/${SOURCE_BRANCH}" -m "$MERGE_MESSAGE"
+
+git remote remove "$REMOTE_NAME"
+
+echo "    Merge complete."
+
+# Remove BUILD_TMP now, before any `git add -A` could accidentally stage it.
+echo "==> Cleaning up temporary clone..."
+rm -rf "$BUILD_TMP"
+
+# 5. Fix up the new package's package.json: rename, version, strip repo-level config.
+echo "==> Fixing up ${PACKAGE_DIR}/package.json..."
+
+# Remove repository-level files that don't belong in a workspace package.
+# Keep things like .github/ around as reference for the eventual CI changes.
+rm -rf "${PACKAGE_PATH}/.husky" \
+       "${PACKAGE_PATH}/package-lock.json" \
+       "${PACKAGE_PATH}/renovate.json" \
+       "${PACKAGE_PATH}/renovate.json5"
+
+MONOREPO_VERSION=$(jq -r '.version' "${MONOREPO_ROOT}/package.json")
+if [ -r "${PACKAGE_PATH}/package.json" ]; then
+    # shellcheck disable=SC2016
+    # The single-quoted fragments below are jq filter syntax. $PACKAGE_NAME,
+    # $MONOREPO_URL and $MONOREPO_VERSION are jq variables (bound via --arg),
+    # not shell variables — they must NOT be expanded by the shell.
+    jq -f --arg PACKAGE_NAME "${NPM_ORGANIZATION}/${REPO_NAME}" \
+          --arg MONOREPO_URL "$MONOREPO_URL" \
+          --arg MONOREPO_VERSION "$MONOREPO_VERSION" \
+        <(join_args ' | ' \
             '.name |= $PACKAGE_NAME' \
+            '.version |= $MONOREPO_VERSION' \
             '.repository.url |= $MONOREPO_URL' \
+            'del(.repository.sha)' \
             'if .scripts.prepare == "husky install" then del(.scripts.prepare) else . end' \
-            'if .scripts == {} then del(.scripts.prepare) else . end' \
+            'if (.scripts // {}) == {} then del(.scripts) else . end' \
             'del(.config.commitizen)' \
-            'if .config == {} then del(.config) else . end' \
+            'if (.config // {}) == {} then del(.config) else . end' \
             'del(.devDependencies."@commitlint/cli")' \
             'del(.devDependencies."@commitlint/config-conventional")' \
             'del(.devDependencies."@commitlint/travis-cli")' \
             'del(.devDependencies."cz-conventional-changelog")' \
             'del(.devDependencies."husky")' \
-            'if .devDependencies == {} then del(.devDependencies) else . end' \
-        ) "${BUILD_OUT}/packages/${REPO}/package.json" | sponge "${BUILD_OUT}/packages/${REPO}/package.json"
-    done
-    git -C "$BUILD_OUT" commit -m "chore: remove repo-level configuration and deps from packages/*" \
-        packages
-
-    npm -C "$BUILD_OUT" i
-
-    for REPO in $ALL_REPOS; do
-        if [ ! -r "${BUILD_OUT}/packages/${REPO}/package.json" ]; then
-            # This repository doesn't exist in this branch
-            continue
-        fi
-
-        REMOVEDEPS=""
-        DEPS=""
-        DEVDEPS=""
-        OPTDEPS=""
-        PEERDEPS=""
-        for DEP in $ALL_REPOS; do
-            if jq -e .dependencies.\"$DEP\" "${BUILD_OUT}/packages/${REPO}/package.json" > /dev/null; then
-                jq  "del(.dependencies.\"$DEP\")" "${BUILD_OUT}/packages/${REPO}/package.json"  | sponge "${BUILD_OUT}/packages/${REPO}/package.json"
-                DEPS="$DEPS $DEP@*"
-            fi
-            if jq -e .devDependencies.\"$DEP\" "${BUILD_OUT}/packages/${REPO}/package.json" > /dev/null; then
-                jq  "del(.devDependencies.\"$DEP\")" "${BUILD_OUT}/packages/${REPO}/package.json"  | sponge "${BUILD_OUT}/packages/${REPO}/package.json"
-                DEVDEPS="$DEVDEPS $DEP@*"
-            fi
-            if jq -e .optionalDependencies.\"$DEP\" "${BUILD_OUT}/packages/${REPO}/package.json" > /dev/null; then
-                jq  "del(.optionalDependencies.\"$DEP\")" "${BUILD_OUT}/packages/${REPO}/package.json"  | sponge "${BUILD_OUT}/packages/${REPO}/package.json"
-                OPTDEPS="$OPTDEPS $DEP@*"
-            fi
-            if jq -e .peerDependencies.\"$DEP\" "${BUILD_OUT}/packages/${REPO}/package.json" > /dev/null; then
-                jq  "del(.peerDependencies.\"$DEP\")" "${BUILD_OUT}/packages/${REPO}/package.json"  | sponge "${BUILD_OUT}/packages/${REPO}/package.json"
-                PEERDEPS="$PEERDEPS $DEP@*"
-            fi
-
-            npm -C "$BUILD_OUT" uninstall "$DEP"
-        done
-        for DEP in $DEPS; do
-            npm -C "$BUILD_OUT" install --force --save --save-exact "$NPM_ORGANIZATION/$DEP" -w "$NPM_ORGANIZATION/$REPO" || package_replacement_error "$REPO" "$BRANCH" "$DEP"
-        done
-        for DEP in $DEVDEPS; do
-            npm -C "$BUILD_OUT" install --force --save-dev --save-exact "$NPM_ORGANIZATION/$DEP" -w "$NPM_ORGANIZATION/$REPO" || package_replacement_error "$REPO" "$BRANCH" "$DEVDEPS"
-        done
-        for DEP in $OPTDEPS; do
-            npm -C "$BUILD_OUT" install --force --save-optional --save-exact "$NPM_ORGANIZATION/$DEP" -w "$NPM_ORGANIZATION/$REPO" || package_replacement_error "$REPO" "$BRANCH" "$OPTDEPS"
-        done
-        for DEP in $PEERDEPS; do
-            npm -C "$BUILD_OUT" install --force --save-peer --save-exact "$NPM_ORGANIZATION/$DEP" -w "$NPM_ORGANIZATION/$REPO" || package_replacement_error "$REPO" "$BRANCH" "$PEERDEPS"
-        done
-
-        # replace the name of the package with the organization prefixed one
-        find "$BUILD_OUT" -type f -exec sed -i -e "s:\(require(\|from\s\|resolve(\|node_modules\)\(['\"/]\)$REPO\(['\"/]\):\1\2$NPM_ORGANIZATION/$REPO\3:g" {} \;
-    done
-
-    npm -C "$BUILD_OUT" i --package-lock-only # sometimes this is necessary to get a consistent package-lock.json
-
-    if ! git -C "$BUILD_OUT" diff --quiet package.json package-lock.json packages/*/package.json; then
-        git -C "$BUILD_OUT" commit -m "chore(deps): use workspace versions of all local packages" \
-            package.json package-lock.json packages/*/package.json
-    fi
-}
-
-# Report that replacing a dependency with the local monorepo version failed
-# $1: the name of the repository
-# $2: the branch that was being built
-# $3: the dependency that failed to install
-package_replacement_error () {
-    echo "***ERROR***"
-    echo "Could not replace a dependency with the local monorepo version."
-    echo "Failed to replace $3 in $1#$2" | tee -a "monorepo.errors.log"
-    #exit 1 # uncomment this to make it a fatal error
-    echo "Attempting to continue anyway..."
-}
-
-setup_github_actions () {
-    cp -a .github/actions "$BUILD_OUT/.github/"
-    npm -C "$BUILD_OUT" run refresh-gh-workflow
-
-    git -C "$BUILD_OUT" add .github/
-    git -C "$BUILD_OUT" commit -m "ci: populate workspace workflows"
-}
-
-build_scratch_svg_renderer () {
-    echo "Attempting to generate all prerequisite files and to build scratch-svg-renderer"
-
-    cd ./monorepo.out/packages/scratch-svg-renderer
-    use_node_version_from_nvmrc
-    process_workspace_webpack_config "." "webpack.config.js"
-    npm run build
-    cd -
-}
-
-build_scratch_render () {
-    echo "Attempting to generate all prerequisite files and to build scratch-render"
-
-    cd ./monorepo.out/packages/scratch-render
-    use_node_version_from_nvmrc
-    process_workspace_webpack_config "." ".jsdoc.json"
-    process_workspace_webpack_config "./test/integration" "cpu-render.html"
-    process_workspace_webpack_config "./test/integration" "index.html"
-    process_workspace_webpack_config "." "webpack.config.js"
-    npm run build
-    cd -
-}
-
-build_scratch_vm () {
-    echo "Attempting to generate all prerequisite files and to build scratch-scratch-vm"
-
-    cd ./monorepo.out/packages/scratch-vm
-    use_node_version_from_nvmrc
-    process_workspace_webpack_config "." "webpack.config.js"
-    npm run build
-    cd -
-}
-
-build_scratch_gui () {
-    echo "Attempting to generate all prerequisite files and to build scratch-scratch-gui"
-
-    cd ./monorepo.out/packages/scratch-gui
-    use_node_version_from_nvmrc
-    process_workspace_webpack_config "." "webpack.config.js"
-    npm run build
-    cd -
-}
-
-process_workspace_webpack_config () {
-    FILE_PATH="$1"
-    FILE_NAME="$2"
-
-    PACKAGE_PATHS="$(egrep -o "[\.\/]*node_modules\/[^\"']*" "${FILE_PATH}/${FILE_NAME}" | uniq)"
-
-    for PACKAGE_PATH in $PACKAGE_PATHS; do
-        PATH_FROM_CURRENT_DIR="${FILE_PATH}/${PACKAGE_PATH}"
-
-        if [ ! -d $PATH_FROM_CURRENT_DIR ] && [ ! -f $PATH_FROM_CURRENT_DIR ]; then
-            sed -i -e "s:$PACKAGE_PATH:../../${PACKAGE_PATH}:g" "${FILE_PATH}/${FILE_NAME}"
-        fi
-    done
-}
-
-use_node_version_from_nvmrc () {
-    source ~/.nvm/nvm.sh
-    nvm install
-    nvm use
-}
-
-### Do the things! ###
-
-echo "Depending on your CPU, RAM, drives, and network, this may take about an hour."
-echo "Make sure you have at least 10GB or so free on your drive."
-echo "Press Ctrl-C now to cancel!"
-echo "Starting in 15 seconds..."
-sleep 15
-
-mkdir -p "$BUILD_TMP"
-
-#set -x
-
-init_monorepo
-
-for REPO in $ALL_REPOS; do
-    add_repo_to_monorepo "$REPO"
-    add_gh_pages "$REPO"
-done
-
-git -C "$BUILD_OUT" checkout -f --no-guess develop
-
-if [ ! -f "$BUILD_OUT/package.json" ]; then
-    echo "Something went wrong: $BUILD_OUT/package.json does not exist!"
-    exit 1
+            'if (.devDependencies // {}) == {} then del(.devDependencies) else . end' \
+        ) "${PACKAGE_PATH}/package.json" | sponge "${PACKAGE_PATH}/package.json"
 fi
 
-rmdir "$BUILD_TMP"
+# Normalize so subsequent diffs are minimal.
+if command -v sort-package-json &> /dev/null; then
+    sort-package-json "${PACKAGE_PATH}/package.json"
+else
+    npx --yes sort-package-json "${PACKAGE_PATH}/package.json" \
+        || echo "    Note: sort-package-json unavailable; skipping normalization."
+fi
 
-for BRANCH in $DEST_BRANCHES; do
-    fixup_branch "$BRANCH"
-    
-    build_scratch_svg_renderer
-    build_scratch_render
-    build_scratch_vm
-    build_scratch_gui
+# 6. Insert the new package into the root workspaces array at the correct
+#    position for `npm run --workspaces build` order.
+echo "==> Updating root package.json workspaces..."
 
-    git -C "$BUILD_OUT" add .
-    git -C "$BUILD_OUT" commit -m "refactor: fixed paths to work with new project structure"
+# The new package must appear AFTER any existing workspace it depends on (so
+# `npm run --workspaces build` builds the dep first). We do this by locating
+# the last existing workspace among the new package's monorepo deps and
+# inserting just after it. If the new package has no monorepo deps, it goes
+# at position 0.
+#
+# This is a "last dep wins" heuristic, not a full topological sort. It also
+# implies the new package is placed before any existing workspace that
+# depends on it — but ONLY when the existing workspaces array is itself in
+# valid topological order (which is the case for the hand-curated array in
+# this monorepo). The script does not scan existing packages for
+# reverse-dependencies and does not re-validate the existing order.
+#
+# Adding to workspaces BEFORE rewiring deps (step 7) lets npm resolve the new
+# package as a workspace rather than fetching from the registry.
+WORKSPACE_ENTRY="packages/${REPO_NAME}"
+if jq -e ".workspaces | index(\"${WORKSPACE_ENTRY}\")" "${MONOREPO_ROOT}/package.json" > /dev/null 2>&1; then
+    echo "    '${WORKSPACE_ENTRY}' already in workspaces."
+else
+    INSERT_AFTER_INDEX=-1
+    for EXISTING in $(get_existing_packages); do
+        [ "$EXISTING" = "$REPO_NAME" ] && continue
+        # The new package may declare its monorepo deps either by bare name
+        # (e.g. "scratch-svg-renderer") or already with the @scratch/ prefix
+        # (e.g. "@scratch/scratch-svg-renderer"). Either form means "I depend
+        # on this monorepo package."
+        EXISTING_FULL="${NPM_ORGANIZATION}/${EXISTING}"
+        HAS_DEP=$(jq -r --arg bare "${EXISTING}" --arg full "${EXISTING_FULL}" '
+            any(
+                (.dependencies // {}, .devDependencies // {}, .peerDependencies // {}, .optionalDependencies // {})
+                | keys[]; . == $bare or . == $full
+            )
+        ' "${PACKAGE_PATH}/package.json")
+        if [ "$HAS_DEP" = "true" ]; then
+            EXISTING_INDEX=$(jq -r --arg p "packages/${EXISTING}" '.workspaces | index($p) // -1' "${MONOREPO_ROOT}/package.json")
+            if [ "$EXISTING_INDEX" -gt "$INSERT_AFTER_INDEX" ]; then
+                INSERT_AFTER_INDEX="$EXISTING_INDEX"
+            fi
+        fi
+    done
+    INSERT_AT=$((INSERT_AFTER_INDEX + 1))
+    jq ".workspaces |= (.[:${INSERT_AT}] + [\"${WORKSPACE_ENTRY}\"] + .[${INSERT_AT}:])" \
+        "${MONOREPO_ROOT}/package.json" | sponge "${MONOREPO_ROOT}/package.json"
+    if [ "$INSERT_AT" = "0" ]; then
+        echo "    Prepended '${WORKSPACE_ENTRY}' (no monorepo deps detected)."
+    else
+        echo "    Inserted '${WORKSPACE_ENTRY}' at position ${INSERT_AT} (after its monorepo deps)."
+    fi
+fi
+
+# 7. Rewire inter-package dependencies across all packages.
+echo "==> Rewiring inter-package dependencies..."
+
+ALL_PACKAGES=$(get_existing_packages)
+
+# For every package in the monorepo (existing + the new one), find any dep that
+# names another monorepo package and rewrite it to use the @scratch/-prefixed
+# name pinned to that workspace's current version (e.g.
+# "@scratch/scratch-vm": "13.7.2"). Pinning to the exact workspace version
+# ensures npm resolves to the local workspace rather than a higher published
+# registry version.
+#
+# Two cases are handled:
+#   1. Bare-name deps (e.g. "scratch-vm": "...") — across every package, since an
+#      existing package may reference the newly-added repo by bare name.
+#   2. Already @scratch/-prefixed deps with a stale exact version (e.g.
+#      "@scratch/scratch-svg-renderer": "13.7.3") — only inside the newly-added
+#      package, where the source repo may have shipped its cross-deps pre-prefixed
+#      and pinned to whatever was the latest registry release at import time.
+#
+# Already-@scratch/-prefixed deps in OTHER packages are left as-is to avoid
+# opportunistic rewrites of unrelated packages.
+#
+# npm's workspace: protocol would be the ideal here ("resolve to the workspace,
+# substitute the actual version at publish"), but npm does not actually support
+# it (npm/cli#8845 — EUNSUPPORTEDPROTOCOL at install time), so exact-pin matches
+# the existing scratch-gui / scratch-vm / scratch-render convention.
+for PACKAGE in $ALL_PACKAGES; do
+    PACKAGE_JSON="${MONOREPO_ROOT}/packages/${PACKAGE}/package.json"
+    if [ ! -r "$PACKAGE_JSON" ]; then
+        continue
+    fi
+
+    for DEP in $ALL_PACKAGES; do
+        DEP_VERSION=$(jq -r '.version' "${MONOREPO_ROOT}/packages/${DEP}/package.json")
+        DEP_FULL="${NPM_ORGANIZATION}/${DEP}"
+
+        # The names this loop will rewrite. Always the bare name; for the newly-
+        # added package also its @scratch/-prefixed form (likely stale).
+        NAMES_TO_CHECK=("${DEP}")
+        if [ "$PACKAGE" = "$REPO_NAME" ]; then
+            NAMES_TO_CHECK+=("${DEP_FULL}")
+        fi
+
+        for KIND in dependencies devDependencies optionalDependencies peerDependencies; do
+            for NAME in "${NAMES_TO_CHECK[@]}"; do
+                if jq -e ".${KIND}.\"${NAME}\"" "$PACKAGE_JSON" > /dev/null 2>&1; then
+                    if ! jq "del(.${KIND}.\"${NAME}\") \
+                           | .${KIND} += {\"${DEP_FULL}\": \"${DEP_VERSION}\"}" \
+                           "$PACKAGE_JSON" | sponge "$PACKAGE_JSON"; then
+                        package_replacement_error "$PACKAGE" "${NAME} (${KIND})"
+                    fi
+                fi
+            done
+        done
+    done
 done
 
-setup_github_actions # TODO: should we do this on every branch?
+# Rewrite require/import references for the new repo across the whole monorepo.
+# Using perl for cross-platform in-place editing (sed -i differs between BSD and GNU).
+echo "==> Updating require/import references for ${REPO_NAME}..."
 
-optimize_git_repo
+# Collect matching files with a read loop rather than `mapfile` so the script
+# works under bash 3.2 (the version macOS ships at /bin/bash).
+MATCHING_FILES=()
+while IFS= read -r f; do
+    MATCHING_FILES+=("$f")
+done < <(
+    find "${MONOREPO_ROOT}" -type f \
+        -not -path '*/.git/*' \
+        -not -path '*/node_modules/*' \
+        -exec grep -Il "$REPO_NAME" {} + 2>/dev/null
+)
 
-echo "All done!"
-echo "You'll need to manually fix up any CI/CD workflows."
-echo "The monorepo is in: $BUILD_OUT"
+if [ ${#MATCHING_FILES[@]} -gt 0 ]; then
+    REPO_NAME="$REPO_NAME" NPM_ORG="$NPM_ORGANIZATION" perl -i -pe '
+        BEGIN { $r = $ENV{REPO_NAME}; $n = $ENV{NPM_ORG}; }
+        s{(require\(|from\s|resolve\(|node_modules)([\047"/])\Q$r\E([\047"/])}{$1$2$n/$r$3}g
+    ' "${MATCHING_FILES[@]}"
+fi
+
+# 8. Normalize the lockfile after all the dep changes.
+echo "==> Normalizing package-lock.json..."
+npm install --prefer-offline --no-audit --no-fund
+npm install --package-lock-only 2>/dev/null || true
+
+# 9. Commit the integration fixups as one cumulative commit.
+echo "==> Committing fixup changes..."
+git add -A
+if ! git diff --cached --quiet; then
+    git commit -m "feat: integrate ${REPO_NAME} into monorepo
+
+- Renamed package to ${NPM_ORGANIZATION}/${REPO_NAME}
+- Removed repo-level config (.husky, renovate, commitlint)
+- Rewired inter-package dependencies to use workspace versions
+- Added to root workspaces list
+- Regenerated package-lock.json"
+else
+    echo "    No fixup changes to commit."
+fi
+
+# 10. Regenerate CI workflows (default; --no-ci to skip).
+if [ "$SKIP_CI" = false ]; then
+    echo "==> Regenerating CI workflows..."
+    npm run refresh-gh-workflow
+
+    git add -A
+    if ! git diff --cached --quiet; then
+        git commit -m "ci: regenerate workflows after adding ${REPO_NAME}"
+    else
+        echo "    No CI workflow changes to commit."
+    fi
+else
+    echo "==> Skipping CI workflow regeneration (--no-ci)."
+    echo "    Run 'npm run refresh-gh-workflow' manually when ready."
+fi
+
+### Done ###
+
+echo ""
+echo "=========================================="
+echo "  Successfully added ${REPO_NAME}!"
+echo "=========================================="
+echo ""
+echo "Summary:"
+echo "  - Merged ${REPO_NAME}#${SOURCE_BRANCH} into ${CURRENT_BRANCH}"
+echo "  - Package location: ${PACKAGE_DIR}/"
+echo "  - Package name:     ${NPM_ORGANIZATION}/${REPO_NAME}"
+echo ""
+echo "Recommended next steps:"
+echo "  1. Review the commits:    git log --oneline -10"
+echo "  2. Verify the package:    ls ${PACKAGE_DIR}/"
+echo "  3. Check workspace resolution:  npm ls ${NPM_ORGANIZATION}/${REPO_NAME}"
+echo "  4. Review generated CI changes:"
+echo "       .github/path-filters.yml"
+echo "       .github/workflows/publish.yml"
+echo "  5. Run tests:             npm test -w ${NPM_ORGANIZATION}/${REPO_NAME}"
+echo "  6. If the new package's position in 'workspaces' is wrong for build order,"
+echo "     reorder it manually in the root package.json."
+echo ""

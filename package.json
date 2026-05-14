@@ -24,10 +24,9 @@
   ],
   "scripts": {
     "build": "cross-env NODE_ENV=production npm run --workspaces build",
-    "build-monorepo": "cross-env-shell ./scripts/build-monorepo.sh",
     "clean": "npm run --workspaces clean",
     "prepare": "husky install",
-    "refresh-gh-workflow": "ts-node scripts/build-gha-workflows.ts",
+    "refresh-gh-workflow": "ts-node scripts/update-gha-workflows.ts",
     "start": "npm --workspace @scratch/scratch-gui start",
     "test": "npm test --workspaces",
     "update-legal": "npm --workspaces exec -c 'rm -f ./{LICENSE,TRADEMARK} && cp -f ../../{LICENSE,TRADEMARK} .'",
