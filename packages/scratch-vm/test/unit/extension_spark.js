@@ -66,3 +66,61 @@ test('whenButtonPressed returns false when not connected', t => {
     t.equal(ext.whenButtonPressed({BTN: 'B'}), false);
     t.end();
 });
+
+// ─── Story 10.1: env-injected MIDDLEWARE_WS_URL ───────────────────────────────
+//
+// WS_URL is module-evaluated at require time, so each case manipulates
+// global.window, busts require.cache, re-requires the module, and verifies the
+// URL passed to `new WebSocket()` via a stub.
+
+const sparkModulePath = require.resolve('../../src/extensions/scratch3_spark/index.js');
+
+const reloadSparkExtension = () => {
+    delete require.cache[sparkModulePath];
+    return require('../../src/extensions/scratch3_spark/index.js');
+};
+
+class MockWebSocket {
+    constructor (url) {
+        MockWebSocket.lastUrl = url;
+        this.readyState = 0;
+        this.onopen = null;
+        this.onmessage = null;
+        this.onerror = null;
+        this.onclose = null;
+    }
+    close () {}
+}
+
+const withSparkWebSocketEnv = (sparkEnv, fn) => {
+    const originalWindow = global.window;
+    const originalWebSocket = global.WebSocket;
+    global.window = sparkEnv === undefined ? undefined : {SPARK_ENV: sparkEnv};
+    global.WebSocket = MockWebSocket;
+    MockWebSocket.lastUrl = null;
+    try {
+        const Mod = reloadSparkExtension();
+        const instance = new Mod(fakeRuntime);
+        instance._peripheral.scan();
+        return MockWebSocket.lastUrl;
+    } finally {
+        global.window = originalWindow;
+        global.WebSocket = originalWebSocket;
+        // Bust the cache so the original `ext` consumed by other tests is
+        // unaffected — and so the module re-evaluates on next require with a
+        // clean global state.
+        delete require.cache[sparkModulePath];
+    }
+};
+
+test('Story 10.1 — WS_URL uses window.SPARK_ENV.MIDDLEWARE_WS_URL when set (K8s deployment path)', t => {
+    const url = withSparkWebSocketEnv({MIDDLEWARE_WS_URL: 'wss://staging.example/ws'}, () => {});
+    t.equal(url, 'wss://staging.example/ws', 'WebSocket constructed with env-injected URL');
+    t.end();
+});
+
+test('Story 10.1 — WS_URL falls back to ws://localhost:8080 when window.SPARK_ENV is absent (Electron desktop path)', t => {
+    const url = withSparkWebSocketEnv(undefined, () => {});
+    t.equal(url, 'ws://localhost:8080', 'WebSocket constructed with localhost fallback URL');
+    t.end();
+});

@@ -16,6 +16,8 @@
     <meta name="google" value="notranslate">
     <link rel="shortcut icon" href="static/favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <!-- Story 10.1: env-config injection for K8s deployment. Runtime envsubst writes window.SPARK_ENV.{MIDDLEWARE_WS_URL,VERSION}. Missing file (e.g. local non-Docker dev) is harmless — Spark extension falls back to ws://localhost:8080. -->
+    <script src="/env-config.js"></script>
   </head>
   <body>
     <% if (htmlWebpackPlugin.options.gtm_id) { %>
@@ -23,5 +25,11 @@
       <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<%- htmlWebpackPlugin.options.gtm_id %><%= htmlWebpackPlugin.options.gtm_env_auth %>" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <!-- End Google Tag Manager (noscript) -->
     <% } %>
+    <!-- Story 10.1: AGPL §13 source-availability footer. Required for public-network-service deployments of AGPL-3.0 software. -->
+    <div id="spark-footer" style="position:fixed;bottom:4px;right:8px;font-size:11px;color:#666;z-index:9999;font-family:sans-serif;background:rgba(255,255,255,0.85);padding:2px 6px;border-radius:3px;pointer-events:auto;">
+      <a href="https://github.com/WarutC/scratch-editor" target="_blank" rel="noopener" style="color:#666;text-decoration:underline;">ซอร์สโค้ด / Source</a>
+      <span style="margin-left:8px;">v<span id="spark-version">dev</span></span>
+    </div>
+    <script>if(window.SPARK_ENV&&window.SPARK_ENV.VERSION){document.getElementById('spark-version').textContent=window.SPARK_ENV.VERSION;}</script>
   </body>
 </html>
