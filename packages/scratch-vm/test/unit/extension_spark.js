@@ -93,9 +93,15 @@ class MockWebSocket {
 }
 
 const withSparkWebSocketEnv = (sparkEnv, fn) => {
+    const hadWindow = Object.prototype.hasOwnProperty.call(global, 'window');
+    const hadWebSocket = Object.prototype.hasOwnProperty.call(global, 'WebSocket');
     const originalWindow = global.window;
     const originalWebSocket = global.WebSocket;
-    global.window = sparkEnv === undefined ? undefined : {SPARK_ENV: sparkEnv};
+    if (sparkEnv === undefined) {
+        delete global.window;
+    } else {
+        global.window = {SPARK_ENV: sparkEnv};
+    }
     global.WebSocket = MockWebSocket;
     MockWebSocket.lastUrl = null;
     try {
@@ -104,8 +110,16 @@ const withSparkWebSocketEnv = (sparkEnv, fn) => {
         instance._peripheral.scan();
         return MockWebSocket.lastUrl;
     } finally {
-        global.window = originalWindow;
-        global.WebSocket = originalWebSocket;
+        if (hadWindow) {
+            global.window = originalWindow;
+        } else {
+            delete global.window;
+        }
+        if (hadWebSocket) {
+            global.WebSocket = originalWebSocket;
+        } else {
+            delete global.WebSocket;
+        }
         // Bust the cache so the original `ext` consumed by other tests is
         // unaffected — and so the module re-evaluates on next require with a
         // clean global state.

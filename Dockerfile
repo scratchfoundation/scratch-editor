@@ -27,34 +27,29 @@ RUN node -p "require('./package.json').version" > /src/VERSION
 
 # ─── Stage 2: runtime ──────────────────────────────────────────────────────
 FROM nginxinc/nginx-unprivileged:1.27-alpine@sha256:65e3e85dbaed8ba248841d9d58a899b6197106c23cb0ff1a132b7bfe0547e4c0 AS runtime
-# Base image runs as UID 101 (nginx). We briefly switch to root for one
-# chown so the entrypoint script (running as UID 101) can write env-config.js
-# into /usr/share/nginx/html at start. Final USER is restored to 101.
-USER root
-RUN chown 101:0 /usr/share/nginx/html && \
-    mkdir -p /etc/spark && chown 101:0 /etc/spark
+# Base image USER is already 101 (nginx). No USER root needed — env-config.js
+# renders to /tmp (world-writable) and the template reads from /usr/share/...
+# (world-readable). /usr/share/nginx/html stays read-only, so a future Helm
+# chart can set `readOnlyRootFilesystem: true` without shadowing the assets.
 
 # Deployable subset of build/ only — drop standalone/player/blocks-only/compatibility
 # HTML entries and their ~16 MB sibling bundles (not part of the public web service).
-# Chown to UID 101 so the runtime entrypoint can write the rendered env-config.js.
-COPY --from=builder --chown=101:0 /src/packages/scratch-gui/build/index.html               /usr/share/nginx/html/
-COPY --from=builder --chown=101:0 /src/packages/scratch-gui/build/gui.js                   /usr/share/nginx/html/
-COPY --from=builder --chown=101:0 /src/packages/scratch-gui/build/gui.js.LICENSE.txt       /usr/share/nginx/html/
-COPY --from=builder --chown=101:0 /src/packages/scratch-gui/build/extension-worker.js      /usr/share/nginx/html/
-COPY --from=builder --chown=101:0 /src/packages/scratch-gui/build/extension-worker.js.LICENSE.txt /usr/share/nginx/html/
-COPY --from=builder --chown=101:0 /src/packages/scratch-gui/build/30d09ba32a17082ef820b57d52d60b7b.hex /usr/share/nginx/html/
-COPY --from=builder --chown=101:0 /src/packages/scratch-gui/build/chunks/ /usr/share/nginx/html/chunks/
-COPY --from=builder --chown=101:0 /src/packages/scratch-gui/build/static/ /usr/share/nginx/html/static/
-COPY --from=builder --chown=101:0 /src/VERSION /usr/share/nginx/html/VERSION
+COPY --from=builder /src/packages/scratch-gui/build/index.html               /usr/share/nginx/html/
+COPY --from=builder /src/packages/scratch-gui/build/gui.js                   /usr/share/nginx/html/
+COPY --from=builder /src/packages/scratch-gui/build/gui.js.LICENSE.txt       /usr/share/nginx/html/
+COPY --from=builder /src/packages/scratch-gui/build/extension-worker.js      /usr/share/nginx/html/
+COPY --from=builder /src/packages/scratch-gui/build/extension-worker.js.LICENSE.txt /usr/share/nginx/html/
+COPY --from=builder /src/packages/scratch-gui/build/30d09ba32a17082ef820b57d52d60b7b.hex /usr/share/nginx/html/
+COPY --from=builder /src/packages/scratch-gui/build/chunks/ /usr/share/nginx/html/chunks/
+COPY --from=builder /src/packages/scratch-gui/build/static/ /usr/share/nginx/html/static/
+COPY --from=builder /src/VERSION /usr/share/nginx/html/VERSION
 
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
-# Template lives outside /etc/nginx/templates/ to avoid the base image's
-# 20-envsubst-on-templates.sh picking it up and rendering it into the wrong
-# location (/etc/nginx/conf.d/). Our own 30-spark-env.sh handles it.
-COPY docker/env-config.js.template /etc/spark/env-config.js.template
+# Flat path under /usr/share/ — avoids /etc/nginx/templates/ (the base image's
+# 20-envsubst-on-templates.sh would render anything in there to the wrong
+# place). Our own 30-spark-env.sh reads from here and writes to /tmp.
+COPY docker/env-config.js.template /usr/share/spark.env-config.js.template
 COPY --chmod=0755 docker/30-spark-env.sh /docker-entrypoint.d/30-spark-env.sh
 
-# Restore non-root final user (AC2: USER must be 101, not root).
-USER 101
 EXPOSE 8080
 # Base image's ENTRYPOINT/CMD already invokes /docker-entrypoint.d/*.sh then nginx -g 'daemon off;'.

@@ -87,12 +87,11 @@ securityContext:
 
 | Mount path | เหตุผล / Reason |
 |------------|------|
-| `/tmp` | nginx temp files |
+| `/tmp` | nginx temp files AND the rendered `env-config.js` (the `/env-config.js` route is served via nginx `alias /tmp/env-config.js;`) |
 | `/var/cache/nginx` | nginx proxy/fastcgi cache dirs (แม้เราไม่ proxy ก็ตาม nginx ยัง mkdir) |
 | `/var/run` | nginx PID file |
-| `/usr/share/nginx/html/env-config.js` (subPath OR `/usr/share/nginx/html`) | entrypoint script writes the rendered env-config here at start |
 
-> Story 10.2's Helm chart owns the actual pod spec; this README provides the contract.
+> `/usr/share/nginx/html` stays **read-only**. The entrypoint never writes into it — env-config rendering lives in `/tmp` and nginx aliases the request to that path. Story 10.2's Helm chart owns the actual pod spec; this README provides the contract.
 
 **Listener port:** 8080 (non-root, no `CAP_NET_BIND_SERVICE` needed). Service should expose `targetPort: 8080`.
 
@@ -132,7 +131,16 @@ docker pull nginxinc/nginx-unprivileged:1.27-alpine && \
 - No proxy/upstream blocks — pure static serve
 - No build args or runtime env accept secrets — only `MIDDLEWARE_WS_URL` (public URL) and `SPARK_VERSION` (baked from `package.json`)
 
-## §11 Smoke checklist
+## §11 Input validation
+
+`MIDDLEWARE_WS_URL` is validated by the entrypoint script before render:
+
+- Must start with `ws://` or `wss://`, OR be empty (empty triggers the Spark extension's localhost fallback).
+- Must NOT contain `'`, `` ` ``, `$`, or newlines (these would break out of the JS string literal in `env-config.js`).
+
+Invalid values cause the container to exit with a non-zero code and a clear error in `docker logs`. This is intentional — fail-fast under a misconfigured Helm value beats silently serving the wrong WS URL.
+
+## §12 Smoke checklist
 
 - [ ] `docker build -t scratch-editor:local .` succeeds
 - [ ] `docker run --rm -p 8080:8080 scratch-editor:local` starts; logs show `[spark] env-config.js rendered: ...`
