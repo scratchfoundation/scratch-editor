@@ -370,6 +370,7 @@ class Scratch3SparkBlocks {
             name: formatMessage({id: 'spark.categoryName', default: 'Sparky', description: 'Extension name'}),
             showStatusButton: true,
             blocks: [
+                // ══ OUTPUTS ══════════════════════════════════════════
                 // ── LED ─────────────────────────────────────────────
                 {
                     opcode: 'setLedColor',
@@ -394,6 +395,24 @@ class Scratch3SparkBlocks {
                         }
                     }
                 },
+                '---',
+                // ── Buzzer ──────────────────────────────────────────
+                {
+                    opcode: 'playTone',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({id: 'spark.playTone', default: 'play tone [FREQ] Hz for [DUR] ms', description: 'Play buzzer tone'}),
+                    arguments: {
+                        FREQ: {type: ArgumentType.NUMBER, defaultValue: 440},
+                        DUR: {type: ArgumentType.NUMBER, defaultValue: 500}
+                    }
+                },
+                {
+                    opcode: 'stopBuzzer',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({id: 'spark.stopBuzzer', default: 'stop buzzer', description: 'Stop buzzer'})
+                },
+                // ══ major break: OUTPUTS → SENSORS / INPUTS (double '---' = wider gap) ══
+                '---',
                 '---',
                 // ── Button ──────────────────────────────────────────
                 {
@@ -421,30 +440,7 @@ class Scratch3SparkBlocks {
                     }
                 },
                 '---',
-                // ── Buzzer ──────────────────────────────────────────
-                {
-                    opcode: 'playTone',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({id: 'spark.playTone', default: 'play tone [FREQ] Hz for [DUR] ms', description: 'Play buzzer tone'}),
-                    arguments: {
-                        FREQ: {type: ArgumentType.NUMBER, defaultValue: 440},
-                        DUR: {type: ArgumentType.NUMBER, defaultValue: 500}
-                    }
-                },
-                {
-                    opcode: 'stopBuzzer',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({id: 'spark.stopBuzzer', default: 'stop buzzer', description: 'Stop buzzer'})
-                },
-                '---',
-                // ── Camera ──────────────────────────────────────────
-                {
-                    opcode: 'capturePhoto',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({id: 'spark.capturePhoto', default: 'capture photo to stage', description: 'Capture camera image to stage'})
-                },
-                '---',
-                // ── IMU ─────────────────────────────────────────────
+                // ── Motion · Accelerometer ──────────────────────────
                 {
                     opcode: 'imuAccelX',
                     blockType: BlockType.REPORTER,
@@ -460,6 +456,8 @@ class Scratch3SparkBlocks {
                     blockType: BlockType.REPORTER,
                     text: formatMessage({id: 'spark.imuAccelZ', default: 'accel Z', description: 'IMU accelerometer Z axis (g)'})
                 },
+                '---',
+                // ── Motion · Gyroscope ──────────────────────────────
                 {
                     opcode: 'imuGyroX',
                     blockType: BlockType.REPORTER,
@@ -475,6 +473,8 @@ class Scratch3SparkBlocks {
                     blockType: BlockType.REPORTER,
                     text: formatMessage({id: 'spark.imuGyroZ', default: 'gyro Z', description: 'IMU gyroscope Z axis (deg/s)'})
                 },
+                '---',
+                // ── Motion · Angle ──────────────────────────────────
                 {
                     opcode: 'imuPitch',
                     blockType: BlockType.REPORTER,
@@ -490,6 +490,17 @@ class Scratch3SparkBlocks {
                     opcode: 'imuYaw',
                     blockType: BlockType.REPORTER,
                     text: formatMessage({id: 'spark.imuYaw', default: 'yaw', description: 'IMU heading / yaw (degrees, -180..180)'})
+                },
+                '---',
+                // ── Motion · Shake gesture + Fusion (Story 3.3 / 3.11) ──
+                {
+                    opcode: 'whenShake',
+                    blockType: BlockType.HAT,
+                    text: formatMessage({
+                        id: 'spark.whenShake',
+                        default: 'when shaken',
+                        description: 'Hat: when board is shaken'
+                    })
                 },
                 {
                     // Story 3.11 — pick the orientation sensor-fusion algorithm.
@@ -507,17 +518,6 @@ class Scratch3SparkBlocks {
                             defaultValue: 'complementary'
                         }
                     }
-                },
-                '---',
-                // ── IMU gesture (Story 3.3) ────────────────────────
-                {
-                    opcode: 'whenShake',
-                    blockType: BlockType.HAT,
-                    text: formatMessage({
-                        id: 'spark.whenShake',
-                        default: 'when shaken',
-                        description: 'Hat: when board is shaken'
-                    })
                 },
                 {
                     opcode: 'setShakeSensitivity',
@@ -541,15 +541,16 @@ class Scratch3SparkBlocks {
                 // without it the reporters return mock 0 + a one-shot Thai
                 // toast and the HATs stay inert (firmware sends no events). The
                 // branch is on the response, so one .scratch works on both.
-                {
-                    opcode: 'micLevel',
-                    blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.micLevel', default: 'sound level', description: 'Mic level reporter (RMS)'})
-                },
+                // ── Sound (microphone) ──────────────────────────────
                 {
                     opcode: 'whenLoud',
                     blockType: BlockType.HAT,
                     text: formatMessage({id: 'spark.whenLoud', default: 'when loud', description: 'Hat: when a loud sound happens'})
+                },
+                {
+                    opcode: 'micLevel',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.micLevel', default: 'sound level', description: 'Mic level reporter (RMS)'})
                 },
                 {
                     opcode: 'setMicThreshold',
@@ -557,15 +558,17 @@ class Scratch3SparkBlocks {
                     text: formatMessage({id: 'spark.setMicThreshold', default: 'set loud sensitivity to [LEVEL]', description: 'Set whenLoud threshold level 1/2/3'}),
                     arguments: {LEVEL: {type: ArgumentType.STRING, menu: 'sensorLevels', defaultValue: '2'}}
                 },
-                {
-                    opcode: 'lightLevel',
-                    blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.lightLevel', default: 'light level', description: 'Light level reporter (lux)'})
-                },
+                '---',
+                // ── Light ───────────────────────────────────────────
                 {
                     opcode: 'whenBright',
                     blockType: BlockType.HAT,
                     text: formatMessage({id: 'spark.whenBright', default: 'when bright', description: 'Hat: when it gets bright'})
+                },
+                {
+                    opcode: 'lightLevel',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.lightLevel', default: 'light level', description: 'Light level reporter (lux)'})
                 },
                 {
                     opcode: 'setLightThreshold',
@@ -573,21 +576,32 @@ class Scratch3SparkBlocks {
                     text: formatMessage({id: 'spark.setLightThreshold', default: 'set bright sensitivity to [LEVEL]', description: 'Set whenBright threshold level 1/2/3'}),
                     arguments: {LEVEL: {type: ArgumentType.STRING, menu: 'sensorLevels', defaultValue: '2'}}
                 },
-                {
-                    opcode: 'tofDistance',
-                    blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.tofDistance', default: 'nearest distance', description: 'TOF distance reporter (mm; 9999 = no target)'})
-                },
+                '---',
+                // ── Distance (time-of-flight) ───────────────────────
                 {
                     opcode: 'whenNear',
                     blockType: BlockType.HAT,
                     text: formatMessage({id: 'spark.whenNear', default: 'when object near', description: 'Hat: when an object comes near'})
                 },
                 {
+                    opcode: 'tofDistance',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.tofDistance', default: 'nearest distance', description: 'TOF distance reporter (mm; 9999 = no target)'})
+                },
+                {
                     opcode: 'setTofThreshold',
                     blockType: BlockType.COMMAND,
                     text: formatMessage({id: 'spark.setTofThreshold', default: 'set near sensitivity to [LEVEL]', description: 'Set whenNear threshold level 1/2/3'}),
                     arguments: {LEVEL: {type: ArgumentType.STRING, menu: 'sensorLevels', defaultValue: '2'}}
+                },
+                // ══ major break: SENSORS → CAMERA (M3 module, delivered later) ══
+                '---',
+                '---',
+                // ── Camera (M3 — not in the M2 deliverable) ─────────
+                {
+                    opcode: 'capturePhoto',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({id: 'spark.capturePhoto', default: 'capture photo to stage', description: 'Capture camera image to stage'})
                 }
             ],
             menus: {
