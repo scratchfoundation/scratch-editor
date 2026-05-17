@@ -30,7 +30,7 @@ const applySparkTranslations = () => {
 };
 applySparkTranslations();
 
-const EXTENSION_ID = 'spark';
+const EXTENSION_ID = 'Sparky';
 // Story 10.1: env-injected for K8s deployment via runtime /env-config.js; falls back to localhost for Electron desktop.
 const WS_URL = (typeof window !== 'undefined' && window.SPARK_ENV && window.SPARK_ENV.MIDDLEWARE_WS_URL) || 'ws://localhost:8080';
 const POLL_INTERVAL_MS = 30;
@@ -363,7 +363,7 @@ class Scratch3SparkBlocks {
         applySparkTranslations();
         return {
             id: EXTENSION_ID,
-            name: formatMessage({id: 'spark.categoryName', default: 'Spark', description: 'Extension name'}),
+            name: formatMessage({id: 'spark.categoryName', default: 'Sparky', description: 'Extension name'}),
             showStatusButton: true,
             blocks: [
                 // ── LED ─────────────────────────────────────────────
