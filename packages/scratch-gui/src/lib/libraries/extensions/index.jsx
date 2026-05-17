@@ -58,8 +58,8 @@ export default [
     {
         name: (
             <FormattedMessage
-                defaultMessage="Spark"
-                description="Name for the Spark IoT extension"
+                defaultMessage="Sparky"
+                description="Name for the Sparky IoT extension"
                 id="gui.extension.spark.name"
             />
         ),
@@ -88,8 +88,8 @@ export default [
         ),
         connectingMessage: (
             <FormattedMessage
-                defaultMessage="Connecting to Spark..."
-                description="Connecting message for Spark"
+                defaultMessage="Connecting to Sparky..."
+                description="Connecting message for Sparky"
                 id="gui.extension.spark.connectingMessage"
             />
         )

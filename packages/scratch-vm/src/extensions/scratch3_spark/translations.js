@@ -1,6 +1,6 @@
 module.exports = {
     th: {
-        'spark.categoryName':     'สปาร์ก',
+        'spark.categoryName':     'สปาร์กี้',
         'spark.setLedColor':      'ตั้งสีไฟ LED เป็น [COLOR]',
         'spark.setLedBrightness': 'ตั้งความสว่างไฟ LED เป็น [BRIGHTNESS]',
         'spark.whenButtonPressed': 'เมื่อกดปุ่ม [BTN]',
