@@ -16,22 +16,23 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
 
       - name: Short SHA
         id: vars
-        run: echo "sha=sha-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+        run: echo "sha=sha-$(git rev-parse --short=12 HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Log in to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121  # v4.1.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f  # v7.1.0
         with:
           context: .
           file: ./Dockerfile
@@ -44,10 +45,12 @@ jobs:
         env:
           UAT_HOST: ${{ vars.UAT_HOST }}
           UAT_USER: ${{ vars.UAT_USER }}
+          UAT_SSH_KEY: ${{ secrets.UAT_SSH_KEY }}
         run: |
           install -d -m700 ~/.ssh
-          printf '%s\n' "${{ secrets.UAT_SSH_KEY }}" > ~/.ssh/uat_key
+          printf '%s\n' "$UAT_SSH_KEY" > ~/.ssh/uat_key
           chmod 600 ~/.ssh/uat_key
-          ssh-keyscan -H "$UAT_HOST" >> ~/.ssh/known_hosts 2>/dev/null
-          ssh -i ~/.ssh/uat_key -o IdentitiesOnly=yes \
+          ssh-keyscan -H "$UAT_HOST" >> ~/.ssh/known_hosts 2>/dev/null \
+            || { echo "ssh-keyscan failed for $UAT_HOST" >&2; exit 1; }
+          ssh -i ~/.ssh/uat_key -o IdentitiesOnly=yes -o ConnectTimeout=15 \
             "$UAT_USER@$UAT_HOST" "deploy ${{ steps.vars.outputs.sha }}"
