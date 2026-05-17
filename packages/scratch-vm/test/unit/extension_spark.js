@@ -11,16 +11,33 @@ const fakeRuntime = {
 const ext = new Scratch3SparkBlocks(fakeRuntime);
 
 test('extension has correct ID', t => {
-    t.equal(Scratch3SparkBlocks.EXTENSION_ID, 'spark');
+    t.equal(Scratch3SparkBlocks.EXTENSION_ID, 'Sparky');
     t.end();
 });
 
 test('getInfo returns expected structure', t => {
     const info = ext.getInfo();
-    t.equal(info.id, 'spark');
+    t.equal(info.id, 'Sparky');
     t.ok(info.name, 'has name');
     t.ok(Array.isArray(info.blocks), 'blocks is array');
     t.ok(info.menus, 'has menus');
+    t.end();
+});
+
+// Regression — the connection-modal hang was an id drift: getInfo().id /
+// EXTENSION_ID / the peripheral registration id must all agree, since the GUI
+// scans by the same id the peripheral registered under.
+test('peripheral registers under the same id as getInfo().id', t => {
+    let registeredId = null;
+    const capturingRuntime = {
+        ...fakeRuntime,
+        registerPeripheralExtension: id => {
+            registeredId = id;
+        }
+    };
+    const instance = new Scratch3SparkBlocks(capturingRuntime);
+    t.equal(registeredId, Scratch3SparkBlocks.EXTENSION_ID, 'registered under EXTENSION_ID');
+    t.equal(instance.getInfo().id, Scratch3SparkBlocks.EXTENSION_ID, 'getInfo().id === EXTENSION_ID');
     t.end();
 });
 
