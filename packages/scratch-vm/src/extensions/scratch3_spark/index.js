@@ -41,10 +41,10 @@ const POLL_INTERVAL_MS = 30;
 // and message-ids all derive from this map. Bi-color red+green matrix:
 // firmware ignores b — keep b:0 and express colors as red/green mixes.
 const LED_COLOR_MAP = {
-    red:   {r: 255, g: 0,   b: 0},
-    green: {r: 0,   g: 255, b: 0},
+    red: {r: 255, g: 0, b: 0},
+    green: {r: 0, g: 255, b: 0},
     amber: {r: 255, g: 191, b: 0},
-    off:   {r: 0,   g: 0,   b: 0}
+    off: {r: 0, g: 0, b: 0}
 };
 const LED_COLOR_NAMES = Object.keys(LED_COLOR_MAP);
 const ledColorMenuItems = () => LED_COLOR_NAMES.map(name => ({
