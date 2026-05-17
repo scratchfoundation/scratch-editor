@@ -63,7 +63,7 @@ export default [
                 id="gui.extension.spark.name"
             />
         ),
-        extensionId: 'spark',
+        extensionId: 'Sparky',
         iconURL: sparkIconURL,
         insetIconURL: sparkInsetIconURL,
         description: (
