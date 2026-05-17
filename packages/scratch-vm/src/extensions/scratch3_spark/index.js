@@ -35,22 +35,26 @@ const EXTENSION_ID = 'Sparky';
 const WS_URL = (typeof window !== 'undefined' && window.SPARK_ENV && window.SPARK_ENV.MIDDLEWARE_WS_URL) || 'ws://localhost:8080';
 const POLL_INTERVAL_MS = 30;
 
-// R2 amendment (SCP 2026-05-08): closed 4-state enum matching the
-// Spark-Baseboard bi-color LED. Yellow = additive red+green.
-// Blue and White were dropped; the matrix has no blue channel.
-const LedColor = {
-    RED: 'red',
-    GREEN: 'green',
-    AMBER: 'amber',
-    OFF: 'off'
-};
-
+// SINGLE SOURCE OF TRUTH for LED colors (R3 2026-05-18, supersedes the
+// R2/SCP-2026-05-08 closed enum). Add/raise a color = ONE row here + one
+// `spark.color.<name>` line in translations.js. The block menu, default,
+// and message-ids all derive from this map. Bi-color red+green matrix:
+// firmware ignores b — keep b:0 and express colors as red/green mixes.
 const LED_COLOR_MAP = {
-    red: {r: 255, g: 0, b: 0},
-    green: {r: 0, g: 255, b: 0},
+    red:   {r: 255, g: 0,   b: 0},
+    green: {r: 0,   g: 255, b: 0},
     amber: {r: 255, g: 191, b: 0},
-    off: {r: 0, g: 0, b: 0}
+    off:   {r: 0,   g: 0,   b: 0}
 };
+const LED_COLOR_NAMES = Object.keys(LED_COLOR_MAP);
+const ledColorMenuItems = () => LED_COLOR_NAMES.map(name => ({
+    text: formatMessage({
+        id: `spark.color.${name}`,
+        default: name,
+        description: `LED color ${name}`
+    }),
+    value: name
+}));
 
 const SparkButton = {A: 'A', B: 'B'};
 
@@ -375,7 +379,7 @@ class Scratch3SparkBlocks {
                         COLOR: {
                             type: ArgumentType.STRING,
                             menu: 'ledColors',
-                            defaultValue: LedColor.RED
+                            defaultValue: 'red'
                         }
                     }
                 },
@@ -589,12 +593,7 @@ class Scratch3SparkBlocks {
             menus: {
                 ledColors: {
                     acceptReporters: true,
-                    items: [
-                        {text: formatMessage({id: 'spark.color.red', default: 'red', description: 'LED red'}), value: LedColor.RED},
-                        {text: formatMessage({id: 'spark.color.green', default: 'green', description: 'LED green'}), value: LedColor.GREEN},
-                        {text: formatMessage({id: 'spark.color.amber', default: 'amber', description: 'LED amber'}), value: LedColor.AMBER},
-                        {text: formatMessage({id: 'spark.color.off', default: 'off', description: 'LED off'}), value: LedColor.OFF}
-                    ]
+                    items: ledColorMenuItems()
                 },
                 buttons: {
                     acceptReporters: true,
