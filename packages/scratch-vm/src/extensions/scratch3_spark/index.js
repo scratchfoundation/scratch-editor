@@ -41,14 +41,14 @@ const POLL_INTERVAL_MS = 30;
 const LedColor = {
     RED: 'red',
     GREEN: 'green',
-    YELLOW: 'yellow',
+    AMBER: 'amber',
     OFF: 'off'
 };
 
 const LED_COLOR_MAP = {
     red: {r: 255, g: 0, b: 0},
     green: {r: 0, g: 255, b: 0},
-    yellow: {r: 255, g: 255, b: 0},
+    amber: {r: 100, g: 255, b: 0},
     off: {r: 0, g: 0, b: 0}
 };
 
@@ -592,7 +592,7 @@ class Scratch3SparkBlocks {
                     items: [
                         {text: formatMessage({id: 'spark.color.red', default: 'red', description: 'LED red'}), value: LedColor.RED},
                         {text: formatMessage({id: 'spark.color.green', default: 'green', description: 'LED green'}), value: LedColor.GREEN},
-                        {text: formatMessage({id: 'spark.color.yellow', default: 'yellow', description: 'LED yellow'}), value: LedColor.YELLOW},
+                        {text: formatMessage({id: 'spark.color.amber', default: 'amber', description: 'LED amber'}), value: LedColor.AMBER},
                         {text: formatMessage({id: 'spark.color.off', default: 'off', description: 'LED off'}), value: LedColor.OFF}
                     ]
                 },
