@@ -48,7 +48,7 @@ const LedColor = {
 const LED_COLOR_MAP = {
     red: {r: 255, g: 0, b: 0},
     green: {r: 0, g: 255, b: 0},
-    amber: {r: 100, g: 255, b: 0},
+    amber: {r: 255, g: 191, b: 0},
     off: {r: 0, g: 0, b: 0}
 };
 
