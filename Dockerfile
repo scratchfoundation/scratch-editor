@@ -17,12 +17,30 @@ RUN npm ci --workspaces --include-workspace-root --ignore-scripts && \
     npm rebuild && \
     npm run --workspace=packages/scratch-gui prepare
 ENV NODE_ENV=production
-# Root build runs all workspaces in dependency order
-# (task-herder → scratch-svg-renderer → scratch-render → scratch-vm → scratch-gui → scratch-media-lib-scripts).
-# scratch-gui's webpack consumes the `dist/` outputs of the upstream packages
-# via their `main` fields, so building scratch-gui in isolation fails on
-# "Cannot find module '@scratch/scratch-vm'".
-RUN npm run build
+# Build ONLY scratch-gui's dependency closure, in dependency order
+# (scratch-svg-renderer → scratch-render → scratch-vm → scratch-gui).
+# We deliberately do NOT run the monorepo-wide `npm run build`: the sibling
+# `@scratch/task-herder` package builds with rolldown-vite, and rolldown
+# 1.0.0-beta.53 fails to resolve its entry module ("[UNRESOLVED_ENTRY]"),
+# which aborts the whole workspace build. task-herder is not a dependency of
+# scratch-gui and is not shipped in this image, so excluding it is correct
+# scoping, not error suppression. (Tracked as a separate task-herder defect.)
+# scratch-gui's webpack consumes the upstream packages' `dist/` via their
+# `main` fields, so the upstream three must be built first, in this order.
+RUN npm run --workspace=packages/scratch-svg-renderer \
+            --workspace=packages/scratch-render \
+            --workspace=packages/scratch-vm \
+            --workspace=packages/scratch-gui build
+# Verification gate: fail loudly if the deployable artifact is incomplete,
+# so a silently-broken scratch-gui build can never reach the runtime stage.
+RUN set -e; \
+    d=packages/scratch-gui/build; \
+    for f in "$d/index.html" "$d/gui.js"; do \
+      test -s "$f" || { echo "FATAL: missing/empty $f" >&2; exit 1; }; \
+    done; \
+    test -d "$d/chunks" && [ -n "$(ls -A "$d/chunks")" ] || { echo "FATAL: $d/chunks missing/empty" >&2; exit 1; }; \
+    test -d "$d/static" && [ -n "$(ls -A "$d/static")" ] || { echo "FATAL: $d/static missing/empty" >&2; exit 1; }; \
+    echo "artifact OK: $(du -sh "$d" | cut -f1) in $d"
 RUN node -p "require('./package.json').version" > /src/VERSION
 
 # ─── Stage 2: runtime ──────────────────────────────────────────────────────
