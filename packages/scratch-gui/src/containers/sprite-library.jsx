@@ -53,6 +53,7 @@ class SpriteLibrary extends React.PureComponent {
         return (
             <LibraryComponent
                 data={data}
+                libraryAssetHost={this.props.libraryAssetHost}
                 id="spriteLibrary"
                 tags={spriteTags}
                 title={this.props.intl.formatMessage(messages.libraryTitle)}
@@ -69,6 +70,7 @@ const mapStateToProps = state => ({
 
 SpriteLibrary.propTypes = {
     dynamicSprites: PropTypes.arrayOf(spriteShape),
+    libraryAssetHost: PropTypes.string,
     intl: intlShape.isRequired,
     onActivateBlocksTab: PropTypes.func.isRequired,
     onRequestClose: PropTypes.func,

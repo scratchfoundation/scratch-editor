@@ -56,6 +56,7 @@ class ExtensionLibrary extends React.PureComponent {
             <LibraryComponent
                 data={extensionLibraryThumbnailData}
                 filterable={false}
+                libraryAssetHost={this.props.libraryAssetHost}
                 id="extensionLibrary"
                 title={this.props.intl.formatMessage(messages.extensionTitle)}
                 visible={this.props.visible}
@@ -67,6 +68,7 @@ class ExtensionLibrary extends React.PureComponent {
 }
 
 ExtensionLibrary.propTypes = {
+    libraryAssetHost: PropTypes.string,
     intl: intlShape.isRequired,
     onCategorySelected: PropTypes.func,
     onRequestClose: PropTypes.func,

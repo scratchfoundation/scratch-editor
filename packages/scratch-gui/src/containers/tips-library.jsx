@@ -109,6 +109,7 @@ class TipsLibrary extends React.PureComponent {
             <LibraryComponent
                 filterable
                 data={decksLibraryThumbnailData}
+                libraryAssetHost={this.props.libraryAssetHost}
                 id="tipsLibrary"
                 tags={tutorialTags}
                 title={this.props.intl.formatMessage(messages.tipsLibraryTitle)}
@@ -122,6 +123,7 @@ class TipsLibrary extends React.PureComponent {
 }
 
 TipsLibrary.propTypes = {
+    libraryAssetHost: PropTypes.string,
     onTutorialSelect: PropTypes.func,
     intl: intlShape.isRequired,
     onActivateDeck: PropTypes.func.isRequired,

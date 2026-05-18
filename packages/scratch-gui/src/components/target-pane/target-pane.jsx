@@ -38,6 +38,7 @@ const TargetPane = ({
     onNewBackdropClick,
     onNewSpriteClick,
     onPaintSpriteClick,
+    libraryAssetHost,
     onRequestCloseSpriteLibrary,
     onSelectSprite,
     onSpriteUpload,
@@ -95,6 +96,7 @@ const TargetPane = ({
             <div>
                 {spriteLibraryVisible ? (
                     <SpriteLibrary
+                        libraryAssetHost={libraryAssetHost}
                         vm={vm}
                         onActivateBlocksTab={onActivateBlocksTab}
                         onRequestClose={onRequestCloseSpriteLibrary}
@@ -151,6 +153,7 @@ TargetPane.propTypes = {
     onNewBackdropClick: PropTypes.func,
     onNewSpriteClick: PropTypes.func,
     onPaintSpriteClick: PropTypes.func,
+    libraryAssetHost: PropTypes.string,
     onRequestCloseExtensionLibrary: PropTypes.func,
     onRequestCloseSpriteLibrary: PropTypes.func,
     onSelectSprite: PropTypes.func,

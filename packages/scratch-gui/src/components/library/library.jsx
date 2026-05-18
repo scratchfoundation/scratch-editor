@@ -11,6 +11,10 @@ import Divider from '../divider/divider.jsx';
 import Filter from '../filter/filter.jsx';
 import TagButton from '../../containers/tag-button.jsx';
 import {legacyConfig} from '../../legacy-config';
+import {
+    DEFAULT_LIBRARY_ASSET_HOST,
+    buildLibraryAssetServiceUri
+} from '../../lib/library-asset-url.js';
 import Spinner from '../spinner/spinner.jsx';
 import {CATEGORIES} from '../../../src/lib/libraries/decks/index.jsx';
 
@@ -89,12 +93,13 @@ const getAssetTypeForFileExtension = function (fileExtension) {
  * Otherwise it'll return just one `imageSource`.
  * @param {object} item - either a library item or one of a library item's costumes.
  *   The latter is used internally as part of processing an animated thumbnail.
+ * @param {string} libraryAssetHost - Base URL for library thumbnail assets.
  * @returns {LibraryItem.PropTypes.icons} - an `imageSource` or array of them
  */
-const getItemIcons = function (item) {
+const getItemIcons = function (item, libraryAssetHost) {
     const costumes = (item.json && item.json.costumes) || item.costumes;
     if (costumes) {
-        return costumes.map(getItemIcons);
+        return costumes.map(costume => getItemIcons(costume, libraryAssetHost));
     }
 
     if (item.rawURL) {
@@ -107,7 +112,11 @@ const getItemIcons = function (item) {
         return {
             assetId: item.assetId,
             assetType: getAssetTypeForFileExtension(item.dataFormat),
-            assetServiceUri: `https://cdn.assets.scratch.mit.edu/internalapi/asset/${item.assetId}.${item.dataFormat}/get/`
+            assetServiceUri: buildLibraryAssetServiceUri(
+                libraryAssetHost,
+                item.assetId,
+                item.dataFormat
+            )
         };
     }
 
@@ -117,7 +126,7 @@ const getItemIcons = function (item) {
         return {
             assetId: assetId,
             assetType: getAssetTypeForFileExtension(fileExtension),
-            assetServiceUri: `https://cdn.assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`
+            assetServiceUri: buildLibraryAssetServiceUri(libraryAssetHost, md5ext)
         };
     }
 };
@@ -274,7 +283,7 @@ class LibraryComponent extends React.Component {
     }
     renderElement (data) {
         const key = this.constructKey(data);
-        const icons = getItemIcons(data);
+        const icons = getItemIcons(data, this.props.libraryAssetHost);
         return (<LibraryItem
             bluetoothRequired={data.bluetoothRequired}
             collaborator={data.collaborator}
@@ -413,6 +422,7 @@ LibraryComponent.propTypes = {
     ),
     filterable: PropTypes.bool,
     withCategories: PropTypes.bool,
+    libraryAssetHost: PropTypes.string,
     id: PropTypes.string.isRequired,
     intl: intlShape.isRequired,
     onItemMouseEnter: PropTypes.func,
@@ -427,6 +437,7 @@ LibraryComponent.propTypes = {
 
 LibraryComponent.defaultProps = {
     filterable: true,
+    libraryAssetHost: DEFAULT_LIBRARY_ASSET_HOST,
     showPlayButton: false
 };
 

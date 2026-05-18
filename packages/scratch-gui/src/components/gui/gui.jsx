@@ -205,6 +205,7 @@ const GUIComponent = props => {
         username,
         userOwnsProject,
         hideTutorialProjects,
+        libraryAssetHost,
         vm,
         ...componentProps
     } = omit(props, 'dispatch', 'setPlatform');
@@ -300,6 +301,7 @@ const GUIComponent = props => {
                     {tipsLibraryVisible ? (
                         <TipsLibrary
                             hideTutorialProjects={hideTutorialProjects}
+                            libraryAssetHost={libraryAssetHost}
                             onTutorialSelect={onTutorialSelect}
                         />
                     ) : null}
@@ -317,6 +319,7 @@ const GUIComponent = props => {
                     ) : null}
                     {costumeLibraryVisible ? (
                         <CostumeLibrary
+                            libraryAssetHost={libraryAssetHost}
                             vm={vm}
                             onRequestClose={onRequestCloseCostumeLibrary}
                         />
@@ -327,6 +330,7 @@ const GUIComponent = props => {
                     />}
                     {backdropLibraryVisible ? (
                         <BackdropLibrary
+                            libraryAssetHost={libraryAssetHost}
                             vm={vm}
                             onRequestClose={onRequestCloseBackdropLibrary}
                         />
@@ -479,6 +483,7 @@ const GUIComponent = props => {
                                             canUseCloud={canUseCloud}
                                             grow={1}
                                             isVisible={blocksTabVisible}
+                                            libraryAssetHost={libraryAssetHost}
                                             options={{
                                                 media: `${basePath}static/${colorModeMap[colorMode].blocksMediaFolder}/`
                                             }}
@@ -517,6 +522,7 @@ const GUIComponent = props => {
                                         <SoundTab
                                             ariaLabel={intl.formatMessage(ariaMessages.soundsPanel)}
                                             ariaRole="region"
+                                            libraryAssetHost={libraryAssetHost}
                                             vm={vm}
                                         /> : null}
                                 </TabPanel>
@@ -561,6 +567,7 @@ const GUIComponent = props => {
                                 element="section"
                             >
                                 <TargetPane
+                                    libraryAssetHost={libraryAssetHost}
                                     stageSize={stageSize}
                                     vm={vm}
                                     onNewSpriteClick={onNewSpriteClick}
@@ -618,6 +625,7 @@ GUIComponent.propTypes = {
     isRtl: PropTypes.bool,
     isShared: PropTypes.bool,
     isTotallyNormal: PropTypes.bool,
+    libraryAssetHost: PropTypes.string,
     loading: PropTypes.bool,
     logo: PropTypes.string,
     manuallySaveThumbnails: PropTypes.bool,
