@@ -6,6 +6,46 @@ Scratch project by pressing "Create" on that website or by visiting <https://scr
 This is a source code repository for the packages that make up the Scratch editor and a few additional support
 packages. Use this if you'd like to learn about how the Scratch editor works or to contribute to its development.
 
+## Raspberry Pi Foundation fork (`experience-cs`)
+
+This repository is a public fork of [scratchfoundation/scratch-editor](https://github.com/scratchfoundation/scratch-editor), maintained for Experience CS and related products. Modified source is published under AGPL-3.0; published npm packages should correspond to a specific commit on this repository.
+
+### Upstream anchor and integration branch
+
+| | |
+|---|---|
+| **Upstream release** | [`v13.7.3`](https://github.com/scratchfoundation/scratch-editor/releases/tag/v13.7.3) on [scratchfoundation/scratch-editor](https://github.com/scratchfoundation/scratch-editor) |
+| **Integration branch** | [`experience-cs`](https://github.com/RaspberryPiFoundation/scratch-editor/tree/experience-cs) — long-lived branch; feature work merges here via PR |
+| **Published package** | [`@RaspberryPiFoundation/scratch-gui`](https://github.com/RaspberryPiFoundation/scratch-editor/pkgs/npm/scratch-gui) on GitHub Packages |
+
+This was base on the latest upstream release tag `v13.7.3` with RPF-specific packaging and CI.
+
+### Local development
+
+Use the Node version in [`.nvmrc`](.nvmrc). Install dependencies from the **repository root**:
+
+```bash
+nvm install
+nvm use
+NODE_ENV=development npm ci
+npm run build
+```
+
+Root [`.npmrc`](.npmrc) routes the `@RaspberryPiFoundation` scope to GitHub Packages. This requires a Github access token with `read:packages` and `repo`.
+
+```bash
+cd packages/scratch-gui
+npm run test:lint
+npm run test:unit
+npm start   # http://localhost:8601/
+```
+
+### CI and publishing
+
+- **Pull requests:** CI runs build and tests; **no** package is published to GitHub Packages.
+- **Push to `experience-cs`:** CI builds and publishes `@RaspberryPiFoundation/scratch-gui` with a version such as `13.7.3-experience-cs.YYYYMMDDHHMMSS`. Pin an explicit version in consumers (e.g. editor-ui); do not rely on floating `latest` in production.
+- Publishing is configured in [`.github/workflows/ci.yml`](.github/workflows/ci.yml) (inline publish step on the `experience-cs` branch only). Upstream’s npmjs release workflow (`.github/workflows/publish.yml`) is disabled on this fork.
+
 ## What's in this repository?
 
 The `packages` directory in this repository contains:

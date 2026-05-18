@@ -17,6 +17,10 @@ on:
         type: boolean
         default: false
 
+permissions:
+  contents: read
+  packages: write
+
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.compare || github.head_ref || github.ref }}"
   cancel-in-progress: true
@@ -34,6 +38,7 @@ jobs:
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
+          registry-url: https://npm.pkg.github.com
       - name: Debug Info
         # https://docs.github.com/en/actions/reference/security/secure-use#use-an-intermediate-environment-variable
         env:
@@ -68,7 +73,13 @@ jobs:
           fi
 
       - if: ${{ steps.filter.outputs.any-workspace == 'true' }}
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: ./.github/actions/install-dependencies
+
+      - name: Install Rolldown linux binaries
+        if: ${{ steps.filter.outputs.any-workspace == 'true' }}
+        run: npm install @rolldown/binding-linux-x64-gnu --no-save --ignore-scripts
 
       # TODO: Packages currently depend on each other's compiled dist at build time. Fix that and matrix the builds.
       - name: Build Packages
@@ -85,6 +96,16 @@ jobs:
             packages/**/build
             packages/**/dist
             packages/**/playground
+
+      - name: Publish scratch-gui to GitHub Packages
+        if: ${{ github.ref == 'refs/heads/experience-cs' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch') }}
+        working-directory: ./packages/scratch-gui
+        env:
+          NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RELEASE_VERSION="13.7.3-experience-cs.$(date +'%Y%m%d%H%M%S')"
+          npm version --no-git-tag-version "$RELEASE_VERSION"
+          npm publish --access public --tag latest
 
   test:
     name: Test

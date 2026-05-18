@@ -8,6 +8,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ScratchWebpackConfigBuilder = require('scratch-webpack-configuration');
 
 // const STATIC_PATH = process.env.STATIC_PATH || '/static';
+const ASSET_PATH = '/scratch-gui/';
 
 const commonHtmlWebpackPluginOptions = {
     // Google Tag Manager ID
@@ -119,7 +120,7 @@ const distConfig = baseConfig.clone()
             // - if the publicPath is static here (defaults to `/`), they are unable to load their assets,
             // which depend on a relative path resolution.
             // (e.g. `/tmp/*path-to-packaged-dist*/static/assets` in scratch-desktop)
-            publicPath: 'auto',
+            publicPath: ASSET_PATH,
             path: path.resolve(__dirname, 'dist')
         }
     })
