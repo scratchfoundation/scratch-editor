@@ -1,28 +1,123 @@
 name: Publish
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
 
 jobs:
+  release-prep:
+    name: Compute release
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.semrel.outputs.version }}
+      npm_tag: ${{ steps.semrel.outputs.npm_tag }}
+      tag: ${{ steps.semrel.outputs.tag }}
+      branch: ${{ steps.semrel.outputs.branch }}
+      is_prerelease: ${{ steps.semrel.outputs.is_prerelease }}
+      do_release: ${{ steps.semrel.outputs.do_release }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          fetch-depth: 0 # full history for semantic-release
+
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+
+      - uses: ./.github/actions/install-dependencies
+
+      - name: Configure git author
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Redirect pushes to a local sink
+        # semantic-release would push the version-bump commit and the tag to
+        # origin during its prepare/publish steps. We redirect those pushes
+        # to a local bare repository so origin stays untouched until the
+        # finalize job has confirmed publishing succeeded. git's
+        # pushInsteadOf rewrites only pushes — fetches and changelog links
+        # still resolve against the real repository URL.
+        run: |
+          git init --bare ../release-sink.git
+          SINK_URL="file://$(realpath ../release-sink.git)"
+          for url in \
+            "git@github.com:${GITHUB_REPOSITORY}.git" \
+            "https://github.com/${GITHUB_REPOSITORY}.git" \
+            "https://github.com/${GITHUB_REPOSITORY}"
+          do
+            git config "url.${SINK_URL}.pushInsteadOf" "$url"
+          done
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+      - name: Capture release outputs
+        id: semrel
+        run: |
+          if [ ! -f .release-version ]; then
+            echo "::notice::No relevant commits since the last release on this branch. Nothing to publish."
+            echo "do_release=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          VERSION=$(cat .release-version)
+          CHANNEL=$(cat .release-channel)
+          NPM_TAG="${CHANNEL:-latest}"
+          TAG="v${VERSION}"
+          BRANCH="${GITHUB_REF_NAME}"
+          # A semver prerelease is indicated by a hyphen after the MAJOR.MINOR.PATCH
+          # core, before any optional +BUILD metadata. Strip the build metadata
+          # before checking, since build identifiers themselves may contain hyphens.
+          VERSION_CORE="${VERSION%%+*}"
+          case "$VERSION_CORE" in
+            *-*) IS_PRERELEASE=true ;;
+            *)   IS_PRERELEASE=false ;;
+          esac
+          # Use $GITHUB_SHA (the commit at workflow trigger time) as the bundle
+          # boundary rather than HEAD^, so the range stays correct if the
+          # prepare-phase plugins ever create zero or more than one commit.
+          git bundle create release.bundle \
+            "refs/heads/${BRANCH}" \
+            "refs/tags/${TAG}" \
+            "^${GITHUB_SHA}"
+          {
+            echo "version=${VERSION}"
+            echo "npm_tag=${NPM_TAG}"
+            echo "tag=${TAG}"
+            echo "branch=${BRANCH}"
+            echo "is_prerelease=${IS_PRERELEASE}"
+            echo "do_release=true"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Store Package Manifests
+        if: steps.semrel.outputs.do_release == 'true'
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: package-manifests
+          retention-days: 90
+          path: |
+            package.json
+            package-lock.json
+            packages/*/package.json
+
+      - name: Store Release Bundle
+        if: steps.semrel.outputs.do_release == 'true'
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: release-bundle
+          retention-days: 90
+          path: release.bundle
+
   build:
     name: Build
+    needs: release-prep
+    if: needs.release-prep.outputs.do_release == 'true'
     runs-on: ubuntu-latest
     outputs:
       packages: ${{ steps.list-packages.outputs.packages }}
     steps:
-      - name: Debug Info
-        # https://docs.github.com/en/actions/reference/security/secure-use#use-an-intermediate-environment-variable
-        env:
-          # `env:` values are printed to the log even without using them in `run:`
-          RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
-          RELEASE_TARGET_COMMITISH: ${{ github.event.release.target_commitish }}
-        run: |
-          cat <<EOF
-          Release tag name: $RELEASE_TAG_NAME
-          Release target commit-ish: $RELEASE_TARGET_COMMITISH
-          EOF
-
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
 
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
@@ -32,13 +127,11 @@ jobs:
 
       - uses: ./.github/actions/install-dependencies
 
-      - name: Bump Version
-        shell: bash
-        env:
-          GIT_TAG: ${{ github.event.release.tag_name }}
-        run: |
-          NEW_VERSION="${GIT_TAG/v/}"
-          npm version "$NEW_VERSION" --no-git-tag-version
+      - name: Download Package Manifests
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: package-manifests
+          path: .
 
       - name: Build Packages
         run: npm run build
@@ -59,65 +152,33 @@ jobs:
             packages/**/dist
             packages/**/playground
 
-      - name: Store Package Manifests
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
-        with:
-          name: package-manifests
-          retention-days: 90
-          path: |
-            package.json
-            package-lock.json
-            packages/*/package.json
-
   test:
-    needs: build
+    needs: [release-prep, build]
+    if: needs.release-prep.outputs.do_release == 'true'
     uses: ./.github/workflows/test-packages.yml
     with:
       packages: ${{ needs.build.outputs.packages }}
 
   preview:
-    needs: build
+    needs: [release-prep, build]
+    if: needs.release-prep.outputs.do_release == 'true'
     uses: ./.github/workflows/deploy-playground-preview.yml
     with:
-      destination_dir: ${{ github.event.release.target_commitish }}
-      full_commit_message: "Build for release ${{ github.event.release.tag_name }}"
+      destination_dir: ${{ needs.release-prep.outputs.branch }}
+      full_commit_message: "Build for release ${{ needs.release-prep.outputs.tag }}"
 
   cd:
     name: Publish to npm
     needs:
+      - release-prep
       - build
       - test
     if: ${{ !cancelled() && needs.build.result == 'success' && needs.test.result == 'success' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # to push the version commit and tag
-      issues: write # to comment on issues when a fix is released
-      pull-requests: write # to comment on PRs when a fix is released
     env:
+      NPM_TAG: ${{ needs.release-prep.outputs.npm_tag }}
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
-      - name: Determine NPM Tag
-        shell: bash
-        env:
-          TARGET_COMMITISH: ${{ github.event.release.target_commitish }}
-          IS_PRERELEASE: ${{ github.event.release.prerelease }}
-        run: |
-          case "$TARGET_COMMITISH" in
-            develop | main | master)
-              if [[ "$IS_PRERELEASE" == true ]]; then
-                npm_tag=beta
-              else
-                npm_tag=latest
-              fi
-              ;;
-            *)
-              # use the branch name as the npm tag
-              npm_tag="$TARGET_COMMITISH"
-              ;;
-          esac
-          echo "Determined NPM tag: [$npm_tag]"
-          echo "NPM_TAG=${npm_tag}" >> "$GITHUB_ENV"
-
       - name: Check NPM Tag
         run: |
           if [ -z "$NPM_TAG" ]; then
@@ -125,15 +186,7 @@ jobs:
             exit 1
           fi
 
-      - name: Configure GitHub User
-        shell: bash
-        run: |
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'github-actions@localhost'
-
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-        with:
-          token: ${{ secrets.PAT_RELEASE_PUSH }} # persists the token for pushing to the repo later
 
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
         with:
@@ -148,15 +201,6 @@ jobs:
         with:
           name: package-manifests
           path: .
-
-      - name: Commit Version Bump
-        shell: bash
-        env:
-          GIT_TAG: ${{ github.event.release.tag_name }}
-        run: |
-          NEW_VERSION="${GIT_TAG/v/}"
-          git add package.json package-lock.json packages/*/package.json
-          git commit -m "chore(release): $NEW_VERSION [skip ci]"
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
@@ -196,37 +240,93 @@ jobs:
           npm run build --workspace @scratch/scratch-media-lib-scripts
           npm publish --access=public --tag="$NPM_TAG" --workspace=@scratch/scratch-media-lib-scripts
         env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Push to Develop
-        shell: bash
-        env:
-          TAG_NAME: ${{ github.event.release.tag_name }}
+  finalize:
+    name: Push release to origin
+    needs:
+      - release-prep
+      - cd
+    if: ${{ !cancelled() && needs.cd.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to push the version commit and tag
+    env:
+      TAG: ${{ needs.release-prep.outputs.tag }}
+      BRANCH: ${{ needs.release-prep.outputs.branch }}
+      NPM_TAG: ${{ needs.release-prep.outputs.npm_tag }}
+      IS_PRERELEASE: ${{ needs.release-prep.outputs.is_prerelease }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          token: ${{ secrets.PAT_RELEASE_PUSH }}
+
+      - name: Download Release Bundle
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: release-bundle
+          path: .
+
+      - name: Apply bundle locally
         run: |
-          git fetch origin develop
+          git fetch ./release.bundle \
+            "+refs/heads/${BRANCH}:refs/release-bundle/${BRANCH}" \
+            "+refs/tags/${TAG}:refs/tags/${TAG}"
 
-          # HEAD is the version bump commit; HEAD^ is the release target commit
-          RELEASE_TARGET_COMMIT="$(git rev-parse HEAD^)"
-          DEVELOP_COMMIT_ID="$(git rev-parse origin/develop)"
+      - name: Push release tag to origin
+        # The tag is the primary record of what was published. Push it
+        # before the branch so a concurrent push to ${BRANCH} can't
+        # prevent the tag (and the GitHub release below) from reaching
+        # origin. The npm publish has already happened at this point.
+        run: git push origin "refs/tags/${TAG}"
 
-          if [ "$RELEASE_TARGET_COMMIT" = "$DEVELOP_COMMIT_ID" ]; then
-            git push origin HEAD:develop
-          else
-            echo "Not pushing to develop because the tag we're operating on is behind"
+      - name: Push bump commit to branch
+        # Best-effort. If someone pushed to ${BRANCH} between release-prep
+        # and now, this fails (non-fast-forward), but the tag is already
+        # safe on origin and the GitHub release will still be created
+        # below. The bump commit lives only on the tag in that case; the
+        # maintainer can merge or cherry-pick ${TAG} onto ${BRANCH}
+        # afterward to advance the manifest version on the branch.
+        continue-on-error: true
+        run: |
+          if ! git push origin "refs/release-bundle/${BRANCH}:refs/heads/${BRANCH}"; then
+            echo "::warning title=Branch push failed::The release tag ${TAG} was pushed and the npm publish succeeded, but pushing the bump commit to ${BRANCH} failed (likely a concurrent push). Merge or cherry-pick ${TAG} onto ${BRANCH} to advance the manifest version on the branch."
+            exit 1
           fi
 
-      # See https://stackoverflow.com/a/24849501
-      - name: Change Connected Commit on Release
-        shell: bash
-        env:
-          TAG_NAME: ${{ github.event.release.tag_name }}
+      - name: Extract release notes from commit body
+        id: notes
         run: |
-          git tag -f "$TAG_NAME" HEAD
-          git push -f origin "refs/tags/$TAG_NAME"
+          NOTES_FILE="$(mktemp)"
+          git log -1 --pretty=%b "${TAG}" > "$NOTES_FILE"
+          echo "path=${NOTES_FILE}" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ARGS=("${TAG}" "--target=${BRANCH}" "--title=${TAG}" "--notes-file=${{ steps.notes.outputs.path }}")
+          # Default to --prerelease unless IS_PRERELEASE is explicitly "false".
+          # If the value is empty (e.g., upstream output unset) or unexpected,
+          # err on the conservative side: marking a stable release as a
+          # prerelease is cosmetically wrong but recoverable; the inverse
+          # mistakenly fronts an unfinished build as the latest stable.
+          if [ "${IS_PRERELEASE}" != "false" ]; then
+            ARGS+=("--prerelease")
+          fi
+          gh release create "${ARGS[@]}"
 
       - name: Comment on Resolved Issues and Merged PRs
-        if: ${{ !github.event.release.prerelease }}
+        # Run only when we explicitly know this is a stable release. Any
+        # other value (empty, unexpected, or 'true') skips the comment;
+        # better to stay silent than to comment on issues for a build that
+        # isn't actually the "this is now released" milestone.
+        if: env.IS_PRERELEASE == 'false'
         continue-on-error: true
+        # apexskier/github-release-commenter reads context.payload.repository.html_url
+        # (available under workflow_dispatch) and queries the GitHub API for the
+        # two most recent releases. Running this step after the gh-release-create
+        # step above makes that just-created release the "current" one.
         uses: apexskier/github-release-commenter@e7813a9625eabd79a875b4bc4046cfcae377ab34 # v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
