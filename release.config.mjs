@@ -6,7 +6,9 @@
 // No @semantic-release/github: the GitHub release is created by the finalize
 // job, using the commit body as the release notes.
 
-module.exports = {
+import {commitPartial, commitsSort, finalizeContext} from './scripts/release-notes-writer-opts.mjs';
+
+export default {
     branches: [
         'develop',
         '+([0-9])?(.{+([0-9]),x}).x',
@@ -15,7 +17,7 @@ module.exports = {
     ],
     plugins: [
         '@semantic-release/commit-analyzer',
-        '@semantic-release/release-notes-generator',
+        ['@semantic-release/release-notes-generator', { writerOpts: {commitPartial, commitsSort, finalizeContext} }],
         [
             '@semantic-release/exec',
             {
