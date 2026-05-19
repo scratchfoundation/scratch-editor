@@ -127,6 +127,7 @@ GUI.propTypes = {
     accountMenuOptions: AccountMenuOptionsPropTypes,
     assetHost: PropTypes.string,
     libraryAssetHost: PropTypes.string,
+    libraryAssetsFetchWithHeaders: PropTypes.bool,
     children: PropTypes.node,
     cloudHost: PropTypes.string,
     dynamicAssets: PropTypes.shape({

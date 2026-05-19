@@ -206,6 +206,7 @@ const GUIComponent = props => {
         userOwnsProject,
         hideTutorialProjects,
         libraryAssetHost,
+        libraryAssetsFetchWithHeaders,
         vm,
         ...componentProps
     } = omit(props, 'dispatch', 'setPlatform');
@@ -302,6 +303,7 @@ const GUIComponent = props => {
                         <TipsLibrary
                             hideTutorialProjects={hideTutorialProjects}
                             libraryAssetHost={libraryAssetHost}
+                            libraryAssetsFetchWithHeaders={libraryAssetsFetchWithHeaders}
                             onTutorialSelect={onTutorialSelect}
                         />
                     ) : null}
@@ -320,6 +322,7 @@ const GUIComponent = props => {
                     {costumeLibraryVisible ? (
                         <CostumeLibrary
                             libraryAssetHost={libraryAssetHost}
+                            libraryAssetsFetchWithHeaders={libraryAssetsFetchWithHeaders}
                             vm={vm}
                             onRequestClose={onRequestCloseCostumeLibrary}
                         />
@@ -331,6 +334,7 @@ const GUIComponent = props => {
                     {backdropLibraryVisible ? (
                         <BackdropLibrary
                             libraryAssetHost={libraryAssetHost}
+                            libraryAssetsFetchWithHeaders={libraryAssetsFetchWithHeaders}
                             vm={vm}
                             onRequestClose={onRequestCloseBackdropLibrary}
                         />
@@ -484,6 +488,7 @@ const GUIComponent = props => {
                                             grow={1}
                                             isVisible={blocksTabVisible}
                                             libraryAssetHost={libraryAssetHost}
+                                            libraryAssetsFetchWithHeaders={libraryAssetsFetchWithHeaders}
                                             options={{
                                                 media: `${basePath}static/${colorModeMap[colorMode].blocksMediaFolder}/`
                                             }}
@@ -523,6 +528,7 @@ const GUIComponent = props => {
                                             ariaLabel={intl.formatMessage(ariaMessages.soundsPanel)}
                                             ariaRole="region"
                                             libraryAssetHost={libraryAssetHost}
+                                            libraryAssetsFetchWithHeaders={libraryAssetsFetchWithHeaders}
                                             vm={vm}
                                         /> : null}
                                 </TabPanel>
@@ -568,6 +574,7 @@ const GUIComponent = props => {
                             >
                                 <TargetPane
                                     libraryAssetHost={libraryAssetHost}
+                                    libraryAssetsFetchWithHeaders={libraryAssetsFetchWithHeaders}
                                     stageSize={stageSize}
                                     vm={vm}
                                     onNewSpriteClick={onNewSpriteClick}
@@ -626,6 +633,7 @@ GUIComponent.propTypes = {
     isShared: PropTypes.bool,
     isTotallyNormal: PropTypes.bool,
     libraryAssetHost: PropTypes.string,
+    libraryAssetsFetchWithHeaders: PropTypes.bool,
     loading: PropTypes.bool,
     logo: PropTypes.string,
     manuallySaveThumbnails: PropTypes.bool,
@@ -704,6 +712,7 @@ GUIComponent.defaultProps = {
     showComingSoon: false,
     showNewFeatureCallouts: false,
     stageSizeMode: STAGE_SIZE_MODES.large,
+    libraryAssetsFetchWithHeaders: false,
     useExternalPeripheralList: false
 };
 

@@ -185,6 +185,7 @@ class SoundLibrary extends React.PureComponent {
                 showPlayButton
                 data={soundLibraryThumbnailData}
                 libraryAssetHost={this.props.libraryAssetHost}
+                libraryAssetsFetchWithHeaders={this.props.libraryAssetsFetchWithHeaders}
                 id="soundLibrary"
                 setStopHandler={this.setStopHandler}
                 tags={soundTags}
@@ -201,6 +202,7 @@ class SoundLibrary extends React.PureComponent {
 SoundLibrary.propTypes = {
     dynamicSounds: PropTypes.arrayOf(soundShape),
     libraryAssetHost: PropTypes.string,
+    libraryAssetsFetchWithHeaders: PropTypes.bool,
     intl: intlShape.isRequired,
     isRtl: PropTypes.bool,
     onNewSound: PropTypes.func.isRequired,

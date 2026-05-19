@@ -299,6 +299,7 @@ class SoundTab extends React.Component {
                 {this.props.soundLibraryVisible ? (
                     <SoundLibrary
                         libraryAssetHost={this.props.libraryAssetHost}
+                        libraryAssetsFetchWithHeaders={this.props.libraryAssetsFetchWithHeaders}
                         vm={this.props.vm}
                         onNewSound={this.handleNewSound}
                         onRequestClose={this.props.onRequestCloseSoundLibrary}
@@ -313,6 +314,7 @@ SoundTab.propTypes = {
     ariaLabel: PropTypes.string,
     ariaRole: PropTypes.string,
     libraryAssetHost: PropTypes.string,
+    libraryAssetsFetchWithHeaders: PropTypes.bool,
     dispatchUpdateRestore: PropTypes.func,
     editingTarget: PropTypes.string,
     intl: intlShape,

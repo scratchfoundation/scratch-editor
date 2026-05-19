@@ -692,6 +692,7 @@ class Blocks extends React.Component {
             workspaceMetrics,
             colorMode,
             libraryAssetHost,
+            libraryAssetsFetchWithHeaders,
             ...props
         } = this.props;
          
@@ -719,6 +720,7 @@ class Blocks extends React.Component {
                 {extensionLibraryVisible ? (
                     <ExtensionLibrary
                         libraryAssetHost={libraryAssetHost}
+                        libraryAssetsFetchWithHeaders={libraryAssetsFetchWithHeaders}
                         vm={vm}
                         onCategorySelected={this.handleCategorySelected}
                         onRequestClose={onRequestCloseExtensionLibrary}
@@ -741,6 +743,7 @@ class Blocks extends React.Component {
 Blocks.propTypes = {
     anyModalVisible: PropTypes.bool,
     libraryAssetHost: PropTypes.string,
+    libraryAssetsFetchWithHeaders: PropTypes.bool,
     canUseCloud: PropTypes.bool,
     customProceduresVisible: PropTypes.bool,
     extensionLibraryVisible: PropTypes.bool,

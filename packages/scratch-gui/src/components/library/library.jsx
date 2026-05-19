@@ -298,7 +298,7 @@ class LibraryComponent extends React.Component {
             internetConnectionRequired={data.internetConnectionRequired}
             isPlaying={this.state.playingItem === key}
             key={key}
-            libraryAssetHost={this.props.libraryAssetHost}
+            libraryAssetsFetchWithHeaders={this.props.libraryAssetsFetchWithHeaders}
             name={data.name}
             showPlayButton={this.props.showPlayButton}
             onMouseEnter={this.handleMouseEnter}
@@ -424,6 +424,7 @@ LibraryComponent.propTypes = {
     filterable: PropTypes.bool,
     withCategories: PropTypes.bool,
     libraryAssetHost: PropTypes.string,
+    libraryAssetsFetchWithHeaders: PropTypes.bool,
     id: PropTypes.string.isRequired,
     intl: intlShape.isRequired,
     onItemMouseEnter: PropTypes.func,
@@ -439,6 +440,7 @@ LibraryComponent.propTypes = {
 LibraryComponent.defaultProps = {
     filterable: true,
     libraryAssetHost: DEFAULT_LIBRARY_ASSET_HOST,
+    libraryAssetsFetchWithHeaders: false,
     showPlayButton: false
 };
 

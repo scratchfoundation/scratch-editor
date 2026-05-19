@@ -15,7 +15,6 @@ import memberAssetIconURL from './lib-icon--member-asset.svg';
 import intlShape from '../../lib/intlShape';
 
 import {PLATFORM} from '../../lib/platform.js';
-import {usesCustomLibraryAssetHost} from '../../lib/library-asset-url.js';
 
 const messages = defineMessages({
     memberAssetImgAlt: {
@@ -29,18 +28,18 @@ const messages = defineMessages({
  * Load via scratchStorage (ScratchImage) when assets need auth/project headers or
  * are bundled for native offline use. Otherwise use a direct <img> src (MIT CDN or rawURL).
  * @param {string} platform - PLATFORM value from scratch-gui state.
- * @param {string} [libraryAssetHost] - Base URL for library thumbnail assets.
+ * @param {boolean} libraryAssetsFetchWithHeaders - Load via scratchStorage so fetch can send headers.
  * @param {object} imageSource - uri and/or assetId, assetType, assetServiceUri.
  * @returns {boolean} True when ScratchImage should load the thumbnail.
  */
-const shouldLoadLibraryImageViaStorage = function (platform, libraryAssetHost, imageSource) {
+const shouldLoadLibraryImageViaStorage = function (platform, libraryAssetsFetchWithHeaders, imageSource) {
     if (!imageSource.assetId || !imageSource.assetType) {
         return false;
     }
     if (platform === PLATFORM.ANDROID || platform === PLATFORM.DESKTOP) {
         return true;
     }
-    return Boolean(libraryAssetHost && usesCustomLibraryAssetHost(libraryAssetHost));
+    return Boolean(libraryAssetsFetchWithHeaders);
 };
 
 const getLibraryImageSrc = function (imageSource) {
@@ -60,13 +59,12 @@ class LibraryItemComponent extends React.PureComponent {
         // component which loads the local assets by using a queue.
         // In Scratch Web we don't have the assets locally and want to directly download
         // them from the assets service via <img src={assetServiceUri}> when using the
-        // public MIT CDN (default libraryAssetHost).
-        // When libraryAssetHost is a custom host (e.g. RPF editor-api), load via
-        // scratchStorage instead so requests include X-Project-ID and Authorization.
+        // public MIT CDN. When libraryAssetsFetchWithHeaders is set (e.g. RPF editor-api),
+        // load via scratchStorage instead so requests include X-Project-ID and Authorization.
         // TODO: Abstract this logic in the `ScratchImage` component itself.
         if (shouldLoadLibraryImageViaStorage(
             this.props.platform,
-            this.props.libraryAssetHost,
+            this.props.libraryAssetsFetchWithHeaders,
             imageSource
         )) {
             return (<ScratchImage
@@ -241,7 +239,7 @@ LibraryItemComponent.propTypes = {
     insetIconURL: PropTypes.string,
     internetConnectionRequired: PropTypes.bool,
     isPlaying: PropTypes.bool,
-    libraryAssetHost: PropTypes.string,
+    libraryAssetsFetchWithHeaders: PropTypes.bool,
     name: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.node
@@ -261,6 +259,7 @@ LibraryItemComponent.propTypes = {
 
 LibraryItemComponent.defaultProps = {
     disabled: false,
+    libraryAssetsFetchWithHeaders: false,
     showPlayButton: false
 };
 
