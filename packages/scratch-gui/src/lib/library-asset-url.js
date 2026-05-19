@@ -6,6 +6,16 @@ export const DEFAULT_LIBRARY_ASSET_HOST = 'https://cdn.assets.scratch.mit.edu';
 const normalizeHost = host => (host || DEFAULT_LIBRARY_ASSET_HOST).replace(/\/$/, '');
 
 /**
+ * True when library thumbnails should load via scratchStorage (e.g. RPF editor-api),
+ * not direct <img> to the public MIT CDN.
+ * @param {string} [libraryAssetHost]
+ * @returns {boolean}
+ */
+export const usesCustomLibraryAssetHost = function (libraryAssetHost) {
+    return normalizeHost(libraryAssetHost) !== DEFAULT_LIBRARY_ASSET_HOST;
+};
+
+/**
  * Build a Scratch-shaped library asset GET URL for use in library thumbnails.
  * @param {string} libraryAssetHost - Base URL (no trailing slash), e.g. https://cdn.assets.scratch.mit.edu
  * @param {string} assetId - Asset id or full md5ext (e.g. "abc123" or "abc123.png")

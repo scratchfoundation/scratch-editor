@@ -15,6 +15,7 @@ import memberAssetIconURL from './lib-icon--member-asset.svg';
 import intlShape from '../../lib/intlShape';
 
 import {PLATFORM} from '../../lib/platform.js';
+import {usesCustomLibraryAssetHost} from '../../lib/library-asset-url.js';
 
 const messages = defineMessages({
     memberAssetImgAlt: {
@@ -23,7 +24,29 @@ const messages = defineMessages({
         id: 'gui.libraryItem.memberAssetImgAlt'
     }
 });
- 
+
+/**
+ * Load via scratchStorage (ScratchImage) when assets need auth/project headers or
+ * are bundled for native offline use. Otherwise use a direct <img> src (MIT CDN or rawURL).
+ * @param {string} platform - PLATFORM value from scratch-gui state.
+ * @param {string} [libraryAssetHost] - Base URL for library thumbnail assets.
+ * @param {object} imageSource - uri and/or assetId, assetType, assetServiceUri.
+ * @returns {boolean} True when ScratchImage should load the thumbnail.
+ */
+const shouldLoadLibraryImageViaStorage = function (platform, libraryAssetHost, imageSource) {
+    if (!imageSource.assetId || !imageSource.assetType) {
+        return false;
+    }
+    if (platform === PLATFORM.ANDROID || platform === PLATFORM.DESKTOP) {
+        return true;
+    }
+    return Boolean(libraryAssetHost && usesCustomLibraryAssetHost(libraryAssetHost));
+};
+
+const getLibraryImageSrc = function (imageSource) {
+    return imageSource.uri ?? imageSource.assetServiceUri;
+};
+
 class LibraryItemComponent extends React.PureComponent {
     constructor (props) {
         super(props);
@@ -34,14 +57,18 @@ class LibraryItemComponent extends React.PureComponent {
     renderImage (className, imageSource) {
         // Scratch Android and Scratch Desktop assume the user is offline and has
         // local access to the image assets. In those cases we use the `ScratchImage`
-        // component which loads the local assets by using a queue. In Scratch Web
-        // we don't have the assets locally and want to directly download them from
-        // the assets service.
+        // component which loads the local assets by using a queue.
+        // In Scratch Web we don't have the assets locally and want to directly download
+        // them from the assets service via <img src={assetServiceUri}> when using the
+        // public MIT CDN (default libraryAssetHost).
+        // When libraryAssetHost is a custom host (e.g. RPF editor-api), load via
+        // scratchStorage instead so requests include X-Project-ID and Authorization.
         // TODO: Abstract this logic in the `ScratchImage` component itself.
-        const url = imageSource.uri ?? imageSource.assetServiceUri;
-
-        if (this.props.platform === PLATFORM.ANDROID ||
-            this.props.platform === PLATFORM.DESKTOP) {
+        if (shouldLoadLibraryImageViaStorage(
+            this.props.platform,
+            this.props.libraryAssetHost,
+            imageSource
+        )) {
             return (<ScratchImage
                 className={className}
                 imageSource={imageSource}
@@ -49,7 +76,7 @@ class LibraryItemComponent extends React.PureComponent {
         }
         return (<img
             className={className}
-            src={url}
+            src={getLibraryImageSrc(imageSource)}
         />);
     }
     render () {
@@ -214,6 +241,7 @@ LibraryItemComponent.propTypes = {
     insetIconURL: PropTypes.string,
     internetConnectionRequired: PropTypes.bool,
     isPlaying: PropTypes.bool,
+    libraryAssetHost: PropTypes.string,
     name: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.node

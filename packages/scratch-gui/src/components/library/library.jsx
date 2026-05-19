@@ -298,6 +298,7 @@ class LibraryComponent extends React.Component {
             internetConnectionRequired={data.internetConnectionRequired}
             isPlaying={this.state.playingItem === key}
             key={key}
+            libraryAssetHost={this.props.libraryAssetHost}
             name={data.name}
             showPlayButton={this.props.showPlayButton}
             onMouseEnter={this.handleMouseEnter}

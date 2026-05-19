@@ -1,6 +1,7 @@
 import {
     DEFAULT_LIBRARY_ASSET_HOST,
-    buildLibraryAssetServiceUri
+    buildLibraryAssetServiceUri,
+    usesCustomLibraryAssetHost
 } from '../../../src/lib/library-asset-url';
 
 describe('buildLibraryAssetServiceUri', () => {
@@ -41,5 +42,16 @@ describe('buildLibraryAssetServiceUri', () => {
 
     test('exports expected default host', () => {
         expect(DEFAULT_LIBRARY_ASSET_HOST).toBe('https://cdn.assets.scratch.mit.edu');
+    });
+});
+
+describe('usesCustomLibraryAssetHost', () => {
+    test('returns false for default MIT CDN host', () => {
+        expect(usesCustomLibraryAssetHost(DEFAULT_LIBRARY_ASSET_HOST)).toBe(false);
+        expect(usesCustomLibraryAssetHost('')).toBe(false);
+    });
+
+    test('returns true for custom hosts such as editor-api', () => {
+        expect(usesCustomLibraryAssetHost('http://localhost:3009/api/scratch/assets')).toBe(true);
     });
 });
