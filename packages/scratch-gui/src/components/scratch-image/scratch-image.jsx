@@ -37,16 +37,31 @@ class ScratchImage extends React.PureComponent {
             this._pendingImages.delete(nextImage);
             const imageSource = nextImage.props.imageSource;
             ++this._currentJobs;
+            const setFailedImageUri = () => {
+                if (imageSource.assetServiceUri) {
+                    nextImage.setState({
+                        imageURI: imageSource.assetServiceUri
+                    });
+                }
+            };
             legacyConfig.storage.scratchStorage
                 .load(imageSource.assetType, imageSource.assetId)
                 .then(asset => {
-                    if (!nextImage.wasUnmounted) {
-                        const dataURI = asset.encodeDataURI();
-
-                        nextImage.setState({
-                            imageURI: dataURI
-                        });
+                    if (nextImage.wasUnmounted) {
+                        return;
                     }
+                    if (!asset) {
+                        setFailedImageUri();
+                        return;
+                    }
+                    nextImage.setState({
+                        imageURI: asset.encodeDataURI()
+                    });
+                })
+                .catch(() => {
+                    setFailedImageUri();
+                })
+                .finally(() => {
                     --this._currentJobs;
                     this.loadPendingImages();
                 });
