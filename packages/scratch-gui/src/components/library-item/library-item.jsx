@@ -15,6 +15,7 @@ import memberAssetIconURL from './lib-icon--member-asset.svg';
 import intlShape from '../../lib/intlShape';
 
 import {PLATFORM} from '../../lib/platform.js';
+import {LibraryAssetConfigContext} from '../../contexts/library-asset-config-context.jsx';
 
 const messages = defineMessages({
     memberAssetImgAlt: {
@@ -53,6 +54,8 @@ class LibraryItemComponent extends React.PureComponent {
             'renderImage'
         ]);
     }
+
+    static contextType = LibraryAssetConfigContext;
     renderImage (className, imageSource) {
         // Scratch Android and Scratch Desktop assume the user is offline and has
         // local access to the image assets. In those cases we use the `ScratchImage`
@@ -60,11 +63,11 @@ class LibraryItemComponent extends React.PureComponent {
         // In Scratch Web we don't have the assets locally and want to directly download
         // them from the assets service via <img src={assetServiceUri}> when using the
         // public MIT CDN. When libraryAssetsFetchWithHeaders is set (e.g. RPF editor-api),
-        // load via scratchStorage instead so requests include X-Project-ID and Authorization.
+        // load via scratchStorage instead so requests include specified headers.
         // TODO: Abstract this logic in the `ScratchImage` component itself.
         if (shouldLoadLibraryImageViaStorage(
             this.props.platform,
-            this.props.libraryAssetsFetchWithHeaders,
+            this.context.libraryAssetsFetchWithHeaders,
             imageSource
         )) {
             return (<ScratchImage
@@ -239,7 +242,6 @@ LibraryItemComponent.propTypes = {
     insetIconURL: PropTypes.string,
     internetConnectionRequired: PropTypes.bool,
     isPlaying: PropTypes.bool,
-    libraryAssetsFetchWithHeaders: PropTypes.bool,
     name: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.node
@@ -259,7 +261,6 @@ LibraryItemComponent.propTypes = {
 
 LibraryItemComponent.defaultProps = {
     disabled: false,
-    libraryAssetsFetchWithHeaders: false,
     showPlayButton: false
 };
 

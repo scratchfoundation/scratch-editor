@@ -55,8 +55,6 @@ class CostumeLibrary extends React.PureComponent {
         return (
             <LibraryComponent
                 data={data}
-                libraryAssetHost={this.props.libraryAssetHost}
-                libraryAssetsFetchWithHeaders={this.props.libraryAssetsFetchWithHeaders}
                 id="costumeLibrary"
                 tags={spriteTags}
                 title={this.props.intl.formatMessage(messages.libraryTitle)}
@@ -73,8 +71,6 @@ const mapStateToProps = state => ({
 
 CostumeLibrary.propTypes = {
     dynamicCostumes: PropTypes.arrayOf(costumeShape),
-    libraryAssetHost: PropTypes.string,
-    libraryAssetsFetchWithHeaders: PropTypes.bool,
     intl: intlShape.isRequired,
     onRequestClose: PropTypes.func,
     vm: PropTypes.instanceOf(VM).isRequired

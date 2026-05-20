@@ -11,10 +11,8 @@ import Divider from '../divider/divider.jsx';
 import Filter from '../filter/filter.jsx';
 import TagButton from '../../containers/tag-button.jsx';
 import {legacyConfig} from '../../legacy-config';
-import {
-    DEFAULT_LIBRARY_ASSET_HOST,
-    buildLibraryAssetServiceUri
-} from '../../lib/library-asset-url.js';
+import {buildLibraryAssetServiceUri} from '../../lib/library-asset-url.js';
+import {LibraryAssetConfigContext} from '../../contexts/library-asset-config-context.jsx';
 import Spinner from '../spinner/spinner.jsx';
 import {CATEGORIES} from '../../../src/lib/libraries/decks/index.jsx';
 
@@ -283,29 +281,34 @@ class LibraryComponent extends React.Component {
     }
     renderElement (data) {
         const key = this.constructKey(data);
-        const icons = getItemIcons(data, this.props.libraryAssetHost);
-        return (<LibraryItem
-            bluetoothRequired={data.bluetoothRequired}
-            collaborator={data.collaborator}
-            description={data.description}
-            disabled={data.disabled}
-            extensionId={data.extensionId}
-            featured={data.featured}
-            hidden={data.hidden}
-            icons={icons}
-            id={key}
-            insetIconURL={data.insetIconURL}
-            internetConnectionRequired={data.internetConnectionRequired}
-            isPlaying={this.state.playingItem === key}
-            key={key}
-            libraryAssetsFetchWithHeaders={this.props.libraryAssetsFetchWithHeaders}
-            name={data.name}
-            showPlayButton={this.props.showPlayButton}
-            onMouseEnter={this.handleMouseEnter}
-            onMouseLeave={this.handleMouseLeave}
-            onSelect={this.handleSelect}
-            isMemberOnly={data.isMemberOnly}
-        />);
+        return (
+            <LibraryAssetConfigContext.Consumer>
+                {({libraryAssetHost}) => {
+                    const icons = getItemIcons(data, libraryAssetHost);
+                    return (<LibraryItem
+                        bluetoothRequired={data.bluetoothRequired}
+                        collaborator={data.collaborator}
+                        description={data.description}
+                        disabled={data.disabled}
+                        extensionId={data.extensionId}
+                        featured={data.featured}
+                        hidden={data.hidden}
+                        icons={icons}
+                        id={key}
+                        insetIconURL={data.insetIconURL}
+                        internetConnectionRequired={data.internetConnectionRequired}
+                        isPlaying={this.state.playingItem === key}
+                        key={key}
+                        name={data.name}
+                        showPlayButton={this.props.showPlayButton}
+                        onMouseEnter={this.handleMouseEnter}
+                        onMouseLeave={this.handleMouseLeave}
+                        onSelect={this.handleSelect}
+                        isMemberOnly={data.isMemberOnly}
+                    />);
+                }}
+            </LibraryAssetConfigContext.Consumer>
+        );
     }
     renderData (data) {
         if (this.state.selectedTag !== ALL_TAG.tag || !this.props.withCategories) {
@@ -423,8 +426,6 @@ LibraryComponent.propTypes = {
     ),
     filterable: PropTypes.bool,
     withCategories: PropTypes.bool,
-    libraryAssetHost: PropTypes.string,
-    libraryAssetsFetchWithHeaders: PropTypes.bool,
     id: PropTypes.string.isRequired,
     intl: intlShape.isRequired,
     onItemMouseEnter: PropTypes.func,
@@ -439,8 +440,6 @@ LibraryComponent.propTypes = {
 
 LibraryComponent.defaultProps = {
     filterable: true,
-    libraryAssetHost: DEFAULT_LIBRARY_ASSET_HOST,
-    libraryAssetsFetchWithHeaders: false,
     showPlayButton: false
 };
 

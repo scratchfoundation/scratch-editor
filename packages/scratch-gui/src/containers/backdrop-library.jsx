@@ -57,8 +57,6 @@ class BackdropLibrary extends React.Component {
         return (
             <LibraryComponent
                 data={mergedAssets}
-                libraryAssetHost={this.props.libraryAssetHost}
-                libraryAssetsFetchWithHeaders={this.props.libraryAssetsFetchWithHeaders}
                 id="backdropLibrary"
                 tags={backdropTags}
                 title={this.props.intl.formatMessage(messages.libraryTitle)}
@@ -75,8 +73,6 @@ const mapStateToProps = state => ({
 
 BackdropLibrary.propTypes = {
     dynamicBackdrops: PropTypes.arrayOf(costumeShape),
-    libraryAssetHost: PropTypes.string,
-    libraryAssetsFetchWithHeaders: PropTypes.bool,
     intl: intlShape.isRequired,
     onRequestClose: PropTypes.func,
     vm: PropTypes.instanceOf(VM).isRequired
