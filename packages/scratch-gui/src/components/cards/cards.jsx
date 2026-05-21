@@ -102,7 +102,7 @@ class VideoStep extends React.Component {
 
         // The Wistia API doesn't provide a callback for when the video is ready,
         // so we use the global _wq queue that Wistia provides for this purpose.
-        // See the below above for more details.
+        // See the below for more details.
         // https://docs.wistia.com/docs/javascript-player-api#with-standard-embeds
         window._wq = window._wq || [];
         window._wq.push({
@@ -141,6 +141,10 @@ class VideoStep extends React.Component {
 
         const script2 = document.getElementById('wistia-video-api');
         script2.parentNode.removeChild(script2);
+
+        // Clear the _wq queue to prevent old callbacks from firing
+        // if the component is unmounted before the video is ready
+        window._wq = [];
     }
 
     render () {
