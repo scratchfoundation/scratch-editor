@@ -32,24 +32,10 @@ class LibraryItemComponent extends React.PureComponent {
         ]);
     }
     renderImage (className, imageSource) {
-        // Scratch Android and Scratch Desktop assume the user is offline and has
-        // local access to the image assets. In those cases we use the `ScratchImage`
-        // component which loads the local assets by using a queue. In Scratch Web
-        // we don't have the assets locally and want to directly download them from
-        // the assets service.
-        // TODO: Abstract this logic in the `ScratchImage` component itself.
-        const url = imageSource.uri ?? imageSource.assetServiceUri;
-
-        if (this.props.platform === PLATFORM.ANDROID ||
-            this.props.platform === PLATFORM.DESKTOP) {
-            return (<ScratchImage
-                className={className}
-                imageSource={imageSource}
-            />);
-        }
-        return (<img
+        return (<ScratchImage
             className={className}
-            src={url}
+            imageSource={imageSource}
+            platform={this.props.platform}
         />);
     }
     render () {
