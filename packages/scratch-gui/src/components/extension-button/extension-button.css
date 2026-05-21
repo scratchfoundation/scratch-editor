@@ -39,7 +39,7 @@ $fade-out-distance: 15px;
 }
 
 .extension-button:focus-visible {
-    outline: revert;
+    outline: 0.0625rem auto $ui-black;
 }
 
 .extension-button-icon {

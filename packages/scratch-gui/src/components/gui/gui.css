@@ -176,8 +176,8 @@
 /* Focus outline for tabs */
 .tab:focus-visible,
 .tab.is-selected:focus-visible {
-    outline: 2px solid $ui-black;
-    outline-offset: -3px; /* Looks better, otherwise it gets cut off by the canvas below */
+    outline: 0.0625rem auto $ui-black;
+    outline-offset: -0.125rem; /* Looks better, otherwise it gets cut off by the canvas below */
     z-index: 5; /* Display above tabs */
 }
 
