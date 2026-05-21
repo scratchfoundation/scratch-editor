@@ -487,6 +487,56 @@ const _parseUrl = (value, windowRef) => {
     return res;
 };
 
+// Fixes an issue where clip paths didn’t follow transforms.
+//
+// In SVG, elements can have transforms (scale, rotate, translate, etc.)
+// applied via a transform matrix. In this file, we apply those transforms
+// into the actual geometry (e.g. path data) instead of keeping them as
+// separate transform attributes.
+//
+// However, clip paths are defined separately and are referenced by elements.
+// When we applied transforms to the element’s geometry, the clip path itself
+// remained unchanged, so it no longer lined up with the transformed shape.
+//
+// This function clones the original clip path and applies the same transform
+// matrix to it, ensuring the clipping region stays correctly aligned with
+// the transformed element.
+const _createClipPath = function (clipPathId, svgTag, matrix) {
+    const oldClipPath = svgTag.getElementById(clipPathId);
+    if (!oldClipPath) return null;
+
+    // Build unique ID from matrix, same pattern as _createGradient
+    let matrixString = Matrix.toString(matrix);
+    matrixString = matrixString.substring(8, matrixString.length - 1);
+    const newClipPathId = `${clipPathId}-${matrixString}`;
+
+    // Already transformed, reuse it
+    if (svgTag.getElementById(newClipPathId)) {
+        return `url(#${newClipPathId})`;
+    }
+
+    let defs = svgTag.getElementsByTagName('defs');
+    if (defs.length === 0) {
+        defs = SvgElement.create('defs');
+        svgTag.appendChild(defs);
+    } else {
+        defs = defs[0];
+    }
+
+    // Clone and give new ID
+    const newClipPath = oldClipPath.cloneNode(true);
+    newClipPath.setAttribute('id', newClipPathId);
+
+    // Compose with any existing transform on the clipPath rather than replacing it
+    const existingMatrix = _parseTransform(oldClipPath);
+    const composedMatrix = Matrix.compose(matrix, existingMatrix);
+    newClipPath.setAttribute('transform', Matrix.toString(composedMatrix));
+
+    defs.appendChild(newClipPath);
+
+    return `url(#${newClipPathId})`;
+};
+
 /**
  * Scratch 2.0 displays stroke widths in a "normalized" way, that is,
  * if a shape with a stroke width has a transform applied, it will be
@@ -512,6 +562,18 @@ const _parseUrl = (value, windowRef) => {
 const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
     const inherited = Matrix.identity();
 
+    const _applyTransformToClipPath = function (element, matrix) {
+        const clipPathAttr = element.attributes && element.attributes['clip-path'];
+        if (!clipPathAttr) return;
+        const clipPathId = _parseUrl(clipPathAttr.value, windowRef);
+        if (!clipPathId) return;
+
+        const newClipPathRef = _createClipPath(clipPathId, svgTag, matrix);
+        if (newClipPathRef) {
+            element.setAttribute('clip-path', newClipPathRef);
+        }
+    };
+
     const applyTransforms = (element, matrix, strokeWidth, fill, stroke) => {
         if (_isContainerElement(element)) {
             // Push fills and stroke width down to leaves
@@ -523,12 +585,15 @@ const transformStrokeWidths = function (svgTag, windowRef, bboxForTesting) {
                 if (element.attributes.stroke) stroke = element.attributes.stroke.value;
             }
 
+            const currentMatrix = Matrix.compose(matrix, _parseTransform(element));
+            _applyTransformToClipPath(element, currentMatrix);
+            
             // If any child nodes don't take attributes, leave the attributes
             // at the parent level.
             for (let i = 0; i < element.childNodes.length; i++) {
                 applyTransforms(
                     element.childNodes[i],
-                    Matrix.compose(matrix, _parseTransform(element)),
+                    currentMatrix,
                     strokeWidth,
                     fill,
                     stroke

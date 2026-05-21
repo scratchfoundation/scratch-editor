@@ -1,0 +1,127 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {
+        "broadcast:<": "< perfect",
+        "broadcast:a": "a&b"
+      },
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "backdrop1",
+          "bitmapResolution": 2,
+          "dataFormat": "png",
+          "assetId": "797b03bdb8cf6ccfc30c0692d533d998",
+          "md5ext": "797b03bdb8cf6ccfc30c0692d533d998.png",
+          "rotationCenterX": 480,
+          "rotationCenterY": 360
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 48000,
+          "sampleCount": 1123,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null,
+      "scripts": []
+    },
+    {
+      "isStage": false,
+      "name": "Sprite1",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "costume1",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "be4269f29458b8a167da107dd32f7fcb",
+          "md5ext": "be4269f29458b8a167da107dd32f7fcb.svg",
+          "rotationCenterX": 47,
+          "rotationCenterY": 55
+        },
+        {
+          "name": "costume2",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "647af087a73872c7019b594b4419b70c",
+          "md5ext": "647af087a73872c7019b594b4419b70c.svg",
+          "rotationCenterX": 47,
+          "rotationCenterY": 55
+        }
+      ],
+      "sounds": [
+        {
+          "name": "meow",
+          "assetId": "83c36d806dc92327b9e7049a565c6bff",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 48000,
+          "sampleCount": 40681,
+          "md5ext": "83c36d806dc92327b9e7049a565c6bff.wav"
+        }
+      ],
+      "volume": 100,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": [
+        [
+          {
+            "opcode": "event_broadcast",
+            "inputs": {
+              "BROADCAST_INPUT": [
+                1,
+                [
+                  11,
+                  "< perfect",
+                  "broadcast:<"
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_broadcast",
+            "inputs": {
+              "BROADCAST_INPUT": [
+                1,
+                [
+                  11,
+                  "a&b",
+                  "broadcast:a"
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  ],
+  "monitors": []
+}

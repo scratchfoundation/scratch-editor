@@ -1,0 +1,516 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {
+        "var:my variable": [
+          "my variable",
+          "my"
+        ],
+        "var:secret_slide": [
+          "secret_slide",
+          81
+        ]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 1,
+      "costumes": [
+        {
+          "name": "backdrop1",
+          "dataFormat": "svg",
+          "assetId": "87ec29ad216c0074c731d581c7f40c39",
+          "md5ext": "87ec29ad216c0074c731d581c7f40c39.svg",
+          "rotationCenterX": 240,
+          "rotationCenterY": 180
+        },
+        {
+          "name": "School",
+          "bitmapResolution": 2,
+          "dataFormat": "png",
+          "assetId": "1dea69ac0f62cf538d368a7bde1372ac",
+          "md5ext": "1dea69ac0f62cf538d368a7bde1372ac.png",
+          "rotationCenterX": 480,
+          "rotationCenterY": 360
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 44100,
+          "sampleCount": 1032,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "tempo": 120,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null,
+      "scripts": []
+    },
+    {
+      "isStage": false,
+      "name": "Shirt-T",
+      "variables": {
+        "var:tee": [
+          "tee",
+          60
+        ]
+      },
+      "lists": {
+        "list:fashion": [
+          "fashion",
+          [
+            "shirt",
+            "shoe",
+            "service"
+          ]
+        ]
+      },
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "shirt-t",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "b87a27aadb562284f811f5983703cea4",
+          "md5ext": "b87a27aadb562284f811f5983703cea4.svg",
+          "rotationCenterX": 39,
+          "rotationCenterY": 28
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 44100,
+          "sampleCount": 1032,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "visible": true,
+      "x": -220.22821868,
+      "y": -161.13259432,
+      "size": 30,
+      "direction": 40,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": [
+        [
+          {
+            "opcode": "event_whenkeypressed",
+            "fields": {
+              "KEY_OPTION": [
+                "space"
+              ]
+            }
+          },
+          {
+            "opcode": "data_showvariable",
+            "fields": {
+              "VARIABLE": [
+                "secret_slide",
+                "var:secret_slide"
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "data_hidevariable",
+            "fields": {
+              "VARIABLE": [
+                "secret_slide",
+                "var:secret_slide"
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "isStage": false,
+      "name": "Heart",
+      "variables": {
+        "var:hearty": [
+          "hearty",
+          "happy"
+        ]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 1,
+      "costumes": [
+        {
+          "name": "heart red",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "08b7e67803155c071c968ab8dc8f1885",
+          "md5ext": "08b7e67803155c071c968ab8dc8f1885.svg",
+          "rotationCenterX": 65,
+          "rotationCenterY": 56
+        },
+        {
+          "name": "heart purple",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "1faaf7ac9f66fe7aeea8ed18b9ca9e04",
+          "md5ext": "1faaf7ac9f66fe7aeea8ed18b9ca9e04.svg",
+          "rotationCenterX": 66,
+          "rotationCenterY": 62
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 44100,
+          "sampleCount": 1032,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "visible": true,
+      "x": 165.29045643,
+      "y": -96.45303867,
+      "size": 60,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": []
+    }
+  ],
+  "monitors": [
+    {
+      "id": "_data_variable_{\"VARIABLE\":\"my variable\"}",
+      "mode": "default",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "my variable"
+      },
+      "spriteName": null,
+      "value": "my",
+      "width": 0,
+      "height": 0,
+      "x": 10,
+      "y": 62,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_data_variable_{\"VARIABLE\":\"secret_slide\"}",
+      "mode": "slider",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "secret_slide"
+      },
+      "spriteName": null,
+      "value": 81,
+      "width": 0,
+      "height": 0,
+      "x": 158,
+      "y": 217,
+      "visible": false,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_ev3_getDistance_{}",
+      "mode": "default",
+      "opcode": "ev3_getDistance",
+      "params": {},
+      "spriteName": null,
+      "value": 0,
+      "width": 0,
+      "height": 0,
+      "x": 155,
+      "y": 102,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_looks_backdropnumbername_{\"NUMBER_NAME\":\"name\"}",
+      "mode": "default",
+      "opcode": "looks_backdropnumbername",
+      "params": {
+        "NUMBER_NAME": "name"
+      },
+      "spriteName": null,
+      "value": "School",
+      "width": 0,
+      "height": 0,
+      "x": 321,
+      "y": 74,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_looks_backdropnumbername_{\"NUMBER_NAME\":\"number\"}",
+      "mode": "default",
+      "opcode": "looks_backdropnumbername",
+      "params": {
+        "NUMBER_NAME": "number"
+      },
+      "spriteName": null,
+      "value": 2,
+      "width": 0,
+      "height": 0,
+      "x": 288,
+      "y": 22,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_music_getTempo_{}",
+      "mode": "default",
+      "opcode": "music_getTempo",
+      "params": {},
+      "spriteName": null,
+      "value": 120,
+      "width": 0,
+      "height": 0,
+      "x": 61,
+      "y": 242,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_sensing_current_{\"CURRENTMENU\":\"DATE\"}",
+      "mode": "default",
+      "opcode": "sensing_current",
+      "params": {
+        "CURRENTMENU": "DATE"
+      },
+      "spriteName": null,
+      "value": 9,
+      "width": 0,
+      "height": 0,
+      "x": 155,
+      "y": 61,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_sensing_current_{\"CURRENTMENU\":\"MONTH\"}",
+      "mode": "default",
+      "opcode": "sensing_current",
+      "params": {
+        "CURRENTMENU": "MONTH"
+      },
+      "spriteName": null,
+      "value": 11,
+      "width": 0,
+      "height": 0,
+      "x": 105,
+      "y": 34,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_sensing_current_{\"CURRENTMENU\":\"YEAR\"}",
+      "mode": "default",
+      "opcode": "sensing_current",
+      "params": {
+        "CURRENTMENU": "YEAR"
+      },
+      "spriteName": null,
+      "value": 2018,
+      "width": 0,
+      "height": 0,
+      "x": 5,
+      "y": 34,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "Heart_data_variable_{\"VARIABLE\":\"hearty\"}",
+      "mode": "default",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "hearty"
+      },
+      "spriteName": "Heart",
+      "value": "happy",
+      "width": 0,
+      "height": 0,
+      "x": 327,
+      "y": 204,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "Shirt-T_data_listcontents_{\"LIST\":\"fashion\"}",
+      "mode": "list",
+      "opcode": "data_listcontents",
+      "params": {
+        "LIST": "fashion"
+      },
+      "spriteName": "Shirt-T",
+      "value": [
+        "shirt",
+        "shoe",
+        "service"
+      ],
+      "width": 104,
+      "height": 122,
+      "x": 5,
+      "y": 90,
+      "visible": true
+    },
+    {
+      "id": "Shirt-T_data_variable_{\"VARIABLE\":\"tee\"}",
+      "mode": "slider",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "tee"
+      },
+      "spriteName": "Shirt-T",
+      "value": 60,
+      "width": 0,
+      "height": 0,
+      "x": 160,
+      "y": 158,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "Shirt-T_looks_costumenumbername_{\"NUMBER_NAME\":\"name\"}",
+      "mode": "default",
+      "opcode": "looks_costumenumbername",
+      "params": {
+        "NUMBER_NAME": "name"
+      },
+      "spriteName": "Shirt-T",
+      "value": "shirt-t",
+      "width": 0,
+      "height": 0,
+      "x": 134,
+      "y": 294,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "Shirt-T_looks_costumenumbername_{\"NUMBER_NAME\":\"number\"}",
+      "mode": "default",
+      "opcode": "looks_costumenumbername",
+      "params": {
+        "NUMBER_NAME": "number"
+      },
+      "spriteName": "Shirt-T",
+      "value": 1,
+      "width": 0,
+      "height": 0,
+      "x": 93,
+      "y": 325,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "Shirt-T_looks_size_{}",
+      "mode": "large",
+      "opcode": "looks_size",
+      "params": {},
+      "spriteName": "Shirt-T",
+      "value": 30,
+      "width": 0,
+      "height": 0,
+      "x": 34,
+      "y": 328,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "Shirt-T_motion_direction_{}",
+      "mode": "large",
+      "opcode": "motion_direction",
+      "params": {},
+      "spriteName": "Shirt-T",
+      "value": 40,
+      "width": 0,
+      "height": 0,
+      "x": 219,
+      "y": 4,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "Shirt-T_motion_xposition_{}",
+      "mode": "large",
+      "opcode": "motion_xposition",
+      "params": {},
+      "spriteName": "Shirt-T",
+      "value": -220.22821868,
+      "width": 0,
+      "height": 0,
+      "x": 5,
+      "y": 5,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "Shirt-T_motion_yposition_{}",
+      "mode": "large",
+      "opcode": "motion_yposition",
+      "params": {},
+      "spriteName": "Shirt-T",
+      "value": -161.13259432,
+      "width": 0,
+      "height": 0,
+      "x": 113,
+      "y": 4,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    }
+  ]
+}

@@ -1,13 +1,13 @@
 const blockColors = {
     motion: {
-        primary: '#111111',
-        secondary: '#222222',
-        tertiary: '#333333'
+        colourPrimary: '#111111',
+        colourSecondary: '#222222',
+        colourTertiary: '#333333'
     },
     pen: {
-        primary: '#121212',
-        secondary: '#232323',
-        tertiary: '#343434'
+        colourPrimary: '#121212',
+        colourSecondary: '#232323',
+        colourTertiary: '#343434'
     },
     text: '#444444',
     workspace: '#555555'

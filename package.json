@@ -1,6 +1,6 @@
 {
   "name": "scratch-editor",
-  "version": "12.6.2",
+  "version": "13.7.2",
   "private": "true",
   "description": "Scratch editor mono-repository",
   "keywords": [],
@@ -19,7 +19,8 @@
     "packages/scratch-svg-renderer",
     "packages/scratch-render",
     "packages/scratch-vm",
-    "packages/scratch-gui"
+    "packages/scratch-gui",
+    "packages/scratch-media-lib-scripts"
   ],
   "scripts": {
     "build": "cross-env NODE_ENV=production npm run --workspaces build",
@@ -27,6 +28,7 @@
     "clean": "npm run --workspaces clean",
     "prepare": "husky install",
     "refresh-gh-workflow": "ts-node scripts/build-gha-workflows.ts",
+    "start": "npm --workspace @scratch/scratch-gui start",
     "test": "npm test --workspaces",
     "update-legal": "npm --workspaces exec -c 'rm -f ./{LICENSE,TRADEMARK} && cp -f ../../{LICENSE,TRADEMARK} .'",
     "version": "cross-env-shell ./scripts/npm-version.sh"
@@ -42,7 +44,7 @@
     "cross-env": "7.0.3",
     "globals": "16.5.0",
     "husky": "8.0.3",
-    "npm": "10.9.4",
+    "npm": "10.9.8",
     "ts-node": "10.9.2"
   }
 }

@@ -1,0 +1,74 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+
+.modal-container {
+    display: flex;
+    width: 100%;
+    padding: 0.75rem;
+    flex-direction: column;
+    align-items: flex-start;
+    border-radius: 0.5rem;
+    background: $looks-secondary;
+    gap: 0.9375rem;
+    box-sizing: border-box;
+}
+
+.label {
+    align-self: stretch;
+    color: $ui-white;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.5rem;
+}
+
+.button-row {
+    font-weight: 700;
+    display: flex;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.confirm-button,
+.cancel-button {
+    all: unset;
+    display: flex;
+    padding: 0.5rem 1rem;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    border-radius: 2.5rem;
+    background: inherit;
+    cursor: pointer;
+    color: $ui-white;
+}
+
+.confirm-button:focus,
+.cancel-button:focus {
+    outline: auto;
+}
+
+.confirm-button span,
+.cancel-button span {
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1rem;
+}
+
+.confirm-button {
+    background: $ui-white;
+}
+
+.confirm-button span {
+    color: $looks-secondary;
+}
+
+.cancel-button {
+    border: 0.0625rem solid $ui-white;
+}
+
+.button-icon {
+    height: 1.5rem;
+    width: 1.5rem;
+}

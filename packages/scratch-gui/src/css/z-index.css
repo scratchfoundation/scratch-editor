@@ -13,9 +13,12 @@ $z-index-monitor: 48; /* monitors go over add buttons */
 $z-index-stage-question: 49; /* "ask" block text input goes above monitors */
 
 $z-index-card: 480;
+$z-index-tooltip-overlay: 481;
+$z-index-tooltip: 490;
 $z-index-alerts: 490;
-$z-index-menu-bar: 491; /* menu-bar should go over monitors, alerts and tutorials */
+$z-index-menu-bar: 491; /* menu-bar should go over monitors, alerts, tooltips and tutorials */
 $z-index-loader: 500;
+$z-index-modal-overlay: 501;
 $z-index-modal: 510;
 
 $z-index-drag-layer: 1000;

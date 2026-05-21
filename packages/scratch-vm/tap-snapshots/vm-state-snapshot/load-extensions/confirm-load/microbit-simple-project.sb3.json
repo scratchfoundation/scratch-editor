@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [
+    "microbit"
+  ],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {
+        "var:my variable": [
+          "my variable",
+          0
+        ]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "backdrop1",
+          "dataFormat": "svg",
+          "assetId": "87ec29ad216c0074c731d581c7f40c39",
+          "md5ext": "87ec29ad216c0074c731d581c7f40c39.svg",
+          "rotationCenterX": 240,
+          "rotationCenterY": 180
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 44100,
+          "sampleCount": 1032,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null,
+      "scripts": []
+    },
+    {
+      "isStage": false,
+      "name": "Sprite1",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "costume1",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "9f567abe17ba2d13597d1f2e416017ef",
+          "md5ext": "9f567abe17ba2d13597d1f2e416017ef.svg",
+          "rotationCenterX": 47,
+          "rotationCenterY": 55
+        },
+        {
+          "name": "costume2",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "1e4df2581d2d314527775ee43f646b42",
+          "md5ext": "1e4df2581d2d314527775ee43f646b42.svg",
+          "rotationCenterX": 47,
+          "rotationCenterY": 55
+        }
+      ],
+      "sounds": [
+        {
+          "name": "Meow",
+          "assetId": "83c36d806dc92327b9e7049a565c6bff",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 44100,
+          "sampleCount": 37376,
+          "md5ext": "83c36d806dc92327b9e7049a565c6bff.wav"
+        }
+      ],
+      "volume": 100,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": [
+        [
+          {
+            "opcode": "microbit_displayText",
+            "inputs": {
+              "TEXT": [
+                1,
+                [
+                  10,
+                  "Hello!"
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  ],
+  "monitors": []
+}

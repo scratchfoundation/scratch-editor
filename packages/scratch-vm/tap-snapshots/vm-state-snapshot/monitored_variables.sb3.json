@@ -1,0 +1,228 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {
+        "var:my variable": [
+          "my variable",
+          "0"
+        ]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "backdrop1",
+          "dataFormat": "svg",
+          "assetId": "87ec29ad216c0074c731d581c7f40c39",
+          "md5ext": "87ec29ad216c0074c731d581c7f40c39.svg",
+          "rotationCenterX": 240,
+          "rotationCenterY": 180
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 48000,
+          "sampleCount": 1123,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null,
+      "scripts": []
+    },
+    {
+      "isStage": false,
+      "name": "Referee",
+      "variables": {
+        "var:refereevar1": [
+          "refereevar1",
+          "cat"
+        ]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "referee-a",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "5e4389db3c5f5a39af0b0ac5b2d65271",
+          "md5ext": "5e4389db3c5f5a39af0b0ac5b2d65271.svg",
+          "rotationCenterX": 76,
+          "rotationCenterY": 68
+        },
+        {
+          "name": "referee-b",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "fcd39eb555891043f8083653ae87b976",
+          "md5ext": "fcd39eb555891043f8083653ae87b976.svg",
+          "rotationCenterX": 76,
+          "rotationCenterY": 68
+        },
+        {
+          "name": "referee-c",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "2b2251020e2144c3b16396ef9a4afe29",
+          "md5ext": "2b2251020e2144c3b16396ef9a4afe29.svg",
+          "rotationCenterX": 76,
+          "rotationCenterY": 68
+        },
+        {
+          "name": "referee-d",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "20bd21a62ba09f1d3f98dc8f72437ec8",
+          "md5ext": "20bd21a62ba09f1d3f98dc8f72437ec8.svg",
+          "rotationCenterX": 76,
+          "rotationCenterY": 68
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 48000,
+          "sampleCount": 1123,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "visible": true,
+      "x": -140.43983402489627,
+      "y": 12.93922651933702,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": []
+    },
+    {
+      "isStage": false,
+      "name": "Jamal",
+      "variables": {
+        "var:jamalvar": [
+          "jamalvar",
+          "12"
+        ]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "jamal-a",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "29c4b1be0e00c7d95b4a86c9069e2698",
+          "md5ext": "29c4b1be0e00c7d95b4a86c9069e2698.svg",
+          "rotationCenterX": 82,
+          "rotationCenterY": 105
+        },
+        {
+          "name": "jamal-b",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "ab9a9c3249eba11f7c21edc62eddc13e",
+          "md5ext": "ab9a9c3249eba11f7c21edc62eddc13e.svg",
+          "rotationCenterX": 82,
+          "rotationCenterY": 105
+        },
+        {
+          "name": "jamal-c",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "96662d4e405d513800417e19875a7e20",
+          "md5ext": "96662d4e405d513800417e19875a7e20.svg",
+          "rotationCenterX": 82,
+          "rotationCenterY": 105
+        },
+        {
+          "name": "jamal-d",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "5c988632650bbfb2c9f5e354f4a224af",
+          "md5ext": "5c988632650bbfb2c9f5e354f4a224af.svg",
+          "rotationCenterX": 82,
+          "rotationCenterY": 105
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 48000,
+          "sampleCount": 1123,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "visible": true,
+      "x": 56,
+      "y": 37,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": []
+    }
+  ],
+  "monitors": [
+    {
+      "id": "Jamal_data_variable_{\"VARIABLE\":\"jamalvar\"}",
+      "mode": "default",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "jamalvar"
+      },
+      "spriteName": "Jamal",
+      "value": "12",
+      "width": 0,
+      "height": 0,
+      "x": 5,
+      "y": 5,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "Referee_data_variable_{\"VARIABLE\":\"refereevar1\"}",
+      "mode": "default",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "refereevar1"
+      },
+      "spriteName": "Referee",
+      "value": "cat",
+      "width": 0,
+      "height": 0,
+      "x": 5,
+      "y": 33,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    }
+  ]
+}

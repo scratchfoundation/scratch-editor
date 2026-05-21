@@ -22,7 +22,7 @@ const messages = defineMessages({
     },
     cloudVarOptionMessage: {
         defaultMessage: 'Cloud variable (stored on server)',
-        description: 'Option message when creating a variable for making it a cloud variable, a variable that is stored on the server', /* eslint-disable-line max-len */
+        description: 'Option message when creating a variable for making it a cloud variable, a variable that is stored on the server', /* eslint-disable-line @stylistic/max-len */
         id: 'gui.gui.cloudVariableOption'
     },
     availableToAllSpritesMessage: {

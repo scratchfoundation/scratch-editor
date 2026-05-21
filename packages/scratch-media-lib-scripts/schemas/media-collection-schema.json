@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schema.scratch.org/media-collection.json",
+  "title": "Media Collection",
+  "description": "A collection of media library items for use within Scratch.",
+  "type": "object",
+  "unevaluatedProperties": false,
+  "properties": {
+    "$schema": {
+      "description": "The JSON Schema version used for this document.",
+      "type": "string",
+      "format": "uri"
+    },
+    "backdrops": {
+      "description": "A list of backdrops in this collection.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/backdrop" },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "costumes": {
+      "description": "A list of costumes in this collection.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/costume"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "sounds": {
+      "description": "A list of sounds in this collection.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sound"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "sprites": {
+      "description": "A list of sprites in this collection.",
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sprite"
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "common": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of this item, in English Title Case.",
+          "type": "string"
+        }
+      },
+      "required": ["name"]
+    },
+    "tags": {
+      "description": "Tags associated with the item, in English lower case. Used for filtering and searching.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "tagsInherit": {
+      "anyOf": [
+        {
+          "const": "inherit",
+          "description": "This item will inherit its tags from its parent sprite. Must have exactly one parent sprite defined in the same file."
+        },
+        {
+          "$ref": "#/$defs/tags"
+        }
+      ]
+    },
+    "image": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "description": "The path to the image file.",
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "bitmapResolution": {
+          "description": "The resolution multiplier for the bitmap image. New bitmaps should generally use 2.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2
+        },
+        "rotationCenterX": {
+          "description": "The X coordinate of the rotation center, relative to the left edge. Defaults to the image's natural center.",
+          "type": "number"
+        },
+        "rotationCenterY": {
+          "description": "The Y coordinate of the rotation center, relative to the top edge. Defaults to the image's natural center.",
+          "type": "number"
+        }
+      },
+      "required": ["file"]
+    },
+    "backdrop": {
+      "description": "A backdrop in the Scratch media library",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        },
+        {
+          "$ref": "#/$defs/image"
+        }
+      ],
+      "type": "object",
+      "properties": {
+        "tags": {
+          "$ref": "#/$defs/tags"
+        }
+      },
+      "required": ["file"],
+      "unevaluatedProperties": false
+    },
+    "costume": {
+      "description": "A costume in the Scratch media library",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        },
+        {
+          "$ref": "#/$defs/image"
+        }
+      ],
+      "type": "object",
+      "properties": {
+        "tags": {
+          "$ref": "#/$defs/tagsInherit"
+        }
+      },
+      "required": ["file"],
+      "unevaluatedProperties": false
+    },
+    "sound": {
+      "description": "A sound in the Scratch media library",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "type": "object",
+      "properties": {
+        "tags": {
+          "$ref": "#/$defs/tagsInherit"
+        },
+        "file": {
+          "description": "The path to the audio file.",
+          "type": "string",
+          "format": "uri-reference"
+        },
+        "rate": {
+          "description": "The sampling rate of the audio file.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "sampleCount": {
+          "description": "The number of samples in the audio file.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "dataFormat": {
+          "description": "The format of the audio data.",
+          "type": "string",
+          "enum": ["wav", "adpcm", "mp3"]
+        }
+      },
+      "required": ["file", "rate", "sampleCount"],
+      "unevaluatedProperties": false
+    },
+    "sprite": {
+      "description": "A sprite in the Scratch media library",
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "type": "object",
+      "properties": {
+        "tags": {
+          "$ref": "#/$defs/tags"
+        },
+        "costumes": {
+          "description": "The list of costumes for the sprite.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "The exact name of a costume defined in this or another file."
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "sounds": {
+          "description": "The list of sounds for the sprite.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "The exact name of a sound defined in this or another file."
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": ["costumes"],
+      "unevaluatedProperties": false
+    }
+  }
+}

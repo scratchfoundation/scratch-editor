@@ -66,7 +66,7 @@ export const messages = defineMessages({
     slowItDownDescription2: {
         id: 'gui.debugModal.slowItDown.description2',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'Add temporary “wait” or “wait until” blocks to slow down the sequence. This gives you time to process if a piece worked or not.',
         description: 'description for the "slow it down" section of the debug modal'
     },
@@ -83,14 +83,14 @@ export const messages = defineMessages({
     addSoundCheckpointsDescription1: {
         id: 'gui.debugModal.addSoundCheckpoints.description1',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'Similar to the Slow It Down strategy, you can add different sounds with the “play until done” block at key points to test your sequence.',
         description: 'description for the "add sound checkpoints" section of the debug modal'
     },
     addSoundCheckpointsDescription2: {
         id: 'gui.debugModal.addSoundCheckpoints.description2',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'If a sound doesn’t play, your bug may be before this block. If the sound plays, the bug is probably after this block.',
         description: 'description for the "add sound checkpoints" section of the debug modal'
     },
@@ -138,14 +138,14 @@ export const messages = defineMessages({
     toLoopOrNotDescription1: {
         id: 'gui.debugModal.toLoopOrNot.description1',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'If using Control blocks like "forever" and "repeat", check that all blocks inside a loop should be there, or if a block (like “wait”) is missing to reset the action or adjust the timing. Do you want your loop to run forever or for a certain number of times? Should something stop the looping?',
         description: 'description for the "to loop or not to loop" section of the debug modal'
     },
     toLoopOrNotDescription2: {
         id: 'gui.debugModal.toLoopOrNot.description2',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'Perhaps you aren\'t using a loop when you should be? For instance, if you are using a conditional statement block like "if then," does the program only need to check if it is true or false once? Or does it need to check continuously, in which case, you would want to place your conditional statement inside a forever loop?',
         description: 'description for the "to loop or not to loop" section of the debug modal'
     },
@@ -162,14 +162,14 @@ export const messages = defineMessages({
     timingAndParallelismDescription1: {
         id: 'gui.debugModal.timingAndParallelism.description1',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'Do you have multiple events trying to run at the same time? If two sequences are programmed to start at the same time, you can get unpredictable behavior.',
         description: 'description for the "think about timing and parallelism" section of the debug modal'
     },
     timingAndParallelismDescription2: {
         id: 'gui.debugModal.timingAndParallelism.description2',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'Add small waits, broadcasts, or user interaction (like clicking or pressing a key) to see if this affects the result.',
         description: 'description for the "think about timing and parallelism" section of the debug modal'
     },
@@ -186,7 +186,7 @@ export const messages = defineMessages({
     thinkAboutBlockOptionsDescription2: {
         id: 'gui.debugModal.thinkAboutBlockOptions.description2',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'Some blocks look similar but can behave differently, such as “set” vs “change” or “play until done” vs “start.”',
         description: 'description for the "think about block options" section of the debug modal'
     },
@@ -230,7 +230,7 @@ export const messages = defineMessages({
     checkCodeSequenceDescription2: {
         id: 'gui.debugModal.checkCodeSequence.description2',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'If you need to move your code to another sprite, click and drag it until you are hovering over the correct sprite. Release it once the sprite wiggles.',
         description: 'description for the "check code sequence" section of the debug modal'
     },
@@ -248,14 +248,14 @@ export const messages = defineMessages({
     commentYourCodeDescription1: {
         id: 'gui.debugModal.commentYourCode.description1',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'Adding comments to your code can help others looking at your code to understand it. It can also help you remember how your code works when you come back to it later.',
         description: 'description for the "comment your code" section of the debug modal'
     },
     commentYourCodeDescription2: {
         id: 'gui.debugModal.commentYourCode.description2',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'Right click on script area to “Add Comment.” Use everyday language to explain what a block, or small sequence of blocks, does.',
         description: 'description for the "comment your code" section of the debug modal'
     },
@@ -273,7 +273,7 @@ export const messages = defineMessages({
     takeABreakDescription2: {
         id: 'gui.debugModal.takeABreak.description2',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'Take a break and step away from the screen to clear your mind. After some rest, focusing on something else, or getting some water, you can approach the problem with fresh eyes.',
         description: 'description for the "take a break, step away" section of the debug modal'
     },
@@ -285,14 +285,14 @@ export const messages = defineMessages({
     askForHelpDescription1: {
         id: 'gui.debugModal.askForHelp.description1',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'If you are still stuck, you can ask for help from a peer. Try finding a debugging/help studio and share your project, asking for help in a comment or the project notes.',
         description: 'description for the "ask for help" section of the debug modal'
     },
     askForHelpDescription2: {
         id: 'gui.debugModal.askForHelp.description2',
         defaultMessage:
-            // eslint-disable-next-line max-len
+            // eslint-disable-next-line @stylistic/max-len
             'Ask one to three people to try your code, as different people may have different perspectives or solutions!',
         description: 'description for the "ask for help" section of the debug modal'
     }

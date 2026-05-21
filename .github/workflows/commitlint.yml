@@ -1,8 +1,9 @@
-name: Lint commit messages
+name: Lint Commit Messages
 on: [pull_request]
 
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.sha }}"
+  cancel-in-progress: true
 
 jobs:
   commitlint:

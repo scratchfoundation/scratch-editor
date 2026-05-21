@@ -1,0 +1,35 @@
+@import "../../css/z-index.css";
+
+.modal-content {
+    border: none;
+    border-radius: 0;
+    height: fit-content;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    position: fixed;
+    overflow-x: hidden;
+    z-index: $z-index-modal;
+    /* Apply an outline to the passed children and not the modal itself */
+    outline: none;
+}
+
+.modal-content:focus-visible {
+    outline: revert;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: $z-index-modal-overlay;
+    background-color: transparent;
+}
+
+.arrow {
+    position: fixed;
+    z-index: $z-index-modal;
+    border: none;
+}

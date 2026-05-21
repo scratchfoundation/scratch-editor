@@ -1,12 +1,13 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React, {useEffect} from 'react';
+import React, {useEffect, useCallback} from 'react';
 import DeleteButton from '../delete-button/delete-button.jsx';
 import styles from './sprite-selector-item.css';
 import contextMenuStyles from '../context-menu/context-menu.css';
 import {DangerousMenuItem, MenuItem} from '../context-menu/context-menu.jsx';
 import {FormattedMessage} from 'react-intl';
-import ContextMenu from '../../lib/radix-ui-context-menu.js';
+import * as ContextMenu from '@radix-ui/react-context-menu';
+import {KEY} from '../../lib/navigation-keys.js';
 
 const SpriteSelectorItem = props => {
     useEffect(() => {
@@ -16,11 +17,17 @@ const SpriteSelectorItem = props => {
                 contextMenu.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
             }
         };
-    
+
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-    
+
+    const handleKeyDown = useCallback(event => {
+        if (event.key === KEY.ENTER && event.currentTarget === event.target) {
+            event.preventDefault();
+            props.onClick(event);
+        }
+    }, [props.onClick]);
 
     return (
         <ContextMenu.Root modal={false}>
@@ -31,12 +38,14 @@ const SpriteSelectorItem = props => {
                 <div
                     role="button"
                     tabIndex={0}
+                    aria-label={props.details ? `${props.name} (${props.details})` : props.name}
                     className={classNames(props.className, styles.spriteSelectorItem, {
                         [styles.isSelected]: props.selected
                     })}
                     onClick={props.onClick}
-                    onMouseEnter={props.onMouseEnter}
-                    onMouseLeave={props.onMouseLeave}
+                    onKeyDown={handleKeyDown}
+                    onPointerEnter={props.onPointerEnter}
+                    onPointerLeave={props.onPointerLeave}
                     onMouseDown={props.onMouseDown}
                     onTouchStart={props.onMouseDown}
                     ref={props.componentRef}
@@ -123,8 +132,8 @@ SpriteSelectorItem.propTypes = {
     onDuplicateButtonClick: PropTypes.func,
     onExportButtonClick: PropTypes.func,
     onMouseDown: PropTypes.func,
-    onMouseEnter: PropTypes.func,
-    onMouseLeave: PropTypes.func,
+    onPointerEnter: PropTypes.func,
+    onPointerLeave: PropTypes.func,
     preventContextMenu: PropTypes.bool,
     selected: PropTypes.bool.isRequired,
     isDeleteConfirmationModalOpened: PropTypes.bool

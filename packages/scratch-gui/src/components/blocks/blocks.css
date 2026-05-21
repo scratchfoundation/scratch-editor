@@ -40,6 +40,11 @@
     stroke: none;
 }
 
+/*
+    TODO: Check if we still need both `blocklyToolbox` and `blocklyToolboxDiv`, and remove one if possible.
+    Note that there are other places in this file which use both.
+*/
+.blocks :global(.blocklyToolbox),
 .blocks :global(.blocklyToolboxDiv) {
     border-right: 1px solid $ui-black-transparent;
     border-bottom: 1px solid $ui-black-transparent;
@@ -55,11 +60,13 @@
     -ms-overflow-style: none;
 }
 
+[dir="rtl"] .blocks :global(.blocklyToolbox),
 [dir="rtl"] .blocks :global(.blocklyToolboxDiv) {
     border-right: none;
     border-left: 1px solid $ui-black-transparent;
 }
 
+.blocks :global(.blocklyToolbox::-webkit-scrollbar),
 .blocks :global(.blocklyToolboxDiv::-webkit-scrollbar) {
     display: none;
 }
@@ -76,11 +83,6 @@
 
 
 .blocks :global(.blocklyBlockDragSurface) {
-    /*
-        Fix an issue where the drag surface was preventing hover events for sharing blocks.
-        This does not prevent user interaction on the blocks themselves.
-    */
-    pointer-events: none;
     z-index: $z-index-drag-layer; /* make blocks match gui drag layer */
 }
 

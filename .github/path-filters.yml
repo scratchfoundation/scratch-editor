@@ -14,6 +14,9 @@ any-workspace:
 task-herder:
   - *global
   - "packages/task-herder/**"
+scratch-media-lib-scripts:
+  - *global
+  - "packages/scratch-media-lib-scripts/**"
 scratch-svg-renderer:
   - *global
   - "packages/scratch-svg-renderer/**"

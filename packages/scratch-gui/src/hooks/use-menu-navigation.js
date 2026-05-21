@@ -174,6 +174,14 @@ export default function useMenuNavigation ({
             handleMove(-1);
             break;
         case KEY.ESCAPE:
+            e.preventDefault();
+            e.stopPropagation();
+            handleOnClose();
+            if (menuContext.isOutermostMenu(menuRef)) {
+                // If it's the outermost menu, also blur the trigger to remove focus
+                menuRef?.current?.blur();
+            }
+            break;
         case CLOSE_KEY:
             e.preventDefault();
             e.stopPropagation();
@@ -200,6 +208,11 @@ export default function useMenuNavigation ({
     }, [handleMove, handleOnClose, handleOnCloseAllMenus]);
 
     const handleKeyDown = useCallback(e => {
+        if (!isExpanded() && e.key === KEY.ESCAPE) {
+            // If the menu is closed and Escape is pressed, blur the menu trigger to remove focus
+            menuRef?.current?.blur();
+            return;
+        }
         if (isExpanded() && e.key === KEY.TAB) {
             handleOnCloseAllMenus();
             return;

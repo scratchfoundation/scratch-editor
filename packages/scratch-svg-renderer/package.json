@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-svg-renderer",
-  "version": "12.6.2",
+  "version": "13.7.2",
   "description": "SVG renderer for Scratch",
   "keywords": [],
   "homepage": "https://github.com/scratchfoundation/scratch-svg-renderer#readme",
@@ -33,6 +33,7 @@
   "scripts": {
     "build": "npm run clean && webpack",
     "clean": "rimraf dist playground",
+    "prepublishOnly": "echo \"Please publish through CI only.\" && exit 1",
     "start": "webpack-dev-server",
     "test": "npm run test:lint && npm run test:unit",
     "test:lint": "eslint",
@@ -51,7 +52,7 @@
   "dependencies": {
     "base64-js": "1.5.1",
     "base64-loader": "1.0.0",
-    "css-tree": "1.1.3",
+    "css-tree": "3.2.1",
     "fastestsmallesttextencoderdecoder": "1.0.22",
     "isomorphic-dompurify": "2.36.0",
     "transformation-matrix": "1.15.3",
@@ -59,26 +60,26 @@
   },
   "devDependencies": {
     "@babel/core": "7.29.0",
-    "@babel/preset-env": "7.29.0",
+    "@babel/preset-env": "7.29.5",
     "babel-loader": "9.2.1",
+    "canvas": "3.2.3",
     "copy-webpack-plugin": "6.4.1",
-    "eslint": "9.39.2",
-    "eslint-config-scratch": "12.0.49",
+    "eslint": "9.39.4",
+    "eslint-config-scratch": "14.1.19",
     "globals": "16.5.0",
     "jsdom": "13.2.0",
     "mkdirp": "2.1.6",
     "rimraf": "3.0.2",
     "scratch-render-fonts": "1.0.252",
     "scratch-semantic-release-config": "4.0.1",
-    "scratch-webpack-configuration": "3.1.1",
+    "scratch-webpack-configuration": "3.1.2",
     "semantic-release": "25.0.3",
-    "tap": "21.5.1",
-    "webpack": "5.105.0",
+    "tap": "21.7.2",
+    "webpack": "5.106.2",
     "webpack-cli": "5.1.4",
-    "webpack-dev-server": "5.2.3",
-    "xmldom": "0.1.31"
+    "webpack-dev-server": "5.2.3"
   },
   "peerDependencies": {
-    "scratch-render-fonts": "^1.0.0"
+    "scratch-render-fonts": "1.0.252"
   }
 }

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # `npm version 1.2.3` does the following:
 # 1. Update `/package.json` and `/package-lock.json` with the new version
 # 2. `git add package.json package-lock.json`
@@ -79,12 +81,19 @@ update_dependency_in_workspace () {
     mv "$workspace/package.json.tmp" "$workspace/package.json"
 }
 
-echo "${me}: Setting workspace versions..." >&2
-npm --workspaces version --no-git-tag-version "${npm_package_version}"
-
 echo "${me}: Reading workspaces..." >&2
 readarray -t workspace_locations < <( npm query .workspace | jq -r '.[].location' )
 readarray -t workspace_names < <( npm query .workspace | jq -r '.[].name' )
+
+# Use jq to set the version directly instead of `npm --workspaces version`.
+# Using npm would cause npm to run an install, which (seeing the old cross-dependency version
+# specs) would install old published versions of workspace packages into local node_modules,
+# shadowing the workspace symlinks during the subsequent build.
+echo "${me}: Setting workspace versions..." >&2
+for workspace in "${workspace_locations[@]}"; do
+    jq ".version = \"${npm_package_version}\"" "$workspace/package.json" > "$workspace/package.json.tmp"
+    mv "$workspace/package.json.tmp" "$workspace/package.json"
+done
 
 echo "${me}: Updating internal dependency versions..." >&2
 for workspace in "." "${workspace_locations[@]}"; do

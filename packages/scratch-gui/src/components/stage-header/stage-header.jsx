@@ -1,7 +1,6 @@
-import {FormattedMessage, defineMessages, useIntl} from 'react-intl';
+import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
 import PropTypes from 'prop-types';
-import React, {useCallback} from 'react';
-import {connect} from 'react-redux';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import VM from '@scratch/scratch-vm';
 
 import Box from '../box/box.jsx';
@@ -21,6 +20,16 @@ import styles from './stage-header.css';
 import {storeProjectThumbnail} from '../../lib/store-project-thumbnail.js';
 import dataURItoBlob from '../../lib/data-uri-to-blob.js';
 import throttle from 'lodash.throttle';
+import thumbnailIcon from './icon--thumbnail.svg';
+import ConfirmationPrompt from '../confirmation-prompt/confirmation-prompt.jsx';
+import FeatureCalloutPopover from '../feature-callout-popover/feature-callout-popover.jsx';
+import classNames from 'classnames';
+import {PopupAlign, PopupSide} from '../../lib/calculatePopupPosition.js';
+import {getLocalStorageValue, setLocalStorageValue} from '../../lib/local-storage.js';
+
+const LOCAL_STORAGE_KEY = 'hasIntroducedEditorManualSetThumbnail';
+
+import useFocusTrap from '../../hooks/use-focus-trap.js';
 
 const messages = defineMessages({
     largeStageSizeMessage: {
@@ -48,6 +57,22 @@ const messages = defineMessages({
         description: 'Manually save project thumbnail',
         id: 'gui.stageHeader.saveThumbnail'
     },
+    setThumbnailMessage: {
+        defaultMessage: 'Are you sure you want to set your thumbnail?',
+        description: 'Confirmation message for manually saving project thumbnail',
+        id: 'gui.stageHeader.saveThumbnailMessage'
+    },
+    thumbnailTooltipTitle: {
+        defaultMessage: 'Hey there! 👋',
+        description: 'Title for the thumbnail tooltip',
+        id: 'gui.stageHeader.thumbnailTooltipTitle'
+    },
+    thumbnailTooltipBody: {
+        defaultMessage: '<b>"Set Thumbnail"</b> has a new spot. It works by ' +
+            'taking a snapshot of your stage and setting it as your project thumbnail.',
+        description: 'Body text for the thumbnail tooltip',
+        id: 'gui.stageHeader.thumbnailTooltipBody'
+    },
     fullscreenControl: {
         defaultMessage: 'Full Screen Control',
         description: 'Button to enter/exit full screen mode',
@@ -60,6 +85,9 @@ const StageHeaderComponent = function (props) {
         isFullScreen,
         isPlayerOnly,
         manuallySaveThumbnails,
+        onSetManualThumbnail,
+        onSetManualThumbnailButtonClick,
+        loadingOrCreating,
         onKeyPress,
         onSetStageLarge,
         onSetStageSmall,
@@ -68,28 +96,113 @@ const StageHeaderComponent = function (props) {
         onUpdateProjectThumbnail,
         projectId,
         showBranding,
+        showNewFeatureCallouts,
         stageSizeMode,
-        vm
+        vm,
+        userOwnsProject,
+        username,
+        onShowSettingThumbnail,
+        onShowThumbnailSuccess,
+        onShowThumbnailError
     } = props;
     const intl = useIntl();
 
+    const containerRef = useRef(null);
+    const {trapFocus, releaseFocus} = useFocusTrap(containerRef, 'data-focusable');
+
+    const handleEnterFullScreen = useCallback(() => {
+        onSetStageFull();
+        requestAnimationFrame(() => {
+            trapFocus();
+        });
+    }, [onSetStageFull, trapFocus]);
+
+    const handleExitFullScreen = useCallback(() => {
+        onSetStageUnFull();
+        releaseFocus();
+    }, [onSetStageUnFull, releaseFocus]);
+
     let header = null;
 
-    const onUpdateThumbnail = useCallback(
-        throttle(
-            () => {
-                if (!onUpdateProjectThumbnail) {
-                    return;
-                }
+    const thumbnailButtonRef = useRef(null);
 
-                storeProjectThumbnail(vm, dataURI => {
-                    onUpdateProjectThumbnail(projectId, dataURItoBlob(dataURI));
-                });
-            },
-            3000
-        ),
-        [projectId, onUpdateProjectThumbnail]
+    const [isThumbnailPromptOpen, setIsThumbnailPromptOpen] = useState(false);
+    const [isThumbnailTooltipOpen, setIsThumbnailTooltipOpen] = useState(false);
+    const [isUpdatingThumbnail, setIsUpdatingThumbnail] = useState(false);
+
+    const shouldShowThumbnailSaveButton = manuallySaveThumbnails && userOwnsProject;
+    // TODO: Remove this callout after 60 days of manual thumbnail update release.
+    const shouldShowCallout = shouldShowThumbnailSaveButton && showNewFeatureCallouts && !loadingOrCreating &&
+        getLocalStorageValue(LOCAL_STORAGE_KEY, username ?? '') !== true;
+
+    useEffect(() => {
+        if (shouldShowCallout) {
+            setIsThumbnailTooltipOpen(true);
+        } else {
+            setIsThumbnailTooltipOpen(false);
+        }
+    }, [shouldShowCallout]);
+
+    const onUpdateThumbnail = useCallback(
+        throttle(() => {
+            if (!onUpdateProjectThumbnail) return;
+
+            setIsUpdatingThumbnail(true);
+            onShowSettingThumbnail();
+            onSetManualThumbnail?.(projectId);
+
+            storeProjectThumbnail(vm, dataURI => {
+                onUpdateProjectThumbnail(
+                    projectId,
+                    dataURItoBlob(dataURI),
+                    () => {
+                        onShowThumbnailSuccess();
+                        setIsUpdatingThumbnail(false);
+                    },
+                    () => {
+                        onShowThumbnailError();
+                        setIsUpdatingThumbnail(false);
+                    }
+                );
+            });
+        }, 3000),
+        [
+            onUpdateProjectThumbnail,
+            projectId,
+            vm,
+            onShowSettingThumbnail,
+            onShowThumbnailSuccess,
+            onShowThumbnailError,
+            onSetManualThumbnail
+        ]
     );
+
+    const onThumbnailPromptOpen = useCallback(() => {
+        setIsThumbnailPromptOpen(true);
+        
+        onSetManualThumbnailButtonClick?.(projectId);
+        
+        try {
+            setLocalStorageValue(LOCAL_STORAGE_KEY, username ?? '', true);
+        } catch (e) {
+            // eslint-disable-next-line no-console
+            console.warn('Unable to set thumbnail tooltip local storage value. Check if local storage is enabled.', e);
+        }
+        setIsThumbnailTooltipOpen(false);
+    }, [username, onSetManualThumbnailButtonClick, projectId]);
+
+    const onThumbnailPromptClose = useCallback(() => {
+        setIsThumbnailPromptOpen(false);
+    }, []);
+
+    const onUpdateThumbnailAndClose = useCallback(() => {
+        onThumbnailPromptClose();
+        onUpdateThumbnail();
+    }, [onUpdateThumbnail]);
+
+    const onCloseTooltip = useCallback(() => {
+        setIsThumbnailTooltipOpen(false);
+    }, []);
 
     if (isFullScreen) {
         const stageDimensions = getStageDimensions(null, true);
@@ -99,6 +212,7 @@ const StageHeaderComponent = function (props) {
                     href="https://scratch.mit.edu"
                     rel="noopener noreferrer"
                     target="_blank"
+                    data-focusable
                 >
                     <img
                         alt="Scratch"
@@ -110,8 +224,9 @@ const StageHeaderComponent = function (props) {
             <div className={styles.unselectWrapper}>
                 <Button
                     className={styles.stageButton}
-                    onClick={onSetStageUnFull}
+                    onClick={handleExitFullScreen}
                     onKeyPress={onKeyPress}
+                    data-focusable
                 >
                     <img
                         alt={intl.formatMessage(messages.unFullStageSizeMessage)}
@@ -124,12 +239,18 @@ const StageHeaderComponent = function (props) {
             </div>
         );
         header = (
-            <Box className={styles.stageHeaderWrapperOverlay}>
+            <Box
+                className={styles.stageHeaderWrapperOverlay}
+                componentRef={containerRef}
+            >
                 <Box
                     className={styles.stageMenuWrapper}
                     style={{width: stageDimensions.width}}
                 >
-                    <Controls vm={vm} />
+                    <Controls
+                        isFullScreen={isFullScreen}
+                        vm={vm}
+                    />
                     {stageButton}
                 </Box>
             </Box>
@@ -139,46 +260,83 @@ const StageHeaderComponent = function (props) {
             isPlayerOnly ? (
                 []
             ) : (
-                <div className={styles.stageSizeToggleGroup}>
-                    <ToggleButtons
-                        buttons={[
-                            {
-                                handleClick: onSetStageSmall,
-                                icon: smallStageIcon,
-                                iconClassName: styles.stageButtonIcon,
-                                isSelected: stageSizeMode === STAGE_SIZE_MODES.small,
-                                title: intl.formatMessage(messages.smallStageSizeMessage)
-                            },
-                            {
-                                handleClick: onSetStageLarge,
-                                icon: largeStageIcon,
-                                iconClassName: styles.stageButtonIcon,
-                                isSelected: stageSizeMode === STAGE_SIZE_MODES.large,
-                                title: intl.formatMessage(messages.largeStageSizeMessage)
-                            }
-                        ]}
-                    />
-                </div>
+                <ToggleButtons
+                    buttons={[
+                        {
+                            handleClick: onSetStageSmall,
+                            icon: smallStageIcon,
+                            iconClassName: styles.stageButtonIcon,
+                            isSelected: stageSizeMode === STAGE_SIZE_MODES.small,
+                            title: intl.formatMessage(messages.smallStageSizeMessage)
+                        },
+                        {
+                            handleClick: onSetStageLarge,
+                            icon: largeStageIcon,
+                            iconClassName: styles.stageButtonIcon,
+                            isSelected: stageSizeMode === STAGE_SIZE_MODES.large,
+                            title: intl.formatMessage(messages.largeStageSizeMessage)
+                        }
+                    ]}
+                />
             );
         header = (
             <Box className={styles.stageHeaderWrapper}>
                 <Box className={styles.stageMenuWrapper}>
-                    <Controls vm={vm} />
+                    <Controls
+                        isFullScreen={isFullScreen}
+                        vm={vm}
+                    />
                     <div className={styles.stageSizeRow}>
+                        <FeatureCalloutPopover
+                            isOpen={isThumbnailTooltipOpen}
+                            onRequestClose={onCloseTooltip}
+                            targetRef={thumbnailButtonRef}
+                            side={PopupSide.LEFT}
+                            align={PopupAlign.DOWN}
+                            title={intl.formatMessage(messages.thumbnailTooltipTitle)}
+                            body={
+                                <FormattedMessage
+                                    {...messages.thumbnailTooltipBody}
+                                    values={{
+                                        b: chunks => <b>{chunks}</b>
+                                    }}
+                                />
+                            }
+                        />
+                        {shouldShowThumbnailSaveButton && (
+                            <Button
+                                title={intl.formatMessage(messages.setThumbnail)}
+                                className={classNames(
+                                    styles.stageButton,
+                                    {[styles.stageButtonHighlighted]: isThumbnailTooltipOpen}
+                                )}
+                                onClick={onThumbnailPromptOpen}
+                                disabled={isUpdatingThumbnail}
+                                componentRef={thumbnailButtonRef}
+                            >
+                                <img
+                                    src={thumbnailIcon}
+                                    alt={intl.formatMessage(messages.setThumbnail)}
+                                    className={styles.stageButtonIcon}
+                                />
+                            </Button>
+                        )}
+                        <ConfirmationPrompt
+                            isOpen={isThumbnailPromptOpen}
+                            title={intl.formatMessage(messages.setThumbnail)}
+                            message={intl.formatMessage(messages.setThumbnailMessage)}
+                            confirmButtonConfig={{onClick: onUpdateThumbnailAndClose}}
+                            cancelButtonConfig={{onClick: onThumbnailPromptClose}}
+                            relativeElementRef={thumbnailButtonRef}
+                            side={PopupSide.DOWN}
+                            align={PopupAlign.LEFT}
+                        />
                         {stageControls}
                         <div className={styles.rightSection}>
-                            {manuallySaveThumbnails && (
-                                <Button
-                                    aria-label={intl.formatMessage(messages.setThumbnail)}
-                                    className={styles.setThumbnailButton}
-                                    onClick={onUpdateThumbnail}
-                                >
-                                    <FormattedMessage {...messages.setThumbnail} />
-                                </Button>
-                            )}
                             <Button
                                 className={styles.stageButton}
-                                onClick={onSetStageFull}
+                                onClick={handleEnterFullScreen}
+                                aria-label={intl.formatMessage(messages.fullStageSizeMessage)}
                             >
                                 <img
                                     alt={intl.formatMessage(messages.fullStageSizeMessage)}
@@ -198,30 +356,34 @@ const StageHeaderComponent = function (props) {
     return header;
 };
 
-const mapStateToProps = state => ({
-    projectId: state.scratchGui.projectState.projectId,
-    // This is the button's mode, as opposed to the actual current state
-    stageSizeMode: state.scratchGui.stageSize.stageSize
-});
-
 StageHeaderComponent.propTypes = {
     isFullScreen: PropTypes.bool.isRequired,
     isPlayerOnly: PropTypes.bool.isRequired,
     manuallySaveThumbnails: PropTypes.bool,
+    onSetManualThumbnail: PropTypes.func,
+    onSetManualThumbnailButtonClick: PropTypes.func,
+    loadingOrCreating: PropTypes.bool,
     onKeyPress: PropTypes.func.isRequired,
     onSetStageFull: PropTypes.func.isRequired,
     onSetStageLarge: PropTypes.func.isRequired,
     onSetStageSmall: PropTypes.func.isRequired,
     onSetStageUnFull: PropTypes.func.isRequired,
     onUpdateProjectThumbnail: PropTypes.func,
-    projectId: PropTypes.number.isRequired,
+    projectId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     showBranding: PropTypes.bool.isRequired,
+    showNewFeatureCallouts: PropTypes.bool,
     stageSizeMode: PropTypes.oneOf(Object.keys(STAGE_SIZE_MODES)),
-    vm: PropTypes.instanceOf(VM).isRequired
+    vm: PropTypes.instanceOf(VM).isRequired,
+    userOwnsProject: PropTypes.bool,
+    username: PropTypes.string,
+    onShowSettingThumbnail: PropTypes.func,
+    onShowThumbnailError: PropTypes.func,
+    onShowThumbnailSuccess: PropTypes.func
 };
 
 StageHeaderComponent.defaultProps = {
-    stageSizeMode: STAGE_SIZE_MODES.large
+    stageSizeMode: STAGE_SIZE_MODES.large,
+    userOwnsProject: false
 };
 
-export default connect(mapStateToProps)(StageHeaderComponent);
+export default StageHeaderComponent;

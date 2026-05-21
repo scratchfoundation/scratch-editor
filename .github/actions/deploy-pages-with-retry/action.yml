@@ -1,0 +1,64 @@
+name: Deploy GitHub Pages with retry
+
+description: Deploy to GitHub Pages and retry failed deploy attempts with a delay.
+
+inputs:
+  github_token:
+    description: GitHub token used by peaceiris/actions-gh-pages
+    required: true
+  publish_dir:
+    description: Directory to publish
+    required: true
+  destination_dir:
+    description: Destination subdirectory in gh-pages branch
+    required: true
+  full_commit_message:
+    description: Full commit message for the deploy commit
+    required: true
+  retry_delay_seconds:
+    description: Delay in seconds between retries
+    required: false
+    default: "5"
+
+runs:
+  using: composite
+  steps:
+    - name: Deploy (attempt 1)
+      id: deploy_pages_attempt_1
+      continue-on-error: true
+      uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+      with:
+        github_token: ${{ inputs.github_token }}
+        publish_dir: ${{ inputs.publish_dir }}
+        destination_dir: ${{ inputs.destination_dir }}
+        full_commit_message: ${{ inputs.full_commit_message }}
+
+    - name: Wait before retry (attempt 2)
+      if: ${{ steps.deploy_pages_attempt_1.outcome == 'failure' }}
+      shell: bash
+      run: sleep "${{ inputs.retry_delay_seconds }}"
+
+    - name: Deploy (attempt 2)
+      id: deploy_pages_attempt_2
+      if: ${{ steps.deploy_pages_attempt_1.outcome == 'failure' }}
+      continue-on-error: true
+      uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+      with:
+        github_token: ${{ inputs.github_token }}
+        publish_dir: ${{ inputs.publish_dir }}
+        destination_dir: ${{ inputs.destination_dir }}
+        full_commit_message: ${{ inputs.full_commit_message }}
+
+    - name: Wait before retry (attempt 3)
+      if: ${{ steps.deploy_pages_attempt_2.outcome == 'failure' }}
+      shell: bash
+      run: sleep "${{ inputs.retry_delay_seconds }}"
+
+    - name: Deploy (attempt 3)
+      if: ${{ steps.deploy_pages_attempt_2.outcome == 'failure' }}
+      uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+      with:
+        github_token: ${{ inputs.github_token }}
+        publish_dir: ${{ inputs.publish_dir }}
+        destination_dir: ${{ inputs.destination_dir }}
+        full_commit_message: ${{ inputs.full_commit_message }}

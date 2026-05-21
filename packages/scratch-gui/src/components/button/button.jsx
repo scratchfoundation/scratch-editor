@@ -11,6 +11,7 @@ const ButtonComponent = ({
     iconSrc,
     onClick,
     children,
+    componentRef,
     ...props
 }) => {
 
@@ -33,6 +34,7 @@ const ButtonComponent = ({
                 className
             )}
             onClick={onClick}
+            ref={componentRef}
             {...props}
         >
             {icon}
@@ -47,7 +49,11 @@ ButtonComponent.propTypes = {
     disabled: PropTypes.bool,
     iconClassName: PropTypes.string,
     iconSrc: PropTypes.string,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
+    componentRef: PropTypes.oneOfType([
+        PropTypes.func,
+        PropTypes.shape({current: PropTypes.instanceOf(Element)})
+    ])
 };
 
 export default ButtonComponent;

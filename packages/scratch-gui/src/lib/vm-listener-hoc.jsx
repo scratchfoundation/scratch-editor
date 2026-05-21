@@ -68,9 +68,20 @@ const vmListenerHOC = function (WrappedComponent) {
             }
         }
         componentWillUnmount () {
+            this.props.vm.removeListener('targetsUpdate', this.handleTargetsUpdate);
+            this.props.vm.removeListener('MONITORS_UPDATE', this.props.onMonitorsUpdate);
+            this.props.vm.removeListener('BLOCK_DRAG_UPDATE', this.props.onBlockDragUpdate);
+            this.props.vm.removeListener('TURBO_MODE_ON', this.props.onTurboModeOn);
+            this.props.vm.removeListener('TURBO_MODE_OFF', this.props.onTurboModeOff);
+            this.props.vm.removeListener('PROJECT_RUN_START', this.props.onProjectRunStart);
+            this.props.vm.removeListener('PROJECT_RUN_STOP', this.props.onProjectRunStop);
+            this.props.vm.removeListener('PROJECT_CHANGED', this.handleProjectChanged);
+            this.props.vm.removeListener('RUNTIME_STARTED', this.props.onRuntimeStarted);
+            this.props.vm.removeListener('PROJECT_START', this.props.onGreenFlag);
             this.props.vm.removeListener('PERIPHERAL_CONNECTION_LOST_ERROR', this.props.onShowExtensionAlert);
+            this.props.vm.removeListener('MIC_LISTENING', this.props.onMicListeningUpdate);
             this.props.vm.removeListener('EXTENSION_DATA_LOADING', this.props.onExtensionDataLoading);
-            
+
             if (this.props.attachKeyboardEvents) {
                 document.removeEventListener('keydown', this.handleKeyDown);
                 document.removeEventListener('keyup', this.handleKeyUp);
@@ -87,8 +98,14 @@ const vmListenerHOC = function (WrappedComponent) {
             }
         }
         handleKeyDown (e) {
-            // Don't capture keys intended for Blockly inputs.
-            if (e.target !== document && e.target !== document.body) return;
+            // Don't capture keys intended for HTML inputs (e.g. project title).
+            // The Blockly workspace is rendered as SVG, so SVG-targeted events
+            // should always reach the VM for key-sensing — even when a block has
+            // Blockly focus — so that game controls are never silently dropped
+            // while the user is on the Code tab.
+            if (e.target !== document && e.target !== document.body) {
+                if (!(e.target instanceof SVGElement)) return;
+            }
 
             const key = (!e.key || e.key === 'Dead') ? e.keyCode : e.key;
             this.props.vm.postIOData('keyboard', {
@@ -118,7 +135,7 @@ const vmListenerHOC = function (WrappedComponent) {
         }
         render () {
             const {
-                 
+
                 attachKeyboardEvents,
                 projectChanged,
                 shouldUpdateTargets,
@@ -139,7 +156,7 @@ const vmListenerHOC = function (WrappedComponent) {
                 onTurboModeOff,
                 onTurboModeOn,
                 onShowExtensionAlert,
-                 
+
                 ...props
             } = this.props;
             return <WrappedComponent {...props} />;

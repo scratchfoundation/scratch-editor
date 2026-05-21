@@ -15,16 +15,21 @@ const StageWrapperComponent = function (props) {
     const {
         ariaLabel,
         ariaRole,
+        isCreating,
         isFullScreen,
         isRtl,
         isRendererSupported,
         loading,
         manuallySaveThumbnails,
+        onSetManualThumbnail,
+        onSetManualThumbnailButtonClick,
         onUpdateProjectThumbnail,
+        username,
+        userOwnsProject,
         stageSize,
+        showNewFeatureCallouts,
         vm
     } = props;
-
     return (
         <Box
             className={classNames(
@@ -39,7 +44,13 @@ const StageWrapperComponent = function (props) {
             <Box className={styles.stageMenuWrapper}>
                 <StageHeader
                     manuallySaveThumbnails={manuallySaveThumbnails}
+                    onSetManualThumbnail={onSetManualThumbnail}
+                    onSetManualThumbnailButtonClick={onSetManualThumbnailButtonClick}
+                    username={username}
+                    userOwnsProject={userOwnsProject}
+                    loadingOrCreating={loading || isCreating}
                     onUpdateProjectThumbnail={onUpdateProjectThumbnail}
+                    showNewFeatureCallouts={showNewFeatureCallouts}
                     stageSize={stageSize}
                     vm={vm}
                 />
@@ -64,11 +75,17 @@ const StageWrapperComponent = function (props) {
 StageWrapperComponent.propTypes = {
     ariaLabel: PropTypes.string,
     ariaRole: PropTypes.string,
+    isCreating: PropTypes.bool,
     isFullScreen: PropTypes.bool,
     isRendererSupported: PropTypes.bool.isRequired,
     isRtl: PropTypes.bool.isRequired,
     loading: PropTypes.bool,
     manuallySaveThumbnails: PropTypes.bool,
+    onSetManualThumbnail: PropTypes.func,
+    onSetManualThumbnailButtonClick: PropTypes.func,
+    showNewFeatureCallouts: PropTypes.bool,
+    username: PropTypes.string,
+    userOwnsProject: PropTypes.bool,
     onUpdateProjectThumbnail: PropTypes.func,
     stageSize: PropTypes.oneOf(Object.keys(STAGE_DISPLAY_SIZES)).isRequired,
     vm: PropTypes.instanceOf(VM).isRequired

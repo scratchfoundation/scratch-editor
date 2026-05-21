@@ -72,10 +72,10 @@ queue
       cost: 2,
     },
   )
-  .then(response => {
+  .then((response) => {
     // Handle successful response
   })
-  .catch(error => {
+  .catch((error) => {
     // Handle error
   })
 ```
@@ -96,7 +96,7 @@ queue
       signal: controller.signal,
     },
   )
-  .catch(error => {
+  .catch((error) => {
     if (error.name === 'AbortError') {
       // Handle task cancellation
     } else {

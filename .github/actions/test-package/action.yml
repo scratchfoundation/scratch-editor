@@ -11,27 +11,28 @@ runs:
   using: composite
   steps:
     - name: Install Playwright
+      if: ${{ inputs.package_name == 'scratch-render' || inputs.package_name == 'scratch-gui' }}
       shell: bash
-      run: |
-        if [[ ${{ inputs.package_name }} == "scratch-render" ]]; then
-          npx playwright install --with-deps chromium
-        fi
+      # Install both browsers for any package that needs Playwright,
+      # even if a particular package only uses one of them — keeping
+      # the install step uniform is much simpler than maintaining a
+      # per-package browser list, and Firefox in scratch-render is
+      # cheap unused weight rather than a correctness problem.
+      run: npx playwright install --with-deps chromium firefox
     - name: Test
       working-directory: ./packages/${{ inputs.package_name }}
       shell: bash
       env:
         TAP_REPORTER: "junit"
         TAP_REPORTER_FILE: "test-results/junit.xml"
+      # xvfb-run provides a virtual display for browsers that need one.
+      # Firefox's non-headless mode (used because headless Firefox lacks
+      # WebGL support) requires an X server, and xvfb fills that role
+      # on the headless CI runner. Chromium doesn't need it but works
+      # fine under xvfb too.
       run: |
         mkdir -p test-results
-        npm run test
-    - name: Publish test reports
-      if: ${{ !cancelled() }}
-      uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2
-      with:
-        files: "./packages/${{ inputs.package_name }}/test-results/**/*"
-        check_name: "Test report for ${{ inputs.package_name }}"
-        test_file_prefix: "+packages/${{ inputs.package_name }}/"
+        xvfb-run --auto-servernum npm run test
     - name: Store Test Results
       if: ${{ !cancelled() }}
       uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5

@@ -173,6 +173,7 @@ describe('Working with sounds', () => {
 
         await loadUri(uri);
         await clickText('Sounds');
+        // Just select any button inside the tab so the controls impact the sounds editor
         const el = await findByXpath('//button[@aria-label="Choose a Sound"]');
         await el.sendKeys(Key.chord(cmdCtrl, 'a')); // Select all
         await findByText('0.85', scope.soundsTab); // Meow sound duration

@@ -99,6 +99,7 @@
 
     .topic-item {
         display: flex;
+        width: 100%;
         gap: 8px;
         align-items: center;
         padding: 8px;
@@ -156,7 +157,20 @@
         margin-top: 20px;
     }
 
-    button {
+    .modal-header button,
+    .navigation-buttons button {
         margin: 5px;
     }
+}
+
+/* TO DO: export this class for reuse */
+.button-style-remover {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    text-align: inherit;
 }

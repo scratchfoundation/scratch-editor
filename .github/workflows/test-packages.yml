@@ -1,0 +1,79 @@
+name: Test Packages
+
+on:
+  workflow_call:
+    inputs:
+      packages:
+        description: 'JSON array of package names to test'
+        type: string
+        required: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJSON(inputs.packages) }}
+    name: Test ${{ matrix.package }}
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - uses: ./.github/actions/install-dependencies
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: build
+          path: packages
+      - uses: ./.github/actions/test-package
+        with:
+          package_name: ${{ matrix.package }}
+
+  results:
+    name: Test Results
+    runs-on: ubuntu-latest
+    needs: test
+    if: ${{ !cancelled() }}
+    permissions:
+      checks: write
+      pull-requests: write
+      contents: read
+      issues: read
+    steps:
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          # Download every per-package test-output artifact. Each lands
+          # in its own subdirectory (e.g. scratch-gui-test-output/),
+          # which avoids filename collisions between packages that both
+          # produce junit.xml.
+          pattern: '*-test-output'
+          path: test-results
+      - name: Publish test reports
+        uses: EnricoMi/publish-unit-test-result-action@34d7c956a59aed1bfebf31df77b8de55db9bbaaf # v2
+        with:
+          # Every test reporter in this repo produces JUnit XML.
+          # Restricting to *.xml avoids the action trying to parse
+          # directories and non-test artifacts (Playwright HTML
+          # reports, traces, screenshots, etc.) as test result files.
+          files: test-results/**/*.xml
+          check_name: "Test Results"
+      - name: Check test outcome
+        run: |
+          case "${{ needs.test.result }}" in
+            success)
+              echo "Tests passed successfully."
+              exit 0
+              ;;
+            cancelled)
+              echo "Tests were cancelled."
+              exit 1
+              ;;
+            *)
+              echo "Tests failed. Result: ${{ needs.test.result }}"
+              exit 1
+              ;;
+          esac

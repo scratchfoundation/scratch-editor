@@ -1,0 +1,5086 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [
+    "pen"
+  ],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {
+        "broadcast:i": "initialize",
+        "broadcast:p": "position camera",
+        "broadcast:d": "draw frame",
+        "broadcast:s": "show preview"
+      },
+      "currentCostume": 1,
+      "costumes": [
+        {
+          "name": "blank",
+          "bitmapResolution": 2,
+          "dataFormat": "png",
+          "assetId": "b61b1077b0ea1931abee9dbbfa7903ff",
+          "md5ext": "b61b1077b0ea1931abee9dbbfa7903ff.png",
+          "rotationCenterX": 480,
+          "rotationCenterY": 360
+        },
+        {
+          "name": "preview",
+          "bitmapResolution": 2,
+          "dataFormat": "png",
+          "assetId": "7bd9467ddeadae49b4da02d13aa98702",
+          "md5ext": "7bd9467ddeadae49b4da02d13aa98702.png",
+          "rotationCenterX": 480,
+          "rotationCenterY": 360
+        }
+      ],
+      "sounds": [
+        {
+          "name": "320839__thoribass__soundscape1-freesound",
+          "assetId": "e334982c8d4d30ae15092ff03a3961a7",
+          "dataFormat": "wav",
+          "format": "adpcm",
+          "rate": 22050,
+          "sampleCount": 3176017,
+          "md5ext": "e334982c8d4d30ae15092ff03a3961a7.wav"
+        }
+      ],
+      "volume": 100,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "on",
+      "textToSpeechLanguage": null,
+      "scripts": [
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "looks_switchbackdropto",
+            "inputs": {
+              "BACKDROP": [
+                1,
+                {
+                  "opcode": "looks_backdrops",
+                  "shadow": true,
+                  "fields": {
+                    "BACKDROP": [
+                      "blank"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "event_broadcastandwait",
+            "inputs": {
+              "BROADCAST_INPUT": [
+                1,
+                [
+                  11,
+                  "initialize",
+                  "broadcast:i"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_forever",
+            "inputs": {
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "event_broadcastandwait",
+                    "inputs": {
+                      "BROADCAST_INPUT": [
+                        1,
+                        [
+                          11,
+                          "position camera",
+                          "broadcast:p"
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "event_broadcastandwait",
+                    "inputs": {
+                      "BROADCAST_INPUT": [
+                        1,
+                        [
+                          11,
+                          "draw frame",
+                          "broadcast:d"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "control_forever",
+            "inputs": {
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "sound_playuntildone",
+                    "inputs": {
+                      "SOUND_MENU": [
+                        1,
+                        {
+                          "opcode": "sound_sounds_menu",
+                          "shadow": true,
+                          "fields": {
+                            "SOUND_MENU": [
+                              "320839__thoribass__soundscape1-freesound"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenbroadcastreceived",
+            "fields": {
+              "BROADCAST_OPTION": [
+                "show preview",
+                "broadcast:s"
+              ]
+            }
+          },
+          {
+            "opcode": "looks_switchbackdropto",
+            "inputs": {
+              "BACKDROP": [
+                1,
+                {
+                  "opcode": "looks_backdrops",
+                  "shadow": true,
+                  "fields": {
+                    "BACKDROP": [
+                      "preview"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_broadcast",
+            "inputs": {
+              "BROADCAST_INPUT": [
+                1,
+                [
+                  11,
+                  "show preview",
+                  "broadcast:s"
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "isStage": false,
+      "name": "Pen",
+      "variables": {
+        "var:x": [
+          "x",
+          -40
+        ],
+        "var:y": [
+          "y",
+          80
+        ],
+        "var:z": [
+          "z",
+          -40
+        ],
+        "var:phase": [
+          "phase",
+          180
+        ],
+        "var:dir": [
+          "dir",
+          "0"
+        ],
+        "var:amplitude": [
+          "amplitude",
+          "20"
+        ],
+        "var:period": [
+          "period",
+          "3"
+        ],
+        "var:i": [
+          "i",
+          29
+        ],
+        "var:zoom": [
+          "zoom",
+          0
+        ]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "underwater",
+          "bitmapResolution": 2,
+          "dataFormat": "png",
+          "assetId": "f957e718a223c57572f5baa322842647",
+          "md5ext": "f957e718a223c57572f5baa322842647.png",
+          "rotationCenterX": 480,
+          "rotationCenterY": 360
+        }
+      ],
+      "sounds": [],
+      "volume": 100,
+      "visible": false,
+      "x": -130.67636857,
+      "y": -41.81574809,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "don't rotate",
+      "scripts": [
+        [
+          {
+            "opcode": "event_whenbroadcastreceived",
+            "fields": {
+              "BROADCAST_OPTION": [
+                "initialize",
+                "broadcast:i"
+              ]
+            }
+          },
+          {
+            "opcode": "pen_clear"
+          },
+          {
+            "opcode": "pen_setPenColorToColor",
+            "inputs": {
+              "COLOR": [
+                1,
+                [
+                  9,
+                  "#135b8d"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "dir",
+                "var:dir"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "0"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "period",
+                "var:period"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "3"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "amplitude",
+                "var:amplitude"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "20"
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "paint frame",
+                    "argumentnames": "[]",
+                    "warp": true
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "pen_clear"
+          },
+          {
+            "opcode": "procedures_call",
+            "mutation": {
+              "proccode": "paint background"
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "x",
+                "var:x"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "20"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "y",
+                "var:y"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "-40"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "z",
+                "var:z"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "20"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "phase",
+                "var:phase"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "240"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_repeat",
+            "inputs": {
+              "TIMES": [
+                1,
+                [
+                  6,
+                  3
+                ]
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "procedures_call",
+                    "inputs": {
+                      "input0": [
+                        3,
+                        {
+                          "opcode": "operator_multiply",
+                          "inputs": {
+                            "NUM1": [
+                              1,
+                              [
+                                4,
+                                360
+                              ]
+                            ],
+                            "NUM2": [
+                              3,
+                              {
+                                "opcode": "operator_divide",
+                                "inputs": {
+                                  "NUM1": [
+                                    3,
+                                    {
+                                      "opcode": "sensing_timer"
+                                    },
+                                    [
+                                      4,
+                                      10
+                                    ]
+                                  ],
+                                  "NUM2": [
+                                    3,
+                                    [
+                                      12,
+                                      "period",
+                                      "var:period"
+                                    ],
+                                    [
+                                      4,
+                                      10
+                                    ]
+                                  ]
+                                }
+                              },
+                              [
+                                4,
+                                10
+                              ]
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "mutation": {
+                      "proccode": "paint dolphin %n"
+                    }
+                  },
+                  {
+                    "opcode": "data_changevariableby",
+                    "fields": {
+                      "VARIABLE": [
+                        "x",
+                        "var:x"
+                      ]
+                    },
+                    "inputs": {
+                      "VALUE": [
+                        1,
+                        [
+                          4,
+                          -20
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "data_changevariableby",
+                    "fields": {
+                      "VARIABLE": [
+                        "y",
+                        "var:y"
+                      ]
+                    },
+                    "inputs": {
+                      "VALUE": [
+                        1,
+                        [
+                          4,
+                          40
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "data_changevariableby",
+                    "fields": {
+                      "VARIABLE": [
+                        "z",
+                        "var:z"
+                      ]
+                    },
+                    "inputs": {
+                      "VALUE": [
+                        1,
+                        [
+                          4,
+                          -20
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "data_changevariableby",
+                    "fields": {
+                      "VARIABLE": [
+                        "phase",
+                        "var:phase"
+                      ]
+                    },
+                    "inputs": {
+                      "VALUE": [
+                        1,
+                        [
+                          4,
+                          -20
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "flat go to %n %n %n %n",
+                    "argumentnames": "[\"x\",\"y\",\"size\",\"multiplier\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "control_if_else",
+            "inputs": {
+              "CONDITION": [
+                2,
+                {
+                  "opcode": "operator_and",
+                  "inputs": {
+                    "OPERAND1": [
+                      2,
+                      {
+                        "opcode": "operator_gt",
+                        "inputs": {
+                          "OPERAND1": [
+                            3,
+                            {
+                              "opcode": "operator_multiply",
+                              "inputs": {
+                                "NUM1": [
+                                  3,
+                                  {
+                                    "opcode": "argument_reporter_string_number",
+                                    "fields": {
+                                      "VALUE": [
+                                        "size"
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ],
+                                "NUM2": [
+                                  3,
+                                  {
+                                    "opcode": "argument_reporter_string_number",
+                                    "fields": {
+                                      "VALUE": [
+                                        "multiplier"
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              10,
+                              ""
+                            ]
+                          ],
+                          "OPERAND2": [
+                            1,
+                            [
+                              10,
+                              "0"
+                            ]
+                          ]
+                        }
+                      }
+                    ],
+                    "OPERAND2": [
+                      2,
+                      {
+                        "opcode": "operator_lt",
+                        "inputs": {
+                          "OPERAND1": [
+                            3,
+                            {
+                              "opcode": "argument_reporter_string_number",
+                              "fields": {
+                                "VALUE": [
+                                  "multiplier"
+                                ]
+                              }
+                            },
+                            [
+                              10,
+                              ""
+                            ]
+                          ],
+                          "OPERAND2": [
+                            1,
+                            [
+                              10,
+                              "32"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "pen_setPenSizeTo",
+                    "inputs": {
+                      "SIZE": [
+                        3,
+                        {
+                          "opcode": "operator_multiply",
+                          "inputs": {
+                            "NUM1": [
+                              3,
+                              {
+                                "opcode": "argument_reporter_string_number",
+                                "fields": {
+                                  "VALUE": [
+                                    "size"
+                                  ]
+                                }
+                              },
+                              [
+                                4,
+                                10
+                              ]
+                            ],
+                            "NUM2": [
+                              3,
+                              {
+                                "opcode": "argument_reporter_string_number",
+                                "fields": {
+                                  "VALUE": [
+                                    "multiplier"
+                                  ]
+                                }
+                              },
+                              [
+                                4,
+                                10
+                              ]
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "pen_penDown"
+                  }
+                ]
+              ],
+              "SUBSTACK2": [
+                2,
+                [
+                  {
+                    "opcode": "pen_penUp"
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "motion_gotoxy",
+            "inputs": {
+              "X": [
+                3,
+                {
+                  "opcode": "operator_multiply",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "argument_reporter_string_number",
+                        "fields": {
+                          "VALUE": [
+                            "x"
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "argument_reporter_string_number",
+                        "fields": {
+                          "VALUE": [
+                            "multiplier"
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "Y": [
+                3,
+                {
+                  "opcode": "operator_multiply",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "argument_reporter_string_number",
+                        "fields": {
+                          "VALUE": [
+                            "y"
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "argument_reporter_string_number",
+                        "fields": {
+                          "VALUE": [
+                            "multiplier"
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "rotated go to %n %n %n %n",
+                    "argumentnames": "[\"x\",\"y\",\"z\",\"size\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                {
+                  "opcode": "operator_subtract",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "operator_multiply",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            {
+                              "opcode": "argument_reporter_string_number",
+                              "fields": {
+                                "VALUE": [
+                                  "x"
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            3,
+                            {
+                              "opcode": "operator_mathop",
+                              "fields": {
+                                "OPERATOR": [
+                                  "sin"
+                                ]
+                              },
+                              "inputs": {
+                                "NUM": [
+                                  3,
+                                  {
+                                    "opcode": "sensing_of",
+                                    "fields": {
+                                      "PROPERTY": [
+                                        "dir"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "OBJECT": [
+                                        1,
+                                        {
+                                          "opcode": "sensing_of_object_menu",
+                                          "shadow": true,
+                                          "fields": {
+                                            "OBJECT": [
+                                              "Camera"
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_multiply",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            {
+                              "opcode": "argument_reporter_string_number",
+                              "fields": {
+                                "VALUE": [
+                                  "y"
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            3,
+                            {
+                              "opcode": "operator_mathop",
+                              "fields": {
+                                "OPERATOR": [
+                                  "cos"
+                                ]
+                              },
+                              "inputs": {
+                                "NUM": [
+                                  3,
+                                  {
+                                    "opcode": "sensing_of",
+                                    "fields": {
+                                      "PROPERTY": [
+                                        "dir"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "OBJECT": [
+                                        1,
+                                        {
+                                          "opcode": "sensing_of_object_menu",
+                                          "shadow": true,
+                                          "fields": {
+                                            "OBJECT": [
+                                              "Camera"
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input1": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "z"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input2": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "size"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input3": [
+                3,
+                {
+                  "opcode": "operator_divide",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "sensing_of",
+                        "fields": {
+                          "PROPERTY": [
+                            "zoom"
+                          ]
+                        },
+                        "inputs": {
+                          "OBJECT": [
+                            1,
+                            {
+                              "opcode": "sensing_of_object_menu",
+                              "shadow": true,
+                              "fields": {
+                                "OBJECT": [
+                                  "Camera"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_add",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            {
+                              "opcode": "operator_multiply",
+                              "inputs": {
+                                "NUM1": [
+                                  3,
+                                  {
+                                    "opcode": "argument_reporter_string_number",
+                                    "fields": {
+                                      "VALUE": [
+                                        "x"
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ],
+                                "NUM2": [
+                                  3,
+                                  {
+                                    "opcode": "operator_mathop",
+                                    "fields": {
+                                      "OPERATOR": [
+                                        "cos"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "NUM": [
+                                        3,
+                                        {
+                                          "opcode": "sensing_of",
+                                          "fields": {
+                                            "PROPERTY": [
+                                              "dir"
+                                            ]
+                                          },
+                                          "inputs": {
+                                            "OBJECT": [
+                                              1,
+                                              {
+                                                "opcode": "sensing_of_object_menu",
+                                                "shadow": true,
+                                                "fields": {
+                                                  "OBJECT": [
+                                                    "Camera"
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        [
+                                          4,
+                                          10
+                                        ]
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            3,
+                            {
+                              "opcode": "operator_multiply",
+                              "inputs": {
+                                "NUM1": [
+                                  3,
+                                  {
+                                    "opcode": "argument_reporter_string_number",
+                                    "fields": {
+                                      "VALUE": [
+                                        "y"
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ],
+                                "NUM2": [
+                                  3,
+                                  {
+                                    "opcode": "operator_mathop",
+                                    "fields": {
+                                      "OPERATOR": [
+                                        "sin"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "NUM": [
+                                        3,
+                                        {
+                                          "opcode": "sensing_of",
+                                          "fields": {
+                                            "PROPERTY": [
+                                              "dir"
+                                            ]
+                                          },
+                                          "inputs": {
+                                            "OBJECT": [
+                                              1,
+                                              {
+                                                "opcode": "sensing_of_object_menu",
+                                                "shadow": true,
+                                                "fields": {
+                                                  "OBJECT": [
+                                                    "Camera"
+                                                  ]
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        },
+                                        [
+                                          4,
+                                          10
+                                        ]
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "flat go to %n %n %n %n"
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "go to %n %n %n %n %n",
+                    "argumentnames": "[\"x\",\"y\",\"z\",\"size\",\"wave\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                {
+                  "opcode": "operator_add",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "operator_subtract",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            [
+                              12,
+                              "x",
+                              "var:x"
+                            ],
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            3,
+                            {
+                              "opcode": "sensing_of",
+                              "fields": {
+                                "PROPERTY": [
+                                  "x"
+                                ]
+                              },
+                              "inputs": {
+                                "OBJECT": [
+                                  1,
+                                  {
+                                    "opcode": "sensing_of_object_menu",
+                                    "shadow": true,
+                                    "fields": {
+                                      "OBJECT": [
+                                        "Camera"
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_add",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            {
+                              "opcode": "operator_multiply",
+                              "inputs": {
+                                "NUM1": [
+                                  3,
+                                  {
+                                    "opcode": "argument_reporter_string_number",
+                                    "fields": {
+                                      "VALUE": [
+                                        "x"
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ],
+                                "NUM2": [
+                                  3,
+                                  {
+                                    "opcode": "operator_mathop",
+                                    "fields": {
+                                      "OPERATOR": [
+                                        "cos"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "NUM": [
+                                        3,
+                                        [
+                                          12,
+                                          "dir",
+                                          "var:dir"
+                                        ],
+                                        [
+                                          4,
+                                          10
+                                        ]
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            3,
+                            {
+                              "opcode": "operator_multiply",
+                              "inputs": {
+                                "NUM1": [
+                                  3,
+                                  {
+                                    "opcode": "argument_reporter_string_number",
+                                    "fields": {
+                                      "VALUE": [
+                                        "y"
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ],
+                                "NUM2": [
+                                  3,
+                                  {
+                                    "opcode": "operator_mathop",
+                                    "fields": {
+                                      "OPERATOR": [
+                                        "sin"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "NUM": [
+                                        3,
+                                        [
+                                          12,
+                                          "dir",
+                                          "var:dir"
+                                        ],
+                                        [
+                                          4,
+                                          10
+                                        ]
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input1": [
+                3,
+                {
+                  "opcode": "operator_add",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "operator_subtract",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            [
+                              12,
+                              "y",
+                              "var:y"
+                            ],
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            3,
+                            {
+                              "opcode": "sensing_of",
+                              "fields": {
+                                "PROPERTY": [
+                                  "y"
+                                ]
+                              },
+                              "inputs": {
+                                "OBJECT": [
+                                  1,
+                                  {
+                                    "opcode": "sensing_of_object_menu",
+                                    "shadow": true,
+                                    "fields": {
+                                      "OBJECT": [
+                                        "Camera"
+                                      ]
+                                    }
+                                  }
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_subtract",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            {
+                              "opcode": "operator_multiply",
+                              "inputs": {
+                                "NUM1": [
+                                  3,
+                                  {
+                                    "opcode": "argument_reporter_string_number",
+                                    "fields": {
+                                      "VALUE": [
+                                        "y"
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ],
+                                "NUM2": [
+                                  3,
+                                  {
+                                    "opcode": "operator_mathop",
+                                    "fields": {
+                                      "OPERATOR": [
+                                        "cos"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "NUM": [
+                                        3,
+                                        [
+                                          12,
+                                          "dir",
+                                          "var:dir"
+                                        ],
+                                        [
+                                          4,
+                                          10
+                                        ]
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            3,
+                            {
+                              "opcode": "operator_multiply",
+                              "inputs": {
+                                "NUM1": [
+                                  3,
+                                  {
+                                    "opcode": "argument_reporter_string_number",
+                                    "fields": {
+                                      "VALUE": [
+                                        "x"
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ],
+                                "NUM2": [
+                                  3,
+                                  {
+                                    "opcode": "operator_mathop",
+                                    "fields": {
+                                      "OPERATOR": [
+                                        "sin"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "NUM": [
+                                        3,
+                                        [
+                                          12,
+                                          "dir",
+                                          "var:dir"
+                                        ],
+                                        [
+                                          4,
+                                          10
+                                        ]
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input2": [
+                3,
+                {
+                  "opcode": "operator_add",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "operator_add",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            {
+                              "opcode": "operator_subtract",
+                              "inputs": {
+                                "NUM1": [
+                                  3,
+                                  [
+                                    12,
+                                    "z",
+                                    "var:z"
+                                  ],
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ],
+                                "NUM2": [
+                                  3,
+                                  {
+                                    "opcode": "sensing_of",
+                                    "fields": {
+                                      "PROPERTY": [
+                                        "z"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "OBJECT": [
+                                        1,
+                                        {
+                                          "opcode": "sensing_of_object_menu",
+                                          "shadow": true,
+                                          "fields": {
+                                            "OBJECT": [
+                                              "Camera"
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            3,
+                            {
+                              "opcode": "argument_reporter_string_number",
+                              "fields": {
+                                "VALUE": [
+                                  "z"
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_multiply",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            [
+                              12,
+                              "amplitude",
+                              "var:amplitude"
+                            ],
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            3,
+                            {
+                              "opcode": "operator_mathop",
+                              "fields": {
+                                "OPERATOR": [
+                                  "sin"
+                                ]
+                              },
+                              "inputs": {
+                                "NUM": [
+                                  3,
+                                  {
+                                    "opcode": "operator_add",
+                                    "inputs": {
+                                      "NUM1": [
+                                        3,
+                                        {
+                                          "opcode": "operator_add",
+                                          "inputs": {
+                                            "NUM1": [
+                                              3,
+                                              [
+                                                12,
+                                                "phase",
+                                                "var:phase"
+                                              ],
+                                              [
+                                                4,
+                                                10
+                                              ]
+                                            ],
+                                            "NUM2": [
+                                              3,
+                                              {
+                                                "opcode": "argument_reporter_string_number",
+                                                "fields": {
+                                                  "VALUE": [
+                                                    "x"
+                                                  ]
+                                                }
+                                              },
+                                              [
+                                                4,
+                                                10
+                                              ]
+                                            ]
+                                          }
+                                        },
+                                        [
+                                          4,
+                                          10
+                                        ]
+                                      ],
+                                      "NUM2": [
+                                        3,
+                                        {
+                                          "opcode": "argument_reporter_string_number",
+                                          "fields": {
+                                            "VALUE": [
+                                              "wave"
+                                            ]
+                                          }
+                                        },
+                                        [
+                                          4,
+                                          10
+                                        ]
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input3": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "size"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "rotated go to %n %n %n %n"
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "paint body %n",
+                    "argumentnames": "[\"wave\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "i",
+                "var:i"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "-61"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                [
+                  12,
+                  "i",
+                  "var:i"
+                ],
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input1": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input2": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input3": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input4": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "wave"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "go to %n %n %n %n %n"
+            }
+          },
+          {
+            "opcode": "control_repeat",
+            "inputs": {
+              "TIMES": [
+                1,
+                [
+                  6,
+                  90
+                ]
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "data_changevariableby",
+                    "fields": {
+                      "VARIABLE": [
+                        "i",
+                        "var:i"
+                      ]
+                    },
+                    "inputs": {
+                      "VALUE": [
+                        1,
+                        [
+                          4,
+                          1
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "procedures_call",
+                    "inputs": {
+                      "input0": [
+                        3,
+                        [
+                          12,
+                          "i",
+                          "var:i"
+                        ],
+                        [
+                          4,
+                          10
+                        ]
+                      ],
+                      "input1": [
+                        1,
+                        [
+                          4,
+                          0
+                        ]
+                      ],
+                      "input2": [
+                        1,
+                        [
+                          4,
+                          0
+                        ]
+                      ],
+                      "input3": [
+                        3,
+                        {
+                          "opcode": "operator_subtract",
+                          "inputs": {
+                            "NUM1": [
+                              1,
+                              [
+                                4,
+                                10
+                              ]
+                            ],
+                            "NUM2": [
+                              3,
+                              {
+                                "opcode": "operator_multiply",
+                                "inputs": {
+                                  "NUM1": [
+                                    1,
+                                    [
+                                      4,
+                                      8
+                                    ]
+                                  ],
+                                  "NUM2": [
+                                    3,
+                                    {
+                                      "opcode": "operator_mathop",
+                                      "fields": {
+                                        "OPERATOR": [
+                                          "cos"
+                                        ]
+                                      },
+                                      "inputs": {
+                                        "NUM": [
+                                          3,
+                                          {
+                                            "opcode": "operator_subtract",
+                                            "inputs": {
+                                              "NUM1": [
+                                                3,
+                                                {
+                                                  "opcode": "operator_multiply",
+                                                  "inputs": {
+                                                    "NUM1": [
+                                                      1,
+                                                      [
+                                                        4,
+                                                        40
+                                                      ]
+                                                    ],
+                                                    "NUM2": [
+                                                      3,
+                                                      {
+                                                        "opcode": "operator_mathop",
+                                                        "fields": {
+                                                          "OPERATOR": [
+                                                            "sqrt"
+                                                          ]
+                                                        },
+                                                        "inputs": {
+                                                          "NUM": [
+                                                            3,
+                                                            {
+                                                              "opcode": "operator_subtract",
+                                                              "inputs": {
+                                                                "NUM1": [
+                                                                  1,
+                                                                  [
+                                                                    4,
+                                                                    30
+                                                                  ]
+                                                                ],
+                                                                "NUM2": [
+                                                                  3,
+                                                                  [
+                                                                    12,
+                                                                    "i",
+                                                                    "var:i"
+                                                                  ],
+                                                                  [
+                                                                    4,
+                                                                    10
+                                                                  ]
+                                                                ]
+                                                              }
+                                                            },
+                                                            [
+                                                              4,
+                                                              10
+                                                            ]
+                                                          ]
+                                                        }
+                                                      },
+                                                      [
+                                                        4,
+                                                        10
+                                                      ]
+                                                    ]
+                                                  }
+                                                },
+                                                [
+                                                  4,
+                                                  10
+                                                ]
+                                              ],
+                                              "NUM2": [
+                                                1,
+                                                [
+                                                  4,
+                                                  36
+                                                ]
+                                              ]
+                                            }
+                                          },
+                                          [
+                                            4,
+                                            10
+                                          ]
+                                        ]
+                                      }
+                                    },
+                                    [
+                                      4,
+                                      10
+                                    ]
+                                  ]
+                                }
+                              },
+                              [
+                                4,
+                                10
+                              ]
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ],
+                      "input4": [
+                        3,
+                        {
+                          "opcode": "argument_reporter_string_number",
+                          "fields": {
+                            "VALUE": [
+                              "wave"
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "mutation": {
+                      "proccode": "go to %n %n %n %n %n"
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "paint flippers %n",
+                    "argumentnames": "[\"wave\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "i",
+                "var:i"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "8"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_repeat",
+            "inputs": {
+              "TIMES": [
+                1,
+                [
+                  6,
+                  10
+                ]
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "data_changevariableby",
+                    "fields": {
+                      "VARIABLE": [
+                        "i",
+                        "var:i"
+                      ]
+                    },
+                    "inputs": {
+                      "VALUE": [
+                        1,
+                        [
+                          4,
+                          1
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "procedures_call",
+                    "inputs": {
+                      "input0": [
+                        1,
+                        [
+                          4,
+                          -11
+                        ]
+                      ],
+                      "input1": [
+                        1,
+                        [
+                          4,
+                          -11
+                        ]
+                      ],
+                      "input2": [
+                        3,
+                        {
+                          "opcode": "argument_reporter_string_number",
+                          "fields": {
+                            "VALUE": [
+                              "wave"
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "mutation": {
+                      "proccode": "draw diagonally for flipper %n %n %n"
+                    }
+                  },
+                  {
+                    "opcode": "procedures_call",
+                    "inputs": {
+                      "input0": [
+                        1,
+                        [
+                          4,
+                          11
+                        ]
+                      ],
+                      "input1": [
+                        1,
+                        [
+                          4,
+                          -11
+                        ]
+                      ],
+                      "input2": [
+                        3,
+                        {
+                          "opcode": "argument_reporter_string_number",
+                          "fields": {
+                            "VALUE": [
+                              "wave"
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "mutation": {
+                      "proccode": "draw diagonally for flipper %n %n %n"
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "draw diagonally for flipper %n %n %n",
+                    "argumentnames": "[\"y\",\"z\",\"wave\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                [
+                  12,
+                  "i",
+                  "var:i"
+                ],
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input1": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input2": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input3": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input4": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "wave"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "go to %n %n %n %n %n"
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                {
+                  "opcode": "operator_subtract",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      [
+                        12,
+                        "i",
+                        "var:i"
+                      ],
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      1,
+                      [
+                        4,
+                        15
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input1": [
+                3,
+                {
+                  "opcode": "operator_multiply",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "argument_reporter_string_number",
+                        "fields": {
+                          "VALUE": [
+                            "y"
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_mathop",
+                        "fields": {
+                          "OPERATOR": [
+                            "cos"
+                          ]
+                        },
+                        "inputs": {
+                          "NUM": [
+                            3,
+                            {
+                              "opcode": "operator_multiply",
+                              "inputs": {
+                                "NUM1": [
+                                  1,
+                                  [
+                                    4,
+                                    4
+                                  ]
+                                ],
+                                "NUM2": [
+                                  3,
+                                  {
+                                    "opcode": "operator_subtract",
+                                    "inputs": {
+                                      "NUM1": [
+                                        3,
+                                        [
+                                          12,
+                                          "i",
+                                          "var:i"
+                                        ],
+                                        [
+                                          4,
+                                          10
+                                        ]
+                                      ],
+                                      "NUM2": [
+                                        1,
+                                        [
+                                          4,
+                                          9
+                                        ]
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input2": [
+                3,
+                {
+                  "opcode": "operator_multiply",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "argument_reporter_string_number",
+                        "fields": {
+                          "VALUE": [
+                            "z"
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_mathop",
+                        "fields": {
+                          "OPERATOR": [
+                            "cos"
+                          ]
+                        },
+                        "inputs": {
+                          "NUM": [
+                            3,
+                            {
+                              "opcode": "operator_multiply",
+                              "inputs": {
+                                "NUM1": [
+                                  1,
+                                  [
+                                    4,
+                                    4
+                                  ]
+                                ],
+                                "NUM2": [
+                                  3,
+                                  {
+                                    "opcode": "operator_subtract",
+                                    "inputs": {
+                                      "NUM1": [
+                                        3,
+                                        [
+                                          12,
+                                          "i",
+                                          "var:i"
+                                        ],
+                                        [
+                                          4,
+                                          10
+                                        ]
+                                      ],
+                                      "NUM2": [
+                                        1,
+                                        [
+                                          4,
+                                          9
+                                        ]
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input3": [
+                1,
+                [
+                  4,
+                  2
+                ]
+              ],
+              "input4": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "wave"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "go to %n %n %n %n %n"
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "paint dorsal fin %n",
+                    "argumentnames": "[\"wave\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "i",
+                "var:i"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "-13"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                [
+                  12,
+                  "i",
+                  "var:i"
+                ],
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input1": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input2": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input3": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input4": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "wave"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "go to %n %n %n %n %n"
+            }
+          },
+          {
+            "opcode": "control_repeat",
+            "inputs": {
+              "TIMES": [
+                1,
+                [
+                  6,
+                  12
+                ]
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "data_changevariableby",
+                    "fields": {
+                      "VARIABLE": [
+                        "i",
+                        "var:i"
+                      ]
+                    },
+                    "inputs": {
+                      "VALUE": [
+                        1,
+                        [
+                          4,
+                          1
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "procedures_call",
+                    "inputs": {
+                      "input0": [
+                        3,
+                        [
+                          12,
+                          "i",
+                          "var:i"
+                        ],
+                        [
+                          4,
+                          10
+                        ]
+                      ],
+                      "input1": [
+                        1,
+                        [
+                          4,
+                          0
+                        ]
+                      ],
+                      "input2": [
+                        1,
+                        [
+                          4,
+                          0
+                        ]
+                      ],
+                      "input3": [
+                        1,
+                        [
+                          4,
+                          2
+                        ]
+                      ],
+                      "input4": [
+                        3,
+                        {
+                          "opcode": "argument_reporter_string_number",
+                          "fields": {
+                            "VALUE": [
+                              "wave"
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "mutation": {
+                      "proccode": "go to %n %n %n %n %n"
+                    }
+                  },
+                  {
+                    "opcode": "procedures_call",
+                    "inputs": {
+                      "input0": [
+                        3,
+                        {
+                          "opcode": "operator_subtract",
+                          "inputs": {
+                            "NUM1": [
+                              3,
+                              [
+                                12,
+                                "i",
+                                "var:i"
+                              ],
+                              [
+                                4,
+                                10
+                              ]
+                            ],
+                            "NUM2": [
+                              1,
+                              [
+                                4,
+                                15
+                              ]
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ],
+                      "input1": [
+                        1,
+                        [
+                          4,
+                          0
+                        ]
+                      ],
+                      "input2": [
+                        3,
+                        {
+                          "opcode": "operator_multiply",
+                          "inputs": {
+                            "NUM1": [
+                              1,
+                              [
+                                4,
+                                12
+                              ]
+                            ],
+                            "NUM2": [
+                              3,
+                              {
+                                "opcode": "operator_mathop",
+                                "fields": {
+                                  "OPERATOR": [
+                                    "cos"
+                                  ]
+                                },
+                                "inputs": {
+                                  "NUM": [
+                                    3,
+                                    {
+                                      "opcode": "operator_multiply",
+                                      "inputs": {
+                                        "NUM1": [
+                                          1,
+                                          [
+                                            4,
+                                            4
+                                          ]
+                                        ],
+                                        "NUM2": [
+                                          3,
+                                          {
+                                            "opcode": "operator_add",
+                                            "inputs": {
+                                              "NUM1": [
+                                                3,
+                                                [
+                                                  12,
+                                                  "i",
+                                                  "var:i"
+                                                ],
+                                                [
+                                                  4,
+                                                  10
+                                                ]
+                                              ],
+                                              "NUM2": [
+                                                1,
+                                                [
+                                                  4,
+                                                  10
+                                                ]
+                                              ]
+                                            }
+                                          },
+                                          [
+                                            4,
+                                            10
+                                          ]
+                                        ]
+                                      }
+                                    },
+                                    [
+                                      4,
+                                      10
+                                    ]
+                                  ]
+                                }
+                              },
+                              [
+                                4,
+                                10
+                              ]
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ],
+                      "input3": [
+                        1,
+                        [
+                          4,
+                          2
+                        ]
+                      ],
+                      "input4": [
+                        3,
+                        {
+                          "opcode": "argument_reporter_string_number",
+                          "fields": {
+                            "VALUE": [
+                              "wave"
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "mutation": {
+                      "proccode": "go to %n %n %n %n %n"
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "paint tail fin %n",
+                    "argumentnames": "[\"wave\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "i",
+                "var:i"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "-62"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_repeat",
+            "inputs": {
+              "TIMES": [
+                1,
+                [
+                  6,
+                  10
+                ]
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "data_changevariableby",
+                    "fields": {
+                      "VARIABLE": [
+                        "i",
+                        "var:i"
+                      ]
+                    },
+                    "inputs": {
+                      "VALUE": [
+                        1,
+                        [
+                          4,
+                          1
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "procedures_call",
+                    "inputs": {
+                      "input0": [
+                        1,
+                        [
+                          4,
+                          12
+                        ]
+                      ],
+                      "input1": [
+                        3,
+                        {
+                          "opcode": "argument_reporter_string_number",
+                          "fields": {
+                            "VALUE": [
+                              "wave"
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "mutation": {
+                      "proccode": "draw horizontally for fluke %n %n"
+                    }
+                  },
+                  {
+                    "opcode": "procedures_call",
+                    "inputs": {
+                      "input0": [
+                        1,
+                        [
+                          4,
+                          -12
+                        ]
+                      ],
+                      "input1": [
+                        3,
+                        {
+                          "opcode": "argument_reporter_string_number",
+                          "fields": {
+                            "VALUE": [
+                              "wave"
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "mutation": {
+                      "proccode": "draw horizontally for fluke %n %n"
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "draw horizontally for fluke %n %n",
+                    "argumentnames": "[\"span\",\"wave\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                [
+                  12,
+                  "i",
+                  "var:i"
+                ],
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input1": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input2": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input3": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input4": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "wave"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "go to %n %n %n %n %n"
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                1,
+                [
+                  4,
+                  -63
+                ]
+              ],
+              "input1": [
+                3,
+                {
+                  "opcode": "operator_multiply",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "argument_reporter_string_number",
+                        "fields": {
+                          "VALUE": [
+                            "span"
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_subtract",
+                        "inputs": {
+                          "NUM1": [
+                            1,
+                            [
+                              4,
+                              1
+                            ]
+                          ],
+                          "NUM2": [
+                            3,
+                            {
+                              "opcode": "operator_mathop",
+                              "fields": {
+                                "OPERATOR": [
+                                  "sin"
+                                ]
+                              },
+                              "inputs": {
+                                "NUM": [
+                                  3,
+                                  {
+                                    "opcode": "operator_mathop",
+                                    "fields": {
+                                      "OPERATOR": [
+                                        "abs"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "NUM": [
+                                        3,
+                                        {
+                                          "opcode": "operator_multiply",
+                                          "inputs": {
+                                            "NUM1": [
+                                              1,
+                                              [
+                                                4,
+                                                8
+                                              ]
+                                            ],
+                                            "NUM2": [
+                                              3,
+                                              {
+                                                "opcode": "operator_add",
+                                                "inputs": {
+                                                  "NUM1": [
+                                                    3,
+                                                    [
+                                                      12,
+                                                      "i",
+                                                      "var:i"
+                                                    ],
+                                                    [
+                                                      4,
+                                                      10
+                                                    ]
+                                                  ],
+                                                  "NUM2": [
+                                                    1,
+                                                    [
+                                                      4,
+                                                      55.25
+                                                    ]
+                                                  ]
+                                                }
+                                              },
+                                              [
+                                                4,
+                                                10
+                                              ]
+                                            ]
+                                          }
+                                        },
+                                        [
+                                          4,
+                                          10
+                                        ]
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "input2": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "input3": [
+                1,
+                [
+                  4,
+                  2
+                ]
+              ],
+              "input4": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "wave"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "go to %n %n %n %n %n"
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "paint dolphin %n",
+                    "argumentnames": "[\"wave\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "wave"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "paint tail fin %n"
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "wave"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "paint dorsal fin %n"
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "wave"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "paint flippers %n"
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                {
+                  "opcode": "argument_reporter_string_number",
+                  "fields": {
+                    "VALUE": [
+                      "wave"
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "paint body %n"
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "paint background",
+                    "argumentnames": "[]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "pen_penUp"
+          },
+          {
+            "opcode": "motion_gotoxy",
+            "inputs": {
+              "X": [
+                3,
+                {
+                  "opcode": "operator_mod",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "operator_multiply",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            {
+                              "opcode": "operator_multiply",
+                              "inputs": {
+                                "NUM1": [
+                                  3,
+                                  {
+                                    "opcode": "sensing_of",
+                                    "fields": {
+                                      "PROPERTY": [
+                                        "zoom"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "OBJECT": [
+                                        1,
+                                        {
+                                          "opcode": "sensing_of_object_menu",
+                                          "shadow": true,
+                                          "fields": {
+                                            "OBJECT": [
+                                              "Camera"
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ],
+                                "NUM2": [
+                                  3,
+                                  {
+                                    "opcode": "sensing_of",
+                                    "fields": {
+                                      "PROPERTY": [
+                                        "dir"
+                                      ]
+                                    },
+                                    "inputs": {
+                                      "OBJECT": [
+                                        1,
+                                        {
+                                          "opcode": "sensing_of_object_menu",
+                                          "shadow": true,
+                                          "fields": {
+                                            "OBJECT": [
+                                              "Camera"
+                                            ]
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  },
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            3,
+                            {
+                              "opcode": "operator_divide",
+                              "inputs": {
+                                "NUM1": [
+                                  1,
+                                  [
+                                    4,
+                                    3.1416
+                                  ]
+                                ],
+                                "NUM2": [
+                                  1,
+                                  [
+                                    4,
+                                    180
+                                  ]
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      1,
+                      [
+                        4,
+                        460
+                      ]
+                    ]
+                  }
+                },
+                [
+                  4,
+                  10
+                ]
+              ],
+              "Y": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "pen_stamp"
+          },
+          {
+            "opcode": "motion_changexby",
+            "inputs": {
+              "DX": [
+                1,
+                [
+                  4,
+                  -460
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "pen_stamp"
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenbroadcastreceived",
+            "fields": {
+              "BROADCAST_OPTION": [
+                "draw frame",
+                "broadcast:d"
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "mutation": {
+              "proccode": "paint frame"
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenbroadcastreceived",
+            "fields": {
+              "BROADCAST_OPTION": [
+                "show preview",
+                "broadcast:s"
+              ]
+            }
+          },
+          {
+            "opcode": "pen_clear"
+          }
+        ]
+      ]
+    },
+    {
+      "isStage": false,
+      "name": "Camera",
+      "variables": {
+        "var:x": [
+          "x",
+          -149.42692070582703
+        ],
+        "var:y": [
+          "y",
+          13.099441529106574
+        ],
+        "var:z": [
+          "z",
+          "0"
+        ],
+        "var:dir": [
+          "dir",
+          354.99
+        ],
+        "var:zoom": [
+          "zoom",
+          "500"
+        ]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "empty",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "576aeb8905e0b5685794e01ca28d417a",
+          "md5ext": "576aeb8905e0b5685794e01ca28d417a.svg",
+          "rotationCenterX": 0,
+          "rotationCenterY": 0
+        }
+      ],
+      "sounds": [],
+      "volume": 100,
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "don't rotate",
+      "scripts": [
+        [
+          {
+            "opcode": "event_whenbroadcastreceived",
+            "fields": {
+              "BROADCAST_OPTION": [
+                "initialize",
+                "broadcast:i"
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "zoom",
+                "var:zoom"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "500"
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "position camera %n",
+                    "argumentnames": "[\"time\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "control_if_else",
+            "inputs": {
+              "CONDITION": [
+                2,
+                {
+                  "opcode": "operator_lt",
+                  "inputs": {
+                    "OPERAND1": [
+                      3,
+                      {
+                        "opcode": "argument_reporter_string_number",
+                        "fields": {
+                          "VALUE": [
+                            "time"
+                          ]
+                        }
+                      },
+                      [
+                        10,
+                        ""
+                      ]
+                    ],
+                    "OPERAND2": [
+                      1,
+                      [
+                        10,
+                        "20"
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "procedures_call",
+                    "inputs": {
+                      "input0": [
+                        3,
+                        {
+                          "opcode": "argument_reporter_string_number",
+                          "fields": {
+                            "VALUE": [
+                              "time"
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ]
+                    },
+                    "mutation": {
+                      "proccode": "rush from behind %n"
+                    }
+                  }
+                ]
+              ],
+              "SUBSTACK2": [
+                2,
+                [
+                  {
+                    "opcode": "procedures_call",
+                    "inputs": {
+                      "input0": [
+                        3,
+                        {
+                          "opcode": "argument_reporter_string_number",
+                          "fields": {
+                            "VALUE": [
+                              "time"
+                            ]
+                          }
+                        },
+                        [
+                          4,
+                          10
+                        ]
+                      ],
+                      "input1": [
+                        1,
+                        [
+                          4,
+                          -150
+                        ]
+                      ]
+                    },
+                    "mutation": {
+                      "proccode": "circle around %n %n"
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenbroadcastreceived",
+            "fields": {
+              "BROADCAST_OPTION": [
+                "position camera",
+                "broadcast:p"
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "inputs": {
+              "input0": [
+                3,
+                {
+                  "opcode": "sensing_timer"
+                },
+                [
+                  4,
+                  10
+                ]
+              ]
+            },
+            "mutation": {
+              "proccode": "position camera %n"
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "rush from behind %n",
+                    "argumentnames": "[\"time\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "dir",
+                "var:dir"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                3,
+                {
+                  "opcode": "operator_subtract",
+                  "inputs": {
+                    "NUM1": [
+                      1,
+                      [
+                        4,
+                        20
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_divide",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            {
+                              "opcode": "argument_reporter_string_number",
+                              "fields": {
+                                "VALUE": [
+                                  "time"
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            1,
+                            [
+                              4,
+                              2
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  10,
+                  ""
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "x",
+                "var:x"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                3,
+                {
+                  "opcode": "operator_multiply",
+                  "inputs": {
+                    "NUM1": [
+                      1,
+                      [
+                        4,
+                        -120
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_subtract",
+                        "inputs": {
+                          "NUM1": [
+                            3,
+                            {
+                              "opcode": "argument_reporter_string_number",
+                              "fields": {
+                                "VALUE": [
+                                  "time"
+                                ]
+                              }
+                            },
+                            [
+                              4,
+                              10
+                            ]
+                          ],
+                          "NUM2": [
+                            1,
+                            [
+                              4,
+                              8
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  10,
+                  ""
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "y",
+                "var:y"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "-20"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "z",
+                "var:z"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "-20"
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "circle around %n %n",
+                    "argumentnames": "[\"time\",\"distance\"]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "dir",
+                "var:dir"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                3,
+                {
+                  "opcode": "operator_multiply",
+                  "inputs": {
+                    "NUM1": [
+                      1,
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "argument_reporter_string_number",
+                        "fields": {
+                          "VALUE": [
+                            "time"
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  10,
+                  ""
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "x",
+                "var:x"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                3,
+                {
+                  "opcode": "operator_multiply",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "argument_reporter_string_number",
+                        "fields": {
+                          "VALUE": [
+                            "distance"
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_mathop",
+                        "fields": {
+                          "OPERATOR": [
+                            "cos"
+                          ]
+                        },
+                        "inputs": {
+                          "NUM": [
+                            3,
+                            [
+                              12,
+                              "dir",
+                              "var:dir"
+                            ],
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  10,
+                  ""
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "y",
+                "var:y"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                3,
+                {
+                  "opcode": "operator_multiply",
+                  "inputs": {
+                    "NUM1": [
+                      3,
+                      {
+                        "opcode": "argument_reporter_string_number",
+                        "fields": {
+                          "VALUE": [
+                            "distance"
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ],
+                    "NUM2": [
+                      3,
+                      {
+                        "opcode": "operator_mathop",
+                        "fields": {
+                          "OPERATOR": [
+                            "sin"
+                          ]
+                        },
+                        "inputs": {
+                          "NUM": [
+                            3,
+                            [
+                              12,
+                              "dir",
+                              "var:dir"
+                            ],
+                            [
+                              4,
+                              10
+                            ]
+                          ]
+                        }
+                      },
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                [
+                  10,
+                  ""
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "z",
+                "var:z"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "0"
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "isStage": false,
+      "name": "Title",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "Dolphins",
+          "bitmapResolution": 2,
+          "dataFormat": "png",
+          "assetId": "c956278c6d9cdae7a196b7910b7ed232",
+          "md5ext": "c956278c6d9cdae7a196b7910b7ed232.png",
+          "rotationCenterX": 354,
+          "rotationCenterY": -84
+        },
+        {
+          "name": "HeldLaw presents",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "75af5e30018f0c7294349a0a21954743",
+          "md5ext": "75af5e30018f0c7294349a0a21954743.svg",
+          "rotationCenterX": 218,
+          "rotationCenterY": 145
+        }
+      ],
+      "sounds": [],
+      "volume": 100,
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "don't rotate",
+      "scripts": [
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "motion_gotoxy",
+            "inputs": {
+              "X": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "Y": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_seteffectto",
+            "fields": {
+              "EFFECT": [
+                "ghost"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  4,
+                  100
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_switchcostumeto",
+            "inputs": {
+              "COSTUME": [
+                1,
+                {
+                  "opcode": "looks_costume",
+                  "shadow": true,
+                  "fields": {
+                    "COSTUME": [
+                      "HeldLaw presents"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "looks_show"
+          },
+          {
+            "opcode": "control_wait",
+            "inputs": {
+              "DURATION": [
+                1,
+                [
+                  5,
+                  1.5
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "mutation": {
+              "proccode": "fade in"
+            }
+          },
+          {
+            "opcode": "control_wait",
+            "inputs": {
+              "DURATION": [
+                1,
+                [
+                  5,
+                  3.5
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "mutation": {
+              "proccode": "fade out"
+            }
+          },
+          {
+            "opcode": "control_wait_until",
+            "inputs": {
+              "CONDITION": [
+                2,
+                {
+                  "opcode": "operator_gt",
+                  "inputs": {
+                    "OPERAND1": [
+                      3,
+                      {
+                        "opcode": "sensing_timer"
+                      },
+                      [
+                        10,
+                        ""
+                      ]
+                    ],
+                    "OPERAND2": [
+                      1,
+                      [
+                        10,
+                        "11.5"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "looks_switchcostumeto",
+            "inputs": {
+              "COSTUME": [
+                1,
+                {
+                  "opcode": "looks_costume",
+                  "shadow": true,
+                  "fields": {
+                    "COSTUME": [
+                      "Dolphins"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "mutation": {
+              "proccode": "fade in"
+            }
+          },
+          {
+            "opcode": "control_wait",
+            "inputs": {
+              "DURATION": [
+                1,
+                [
+                  5,
+                  4
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "procedures_call",
+            "mutation": {
+              "proccode": "fade out"
+            }
+          },
+          {
+            "opcode": "looks_hide"
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "fade in",
+                    "argumentnames": "[]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "control_repeat",
+            "inputs": {
+              "TIMES": [
+                1,
+                [
+                  6,
+                  10
+                ]
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "looks_changeeffectby",
+                    "fields": {
+                      "EFFECT": [
+                        "ghost"
+                      ]
+                    },
+                    "inputs": {
+                      "CHANGE": [
+                        1,
+                        [
+                          4,
+                          -10
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "control_wait",
+                    "inputs": {
+                      "DURATION": [
+                        1,
+                        [
+                          5,
+                          0.033
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "fade out",
+                    "argumentnames": "[]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "control_repeat",
+            "inputs": {
+              "TIMES": [
+                1,
+                [
+                  6,
+                  25
+                ]
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "looks_changeeffectby",
+                    "fields": {
+                      "EFFECT": [
+                        "ghost"
+                      ]
+                    },
+                    "inputs": {
+                      "CHANGE": [
+                        1,
+                        [
+                          4,
+                          4
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "control_wait",
+                    "inputs": {
+                      "DURATION": [
+                        1,
+                        [
+                          5,
+                          0.033
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenbroadcastreceived",
+            "fields": {
+              "BROADCAST_OPTION": [
+                "show preview",
+                "broadcast:s"
+              ]
+            }
+          },
+          {
+            "opcode": "looks_hide"
+          }
+        ]
+      ]
+    },
+    {
+      "isStage": false,
+      "name": "Trivia",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "species",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "9743a9355593b6e88c56ac9c87cbd7da",
+          "md5ext": "9743a9355593b6e88c56ac9c87cbd7da.svg",
+          "rotationCenterX": 233,
+          "rotationCenterY": -125
+        },
+        {
+          "name": "river dolphins",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "cab4cf159421327aaa712ee323e0da4a",
+          "md5ext": "cab4cf159421327aaa712ee323e0da4a.svg",
+          "rotationCenterX": 233,
+          "rotationCenterY": -125
+        },
+        {
+          "name": "mammals",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "26a0c311fa0b10405e8b336298b9a892",
+          "md5ext": "26a0c311fa0b10405e8b336298b9a892.svg",
+          "rotationCenterX": 233,
+          "rotationCenterY": -125
+        },
+        {
+          "name": "blowhole",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "14457492310d5fd48fbf2590bfdbf58b",
+          "md5ext": "14457492310d5fd48fbf2590bfdbf58b.svg",
+          "rotationCenterX": 233,
+          "rotationCenterY": -125
+        },
+        {
+          "name": "hold breath",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "a82bb7f524502ebc66749152b481f575",
+          "md5ext": "a82bb7f524502ebc66749152b481f575.svg",
+          "rotationCenterX": 233,
+          "rotationCenterY": -125
+        },
+        {
+          "name": "bulls cows",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "5e13271a5ab6489af473fa28e5c15190",
+          "md5ext": "5e13271a5ab6489af473fa28e5c15190.svg",
+          "rotationCenterX": 233,
+          "rotationCenterY": -125
+        },
+        {
+          "name": "intelligent",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "30ba561d4deca607d7eba7be90dcffc0",
+          "md5ext": "30ba561d4deca607d7eba7be90dcffc0.svg",
+          "rotationCenterX": 233,
+          "rotationCenterY": -125
+        },
+        {
+          "name": "social",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "7089040b78d5dbf418d61fc24a8f2522",
+          "md5ext": "7089040b78d5dbf418d61fc24a8f2522.svg",
+          "rotationCenterX": 233,
+          "rotationCenterY": -125
+        },
+        {
+          "name": "communicate",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "3d5422711f3f046eb27792b26cc79ab4",
+          "md5ext": "3d5422711f3f046eb27792b26cc79ab4.svg",
+          "rotationCenterX": 233,
+          "rotationCenterY": -125
+        },
+        {
+          "name": "nonverbal",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "1edebcc018a1dc419811572faefde422",
+          "md5ext": "1edebcc018a1dc419811572faefde422.svg",
+          "rotationCenterX": 233,
+          "rotationCenterY": -125
+        },
+        {
+          "name": "endangered",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "3920ee8046f686c0aed2c14f40f556dd",
+          "md5ext": "3920ee8046f686c0aed2c14f40f556dd.svg",
+          "rotationCenterX": 233,
+          "rotationCenterY": -125
+        }
+      ],
+      "sounds": [],
+      "volume": 100,
+      "visible": false,
+      "x": 0,
+      "y": 0,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "don't rotate",
+      "scripts": [
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "looks_hide"
+          },
+          {
+            "opcode": "motion_gotoxy",
+            "inputs": {
+              "X": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "Y": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_seteffectto",
+            "fields": {
+              "EFFECT": [
+                "ghost"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  4,
+                  100
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_switchcostumeto",
+            "inputs": {
+              "COSTUME": [
+                1,
+                {
+                  "opcode": "looks_costume",
+                  "shadow": true,
+                  "fields": {
+                    "COSTUME": [
+                      "species"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "control_wait",
+            "inputs": {
+              "DURATION": [
+                1,
+                [
+                  5,
+                  24
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_show"
+          },
+          {
+            "opcode": "control_forever",
+            "inputs": {
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "control_wait",
+                    "inputs": {
+                      "DURATION": [
+                        1,
+                        [
+                          5,
+                          2
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "procedures_call",
+                    "mutation": {
+                      "proccode": "fade in"
+                    }
+                  },
+                  {
+                    "opcode": "control_wait",
+                    "inputs": {
+                      "DURATION": [
+                        1,
+                        [
+                          5,
+                          10
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "procedures_call",
+                    "mutation": {
+                      "proccode": "fade out"
+                    }
+                  },
+                  {
+                    "opcode": "looks_nextcostume"
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "fade in",
+                    "argumentnames": "[]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "control_repeat",
+            "inputs": {
+              "TIMES": [
+                1,
+                [
+                  6,
+                  10
+                ]
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "looks_changeeffectby",
+                    "fields": {
+                      "EFFECT": [
+                        "ghost"
+                      ]
+                    },
+                    "inputs": {
+                      "CHANGE": [
+                        1,
+                        [
+                          4,
+                          -10
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "control_wait",
+                    "inputs": {
+                      "DURATION": [
+                        1,
+                        [
+                          5,
+                          0.033
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "procedures_definition",
+            "inputs": {
+              "custom_block": [
+                2,
+                {
+                  "opcode": "procedures_prototype",
+                  "mutation": {
+                    "proccode": "fade out",
+                    "argumentnames": "[]",
+                    "warp": false
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "control_repeat",
+            "inputs": {
+              "TIMES": [
+                1,
+                [
+                  6,
+                  25
+                ]
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "looks_changeeffectby",
+                    "fields": {
+                      "EFFECT": [
+                        "ghost"
+                      ]
+                    },
+                    "inputs": {
+                      "CHANGE": [
+                        1,
+                        [
+                          4,
+                          4
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "control_wait",
+                    "inputs": {
+                      "DURATION": [
+                        1,
+                        [
+                          5,
+                          0.033
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenbroadcastreceived",
+            "fields": {
+              "BROADCAST_OPTION": [
+                "show preview",
+                "broadcast:s"
+              ]
+            }
+          },
+          {
+            "opcode": "looks_hide"
+          }
+        ]
+      ]
+    }
+  ],
+  "monitors": []
+}

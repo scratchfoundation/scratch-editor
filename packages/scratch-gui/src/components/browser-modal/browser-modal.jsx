@@ -41,7 +41,7 @@ const BrowserModal = props => {
                         <FormattedMessage {...label} />
                     </h2>
                     <p>
-                        { /* eslint-disable max-len */ }
+                        { /* eslint-disable @stylistic/max-len */ }
                         {
                             props.error ? <FormattedMessage
                                 defaultMessage="We are very sorry, but it looks like you are using a browser version that Scratch does not support. We recommend updating to the latest version of a supported browser such as Google Chrome, Mozilla Firefox, Microsoft Edge, or Apple Safari. "

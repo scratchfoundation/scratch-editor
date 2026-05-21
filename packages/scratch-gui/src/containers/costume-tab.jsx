@@ -113,7 +113,9 @@ class CostumeTab extends React.Component {
     }
     componentDidMount () {
         this.handleDocumentClick = () => {
-            if (document.activeElement !== document.body) {
+            // If the costume tab is focused and the user clicks outside of it, unfocus the costume tab.
+            // This is to prevent keypresses from affecting the tabs when users try to interact with the paint editor
+            if (document.activeElement instanceof HTMLLIElement && document.activeElement.role === 'tab') {
                 document.activeElement.blur();
             }
         };

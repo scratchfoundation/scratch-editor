@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import ContextMenu from '../../lib/radix-ui-context-menu.js';
+import * as ContextMenu from '@radix-ui/react-context-menu';
 import classNames from 'classnames';
 import styles from './context-menu.css';
 

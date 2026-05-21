@@ -1,0 +1,275 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {
+        "var:broadcast name": [
+          "broadcast name",
+          0
+        ]
+      },
+      "lists": {},
+      "broadcasts": {
+        "broadcast:b": "broadcast a",
+        "broadcast:m": "message1"
+      },
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "backdrop1",
+          "bitmapResolution": 1,
+          "dataFormat": "png",
+          "assetId": "739b5e2a2435f6e1ec2993791b423146",
+          "md5ext": "739b5e2a2435f6e1ec2993791b423146.png",
+          "rotationCenterX": 240,
+          "rotationCenterY": 180
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 11025,
+          "sampleCount": 258,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null,
+      "scripts": []
+    },
+    {
+      "isStage": false,
+      "name": "Sprite2",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "costume1",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "87ec29ad216c0074c731d581c7f40c39",
+          "md5ext": "87ec29ad216c0074c731d581c7f40c39.svg",
+          "rotationCenterX": 240,
+          "rotationCenterY": 180
+        }
+      ],
+      "sounds": [],
+      "volume": 100,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": [
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "looks_say",
+            "inputs": {
+              "MESSAGE": [
+                1,
+                [
+                  10,
+                  "plan 1"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "broadcast name",
+                "var:broadcast name"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "broadcast a"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "event_broadcastandwait",
+            "inputs": {
+              "BROADCAST_INPUT": [
+                3,
+                [
+                  12,
+                  "broadcast name",
+                  "var:broadcast name"
+                ],
+                [
+                  11,
+                  "message1",
+                  "broadcast:m"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_say",
+            "inputs": {
+              "MESSAGE": [
+                1,
+                [
+                  10,
+                  "fail broadcast a did not complete"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_say",
+            "inputs": {
+              "MESSAGE": [
+                1,
+                [
+                  10,
+                  "end"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_stop",
+            "fields": {
+              "STOP_OPTION": [
+                "all"
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenbroadcastreceived",
+            "fields": {
+              "BROADCAST_OPTION": [
+                "broadcast a",
+                "broadcast:b"
+              ]
+            }
+          },
+          {
+            "opcode": "control_wait",
+            "inputs": {
+              "DURATION": [
+                1,
+                [
+                  5,
+                  1
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_say",
+            "inputs": {
+              "MESSAGE": [
+                1,
+                [
+                  10,
+                  "pass broadcast a completed"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_say",
+            "inputs": {
+              "MESSAGE": [
+                1,
+                [
+                  10,
+                  "end"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_stop",
+            "fields": {
+              "STOP_OPTION": [
+                "all"
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "control_wait",
+            "inputs": {
+              "DURATION": [
+                1,
+                [
+                  5,
+                  0.5
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "broadcast name",
+                "var:broadcast name"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "something else"
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  ],
+  "monitors": [
+    {
+      "id": "_data_variable_{\"VARIABLE\":\"broadcast name\"}",
+      "mode": "default",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "broadcast name"
+      },
+      "spriteName": null,
+      "value": "",
+      "x": 5,
+      "y": 5,
+      "visible": false,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    }
+  ]
+}

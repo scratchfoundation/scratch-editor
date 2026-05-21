@@ -15,9 +15,28 @@ import {
     setProjectId
 } from './reducers/project-state.js';
 import {
+    openBackdropLibrary,
+    openCostumeLibrary,
+    openDebugModal,
+    openExtensionLibrary,
     openLoadingProject,
+    openTelemetryModal,
+    openSoundLibrary,
+    openSpriteLibrary,
+    openSoundRecorder,
+    openConnectionModal,
+    openTipsLibrary,
+    closeBackdropLibrary,
+    closeCostumeLibrary,
+    closeDebugModal,
+    closeExtensionLibrary,
     closeLoadingProject,
-    openTelemetryModal
+    closeTelemetryModal,
+    closeSpriteLibrary,
+    closeSoundLibrary,
+    closeSoundRecorder,
+    closeTipsLibrary,
+    closeConnectionModal
 } from './reducers/modals.js';
 import {setStageSize} from './reducers/stage-size';
 
@@ -39,9 +58,28 @@ export {
     setProjectId,
     setStageSize,
 
+    openBackdropLibrary,
+    openCostumeLibrary,
+    openDebugModal,
+    openExtensionLibrary,
     openLoadingProject,
-    closeLoadingProject,
     openTelemetryModal,
+    openSoundLibrary,
+    openSpriteLibrary,
+    openSoundRecorder,
+    openConnectionModal,
+    openTipsLibrary,
+    closeBackdropLibrary,
+    closeCostumeLibrary,
+    closeDebugModal,
+    closeExtensionLibrary,
+    closeLoadingProject,
+    closeTelemetryModal,
+    closeSpriteLibrary,
+    closeSoundLibrary,
+    closeSoundRecorder,
+    closeTipsLibrary,
+    closeConnectionModal,
     
     buildInitialState,
     guiMiddleware,

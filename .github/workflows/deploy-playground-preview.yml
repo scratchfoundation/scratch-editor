@@ -1,0 +1,60 @@
+name: Deploy Playground Preview
+
+on:
+  workflow_call:
+    inputs:
+      destination_dir:
+        description: 'Destination subdirectory for GitHub Pages (will be sanitized)'
+        type: string
+        required: true
+      full_commit_message:
+        description: 'Commit message for the GitHub Pages deployment'
+        type: string
+        required: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    name: Publish Preview Playgrounds to GitHub Pages
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+        with:
+          sparse-checkout: .github/actions/deploy-pages-with-retry/
+          fetch-depth: 1
+          sparse-checkout-cone-mode: true
+          persist-credentials: false
+          lfs: false
+          submodules: false
+      - name: Sanitize Destination Directory Name
+        id: dir
+        env:
+          DESTINATION_DIR: ${{ inputs.destination_dir }}
+        run: |
+          echo "result=${DESTINATION_DIR//[^A-Za-z0-9._-]/_}" | tee --append "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: build
+          path: packages
+      - name: Prepare Playgrounds for GitHub Pages
+        working-directory: ./packages
+        run: |
+          mkdir -p ../pages/
+          for pkg in *; do
+            if [ -d "${pkg}/playground" ]; then
+              # using symlinks is quick and artifact generation will dereference them
+              # if the GitHub Pages action stops dereferencing these links, we'll need to copy the files instead
+              ln -s "../packages/${pkg}/playground" "../pages/${pkg}"
+            fi
+          done
+
+          # scratch-gui doesn't follow the pattern above
+          ln -s "../packages/scratch-gui/build" "../pages/scratch-gui"
+
+          ls -l ../pages/
+      - name: Deploy Playgrounds to GitHub Pages
+        uses: ./.github/actions/deploy-pages-with-retry
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./pages
+          destination_dir: "${{ steps.dir.outputs.result }}"
+          full_commit_message: "${{ inputs.full_commit_message }}"

@@ -1240,7 +1240,7 @@ const parseBlock = function (sb2block, addBroadcastMsg, getVariableId, extension
         activeBlock.inputs[inputName] = {
             name: inputName,
             block: inputUid,
-            shadow: inputUid
+            shadow: null
         };
         activeBlock.children = [{
             id: inputUid,
@@ -1248,7 +1248,7 @@ const parseBlock = function (sb2block, addBroadcastMsg, getVariableId, extension
             inputs: {},
             fields: {},
             next: null,
-            shadow: true,
+            shadow: false,
             children: [],
             mutation: {
                 tagName: 'mutation',

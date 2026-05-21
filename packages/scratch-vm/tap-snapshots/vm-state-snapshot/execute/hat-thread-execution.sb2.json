@@ -1,0 +1,504 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {
+        "var:Green flag counter": [
+          "Green flag counter",
+          20
+        ],
+        "var:Greater than timer counter": [
+          "Greater than timer counter",
+          57
+        ]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "backdrop1",
+          "bitmapResolution": 1,
+          "dataFormat": "png",
+          "assetId": "739b5e2a2435f6e1ec2993791b423146",
+          "md5ext": "739b5e2a2435f6e1ec2993791b423146.png",
+          "rotationCenterX": 240,
+          "rotationCenterY": 180
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 11025,
+          "sampleCount": 258,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null,
+      "scripts": []
+    },
+    {
+      "isStage": false,
+      "name": "Sprite1",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "costume1",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "9f567abe17ba2d13597d1f2e416017ef",
+          "md5ext": "9f567abe17ba2d13597d1f2e416017ef.svg",
+          "rotationCenterX": 47,
+          "rotationCenterY": 55
+        },
+        {
+          "name": "costume2",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "1e4df2581d2d314527775ee43f646b42",
+          "md5ext": "1e4df2581d2d314527775ee43f646b42.svg",
+          "rotationCenterX": 47,
+          "rotationCenterY": 55
+        }
+      ],
+      "sounds": [
+        {
+          "name": "meow",
+          "assetId": "83c36d806dc92327b9e7049a565c6bff",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 22050,
+          "sampleCount": 18688,
+          "md5ext": "83c36d806dc92327b9e7049a565c6bff.wav"
+        }
+      ],
+      "volume": 100,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": [
+        [
+          {
+            "opcode": "event_whengreaterthan",
+            "fields": {
+              "WHENGREATERTHANMENU": [
+                "timer"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_repeat",
+            "inputs": {
+              "TIMES": [
+                1,
+                [
+                  6,
+                  1
+                ]
+              ],
+              "SUBSTACK": [
+                1,
+                null
+              ]
+            }
+          },
+          {
+            "opcode": "data_changevariableby",
+            "fields": {
+              "VARIABLE": [
+                "Greater than timer counter",
+                "var:Greater than timer counter"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  4,
+                  1
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "sensing_resettimer"
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "Green flag counter",
+                "var:Green flag counter"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "Greater than timer counter",
+                "var:Greater than timer counter"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_say",
+            "inputs": {
+              "MESSAGE": [
+                1,
+                [
+                  10,
+                  "plan  2"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_repeat_until",
+            "inputs": {
+              "CONDITION": [
+                2,
+                {
+                  "opcode": "operator_equals",
+                  "inputs": {
+                    "OPERAND1": [
+                      3,
+                      [
+                        12,
+                        "Green flag counter",
+                        "var:Green flag counter"
+                      ],
+                      [
+                        10,
+                        ""
+                      ]
+                    ],
+                    "OPERAND2": [
+                      1,
+                      [
+                        10,
+                        "20"
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "data_changevariableby",
+                    "fields": {
+                      "VARIABLE": [
+                        "Green flag counter",
+                        "var:Green flag counter"
+                      ]
+                    },
+                    "inputs": {
+                      "VALUE": [
+                        1,
+                        [
+                          4,
+                          1
+                        ]
+                      ]
+                    }
+                  },
+                  {
+                    "opcode": "control_wait",
+                    "inputs": {
+                      "DURATION": [
+                        1,
+                        [
+                          5,
+                          -1
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_if_else",
+            "inputs": {
+              "CONDITION": [
+                2,
+                {
+                  "opcode": "operator_equals",
+                  "inputs": {
+                    "OPERAND1": [
+                      3,
+                      [
+                        12,
+                        "Green flag counter",
+                        "var:Green flag counter"
+                      ],
+                      [
+                        10,
+                        ""
+                      ]
+                    ],
+                    "OPERAND2": [
+                      1,
+                      [
+                        10,
+                        "20"
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        1,
+                        [
+                          10,
+                          "pass Green flag counter is correct"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ],
+              "SUBSTACK2": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        3,
+                        {
+                          "opcode": "operator_join",
+                          "inputs": {
+                            "STRING1": [
+                              1,
+                              [
+                                10,
+                                "fail Flag counter should be 20 and it is "
+                              ]
+                            ],
+                            "STRING2": [
+                              3,
+                              [
+                                12,
+                                "Green flag counter",
+                                "var:Green flag counter"
+                              ],
+                              [
+                                10,
+                                ""
+                              ]
+                            ]
+                          }
+                        },
+                        [
+                          10,
+                          ""
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_if_else",
+            "inputs": {
+              "CONDITION": [
+                2,
+                {
+                  "opcode": "operator_equals",
+                  "inputs": {
+                    "OPERAND1": [
+                      3,
+                      [
+                        12,
+                        "Greater than timer counter",
+                        "var:Greater than timer counter"
+                      ],
+                      [
+                        10,
+                        ""
+                      ]
+                    ],
+                    "OPERAND2": [
+                      1,
+                      [
+                        10,
+                        "10"
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        1,
+                        [
+                          10,
+                          "pass Greater than timer is correct"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ],
+              "SUBSTACK2": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        3,
+                        {
+                          "opcode": "operator_join",
+                          "inputs": {
+                            "STRING1": [
+                              1,
+                              [
+                                10,
+                                "fail Timer counter should be 10 and it is "
+                              ]
+                            ],
+                            "STRING2": [
+                              3,
+                              [
+                                12,
+                                "Greater than timer counter",
+                                "var:Greater than timer counter"
+                              ],
+                              [
+                                10,
+                                ""
+                              ]
+                            ]
+                          }
+                        },
+                        [
+                          10,
+                          ""
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_say",
+            "inputs": {
+              "MESSAGE": [
+                1,
+                [
+                  10,
+                  "end  "
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  ],
+  "monitors": [
+    {
+      "id": "_data_variable_{\"VARIABLE\":\"Greater than timer counter\"}",
+      "mode": "default",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "Greater than timer counter"
+      },
+      "spriteName": null,
+      "value": "",
+      "x": 5,
+      "y": 32,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_data_variable_{\"VARIABLE\":\"Green flag counter\"}",
+      "mode": "default",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "Green flag counter"
+      },
+      "spriteName": null,
+      "value": "",
+      "x": 5,
+      "y": 5,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import path from 'path';
 import SeleniumHelper from '../helpers/selenium-helper';
 
 const {
+    clickBlocksCategory,
     clickText,
     clickXpath,
     findByText,
@@ -10,7 +11,8 @@ const {
     getLogs,
     loadUri,
     rightClickText,
-    scope
+    scope,
+    scopeForBlockText
 } = new SeleniumHelper();
 
 const uri = path.resolve(__dirname, '../../build/index.html');
@@ -41,12 +43,10 @@ describe('Localization', () => {
         await clickXpath(SETTINGS_MENU_XPATH);
         await clickText('Language', scope.menuBar);
         await clickText('Deutsch');
-        await new Promise(resolve => setTimeout(resolve, 1000)); // wait for blocks refresh
 
         // Make sure the blocks are translating
-        await clickText('Fühlen'); // Sensing category in German
-        await new Promise(resolve => setTimeout(resolve, 1000)); // wait for blocks to scroll
-        await clickText('Antwort'); // Find the "answer" block in German
+        await clickBlocksCategory('Fühlen'); // Sensing category in German & wait for scroll
+        await clickXpath(`//${scopeForBlockText('Antwort')}`); // Find the "answer" block in German
 
         // Change to the costumes tab to confirm other parts of the GUI are translating
         await clickText('Kostüme');
@@ -64,7 +64,7 @@ describe('Localization', () => {
     // Regression test for #4476, blocks in wrong language when loaded with locale
     test('Loading with locale shows correct blocks', async () => {
         await loadUri(`${uri}?locale=de`);
-        await clickText('Fühlen'); // Sensing category in German
+        await clickBlocksCategory('Fühlen'); // Sensing category in German
         await new Promise(resolve => setTimeout(resolve, 1000)); // wait for blocks to scroll
         await clickText('Antwort'); // Find the "answer" block in German
         const logs = await getLogs();
@@ -74,7 +74,7 @@ describe('Localization', () => {
     // test for #5445
     test('Loading with locale shows correct translation for string length block parameter', async () => {
         await loadUri(`${uri}?locale=ja`);
-        await clickText('演算'); // Operators category in Japanese
+        await clickBlocksCategory('演算'); // Operators category in Japanese
         await new Promise(resolve => setTimeout(resolve, 1000)); // wait for blocks to scroll
         await clickText('の長さ', scope.blocksTab); // Click "length <apple>" block
         await findByText('3', scope.reportedValue); // Tooltip with result

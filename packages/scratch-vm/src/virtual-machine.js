@@ -560,7 +560,13 @@ class VirtualMachine extends EventEmitter {
                 this.editingTarget = targets[0];
             }
 
-            if (!wholeProject) {
+            if (wholeProject) {
+                // A loaded project may carry dangling variable, list, or broadcast
+                // references baked in by historical bugs. Reconcile each target so
+                // those references resolve cleanly without renaming any legitimate
+                // local-vs-global name collisions.
+                targets.forEach(target => target.reconcileVariableReferences());
+            } else {
                 this.editingTarget.fixUpVariableReferences();
             }
 
@@ -1280,6 +1286,12 @@ class VirtualMachine extends EventEmitter {
                 target.blocks.createBlock(block);
             });
             target.blocks.updateTargetSpecificBlocks(target.isStage);
+            if (!optFromTargetId) {
+                // No source target means the blocks come from outside the project (e.g. the
+                // backpack). Reconcile any variable, list, or broadcast references against
+                // what's defined in the project, creating missing definitions on the stage.
+                target.fixUpVariableReferences();
+            }
         });
     }
 

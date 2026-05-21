@@ -25,8 +25,8 @@ class SpriteSelectorItem extends React.PureComponent {
             'handleClick',
             'handleDuplicate',
             'handleExport',
-            'handleMouseEnter',
-            'handleMouseLeave',
+            'handlePointerEnter',
+            'handlePointerLeave',
             'handleMouseDown',
             'handleDragEnd',
             'handleDrag',
@@ -93,7 +93,7 @@ class SpriteSelectorItem extends React.PureComponent {
         const {x, y} = getEventXY(e);
         const {top, left, bottom, right} = this.ref.getBoundingClientRect();
         if (x >= left && x <= right && y >= top && y <= bottom) {
-            this.handleMouseEnter();
+            this.handlePointerEnter();
         }
     }
     handleMouseDown (e) {
@@ -113,10 +113,10 @@ class SpriteSelectorItem extends React.PureComponent {
         e.stopPropagation();
         this.props.onExportButtonClick(this.props.id);
     }
-    handleMouseLeave () {
+    handlePointerLeave () {
         this.props.dispatchSetHoveredSprite(null);
     }
-    handleMouseEnter () {
+    handlePointerEnter () {
         this.props.dispatchSetHoveredSprite(this.props.id);
     }
     handleDeleteButtonClick (e) {
@@ -140,7 +140,7 @@ class SpriteSelectorItem extends React.PureComponent {
     }
     render () {
         const {
-             
+
             asset,
             id,
             index,
@@ -153,7 +153,7 @@ class SpriteSelectorItem extends React.PureComponent {
             costumeURL,
             vm,
             deleteConfirmationModalPosition,
-             
+
             ...props
         } = this.props;
         return (<>
@@ -173,8 +173,8 @@ class SpriteSelectorItem extends React.PureComponent {
                 onDuplicateButtonClick={onDuplicateButtonClick ? this.handleDuplicate : null}
                 onExportButtonClick={onExportButtonClick ? this.handleExport : null}
                 onMouseDown={this.handleMouseDown}
-                onMouseEnter={this.handleMouseEnter}
-                onMouseLeave={this.handleMouseLeave}
+                onPointerEnter={this.handlePointerEnter}
+                onPointerLeave={this.handlePointerLeave}
                 isDeleteConfirmationModalOpened={this.state.isDeletePromptOpen}
                 {...props}
             />

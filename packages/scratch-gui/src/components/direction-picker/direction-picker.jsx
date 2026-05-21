@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import Popover from 'react-popover';
 import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
@@ -51,15 +51,43 @@ const messages = defineMessages({
 
 const DirectionPicker = props => {
     const intl = useIntl();
+
+    const containerRef = useRef(null);
+    const popoverRef = useRef(null);
+
+    // Close the popover once we focus out of it
+    useEffect(() => {
+        if (!props.popoverOpen) return;
+
+        const handleFocusIn = event => {
+            const target = event.target;
+            if (
+                (containerRef.current && containerRef.current.contains(target)) ||
+                (popoverRef.current && popoverRef.current.contains(target))
+            ) {
+                return;
+            }
+
+            props.onClosePopover();
+        };
+
+        document.addEventListener('focusin', handleFocusIn);
+
+        return () => {
+            document.removeEventListener('focusin', handleFocusIn);
+        };
+    }, [props.popoverOpen, props.onClosePopover]);
+
     return (
         <Label
             secondary
             above={props.labelAbove}
             text={directionLabel}
+            ref={containerRef}
         >
             <Popover
                 body={
-                    <div>
+                    <div ref={popoverRef}>
                         <Dial
                             direction={props.direction}
                             onChange={props.onChangeDirection}

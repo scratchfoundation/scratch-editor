@@ -1,0 +1,108 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "backdrop1",
+          "bitmapResolution": 2,
+          "dataFormat": "png",
+          "assetId": "b61b1077b0ea1931abee9dbbfa7903ff",
+          "md5ext": "b61b1077b0ea1931abee9dbbfa7903ff.png",
+          "rotationCenterX": 480,
+          "rotationCenterY": 360
+        }
+      ],
+      "sounds": [],
+      "volume": 100,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null,
+      "scripts": []
+    },
+    {
+      "isStage": false,
+      "name": "Sprite1",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "costume1",
+          "bitmapResolution": 2,
+          "dataFormat": "png",
+          "assetId": "6d1ca6862f00a2bdc3e4ce243795937f",
+          "md5ext": "6d1ca6862f00a2bdc3e4ce243795937f.png",
+          "rotationCenterX": 110,
+          "rotationCenterY": 124
+        }
+      ],
+      "sounds": [],
+      "volume": 100,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": [
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "looks_sayforsecs",
+            "inputs": {
+              "MESSAGE": [
+                1,
+                [
+                  10,
+                  "Hello!"
+                ]
+              ],
+              "SECS": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_thinkforsecs",
+            "inputs": {
+              "MESSAGE": [
+                1,
+                [
+                  10,
+                  "Hmm..."
+                ]
+              ],
+              "SECS": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  ],
+  "monitors": []
+}

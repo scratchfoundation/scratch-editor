@@ -125,9 +125,7 @@ const extensionInfoWithCustomFieldTypes = {
 
 const testCategoryInfo = function (t, block) {
     t.equal(block.json.category, 'fake test extension');
-    t.equal(block.json.colour, '#111111');
-    t.equal(block.json.colourSecondary, '#222222');
-    t.equal(block.json.colourTertiary, '#333333');
+    t.equal(block.json.style, 'test');
     t.equal(block.json.inputsInline, true);
 };
 
@@ -139,12 +137,11 @@ const testButton = function (t, button) {
 const testReporter = function (t, reporter) {
     t.equal(reporter.json.type, 'test_reporter');
     testCategoryInfo(t, reporter);
-    t.equal(reporter.json.checkboxInFlyout, true);
     t.equal(reporter.json.outputShape, ScratchBlocksConstants.OUTPUT_SHAPE_ROUND);
     t.equal(reporter.json.output, 'String');
     t.notOk(Object.prototype.hasOwnProperty.call(reporter.json, 'previousStatement'));
     t.notOk(Object.prototype.hasOwnProperty.call(reporter.json, 'nextStatement'));
-    t.same(reporter.json.extensions, ['scratch_extension']);
+    t.same(reporter.json.extensions, ['scratch_extension', 'monitor_block']);
     t.equal(reporter.json.message0, '%1 %2simple text'); // "%1 %2" from the block icon
     t.notOk(Object.prototype.hasOwnProperty.call(reporter.json, 'message1'));
     t.same(reporter.json.args0, [
@@ -167,12 +164,11 @@ const testReporter = function (t, reporter) {
 const testInlineImage = function (t, inlineImage) {
     t.equal(inlineImage.json.type, 'test_inlineImage');
     testCategoryInfo(t, inlineImage);
-    t.equal(inlineImage.json.checkboxInFlyout, true);
     t.equal(inlineImage.json.outputShape, ScratchBlocksConstants.OUTPUT_SHAPE_ROUND);
     t.equal(inlineImage.json.output, 'String');
     t.notOk(Object.prototype.hasOwnProperty.call(inlineImage.json, 'previousStatement'));
     t.notOk(Object.prototype.hasOwnProperty.call(inlineImage.json, 'nextStatement'));
-    t.notOk(inlineImage.json.extensions && inlineImage.json.extensions.length); // OK if it's absent or empty
+    t.same(inlineImage.json.extensions, ['monitor_block']);
     t.equal(inlineImage.json.message0, 'text and %1'); // block text followed by inline image
     t.notOk(Object.prototype.hasOwnProperty.call(inlineImage.json, 'message1'));
     t.same(inlineImage.json.args0, [

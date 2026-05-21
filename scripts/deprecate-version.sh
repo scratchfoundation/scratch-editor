@@ -18,7 +18,7 @@ echo "Deprecating version $version_to_deprecate with message: $message"
 # ensuring that npm can authenticate interactively if needed
 readarray -t packages < <(npm -ws pkg get name | jq -r '.[]')
 
-for package in "${packages[@]}"; do
+for package in "${packages[@]}" '@scratch/scratch-gui-standalone'; do
     echo "Deprecating $package@$version_to_deprecate"
     npm deprecate "$package@$version_to_deprecate" "$message"
 done

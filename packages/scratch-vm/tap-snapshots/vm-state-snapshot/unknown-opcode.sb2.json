@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "backdrop1",
+          "bitmapResolution": 1,
+          "dataFormat": "png",
+          "assetId": "739b5e2a2435f6e1ec2993791b423146",
+          "md5ext": "739b5e2a2435f6e1ec2993791b423146.png",
+          "rotationCenterX": 240,
+          "rotationCenterY": 180
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 11025,
+          "sampleCount": 258,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null,
+      "scripts": [
+        [
+          {
+            "opcode": "sound_play",
+            "inputs": {
+              "SOUND_MENU": [
+                1,
+                {
+                  "opcode": "sound_sounds_menu",
+                  "shadow": true,
+                  "fields": {
+                    "SOUND_MENU": [
+                      "pop"
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "sound_play",
+            "inputs": {
+              "SOUND_MENU": [
+                1,
+                {
+                  "opcode": "sound_sounds_menu",
+                  "shadow": true,
+                  "fields": {
+                    "SOUND_MENU": [
+                      "pop"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  ],
+  "monitors": []
+}

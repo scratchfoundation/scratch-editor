@@ -5,7 +5,17 @@ on:
   pull_request:
   push: # WARNING: Renovate sometimes automerges without PR, so we MUST build and test renovate/** branches
   workflow_call:
+    inputs:
+      force-full-build:
+        description: 'Build all packages regardless of path filters'
+        type: boolean
+        default: false
   workflow_dispatch:
+    inputs:
+      force-full-build:
+        description: 'Build all packages regardless of path filters'
+        type: boolean
+        default: false
 
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.compare || github.head_ref || github.ref }}"
@@ -24,70 +34,68 @@ jobs:
         with:
           cache: 'npm'
           node-version-file: '.nvmrc'
-      - name: Debug info
+      - name: Debug Info
         # https://docs.github.com/en/actions/reference/security/secure-use#use-an-intermediate-environment-variable
         env:
           # `env:` values are printed to the log even without using them in `run:`
           GH_CONTEXT: ${{ toJson(github) }}
+          SCRATCH_ENV: ${{ vars.SCRATCH_ENV || '<none>' }}
         run: |
           cat <<EOF
           Working directory: $(pwd)
           Node version: $(node --version)
           NPM version: $(npm --version)
-          Scratch environment: ${{ vars.SCRATCH_ENV || '<none>' }}
+          Scratch environment: $SCRATCH_ENV
           EOF
 
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
-        id: filter
+      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
+        id: paths-filter
+        if: ${{ !inputs.force-full-build }}
         with:
           filters: ./.github/path-filters.yml
+
+      - name: Resolve Changed Packages
+        id: filter
+        run: |
+          if [ "${{ inputs.force-full-build }}" = "true" ]; then
+            echo "any-workspace=true" >> "$GITHUB_OUTPUT"
+            PACKAGES=$(ls -1d packages/*/ | xargs -n1 basename | jq -Rcn '[inputs]')
+            echo "changes=$PACKAGES" >> "$GITHUB_OUTPUT"
+          else
+            echo "any-workspace=${{ steps.paths-filter.outputs.any-workspace }}" >> "$GITHUB_OUTPUT"
+            PACKAGES=$(echo '${{ steps.paths-filter.outputs.changes }}' | jq -c '[.[] | select(. != "global" and . != "any-workspace")]')
+            echo "changes=$PACKAGES" >> "$GITHUB_OUTPUT"
+          fi
 
       - if: ${{ steps.filter.outputs.any-workspace == 'true' }}
         uses: ./.github/actions/install-dependencies
 
-      - name: Build packages
+      # TODO: Packages currently depend on each other's compiled dist at build time. Fix that and matrix the builds.
+      - name: Build Packages
         if: ${{ steps.filter.outputs.any-workspace == 'true' }}
         run: npm run build
 
-      - name: Store build artifacts
+      - name: Store Build Artifacts
         if: ${{ steps.filter.outputs.any-workspace == 'true' }}
         uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
         with:
           name: build
+          retention-days: 90
           path: |
             packages/**/build
             packages/**/dist
             packages/**/playground
 
   test:
-    runs-on: ubuntu-latest
+    name: Test
     needs: build
-    if: ${{ needs.build.outputs.any-workspace == 'true' }}
-    strategy:
-      fail-fast: false
-      matrix:
-        package: ${{ fromJSON(needs.build.outputs.packages) }}
-        exclude:
-          - package: global
-          - package: any-workspace
-    name: Test ${{ matrix.package }}
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
-      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
-        with:
-          cache: 'npm'
-          node-version-file: '.nvmrc'
-      - uses: ./.github/actions/install-dependencies
-      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
-        with:
-          name: build
-          path: packages
-      - uses: ./.github/actions/test-package
-        with:
-          package_name: ${{ matrix.package }}
+    if: ${{ needs.build.outputs.any-workspace == 'true' && needs.build.outputs.packages != '[]' }}
+    uses: ./.github/workflows/test-packages.yml
+    with:
+      packages: ${{ needs.build.outputs.packages }}
 
   preview:
-    runs-on: ubuntu-latest
+    name: Preview
     needs: build
     # We don't want to give forks free reign to publish to our GitHub Pages, so run this job only if both:
     # - any workspace changed (otherwise there's no work to do)
@@ -104,61 +112,9 @@ jobs:
         ) &&
         (!startsWith((github.head_ref || github.ref_name), 'renovate/'))
       }}
-    name: Publish preview playgrounds to GitHub Pages
-    steps:
-      - name: Determine GitHub Pages directory name
-        id: branch_dir_name
-        # even `develop` should be published to a subdirectory
-        # that way each branch can be updated or cleaned up independently
-        run: |
-          echo "result=${GITHUB_REF_NAME//[^A-Za-z0-9._-]/_}" | tee --append "$GITHUB_OUTPUT"
-      - uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
-        with:
-          name: build
-          path: packages
-      - name: Prepare playgrounds for GitHub Pages
-        working-directory: ./packages
-        run: |
-          mkdir -p ../pages/
-          for pkg in *; do
-            if [ -d "${pkg}/playground" ]; then
-              # using symlinks is quick and artifact generation will dereference them
-              # if the GitHub Pages action stops dereferencing these links, we'll need to copy the files instead
-              ln -s "../packages/${pkg}/playground" "../pages/${pkg}"
-            fi
-          done
-
-          # scratch-gui doesn't follow the pattern above
-          ln -s "../packages/scratch-gui/build" "../pages/scratch-gui"
-
-          ls -l ../pages/
-      - name: Deploy playgrounds to GitHub Pages
-        uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./pages
-          destination_dir: "${{steps.branch_dir_name.outputs.result}}"
-          full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"
-
-  results:
-    name: Test Results
-    runs-on: ubuntu-latest
-    needs: test
-    if: ${{ !cancelled() }}
-    steps:
-      - run: |
-          case "${{ needs.test.result }}" in
-            success)
-              echo "Tests passed successfully."
-              exit 0
-              ;;
-            skipped)
-              echo "Tests were unnecessary for these changes, so they were skipped."
-              echo "If this is unexpected, check the path filters."
-              exit 0
-              ;;
-            *)
-              echo "Tests failed."
-              exit 1
-              ;;
-          esac
+    uses: ./.github/workflows/deploy-playground-preview.yml
+    with:
+      # even `develop` should be published to a subdirectory
+      # that way each branch can be updated or cleaned up independently
+      destination_dir: ${{ github.head_ref || github.ref_name }}
+      full_commit_message: "Build for ${{ github.sha }} ${{ github.event.head_commit.message }}"

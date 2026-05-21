@@ -7,7 +7,7 @@ const VirtualMachine = require('../../src/index');
 const projectUri = path.resolve(__dirname, '../fixtures/block-to-workspace-comments-without-scripts.sb2');
 const project = readFileToBuffer(projectUri);
 
-/* eslint-disable-next-line max-len */
+/* eslint-disable-next-line @stylistic/max-len */
 test('importing sb2 project where block comment is converted to workspace comment and block is deleted, and there are no scripts on the workspace', t => {
     const vm = new VirtualMachine();
     vm.attachStorage(makeTestStorage());

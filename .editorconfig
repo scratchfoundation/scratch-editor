@@ -4,12 +4,13 @@ root = true
 end_of_line = lf
 insert_final_newline = true
 charset = utf-8
+indent_size = 4
 trim_trailing_whitespace = true
 
-[*.{cjs,js,jsx,mjs,ts,tsx}]
+[*.{cjs,html,js,jsx,mjs,ts,tsx}]
 indent_style = space
 
-[*,{json,json5,jsonc}]
+[*.{json,json5,jsonc}]
 indent_size = 2
 indent_style = space
 

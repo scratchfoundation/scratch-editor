@@ -29,7 +29,8 @@ button::-moz-focus-inner {
     border: 0;
 }
 
-.button:hover {
+.button:hover,
+.button:focus {
     background: $extensions-primary;
 }
 

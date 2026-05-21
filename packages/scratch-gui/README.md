@@ -224,11 +224,6 @@ If you run into npm install errors, try these steps:
 3. Delete package-lock.json
 4. run `npm install` again
 
-## Publishing to GitHub Pages
-
-You can publish the GUI to github.io so that others on the Internet can view it.
-[Read the wiki for a step-by-step guide.](https://github.com/scratchfoundation/scratch-gui/wiki/Publishing-to-GitHub-Pages)
-
 ## Understanding the project state machine
 
 Since so much code throughout scratch-gui depends on the state of the project, which goes through many different

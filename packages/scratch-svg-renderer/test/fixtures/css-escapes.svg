@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <mask id="myMask">
+            <rect fill="white" />
+        </mask>
+    </defs>
+
+    <!-- CSS hex escapes for "url": \75=u \72=r \6c=l -->
+    <circle fill="\75\72\6c(https://example.com/escaped-hex)" />
+    <circle style="fill: \75\72\6c('https://example.com/escaped-hex-style')" />
+
+    <!-- Mixed: partial escapes -->
+    <circle fill="\75rl(https://example.com/partial-escape)" />
+
+    <!-- Internal refs with escapes should be preserved -->
+    <circle mask="\75\72\6c(#myMask)" />
+
+    <!-- Multiple url() in one attribute, second is external -->
+    <rect style="background: url(#myMask), url(https://example.com/second-url)" />
+
+    <!-- CSS escapes inside <style> elements -->
+    <style>
+        .escaped-in-style {
+            fill: \75\72\6c(https://example.com/style-element-escape);
+        }
+        .safe-in-style {
+            fill: \75\72\6c(#myMask);
+        }
+    </style>
+</svg>

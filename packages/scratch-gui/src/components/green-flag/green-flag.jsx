@@ -1,9 +1,16 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, {useCallback} from 'react';
+import {defineMessage, useIntl} from 'react-intl';
 
 import greenFlagIcon from './icon--green-flag.svg';
 import styles from './green-flag.css';
+
+const startProjectMessage = defineMessage({
+    id: 'gui.aria.startProjectButton',
+    defaultMessage: 'Start project',
+    description: 'accessibility label for start project button'
+});
 
 const GreenFlagComponent = function (props) {
     const {
@@ -11,8 +18,11 @@ const GreenFlagComponent = function (props) {
         className,
         onClick,
         title,
+        isFullScreen,
         ...componentProps
     } = props;
+
+    const intl = useIntl();
 
     // Unfocus so project stage can capture keyboard events for
     // blocks that react to arrow movement for example
@@ -27,6 +37,8 @@ const GreenFlagComponent = function (props) {
         <button
             className={styles.greenFlagButton}
             onClick={handleOnClick}
+            aria-label={intl.formatMessage(startProjectMessage)}
+            data-focusable={isFullScreen || null}
             {...componentProps}
         >
             <img
@@ -45,6 +57,7 @@ const GreenFlagComponent = function (props) {
     );
 };
 GreenFlagComponent.propTypes = {
+    isFullScreen: PropTypes.bool,
     active: PropTypes.bool,
     className: PropTypes.string,
     onClick: PropTypes.func.isRequired,

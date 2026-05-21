@@ -1,18 +1,11 @@
 import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
-import React from 'react';
+import React, {useRef} from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
-
-import Box from '../box/box.jsx';
-import ReactModal from 'react-modal';
+import {PopupSide, PopupAlign} from '../../lib/calculatePopupPosition.js';
+import ConfirmationPrompt, {BUTTON_ORDER} from '../confirmation-prompt/confirmation-prompt.jsx';
+import styles from './delete-confirmation-prompt.css';
 import deleteIcon from './icon--delete.svg';
 import undoIcon from './icon--undo.svg';
-import arrowLeftIcon from './icon--arrow-left.svg';
-import arrowRightIcon from './icon--arrow-right.svg';
-
-import styles from './delete-confirmation-prompt.css';
-
-// TODO: Parametrize from outside if we want more custom messaging
 const messages = defineMessages({
     shouldDeleteSpriteMessage: {
         defaultMessage: 'Are you sure you want to delete this sprite?',
@@ -29,43 +22,12 @@ const messages = defineMessages({
         description: 'Message to indicate whether selected sound should be deleted.',
         id: 'gui.gui.shouldDeleteSound'
     },
-    confirmOption: {
-        defaultMessage: 'yes',
-        description: 'Yes - should delete the sprite',
-        id: 'gui.gui.confirm'
-    },
-    cancelOption: {
-        defaultMessage: 'no',
-        description: 'No - cancel deletion',
-        id: 'gui.gui.cancel'
-    },
     confirmDeletionHeading: {
         defaultMessage: 'Confirm Asset Deletion',
         description: 'Heading of confirmation prompt to delete asset',
         id: 'gui.gui.deleteAssetHeading'
     }
 });
-
-const modalWidth = 300;
-const calculateModalPosition = (relativeElemRef, modalPosition) => {
-    const refPosition = relativeElemRef.getBoundingClientRect();
-
-    if (modalPosition === 'left') {
-        return {
-            top: refPosition.top - refPosition.height,
-            left: refPosition.left - modalWidth - 25
-        };
-    }
-
-    if (modalPosition === 'right') {
-        return {
-            top: refPosition.top - refPosition.height,
-            left: refPosition.right + 25
-        };
-    }
-
-    return {};
-};
 
 const getMessage = entityType => {
     if (entityType === 'COSTUME') {
@@ -79,6 +41,20 @@ const getMessage = entityType => {
     return messages.shouldDeleteSpriteMessage;
 };
 
+const MODAL_POSITION_TO_SIDE = {
+    left: PopupSide.LEFT,
+    right: PopupSide.RIGHT
+};
+
+const layoutConfig = {
+    modalWidth: 290,
+    spaceForArrow: 30,
+    counterOffset: 0,
+    arrowOffsetFromBottom: 2,
+    arrowHeight: 14,
+    arrowWidth: 25
+};
+
 const DeleteConfirmationPrompt = ({
     onCancel,
     onOk,
@@ -87,88 +63,36 @@ const DeleteConfirmationPrompt = ({
     relativeElemRef
 }) => {
     const intl = useIntl();
-    const modalPositionValues = calculateModalPosition(relativeElemRef, modalPosition);
 
-    return (<ReactModal
-        isOpen
-        // We have to inline the styles, since a part
-        // of them are dynamically generated
-        style={{
-            content: {
-                ...modalPositionValues,
-                width: modalWidth,
-                border: 'none',
-                height: 'fit-content',
-                backgroundColor: 'transparent',
-                padding: 0,
-                margin: 0,
-                position: 'absolute',
-                overflowX: 'hidden',
-                zIndex: 1000
-            },
-            overlay: {
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                zIndex: 510,
-                backgroundColor: 'transparent'
-            }
-        }}
-        contentLabel={intl.formatMessage(messages.confirmDeletionHeading)}
-        onRequestClose={onCancel}
-    >
-        <Box className={styles.modalContainer}>
-            { modalPosition === 'right' ?
-                <Box className={classNames(styles.arrowContainer, styles.arrowContainerLeft)}>
-                    <img
-                        className={styles.deleteIcon}
-                        src={arrowLeftIcon}
-                    />
-                </Box> : null }
-            <Box className={styles.body}>
-                <Box className={styles.label}>
-                    <FormattedMessage {...getMessage(entityType)} />
-                </Box>
-                <Box className={styles.buttonRow}>
-                    <button
-                        className={styles.okButton}
-                        onClick={onOk}
-                        role="button"
-                    >
-                        <img
-                            className={styles.deleteIcon}
-                            src={deleteIcon}
-                        />
-                        <div className={styles.message}>
-                            <FormattedMessage {...messages.confirmOption} />
-                        </div>
-                    </button>
-                    <button
-                        className={styles.cancelButton}
-                        onClick={onCancel}
-                        role="button"
-                    >
-                        <img
-                            className={styles.deleteIcon}
-                            src={undoIcon}
-                        />
-                        <div className={styles.message}>
-                            <FormattedMessage {...messages.cancelOption} />
-                        </div>
-                    </button>
-                </Box>
-            </Box>
-            {modalPosition === 'left' ?
-                <Box className={classNames(styles.arrowContainer, styles.arrowContainerRight)}>
-                    <img
-                        className={styles.deleteIcon}
-                        src={arrowRightIcon}
-                    />
-                </Box> : null }
-        </Box>
-    </ReactModal>);
+    const relativeElementRef = useRef(relativeElemRef);
+    relativeElementRef.current = relativeElemRef;
+
+    const side = MODAL_POSITION_TO_SIDE[modalPosition] ?? PopupSide.RIGHT;
+
+    return (
+        <ConfirmationPrompt
+            isOpen
+            title={intl.formatMessage(messages.confirmDeletionHeading)}
+            message={<FormattedMessage {...getMessage(entityType)} />}
+            relativeElementRef={relativeElementRef}
+            side={side}
+            align={PopupAlign.CENTER}
+            layoutConfig={layoutConfig}
+            buttonOrder={BUTTON_ORDER.CONFIRM_FIRST}
+            containerClassName={styles.body}
+            messageClassName={styles.label}
+            confirmButtonConfig={{
+                icon: deleteIcon,
+                className: styles.buttonRowButton,
+                onClick: onOk
+            }}
+            cancelButtonConfig={{
+                icon: undoIcon,
+                className: styles.buttonRowButton,
+                onClick: onCancel
+            }}
+        />
+    );
 };
 
 DeleteConfirmationPrompt.propTypes = {

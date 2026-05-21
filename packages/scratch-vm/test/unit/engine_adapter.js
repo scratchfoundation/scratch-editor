@@ -52,8 +52,12 @@ test('create with comment', t => {
     t.ok(Array.isArray(result));
     t.equal(result.length, 2);
 
+    t.type(result[0].id, 'string');
     t.type(result[0].comment, 'string');
-    t.equal(result[0].comment, 'aCommentId');
+
+    // as of scratch-blocks@^2, the comment ID is derived from the block ID
+    t.equal(result[0].id, 'z!+#Nqr,_(V=xz0y7a@d');
+    t.equal(result[0].comment, 'z!+#Nqr,_(V=xz0y7a@d_comment');
 
     t.end();
 });

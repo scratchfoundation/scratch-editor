@@ -1,0 +1,12 @@
+# Mac OS
+.DS_Store
+
+# NPM
+/node_modules
+
+# Testing
+scripts/tests
+/test_results
+
+# Output
+/output

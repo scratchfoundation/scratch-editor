@@ -654,29 +654,167 @@ class Target extends EventEmitter {
     }
 
     /**
-     * Fixes up variable references in this target avoiding conflicts with
-     * pre-existing variables in the same scope.
-     * This is used when uploading this target as a new sprite into an existing
-     * project, where the new sprite may contain references
-     * to variable names that already exist as global variables in the project
-     * (and thus are in scope for variable references in the given sprite).
+     * Reconciles variable, list, and broadcast references on this target against
+     * the variables actually defined in the project, creating definitions on the
+     * stage for any references whose ids are not defined anywhere. Does not
+     * rename any existing variables.
      *
-     * If this target has a block that references an existing global variable and that
-     * variable *does not* exist in this target (e.g. it was a global variable in the
-     * project the sprite was originally exported from), merge the variables. This entails
-     * fixing the variable references in this sprite to reference the id of the pre-existing global variable.
+     * For each variable, list, or broadcast referenced by a block on this target:
+     * - If the referenced id is found locally on this sprite or on the stage,
+     *   the reference is already correct and nothing happens.
+     * - If the referenced id is not defined anywhere, the stage is checked for a
+     *   variable with the same name and type. If one exists, the field id is
+     *   remapped to that existing global. Otherwise, a new global is created on
+     *   the stage with a non-conflicting name and the field name is updated.
      *
-     * If this target has a block that references an existing global variable and that
-     * variable does exist in the target itself (e.g. it's a local variable in the sprite being uploaded),
-     * then the local variable is renamed to distinguish itself from the pre-existing variable.
-     * All blocks that reference the local variable will be updated to use the new name.
+     * Used during whole-project load to repair projects corrupted by historical
+     * bugs that left dangling references, and as the definition-creation phase
+     * of `fixUpVariableReferences` for sprite import and backpack paste.
      */
-    // TODO (#1360) This function is too long, add some helpers for the different chunks and cases...
-    fixUpVariableReferences () {
-        if (!this.runtime) return; // There's no runtime context to conflict with
-        if (this.isStage) return; // Stage can't have variable conflicts with itself (and also can't be uploaded)
+    reconcileVariableReferences () {
+        if (!this.runtime) return;
         const stage = this.runtime.getTargetForStage();
         if (!stage || !stage.variables) return;
+
+        const allReferences = this.blocks.getAllVariableAndListReferences(null, true);
+        const conflictIdsToReplace = Object.create(null);
+        const conflictNamesToReplace = Object.create(null);
+        // When a dangling reference triggers creation of a new stage variable, remember
+        // the original (pre-bump) name so subsequent dangling references with the same
+        // original name and type coalesce to the same stage variable instead of creating
+        // a second one. Scratchers who pasted scripts referencing what they called
+        // "score" twice almost certainly meant one variable, not two.
+        const createdForOriginalName = Object.create(null);
+        const originalNameKey = (name, type) => `${type}\u0000${name}`;
+
+        // Cache the list of all variable names by type so that we don't need to
+        // re-calculate this in every iteration of the following loop.
+        const varNamesByType = {};
+        const allVarNames = type => {
+            const namesOfType = varNamesByType[type];
+            if (namesOfType) return namesOfType;
+            varNamesByType[type] = this.runtime.getAllVarNamesOfType(type);
+            return varNamesByType[type];
+        };
+
+        for (const varId in allReferences) {
+            const existing = this.lookupVariableById(varId);
+            if (existing) {
+                // The id resolves to a real variable. Normalize displayed names so
+                // every block field shows the variable's current name. A previous
+                // target's pass on this load may have created the stage variable with
+                // a bumped name; refs on this target that still show the original
+                // name need to be brought into agreement. Scan all refs (not just
+                // the first) so an inconsistent set of refs to the same id heals
+                // even when the first ref happens to already match.
+                if (!conflictNamesToReplace[varId]) {
+                    const staleRef = allReferences[varId].find(
+                        ref => ref.referencingField.value !== existing.name
+                    );
+                    if (staleRef) {
+                        conflictNamesToReplace[varId] = existing.name;
+                        log.warn(
+                            `Reconciled stale displayed name on '${this.getName()}': updated to ` +
+                            `'${existing.name}' for id '${varId}' ` +
+                            `(was '${staleRef.referencingField.value}').`
+                        );
+                    }
+                }
+                continue;
+            }
+            // The referenced id is not defined anywhere. Treat this as a reference
+            // to a global from a different project (or from a backpack paste / sprite
+            // import that lost its definition). Look for a same-name same-type global
+            // on the stage; if found, queue an id remap, otherwise create a fresh one.
+            const varRef = allReferences[varId][0];
+            const varName = varRef.referencingField.value;
+            const varType = varRef.type;
+            const existingVar = stage.lookupVariableByNameAndType(varName, varType);
+            if (existingVar) {
+                if (!conflictIdsToReplace[varId]) {
+                    conflictIdsToReplace[varId] = existingVar.id;
+                    log.warn(
+                        `Reconciled dangling reference on '${this.getName()}': remapped id '${varId}' ` +
+                        `(name '${varName}', type '${varType}') to existing stage variable '${existingVar.id}'.`
+                    );
+                }
+            } else {
+                const coalesceKey = originalNameKey(varName, varType);
+                const earlierCreated = createdForOriginalName[coalesceKey];
+                if (earlierCreated) {
+                    // An earlier dangling reference in this pass already triggered creation
+                    // for this original name and type. Coalesce to that stage variable, and
+                    // update this reference's displayed name to match the bumped name so the
+                    // two blocks display consistently.
+                    if (!conflictIdsToReplace[varId]) {
+                        conflictIdsToReplace[varId] = earlierCreated.id;
+                        conflictNamesToReplace[varId] = earlierCreated.freshName;
+                        log.warn(
+                            `Reconciled dangling reference on '${this.getName()}': coalesced id '${varId}' ` +
+                            `(name '${varName}', type '${varType}') with earlier-created stage variable ` +
+                            `'${earlierCreated.id}' (name '${earlierCreated.freshName}').`
+                        );
+                    }
+                } else {
+                    const allNames = allVarNames(varType);
+                    const freshName = StringUtil.unusedName(varName, allNames);
+                    stage.createVariable(varId, freshName, varType);
+                    // Track the new name so unusedName accounts for it on subsequent calls,
+                    // and remember which stage variable served this original name so
+                    // future same-name dangling references coalesce instead of duplicating.
+                    allNames.push(freshName);
+                    createdForOriginalName[coalesceKey] = {id: varId, freshName};
+                    if (!conflictNamesToReplace[varId]) {
+                        conflictNamesToReplace[varId] = freshName;
+                        log.warn(
+                            `Reconciled dangling reference on '${this.getName()}': created stage variable ` +
+                            `'${varId}' (name '${freshName}', type '${varType}').`
+                        );
+                    }
+                }
+            }
+        }
+
+        // Apply queued id remaps (merge the dangling references with the existing global).
+        for (const conflictId in conflictIdsToReplace) {
+            const existingId = conflictIdsToReplace[conflictId];
+            const referencesToUpdate = allReferences[conflictId];
+            this.mergeVariables(conflictId, existingId, referencesToUpdate);
+        }
+
+        // Apply queued field-name updates for newly-created globals whose name was
+        // bumped to avoid a collision.
+        for (const conflictId in conflictNamesToReplace) {
+            const newName = conflictNamesToReplace[conflictId];
+            const referencesToUpdate = allReferences[conflictId];
+            referencesToUpdate.map(ref => {
+                ref.referencingField.value = newName;
+                return ref;
+            });
+        }
+    }
+
+    /**
+     * Reconciles missing definitions (via `reconcileVariableReferences`) and then
+     * renames sprite-local variables that name-collide with stage globals so they
+     * remain distinguishable after import.
+     *
+     * Used when importing a sprite into an existing project and when pasting
+     * blocks from the backpack. Project load uses `reconcileVariableReferences`
+     * directly so that legitimately-existing local-vs-global name collisions in
+     * a saved project are not renamed.
+     */
+    fixUpVariableReferences () {
+        if (!this.runtime) return;
+        const stage = this.runtime.getTargetForStage();
+        if (!stage || !stage.variables) return;
+
+        // First, ensure every referenced variable, list, or broadcast has a definition.
+        this.reconcileVariableReferences();
+
+        // The stage's variables are the global scope; there's no local-vs-global
+        // distinction to disambiguate.
+        if (this.isStage) return;
 
         const renameConflictingLocalVar = (id, name, type) => {
             const conflict = stage.lookupVariableByNameAndType(name, type);
@@ -690,106 +828,29 @@ class Target extends EventEmitter {
             return null;
         };
 
-        const allReferences = this.blocks.getAllVariableAndListReferences();
-        const unreferencedLocalVarIds = [];
-        if (Object.keys(this.variables).length > 0) {
-            for (const localVarId in this.variables) {
-                if (!Object.prototype.hasOwnProperty.call(this.variables, localVarId)) continue;
-                if (!allReferences[localVarId]) unreferencedLocalVarIds.push(localVarId);
-            }
-        }
-        const conflictIdsToReplace = Object.create(null);
-        const conflictNamesToReplace = Object.create(null);
-
-        // Cache the list of all variable names by type so that we don't need to
-        // re-calculate this in every iteration of the following loop.
-        const varNamesByType = {};
-        const allVarNames = type => {
-            const namesOfType = varNamesByType[type];
-            if (namesOfType) return namesOfType;
-            varNamesByType[type] = this.runtime.getAllVarNamesOfType(type);
-            return varNamesByType[type];
-        };
-
+        // Walk the references again and rename any sprite-local variables whose
+        // name and type collide with a stage global. References on this target
+        // that point at the local are updated to use the new name.
+        const allReferences = this.blocks.getAllVariableAndListReferences(null, true);
         for (const varId in allReferences) {
-            // We don't care about which var ref we get, they should all have the same var info
+            if (!Object.prototype.hasOwnProperty.call(this.variables, varId)) continue;
             const varRef = allReferences[varId][0];
-            const varName = varRef.referencingField.value;
-            const varType = varRef.type;
-            if (this.lookupVariableById(varId)) {
-                // Found a variable with the id in either the target or the stage,
-                // figure out which one.
-                if (Object.prototype.hasOwnProperty.call(this.variables, varId)) {
-                    // If the target has the variable, then check whether the stage
-                    // has one with the same name and type. If it does, then rename
-                    // this target specific variable so that there is a distinction.
-                    const newVarName = renameConflictingLocalVar(varId, varName, varType);
-
-                    if (newVarName) {
-                        // We are not calling this.blocks.updateBlocksAfterVarRename
-                        // here because it will search through all the blocks. We already
-                        // have access to all the references for this var id.
-                        allReferences[varId].map(ref => {
-                            ref.referencingField.value = newVarName;
-                            return ref;
-                        });
-                    }
-                }
-            } else {
-                // We didn't find the referenced variable id anywhere,
-                // Treat it as a reference to a global variable (from the original
-                // project this sprite was exported from).
-                // Check for whether a global variable of the same name and type exists,
-                // and if so, track it to merge with the existing global in a second pass of the blocks.
-                const existingVar = stage.lookupVariableByNameAndType(varName, varType);
-                if (existingVar) {
-                    if (!conflictIdsToReplace[varId]) {
-                        conflictIdsToReplace[varId] = existingVar.id;
-                    }
-                } else {
-                    // A global variable with the same name did not already exist,
-                    // create a new one such that it does not conflict with any
-                    // names of local variables of the same type.
-                    const allNames = allVarNames(varType);
-                    const freshName = StringUtil.unusedName(varName, allNames);
-                    stage.createVariable(varId, freshName, varType);
-                    if (!conflictNamesToReplace[varId]) {
-                        conflictNamesToReplace[varId] = freshName;
-                    }
-                }
+            const newVarName = renameConflictingLocalVar(varId, varRef.referencingField.value, varRef.type);
+            if (newVarName) {
+                allReferences[varId].map(ref => {
+                    ref.referencingField.value = newVarName;
+                    return ref;
+                });
             }
         }
-        // Rename any local variables that were missed above because they aren't
-        // referenced by any blocks
-        for (const id in unreferencedLocalVarIds) {
-            const varId = unreferencedLocalVarIds[id];
-            const name = this.variables[varId].name;
-            const type = this.variables[varId].type;
-            renameConflictingLocalVar(varId, name, type);
-        }
-        // Handle global var conflicts with existing global vars (e.g. a sprite is uploaded, and has
-        // blocks referencing some variable that the sprite does not own, and this
-        // variable conflicts with a global var)
-        // In this case, we want to merge the new variable referenes with the
-        // existing global variable
-        for (const conflictId in conflictIdsToReplace) {
-            const existingId = conflictIdsToReplace[conflictId];
-            const referencesToUpdate = allReferences[conflictId];
-            this.mergeVariables(conflictId, existingId, referencesToUpdate);
-        }
 
-        // Handle global var conflicts existing local vars (e.g a sprite is uploaded,
-        // and has blocks referencing some variable that the sprite does not own, and this
-        // variable conflcits with another sprite's local var).
-        // In this case, we want to go through the variable references and update
-        // the name of the variable in that reference.
-        for (const conflictId in conflictNamesToReplace) {
-            const newName = conflictNamesToReplace[conflictId];
-            const referencesToUpdate = allReferences[conflictId];
-            referencesToUpdate.map(ref => {
-                ref.referencingField.value = newName;
-                return ref;
-            });
+        // Rename any local variables that aren't referenced by any block but still
+        // collide with a stage global, so the sprite remains internally consistent.
+        for (const localVarId in this.variables) {
+            if (!Object.prototype.hasOwnProperty.call(this.variables, localVarId)) continue;
+            if (allReferences[localVarId]) continue;
+            const v = this.variables[localVarId];
+            renameConflictingLocalVar(localVarId, v.name, v.type);
         }
     }
 

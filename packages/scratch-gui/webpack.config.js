@@ -50,7 +50,8 @@ const baseConfig = new ScratchWebpackConfigBuilder(
             fallback: {
                 Buffer: require.resolve('buffer/'),
                 stream: require.resolve('stream-browserify')
-            }
+            },
+            symlinks: false
         }
     })
     .addModuleRule({

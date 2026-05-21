@@ -3,6 +3,7 @@ import {FormattedMessage} from 'react-intl';
 import keyMirror from 'keymirror';
 
 import successImage from '../assets/icon--success.svg';
+import failImage from '../assets/icon--error.svg';
 
 const AlertTypes = keyMirror({
     STANDARD: null,
@@ -12,6 +13,7 @@ const AlertTypes = keyMirror({
 
 const AlertLevels = {
     SUCCESS: 'success',
+    INFO_BLUE: 'info-blue',
     INFO: 'info',
     WARN: 'warn'
 };
@@ -175,7 +177,7 @@ const alerts = [
         clearList: ['cloudInfo'],
         content: (
             <FormattedMessage
-                defaultMessage="Please note, cloud variables only support numbers, not letters or symbols. <a>{learnMoreLink}</a>" // eslint-disable-line max-len
+                defaultMessage="Please note, cloud variables only support numbers, not letters or symbols. <a>{learnMoreLink}</a>" // eslint-disable-line @stylistic/max-len
                 description="Info about cloud variable limitations"
                 id="gui.alerts.cloudInfo"
                 values={{
@@ -229,6 +231,50 @@ const alerts = [
         ),
         iconSpinner: true,
         level: AlertLevels.SUCCESS
+    },
+    {
+        alertId: 'settingThumbnail',
+        alertType: AlertTypes.STANDARD,
+        clearList: ['settingThumbnail', 'thumbnailSuccess', 'thumbnailError'],
+        content: (
+            <FormattedMessage
+                defaultMessage="Setting thumbnail…"
+                description="Message indicating that the thumbnail is in the process of being set"
+                id="gui.alerts.settingThumbnail"
+            />
+        ),
+        iconSpinner: true,
+        level: AlertLevels.INFO_BLUE
+    },
+    {
+        alertId: 'thumbnailSuccess',
+        alertType: AlertTypes.STANDARD,
+        clearList: ['settingThumbnail', 'thumbnailSuccess', 'thumbnailError'],
+        content: (
+            <FormattedMessage
+                defaultMessage="Thumbnail set successfully."
+                description="Message indicating that the thumbnail was successfully set"
+                id="gui.alerts.thumbnailSuccess"
+            />
+        ),
+        iconURL: successImage,
+        level: AlertLevels.SUCCESS,
+        maxDisplaySecs: 5
+    },
+    {
+        alertId: 'thumbnailError',
+        alertType: AlertTypes.STANDARD,
+        clearList: ['settingThumbnail', 'thumbnailError', 'thumbnailSuccess'],
+        content: (
+            <FormattedMessage
+                defaultMessage="Couldn’t set thumbnail. Please try again later."
+                description="Message indicating that setting the thumbnail failed"
+                id="gui.alerts.thumbnailError"
+            />
+        ),
+        iconURL: failImage,
+        level: AlertLevels.WARN,
+        maxDisplaySecs: 5
     }
 ];
 

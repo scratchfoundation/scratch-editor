@@ -39,7 +39,7 @@ The existing repositories will be archived and made read-only. Those repositorie
 information, including but not limited to issues and pull requests. We plan to keep that information available for
 reference, and to selectively migrate it to this new repository.
 
-## Thank you!
+## Thank you
 
 Scratch would not be what it is today without help from the global community of Scratchers and open-source
 contributors. Thank you for your contributions and support. _[Scratch on!](https://scratch.mit.edu/projects/65347738/fullscreen/)_
@@ -47,5 +47,5 @@ contributors. Thank you for your contributions and support. _[Scratch on!](https
 ## Donate
 
 We provide [Scratch](https://scratch.mit.edu) free of charge, and want to keep it that way! Please consider making a
-[donation](https://secure.donationpay.org/scratchfoundation/) to support our continued engineering, design, community,
-and resource development efforts. Donations of any size are appreciated. Thank you!
+[donation](https://www.scratchfoundation.org/donate) to support our continued engineering, design, community, and
+resource development efforts. Donations of any size are appreciated. Thank you!

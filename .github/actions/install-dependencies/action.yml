@@ -36,7 +36,6 @@ runs:
         key: ${{ runner.os }}-npm-${{ hashFiles('.nvmrc', 'package-lock.json') }}
     - if: steps.restore-node-modules-cache.outputs.cache-hit != 'true'
       name: Install NPM dependencies
-      working-directory: .
       shell: bash
       run: NODE_ENV=development npm ci
     - uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4

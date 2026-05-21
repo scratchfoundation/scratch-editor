@@ -5,47 +5,127 @@ on:
     types: [published]
 
 jobs:
-  ci:
-    uses: ./.github/workflows/ci.yml
-  cd:
-    needs:
-      - ci
+  build:
+    name: Build
     runs-on: ubuntu-latest
+    outputs:
+      packages: ${{ steps.list-packages.outputs.packages }}
     steps:
-      - name: Debug info
+      - name: Debug Info
+        # https://docs.github.com/en/actions/reference/security/secure-use#use-an-intermediate-environment-variable
+        env:
+          # `env:` values are printed to the log even without using them in `run:`
+          RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
+          RELEASE_TARGET_COMMITISH: ${{ github.event.release.target_commitish }}
         run: |
           cat <<EOF
-          Release tag name: ${{ github.event.release.tag_name }}
-          Release target commit-ish: ${{ github.event.release.target_commitish }}
+          Release tag name: $RELEASE_TAG_NAME
+          Release target commit-ish: $RELEASE_TARGET_COMMITISH
           EOF
 
-      - name: Determine NPM tag
-        id: npm_tag
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+
+      - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+
+      - uses: ./.github/actions/install-dependencies
+
+      - name: Bump Version
         shell: bash
+        env:
+          GIT_TAG: ${{ github.event.release.tag_name }}
         run: |
-          case ${{ github.event.release.target_commitish }} in
+          NEW_VERSION="${GIT_TAG/v/}"
+          npm version "$NEW_VERSION" --no-git-tag-version
+
+      - name: Build Packages
+        run: npm run build
+
+      - name: List Packages
+        id: list-packages
+        run: |
+          PACKAGES=$(npm query '.workspace' | jq -cr '[.[].location | sub("^packages/"; "")]')
+          echo "packages=$PACKAGES" >> "$GITHUB_OUTPUT"
+
+      - name: Store Build Artifacts
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: build
+          retention-days: 90
+          path: |
+            packages/**/build
+            packages/**/dist
+            packages/**/playground
+
+      - name: Store Package Manifests
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5
+        with:
+          name: package-manifests
+          retention-days: 90
+          path: |
+            package.json
+            package-lock.json
+            packages/*/package.json
+
+  test:
+    needs: build
+    uses: ./.github/workflows/test-packages.yml
+    with:
+      packages: ${{ needs.build.outputs.packages }}
+
+  preview:
+    needs: build
+    uses: ./.github/workflows/deploy-playground-preview.yml
+    with:
+      destination_dir: ${{ github.event.release.target_commitish }}
+      full_commit_message: "Build for release ${{ github.event.release.tag_name }}"
+
+  cd:
+    name: Publish to npm
+    needs:
+      - build
+      - test
+    if: ${{ !cancelled() && needs.build.result == 'success' && needs.test.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # to push the version commit and tag
+      issues: write # to comment on issues when a fix is released
+      pull-requests: write # to comment on PRs when a fix is released
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+      - name: Determine NPM Tag
+        shell: bash
+        env:
+          TARGET_COMMITISH: ${{ github.event.release.target_commitish }}
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          case "$TARGET_COMMITISH" in
             develop | main | master)
-              if [[ ${{ github.event.release.prerelease }} == true ]]; then
+              if [[ "$IS_PRERELEASE" == true ]]; then
                 npm_tag=beta
               else
                 npm_tag=latest
               fi
               ;;
             *)
-              # use the branch name
-              npm_tag="${{ github.event.release.target_commitish }}"
+              # use the branch name as the npm tag
+              npm_tag="$TARGET_COMMITISH"
               ;;
           esac
           echo "Determined NPM tag: [$npm_tag]"
-          echo "npm_tag=${npm_tag}" >> "$GITHUB_OUTPUT"
-      - name: Check NPM tag
+          echo "NPM_TAG=${npm_tag}" >> "$GITHUB_ENV"
+
+      - name: Check NPM Tag
         run: |
-          if [ -z "${{ steps.npm_tag.outputs.npm_tag }}" ]; then
+          if [ -z "$NPM_TAG" ]; then
             echo "Refusing to publish with empty NPM tag."
             exit 1
           fi
 
-      - name: Config GitHub user
+      - name: Configure GitHub User
         shell: bash
         run: |
           git config --global user.name 'GitHub Actions'
@@ -63,39 +143,35 @@ jobs:
 
       - uses: ./.github/actions/install-dependencies
 
-      - name: Update the version in the package files
+      - name: Download Package Manifests
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: package-manifests
+          path: .
+
+      - name: Commit Version Bump
         shell: bash
+        env:
+          GIT_TAG: ${{ github.event.release.tag_name }}
         run: |
-          GIT_TAG="${{github.event.release.tag_name}}"
           NEW_VERSION="${GIT_TAG/v/}"
+          git add package.json package-lock.json packages/*/package.json
+          git commit -m "chore(release): $NEW_VERSION [skip ci]"
 
-          npm version "$NEW_VERSION" --no-git-tag-version
-          git add package* && git commit -m "chore(release): $NEW_VERSION [skip ci]"
-
-      # Install dependencies after the version update so that
-      # the build outputs refer to the newest version of inner packages
-      - uses: ./.github/actions/install-dependencies
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53 # v6
+        with:
+          name: build
+          path: packages
 
       - name: Publish scratch-svg-renderer
-        run: |
-          npm run build --workspace @scratch/scratch-svg-renderer
-          npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/scratch-svg-renderer
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-svg-renderer
 
       - name: Publish scratch-render
-        run: |
-          npm run build --workspace @scratch/scratch-render
-          npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/scratch-render
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-render
 
       - name: Publish scratch-vm
-        run: |
-          npm run build --workspace @scratch/scratch-vm
-          npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/scratch-vm
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-vm
 
       - name: Publish scratch-gui
         run: |
@@ -103,47 +179,57 @@ jobs:
 
           jq 'del(.exports["./standalone"])' ./packages/scratch-gui/package.json | npx sponge ./packages/scratch-gui/package.json
 
-          npm run build:dist --workspace @scratch/scratch-gui
-          npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/scratch-gui
+          npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-gui
 
           mv ./packages/scratch-gui/package-copy.json ./packages/scratch-gui/package.json
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
       - name: Publish scratch-gui-standalone
         run: |
           bash ./scripts/prepare-standalone-gui.sh
-
-          npm --workspace=@scratch/scratch-gui-standalone run clean && npm --workspace=@scratch/scratch-gui-standalone run build:dist-standalone
-          npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/scratch-gui-standalone
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-gui-standalone
 
       - name: Publish task-herder
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/task-herder
+
+      - name: Publish scratch-media-lib-scripts
         run: |
-          npm run build --workspace @scratch/task-herder
-          npm publish --access=public --tag="${{steps.npm_tag.outputs.npm_tag}}" --workspace=@scratch/task-herder
+          npm run build --workspace @scratch/scratch-media-lib-scripts
+          npm publish --access=public --tag="$NPM_TAG" --workspace=@scratch/scratch-media-lib-scripts
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
 
-      - name: Push to develop
+      - name: Push to Develop
         shell: bash
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
           git fetch origin develop
 
-          TAG_NAME="${{github.event.release.tag_name}}"
-          LAST_COMMIT_ID="$(git rev-parse $TAG_NAME)"
+          # HEAD is the version bump commit; HEAD^ is the release target commit
+          RELEASE_TARGET_COMMIT="$(git rev-parse HEAD^)"
           DEVELOP_COMMIT_ID="$(git rev-parse origin/develop)"
 
-          if [ "$LAST_COMMIT_ID" = "$DEVELOP_COMMIT_ID" ]; then
+          if [ "$RELEASE_TARGET_COMMIT" = "$DEVELOP_COMMIT_ID" ]; then
             git push origin HEAD:develop
           else
             echo "Not pushing to develop because the tag we're operating on is behind"
           fi
 
       # See https://stackoverflow.com/a/24849501
-      - name: Change connected commit on release
+      - name: Change Connected Commit on Release
         shell: bash
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
-          git tag -f "${{github.event.release.tag_name}}" HEAD
-          git push -f origin "refs/tags/${{github.event.release.tag_name}}"
+          git tag -f "$TAG_NAME" HEAD
+          git push -f origin "refs/tags/$TAG_NAME"
+
+      - name: Comment on Resolved Issues and Merged PRs
+        if: ${{ !github.event.release.prerelease }}
+        continue-on-error: true
+        uses: apexskier/github-release-commenter@e7813a9625eabd79a875b4bc4046cfcae377ab34 # v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          skip-label: dependencies
+          comment-template: |
+            :tada: This is included in release {release_link}.

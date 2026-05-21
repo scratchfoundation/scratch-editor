@@ -1,14 +1,22 @@
 import computedStyleToInlineStyle from 'computed-style-to-inline-style';
-import ScratchBlocks from 'scratch-blocks';
+import * as ScratchBlocks from 'scratch-blocks';
+
+/**
+ * @import {WorkspaceSvg} from 'blockly/core'
+ */
 
 /**
  * Given a blockId, return a data-uri image that can be used to create a thumbnail.
  * @param {string} blockId the ID of the block to imagify
- * @returns {Promise} resolves to a data-url of a picture of the blocks
+ * @returns {Promise<string>} resolves to a data-url of a picture of the blocks
  */
 export default function (blockId) {
     // Not sure any better way to access the scratch-blocks workspace than this...
-    const block = ScratchBlocks.getMainWorkspace().getBlockById(blockId);
+    const workspace = /** @type {WorkspaceSvg} */ (ScratchBlocks.getMainWorkspace());
+    const block = workspace.getBlockById(blockId);
+    if (!block) {
+        return Promise.reject(new Error(`No block found with id ${blockId} in workspace ${workspace.id}`));
+    }
     const blockSvg = block.getSvgRoot().cloneNode(true /* deep */);
 
     // Once we have the cloned SVG, do the rest in a setTimeout to prevent

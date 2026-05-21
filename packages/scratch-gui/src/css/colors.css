@@ -3,6 +3,7 @@ $ui-secondary: hsla(215, 75%, 95%, 1); /* #E9F1FC */
 $ui-tertiary: hsla(215, 50%, 90%, 1); /* #D9E3F2 */
 
 $ui-modal-overlay: hsla(215, 100%, 65%, 0.9); /* 90% transparent version of motion-primary */
+$ui-alert-overlay: hsla(215, 100%, 65%, 0.4); /* 40% transparent version of motion-primary */
 
 $ui-white: hsla(0, 100%, 100%, 1); /* #FFFFFF */
 $ui-white-dim: hsla(0, 100%, 100%, 0.75); /* 25% transparent version of ui-white */
@@ -16,6 +17,7 @@ $ui-green: hsla(163, 85%, 35%, 1); /* #0DA57A */
 $ui-green-2: hsla(163, 85%, 40%, 1); /* #0FBD8C */
 
 $ui-orange: hsla(37, 96%, 55%, 1); /* #FAA51D */
+$ui-alert-orange: hsla(32, 100%, 94%, 1); /* #FFF0DF */
 $text-primary: hsla(225, 15%, 40%, 1); /* #575E75 */
 $text-primary-transparent: hsla(225, 15%, 40%, 0.75);
 

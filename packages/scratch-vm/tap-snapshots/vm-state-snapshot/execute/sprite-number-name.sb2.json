@@ -1,0 +1,767 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {
+        "var:num": [
+          "num",
+          "3"
+        ]
+      },
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "backdrop1",
+          "bitmapResolution": 2,
+          "dataFormat": "png",
+          "assetId": "b61b1077b0ea1931abee9dbbfa7903ff",
+          "md5ext": "b61b1077b0ea1931abee9dbbfa7903ff.png",
+          "rotationCenterX": 480,
+          "rotationCenterY": 360
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 11025,
+          "sampleCount": 258,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null,
+      "scripts": []
+    },
+    {
+      "isStage": false,
+      "name": "Sprite1",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "costume1",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "9f567abe17ba2d13597d1f2e416017ef",
+          "md5ext": "9f567abe17ba2d13597d1f2e416017ef.svg",
+          "rotationCenterX": 47,
+          "rotationCenterY": 55
+        },
+        {
+          "name": "costume2",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "1e4df2581d2d314527775ee43f646b42",
+          "md5ext": "1e4df2581d2d314527775ee43f646b42.svg",
+          "rotationCenterX": 47,
+          "rotationCenterY": 55
+        }
+      ],
+      "sounds": [
+        {
+          "name": "meow",
+          "assetId": "83c36d806dc92327b9e7049a565c6bff",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 22050,
+          "sampleCount": 18688,
+          "md5ext": "83c36d806dc92327b9e7049a565c6bff.wav"
+        }
+      ],
+      "volume": 100,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "size": 100,
+      "direction": -90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": [
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "looks_say",
+            "inputs": {
+              "MESSAGE": [
+                1,
+                [
+                  10,
+                  "plan 5"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "data_setvariableto",
+            "fields": {
+              "VARIABLE": [
+                "num",
+                "var:num"
+              ]
+            },
+            "inputs": {
+              "VALUE": [
+                1,
+                [
+                  10,
+                  "3"
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_if_else",
+            "inputs": {
+              "CONDITION": [
+                2,
+                {
+                  "opcode": "operator_lt",
+                  "inputs": {
+                    "OPERAND1": [
+                      3,
+                      {
+                        "opcode": "sensing_distanceto",
+                        "inputs": {
+                          "DISTANCETOMENU": [
+                            3,
+                            {
+                              "opcode": "operator_round",
+                              "inputs": {
+                                "NUM": [
+                                  3,
+                                  [
+                                    12,
+                                    "num",
+                                    "var:num"
+                                  ],
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "opcode": "sensing_distancetomenu",
+                              "shadow": true,
+                              "fields": {
+                                "DISTANCETOMENU": [
+                                  ""
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      [
+                        10,
+                        ""
+                      ]
+                    ],
+                    "OPERAND2": [
+                      1,
+                      [
+                        10,
+                        " 1000"
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        1,
+                        [
+                          10,
+                          "pass distance to sprite found"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ],
+              "SUBSTACK2": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        1,
+                        [
+                          10,
+                          "fail distance to sprite not found"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "motion_setx",
+            "inputs": {
+              "X": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "motion_goto",
+            "inputs": {
+              "TO": [
+                3,
+                {
+                  "opcode": "operator_round",
+                  "inputs": {
+                    "NUM": [
+                      3,
+                      [
+                        12,
+                        "num",
+                        "var:num"
+                      ],
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "opcode": "motion_goto_menu",
+                  "shadow": true,
+                  "fields": {
+                    "TO": [
+                      ""
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "control_if_else",
+            "inputs": {
+              "CONDITION": [
+                2,
+                {
+                  "opcode": "operator_not",
+                  "inputs": {
+                    "OPERAND": [
+                      2,
+                      {
+                        "opcode": "operator_equals",
+                        "inputs": {
+                          "OPERAND1": [
+                            3,
+                            {
+                              "opcode": "motion_xposition"
+                            },
+                            [
+                              10,
+                              ""
+                            ]
+                          ],
+                          "OPERAND2": [
+                            1,
+                            [
+                              10,
+                              "0  "
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        1,
+                        [
+                          10,
+                          "pass go to sprite found"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ],
+              "SUBSTACK2": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        1,
+                        [
+                          10,
+                          "fail go to sprite not found"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "motion_gotoxy",
+            "inputs": {
+              "X": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "Y": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "motion_pointtowards",
+            "inputs": {
+              "TOWARDS": [
+                3,
+                {
+                  "opcode": "operator_round",
+                  "inputs": {
+                    "NUM": [
+                      3,
+                      [
+                        12,
+                        "num",
+                        "var:num"
+                      ],
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "opcode": "motion_pointtowards_menu",
+                  "shadow": true,
+                  "fields": {
+                    "TOWARDS": [
+                      ""
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "opcode": "control_if_else",
+            "inputs": {
+              "CONDITION": [
+                2,
+                {
+                  "opcode": "operator_equals",
+                  "inputs": {
+                    "OPERAND1": [
+                      3,
+                      {
+                        "opcode": "motion_direction"
+                      },
+                      [
+                        10,
+                        ""
+                      ]
+                    ],
+                    "OPERAND2": [
+                      1,
+                      [
+                        10,
+                        " -90"
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        1,
+                        [
+                          10,
+                          "pass point towards sprite found"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ],
+              "SUBSTACK2": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        1,
+                        [
+                          10,
+                          "fail point towards sprite not found"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_if_else",
+            "inputs": {
+              "CONDITION": [
+                2,
+                {
+                  "opcode": "operator_equals",
+                  "inputs": {
+                    "OPERAND1": [
+                      3,
+                      {
+                        "opcode": "sensing_of",
+                        "fields": {
+                          "PROPERTY": [
+                            "x position"
+                          ]
+                        },
+                        "inputs": {
+                          "OBJECT": [
+                            3,
+                            {
+                              "opcode": "operator_round",
+                              "inputs": {
+                                "NUM": [
+                                  3,
+                                  [
+                                    12,
+                                    "num",
+                                    "var:num"
+                                  ],
+                                  [
+                                    4,
+                                    10
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "opcode": "sensing_of_object_menu",
+                              "shadow": true,
+                              "fields": {
+                                "OBJECT": [
+                                  "_stage_"
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      },
+                      [
+                        10,
+                        ""
+                      ]
+                    ],
+                    "OPERAND2": [
+                      1,
+                      [
+                        10,
+                        "-140"
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        1,
+                        [
+                          10,
+                          "pass x position of sprite found"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ],
+              "SUBSTACK2": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        1,
+                        [
+                          10,
+                          "fail x position of sprite not found"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "control_create_clone_of",
+            "inputs": {
+              "CLONE_OPTION": [
+                3,
+                {
+                  "opcode": "operator_round",
+                  "inputs": {
+                    "NUM": [
+                      3,
+                      [
+                        12,
+                        "num",
+                        "var:num"
+                      ],
+                      [
+                        4,
+                        10
+                      ]
+                    ]
+                  }
+                },
+                {
+                  "opcode": "control_create_clone_of_menu",
+                  "shadow": true,
+                  "fields": {
+                    "CLONE_OPTION": [
+                      ""
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    },
+    {
+      "isStage": false,
+      "name": "3",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 3,
+      "costumes": [
+        {
+          "name": "ballerina-a",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "c88bb0420ea499d07bdfa8c8c61931f9",
+          "md5ext": "c88bb0420ea499d07bdfa8c8c61931f9.svg",
+          "rotationCenterX": 75,
+          "rotationCenterY": 75
+        },
+        {
+          "name": "ballerina-b",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "27eaf57ec9d15cd17439e17985a747a7",
+          "md5ext": "27eaf57ec9d15cd17439e17985a747a7.svg",
+          "rotationCenterX": 75,
+          "rotationCenterY": 75
+        },
+        {
+          "name": "ballerina-c",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "21b923819484ba50609050840961d0fa",
+          "md5ext": "21b923819484ba50609050840961d0fa.svg",
+          "rotationCenterX": 75,
+          "rotationCenterY": 75
+        },
+        {
+          "name": "ballerina-d",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "d7e6d564a5043b549385ea27fc305246",
+          "md5ext": "d7e6d564a5043b549385ea27fc305246.svg",
+          "rotationCenterX": 75,
+          "rotationCenterY": 75
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 11025,
+          "sampleCount": 258,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "visible": true,
+      "x": -140,
+      "y": 0,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": [
+        [
+          {
+            "opcode": "control_start_as_clone"
+          },
+          {
+            "opcode": "control_if",
+            "inputs": {
+              "CONDITION": [
+                2,
+                {
+                  "opcode": "operator_equals",
+                  "inputs": {
+                    "OPERAND1": [
+                      1,
+                      [
+                        10,
+                        "1"
+                      ]
+                    ],
+                    "OPERAND2": [
+                      1,
+                      [
+                        10,
+                        "1"
+                      ]
+                    ]
+                  }
+                }
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "looks_say",
+                    "inputs": {
+                      "MESSAGE": [
+                        1,
+                        [
+                          10,
+                          "pass create clone of sprite"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "looks_say",
+            "inputs": {
+              "MESSAGE": [
+                1,
+                [
+                  10,
+                  "end"
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "motion_gotoxy",
+            "inputs": {
+              "X": [
+                1,
+                [
+                  4,
+                  -140
+                ]
+              ],
+              "Y": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  ],
+  "monitors": [
+    {
+      "id": "_data_variable_{\"VARIABLE\":\"num\"}",
+      "mode": "default",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "num"
+      },
+      "spriteName": null,
+      "value": "",
+      "x": 5,
+      "y": 5,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    }
+  ]
+}

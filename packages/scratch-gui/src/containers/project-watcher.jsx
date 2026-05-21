@@ -14,6 +14,10 @@ import {
  * ProjectWatcher passes a waitForUpdate function to its children, which they can call
  * to set ProjectWatcher to request that it call the onDoneUpdating callback when
  * project is no longer updating.
+ *
+ * The waitForUpdate function accepts an object containing:
+ * - isSaving {boolean} Whether the project is currently saving
+ * - isSharing {boolean} Whether the project is currently being shared
  */
 class ProjectWatcher extends React.Component {
     constructor (props) {
@@ -23,24 +27,36 @@ class ProjectWatcher extends React.Component {
         ]);
 
         this.state = {
-            waiting: false
+            saving: false,
+            sharing: false
         };
     }
     componentDidUpdate (prevProps) {
-        if (this.state.waiting && this.props.isShowingWithId && !prevProps.isShowingWithId) {
-            this.fulfill();
+        if (this.state.saving && this.state.sharing) {
+            if (this.props.isShared && (this.props.isShowingWithId && !prevProps.isShowingWithId)) {
+                this.fulfill();
+            }
+        }
+        if (this.state.saving && !this.state.sharing) {
+            if (this.props.isShowingWithId && !prevProps.isShowingWithId) {
+                this.fulfill();
+            }
         }
     }
     fulfill () {
         this.props.onDoneUpdating();
         this.setState({
-            waiting: false
+            saving: false,
+            sharing: false
         });
     }
-    waitForUpdate (isUpdating) {
-        if (isUpdating) {
+    waitForUpdate (updates = {isSaving: false, isSharing: false}) {
+        const {isSaving = false, isSharing = false} = updates;
+
+        if (isSaving || isSharing) {
             this.setState({
-                waiting: true
+                saving: isSaving,
+                sharing: isSharing
             });
         } else { // fulfill immediately
             this.fulfill();
@@ -56,10 +72,12 @@ class ProjectWatcher extends React.Component {
 ProjectWatcher.propTypes = {
     children: PropTypes.func,
     isShowingWithId: PropTypes.bool,
+    isShared: PropTypes.bool,
     onDoneUpdating: PropTypes.func
 };
 
 ProjectWatcher.defaultProps = {
+    isShared: false,
     onDoneUpdating: () => {}
 };
 

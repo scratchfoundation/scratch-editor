@@ -1,0 +1,174 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "backdrop1",
+          "bitmapResolution": 1,
+          "dataFormat": "png",
+          "assetId": "739b5e2a2435f6e1ec2993791b423146",
+          "md5ext": "739b5e2a2435f6e1ec2993791b423146.png",
+          "rotationCenterX": 240,
+          "rotationCenterY": 180
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 11025,
+          "sampleCount": 258,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null,
+      "scripts": []
+    },
+    {
+      "isStage": false,
+      "name": "Sprite1",
+      "variables": {},
+      "lists": {},
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "A_Test_Costume",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "1a2c4ff25d0315aa884fc59763b6b6b5",
+          "md5ext": "1a2c4ff25d0315aa884fc59763b6b6b5.svg",
+          "rotationCenterX": 159,
+          "rotationCenterY": 121
+        }
+      ],
+      "sounds": [
+        {
+          "name": "A_Test_Recording",
+          "assetId": "b30084c682f03b58e130988e0f7babf1",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 22050,
+          "sampleCount": 20224,
+          "md5ext": "b30084c682f03b58e130988e0f7babf1.wav"
+        }
+      ],
+      "volume": 100,
+      "visible": true,
+      "x": 0,
+      "y": -20,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": [
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "motion_gotoxy",
+            "inputs": {
+              "X": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "Y": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ]
+            }
+          },
+          {
+            "opcode": "motion_glidesecstoxy",
+            "inputs": {
+              "SECS": [
+                1,
+                [
+                  4,
+                  1
+                ]
+              ],
+              "X": [
+                1,
+                [
+                  4,
+                  0
+                ]
+              ],
+              "Y": [
+                1,
+                [
+                  4,
+                  -20
+                ]
+              ]
+            }
+          }
+        ],
+        [
+          {
+            "opcode": "event_whenflagclicked"
+          },
+          {
+            "opcode": "control_repeat",
+            "inputs": {
+              "TIMES": [
+                1,
+                [
+                  6,
+                  1
+                ]
+              ],
+              "SUBSTACK": [
+                2,
+                [
+                  {
+                    "opcode": "sound_playuntildone",
+                    "inputs": {
+                      "SOUND_MENU": [
+                        1,
+                        {
+                          "opcode": "sound_sounds_menu",
+                          "shadow": true,
+                          "fields": {
+                            "SOUND_MENU": [
+                              "A_Test_Recording"
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  ],
+  "monitors": []
+}

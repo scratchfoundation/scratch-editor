@@ -1,4 +1,4 @@
-name: GitHub Actions debug info
+name: GitHub Actions Debug Info
 
 on:
   branch_protection_rule:
@@ -41,7 +41,7 @@ jobs:
   info:
     runs-on: ubuntu-latest
     steps:
-      - name: Output debug info
+      - name: Output Debug Info
         env:
           github: ${{ toJson(github) }}
         run: |

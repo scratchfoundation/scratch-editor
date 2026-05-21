@@ -12,6 +12,10 @@
     box-sizing: content-box;
 }
 
+.spinner.info-blue {
+    border-color: $ui-alert-overlay;
+}
+
 .spinner::before, .spinner::after {
     width: 1.25rem;
     height: 1.25rem;
@@ -27,6 +31,10 @@
     border: .1875rem solid transparent;
     border-top-color: $ui-white;
     animation: spin 1.5s cubic-bezier(0.4, 0.1, 0.4, 1) infinite;
+}
+
+.spinner.info-blue::after {
+    border-top-color: $motion-primary;
 }
 
 .small {

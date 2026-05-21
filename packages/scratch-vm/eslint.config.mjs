@@ -38,6 +38,7 @@ export default eslintConfigScratch.defineConfig(
         'coverage/**/*',
         'dist/**/*',
         'node_modules/**/*',
-        'playground/**/*'
+        'playground/**/*',
+        'tap-snapshots/**/*'
     ])
 );

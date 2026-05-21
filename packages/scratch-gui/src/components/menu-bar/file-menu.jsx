@@ -14,11 +14,7 @@ import useMenuNavigation from '../../hooks/use-menu-navigation';
 
 import sharedMessages from '../../lib/shared-messages';
 
-import {
-    manualUpdateProject,
-    remixProject,
-    saveProjectAsCopy
-} from '../../reducers/project-state';
+import {saveProjectAsCopy} from '../../reducers/project-state';
 
 const fileMenu = defineMessage({
     id: 'gui.aria.fileMenu',
@@ -159,7 +155,7 @@ const FileMenu = ({
                         >
                             <FormattedMessage
                                 defaultMessage="Save to your computer"
-                                description="Menu bar item for downloading a project to your computer" // eslint-disable-line max-len
+                                description="Menu bar item for downloading a project to your computer" // eslint-disable-line @stylistic/max-len
                                 id="gui.menuBar.downloadToComputer"
                             />
                         </MenuItem>
@@ -190,8 +186,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    onClickRemix: () => dispatch(remixProject()),
-    onClickSave: () => dispatch(manualUpdateProject()),
     onClickSaveAsCopy: () => dispatch(saveProjectAsCopy())
 });
 

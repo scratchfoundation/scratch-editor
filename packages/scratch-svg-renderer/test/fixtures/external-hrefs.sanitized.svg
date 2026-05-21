@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <filter id="f">
+            
+            
+        </filter>
+        <pattern id="p"></pattern>
+        <linearGradient></linearGradient>
+    </defs>
+
+    <image></image>
+    <image></image>
+
+    
+    <image href="data:image/png;base64,iVBORw0KGgo="></image>
+    <image href="#internal"></image>
+
+    <text><textPath>text</textPath></text>
+    <animateMotion><mpath></mpath></animateMotion>
+</svg>

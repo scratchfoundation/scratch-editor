@@ -255,6 +255,70 @@ test('serializeBlocks serializes x and y for topLevel blocks with x,y of 0,0', t
         });
 });
 
+test('serializeBlock does not serialize shadow blocks as top-level', t => {
+    const blocks = {
+        hatBlock: {
+            id: 'hatBlock',
+            opcode: 'event_whenflagclicked',
+            next: 'costumeBlock',
+            parent: null,
+            inputs: {},
+            fields: {},
+            shadow: false,
+            topLevel: true,
+            x: 0,
+            y: 0
+        },
+        costumeBlock: {
+            id: 'costumeBlock',
+            opcode: 'looks_switchcostumeto',
+            next: null,
+            parent: 'hatBlock',
+            inputs: {
+                COSTUME: {
+                    name: 'COSTUME',
+                    block: 'varReporter',
+                    shadow: 'costumeShadow'
+                }
+            },
+            fields: {},
+            shadow: false,
+            topLevel: false
+        },
+        varReporter: {
+            id: 'varReporter',
+            opcode: 'data_variable',
+            next: null,
+            parent: 'costumeBlock',
+            inputs: {},
+            fields: {VARIABLE: {name: 'VARIABLE', value: 'my variable', id: 'var1'}},
+            shadow: false,
+            topLevel: false
+        },
+        costumeShadow: {
+            id: 'costumeShadow',
+            opcode: 'looks_costume',
+            next: null,
+            parent: null,
+            inputs: {},
+            fields: {COSTUME: {name: 'COSTUME', value: 'costume1'}},
+            shadow: true,
+            topLevel: true // bug: should not be serialized as top-level
+        }
+    };
+
+    const result = sb3.serializeBlocks(blocks);
+    const serialized = result[0];
+
+    t.equal(serialized.costumeShadow.topLevel, false,
+        'shadow block should not be serialized as top-level');
+    t.notOk(serialized.costumeShadow.x,
+        'shadow block should not have x coordinate');
+    t.notOk(serialized.costumeShadow.y,
+        'shadow block should not have y coordinate');
+    t.end();
+});
+
 test('deserializeBlocks', t => {
     const vm = new VirtualMachine();
     vm.loadProject(readFileToBuffer(commentsSB3ProjectPath))
@@ -278,6 +342,45 @@ test('deserializeBlocks on already deserialized input', t => {
             t.same(deserialized, deserializedAgain, 'no change from second pass of deserialize');
             t.end();
         });
+});
+
+test('deserializeBlocks clears topLevel on shadow blocks', t => {
+    // Production Scratch can serialize obscured shadow blocks as top-level
+    // (e.g. when a variable reporter covers a dropdown's shadow). Upstream
+    // Blockly throws "Shadow block cannot be a top-level block" if these
+    // survive into the XML, so deserialization must clear the flag.
+    const blocks = {
+        parentBlock: {
+            opcode: 'looks_switchcostumeto',
+            next: null,
+            parent: null,
+            inputs: {
+                COSTUME: [3, [12, 'my variable', 'var_id'], 'shadowBlock']
+            },
+            fields: {},
+            shadow: false,
+            topLevel: true,
+            x: 0,
+            y: 0
+        },
+        shadowBlock: {
+            opcode: 'looks_costume',
+            next: null,
+            parent: null,
+            inputs: {},
+            fields: {COSTUME: ['costume1', null]},
+            shadow: true,
+            topLevel: true,
+            x: 100,
+            y: 100
+        }
+    };
+
+    sb3.deserializeBlocks(blocks);
+
+    t.equal(blocks.shadowBlock.topLevel, false,
+        'shadow block should not be top-level after deserialization');
+    t.end();
 });
 
 test('getExtensionIdForOpcode', t => {
@@ -360,4 +463,229 @@ test('do not serialize origin value if it is not present', t => {
             t.equal(result.meta.origin, undefined);
             t.end();
         });
+});
+
+// Regression test for forum topic 878291: deserializeBlocks should repair
+// broken or missing shadow references by creating a replacement shadow,
+// using a peer block's matching shadow as a template when available.
+test('deserializeBlocks repairs broken shadow references', t => {
+    // Simulate a target with one broken and one intact data_setvariableto.
+    // The peer lookup should find the intact block's shadow as a template.
+    const blocks = {
+        // Broken block: shadow reference points to a nonexistent block
+        brokenBlock: {
+            opcode: 'data_setvariableto',
+            next: null,
+            parent: null,
+            inputs: {
+                VALUE: [3, 'reporterBlock', 'missing_shadow']
+            },
+            fields: {VARIABLE: ['x', 'varId']},
+            shadow: false,
+            topLevel: true,
+            x: 0,
+            y: 0
+        },
+        reporterBlock: {
+            opcode: 'sensing_answer',
+            next: null,
+            parent: 'brokenBlock',
+            inputs: {},
+            fields: {},
+            shadow: false,
+            topLevel: false
+        },
+        // Intact peer: same opcode, working shadow on VALUE
+        peerBlock: {
+            opcode: 'data_setvariableto',
+            next: null,
+            parent: null,
+            inputs: {
+                VALUE: [1, 'peerShadow']
+            },
+            fields: {VARIABLE: ['y', 'varId2']},
+            shadow: false,
+            topLevel: true,
+            x: 200,
+            y: 0
+        },
+        peerShadow: {
+            opcode: 'text',
+            next: null,
+            parent: 'peerBlock',
+            inputs: {},
+            fields: {TEXT: ['hello']},
+            shadow: true,
+            topLevel: false
+        }
+    };
+
+    sb3.deserializeBlocks(blocks);
+
+    // The broken shadow should be replaced using the peer's shadow as template
+    const repairedId = blocks.brokenBlock.inputs.VALUE.shadow;
+    t.not(repairedId, 'missing_shadow', 'broken shadow ID should be replaced');
+    t.not(repairedId, null, 'a replacement shadow should be created');
+    t.ok(blocks[repairedId], 'replacement shadow block should exist');
+    t.equal(blocks[repairedId].opcode, 'text',
+        'shadow type should match the peer (text)');
+    t.equal(blocks[repairedId].shadow, true,
+        'replacement should be marked as shadow');
+    t.equal(blocks[repairedId].parent, 'brokenBlock',
+        'replacement should reference the broken block as parent');
+    t.equal(blocks.brokenBlock.inputs.VALUE.block, 'reporterBlock',
+        'connected block reference should be preserved');
+
+    // The peer's shadow should be untouched
+    t.equal(blocks.peerBlock.inputs.VALUE.shadow, 'peerShadow',
+        'valid shadow reference should be preserved');
+
+    // Test peer lookup across math blocks: broken operator_add should
+    // find a math_number shadow from the intact peer.
+    const mathBlocks = {
+        brokenAdd: {
+            opcode: 'operator_add',
+            next: null,
+            parent: null,
+            inputs: {
+                NUM1: [3, 'numReporter', 'missing_math_shadow'],
+                NUM2: [1, [4, '10']]
+            },
+            fields: {},
+            shadow: false,
+            topLevel: true,
+            x: 0,
+            y: 0
+        },
+        numReporter: {
+            opcode: 'sensing_answer',
+            next: null,
+            parent: 'brokenAdd',
+            inputs: {},
+            fields: {},
+            shadow: false,
+            topLevel: false
+        },
+        // Intact peer with a math_number shadow on NUM1
+        peerAdd: {
+            opcode: 'operator_add',
+            next: null,
+            parent: null,
+            inputs: {
+                NUM1: [1, 'peerMathShadow'],
+                NUM2: [1, [4, '5']]
+            },
+            fields: {},
+            shadow: false,
+            topLevel: true,
+            x: 200,
+            y: 0
+        },
+        peerMathShadow: {
+            opcode: 'math_number',
+            next: null,
+            parent: 'peerAdd',
+            inputs: {},
+            fields: {NUM: {name: 'NUM', value: '3'}},
+            shadow: true,
+            topLevel: false
+        }
+    };
+
+    sb3.deserializeBlocks(mathBlocks);
+
+    const mathShadowId = mathBlocks.brokenAdd.inputs.NUM1.shadow;
+    t.ok(mathBlocks[mathShadowId], 'math shadow should be created');
+    t.equal(mathBlocks[mathShadowId].opcode, 'math_number',
+        'should use math_number from peer, not text fallback');
+    t.equal(mathBlocks[mathShadowId].fields.NUM.name, 'NUM',
+        'math_number shadow should have a NUM field');
+
+    // Test fallback to text when no peer exists
+    const lonelyBlocks = {
+        lonelyBlock: {
+            opcode: 'data_setvariableto',
+            next: null,
+            parent: null,
+            inputs: {VALUE: [1, 'orphan_shadow']},
+            fields: {VARIABLE: ['z', 'varId3']},
+            shadow: false,
+            topLevel: true,
+            x: 0,
+            y: 0
+        }
+        // No peer block, no shadow block — orphan_shadow is missing
+    };
+
+    sb3.deserializeBlocks(lonelyBlocks);
+
+    const fallbackId = lonelyBlocks.lonelyBlock.inputs.VALUE.shadow;
+    t.ok(lonelyBlocks[fallbackId], 'fallback shadow should be created');
+    t.equal(lonelyBlocks[fallbackId].opcode, 'text',
+        'should fall back to text when no peer is available');
+
+    // Test repair of null shadow (INPUT_BLOCK_NO_SHADOW) when peers have shadows.
+    // This covers the case where the shadow was lost before save, so
+    // the input was serialized as [2, blockId] with no shadow reference.
+    const nullShadowBlocks = {
+        // Block with null shadow — reporter is connected but shadow is gone
+        brokenLt: {
+            opcode: 'operator_lt',
+            next: null,
+            parent: null,
+            inputs: {
+                OPERAND1: [2, 'ltReporter'] // INPUT_BLOCK_NO_SHADOW
+            },
+            fields: {},
+            shadow: false,
+            topLevel: true,
+            x: 0,
+            y: 0
+        },
+        ltReporter: {
+            opcode: 'data_variable',
+            next: null,
+            parent: 'brokenLt',
+            inputs: {},
+            fields: {VARIABLE: ['x', 'varId']},
+            shadow: false,
+            topLevel: false
+        },
+        // Intact peer with a shadow on OPERAND1
+        peerLt: {
+            opcode: 'operator_lt',
+            next: null,
+            parent: null,
+            inputs: {
+                OPERAND1: [1, 'peerLtShadow']
+            },
+            fields: {},
+            shadow: false,
+            topLevel: true,
+            x: 200,
+            y: 0
+        },
+        peerLtShadow: {
+            opcode: 'text',
+            next: null,
+            parent: 'peerLt',
+            inputs: {},
+            fields: {TEXT: {name: 'TEXT', value: ''}},
+            shadow: true,
+            topLevel: false
+        }
+    };
+
+    sb3.deserializeBlocks(nullShadowBlocks);
+
+    const repairedNullShadow = nullShadowBlocks.brokenLt.inputs.OPERAND1.shadow;
+    t.ok(repairedNullShadow, 'null shadow should be replaced');
+    t.ok(nullShadowBlocks[repairedNullShadow],
+        'replacement shadow block should exist');
+    t.equal(nullShadowBlocks[repairedNullShadow].opcode, 'text',
+        'replacement should match peer shadow type');
+    t.equal(nullShadowBlocks.brokenLt.inputs.OPERAND1.block, 'ltReporter',
+        'connected block should be preserved');
+
+    t.end();
 });

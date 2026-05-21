@@ -1,0 +1,254 @@
+{
+  "meta": {
+    "semver": "3.0.0"
+  },
+  "extensions": [],
+  "targets": [
+    {
+      "isStage": true,
+      "name": "Stage",
+      "variables": {
+        "var:global": [
+          "global",
+          -200
+        ]
+      },
+      "lists": {
+        "list:global list": [
+          "global list",
+          []
+        ]
+      },
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "backdrop1",
+          "bitmapResolution": 1,
+          "dataFormat": "png",
+          "assetId": "739b5e2a2435f6e1ec2993791b423146",
+          "md5ext": "739b5e2a2435f6e1ec2993791b423146.png",
+          "rotationCenterX": 240,
+          "rotationCenterY": 180
+        }
+      ],
+      "sounds": [
+        {
+          "name": "pop",
+          "assetId": "83a9787d4cb6f3b7632b4ddfebf74367",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 11025,
+          "sampleCount": 258,
+          "md5ext": "83a9787d4cb6f3b7632b4ddfebf74367.wav"
+        }
+      ],
+      "volume": 100,
+      "tempo": 60,
+      "videoTransparency": 50,
+      "videoState": "off",
+      "textToSpeechLanguage": null,
+      "scripts": []
+    },
+    {
+      "isStage": false,
+      "name": "Sprite1",
+      "variables": {
+        "var:local": [
+          "local",
+          0
+        ]
+      },
+      "lists": {
+        "list:local list": [
+          "local list",
+          []
+        ]
+      },
+      "broadcasts": {},
+      "currentCostume": 0,
+      "costumes": [
+        {
+          "name": "costume1",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "9f567abe17ba2d13597d1f2e416017ef",
+          "md5ext": "9f567abe17ba2d13597d1f2e416017ef.svg",
+          "rotationCenterX": 47,
+          "rotationCenterY": 55
+        },
+        {
+          "name": "costume2",
+          "bitmapResolution": 1,
+          "dataFormat": "svg",
+          "assetId": "1e4df2581d2d314527775ee43f646b42",
+          "md5ext": "1e4df2581d2d314527775ee43f646b42.svg",
+          "rotationCenterX": 47,
+          "rotationCenterY": 55
+        }
+      ],
+      "sounds": [
+        {
+          "name": "meow",
+          "assetId": "83c36d806dc92327b9e7049a565c6bff",
+          "dataFormat": "wav",
+          "format": "",
+          "rate": 22050,
+          "sampleCount": 18688,
+          "md5ext": "83c36d806dc92327b9e7049a565c6bff.wav"
+        }
+      ],
+      "volume": 100,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "size": 100,
+      "direction": 90,
+      "draggable": false,
+      "rotationStyle": "all around",
+      "scripts": []
+    }
+  ],
+  "monitors": [
+    {
+      "id": "_data_listcontents_{\"LIST\":\"global list\"}",
+      "mode": "list",
+      "opcode": "data_listcontents",
+      "params": {
+        "LIST": "global list"
+      },
+      "spriteName": null,
+      "value": "",
+      "width": 106,
+      "height": 206,
+      "x": 5,
+      "y": 140,
+      "visible": true
+    },
+    {
+      "id": "_data_variable_{\"VARIABLE\":\"global\"}",
+      "mode": "slider",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "global"
+      },
+      "spriteName": null,
+      "value": "",
+      "x": 5,
+      "y": 59,
+      "visible": true,
+      "sliderMin": -200,
+      "sliderMax": 30,
+      "isDiscrete": false
+    },
+    {
+      "id": "_looks_backdropnumbername_{\"NUMBER_NAME\":\"name\"}",
+      "mode": "default",
+      "opcode": "looks_backdropnumbername",
+      "params": {
+        "NUMBER_NAME": "name"
+      },
+      "spriteName": null,
+      "value": "",
+      "x": 5,
+      "y": 32,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_sensing_current_{\"CURRENTMENU\":\"DATE\"}",
+      "mode": "default",
+      "opcode": "sensing_current",
+      "params": {
+        "CURRENTMENU": "DATE"
+      },
+      "spriteName": null,
+      "value": "",
+      "x": 365,
+      "y": 45,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_sensing_current_{\"CURRENTMENU\":\"DAYOFWEEK\"}",
+      "mode": "default",
+      "opcode": "sensing_current",
+      "params": {
+        "CURRENTMENU": "DAYOFWEEK"
+      },
+      "spriteName": null,
+      "value": "",
+      "x": 345,
+      "y": 83,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "_sensing_current_{\"CURRENTMENU\":\"MINUTE\"}",
+      "mode": "default",
+      "opcode": "sensing_current",
+      "params": {
+        "CURRENTMENU": "MINUTE"
+      },
+      "spriteName": null,
+      "value": "",
+      "x": 365,
+      "y": 12,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "Sprite1_data_listcontents_{\"LIST\":\"local list\"}",
+      "mode": "list",
+      "opcode": "data_listcontents",
+      "params": {
+        "LIST": "local list"
+      },
+      "spriteName": "Sprite1",
+      "value": "",
+      "width": 106,
+      "height": 206,
+      "x": 112,
+      "y": 140,
+      "visible": true
+    },
+    {
+      "id": "Sprite1_data_variable_{\"VARIABLE\":\"local\"}",
+      "mode": "default",
+      "opcode": "data_variable",
+      "params": {
+        "VARIABLE": "local"
+      },
+      "spriteName": "Sprite1",
+      "value": "",
+      "x": 5,
+      "y": 86,
+      "visible": false,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    },
+    {
+      "id": "Sprite1_motion_xposition_{}",
+      "mode": "large",
+      "opcode": "motion_xposition",
+      "params": {},
+      "spriteName": "Sprite1",
+      "value": "",
+      "x": 5,
+      "y": 5,
+      "visible": true,
+      "sliderMin": 0,
+      "sliderMax": 100,
+      "isDiscrete": true
+    }
+  ]
+}
