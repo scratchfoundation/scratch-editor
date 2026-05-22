@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-vm",
-  "version": "13.7.4-svg",
+  "version": "13.8.0-UEPR-297-accessibility-improvements.1",
   "description": "Virtual Machine for Scratch 3.0",
   "keywords": [],
   "homepage": "https://github.com/scratchfoundation/scratch-vm#readme",
@@ -60,8 +60,8 @@
     "allow-incomplete-coverage": true
   },
   "dependencies": {
-    "@scratch/scratch-render": "13.7.4-svg",
-    "@scratch/scratch-svg-renderer": "13.7.4-svg",
+    "@scratch/scratch-render": "13.8.0-UEPR-297-accessibility-improvements.1",
+    "@scratch/scratch-svg-renderer": "13.8.0-UEPR-297-accessibility-improvements.1",
     "@vernier/godirect": "1.8.3",
     "arraybuffer-loader": "1.0.8",
     "atob": "2.1.2",

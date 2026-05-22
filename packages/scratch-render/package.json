@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-render",
-  "version": "13.7.4-svg",
+  "version": "13.8.0-UEPR-297-accessibility-improvements.1",
   "description": "WebGL Renderer for Scratch 3.0",
   "keywords": [],
   "homepage": "https://github.com/scratchfoundation/scratch-render#readme",
@@ -54,7 +54,7 @@
     "allow-incomplete-coverage": true
   },
   "dependencies": {
-    "@scratch/scratch-svg-renderer": "13.7.4-svg",
+    "@scratch/scratch-svg-renderer": "13.8.0-UEPR-297-accessibility-improvements.1",
     "grapheme-breaker": "0.3.2",
     "hull.js": "0.2.10",
     "ify-loader": "1.1.0",
@@ -67,7 +67,7 @@
     "@babel/core": "7.29.0",
     "@babel/polyfill": "7.12.1",
     "@babel/preset-env": "7.29.5",
-    "@scratch/scratch-vm": "13.7.4-svg",
+    "@scratch/scratch-vm": "13.8.0-UEPR-297-accessibility-improvements.1",
     "babel-loader": "9.2.1",
     "copy-webpack-plugin": "6.4.1",
     "docdash": "0.4.0",

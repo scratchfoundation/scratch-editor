@@ -1,6 +1,6 @@
 {
   "name": "@scratch/task-herder",
-  "version": "13.7.4-svg",
+  "version": "13.8.0-UEPR-297-accessibility-improvements.1",
   "description": "An asynchronous task runner with configurable rate limiting / throttling and concurrency control.",
   "keywords": [
     "rate limit",
