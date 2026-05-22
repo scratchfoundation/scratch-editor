@@ -2,16 +2,44 @@
 
 _For maintainers of this monorepo._
 
-All packages in this monorepo will be published to NPM when a new release is created. They'll all share the same
-version number. To create a new release:
+All packages in this monorepo are published to npm with a shared version number. Releases are produced by the
+**Publish** workflow, triggered manually from the Actions tab. The next version number and the changelog are
+both computed from the Conventional Commits on the release branch.
 
-1. Select "Draft a new release" from [the repository's "Releases"
-   tab](https://github.com/scratchfoundation/scratch-editor/releases) or "Create a new release" from [the main page of
-   the repository](https://github.com/scratchfoundation/scratch-editor/).
-2. To create a tag for the release, select the **Choose a tag** dropdown menu, type a version number for your release,
-   then click **Create new tag**. The tag of the release is used to determine and update package versions.
-3. In the **Describe this release** field, type a description for your release. If you @mention anyone in the
-   description, the published release will include a Contributors section with an avatar list of all the mentioned
-   users. Alternatively, you can automatically generate your release notes by clicking **Generate release notes**.
-   This provides a list with the **Pull Requests** included in the release and their creators.
-4. Clicking **Publish release** triggers the publishing workflow that will publish the monorepo packages to NPM.
+## Releasing
+
+1. Push the commits you want included to the branch you want to release from.
+2. Open the [Publish workflow](https://github.com/scratchfoundation/scratch-editor/actions/workflows/publish.yml).
+3. Click the **Run workflow** dropdown, choose the branch, and click the **Run workflow** button.
+4. Wait for the workflow to finish. On success: the packages are on npm, a tag and GitHub release exist, and
+   the version-bump commit is on the branch.
+
+If there are no relevant commits since the last release on that branch, the workflow exits cleanly with a
+"nothing to publish" notice. Pressing the button on a branch with only `chore:` or `docs:` commits is a no-op.
+
+## Which branches can release
+
+| Branch                 | Acts as                | npm dist-tag      | Example version          |
+|------------------------|------------------------|-------------------|--------------------------|
+| `develop`              | primary release        | `latest`          | `13.8.0`                 |
+| `13.x`, `13.7.x`, etc. | maintenance            | matching the line | `13.7.5`                 |
+| `release/<topic>`      | long-lived prerelease  | `<topic>`         | `13.8.0-accessibility.3` |
+| `hotfix/<topic>`       | short-lived prerelease | `<topic>`         | `13.7.5-paint-fix.1`     |
+
+The dist-tag for `release/*` and `hotfix/*` is the branch name with the prefix stripped. Pick a short, public-
+facing branch suffix — it becomes the dist-tag downstream consumers see.
+
+Other branches (`feat/*`, `fix/*`, `chore/*`, `feature/*`, bare names) are not releasable. The workflow run
+will fail at the branch-validation step.
+
+## Conventional Commits matter
+
+Version bumps are computed from commit types:
+
+- `fix:` → patch
+- `feat:` → minor
+- `BREAKING CHANGE:` in the body (or `!:` in the header) → major
+- `chore:`, `docs:`, `style:`, `refactor:`, `test:`, `ci:`, `build:` → no release
+
+A wrong commit type means a wrong version bump. The husky hook enforces the format, but it's up to you to categorize
+your commit correctly.
