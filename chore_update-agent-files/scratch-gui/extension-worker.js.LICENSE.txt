@@ -1,0 +1,1 @@
+/*! For license information please see extension-worker.js.LICENSE.txt */
