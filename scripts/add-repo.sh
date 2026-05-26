@@ -658,8 +658,8 @@ fi
 
 # 8. Normalize the lockfile after all the dep changes.
 echo "==> Normalizing package-lock.json..."
+npm install --package-lock-only --prefer-offline --no-audit --no-fund
 npm install --prefer-offline --no-audit --no-fund
-npm install --package-lock-only 2>/dev/null || true
 
 # 9. Commit the integration fixups as one cumulative commit.
 echo "==> Committing fixup changes..."
