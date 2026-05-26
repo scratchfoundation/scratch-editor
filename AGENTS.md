@@ -60,6 +60,13 @@ npm test --workspace=packages/scratch-vm
 
 Each package defines its own `test` and `build` scripts; see "Packages at a glance" for specifics.
 
+**After all code changes are complete**, run the tests and linter in the affected packages before moving on:
+
+```sh
+npm test --workspace=packages/<package-name>
+npm run lint --workspace=packages/<package-name>
+```
+
 **Commit messages are enforced.** Husky + commitlint validate every commit against the
 [Conventional Commits](https://www.conventionalcommits.org/) format. A commit that doesn't conform will be
 rejected by the pre-commit hook.
