@@ -519,6 +519,13 @@ else
     fi
 fi
 
+# 6a. Refresh the new package's LICENSE/TRADEMARK from the monorepo root so it
+# matches every other workspace. Runs after step 6 because update-legal
+# resolves the target via `npm query .workspace`, which needs the new entry
+# to already be in the root workspaces array.
+echo "==> Refreshing LICENSE/TRADEMARK from monorepo root..."
+npm run update-legal -- "${NPM_ORGANIZATION}/${REPO_NAME}"
+
 # 7. Rewire inter-package dependencies across all packages.
 echo "==> Rewiring inter-package dependencies..."
 
@@ -678,6 +685,7 @@ if ! git diff --cached --quiet; then
 
 - Renamed package to ${NPM_ORGANIZATION}/${REPO_NAME}
 - Removed standalone-repo metadata (CI/release configs, hooks, repo-level dotfiles)
+- Refreshed LICENSE/TRADEMARK from monorepo root
 - Rewired inter-package dependencies to use workspace versions
 - Added to root workspaces list
 - Regenerated package-lock.json"
