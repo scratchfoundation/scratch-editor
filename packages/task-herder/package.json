@@ -28,6 +28,7 @@
   "files": [
     "LICENSE",
     "README.md",
+    "TRADEMARK",
     "dist"
   ],
   "scripts": {
