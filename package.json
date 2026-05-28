@@ -29,7 +29,7 @@
     "refresh-gh-workflow": "ts-node scripts/update-gha-workflows.ts",
     "start": "npm --workspace @scratch/scratch-gui start",
     "test": "npm test --workspaces",
-    "update-legal": "npm --workspaces exec -c 'rm -f ./{LICENSE,TRADEMARK} && cp -f ../../{LICENSE,TRADEMARK} .'",
+    "update-legal": "scripts/update-legal.sh",
     "version": "cross-env-shell ./scripts/npm-version.sh"
   },
   "config": {
