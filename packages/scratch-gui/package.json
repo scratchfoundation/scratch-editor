@@ -232,7 +232,7 @@
     "ts-loader": "9.5.7",
     "url-loader": "4.1.1",
     "web-audio-test-api": "0.5.2",
-    "webpack": "5.107.1",
+    "webpack": "5.107.2",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.2.4",
     "yauzl": "3.3.1"
