@@ -194,10 +194,10 @@
     "xhr": "2.6.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.28.6",
-    "@babel/core": "7.29.0",
-    "@babel/preset-env": "7.29.5",
-    "@babel/preset-react": "7.28.5",
+    "@babel/cli": "7.29.7",
+    "@babel/core": "7.29.7",
+    "@babel/preset-env": "7.29.7",
+    "@babel/preset-react": "7.29.7",
     "@playwright/test": "1.60.0",
     "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "14.3.1",

@@ -59,8 +59,8 @@
     "tslog": "4.10.2"
   },
   "devDependencies": {
-    "@babel/core": "7.29.0",
-    "@babel/preset-env": "7.29.5",
+    "@babel/core": "7.29.7",
+    "@babel/preset-env": "7.29.7",
     "babel-loader": "9.2.1",
     "canvas": "3.2.3",
     "copy-webpack-plugin": "6.4.1",
