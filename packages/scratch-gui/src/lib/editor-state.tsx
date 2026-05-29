@@ -13,7 +13,7 @@ const composeEnhancers = (window as WindowWithDevtools).__REDUX_DEVTOOLS_EXTENSI
 
 // TypeScript doesn't know about require here, and we don't want to change behavior, so...
 declare function require (path: '../reducers/gui'): typeof import('../reducers/gui');
-declare function require (path: 'scratch-paint'): typeof import('scratch-paint');
+declare function require (path: '@scratch/scratch-paint'): typeof import('@scratch/scratch-paint');
 declare function require (path: '../legacy-config'): typeof import('../legacy-config');
 
 export interface EditorStateParams {
