@@ -32,6 +32,9 @@ export default eslintConfigScratch.defineConfig(
             'react/no-unknown-property': 'warn',
             // END: these caused trouble after upgrading eslint-plugin-react from 7.24.0 to 7.33.2
 
+            // React must be in scope for the classic JSX transform; jsx-uses-react is off in v14.
+            'no-unused-vars': 'warn',
+
             // we should probably just fix these...
             'react/no-deprecated': 'warn'
         },
