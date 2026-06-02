@@ -657,7 +657,8 @@ class Blocks extends React.Component {
         this.props.onRequestCloseCustomProcedures(data);
         const ws = this.workspace;
         this.updateToolbox();
-        ws.getToolbox().selectCategoryByName('myBlocks');
+        const toolbox = ws.getToolbox();
+        toolbox.setSelectedItem(toolbox.getToolboxItemById('myBlocks'));
     }
     handleDrop (dragInfo) {
         fetch(dragInfo.payload.bodyUrl)
@@ -668,7 +669,7 @@ class Blocks extends React.Component {
             });
     }
     render () {
-         
+
         const {
             anyModalVisible,
             canUseCloud,
@@ -693,7 +694,7 @@ class Blocks extends React.Component {
             colorMode,
             ...props
         } = this.props;
-         
+
         return (
             <React.Fragment>
                 <DroppableBlocks
