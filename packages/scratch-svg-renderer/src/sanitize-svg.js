@@ -175,7 +175,7 @@ sanitizeSvg.sanitizeByteStream = function (rawData) {
  */
 sanitizeSvg.sanitizeSvgText = function (rawSvgText) {
     let sanitizedText = DOMPurify.sanitize(rawSvgText, {
-        USE_PROFILES: {svg: true},
+        USE_PROFILES: {svg: true, svgFilters: true},
         FORBID_TAGS: ['a', 'audio', 'canvas', 'video'],
         // Allow data URI in image tags (e.g. SVGs converted from bitmap)
         ADD_DATA_URI_TAGS: ['image']
