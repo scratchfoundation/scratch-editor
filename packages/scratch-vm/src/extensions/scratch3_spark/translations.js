@@ -46,6 +46,17 @@ module.exports = {
         'spark.setTofThreshold': 'ตั้งความไวระยะใกล้เป็น [LEVEL]',
         'spark.sensorLevel.1': 'สูง',
         'spark.sensorLevel.2': 'ปานกลาง',
-        'spark.sensorLevel.3': 'ต่ำ'
+        'spark.sensorLevel.3': 'ต่ำ',
+        // Story 4.5 — on-device AI (ai.classify)
+        'spark.aiClassifyFace': 'ตรวจใบหน้า',
+        'spark.aiClassifyColor': 'ตรวจสี [TARGET]',
+        'spark.aiClassifyMotion': 'ตรวจการเคลื่อนไหว',
+        'spark.aiClassifyImuGesture': 'ตรวจท่าทาง',
+        'spark.aiConfidence': 'ความมั่นใจ AI',
+        'spark.aiColor.any': 'สีเด่น',
+        'spark.aiColor.red': 'แดง',
+        'spark.aiColor.green': 'เขียว',
+        'spark.aiColor.blue': 'น้ำเงิน',
+        'spark.aiColor.yellow': 'เหลือง'
     }
 };

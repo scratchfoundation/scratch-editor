@@ -67,7 +67,10 @@ const SparkButton = {A: 'A', B: 'B'};
 const STUB_TOAST_TH = {
     mic: 'ไมโครโฟนยังไม่พร้อม - แสดงค่าจำลอง 0',
     light: 'เซ็นเซอร์แสงยังไม่พร้อม - แสดงค่าจำลอง 0',
-    tof: 'เซ็นเซอร์ระยะยังไม่พร้อม - แสดงค่าจำลอง 0'
+    tof: 'เซ็นเซอร์ระยะยังไม่พร้อม - แสดงค่าจำลอง 0',
+    // Story 4.5 — AI (ai.classify) not ready on this board (no camera / model not
+    // loaded / inference timeout). One-shot per session; reporter returns a mock label.
+    ai: 'AI ยังไม่พร้อม - แสดงผลจำลอง'
 };
 
 // Map a sensor family to its firmware threshold cmd (whenLoud/whenBright/whenNear).
@@ -75,6 +78,23 @@ const SENSOR_THRESHOLD_CMD = {
     mic: 'set_mic_threshold',
     light: 'set_light_threshold',
     tof: 'set_tof_threshold'
+};
+
+// Story 4.5 — AI color-target menu (single source, like LED_COLOR_MAP). 'any' →
+// params.target:null (firmware reports the dominant color). Add a target = one row
+// here + one `spark.aiColor.<name>` line in translations.js.
+const AI_COLOR_TARGETS = ['any', 'red', 'green', 'blue', 'yellow'];
+const aiColorMenuItems = () => AI_COLOR_TARGETS.map(name => ({
+    text: formatMessage({id: `spark.aiColor.${name}`, default: name, description: `AI color target ${name}`}),
+    value: name
+}));
+// Mock label returned by each AI reporter when the board can't run inference
+// (so a .scratch project keeps working / degrades gracefully — FR28).
+const AI_MOCK_LABEL = {
+    face: 'face_count_0',
+    color: 'not_found',
+    motion: 'still',
+    imu_gesture: 'none'
 };
 
 class SparkPeripheral {
@@ -111,6 +131,9 @@ class SparkPeripheral {
         // sensor-pending toast has already been shown this session. Cleared on
         // disconnect so a re-connect re-arms the one-shot warnings.
         this._stubWarningShown = new Set();
+        // Story 4.5 — last ai.classify result {label, confidence, bbox, primitive};
+        // the classify reporters return the label, aiConfidence reads confidence.
+        this._lastAi = null;
         this._runtime.registerPeripheralExtension(extensionId, this);
     }
 
@@ -326,6 +349,37 @@ class SparkPeripheral {
         const cmd = SENSOR_THRESHOLD_CMD[family];
         if (!cmd || ![1, 2, 3].includes(level)) return Promise.resolve(null);
         return this.send(cmd, {level});
+    }
+
+    // Story 4.5 — run an ai.classify primitive. Sends {primitive, params}; on a
+    // success response caches {label, confidence, bbox} and returns the label.
+    // Branch on the RESPONSE (not a build flag) so one .scratch works everywhere:
+    // hw_not_present (no camera) / model_load_failed (primitive not built) /
+    // inference_timeout / null timeout → return the declared mock label + a
+    // one-shot Thai 'ai' toast (FR28 graceful degradation, never a Scratch error).
+    _classify (primitive, params) {
+        const mock = AI_MOCK_LABEL[primitive] ?? 'not_found';
+        if (!this.isConnected()) return Promise.resolve(mock);
+        const fallback = resp => {
+            if (!this._stubWarningShown.has('ai')) {
+                this._stubWarningShown.add('ai');
+                log.warn(`spark: ai_not_ready (${primitive}/${resp?.error_code ?? 'timeout'}) — mock label`);
+                this._showStubToast('ai');
+            }
+            return mock;
+        };
+        return this.send('ai.classify', {primitive, params}).then(resp => {
+            if (resp && resp.status === 'ok' && typeof resp.label === 'string') {
+                this._lastAi = {
+                    label: resp.label,
+                    confidence: typeof resp.confidence === 'number' ? resp.confidence : 0,
+                    bbox: Array.isArray(resp.bbox) ? resp.bbox : null,
+                    primitive
+                };
+                return resp.label;
+            }
+            return fallback(resp);
+        }, () => fallback(null));
     }
 
     _showStubToast (family) {
@@ -602,6 +656,59 @@ class Scratch3SparkBlocks {
                     opcode: 'capturePhoto',
                     blockType: BlockType.COMMAND,
                     text: formatMessage({id: 'spark.capturePhoto', default: 'capture photo to stage', description: 'Capture camera image to stage'})
+                },
+                '---',
+                // ── On-device AI (ai.classify — Stories 4.2/4.3/4.4 firmware) ───────
+                // REPORTERS returning the inference label; aiConfidence reads the last
+                // result's confidence. On a board that can't run a primitive the reporter
+                // returns a mock label + a one-shot Thai toast (FR28) — never an error.
+                {
+                    opcode: 'aiClassifyFace',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiClassifyFace',
+                        default: 'detect face',
+                        description: 'AI: on-device face detection (label face_count_N)'
+                    })
+                },
+                {
+                    opcode: 'aiClassifyColor',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiClassifyColor',
+                        default: 'detect color [TARGET]',
+                        description: 'AI: on-device color detection'
+                    }),
+                    arguments: {
+                        TARGET: {type: ArgumentType.STRING, menu: 'aiColorTargets', defaultValue: 'any'}
+                    }
+                },
+                {
+                    opcode: 'aiClassifyMotion',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiClassifyMotion',
+                        default: 'detect motion',
+                        description: 'AI: on-device motion detection (motion_detected/still)'
+                    })
+                },
+                {
+                    opcode: 'aiClassifyImuGesture',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiClassifyImuGesture',
+                        default: 'detect gesture',
+                        description: 'AI: on-device IMU-gesture (the camera-free AI floor)'
+                    })
+                },
+                {
+                    opcode: 'aiConfidence',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiConfidence',
+                        default: 'AI confidence',
+                        description: 'Confidence (0..1) of the last AI detection'
+                    })
                 }
             ],
             menus: {
@@ -668,6 +775,11 @@ class Scratch3SparkBlocks {
                         {text: formatMessage({id: 'spark.fusionAlgo.madgwick', default: 'Madgwick', description: 'Fusion: Madgwick'}), value: 'madgwick'},
                         {text: formatMessage({id: 'spark.fusionAlgo.mahony', default: 'Mahony', description: 'Fusion: Mahony'}), value: 'mahony'}
                     ]
+                },
+                // Story 4.5 — AI color-target menu (single source: AI_COLOR_TARGETS).
+                aiColorTargets: {
+                    acceptReporters: true,
+                    items: aiColorMenuItems()
                 }
             }
         };
@@ -830,6 +942,26 @@ class Scratch3SparkBlocks {
                 })
                 .catch(err => log.warn('Spark camera capture failed:', err));
         });
+    }
+
+    // ── On-device AI (ai.classify) — Story 4.5. Each reporter returns the inference
+    //    label; graceful fallback to a mock label + one-shot Thai toast on a board
+    //    that can't run the primitive (FR28). aiConfidence reads the last result. ──
+    aiClassifyFace () {
+        return this._peripheral._classify('face', {});
+    }
+    aiClassifyColor (args) {
+        const target = args.TARGET === 'any' ? null : args.TARGET;
+        return this._peripheral._classify('color', {target});
+    }
+    aiClassifyMotion () {
+        return this._peripheral._classify('motion', {threshold_pct: 20});
+    }
+    aiClassifyImuGesture () {
+        return this._peripheral._classify('imu_gesture', {gesture: null});
+    }
+    aiConfidence () {
+        return this._peripheral._lastAi ? this._peripheral._lastAi.confidence : 0;
     }
 }
 
