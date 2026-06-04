@@ -236,7 +236,7 @@
     "webpack": "5.107.2",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.2.4",
-    "yauzl": "3.3.1"
+    "yauzl": "3.3.2"
   },
   "peerDependencies": {
     "react": "^18.0.0",
