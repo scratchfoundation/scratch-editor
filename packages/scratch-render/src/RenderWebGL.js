@@ -1132,7 +1132,7 @@ class RenderWebGL extends EventEmitter {
             return false;
         }
 
-        if(candidateIDs) {
+        if (candidateIDs) {
             // sort candidate IDs into drawing order
             const set = new Set(candidateIDs);
             candidateIDs = this._drawList.filter(id => set.has(id));
