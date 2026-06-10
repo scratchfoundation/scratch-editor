@@ -28,14 +28,14 @@
     "check-coverage": false
   },
   "dependencies": {
-    "@babel/runtime": "^7.21.0",
+    "@babel/runtime": "7.29.7",
     "@scratch/task-herder": "14.1.0",
-    "arraybuffer-loader": "^1.0.3",
-    "base64-js": "^1.3.0",
+    "arraybuffer-loader": "1.0.8",
+    "base64-js": "1.5.1",
     "buffer": "6.0.3",
-    "fastestsmallesttextencoderdecoder": "^1.0.7",
-    "js-md5": "^0.7.3",
-    "minilog": "^3.1.0"
+    "fastestsmallesttextencoderdecoder": "1.0.22",
+    "js-md5": "0.7.3",
+    "minilog": "3.1.0"
   },
   "devDependencies": {
     "@babel/core": "7.29.7",
