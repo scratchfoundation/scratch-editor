@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import {ScratchStorage} from 'scratch-storage';
+import {ScratchStorage} from '@scratch/scratch-storage';
 
 export type GUIConfigFactory = () => GUIConfig;
 export type ProjectId = string | number;

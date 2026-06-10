@@ -1,0 +1,196 @@
+{
+	"objName": "Stage",
+	"costumes": [{
+			"costumeName": "backdrop1",
+			"baseLayerID": -1,
+			"baseLayerMD5": "ba5d7bbc200d7925664a0878421c4ed2.png",
+			"bitmapResolution": 2,
+			"rotationCenterX": 480,
+			"rotationCenterY": 360
+		}],
+	"currentCostumeIndex": 0,
+	"penLayerMD5": "5c81a336fab8be57adc039a8a2b33ca9.png",
+	"penLayerID": -1,
+	"tempoBPM": 60,
+	"videoAlpha": 0.5,
+	"children": [{
+			"objName": "seymour cropped",
+			"scripts": [[89, 102, [["whenGreenFlag"], ["setSizeTo:", 85]]]],
+			"sounds": [{
+					"soundName": "pop",
+					"soundID": -1,
+					"md5": "83a9787d4cb6f3b7632b4ddfebf74367.wav",
+					"sampleCount": 258,
+					"rate": 11025,
+					"format": ""
+				}],
+			"costumes": [{
+					"costumeName": "SeymourPapert001",
+					"baseLayerID": -1,
+					"baseLayerMD5": "2c8559602a79c7ec929636c3a5ea0291.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 204,
+					"rotationCenterY": 262
+				}],
+			"currentCostumeIndex": 0,
+			"scratchX": 115,
+			"scratchY": -28,
+			"scale": 0.85,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 2,
+			"visible": true,
+			"spriteInfo": {
+			}
+		},
+		{
+			"objName": "Sprite1",
+			"scripts": [[48,
+					24,
+					[["whenGreenFlag"],
+						["setSizeTo:", 110],
+						["wait:elapsed:from:", 1],
+						["say:", "Hi. I want to introduce you to Seymour Papert."],
+						["doPlaySoundAndWait", "papert1"],
+						["say:", "Seymour developed Logo, the first programming language for kids"],
+						["doPlaySoundAndWait", "papert2"],
+						["say:", "He believed that kids learn best"],
+						["doPlaySoundAndWait", "papert3"],
+						["say:", "when they are given the chance to create things and express themselves"],
+						["doPlaySoundAndWait", "papert4"],
+						["say:", "When we developed Scratch, we were very inspired by Seymour's ideas"],
+						["doPlaySoundAndWait", "papert5"],
+						["say:", "So you might call Seymour the grandfather of Scratch"],
+						["doPlaySoundAndWait", "papert6"],
+						["say:", "Sadly, Seymour passed away last week, on July 31, 2016"],
+						["doPlaySoundAndWait", "papert7"],
+						["say:", "But every time you create and share a Scratch project"],
+						["doPlaySoundAndWait", "papert8"],
+						["say:", "you're helping to keep Seymour's spirit alive"],
+						["doPlaySoundAndWait", "papert9"],
+						["say:", "So Scratch on!"],
+						["doPlaySoundAndWait", "papert10"],
+						["say:", "And Papert on!"],
+						["doPlaySoundAndWait", "papert11"],
+						["wait:elapsed:from:", 5],
+						["say:", ""]]]],
+			"sounds": [{
+					"soundName": "papert1",
+					"soundID": -1,
+					"md5": "876c45f175060737364334daed9366a1.wav",
+					"sampleCount": 84993,
+					"rate": 22050,
+					"format": ""
+				},
+				{
+					"soundName": "papert2",
+					"soundID": -1,
+					"md5": "e439ca64ef29692ed611bb769fdbe543.wav",
+					"sampleCount": 103425,
+					"rate": 22050,
+					"format": ""
+				},
+				{
+					"soundName": "papert3",
+					"soundID": -1,
+					"md5": "0bd55bc2b3ff5741bafe981decdaca5b.wav",
+					"sampleCount": 54273,
+					"rate": 22050,
+					"format": ""
+				},
+				{
+					"soundName": "papert4",
+					"soundID": -1,
+					"md5": "123abc35f1934ed471436c59f7b99e2f.wav",
+					"sampleCount": 93185,
+					"rate": 22050,
+					"format": ""
+				},
+				{
+					"soundName": "papert5",
+					"soundID": -1,
+					"md5": "cd9f672266016a0e55152b2a3398c8d9.wav",
+					"sampleCount": 113665,
+					"rate": 22050,
+					"format": ""
+				},
+				{
+					"soundName": "papert6",
+					"soundID": -1,
+					"md5": "d38287334764b7d4cd2c5db59548234d.wav",
+					"sampleCount": 84993,
+					"rate": 22050,
+					"format": ""
+				},
+				{
+					"soundName": "papert7",
+					"soundID": -1,
+					"md5": "fab6bf9923265a999bcfea1e62384a2c.wav",
+					"sampleCount": 144385,
+					"rate": 22050,
+					"format": ""
+				},
+				{
+					"soundName": "papert8",
+					"soundID": -1,
+					"md5": "6826373fa0554c582f920cc65620395e.wav",
+					"sampleCount": 82945,
+					"rate": 22050,
+					"format": ""
+				},
+				{
+					"soundName": "papert9",
+					"soundID": -1,
+					"md5": "c6b907cbfe0081748ae83cb3bb6aa6d8.wav",
+					"sampleCount": 74753,
+					"rate": 22050,
+					"format": ""
+				},
+				{
+					"soundName": "papert10",
+					"soundID": -1,
+					"md5": "f455697888f2e7b36072a2189fc78bbc.wav",
+					"sampleCount": 39937,
+					"rate": 22050,
+					"format": ""
+				},
+				{
+					"soundName": "papert11",
+					"soundID": -1,
+					"md5": "fb58460f1cd8629eae3b3c58148984ad.wav",
+					"sampleCount": 54273,
+					"rate": 22050,
+					"format": ""
+				}],
+			"costumes": [{
+					"costumeName": "-mres-cartoon",
+					"baseLayerID": -1,
+					"baseLayerMD5": "dd88c3596176f24479a8e8ec9b6c8278.png",
+					"bitmapResolution": 2,
+					"rotationCenterX": 122,
+					"rotationCenterY": 204
+				}],
+			"currentCostumeIndex": 0,
+			"scratchX": -137.95,
+			"scratchY": -71,
+			"scale": 1.1,
+			"direction": 90,
+			"rotationStyle": "normal",
+			"isDraggable": false,
+			"indexInLibrary": 1,
+			"visible": true,
+			"spriteInfo": {
+			}
+		}],
+	"info": {
+		"spriteCount": 2,
+		"hasCloudData": false,
+		"projectID": "117504922",
+		"flashVersion": "MAC 22,0,0,209",
+		"swfVersion": "v448",
+		"userAgent": "Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/51.0.2704.103 Safari\/537.36",
+		"scriptCount": 2,
+		"videoOn": false
+	}
+}

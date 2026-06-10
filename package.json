@@ -16,6 +16,7 @@
   "author": "Scratch Foundation",
   "workspaces": [
     "packages/task-herder",
+    "packages/scratch-storage",
     "packages/scratch-svg-renderer",
     "packages/scratch-render",
     "packages/scratch-vm",

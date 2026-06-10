@@ -1,5 +1,5 @@
 import xhr from 'xhr';
-import {ScratchStorage, Asset} from 'scratch-storage';
+import {ScratchStorage, Asset} from '@scratch/scratch-storage';
 import {
     GUIBackpackStorage,
     BackpackListItemsInput,

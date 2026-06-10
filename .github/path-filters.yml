@@ -18,6 +18,10 @@ any-workspace:
 task-herder:
   - *global
   - "packages/task-herder/**"
+scratch-storage:
+  - *global
+  - "packages/scratch-storage/**"
+  - "packages/task-herder/**"
 scratch-svg-renderer:
   - *global
   - "packages/scratch-svg-renderer/**"
@@ -28,14 +32,18 @@ scratch-render:
 scratch-vm:
   - *global
   - "packages/scratch-render/**"
+  - "packages/scratch-storage/**"
   - "packages/scratch-svg-renderer/**"
   - "packages/scratch-vm/**"
+  - "packages/task-herder/**"
 scratch-gui:
   - *global
   - "packages/scratch-gui/**"
   - "packages/scratch-render/**"
+  - "packages/scratch-storage/**"
   - "packages/scratch-svg-renderer/**"
   - "packages/scratch-vm/**"
+  - "packages/task-herder/**"
 scratch-media-lib-scripts:
   - *global
   - "packages/scratch-media-lib-scripts/**"

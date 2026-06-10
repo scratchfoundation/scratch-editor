@@ -61,6 +61,7 @@
   },
   "dependencies": {
     "@scratch/scratch-render": "14.1.0",
+    "@scratch/scratch-storage": "14.1.0",
     "@scratch/scratch-svg-renderer": "14.1.0",
     "@vernier/godirect": "1.8.3",
     "arraybuffer-loader": "1.0.8",
@@ -76,7 +77,6 @@
     "scratch-audio": "2.0.268",
     "scratch-parser": "6.0.0",
     "scratch-sb1-converter": "2.0.279",
-    "scratch-storage": "6.2.1",
     "scratch-translate-extension-languages": "1.0.7",
     "text-encoding": "0.7.0",
     "tslog": "4.10.2",

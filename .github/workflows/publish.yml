@@ -242,6 +242,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
+      - name: Publish scratch-storage
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-storage
+
     # update-gha-workflows.ts: insert new "Publish <package>" steps before this line.
 
   finalize:

@@ -8,7 +8,7 @@ const path = require('path');
 const fs = require('fs');
 const test = require('tap').test;
 const AdmZip = require('adm-zip');
-const ScratchStorage = require('scratch-storage').ScratchStorage;
+const ScratchStorage = require('@scratch/scratch-storage').ScratchStorage;
 const VirtualMachine = require('../../src/index');
 const {sanitizeByteStream} = require('../../../scratch-svg-renderer/src/sanitize-svg');
 
