@@ -1,0 +1,25 @@
+.container {
+    margin: 8px;
+    height: 22px;
+    width: 150px;
+    position: relative;
+    outline: none;
+    border-radius: 11px;
+    margin-bottom: 20px;
+}
+
+.last {
+    margin-bottom: 4px;
+}
+
+.handle {
+    left: 100px;
+    width: 26px;
+    height: 26px;
+    margin-top: -2px;
+    position: absolute;
+    background-color: white;
+    border-radius: 100%;
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.15);
+    touch-action: none;
+}

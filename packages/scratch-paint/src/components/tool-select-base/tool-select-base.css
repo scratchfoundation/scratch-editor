@@ -1,0 +1,42 @@
+@import '../../css/colors.css';
+@import "../../css/units.css";
+
+$border-radius: .25rem;
+
+.mod-tool-select {
+    display: inline-block;
+    margin: $grid-unit;
+    border: none;
+    border-radius: $border-radius;
+    outline: none;
+    background: none;
+    padding: $grid-unit;
+    font-size: 0.85rem;
+    transition: 0.2s;
+}
+
+.mod-tool-select.is-selected {
+    background-color: $looks-secondary;
+}
+
+.mod-tool-select:focus {
+    outline: none;
+}
+
+img.tool-select-icon {
+    width: 2rem;
+    height: 2rem;
+    flex-grow: 1;
+    vertical-align: middle;
+}
+
+.mod-tool-select.is-selected .tool-select-icon {
+    /* Make the tool icons white while selected by making them black and inverting */
+    filter: brightness(0) invert(1);
+}
+
+@media only screen and (max-width: $full-size-paint) {
+    .mod-tool-select {
+        margin: 0;
+    }
+}

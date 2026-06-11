@@ -1,0 +1,115 @@
+@import "../../css/colors";
+@import "../../css/units";
+
+/* Popover styles */
+:global(.Popover-body) {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 4px;
+    border-radius: 4px;
+    padding: 4px;
+    box-shadow: 0px 0px 8px 1px rgba(0, 0, 0, .3);
+}
+
+:global(.Popover-tipShape) {
+    fill: white;
+    stroke: #ddd;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.swatch-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.row-header {
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+    font-size: 0.65rem;
+    color: #575E75;
+    margin: 8px;
+}
+
+[dir="ltr"] .label-readout {
+    margin-left: 10px;
+}
+
+[dir="rtl"] .label-readout {
+    margin-right: 10px;
+}
+
+.label-name {
+    font-weight: bold;
+}
+
+.divider {
+    border-top: 1px solid #ddd;
+    margin: 8px;
+}
+
+.swap-button {
+    margin-left: 8px;
+    margin-right: 8px;
+}
+
+.swatches {
+    margin: 8px;
+}
+
+.swatch {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: content-box;
+    display: flex;
+    align-items: center;
+}
+
+.large-swatch-icon {
+    width: 1.75rem;
+    margin: auto;
+}
+
+.large-swatch {
+    width: 2rem;
+    height: 2rem;
+}
+
+.active-swatch {
+    border: 1px solid $looks-secondary;
+    box-shadow: 0px 0px 0px 3px $looks-transparent;
+}
+
+.swatch-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.inactive-gradient {
+    filter: saturate(0%);
+}
+
+.gradient-picker-row {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 8px;
+    user-select: none;
+}
+
+[dir="ltr"] .gradient-picker-row > img + img {
+    margin-left: calc(2 * $grid-unit);
+}
+
+[dir="rtl"] .gradient-picker-row > img + img {
+    margin-right: calc(2 * $grid-unit);
+}
+
+[dir="rtl"] .gradient-swatches-row {
+    flex-direction: row-reverse;
+}

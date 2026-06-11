@@ -1,0 +1,28 @@
+@import "../../css/units.css";
+
+$border-radius: 0.25rem;
+
+.mod-edit-field {
+    background: none;
+    border: none;
+    display: inline-block;
+    padding: .25rem .325rem;
+    outline: none;
+    border-radius: $border-radius;
+    min-width: 3rem;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.edit-field-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-grow: 1;
+    vertical-align: middle;
+}
+
+.edit-field-title {
+    display: block;
+    margin-top: .125rem;
+    font-size: .625rem;
+}

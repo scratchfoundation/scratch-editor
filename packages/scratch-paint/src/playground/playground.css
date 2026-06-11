@@ -1,0 +1,23 @@
+
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    margin: 0px;
+}
+
+body, html, .wrapper {
+	height: 100%
+}
+
+.playgroundContainer{
+	height: 90%;
+	width: 90%;
+	margin: auto;
+}
+
+#fileInput {
+	display: none;
+}
+
+.playgroundButton {
+	margin: 4px;
+}

@@ -1,0 +1,120 @@
+{
+  "name": "@scratch/scratch-paint",
+  "version": "14.1.0",
+  "description": "Graphical User Interface for the Scratch 3.0 paint editor, which is used to make and edit sprites for use in projects.",
+  "homepage": "https://github.com/scratchfoundation/scratch-paint#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scratchfoundation/scratch-editor.git"
+  },
+  "license": "AGPL-3.0-only",
+  "author": "Massachusetts Institute of Technology",
+  "exports": {
+    "webpack": "./src/index.js",
+    "browser": "./src/index.js",
+    "node": "./dist/web/scratch-paint.js",
+    "default": "./dist/web/scratch-paint.js"
+  },
+  "main": "./dist/web/scratch-paint.js",
+  "browser": "./src/index.js",
+  "scripts": {
+    "build": "npm run clean && webpack --progress --bail",
+    "clean": "rimraf ./dist && mkdirp dist && rimraf ./playground && mkdirp playground",
+    "i18n:push": "tx-push-src scratch-editor paint-editor ./translations/en.json",
+    "i18n:src": "rimraf ./translations/messages && babel src > tmp.js && rimraf tmp.js && ./scripts/build-i18n-source.js ./translations/messages/ ./translations/",
+    "lint": "eslint",
+    "prepublishOnly": "echo \"Please publish through CI only.\" && exit 1",
+    "start": "webpack serve",
+    "test": "npm run unit",
+    "unit": "jest --reporters=default",
+    "watch": "webpack --progress --watch"
+  },
+  "browserslist": [
+    "last 3 versions",
+    "Safari >= 8",
+    "iOS >= 8"
+  ],
+  "jest": {
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/test/__mocks__/styleMock.js",
+      "^css-tree/utils$": "<rootDir>/node_modules/css-tree/cjs/utils/index.cjs"
+    },
+    "setupFiles": [
+      "raf/polyfill"
+    ],
+    "testEnvironment": "./test/jest-canvas-environment.js",
+    "testEnvironmentOptions": {
+      "url": "http://localhost"
+    },
+    "transformIgnorePatterns": [
+      "/node_modules/(?!intl-messageformat|intl-messageformat-parser).+\\.js$"
+    ]
+  },
+  "jest-junit": {
+    "outputDirectory": "./test/results"
+  },
+  "dependencies": {
+    "@scratch/paper": "^0.11.20221201200345",
+    "@scratch/scratch-svg-renderer": "14.1.0",
+    "classnames": "^2.2.5",
+    "keymirror": "^0.1.1",
+    "lodash.bindall": "^4.4.0",
+    "lodash.omit": "^4.5.0",
+    "minilog": "^3.1.0",
+    "parse-color": "^1.0.0",
+    "prop-types": "^15.5.10"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.29.7",
+    "@babel/core": "7.29.7",
+    "@babel/node": "7.29.7",
+    "@babel/preset-env": "7.29.7",
+    "@babel/preset-react": "7.29.7",
+    "@testing-library/react": "14.3.1",
+    "autoprefixer": "9.8.8",
+    "babel-jest": "29.7.0",
+    "babel-loader": "9.2.1",
+    "babel-plugin-react-intl": "3.5.1",
+    "canvas": "3.2.3",
+    "css-loader": "5.2.7",
+    "eslint": "9.39.4",
+    "eslint-config-scratch": "14.1.25",
+    "gh-pages": "3.2.3",
+    "globals": "16.5.0",
+    "html-webpack-plugin": "5.6.7",
+    "jest": "29.7.0",
+    "jest-environment-jsdom": "29.7.0",
+    "jest-junit": "13.2.0",
+    "json": "9.0.6",
+    "mkdirp": "1.0.4",
+    "postcss-import": "12.0.1",
+    "postcss-loader": "4.3.0",
+    "postcss-simple-vars": "5.0.2",
+    "raf": "3.4.1",
+    "react-test-renderer": "18.3.1",
+    "redux-mock-store": "1.5.5",
+    "redux-throttle": "0.1.1",
+    "regenerator-runtime": "0.13.9",
+    "rimraf": "2.7.1",
+    "scratch-l10n": "6.1.85",
+    "scratch-webpack-configuration": "3.1.2",
+    "style-loader": "4.0.0",
+    "webpack": "5.107.2",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "5.2.4"
+  },
+  "peerDependencies": {
+    "react": "^18",
+    "react-dom": "^18",
+    "react-intl": "^6",
+    "react-intl-redux": "^0.7 || ^2.0.0",
+    "react-popover": "^0.5",
+    "react-redux": "^8",
+    "react-responsive": "^9",
+    "react-style-proptype": "^3",
+    "react-tooltip": "^4",
+    "redux": "^4",
+    "scratch-render-fonts": "1.0.252"
+  }
+}

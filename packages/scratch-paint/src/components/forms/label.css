@@ -1,0 +1,39 @@
+/* DO NOT EDIT
+@todo This file is copied from GUI and should be pulled out into a shared library.
+See https://github.com/LLK/scratch-paint/issues/13 */
+
+@import "../../css/units.css";
+@import "../../css/colors.css";
+@import "../input-group/input-group.css";
+
+.input-label, .input-label-secondary {
+    font-size: 0.625rem;
+    user-select: none;
+    cursor: default;
+}
+
+[dir="ltr"] .input-label, [dir="ltr"] .input-label-secondary{
+    margin-right: calc(2 * $grid-unit);
+}
+
+[dir="rtl"] .input-label, [dir="ltr"] .input-label-secondary{
+    margin-left: calc(2 * $grid-unit);
+}
+
+.input-label {
+    font-weight: bold;
+}
+
+@media only screen and (max-width: $full-size-paint) {
+    .input-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-top: -1rem; /* To align with the non-labeled inputs */
+    }
+
+    .input-label {
+        font-weight: normal;
+        margin-bottom: 0.25rem;
+    }
+}

@@ -1,0 +1,40 @@
+$scrollbar-size: 8px;
+$scrollbar-padding: 4px;
+
+.vertical-scrollbar, .horizontal-scrollbar {
+    background: rgba(190, 190, 190, 0.8);
+    border-radius: calc($scrollbar-size / 2);
+    width: 100%;
+    height: 100%;
+}
+.vertical-scrollbar-wrapper {
+    position: absolute;
+    width: calc($scrollbar-size + $scrollbar-padding);
+    right: 0;
+    top: $scrollbar-padding;
+    height: calc(100% - $scrollbar-size - 2 * $scrollbar-padding);
+}
+
+.horizontal-scrollbar-wrapper {
+    position: absolute;
+    height: calc($scrollbar-size + $scrollbar-padding);
+    left: $scrollbar-padding;
+    bottom: 0;
+    width: calc(100% - $scrollbar-size - 2 * $scrollbar-padding);
+}
+
+.vertical-scrollbar-hitbox, .horizontal-scrollbar-hitbox {
+    position: absolute;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.vertical-scrollbar-hitbox {
+    width: calc($scrollbar-size + $scrollbar-padding);
+    padding-right: $scrollbar-padding;
+}
+
+.horizontal-scrollbar-hitbox {
+    height: calc($scrollbar-size + $scrollbar-padding);
+    padding-bottom: $scrollbar-padding;
+}

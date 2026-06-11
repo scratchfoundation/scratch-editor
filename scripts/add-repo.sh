@@ -442,33 +442,35 @@ if [ -r "${PACKAGE_PATH}/package.json" ]; then
     # $MONOREPO_URL, $MONOREPO_VERSION, and $PREPUBLISH_ONLY are jq variables
     # (bound via --arg), not shell variables — they must NOT be expanded by
     # the shell.
+    PACKAGE_JSON_REWRITE_FILTER="$(join_args ' | ' \
+        '.name |= $PACKAGE_NAME' \
+        '.version |= $MONOREPO_VERSION' \
+        '.repository.url |= $MONOREPO_URL' \
+        'del(.repository.sha)' \
+        'if (.scripts.prepare == "husky install") or (.scripts.prepare == "husky") then del(.scripts.prepare) else . end' \
+        'del(.scripts."semantic-release")' \
+        'del(.scripts.commitmsg)' \
+        'del(.scripts.version)' \
+        '.scripts.prepublishOnly = $PREPUBLISH_ONLY' \
+        'if (.scripts // {}) == {} then del(.scripts) else . end' \
+        'del(.config.commitizen)' \
+        'if (.config // {}) == {} then del(.config) else . end' \
+        'del(.devDependencies."@commitlint/cli")' \
+        'del(.devDependencies."@commitlint/config-conventional")' \
+        'del(.devDependencies."@commitlint/travis-cli")' \
+        'del(.devDependencies."cz-conventional-changelog")' \
+        'del(.devDependencies."husky")' \
+        'del(.devDependencies."semantic-release")' \
+        'del(.devDependencies."scratch-semantic-release-config")' \
+        'if (.devDependencies // {}) == {} then del(.devDependencies) else . end' \
+    )"
+
     jq_in_place "${PACKAGE_PATH}/package.json" \
         --arg PACKAGE_NAME "${NPM_ORGANIZATION}/${REPO_NAME}" \
         --arg MONOREPO_URL "$MONOREPO_URL" \
         --arg MONOREPO_VERSION "$MONOREPO_VERSION" \
         --arg PREPUBLISH_ONLY "$CANONICAL_PREPUBLISH_ONLY" \
-        -f <(join_args ' | ' \
-            '.name |= $PACKAGE_NAME' \
-            '.version |= $MONOREPO_VERSION' \
-            '.repository.url |= $MONOREPO_URL' \
-            'del(.repository.sha)' \
-            'if (.scripts.prepare == "husky install") or (.scripts.prepare == "husky") then del(.scripts.prepare) else . end' \
-            'del(.scripts."semantic-release")' \
-            'del(.scripts.commitmsg)' \
-            'del(.scripts.version)' \
-            '.scripts.prepublishOnly = $PREPUBLISH_ONLY' \
-            'if (.scripts // {}) == {} then del(.scripts) else . end' \
-            'del(.config.commitizen)' \
-            'if (.config // {}) == {} then del(.config) else . end' \
-            'del(.devDependencies."@commitlint/cli")' \
-            'del(.devDependencies."@commitlint/config-conventional")' \
-            'del(.devDependencies."@commitlint/travis-cli")' \
-            'del(.devDependencies."cz-conventional-changelog")' \
-            'del(.devDependencies."husky")' \
-            'del(.devDependencies."semantic-release")' \
-            'del(.devDependencies."scratch-semantic-release-config")' \
-            'if (.devDependencies // {}) == {} then del(.devDependencies) else . end' \
-        )
+        "$PACKAGE_JSON_REWRITE_FILTER"
 fi
 
 # Normalize so subsequent diffs are minimal.

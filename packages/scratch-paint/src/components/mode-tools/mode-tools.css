@@ -1,0 +1,30 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+
+.mode-tools {
+    display: flex;
+    min-height: 3rem;
+    align-items: center;
+}
+
+.mode-tools-icon {
+    margin-right: calc(2 * $grid-unit);
+    width: 2rem;
+    height: 2rem;
+}
+
+[dir="ltr"] .mod-dashed-border {
+    border-right: 1px dashed $ui-pane-border;
+    padding-right: calc(3 * $grid-unit);
+}
+
+[dir="rtl"] .mod-dashed-border {
+    border-left: 1px dashed $ui-pane-border;
+    padding-left: calc(3 * $grid-unit);
+}
+
+.mod-labeled-icon-height {
+    display: flex;
+    height: 2.85rem; /* for the second row so the dashed borders are equal in size */
+    align-items: center;
+}

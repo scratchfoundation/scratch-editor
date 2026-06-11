@@ -1,0 +1,7 @@
+@import "../../css/units";
+
+.button-group {
+    display: inline-flex;
+    flex-direction: row;
+    padding: 0 $grid-unit;
+}

@@ -245,6 +245,9 @@ jobs:
       - name: Publish scratch-storage
         run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-storage
 
+      - name: Publish scratch-paint
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-paint
+
     # update-gha-workflows.ts: insert new "Publish <package>" steps before this line.
 
   finalize:

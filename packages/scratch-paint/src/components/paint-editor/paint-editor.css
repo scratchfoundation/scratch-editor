@@ -1,0 +1,225 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+
+.editor-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: calc(3 * $grid-unit);
+}
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.editor-container-top {
+    border-bottom: 1px dashed $ui-pane-border;
+    padding-bottom: calc(2 * $grid-unit);
+}
+
+.top-align-row {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    padding-top: calc(5 * $grid-unit);
+    min-width: 524px;
+}
+
+.row + .row {
+    margin-top: calc(2 * $grid-unit);
+}
+
+[dir="ltr"] .mod-dashed-border {
+    border-right: 1px dashed $ui-pane-border;
+    padding-right: calc(2 * $grid-unit);
+}
+
+[dir="rtl"] .mod-dashed-border {
+    border-left: 1px dashed $ui-pane-border;
+    padding-left: calc(2 * $grid-unit);
+}
+.mod-labeled-icon-height {
+    height: 2.85rem; /* for the second row so the dashed borders are equal in size */
+}
+
+$border-radius: 0.25rem;
+
+.button-group-button {
+    display: inline-block;
+    border: 1px solid $ui-pane-border;
+    border-radius: 0;
+    padding: .35rem;
+}
+
+[dir="ltr"] .button-group-button {
+    border-left: none;
+}
+
+[dir="rtl"] .button-group-button {
+    border-right: none;
+}
+
+[dir="ltr"] .button-group-button:last-of-type {
+    border-top-right-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+}
+
+[dir="ltr"] .button-group-button:first-of-type {
+    border-left: 1px solid $ui-pane-border;
+    border-top-left-radius: $border-radius;
+    border-bottom-left-radius: $border-radius;
+}
+
+[dir="rtl"] .button-group-button:last-of-type {
+    border-top-left-radius: $border-radius;
+    border-bottom-left-radius: $border-radius;
+}
+
+[dir="rtl"] .button-group-button:first-of-type {
+    border-right: 1px solid $ui-pane-border;
+    border-top-right-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+}
+
+[dir="ltr"] .button-group-button.mod-start-border {
+    border-left: 1px solid $ui-pane-border;
+}
+
+[dir="rtl"] .button-group-button.mod-start-border {
+    border-right: 1px solid $ui-pane-border;
+}
+
+[dir="ltr"].button-group-button.mod-no-end-border {
+    border-right: none;
+}
+
+[dir="rtl"].button-group-button.mod-no-end-border {
+    border-left: none;
+}
+
+.button-group-button-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    vertical-align: middle;
+}
+
+.mod-mode-tools {
+    margin-left: calc(2 * $grid-unit);
+}
+
+[dir="ltr"] .mod-margin-after {
+    margin-right: calc(2 * $grid-unit);
+}
+
+[dir="rtl"] .mod-margin-after {
+    margin-left: calc(2 * $grid-unit);
+}
+
+.controls-container {
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    flex-grow: 1;
+    margin-left: calc(2 * $grid-unit);
+    margin-right: calc(2 * $grid-unit);
+}
+
+.canvas-container {
+    width: 100%;
+    flex-grow: 1;
+    min-width: 402px; /* Leave room for the border */
+    box-sizing: content-box;
+    border: 1px solid #e8edf1;
+    border-radius: .25rem;
+    position: relative;
+    overflow: visible;
+}
+
+.mode-selector {
+    display: flex;
+    max-width: 7.5rem;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    align-content: flex-start;
+    justify-content: space-between;
+}
+
+.zoom-controls {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.color-picker-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.canvas-controls {
+    display: flex;
+    height: 36px;
+    margin-top: $grid-unit;
+    justify-content: space-between;
+}
+
+.bitmap-button {
+    display: flex;
+    border-radius: 5px;
+    background-color: $looks-secondary;
+    padding: calc(2 * $grid-unit);
+    line-height: 1.5rem;
+    font-size: calc(3 * $grid-unit);
+    font-weight: bold;
+    color: white;
+    justify-content: center;
+}
+
+[dir="ltr"] .bitmap-button-icon {
+    margin-right: calc(2 * $grid-unit);
+}
+
+[dir="rtl"] .bitmap-button-icon {
+    margin-left: calc(2 * $grid-unit);
+}
+
+@media only screen and (max-width: $full-size-paint) {
+    .editor-container {
+        padding: calc(3 * $grid-unit) $grid-unit;
+    }
+
+    .mode-selector {
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .controls-container {
+        margin-right: $grid-unit;
+        margin-left: $grid-unit;
+    }
+}
+
+.text-area {
+    background: transparent;
+    border: none;
+    display: none;
+    margin: 0px;
+    opacity: .8;
+    outline: none;
+    overflow: hidden;
+    padding: 0px;
+    position: absolute;
+    resize: none;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;
+}
+
+.button-text {
+    width: 100%; /* Fixes button text wrapping in Edge */
+}

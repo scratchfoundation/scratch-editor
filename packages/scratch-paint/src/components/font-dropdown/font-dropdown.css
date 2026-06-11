@@ -1,0 +1,84 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+
+.mod-menu-item {
+    display: flex;
+    margin: 0 -$grid-unit;
+    min-width: 6.25rem;
+    padding: calc(2 * $grid-unit);
+    padding-left: calc(3 * $grid-unit);
+    padding-right: calc(3 * $grid-unit);
+    white-space: nowrap;
+    width: 8.5rem;
+    cursor: pointer;
+    transition: 0.1s ease;
+    align-items: center;
+}
+
+.mod-menu-item:hover {
+    background: $looks-secondary;
+    color: white;
+}
+
+.mod-context-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.mod-unselect {
+    user-select: none;
+}
+
+.displayed-font-name {
+    font-size: .8rem;
+}
+
+.font-dropdown {
+    align-items: center;
+    color: $text-primary;
+    display: flex;
+    font-size: 1rem;
+    justify-content: space-between;
+    width: 8.5rem;
+    height: 2rem;
+}
+
+.serif {
+    font-family: 'Serif';
+}
+
+.sans-serif {
+    font-family: 'Sans Serif';
+}
+
+.serif {
+    font-family: 'Serif';
+}
+
+.handwriting {
+    font-family: 'Handwriting';
+}
+
+.marker {
+    font-family: 'Marker';
+}
+
+.curly {
+    font-family: 'Curly';
+}
+
+.pixel {
+    font-family: 'Pixel';
+}
+
+.chinese {
+    font-family: "Microsoft YaHei", "微软雅黑", STXihei, "华文细黑";
+}
+
+.japanese {
+    font-family: "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", Osaka, "メイリオ", Meiryo, "ＭＳ Ｐゴシック", "MS PGothic";
+}
+
+.korean {
+    font-family: "Malgun Gothic";
+}

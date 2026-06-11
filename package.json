@@ -18,6 +18,7 @@
     "packages/task-herder",
     "packages/scratch-storage",
     "packages/scratch-svg-renderer",
+    "packages/scratch-paint",
     "packages/scratch-render",
     "packages/scratch-vm",
     "packages/scratch-gui",

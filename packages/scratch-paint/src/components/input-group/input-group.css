@@ -1,0 +1,21 @@
+@import '../../css/units.css';
+
+.input-group {
+    display: inline-flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+[dir="ltr"] .input-group + .input-group {
+    margin-left: calc(2 * $grid-unit);
+}
+
+[dir="rtl"] .input-group + .input-group {
+    margin-right: calc(2 * $grid-unit);
+}
+
+.disabled {
+    opacity: 0.3;
+    /* Prevent any user actions */
+    pointer-events: none;
+}

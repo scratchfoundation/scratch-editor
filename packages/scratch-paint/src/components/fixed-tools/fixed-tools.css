@@ -1,0 +1,133 @@
+@import "../../css/colors.css";
+@import "../../css/units.css";
+
+.row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.costume-input {
+    width: 8rem;
+}
+
+[dir="ltr"] .mod-dashed-border {
+    border-right: 1px dashed $ui-pane-border;
+    padding-right: calc(2 * $grid-unit);
+}
+
+[dir="rtl"] .mod-dashed-border {
+    border-left: 1px dashed $ui-pane-border;
+    padding-left: calc(2 * $grid-unit);
+}
+
+.mod-unselect {
+    user-select: none;
+}
+
+$border-radius: 0.25rem;
+
+.button-group-button {
+    display: inline-block;
+    border: 1px solid $ui-pane-border;
+    border-radius: 0;
+    padding: .35rem;
+}
+
+[dir="ltr"] .button-group-button {
+    border-left: none;
+}
+
+[dir="rtl"] .button-group-button {
+    border-right: none;
+}
+
+[dir="ltr"] .button-group-button:last-of-type {
+    border-top-right-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+}
+
+[dir="ltr"] .button-group-button:first-of-type {
+    border-left: 1px solid $ui-pane-border;
+    border-top-left-radius: $border-radius;
+    border-bottom-left-radius: $border-radius;
+}
+
+[dir="rtl"] .button-group-button:last-of-type {
+    border-top-left-radius: $border-radius;
+    border-bottom-left-radius: $border-radius;
+}
+
+[dir="rtl"] .button-group-button:first-of-type {
+    border-right: 1px solid $ui-pane-border;
+    border-top-right-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+}
+
+[dir="ltr"] .button-group-button.mod-start-border {
+    border-left: 1px solid $ui-pane-border;
+}
+
+[dir="rtl"] .button-group-button.mod-start-border {
+    border-right: 1px solid $ui-pane-border;
+}
+
+[dir="ltr"] .button-group-button.mod-no-end-border {
+    border-right: none;
+}
+
+[dir="rtl"] .button-group-button.mod-no-end-border {
+    border-left: none;
+}
+
+.button-group-button-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    vertical-align: middle;
+}
+
+[dir="rtl"] .button-group-button-icon {
+    transform: scaleX(-1);
+}
+
+.mod-context-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.mod-top-divider {
+    border-top: 1px solid $ui-pane-border;
+}
+
+.mod-menu-item {
+    display: flex;
+    margin: 0 -$grid-unit;
+    min-width: 6.25rem;
+    padding: calc(3 * $grid-unit);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: 0.1s ease;
+    align-items: center;
+    font-family: "Helvetica Neue", Helvetica, sans-serif;
+}
+
+.mod-disabled {
+    cursor: auto;
+}
+
+.mod-menu-item:hover {
+    background: $looks-transparent;
+}
+
+.mod-disabled:hover {
+    background-color: transparent;
+}
+
+.menu-item-icon {
+    margin-right: calc(2 * $grid-unit);
+}
+
+[dir="rtl"] .menu-item-icon {
+    margin-right: 0;
+    margin-left: calc(2 * $grid-unit);
+}

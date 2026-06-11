@@ -1,0 +1,55 @@
+/* DO NOT EDIT
+@todo This file is copied from GUI and should be pulled out into a shared library.
+See https://github.com/LLK/scratch-paint/issues/13 */
+
+/* NOTE:
+Edited to add input-range-small
+*/
+
+@import "../../css/units.css";
+@import "../../css/colors.css";
+
+.input-form {
+    height: 2rem;
+    padding: 0 0.75rem;
+
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: $text-primary;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: $form-border;
+    border-radius: 2rem;
+
+    outline: none;
+    cursor: text;
+    transition: 0.25s ease-out; /* @todo: standardize with var */
+    box-shadow: none;
+
+    /*
+        For truncating overflowing text gracefully
+        Min-width is for a bug: https://css-tricks.com/flexbox-truncated-text
+        @todo: move this out into a mixin or a helper component
+    */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+.input-form:focus {
+    border-color: $looks-secondary;
+    box-shadow: 0 0 0 $grid-unit $looks-transparent;
+}
+
+.input-small {
+    width: 3rem;
+    text-align: center;
+}
+
+.input-small-range {
+    width: 4rem;
+    text-align: center;
+}

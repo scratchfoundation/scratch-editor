@@ -1,0 +1,37 @@
+@import '../../css/colors.css';
+
+$arrow-border-width: 14px;
+
+.dropdown {
+    border: 1px solid $form-border;
+    border-radius: 5px;
+    overflow: visible;
+    min-width: 3.5rem;
+    color: $looks-secondary;
+    padding: .5rem;
+}
+
+.mod-open {
+    background-color: $form-border;
+}
+
+.dropdown-icon {
+    width: .5rem;
+    height: .5rem;
+    vertical-align: middle;
+    padding-bottom: .2rem;
+}
+
+[dir="ltr"] .dropdown-icon {
+    margin-left: .5rem;
+}
+
+[dir="rtl"] .dropdown-icon {
+    margin-right: .5rem;
+}
+
+.mod-caret-up {
+    transform: rotate(180deg);
+    padding-bottom: 0;
+    padding-top: .2rem;
+}

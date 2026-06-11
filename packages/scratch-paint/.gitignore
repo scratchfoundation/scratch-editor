@@ -1,0 +1,21 @@
+# Mac OS
+.DS_Store
+
+# NPM
+/node_modules
+npm-*
+
+# Build
+playground/*
+dist/*
+
+# Editors
+/#*
+*~
+
+# generated translation files
+/translations
+/locale
+
+# tests
+/test/results/*
