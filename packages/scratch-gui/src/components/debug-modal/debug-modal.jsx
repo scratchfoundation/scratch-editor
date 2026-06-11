@@ -1,5 +1,5 @@
 import React, {useState, useCallback, useEffect} from 'react';
-import {defineMessages, FormattedMessage} from 'react-intl';
+import {defineMessages, FormattedMessage, useIntl} from 'react-intl';
 import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
 import classNames from 'classnames';
@@ -12,12 +12,23 @@ import debugIconInverted from './icons/icon--debug-inverted.svg';
 import closeIcon from './icons/icon--close.svg';
 import prevIcon from './icons/icon--prev.svg';
 import nextIcon from './icons/icon--next.svg';
+import {KEY} from '../../lib/navigation-keys';
 
 const messages = defineMessages({
     title: {
         id: 'gui.debugModal.title',
         defaultMessage: 'Debugging | Getting Unstuck',
         description: 'title for the debugging modal'
+    },
+    previous: {
+        id: 'gui.debugModal.previous',
+        defaultMessage: 'Previous',
+        description: 'Button to go to previous debugging topic'
+    },
+    next: {
+        id: 'gui.debugModal.next',
+        defaultMessage: 'Next',
+        description: 'Button to go to next debugging topic'
     }
 });
 
@@ -64,6 +75,36 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
         onClose();
     }, [onClose]);
 
+    const handleKeyDownSlides = useCallback(e => {
+        if ([KEY.ARROW_LEFT, KEY.ARROW_UP, KEY.ARROW_RIGHT, KEY.ARROW_DOWN].includes(e.key)) {
+            e.preventDefault();
+
+            setSelectedTopicIndex(prev => {
+                let nextIndex = prev;
+
+                if ((e.key === KEY.ARROW_LEFT || e.key === KEY.ARROW_UP) && prev > 0) {
+                    nextIndex = prev - 1;
+                } else if ((e.key === KEY.ARROW_RIGHT || e.key === KEY.ARROW_DOWN) &&
+                    prev < sections.length - 1) {
+                    nextIndex = prev + 1;
+                }
+
+                if (nextIndex !== prev) {
+                    logTopicChange(nextIndex);
+                }
+
+                return nextIndex;
+            });
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        document.addEventListener('keydown', handleKeyDownSlides);
+        return () => document.removeEventListener('keydown', handleKeyDownSlides);
+    }, [isOpen, handleKeyDownSlides]);
+
     useEffect(() => {
         if (isOpen) {
             GA4.event({
@@ -74,6 +115,8 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
     }, [isOpen]);
 
     if (!isOpen) return null;
+
+    const intl = useIntl();
 
     return (
         <ReactModal
@@ -105,13 +148,15 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
             <div className={styles.modalContent} >
                 <div className={styles.topicList}>
                     {sections.map((section, index) => (
-                        <div
+                        <button
                             key={index}
-                            className={classNames(styles.topicItem, {
-                                [styles.active]: selectedTopicIndex === index
-                            })}
+                            className={classNames(styles.topicItem, styles.buttonStyleRemover,
+                                {
+                                    [styles.active]: selectedTopicIndex === index
+                                })}
                             // eslint-disable-next-line react/jsx-no-bind
                             onClick={() => handleTopicSelect(index)}
+                            tabIndex={-1}
                         >
                             <div className={styles.debugIcon}>
                                 <img
@@ -124,7 +169,7 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
                             <FormattedMessage
                                 {...(section.sectionTitle ?? section.title)}
                             />
-                        </div>
+                        </button>
                     ))}
                 </div>
                 <div className={styles.infoContainer}>
@@ -143,22 +188,30 @@ const DebugModal = ({isOpen, onClose = () => {}}) => {
                         />
                     </div>
                     <div className={styles.navigationButtons}>
-                        <img
-                            src={prevIcon}
-                            alt="Previous"
+                        <button
                             onClick={handlePrevious}
-                            className={classNames(styles.previousIcon, {
-                                [styles.hidden]: selectedTopicIndex === 0
-                            })}
-                        />
-                        <img
-                            src={nextIcon}
-                            alt="Next"
+                            className={classNames(styles.buttonStyleRemover,
+                                styles.previousIcon,
+                                {[styles.hidden]: selectedTopicIndex === 0})}
+                        >
+                            <img
+                                src={prevIcon}
+                                alt={intl.formatMessage(messages.previous)}
+                            />
+                        </button>
+                        <button
                             onClick={handleNext}
-                            className={classNames(styles.nextIcon, {
-                                [styles.hidden]: selectedTopicIndex === sections.length - 1
-                            })}
-                        />
+                            className={classNames(styles.nextIcon,
+                                styles.buttonStyleRemover,
+                                {
+                                    [styles.hidden]: selectedTopicIndex === sections.length - 1
+                                })}
+                        >
+                            <img
+                                src={nextIcon}
+                                alt={intl.formatMessage(messages.next)}
+                            />
+                        </button>
                     </div>
                 </div>
             </div>

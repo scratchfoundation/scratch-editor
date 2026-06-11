@@ -1,6 +1,6 @@
 {
   "name": "scratch-editor",
-  "version": "13.7.4-svg",
+  "version": "14.1.0",
   "private": "true",
   "description": "Scratch editor mono-repository",
   "keywords": [],
@@ -16,6 +16,7 @@
   "author": "Scratch Foundation",
   "workspaces": [
     "packages/task-herder",
+    "packages/scratch-storage",
     "packages/scratch-svg-renderer",
     "packages/scratch-paint",
     "packages/scratch-render",

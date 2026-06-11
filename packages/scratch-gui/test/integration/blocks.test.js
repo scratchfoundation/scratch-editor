@@ -22,7 +22,7 @@ const uri = path.resolve(__dirname, '../../build/index.html');
 
 let driver;
 
-const SETTINGS_MENU_XPATH = '//div[contains(@class, "menu-bar_menu-bar-item")]' +
+const SETTINGS_MENU_XPATH = '//button[contains(@class, "menu-bar_menu-bar-item")]' +
     '[*[contains(@class, "settings-menu_dropdown-label")]//*[text()="Settings"]]';
 
 describe('Working with the blocks', () => {

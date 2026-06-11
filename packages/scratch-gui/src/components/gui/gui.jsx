@@ -46,63 +46,64 @@ import DebugModal from '../debug-modal/debug-modal.jsx';
 import {setPlatform} from '../../reducers/platform.js';
 import {setTheme} from '../../reducers/settings.js';
 import {PLATFORM} from '../../lib/platform.js';
+import {MenuRefProvider} from '../../contexts/menu-ref-context.jsx';
 import {ModalFocusProvider} from '../../contexts/modal-focus-context.jsx';
 
 const ariaMessages = defineMessages({
     menuBar: {
         id: 'gui.aria.menuBar',
         defaultMessage: 'Menu topbar',
-        description: 'ARIA label for the top menu bar'
+        description: 'accessibility label for the top menu bar'
     },
     editor: {
         id: 'gui.aria.editor',
         defaultMessage: 'Editor',
-        description: 'ARIA label for the main editor area'
+        description: 'accessibility label for the main editor area'
     },
     tabList: {
         id: 'gui.aria.tabList',
         defaultMessage: 'Tab list',
-        description: 'ARIA label for the editor tab list'
+        description: 'accessibility label for the editor tab list'
     },
     codePanel: {
         id: 'gui.aria.codePanel',
         defaultMessage: 'Code editor panel',
-        description: 'ARIA label for the code editor panel'
+        description: 'accessibility label for the code editor panel'
     },
     costumesPanel: {
         id: 'gui.aria.costumesPanel',
         defaultMessage: 'Costumes editor panel',
-        description: 'ARIA label for the costumes editor panel'
+        description: 'accessibility label for the costumes editor panel'
     },
     backdropsPanel: {
         id: 'gui.aria.backdropsPanel',
         defaultMessage: 'Backdrops editor panel',
-        description: 'ARIA label for the backdrops editor panel'
+        description: 'accessibility label for the backdrops editor panel'
     },
     soundsPanel: {
         id: 'gui.aria.soundsPanel',
         defaultMessage: 'Sounds editor panel',
-        description: 'ARIA label for the sounds editor panel'
+        description: 'accessibility label for the sounds editor panel'
     },
     backpack: {
         id: 'gui.aria.backpack',
         defaultMessage: 'Backpack',
-        description: 'ARIA label for the backpack'
+        description: 'accessibility label for the backpack'
     },
     stageAndTarget: {
         id: 'gui.aria.stageAndTarget',
         defaultMessage: 'Stage and target',
-        description: 'ARIA label for stage and target area'
+        description: 'accessibility label for stage and target area'
     },
     stage: {
         id: 'gui.aria.stage',
         defaultMessage: 'Stage',
-        description: 'ARIA label for the stage'
+        description: 'accessibility label for the stage'
     },
     targetPane: {
         id: 'gui.aria.targetPane',
         defaultMessage: 'Target pane',
-        description: 'ARIA label for the target pane'
+        description: 'accessibility label for the target pane'
     }
 });
 
@@ -114,7 +115,6 @@ const GUIComponent = props => {
     const intl = useIntl();
     const {
         accountMenuOptions,
-        accountNavOpen,
         activeTabIndex,
         alertsVisible,
         authorId,
@@ -165,8 +165,6 @@ const GUIComponent = props => {
         menuBarHidden,
         renderLogin,
         onClickAbout,
-        onClickAccountNav,
-        onCloseAccountNav,
         onLogOut,
         onClickLogin,
         onOpenRegistration,
@@ -331,48 +329,50 @@ const GUIComponent = props => {
                             onRequestClose={onRequestCloseBackdropLibrary}
                         />
                     ) : null}
-                    {!menuBarHidden && <MenuBar
-                        ariaRole="banner"
-                        ariaLabel={intl.formatMessage(ariaMessages.menuBar)}
-                        accountNavOpen={accountNavOpen}
-                        authorId={authorId}
-                        authorThumbnailUrl={authorThumbnailUrl}
-                        authorUsername={authorUsername}
-                        authorAvatarBadge={authorAvatarBadge}
-                        canChangeLanguage={canChangeLanguage}
-                        canChangeColorMode={canChangeColorMode}
-                        canChangeTheme={canChangeTheme}
-                        canCreateCopy={canCreateCopy}
-                        canCreateNew={canCreateNew}
-                        canEditTitle={canEditTitle}
-                        canManageFiles={canManageFiles}
-                        canRemix={canRemix}
-                        canSave={canSave}
-                        canShare={canShare}
-                        className={styles.menuBarPosition}
-                        enableCommunity={enableCommunity}
-                        hasActiveMembership={hasActiveMembership}
-                        isShared={isShared}
-                        isTotallyNormal={isTotallyNormal}
-                        logo={logo}
-                        renderLogin={renderLogin}
-                        showComingSoon={showComingSoon}
-                        onClickAbout={onClickAbout}
-                        onClickAccountNav={onClickAccountNav}
-                        onClickLogo={onClickLogo}
-                        onCloseAccountNav={onCloseAccountNav}
-                        onLogOut={onLogOut}
-                        onClickLogin={onClickLogin}
-                        onOpenRegistration={onOpenRegistration}
-                        onProjectTelemetryEvent={onProjectTelemetryEvent}
-                        onSeeCommunity={onSeeCommunity}
-                        onShare={onShare}
-                        onStartSelectingFileUpload={onStartSelectingFileUpload}
-                        onToggleLoginOpen={onToggleLoginOpen}
-                        userOwnsProject={userOwnsProject}
-                        username={username}
-                        accountMenuOptions={accountMenuOptions}
-                    />}
+                    {/* TODO - in case of moving MenuRefProvider which seems likely,
+                    make sure to move it from tests as well */}
+                    {!menuBarHidden && <MenuRefProvider>
+                        <MenuBar
+                            ariaRole="banner"
+                            ariaLabel={intl.formatMessage(ariaMessages.menuBar)}
+                            authorId={authorId}
+                            authorThumbnailUrl={authorThumbnailUrl}
+                            authorUsername={authorUsername}
+                            authorAvatarBadge={authorAvatarBadge}
+                            canChangeLanguage={canChangeLanguage}
+                            canChangeColorMode={canChangeColorMode}
+                            canChangeTheme={canChangeTheme}
+                            canCreateCopy={canCreateCopy}
+                            canCreateNew={canCreateNew}
+                            canEditTitle={canEditTitle}
+                            canManageFiles={canManageFiles}
+                            canRemix={canRemix}
+                            canSave={canSave}
+                            canShare={canShare}
+                            className={styles.menuBarPosition}
+                            enableCommunity={enableCommunity}
+                            hasActiveMembership={hasActiveMembership}
+                            isShared={isShared}
+                            isTotallyNormal={isTotallyNormal}
+                            logo={logo}
+                            renderLogin={renderLogin}
+                            showComingSoon={showComingSoon}
+                            onClickAbout={onClickAbout}
+                            onClickLogo={onClickLogo}
+                            onLogOut={onLogOut}
+                            onClickLogin={onClickLogin}
+                            onOpenRegistration={onOpenRegistration}
+                            onProjectTelemetryEvent={onProjectTelemetryEvent}
+                            onSeeCommunity={onSeeCommunity}
+                            onShare={onShare}
+                            onStartSelectingFileUpload={onStartSelectingFileUpload}
+                            onToggleLoginOpen={onToggleLoginOpen}
+                            userOwnsProject={userOwnsProject}
+                            username={username}
+                            accountMenuOptions={accountMenuOptions}
+                        />
+                    </MenuRefProvider>
+                    }
                     <Box className={classNames(boxStyles, styles.flexWrapper)}>
                         <Box
                             role="main"
@@ -577,7 +577,6 @@ const GUIComponent = props => {
 };
 
 GUIComponent.propTypes = {
-    accountNavOpen: PropTypes.bool,
     accountMenuOptions: AccountMenuOptionsPropTypes,
     activeTabIndex: PropTypes.number,
     authorId: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]), // can be false
@@ -627,9 +626,7 @@ GUIComponent.propTypes = {
     onActivateCostumesTab: PropTypes.func,
     onActivateSoundsTab: PropTypes.func,
     onActivateTab: PropTypes.func,
-    onClickAccountNav: PropTypes.func,
     onClickLogo: PropTypes.func,
-    onCloseAccountNav: PropTypes.func,
     onExtensionButtonClick: PropTypes.func,
     onLogOut: PropTypes.func,
     onNewSpriteClick: PropTypes.func,

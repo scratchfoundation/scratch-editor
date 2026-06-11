@@ -1,127 +1,141 @@
 import classNames from 'classnames';
-import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
-import React from 'react';
-import {FormattedMessage} from 'react-intl';
+import React, {useCallback, useRef} from 'react';
+import {useIntl, FormattedMessage, defineMessage} from 'react-intl';
 import {connect} from 'react-redux';
 import locales from 'scratch-l10n';
 
 import check from './check.svg';
 import {MenuItem, Submenu} from '../menu/menu.jsx';
 import languageIcon from '../language-selector/language-icon.svg';
-import {languageMenuOpen, openLanguageMenu} from '../../reducers/menus.js';
 import {selectLocale} from '../../reducers/locales.js';
+import useMenuNavigation from '../../hooks/use-menu-navigation';
 
-import styles from './settings-menu.css';
+import stylesSettingsMenu from './settings-menu.css';
+import stylesLanguageMenu from './language-menu.css';
 
 import dropdownCaret from './dropdown-caret.svg';
 
-class LanguageMenu extends React.PureComponent {
-    constructor (props) {
-        super(props);
-        bindAll(this, [
-            'setRef',
-            'handleMouseOver'
-        ]);
-    }
+const languageMenu = defineMessage({
+    id: 'gui.aria.languageMenu',
+    defaultMessage: 'Language menu',
+    description: 'accessibility label for language menu'
+});
 
-    componentDidUpdate (prevProps) {
-        // If the submenu has been toggled open, try scrolling the selected option into view.
-        if (!prevProps.menuOpen && this.props.menuOpen && this.selectedRef) {
-            this.selectedRef.scrollIntoView({block: 'center'});
-        }
-    }
+const LanguageMenu = ({
+    currentLocale,
+    isRtl,
+    onChangeLanguage,
+    depth
+}) => {
+    const intl = useIntl();
 
-    setRef (component) {
-        this.selectedRef = component;
-    }
+    const selectedRef = useRef(null);
 
-    handleMouseOver () {
+    const {
+        isExpanded,
+        handleKeyDown,
+        handleKeyDownOpenMenu,
+        handleOnOpen,
+        menuRef
+    } = useMenuNavigation({
+        depth: depth ?? 1,
+        defaultIndexOnOpen: (Object.keys(locales).indexOf(currentLocale)),
+        isRtl
+    });
+
+    const setRef = useCallback(component => {
+        selectedRef.current = component;
+    }, []);
+
+    const handleMouseOver = useCallback(() => {
         // If we are using hover rather than clicks for submenus, scroll the selected option into view
-        if (!this.props.menuOpen && this.selectedRef) {
-            this.selectedRef.scrollIntoView({block: 'center'});
+        if (isExpanded() && selectedRef.current) {
+            selectedRef.current.scrollIntoView({block: 'center'});
         }
-    }
+    }, [isExpanded]);
 
-    render () {
-        return (
-            <MenuItem
-                expanded={this.props.menuOpen}
+    return (
+        <MenuItem
+            ref={menuRef}
+            isExpanded={isExpanded()}
+            ariaLabel={intl.formatMessage(languageMenu)}
+            onKeyDown={handleKeyDown}
+            isDataMenuItemWrapper
+        >
+            <button
+                className={stylesSettingsMenu.option}
+                onClick={handleOnOpen}
+                onMouseOver={handleMouseOver}
+                data-menu-item
             >
-                <div
-                    className={styles.option}
-                    onClick={this.props.onRequestOpen}
-                    onMouseOver={this.handleMouseOver}
-                >
-                    <img
-                        className={styles.icon}
-                        src={languageIcon}
+                <img
+                    className={stylesSettingsMenu.icon}
+                    src={languageIcon}
+                />
+                <span className={stylesSettingsMenu.submenuLabel}>
+                    <FormattedMessage
+                        defaultMessage="Language"
+                        description="Language sub-menu"
+                        id="gui.menuBar.language"
                     />
-                    <span className={styles.submenuLabel}>
-                        <FormattedMessage
-                            defaultMessage="Language"
-                            description="Language sub-menu"
-                            id="gui.menuBar.language"
-                        />
-                    </span>
-                    <img
-                        className={styles.expandCaret}
-                        src={dropdownCaret}
-                    />
-                </div>
-                <Submenu
-                    className={styles.languageSubmenu}
-                    place={this.props.isRtl ? 'left' : 'right'}
-                >
-                    {
-                        Object.keys(locales)
-                            .map(locale => (
-                                <MenuItem
-                                    key={locale}
-                                    className={styles.languageMenuItem}
-                                    // eslint-disable-next-line react/jsx-no-bind
-                                    onClick={() => this.props.onChangeLanguage(locale)}
-                                >
-                                    <img
-                                        className={classNames(styles.check, {
-                                            [styles.selected]: this.props.currentLocale === locale
-                                        })}
-                                        src={check}
-                                        {...(this.props.currentLocale === locale && {ref: this.setRef})}
-                                    />
-                                    {locales[locale].name}
-                                </MenuItem>
-                            ))
-                    }
-                </Submenu>
-            </MenuItem>
-        );
-    }
-}
+                </span>
+                <img
+                    className={stylesSettingsMenu.expandCaret}
+                    src={dropdownCaret}
+                />
+            </button>
+            <Submenu
+                className={stylesLanguageMenu.languageSubmenu}
+                place={isRtl ? 'left' : 'right'}
+            >
+                {
+                    Object.keys(locales)
+                        .map(locale => {
+                            const isSelected = currentLocale === locale;
+
+                            return (<MenuItem
+                                key={locale}
+                                className={stylesLanguageMenu.languageMenuItem}
+                                // eslint-disable-next-line react/jsx-no-bind
+                                onClick={() => onChangeLanguage(locale)}
+                                isDataMenuItem
+                                onParentKeyDown={handleKeyDownOpenMenu}
+                                isSelected={isSelected}
+                            >
+                                <img
+                                    className={classNames(stylesSettingsMenu.check, {
+                                        [stylesSettingsMenu.selected]: isSelected
+                                    })}
+                                    src={check}
+                                    {...(isSelected && {ref: setRef})}
+                                />
+                                {locales[locale].name}
+                            </MenuItem>);
+                        })
+                }
+            </Submenu>
+        </MenuItem>
+    );
+};
 
 LanguageMenu.propTypes = {
     currentLocale: PropTypes.string,
     isRtl: PropTypes.bool,
-    label: PropTypes.string,
-    menuOpen: PropTypes.bool,
     onChangeLanguage: PropTypes.func,
-    onRequestCloseSettings: PropTypes.func,
-    onRequestOpen: PropTypes.func
+    depth: PropTypes.number
 };
 
 const mapStateToProps = state => ({
     currentLocale: state.locales.locale,
     isRtl: state.locales.isRtl,
-    menuOpen: languageMenuOpen(state),
     messagesByLocale: state.locales.messagesByLocale
 });
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
+const mapDispatchToProps = dispatch => ({
     onChangeLanguage: locale => {
         dispatch(selectLocale(locale));
-        ownProps.onRequestCloseSettings();
-    },
-    onRequestOpen: () => dispatch(openLanguageMenu())
+    }
 });
 
 export default connect(

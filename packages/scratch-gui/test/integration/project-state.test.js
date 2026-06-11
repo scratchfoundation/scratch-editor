@@ -14,7 +14,7 @@ const uri = path.resolve(__dirname, '../../build/index.html');
 
 let driver;
 
-const FILE_MENU_XPATH = '//div[contains(@class, "menu-bar_menu-bar-item")]' +
+const FILE_MENU_XPATH = '//button[contains(@class, "menu-bar_menu-bar-item")]' +
     '[*[contains(@class, "menu-bar_collapsible-label")]//*[text()="File"]]';
 
 describe('Project state', () => {

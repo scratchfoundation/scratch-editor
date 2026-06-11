@@ -10,13 +10,13 @@ exports[`Sound Editor Container should pass the correct data to the component fr
         </span>
         <input
           class=""
-          tabindex="1"
           type="text"
           value="first name"
         />
       </label>
       <div>
         <button
+          aria-label="Undo"
           disabled=""
           title="Undo"
         >
@@ -26,6 +26,7 @@ exports[`Sound Editor Container should pass the correct data to the component fr
           />
         </button>
         <button
+          aria-label="Redo"
           disabled=""
           title="Redo"
         >
@@ -50,6 +51,7 @@ exports[`Sound Editor Container should pass the correct data to the component fr
       </button>
       <button
         class=""
+        disabled=""
       >
         <img
           draggable="false"
@@ -73,6 +75,7 @@ exports[`Sound Editor Container should pass the correct data to the component fr
     </div>
     <button
       class=""
+      disabled=""
     >
       <img
         draggable="false"
@@ -108,6 +111,7 @@ exports[`Sound Editor Container should pass the correct data to the component fr
   >
     <div>
       <button
+        aria-label="Play"
         class=""
         title="Play"
       >

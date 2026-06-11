@@ -1,4 +1,4 @@
-import {ScratchStorage, Asset} from 'scratch-storage';
+import {ScratchStorage, Asset} from '@scratch/scratch-storage';
 
 import defaultProject from './default-project';
 import {GUIStorage, TranslatorFunction, VirtualMachine, GUICloudVariableProvider} from '../gui-config';

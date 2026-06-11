@@ -102,7 +102,7 @@ const playgroundBuilder = webBuilder
         }
     })
     .addModuleRule({
-        test: require.resolve('scratch-storage'),
+        test: require.resolve('@scratch/scratch-storage'),
         loader: 'expose-loader',
         options: {
             exposes: 'ScratchStorage ScratchStorage'
@@ -123,7 +123,7 @@ const playgroundBuilder = webBuilder
                     to: 'media'
                 },
                 {
-                    from: '../../node_modules/scratch-storage/dist/web'
+                    from: '../../node_modules/@scratch/scratch-storage/dist/web'
                 },
                 {
                     from: '../../node_modules/@scratch/scratch-render/dist/web'

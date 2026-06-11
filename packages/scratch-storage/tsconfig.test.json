@@ -1,0 +1,12 @@
+{
+  "include": ["test"],
+  "extends": ["./tsconfig.json"],
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig to read more about this file */
+
+    /* Modules */
+    "isolatedModules": true, // for ts-jest
+    "module": "CommonJS",
+    "types": ["jest", "./src/types.d.ts"],
+  }
+}

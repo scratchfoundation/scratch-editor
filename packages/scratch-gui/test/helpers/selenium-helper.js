@@ -119,6 +119,8 @@ class SeleniumHelper {
             'scopeForCategoryText',
             'scopeForFlyoutBlock',
             'clickBlocksCategory',
+            'clickKey',
+            'clickKeys',
             'elementIsVisible',
             'findByText',
             'textToXpath',
@@ -452,6 +454,36 @@ class SeleniumHelper {
             throw await enhanceError(outerError, cause, this.driver);
         }
     }
+
+    /**
+     * Sends a single keyboard key to the active element.
+     * @param {string} key - The key to send
+     * @param {number} [sleepTime] - Optional delay after sending the key (ms).
+     */
+    async clickKey (key, sleepTime = 50) {
+        try {
+            await this.driver.actions().sendKeys(key)
+                .perform();
+            await this.driver.sleep(sleepTime);
+        } catch (error) {
+            throw new Error(`Failed to send key "${key}": ${error.message}`);
+        }
+    };
+    
+    /**
+     * Sends multiple keyboard keys in sequence.
+     * @param {string[]} keys - Array of keys to send.
+     * @param {number} [sleepTime] - Optional delay between each key (ms).
+     */
+    async clickKeys (keys, sleepTime = 50) {
+        try {
+            for (const key of keys) {
+                await this.clickKey(key, sleepTime);
+            }
+        } catch (error) {
+            throw new Error(`Failed to send key sequence - ${keys}: ${error.message}`);
+        }
+    };
 
     /**
      * Get selected browser log entries.

@@ -109,7 +109,6 @@ $border-radius: 0.25rem;
 .round-button {
     height: 3rem;
     width: 3rem;
-    outline: none;
     background: $looks-secondary;
     border-radius: 100%;
     border: 4px solid $ui-white-dim;

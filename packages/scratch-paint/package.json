@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-paint",
-  "version": "13.7.4-svg",
+  "version": "14.1.0",
   "description": "Graphical User Interface for the Scratch 3.0 paint editor, which is used to make and edit sprites for use in projects.",
   "homepage": "https://github.com/scratchfoundation/scratch-paint#readme",
   "repository": {
@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@scratch/paper": "^0.11.20221201200345",
-    "@scratch/scratch-svg-renderer": "13.7.4-svg",
+    "@scratch/scratch-svg-renderer": "14.1.0",
     "classnames": "^2.2.5",
     "keymirror": "^0.1.1",
     "lodash.bindall": "^4.4.0",
@@ -97,7 +97,7 @@
     "redux-throttle": "0.1.1",
     "regenerator-runtime": "0.13.9",
     "rimraf": "2.7.1",
-    "scratch-l10n": "6.1.84",
+    "scratch-l10n": "6.1.85",
     "scratch-webpack-configuration": "3.1.2",
     "style-loader": "4.0.0",
     "webpack": "5.107.2",

@@ -425,7 +425,23 @@ rm -rf "${PACKAGE_PATH}/.github" \
        "${PACKAGE_PATH}/.appveyor.yml"
 
 MONOREPO_VERSION=$(jq -r '.version' "${MONOREPO_ROOT}/package.json")
+# Match the canonical prepublishOnly script used by every workspace in the
+# monorepo: a local `npm publish` should fail loudly, since publishing is a
+# CI-only operation. The standalone repo's prepublishOnly (if any) no longer
+# applies, so overwrite — and log if we're replacing something different.
+CANONICAL_PREPUBLISH_ONLY='echo "Please publish through CI only." && exit 1'
 if [ -r "${PACKAGE_PATH}/package.json" ]; then
+    EXISTING_PREPUBLISH_ONLY=$(jq -r '.scripts.prepublishOnly // ""' "${PACKAGE_PATH}/package.json")
+    if [ -n "$EXISTING_PREPUBLISH_ONLY" ] && [ "$EXISTING_PREPUBLISH_ONLY" != "$CANONICAL_PREPUBLISH_ONLY" ]; then
+        echo "    Note: replacing existing prepublishOnly script."
+        echo "      old: ${EXISTING_PREPUBLISH_ONLY}"
+        echo "      new: ${CANONICAL_PREPUBLISH_ONLY}"
+    fi
+    # shellcheck disable=SC2016
+    # The single-quoted fragments below are jq filter syntax. $PACKAGE_NAME,
+    # $MONOREPO_URL, $MONOREPO_VERSION, and $PREPUBLISH_ONLY are jq variables
+    # (bound via --arg), not shell variables — they must NOT be expanded by
+    # the shell.
     PACKAGE_JSON_REWRITE_FILTER="$(join_args ' | ' \
         '.name |= $PACKAGE_NAME' \
         '.version |= $MONOREPO_VERSION' \
@@ -435,6 +451,7 @@ if [ -r "${PACKAGE_PATH}/package.json" ]; then
         'del(.scripts."semantic-release")' \
         'del(.scripts.commitmsg)' \
         'del(.scripts.version)' \
+        '.scripts.prepublishOnly = $PREPUBLISH_ONLY' \
         'if (.scripts // {}) == {} then del(.scripts) else . end' \
         'del(.config.commitizen)' \
         'if (.config // {}) == {} then del(.config) else . end' \
@@ -448,14 +465,11 @@ if [ -r "${PACKAGE_PATH}/package.json" ]; then
         'if (.devDependencies // {}) == {} then del(.devDependencies) else . end' \
     )"
 
-    # shellcheck disable=SC2016
-    # The single-quoted fragments below are jq filter syntax. $PACKAGE_NAME,
-    # $MONOREPO_URL and $MONOREPO_VERSION are jq variables (bound via --arg),
-    # not shell variables — they must NOT be expanded by the shell.
     jq_in_place "${PACKAGE_PATH}/package.json" \
         --arg PACKAGE_NAME "${NPM_ORGANIZATION}/${REPO_NAME}" \
         --arg MONOREPO_URL "$MONOREPO_URL" \
         --arg MONOREPO_VERSION "$MONOREPO_VERSION" \
+        --arg PREPUBLISH_ONLY "$CANONICAL_PREPUBLISH_ONLY" \
         "$PACKAGE_JSON_REWRITE_FILTER"
 fi
 
@@ -520,13 +534,6 @@ else
         echo "    Inserted '${WORKSPACE_ENTRY}' at position ${INSERT_AT} (after its monorepo deps)."
     fi
 fi
-
-# 6a. Refresh the new package's LICENSE/TRADEMARK from the monorepo root so it
-# matches every other workspace. Runs after step 6 because update-legal
-# resolves the target via `npm query .workspace`, which needs the new entry
-# to already be in the root workspaces array.
-echo "==> Refreshing LICENSE/TRADEMARK from monorepo root..."
-npm run update-legal -- "${NPM_ORGANIZATION}/${REPO_NAME}"
 
 # 7. Rewire inter-package dependencies across all packages.
 echo "==> Rewiring inter-package dependencies..."
@@ -684,6 +691,14 @@ fi
 echo "==> Normalizing package-lock.json..."
 npm install --package-lock-only --no-audit --no-fund
 npm install --prefer-offline --no-audit --no-fund
+
+# 8a. Refresh the new package's LICENSE/TRADEMARK from the monorepo root so it
+# matches every other workspace. Runs after step 8 because update-legal
+# resolves the target via `npm query .workspace`, which walks the installed
+# tree — a lockfile-only update isn't enough; the full install above must
+# have populated node_modules with the new workspace symlink first.
+echo "==> Refreshing LICENSE/TRADEMARK from monorepo root..."
+npm run update-legal -- "${NPM_ORGANIZATION}/${REPO_NAME}"
 
 # 9. Commit the integration fixups as one cumulative commit.
 echo "==> Committing fixup changes..."

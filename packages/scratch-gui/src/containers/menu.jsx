@@ -49,7 +49,7 @@ class Menu extends React.Component {
         if (!open) return null;
         return (
             <MenuComponent
-                componentRef={this.ref}
+                ref={this.ref}
                 {...props}
             >
                 {children}

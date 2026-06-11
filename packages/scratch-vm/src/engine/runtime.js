@@ -33,7 +33,7 @@ const StringUtil = require('../util/string-util');
 const uid = require('../util/uid');
 
 /**
- * @import {ScratchStorage} from 'scratch-storage'
+ * @import {ScratchStorage} from '@scratch/scratch-storage'
  */
 
 const defaultBlockPackages = {

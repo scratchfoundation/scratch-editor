@@ -64,6 +64,7 @@ body .card-container {
     height: 44px;
     width: 44px;
     border-radius: 100%;
+    border: none;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -110,6 +111,11 @@ body .card-container {
     border-bottom: 1px solid $extensions-tertiary;
     font-size: 0.625rem;
     font-weight: bold;
+}
+
+.header-buttons button {
+    background: none;
+    border: none;
 }
 
 .header-buttons-hidden {

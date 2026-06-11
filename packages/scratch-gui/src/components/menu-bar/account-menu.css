@@ -1,6 +1,11 @@
 @import "../../css/colors.css";
 @import "../../css/units.css";
 
+.account-menu {
+    /* to keep styling as it was with React.Fragment instead of div */
+    display: contents; 
+}
+
 .user-info {
     display: inline-flex;
     flex-wrap: nowrap;

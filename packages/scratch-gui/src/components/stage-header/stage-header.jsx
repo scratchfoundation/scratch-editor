@@ -29,6 +29,8 @@ import {getLocalStorageValue, setLocalStorageValue} from '../../lib/local-storag
 
 const LOCAL_STORAGE_KEY = 'hasIntroducedEditorManualSetThumbnail';
 
+import useFocusTrap from '../../hooks/use-focus-trap.js';
+
 const messages = defineMessages({
     largeStageSizeMessage: {
         defaultMessage: 'Switch to large stage',
@@ -104,6 +106,21 @@ const StageHeaderComponent = function (props) {
         onShowThumbnailError
     } = props;
     const intl = useIntl();
+
+    const containerRef = useRef(null);
+    const {trapFocus, releaseFocus} = useFocusTrap(containerRef, 'data-focusable');
+
+    const handleEnterFullScreen = useCallback(() => {
+        onSetStageFull();
+        requestAnimationFrame(() => {
+            trapFocus();
+        });
+    }, [onSetStageFull, trapFocus]);
+
+    const handleExitFullScreen = useCallback(() => {
+        onSetStageUnFull();
+        releaseFocus();
+    }, [onSetStageUnFull, releaseFocus]);
 
     let header = null;
 
@@ -195,6 +212,7 @@ const StageHeaderComponent = function (props) {
                     href="https://scratch.mit.edu"
                     rel="noopener noreferrer"
                     target="_blank"
+                    data-focusable
                 >
                     <img
                         alt="Scratch"
@@ -206,8 +224,9 @@ const StageHeaderComponent = function (props) {
             <div className={styles.unselectWrapper}>
                 <Button
                     className={styles.stageButton}
-                    onClick={onSetStageUnFull}
+                    onClick={handleExitFullScreen}
                     onKeyPress={onKeyPress}
+                    data-focusable
                 >
                     <img
                         alt={intl.formatMessage(messages.unFullStageSizeMessage)}
@@ -220,12 +239,18 @@ const StageHeaderComponent = function (props) {
             </div>
         );
         header = (
-            <Box className={styles.stageHeaderWrapperOverlay}>
+            <Box
+                className={styles.stageHeaderWrapperOverlay}
+                componentRef={containerRef}
+            >
                 <Box
                     className={styles.stageMenuWrapper}
                     style={{width: stageDimensions.width}}
                 >
-                    <Controls vm={vm} />
+                    <Controls
+                        isFullScreen={isFullScreen}
+                        vm={vm}
+                    />
                     {stageButton}
                 </Box>
             </Box>
@@ -257,7 +282,10 @@ const StageHeaderComponent = function (props) {
         header = (
             <Box className={styles.stageHeaderWrapper}>
                 <Box className={styles.stageMenuWrapper}>
-                    <Controls vm={vm} />
+                    <Controls
+                        isFullScreen={isFullScreen}
+                        vm={vm}
+                    />
                     <div className={styles.stageSizeRow}>
                         <FeatureCalloutPopover
                             isOpen={isThumbnailTooltipOpen}
@@ -307,7 +335,8 @@ const StageHeaderComponent = function (props) {
                         <div className={styles.rightSection}>
                             <Button
                                 className={styles.stageButton}
-                                onClick={onSetStageFull}
+                                onClick={handleEnterFullScreen}
+                                aria-label={intl.formatMessage(messages.fullStageSizeMessage)}
                             >
                                 <img
                                     alt={intl.formatMessage(messages.fullStageSizeMessage)}

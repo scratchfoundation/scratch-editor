@@ -1,4 +1,7 @@
 .save-now {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    cursor: pointer;
+}
+
+.alert {
+    cursor: default;
 }

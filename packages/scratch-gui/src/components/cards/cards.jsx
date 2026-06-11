@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
-import React, {Fragment} from 'react';
+import React, {Fragment, useEffect} from 'react';
 import classNames from 'classnames';
-import {FormattedMessage} from 'react-intl';
+import {FormattedMessage, defineMessages, useIntl} from 'react-intl';
 import Draggable from 'react-draggable';
 
 import styles from './card.css';
@@ -18,22 +18,72 @@ import closeIcon from './icon--close.svg';
 import {translateVideo} from '../../lib/libraries/decks/translate-video.js';
 import {translateImage} from '../../lib/libraries/decks/translate-image.js';
 
-const CardHeader = ({onCloseCards, onShrinkExpandCards, onShowAll, totalSteps, step, expanded}) => (
-    <div className={expanded ? styles.headerButtons : classNames(styles.headerButtons, styles.headerButtonsHidden)}>
-        <div
+import {KEY} from '../../lib/navigation-keys.js';
+
+const labelMap = defineMessages({
+    tutorialsIcon: {
+        id: 'gui.cards.tutorialsIcon',
+        defaultMessage: 'Tutorials icon',
+        description: 'Label for help icon'
+    },
+    shrinkIcon: {
+        id: 'gui.cards.shrinkIcon',
+        defaultMessage: 'Shrink icon',
+        description: 'Title for button to shrink how-to card'
+    },
+    expandIcon: {
+        id: 'gui.cards.expandIcon',
+        defaultMessage: 'Expand icon',
+        description: 'Title for button to expand how-to card'
+    },
+    closeIcon: {
+        id: 'gui.cards.closeIcon',
+        defaultMessage: 'Close icon',
+        description: 'Title for button to close how-to card'
+    },
+    leftArrowIcon: {
+        id: 'gui.cards.leftArrowIcon',
+        defaultMessage: 'Left arrow icon',
+        description: 'Title for button to go to previous step in how-to card'
+    },
+    rightArrowIcon: {
+        id: 'gui.cards.rightArrowIcon',
+        defaultMessage: 'Right arrow icon',
+        description: 'Title for button to go to next step in how-to card'
+    },
+    previousStepButton: {
+        id: 'gui.cards.previousStepButton',
+        defaultMessage: 'Previous step',
+        description: 'Title for button to go to previous step in how-to card'
+    },
+    nextStepButton: {
+        id: 'gui.cards.nextStepButton',
+        defaultMessage: 'Next step',
+        description: 'Title for button to go to next step in how-to card'
+    }
+});
+
+const CardHeader = ({onCloseCards, onShrinkExpandCards, onShowAll, totalSteps, step, expanded}) => {
+    const intl = useIntl();
+    const headerClassName = expanded ? styles.headerButtons :
+        classNames(styles.headerButtons, styles.headerButtonsHidden);
+
+    return (<div className={headerClassName}>
+        <button
             className={styles.allButton}
             onClick={onShowAll}
         >
             <img
                 className={styles.helpIcon}
                 src={helpIcon}
+                alt={intl.formatMessage(labelMap.tutorialsIcon)}
             />
             <FormattedMessage
                 defaultMessage="Tutorials"
                 description="Title for button to return to tutorials library"
                 id="gui.cards.all-tutorials"
             />
-        </div>
+        </button>
         {totalSteps > 1 ? (
             <div className={styles.stepsList}>
                 {Array(totalSteps).fill(0)
@@ -46,13 +96,14 @@ const CardHeader = ({onCloseCards, onShrinkExpandCards, onShowAll, totalSteps, s
             </div>
         ) : null}
         <div className={styles.headerButtonsRight}>
-            <div
+            <button
                 className={styles.shrinkExpandButton}
                 onClick={onShrinkExpandCards}
             >
                 <img
                     draggable={false}
                     src={expanded ? shrinkIcon : expandIcon}
+                    alt={expanded ? intl.formatMessage(labelMap.shrinkIcon) : intl.formatMessage(labelMap.expandIcon)}
                 />
                 {expanded ?
                     <FormattedMessage
@@ -66,24 +117,25 @@ const CardHeader = ({onCloseCards, onShrinkExpandCards, onShowAll, totalSteps, s
                         id="gui.cards.expand"
                     />
                 }
-            </div>
-            <div
+            </button>
+            <button
                 className={styles.removeButton}
                 onClick={onCloseCards}
             >
                 <img
                     className={styles.closeIcon}
                     src={closeIcon}
+                    alt={intl.formatMessage(labelMap.closeIcon)}
                 />
                 <FormattedMessage
                     defaultMessage="Close"
                     description="Title for button to close how-to card"
                     id="gui.cards.close"
                 />
-            </div>
+            </button>
         </div>
-    </div>
-);
+    </div>);
+};
 
 class VideoStep extends React.Component {
 
@@ -99,6 +151,20 @@ class VideoStep extends React.Component {
         script2.async = true;
         script2.setAttribute('id', 'wistia-video-api');
         document.body.appendChild(script2);
+
+        // The Wistia API doesn't provide a callback for when the video is ready,
+        // so we use the global _wq queue that Wistia provides for this purpose.
+        // See the below for more details.
+        // https://docs.wistia.com/docs/javascript-player-api#with-standard-embeds
+        window._wq = window._wq || [];
+        window._wq.push({
+            id: this.props.video,
+            onReady: video => {
+                if (video) {
+                    video.focus();
+                }
+            }});
+
     }
 
     // We use the Wistia API here to update or pause the video dynamically:
@@ -127,6 +193,10 @@ class VideoStep extends React.Component {
 
         const script2 = document.getElementById('wistia-video-api');
         script2.parentNode.removeChild(script2);
+
+        // Clean up the _wq queue to prevent old callbacks from firing
+        // if the component is unmounted before the video is ready
+        window._wq = window._wq.filter(video => video.id !== this.props.video);
     }
 
     render () {
@@ -169,38 +239,49 @@ ImageStep.propTypes = {
     title: PropTypes.node.isRequired
 };
 
-const NextPrevButtons = ({isRtl, onNextStep, onPrevStep, expanded}) => (
-    <Fragment>
+const NextPrevButtons = ({isRtl, onNextStep, onPrevStep, expanded}) => {
+    const intl = useIntl();
+
+    return (<Fragment>
         {onNextStep ? (
             <div>
                 <div className={expanded ? (isRtl ? styles.leftCard : styles.rightCard) : styles.hidden} />
-                <div
+                <button
                     className={expanded ? (isRtl ? styles.leftButton : styles.rightButton) : styles.hidden}
                     onClick={onNextStep}
+                    aria-label={intl.formatMessage(labelMap.nextStepButton)}
                 >
                     <img
                         draggable={false}
                         src={isRtl ? leftArrow : rightArrow}
+                        alt={isRtl ?
+                            intl.formatMessage(labelMap.leftArrowIcon) :
+                            intl.formatMessage(labelMap.rightArrowIcon)}
                     />
-                </div>
+                </button>
             </div>
         ) : null}
         {onPrevStep ? (
             <div>
                 <div className={expanded ? (isRtl ? styles.rightCard : styles.leftCard) : styles.hidden} />
-                <div
+                <button
                     className={expanded ? (isRtl ? styles.rightButton : styles.leftButton) : styles.hidden}
                     onClick={onPrevStep}
+                    aria-label={intl.formatMessage(labelMap.previousStepButton)}
                 >
                     <img
                         draggable={false}
                         src={isRtl ? rightArrow : leftArrow}
+                        alt={
+                            isRtl ?
+                                intl.formatMessage(labelMap.rightArrowIcon) :
+                                intl.formatMessage(labelMap.leftArrowIcon)}
                     />
-                </div>
+                </button>
             </div>
         ) : null}
-    </Fragment>
-);
+    </Fragment>);
+};
 
 NextPrevButtons.propTypes = {
     expanded: PropTypes.bool.isRequired,
@@ -351,6 +432,22 @@ const Cards = props => {
         ...posProps
     } = props;
     let {x, y} = posProps;
+
+    useEffect(() => {
+        if (activeDeckId === null) return;
+        
+        const handleKeyDown = e => {
+            if (e.key === KEY.ESCAPE) {
+                e.preventDefault();
+
+                onCloseCards();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [onCloseCards, activeDeckId]);
 
     if (activeDeckId === null) return;
 

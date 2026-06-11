@@ -12,9 +12,13 @@ The `packages` directory in this repository contains:
 
 - `scratch-gui` provides the buttons, menus, and other elements that you interact with when creating and editing a
   project. It's also the "glue" that brings most of the other modules together at runtime.
+- `scratch-media-lib-scripts` builds (or rebuilds) media libraries for the editor.
 - `scratch-render` draws backdrops, sprites, and clones on the stage.
+- `scratch-storage` helps load project assets like images and sounds. It also provides `ScratchFetch`, a customized
+  wrapper around `fetch`.
 - `scratch-svg-renderer` processes SVG (vector) images for use with Scratch projects.
 - `scratch-vm` is the virtual machine that runs Scratch projects.
+- `task-herder` manages queues of tasks with throttling and concurrency limits.
 
 _Please add to this list as more packages are migrated to the monorepo._
 

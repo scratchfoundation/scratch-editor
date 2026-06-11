@@ -95,10 +95,18 @@ const ConfirmationPrompt = ({
 
     const handleCancel = React.useCallback(() => {
         cancelButtonConfig.onClick();
+        // Ensure focus is removed from the button so that keyboard events are propagated to the blocks
+        requestAnimationFrame(() => {
+            document.activeElement.blur();
+        });
     }, [cancelButtonConfig]);
 
     const handleConfirm = React.useCallback(() => {
         confirmButtonConfig.onClick();
+        // Ensure focus is removed from the button so that keyboard events are propagated to the blocks
+        requestAnimationFrame(() => {
+            document.activeElement.blur();
+        });
     }, [confirmButtonConfig]);
 
     const cancelButton = (

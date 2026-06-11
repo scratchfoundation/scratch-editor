@@ -14,7 +14,7 @@ export {setAppElement} from 'react-modal';
 export * from './gui-config';
 export * from './exported-reducers';
 
-export * from 'scratch-storage';
+export * from '@scratch/scratch-storage';
 
 export * from './lib/legacy-backpack-storage';
 export {default as LegacyCloudProvider} from './lib/cloud-provider';

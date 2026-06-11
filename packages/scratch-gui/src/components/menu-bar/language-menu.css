@@ -1,0 +1,14 @@
+/* Extra padding to deal with scrollbar overlapping options in Firefox */
+
+[dir="ltr"] .language-menu-item {
+    padding-right: 1rem;
+}
+
+[dir="rtl"] .language-menu-item {
+    padding-left: 1rem;
+}
+
+.language-submenu > ul {
+    max-height: calc(100vh - 5rem); /* Fallback if dvh not supported */
+    max-height: calc(100dvh - 5rem);
+}

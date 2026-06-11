@@ -19,9 +19,6 @@ import {
     openLoadingProject,
     closeLoadingProject
 } from '../reducers/modals';
-import {
-    closeFileMenu
-} from '../reducers/menus';
 import {getProjectTitleFromFilename} from './sb-file-uploader-utils';
 
 const messages = defineMessages({
@@ -116,7 +113,6 @@ const SBFileUploaderHOC = function (WrappedComponent) {
                     // skips ahead to step 7
                     this.removeFileObjects();
                 }
-                this.props.closeFileMenu();
             }
         }
         // step 4 is below, in mapDispatchToProps
@@ -176,7 +172,6 @@ const SBFileUploaderHOC = function (WrappedComponent) {
             const {
                  
                 cancelFileUpload,
-                closeFileMenu: closeFileMenuProp,
                 isLoadingUpload,
                 isShowingWithoutId,
                 loadingState,
@@ -206,7 +201,6 @@ const SBFileUploaderHOC = function (WrappedComponent) {
     SBFileUploaderComponent.propTypes = {
         canSave: PropTypes.bool,
         cancelFileUpload: PropTypes.func,
-        closeFileMenu: PropTypes.func,
         intl: intlShape.isRequired,
         isLoadingUpload: PropTypes.bool,
         isShowingWithoutId: PropTypes.bool,
@@ -238,13 +232,11 @@ const SBFileUploaderHOC = function (WrappedComponent) {
     };
     const mapDispatchToProps = (dispatch, ownProps) => ({
         cancelFileUpload: loadingState => dispatch(onLoadedProject(loadingState, false, false)),
-        closeFileMenu: () => dispatch(closeFileMenu()),
         // transition project state from loading to regular, and close
         // loading screen and file menu
         onLoadingFinished: (loadingState, success) => {
             dispatch(onLoadedProject(loadingState, ownProps.canSave, success));
             dispatch(closeLoadingProject());
-            dispatch(closeFileMenu());
         },
         // show project loading screen
         onLoadingStarted: () => dispatch(openLoadingProject()),

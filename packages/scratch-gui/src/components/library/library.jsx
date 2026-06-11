@@ -381,6 +381,7 @@ class LibraryComponent extends React.Component {
                         [styles.withFilterBar]: this.props.filterable || this.props.tags
                     })}
                     ref={this.setFilteredDataRef}
+                    tabIndex={-1}
                 >
                     {this.state.loaded ? this.renderData(this.getFilteredData()) : (
                         <div className={styles.spinnerWrapper}>
