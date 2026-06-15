@@ -15,9 +15,9 @@ Use these defaults unless the user asks otherwise:
 2. Do not preserve backward compatibility when it isn't required. When all callers are internal to a package,
    rename or restructure freely. All packages in this repo are published to npm and consumed externally, so treat
    each package's public exports as a contract and preserve compatibility unless explicitly told otherwise.
-3. Write comments that explain the current code, not its history. Do not reference prior implementations,
-   intermediate states, or what the code "used to do." If an approach seems counterintuitive, explain why it is
-   correct now — not why it changed.
+3. Write comments that explain the current code, not its history or the work that produced it. Do not reference
+   prior implementations, intermediate states, what the code "used to do," or the task plan, ticket, or
+   instructions that prompted the change. If an approach seems counterintuitive, explain why it is correct now.
 4. Prefer fixing root causes over adding surface-level workarounds or assertions.
 5. When fixing a bug, start by adding one or more failing tests that reproduce it, then implement the fix. Iterate
    until all tests pass, including but not limited to the new tests. Use the test framework already in use in that
@@ -59,6 +59,14 @@ npm test --workspace=packages/scratch-vm
 ```
 
 Each package defines its own `test` and `build` scripts; see "Packages at a glance" for specifics.
+
+**After all code changes are complete**, run the build, tests, and linter in the affected packages and verify they complete with no errors before moving on:
+
+```sh
+npm run build --workspace=packages/<package-name>
+npm test --workspace=packages/<package-name>
+npm run lint --workspace=packages/<package-name>
+```
 
 **Commit messages are enforced.** Husky + commitlint validate every commit against the
 [Conventional Commits](https://www.conventionalcommits.org/) format. A commit that doesn't conform will be
@@ -147,6 +155,3 @@ Review all changes and confirm:
   (commands, repo structure, conventions, etc.). The "Packages at a glance" table is particularly prone to going
   stale when a package migrates its tooling.
 - **Commit format**: Commit message follows Conventional Commits — the husky hook will reject it otherwise.
-- **Build passes**: `npm run build` (or `npm run build` in the affected package) completes successfully.
-- **Tests pass**: `npm test` (or `npm test` in the affected package) completes with no failures.
-- **No lint errors**: `npm run test:lint` (or `npm run lint`) passes in the affected package.
