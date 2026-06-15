@@ -33,5 +33,14 @@ module.exports = {
             }
         }).transform,
         '\\.(png|svg|wav)$': '<rootDir>/test/transformers/arraybuffer-loader.js'
-    }
+    },
+    reporters: [
+        'default',
+        [
+            'jest-junit',
+            {
+                outputDirectory: 'test-results'
+            }
+        ]
+    ]
 };
