@@ -110,6 +110,6 @@
     "typedoc": "0.28.18",
     "webpack": "5.107.2",
     "webpack-cli": "4.10.0",
-    "webpack-dev-server": "5.2.4"
+    "webpack-dev-server": "5.2.5"
   }
 }

@@ -84,7 +84,7 @@
     "typedoc": "0.28.18",
     "webpack": "5.107.2",
     "webpack-cli": "5.1.4",
-    "webpack-dev-server": "5.2.4"
+    "webpack-dev-server": "5.2.5"
   },
   "peerDependencies": {
     "scratch-render-fonts": "1.0.252"
