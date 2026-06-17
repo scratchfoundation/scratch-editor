@@ -24,19 +24,28 @@ class PaintEditorWrapper extends React.Component {
         this.props.vm.renameCostume(this.props.selectedCostumeIndex, name);
     }
     handleUpdateImage (isVector, image, rotationCenterX, rotationCenterY) {
+        const currentCostume = this.props.vm.editingTarget.getCostumes()[this.props.selectedCostumeIndex];
+        const currentAsset = currentCostume.asset;
+
+        const provenance = currentAsset.clean ? currentAsset.assetId : currentAsset.provenance;
+
         if (isVector) {
             this.props.vm.updateSvg(
                 this.props.selectedCostumeIndex,
                 image,
                 rotationCenterX,
-                rotationCenterY);
+                rotationCenterY,
+                provenance,
+            );
         } else {
             this.props.vm.updateBitmap(
                 this.props.selectedCostumeIndex,
                 image,
                 rotationCenterX,
                 rotationCenterY,
-                2 /* bitmapResolution */);
+                2 /* bitmapResolution */,
+                provenance,
+            );
         }
     }
     render () {

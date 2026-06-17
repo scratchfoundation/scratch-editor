@@ -254,7 +254,8 @@ const ProjectSaverHOC = function (WrappedComponent) {
                         asset.assetType,
                         asset.dataFormat,
                         asset.data,
-                        asset.assetId
+                        asset.assetId,
+                        { provenance: asset.provenance }
                     ).then(response => {
                         // Asset servers respond with {status: ok} for successful POSTs
                         if (response.status !== 'ok') {
