@@ -161,7 +161,7 @@ class Cast {
                 return true;
             }
             // True if it's "round" (e.g., 2.0 and 2).
-            return val === parseInt(val, 10);
+            return val % 1 === 0;
         } else if (typeof val === 'boolean') {
             // `True` and `false` always represent integer after Scratch cast.
             return true;
