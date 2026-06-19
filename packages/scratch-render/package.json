@@ -64,9 +64,9 @@
     "twgl.js": "4.24.0"
   },
   "devDependencies": {
-    "@babel/core": "7.29.7",
+    "@babel/core": "8.0.0",
     "@babel/polyfill": "7.12.1",
-    "@babel/preset-env": "7.29.7",
+    "@babel/preset-env": "8.0.0",
     "@scratch/scratch-storage": "14.1.0",
     "@scratch/scratch-vm": "14.1.0",
     "babel-loader": "9.2.1",
