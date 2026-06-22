@@ -26,7 +26,7 @@
     "prepublishOnly": "echo \"Please publish through CI only.\" && exit 1",
     "start": "webpack serve",
     "test": "npm run unit",
-    "unit": "jest --reporters=default",
+    "unit": "jest",
     "watch": "webpack --progress --watch"
   },
   "browserslist": [
@@ -49,10 +49,16 @@
     },
     "transformIgnorePatterns": [
       "/node_modules/(?!intl-messageformat|intl-messageformat-parser).+\\.js$"
+    ],
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": "test-results"
+        }
+      ]
     ]
-  },
-  "jest-junit": {
-    "outputDirectory": "./test/results"
   },
   "dependencies": {
     "@scratch/paper": "0.11.20221201200345",
