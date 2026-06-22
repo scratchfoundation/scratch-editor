@@ -161,7 +161,7 @@
     "lodash.omit": "4.18.0",
     "lodash.throttle": "4.1.1",
     "omggif": "1.0.10",
-    "papaparse": "5.5.3",
+    "papaparse": "5.5.4",
     "postcss-import": "12.0.1",
     "postcss-loader": "4.3.0",
     "postcss-simple-vars": "5.0.2",
