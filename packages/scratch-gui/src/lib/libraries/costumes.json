@@ -8128,7 +8128,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 77.641932828964,
         "rotationCenterY": 83.38849,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Milli-b",
@@ -8138,7 +8140,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 77.6419402193093,
         "rotationCenterY": 83.38849,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Milli-c",
@@ -8148,7 +8152,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 77.64193260965467,
         "rotationCenterY": 59.888490000000004,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Milli-d",
@@ -8158,7 +8164,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 77.64194326758283,
         "rotationCenterY": 83.38849,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Milli-e",
@@ -8168,7 +8176,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 77.5781442048648,
         "rotationCenterY": 84.1568008519889,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Milli-f",
@@ -8178,7 +8188,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 76.68730598658698,
         "rotationCenterY": 84.49833596579315,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Milli-g",
@@ -8188,7 +8200,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 74.31885735821905,
         "rotationCenterY": 83.44610661610697,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Milli-h",
@@ -8198,7 +8212,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 74.26471350976036,
         "rotationCenterY": 81.49409878635187,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Milli-i",
@@ -8208,7 +8224,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 74.37136336530932,
         "rotationCenterY": 83.16499013145153,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Monet-a",
@@ -13022,7 +13040,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 68.70500000000001,
         "rotationCenterY": 89.0549999999999,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Zepto-b",
@@ -13032,7 +13052,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 68.70500000000001,
         "rotationCenterY": 63.481481723354904,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Zepto-c",
@@ -13042,7 +13064,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 68.86604364398539,
         "rotationCenterY": 89.21604364398537,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Zepto-d",
@@ -13052,7 +13076,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 68.70500000000001,
         "rotationCenterY": 89.05499999999996,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Zepto-e",
@@ -13062,7 +13088,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 68.7049750000003,
         "rotationCenterY": 89.05498499999982,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Zepto-f",
@@ -13072,7 +13100,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 69.50053848407211,
         "rotationCenterY": 88.53142195193905,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Zepto-g",
@@ -13082,7 +13112,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 69.77988553792466,
         "rotationCenterY": 88.51458161397719,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Zepto-h",
@@ -13092,7 +13124,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 68.7049650000001,
         "rotationCenterY": 89.05496500000001,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Zepto-i",
@@ -13102,7 +13136,9 @@
         "bitmapResolution": 1,
         "rotationCenterX": 70.2066627080294,
         "rotationCenterY": 87.6102625004418,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     },
     {
         "name": "Zepto-j",
@@ -13112,6 +13148,8 @@
         "bitmapResolution": 1,
         "rotationCenterX": 68.44318500000003,
         "rotationCenterY": 88.54633642315261,
-        "tags": []
+        "tags": [
+            "fantasy"
+        ]
     }
 ]
