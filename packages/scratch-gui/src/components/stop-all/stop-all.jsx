@@ -28,7 +28,6 @@ const StopAllComponent = function (props) {
             className={styles.stopAllButton}
             onClick={onClick}
             aria-label={intl.formatMessage(stopProjectMessage)}
-            disabled={!active}
             data-focusable={isFullScreen || null}
             {...componentProps}
         >
