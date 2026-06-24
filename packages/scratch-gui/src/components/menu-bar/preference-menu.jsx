@@ -100,7 +100,11 @@ const PreferenceMenu = ({
                     src={dropdownCaret}
                 />
             </button>
-            <Submenu place={isRtl ? 'left' : 'right'}>
+            <Submenu
+                place={isRtl ? 'left' : 'right'}
+                className={styles.preferenceSubmenu}
+                menuClassName={styles.menu}
+            >
                 {itemKeys.map(itemKey => (
                     <PreferenceItem
                         onParentKeyDown={handleKeyDownOpenMenu}

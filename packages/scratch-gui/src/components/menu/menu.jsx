@@ -32,7 +32,7 @@ MenuComponent.propTypes = {
     place: PropTypes.oneOf(['left', 'right'])
 };
 
-const Submenu = ({children, className, place, ...props}) => (
+const Submenu = ({children, className, menuClassName, place, ...props}) => (
     <ul
         className={classNames(
             styles.submenu,
@@ -45,6 +45,7 @@ const Submenu = ({children, className, place, ...props}) => (
     >
         <MenuComponent
             place={place}
+            className={menuClassName}
             {...props}
         >
             {children}
@@ -55,6 +56,7 @@ const Submenu = ({children, className, place, ...props}) => (
 Submenu.propTypes = {
     children: PropTypes.node,
     className: PropTypes.string,
+    menuClassName: PropTypes.string,
     place: PropTypes.oneOf(['left', 'right'])
 };
 
