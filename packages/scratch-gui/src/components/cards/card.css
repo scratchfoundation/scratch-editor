@@ -111,6 +111,9 @@ body .card-container {
     border-bottom: 1px solid $extensions-tertiary;
     font-size: 0.625rem;
     font-weight: bold;
+    /* Ensure there is enough padding for the focus outline to become visible on Safari */
+    box-sizing: border-box;
+    padding: 0 0.77rem;
 }
 
 .header-buttons button {
@@ -153,6 +156,12 @@ body .card-container {
     justify-content: center;
     align-items: center;
     padding: 0.75rem;
+}
+
+.remove-button:focus-visible,
+.shrink-expand-button:focus-visible,
+.all-button:focus-visible {
+    outline-offset: -4px;
 }
 
 .remove-button:hover, .all-button:hover {
