@@ -33,7 +33,8 @@ class Scratch3OperatorsBlocks {
             operator_contains: this.contains,
             operator_mod: this.mod,
             operator_round: this.round,
-            operator_mathop: this.mathop
+            operator_mathop: this.mathop,
+            operator_convert: this.convert
         };
     }
 
@@ -151,4 +152,19 @@ class Scratch3OperatorsBlocks {
     }
 }
 
+convert (args) {
+        const num = Cast.toNumber(args.NUM);
+        const type = Cast.toString(args.CONVERT_TYPE);
+
+        if (type === 'PERCENT') {
+            return num * 100;
+        }
+
+        if (type === 'DECIMAL') {
+            return num / 100;
+        }
+        
+        return num;
+    }
+                
 module.exports = Scratch3OperatorsBlocks;
