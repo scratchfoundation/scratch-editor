@@ -48,7 +48,7 @@
     "scratch-semantic-release-config": "4.0.1",
     "semantic-release": "25.0.5",
     "source-map-loader": "5.0.0",
-    "ts-loader": "9.6.1",
+    "ts-loader": "9.6.2",
     "typescript": "5.9.3",
     "vitest": "4.1.9",
     "webpack": "5.107.2",
