@@ -98,14 +98,9 @@ const vmListenerHOC = function (WrappedComponent) {
             }
         }
         handleKeyDown (e) {
-            // Don't capture keys intended for HTML inputs (e.g. project title).
-            // The Blockly workspace is rendered as SVG, so SVG-targeted events
-            // should always reach the VM for key-sensing — even when a block has
-            // Blockly focus — so that game controls are never silently dropped
-            // while the user is on the Code tab.
-            if (e.target !== document && e.target !== document.body) {
-                if (!(e.target instanceof SVGElement)) return;
-            }
+            // Don't capture keys intended for Blockly inputs.
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement ||
+                e.target.isContentEditable) return;
 
             const key = (!e.key || e.key === 'Dead') ? e.keyCode : e.key;
             this.props.vm.postIOData('keyboard', {
