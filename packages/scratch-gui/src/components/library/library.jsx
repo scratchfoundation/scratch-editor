@@ -106,8 +106,7 @@ const getItemIcons = function (item) {
     if (item.assetId && item.dataFormat) {
         return {
             assetId: item.assetId,
-            assetType: getAssetTypeForFileExtension(item.dataFormat),
-            assetServiceUri: `https://cdn.assets.scratch.mit.edu/internalapi/asset/${item.assetId}.${item.dataFormat}/get/`
+            assetType: getAssetTypeForFileExtension(item.dataFormat)
         };
     }
 
@@ -116,8 +115,7 @@ const getItemIcons = function (item) {
         const [assetId, fileExtension] = md5ext.split('.');
         return {
             assetId: assetId,
-            assetType: getAssetTypeForFileExtension(fileExtension),
-            assetServiceUri: `https://cdn.assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`
+            assetType: getAssetTypeForFileExtension(fileExtension)
         };
     }
 };
