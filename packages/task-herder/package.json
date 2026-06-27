@@ -51,7 +51,7 @@
     "prettier": "3.8.4",
     "rimraf": "6.1.2",
     "typescript": "5.9.3",
-    "unplugin-dts": "1.0.2",
+    "unplugin-dts": "1.0.3",
     "vite": "npm:rolldown-vite@7.3.1",
     "vitest": "4.1.9"
   }
