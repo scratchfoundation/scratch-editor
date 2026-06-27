@@ -80,7 +80,7 @@
     "scratch-translate-extension-languages": "1.0.7",
     "text-encoding": "0.7.0",
     "tslog": "4.10.2",
-    "uuid": "8.3.2"
+    "uuid": "11.1.1"
   },
   "devDependencies": {
     "@babel/core": "7.29.7",
