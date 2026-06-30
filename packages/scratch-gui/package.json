@@ -233,7 +233,7 @@
     "ts-loader": "9.6.2",
     "url-loader": "4.1.1",
     "web-audio-test-api": "0.5.2",
-    "webpack": "5.108.0",
+    "webpack": "5.108.1",
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "5.2.5",
     "yauzl": "3.4.0"
