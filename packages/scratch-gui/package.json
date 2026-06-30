@@ -212,7 +212,7 @@
     "cheerio": "1.2.0",
     "cross-env": "7.0.3",
     "eslint": "9.39.4",
-    "eslint-config-scratch": "14.1.35",
+    "eslint-config-scratch": "14.1.36",
     "eslint-import-resolver-typescript": "4.4.5",
     "eslint-plugin-import-x": "4.17.0",
     "eslint-plugin-react": "7.37.5",
