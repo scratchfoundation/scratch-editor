@@ -95,8 +95,18 @@ class Scratch3OperatorsBlocks {
     }
 
     letterOf (args) {
-        const index = Cast.toNumber(args.LETTER) - 1;
+        let index = Cast.toNumber(args.LETTER) - 1;
         const str = Cast.toString(args.STRING);
+        switch (Cast.toString(args.LETTER)) {
+        case "last":
+            index = str.length - 1;
+            break;
+        case "random":
+            index = Math.round((str.length - 1) * Math.random());
+            break;
+        default:
+            break;
+        }
         // Out of bounds?
         if (index < 0 || index >= str.length) {
             return '';
