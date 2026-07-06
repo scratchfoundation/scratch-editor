@@ -108,7 +108,7 @@
     "style-loader": "4.0.0",
     "webpack": "5.108.3",
     "webpack-cli": "5.1.4",
-    "webpack-dev-server": "5.2.6"
+    "webpack-dev-server": "6.0.0"
   },
   "peerDependencies": {
     "react": "^18",
