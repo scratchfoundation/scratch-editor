@@ -23,6 +23,9 @@ const motion = function (isInitialSetup, isStage, targetId, colors) {
         ${isStage ? `
         <label text="${stageSelected}"></label>
         ` : `
+        <block type="button" />
+        <block type="joystick" />
+        ${blockSeparator}
         <block type="motion_movesteps">
             <value name="STEPS">
                 <shadow type="math_number">
