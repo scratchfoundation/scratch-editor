@@ -17,6 +17,8 @@ class Scratch3MotionBlocks {
      */
     getPrimitives () {
         return {
+            motion_button: this.movejoystick,
+            motion_joystick: this.movejoystick,
             motion_movesteps: this.moveSteps,
             motion_gotoxy: this.goToXY,
             motion_goto: this.goTo,
@@ -61,6 +63,81 @@ class Scratch3MotionBlocks {
         };
     }
 
+    button (args, util) {
+// Select the button element by its ID
+const button = document.getElementById('myButton');
+
+// Add a click event listener (equivalent to "when this sprite clicked")
+button.addEventListener('click', () => {
+    console.log('Button was clicked!');
+    alert('Hello World!');
+});
+    }
+
+    joystick (args, util) {
+        class GamepadExtension {
+    constructor(runtime) {
+        this.runtime = runtime;
+    }
+
+    getInfo() {
+        return {
+            id: 'hardwareJoystick',
+            name: 'Hardware Joystick',
+            blocks: [
+                {
+                    opcode: 'getJoystickAxis',
+                    blockType: 'reporter', // Returns a number value
+                    text: 'joystick [STICK_AXIS]',
+                    arguments: {
+                        STICK_AXIS: {
+                            type: 'string',
+                            menu: 'axisMenu',
+                            defaultValue: 'LX'
+                        }
+                    }
+                }
+            ],
+            menus: {
+                axisMenu: {
+                    acceptReporters: false,
+                    items: [
+                        { text: 'Left Stick X (Horizontal)', value: 'LX' },
+                        { text: 'Left Stick Y (Vertical)', value: 'LY' },
+                        { text: 'Right Stick X (Horizontal)', value: 'RX' },
+                        { text: 'Right Stick Y (Vertical)', value: 'RY' }
+                    ]
+                }
+            }
+        };
+    }
+
+    getJoystickAxis(args) {
+        // Fetch all connected gamepads via browser HTML5 Gamepad API
+        const gamepads = navigator.getGamepads ? navigator.getGamepads() : [];
+        
+        // Find the first active gamepad
+        const gamepad = Array.from(gamepads).find(gp => gp !== null);
+        
+        if (!gamepad) return 0; // Return 0 if no controller is plugged in
+
+        // Map axis mapping strings to standard gamepad indexes
+        // Axes index 0 = Left X, 1 = Left Y, 2 = Right X, 3 = Right Y
+        switch (args.STICK_AXIS) {
+            case 'LX': return gamepad.axes[0] || 0;
+            case 'LY': return (gamepad.axes[1] || 0) * -1; // Inverted so Up is positive in Scratch
+            case 'RX': return gamepad.axes[2] || 0;
+            case 'RY': return (gamepad.axes[3] || 0) * -1; // Inverted so Up is positive in Scratch
+            default: return 0;
+        }
+    }
+}
+
+// Register the extension in the Scratch Engine environment
+Scratch.extensions.register(new GamepadExtension());
+
+    }
+    
     moveSteps (args, util) {
         const steps = Cast.toNumber(args.STEPS);
         const radians = MathUtil.degToRad(90 - util.target.direction);
