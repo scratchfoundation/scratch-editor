@@ -79,7 +79,7 @@
     "scratch-sb1-converter": "2.0.279",
     "scratch-translate-extension-languages": "1.0.7",
     "text-encoding": "0.7.0",
-    "tslog": "4.11.0",
+    "tslog": "5.0.0",
     "uuid": "8.3.2"
   },
   "devDependencies": {

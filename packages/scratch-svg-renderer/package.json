@@ -56,7 +56,7 @@
     "fastestsmallesttextencoderdecoder": "1.0.22",
     "isomorphic-dompurify": "2.36.0",
     "transformation-matrix": "1.15.3",
-    "tslog": "4.11.0"
+    "tslog": "5.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.29.7",
