@@ -223,7 +223,7 @@
     "jest-junit": "7.0.0",
     "mkdirp": "1.0.4",
     "raf": "3.4.1",
-    "react-test-renderer": "18.3.1",
+    "react-test-renderer": "19.2.7",
     "redux-mock-store": "1.5.5",
     "rimraf": "2.7.1",
     "scratch-webpack-configuration": "3.1.2",
