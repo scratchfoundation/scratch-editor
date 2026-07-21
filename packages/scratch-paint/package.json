@@ -112,7 +112,7 @@
   },
   "peerDependencies": {
     "react": "^18",
-    "react-dom": "^18",
+    "react-dom": "^18 || ^19.0.0",
     "react-intl": "^6",
     "react-intl-redux": "^0.7 || ^2.0.0",
     "react-popover": "^0.5",
