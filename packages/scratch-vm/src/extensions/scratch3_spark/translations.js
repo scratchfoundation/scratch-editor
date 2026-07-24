@@ -1,8 +1,11 @@
 module.exports = {
     th: {
         'spark.categoryName': 'สปาร์กี้',
-        'spark.setLedColor': 'ตั้งสีไฟ LED เป็น [COLOR]',
-        'spark.setLedBrightness': 'ตั้งความสว่างไฟ LED เป็น [BRIGHTNESS]',
+        'spark.setLedColor': 'ตั้งสีไฟ LED [WHICH] เป็น [COLOR]',
+        'spark.ledTarget.both': 'ทั้งคู่',
+        'spark.ledTarget.led1': 'ดวงที่ 1',
+        'spark.ledTarget.led2': 'ดวงที่ 2',
+        'spark.setLedBrightness': 'ตั้งความสว่างไฟ LED [WHICH] เป็น [BRIGHTNESS]',
         'spark.whenButtonPressed': 'เมื่อกดปุ่ม [BTN]',
         'spark.isButtonPressed': 'กดปุ่ม [BTN] อยู่?',
         'spark.playTone': 'เล่นโน้ต [FREQ] Hz นาน [DUR] ms',

@@ -155,3 +155,43 @@ test('Story 10.1 — WS_URL falls back to ws://localhost:8080 when window.SPARK_
     t.equal(url, 'ws://localhost:8080', 'WebSocket constructed with localhost fallback URL');
     t.end();
 });
+
+// ── Story 2.8 — address the two physical LEDs independently ──
+test('setLedColor per-LED index: both omits index, led1→0, led2→1', t => {
+    const sent = [];
+    const inst = new Scratch3SparkBlocks(fakeRuntime);
+    inst._peripheral.send = (cmd, data) => {
+        sent.push({cmd, data});
+        return Promise.resolve({});
+    };
+    inst.setLedColor({WHICH: 'both', COLOR: 'red'});
+    inst.setLedColor({WHICH: 'led1', COLOR: 'green'});
+    inst.setLedColor({WHICH: 'led2', COLOR: 'amber'});
+    t.equal(sent[0].cmd, 'led', 'cmd is led');
+    t.same(sent[0].data, {pin: 2, r: 255, g: 0, b: 0}, 'both → no index (drives both, backward-compatible)');
+    t.same(sent[1].data, {pin: 2, r: 0, g: 255, b: 0, index: 0}, 'led1 → index 0');
+    t.same(sent[2].data, {pin: 2, r: 100, g: 255, b: 0, index: 1}, 'led2 → index 1 (amber = bench-tuned {100,255,0})');
+    t.end();
+});
+
+test('ledTargets menu + Thai translations are single-source (Story 2.8)', t => {
+    const info = ext.getInfo();
+    t.same(info.menus.ledTargets.items.map(i => i.value), ['both', 'led1', 'led2'], 'menu values');
+    const th = require('../../src/extensions/scratch3_spark/translations.js').th;
+    info.menus.ledTargets.items.forEach(i => t.ok(th[`spark.ledTarget.${i.value}`], `has spark.ledTarget.${i.value}`));
+    t.end();
+});
+
+test('setLedBrightness per-LED index (Story 2.8) + amber bench-tuning', t => {
+    const sent = [];
+    const inst = new Scratch3SparkBlocks(fakeRuntime);
+    inst._peripheral.send = (cmd, data) => { sent.push({cmd, data}); return Promise.resolve({}); };
+    inst.setLedBrightness({WHICH: 'both', BRIGHTNESS: 200});
+    inst.setLedBrightness({WHICH: 'led1', BRIGHTNESS: 50});
+    inst.setLedBrightness({WHICH: 'led2', BRIGHTNESS: 255});
+    t.equal(sent[0].cmd, 'pwm', 'cmd is pwm');
+    t.same(sent[0].data, {pin: 2, val: 200}, 'both → no index');
+    t.same(sent[1].data, {pin: 2, val: 50, index: 0}, 'led1 → index 0');
+    t.same(sent[2].data, {pin: 2, val: 255, index: 1}, 'led2 → index 1');
+    t.end();
+});

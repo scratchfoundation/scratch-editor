@@ -43,7 +43,7 @@ const POLL_INTERVAL_MS = 30;
 const LED_COLOR_MAP = {
     red: {r: 255, g: 0, b: 0},
     green: {r: 0, g: 255, b: 0},
-    amber: {r: 255, g: 191, b: 0},
+    amber: {r: 100, g: 255, b: 0},   // bench-tuned for the red+green LED (2026-05-17); NOT web-amber {255,191,0}, which reads too red on this hardware
     off: {r: 0, g: 0, b: 0}
 };
 const LED_COLOR_NAMES = Object.keys(LED_COLOR_MAP);
@@ -54,6 +54,19 @@ const ledColorMenuItems = () => LED_COLOR_NAMES.map(name => ({
         description: `LED color ${name}`
     }),
     value: name
+}));
+
+// Story 2.8 — which physical LED to address (single source). 'both' → no wire
+// `index` field (drives both LEDs, backward-compatible); 'led1'/'led2' → the
+// firmware's optional `index` 0/1. The board has two bi-color LEDs.
+const LED_TARGETS = [
+    {value: 'both', index: null},
+    {value: 'led1', index: 0},
+    {value: 'led2', index: 1}
+];
+const ledTargetMenuItems = () => LED_TARGETS.map(t => ({
+    text: formatMessage({id: `spark.ledTarget.${t.value}`, default: t.value, description: `LED target ${t.value}`}),
+    value: t.value
 }));
 
 const SparkButton = {A: 'A', B: 'B'};
@@ -452,8 +465,13 @@ class Scratch3SparkBlocks {
                 {
                     opcode: 'setLedColor',
                     blockType: BlockType.COMMAND,
-                    text: formatMessage({id: 'spark.setLedColor', default: 'set LED color to [COLOR]', description: 'Set LED color'}),
+                    text: formatMessage({id: 'spark.setLedColor', default: 'set LED [WHICH] color to [COLOR]', description: 'Set LED color (which LED + color)'}),
                     arguments: {
+                        WHICH: {
+                            type: ArgumentType.STRING,
+                            menu: 'ledTargets',
+                            defaultValue: 'both'
+                        },
                         COLOR: {
                             type: ArgumentType.STRING,
                             menu: 'ledColors',
@@ -464,8 +482,13 @@ class Scratch3SparkBlocks {
                 {
                     opcode: 'setLedBrightness',
                     blockType: BlockType.COMMAND,
-                    text: formatMessage({id: 'spark.setLedBrightness', default: 'set LED brightness to [BRIGHTNESS]', description: 'Set LED brightness 0-255'}),
+                    text: formatMessage({id: 'spark.setLedBrightness', default: 'set LED [WHICH] brightness to [BRIGHTNESS]', description: 'Set LED brightness 0-255 (which LED + level)'}),
                     arguments: {
+                        WHICH: {
+                            type: ArgumentType.STRING,
+                            menu: 'ledTargets',
+                            defaultValue: 'both'
+                        },
                         BRIGHTNESS: {
                             type: ArgumentType.NUMBER,
                             defaultValue: 128
@@ -757,6 +780,11 @@ class Scratch3SparkBlocks {
                     acceptReporters: true,
                     items: ledColorMenuItems()
                 },
+                // Story 2.8 — which physical LED (both / LED 1 / LED 2).
+                ledTargets: {
+                    acceptReporters: false,
+                    items: ledTargetMenuItems()
+                },
                 buttons: {
                     acceptReporters: true,
                     items: [
@@ -838,12 +866,21 @@ class Scratch3SparkBlocks {
 
     setLedColor (args) {
         const color = args.COLOR in LED_COLOR_MAP ? LED_COLOR_MAP[args.COLOR] : LED_COLOR_MAP.off;
-        return this._peripheral.send('led', {pin: 2, ...color});
+        // Story 2.8 — 'both' (default) omits `index` (both LEDs, backward-compatible);
+        // 'led1'/'led2' add the firmware's per-LED index 0/1.
+        const target = LED_TARGETS.find(t => t.value === args.WHICH);
+        const payload = {pin: 2, ...color};
+        if (target && target.index !== null) payload.index = target.index;
+        return this._peripheral.send('led', payload);
     }
 
     setLedBrightness (args) {
         const val = Math.max(0, Math.min(255, Number(args.BRIGHTNESS) || 0));
-        return this._peripheral.send('pwm', {pin: 2, val});
+        // Story 2.8 — 'both' (default) omits index; 'led1'/'led2' → per-LED brightness.
+        const target = LED_TARGETS.find(t => t.value === args.WHICH);
+        const payload = {pin: 2, val};
+        if (target && target.index !== null) payload.index = target.index;
+        return this._peripheral.send('pwm', payload);
     }
 
     whenButtonPressed (args) {
