@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-storage",
-  "version": "14.1.0",
+  "version": "15.0.0-svg-sandboxing.1",
   "description": "Load and store project and asset files for Scratch 3.0",
   "homepage": "https://github.com/scratchfoundation/scratch-storage#readme",
   "repository": {
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.29.7",
-    "@scratch/task-herder": "14.1.0",
+    "@scratch/task-herder": "15.0.0-svg-sandboxing.1",
     "arraybuffer-loader": "1.0.8",
     "base64-js": "1.5.1",
     "buffer": "6.0.3",

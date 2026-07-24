@@ -1,6 +1,6 @@
 {
   "name": "scratch-editor",
-  "version": "14.1.0",
+  "version": "15.0.0-svg-sandboxing.1",
   "private": "true",
   "description": "Scratch editor mono-repository",
   "keywords": [],
