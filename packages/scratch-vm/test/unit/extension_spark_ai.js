@@ -1,9 +1,10 @@
 // extension_spark_ai.js — Story 4.5 on-device AI (ai.classify) Scratch blocks.
 // Drives the opcode handlers against a stubbed peripheral.send (no real socket),
-// asserting the wire request shape, the returned label, aiConfidence, and the
+// asserting the wire request shape, the returned label, aiConfidence/aiBbox, and the
 // FR28 graceful-degradation fallback (mock label + one-shot SPARK_STUB_WARNING).
 const test = require('tap').test;
 const Scratch3SparkBlocks = require('../../src/extensions/scratch3_spark/index.js');
+const translations = require('../../src/extensions/scratch3_spark/translations.js');
 
 // Build a Spark extension with a stubbed peripheral.send + a recording runtime.
 const makeExt = (opts = {}) => {
@@ -24,22 +25,28 @@ const makeExt = (opts = {}) => {
     const setResponder = r => {
         responder = r;
     };
-    return {
-        ext,
-        sent,
-        emits,
-        setResponder
-    };
+    return {ext, sent, emits, setResponder};
 };
 
-test('getInfo exposes the 5 AI opcodes + aiColorTargets menu', t => {
+test('getInfo exposes the 6 AI opcodes + AI menus', t => {
     const {ext} = makeExt();
     const info = ext.getInfo();
     const opcodes = info.blocks.filter(b => typeof b === 'object').map(b => b.opcode);
-    ['aiClassifyFace', 'aiClassifyColor', 'aiClassifyMotion', 'aiClassifyImuGesture', 'aiConfidence']
+    ['aiClassifyFace', 'aiClassifyColor', 'aiClassifyMotion', 'aiClassifyImuGesture', 'aiConfidence', 'aiBbox']
         .forEach(op => t.ok(opcodes.includes(op), `has ${op}`));
-    t.ok(info.menus.aiColorTargets, 'has aiColorTargets menu');
     t.same(info.menus.aiColorTargets.items.map(i => i.value), ['any', 'red', 'green', 'blue', 'yellow']);
+    t.same(info.menus.aiGestures.items.map(i => i.value), ['any', 'shake', 'tilt', 'flat', 'flip']);
+    t.same(info.menus.aiBboxFields.items.map(i => i.value), ['x', 'y', 'w', 'h']);
+    t.end();
+});
+
+test('single-source: every AI menu value has a Thai translation key', t => {
+    const {ext} = makeExt();
+    const info = ext.getInfo();
+    const th = translations.th;
+    info.menus.aiColorTargets.items.forEach(i => t.ok(th[`spark.aiColor.${i.value}`], `aiColor.${i.value}`));
+    info.menus.aiGestures.items.forEach(i => t.ok(th[`spark.aiGesture.${i.value}`], `aiGesture.${i.value}`));
+    info.menus.aiBboxFields.items.forEach(i => t.ok(th[`spark.aiBboxField.${i.value}`], `aiBboxField.${i.value}`));
     t.end();
 });
 
@@ -70,12 +77,57 @@ test('aiClassifyFace returns face_count label', async t => {
     t.end();
 });
 
-test('motion + imu_gesture send the right params', async t => {
+test('AC3: aiClassifyMotion THRESHOLD arg is passed + clamped 0..100 (default 50)', async t => {
     const {ext, sent} = makeExt({responder: () => ({status: 'ok', label: 'still', confidence: 0})});
-    await ext.aiClassifyMotion();
-    t.same(sent[0].data, {primitive: 'motion', params: {threshold_pct: 20}});
-    await ext.aiClassifyImuGesture();
-    t.same(sent[1].data, {primitive: 'imu_gesture', params: {gesture: null}});
+    await ext.aiClassifyMotion({THRESHOLD: 70});
+    t.same(sent[0].data, {primitive: 'motion', params: {threshold_pct: 70}}, 'passes the arg');
+    await ext.aiClassifyMotion({THRESHOLD: 150});
+    t.equal(sent[1].data.params.threshold_pct, 100, 'clamps high');
+    await ext.aiClassifyMotion({THRESHOLD: -5});
+    t.equal(sent[2].data.params.threshold_pct, 0, 'clamps low');
+    await ext.aiClassifyMotion({THRESHOLD: undefined});
+    t.equal(sent[3].data.params.threshold_pct, 50, 'defaults to 50 on non-numeric');
+    t.end();
+});
+
+test('AC3: aiClassifyImuGesture GESTURE arg → params.gesture (any→null)', async t => {
+    const {ext, sent} = makeExt({responder: () => ({status: 'ok', label: 'shake', confidence: 0.7})});
+    await ext.aiClassifyImuGesture({GESTURE: 'shake'});
+    t.same(sent[0].data, {primitive: 'imu_gesture', params: {gesture: 'shake'}});
+    await ext.aiClassifyImuGesture({GESTURE: 'any'});
+    t.same(sent[1].data, {primitive: 'imu_gesture', params: {gesture: null}}, 'any → null');
+    t.end();
+});
+
+test('AC4: aiBbox reads x/y/w/h of the last detection; 0 when no bbox', async t => {
+    const {ext} = makeExt({
+        responder: () => ({status: 'ok', label: 'face_count_1', confidence: 0.9, bbox: [10, 20, 30, 40]})
+    });
+    await ext.aiClassifyFace();
+    t.equal(ext.aiBbox({FIELD: 'x'}), 10);
+    t.equal(ext.aiBbox({FIELD: 'y'}), 20);
+    t.equal(ext.aiBbox({FIELD: 'w'}), 30);
+    t.equal(ext.aiBbox({FIELD: 'h'}), 40);
+    // no-bbox response → 0
+    const {ext: ext2} = makeExt({responder: () => ({status: 'ok', label: 'face_count_0', confidence: 0})});
+    await ext2.aiClassifyFace();
+    t.equal(ext2.aiBbox({FIELD: 'x'}), 0, 'no bbox → 0');
+    t.end();
+});
+
+test('companion cache is coherent with the LAST block run (degrade does not leave stale confidence/bbox)', async t => {
+    const {ext, setResponder} = makeExt({
+        responder: () => ({status: 'ok', label: 'face_count_1', confidence: 0.8, bbox: [1, 2, 3, 4]})
+    });
+    await ext.aiClassifyFace();
+    t.equal(ext.aiConfidence(), 0.8, 'good result cached');
+    t.equal(ext.aiBbox({FIELD: 'x'}), 1);
+    // now a degraded call (error) must reset the companions to the mock state
+    setResponder(() => ({status: 'error', error_code: 'hw_not_present'}));
+    const label = await ext.aiClassifyColor({TARGET: 'red'});
+    t.equal(label, 'not_found', 'color degrades to mock');
+    t.equal(ext.aiConfidence(), 0, 'confidence NOT stale (0 for the degraded call)');
+    t.equal(ext.aiBbox({FIELD: 'x'}), 0, 'bbox NOT stale');
     t.end();
 });
 
@@ -93,7 +145,7 @@ test('FR28: error response → mock label + ONE SPARK_STUB_WARNING per session',
 
 test('timeout (null response) → mock label, no throw', async t => {
     const {ext} = makeExt({responder: () => null});
-    const label = await ext.aiClassifyMotion();
+    const label = await ext.aiClassifyMotion({THRESHOLD: 50});
     t.equal(label, 'still');
     t.end();
 });

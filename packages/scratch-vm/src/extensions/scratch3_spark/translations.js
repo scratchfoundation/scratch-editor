@@ -50,13 +50,23 @@ module.exports = {
         // Story 4.5 — on-device AI (ai.classify)
         'spark.aiClassifyFace': 'ตรวจใบหน้า',
         'spark.aiClassifyColor': 'ตรวจสี [TARGET]',
-        'spark.aiClassifyMotion': 'ตรวจการเคลื่อนไหว',
-        'spark.aiClassifyImuGesture': 'ตรวจท่าทาง',
+        'spark.aiClassifyMotion': 'ตรวจการเคลื่อนไหว (ความไว [THRESHOLD])',
+        'spark.aiClassifyImuGesture': 'ตรวจท่าทาง [GESTURE]',
         'spark.aiConfidence': 'ความมั่นใจ AI',
+        'spark.aiBbox': 'กรอบ AI [FIELD]',
         'spark.aiColor.any': 'สีเด่น',
         'spark.aiColor.red': 'แดง',
         'spark.aiColor.green': 'เขียว',
         'spark.aiColor.blue': 'น้ำเงิน',
-        'spark.aiColor.yellow': 'เหลือง'
+        'spark.aiColor.yellow': 'เหลือง',
+        'spark.aiGesture.any': 'ท่าใดก็ได้',
+        'spark.aiGesture.shake': 'เขย่า',
+        'spark.aiGesture.tilt': 'เอียง',
+        'spark.aiGesture.flat': 'ราบ',
+        'spark.aiGesture.flip': 'พลิก',
+        'spark.aiBboxField.x': 'x',
+        'spark.aiBboxField.y': 'y',
+        'spark.aiBboxField.w': 'กว้าง',
+        'spark.aiBboxField.h': 'สูง'
     }
 };

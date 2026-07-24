@@ -88,6 +88,21 @@ const aiColorMenuItems = () => AI_COLOR_TARGETS.map(name => ({
     text: formatMessage({id: `spark.aiColor.${name}`, default: name, description: `AI color target ${name}`}),
     value: name
 }));
+// Story 4.5 — AI imu_gesture menu (single source; mirrors AI_COLOR_TARGETS). 'any' →
+// params.gesture:null (firmware recognizes any). Non-'any' values match the firmware
+// gesture_classify vocabulary (Story 4.2, incl. 'flip'). Add a gesture = one row here +
+// one `spark.aiGesture.<name>` line in translations.js.
+const AI_GESTURE_TARGETS = ['any', 'shake', 'tilt', 'flat', 'flip'];
+const aiGestureMenuItems = () => AI_GESTURE_TARGETS.map(name => ({
+    text: formatMessage({id: `spark.aiGesture.${name}`, default: name, description: `AI gesture target ${name}`}),
+    value: name
+}));
+// Story 4.5 — face bbox field accessor menu ([x,y,w,h] → one numeric field).
+const AI_BBOX_FIELDS = ['x', 'y', 'w', 'h'];
+const aiBboxMenuItems = () => AI_BBOX_FIELDS.map(name => ({
+    text: formatMessage({id: `spark.aiBboxField.${name}`, default: name, description: `AI bbox field ${name}`}),
+    value: name
+}));
 // Mock label returned by each AI reporter when the board can't run inference
 // (so a .scratch project keeps working / degrades gracefully — FR28).
 const AI_MOCK_LABEL = {
@@ -359,14 +374,22 @@ class SparkPeripheral {
     // one-shot Thai 'ai' toast (FR28 graceful degradation, never a Scratch error).
     _classify (primitive, params) {
         const mock = AI_MOCK_LABEL[primitive] ?? 'not_found';
-        if (!this.isConnected()) return Promise.resolve(mock);
+        // Cache the mock as the last result so the companion reporters
+        // (aiConfidence / aiBbox) stay coherent with the block that just ran —
+        // otherwise a degraded call leaves a previous success's confidence/bbox
+        // stale (Story 4.5 code-review, 2026-07-25).
+        const cacheMock = () => {
+            this._lastAi = {label: mock, confidence: 0, bbox: null, primitive};
+            return mock;
+        };
+        if (!this.isConnected()) return Promise.resolve(cacheMock());
         const fallback = resp => {
             if (!this._stubWarningShown.has('ai')) {
                 this._stubWarningShown.add('ai');
                 log.warn(`spark: ai_not_ready (${primitive}/${resp?.error_code ?? 'timeout'}) — mock label`);
                 this._showStubToast('ai');
             }
-            return mock;
+            return cacheMock();
         };
         return this.send('ai.classify', {primitive, params}).then(resp => {
             if (resp && resp.status === 'ok' && typeof resp.label === 'string') {
@@ -688,18 +711,24 @@ class Scratch3SparkBlocks {
                     blockType: BlockType.REPORTER,
                     text: formatMessage({
                         id: 'spark.aiClassifyMotion',
-                        default: 'detect motion',
+                        default: 'detect motion (sensitivity [THRESHOLD])',
                         description: 'AI: on-device motion detection (motion_detected/still)'
-                    })
+                    }),
+                    arguments: {
+                        THRESHOLD: {type: ArgumentType.NUMBER, defaultValue: 50}
+                    }
                 },
                 {
                     opcode: 'aiClassifyImuGesture',
                     blockType: BlockType.REPORTER,
                     text: formatMessage({
                         id: 'spark.aiClassifyImuGesture',
-                        default: 'detect gesture',
+                        default: 'detect gesture [GESTURE]',
                         description: 'AI: on-device IMU-gesture (the camera-free AI floor)'
-                    })
+                    }),
+                    arguments: {
+                        GESTURE: {type: ArgumentType.STRING, menu: 'aiGestures', defaultValue: 'any'}
+                    }
                 },
                 {
                     opcode: 'aiConfidence',
@@ -709,6 +738,18 @@ class Scratch3SparkBlocks {
                         default: 'AI confidence',
                         description: 'Confidence (0..1) of the last AI detection'
                     })
+                },
+                {
+                    opcode: 'aiBbox',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiBbox',
+                        default: 'AI box [FIELD]',
+                        description: 'Read x/y/w/h of the last AI detection bbox'
+                    }),
+                    arguments: {
+                        FIELD: {type: ArgumentType.STRING, menu: 'aiBboxFields', defaultValue: 'x'}
+                    }
                 }
             ],
             menus: {
@@ -780,6 +821,16 @@ class Scratch3SparkBlocks {
                 aiColorTargets: {
                     acceptReporters: true,
                     items: aiColorMenuItems()
+                },
+                // Story 4.5 — AI imu_gesture menu (single source: AI_GESTURE_TARGETS).
+                aiGestures: {
+                    acceptReporters: true,
+                    items: aiGestureMenuItems()
+                },
+                // Story 4.5 — face bbox field accessor menu (AI_BBOX_FIELDS).
+                aiBboxFields: {
+                    acceptReporters: false,
+                    items: aiBboxMenuItems()
                 }
             }
         };
@@ -954,14 +1005,26 @@ class Scratch3SparkBlocks {
         const target = args.TARGET === 'any' ? null : args.TARGET;
         return this._peripheral._classify('color', {target});
     }
-    aiClassifyMotion () {
-        return this._peripheral._classify('motion', {threshold_pct: 20});
+    aiClassifyMotion (args) {
+        // AC3: user-settable sensitivity, clamped 0..100 (default 50).
+        const raw = Math.round(Number(args.THRESHOLD));
+        const threshold = Number.isFinite(raw) ? Math.max(0, Math.min(100, raw)) : 50;
+        return this._peripheral._classify('motion', {threshold_pct: threshold});
     }
-    aiClassifyImuGesture () {
-        return this._peripheral._classify('imu_gesture', {gesture: null});
+    aiClassifyImuGesture (args) {
+        // AC3: 'any' → null (firmware recognizes any); else the selected gesture.
+        const gesture = args.GESTURE === 'any' ? null : args.GESTURE;
+        return this._peripheral._classify('imu_gesture', {gesture});
     }
     aiConfidence () {
         return this._peripheral._lastAi ? this._peripheral._lastAi.confidence : 0;
+    }
+    aiBbox (args) {
+        // AC4: read x/y/w/h of the last detection's bbox (0 when no bbox cached).
+        const bb = this._peripheral._lastAi && this._peripheral._lastAi.bbox;
+        if (!Array.isArray(bb)) return 0;
+        const idx = AI_BBOX_FIELDS.indexOf(args.FIELD);
+        return idx >= 0 && typeof bb[idx] === 'number' ? bb[idx] : 0;
     }
 }
 
