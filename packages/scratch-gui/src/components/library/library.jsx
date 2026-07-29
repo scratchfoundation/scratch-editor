@@ -11,6 +11,8 @@ import Divider from '../divider/divider.jsx';
 import Filter from '../filter/filter.jsx';
 import TagButton from '../../containers/tag-button.jsx';
 import {legacyConfig} from '../../legacy-config';
+import {buildLibraryAssetServiceUri} from '../../lib/library-asset-url.js';
+import {LibraryAssetConfigContext} from '../../contexts/library-asset-config-context.jsx';
 import Spinner from '../spinner/spinner.jsx';
 import {CATEGORIES} from '../../../src/lib/libraries/decks/index.jsx';
 
@@ -89,12 +91,13 @@ const getAssetTypeForFileExtension = function (fileExtension) {
  * Otherwise it'll return just one `imageSource`.
  * @param {object} item - either a library item or one of a library item's costumes.
  *   The latter is used internally as part of processing an animated thumbnail.
+ * @param {string} libraryAssetUrlTemplate - URL template for library thumbnail assets.
  * @returns {LibraryItem.PropTypes.icons} - an `imageSource` or array of them
  */
-const getItemIcons = function (item) {
+const getItemIcons = function (item, libraryAssetUrlTemplate) {
     const costumes = (item.json && item.json.costumes) || item.costumes;
     if (costumes) {
-        return costumes.map(getItemIcons);
+        return costumes.map(costume => getItemIcons(costume, libraryAssetUrlTemplate));
     }
 
     if (item.rawURL) {
@@ -107,7 +110,11 @@ const getItemIcons = function (item) {
         return {
             assetId: item.assetId,
             assetType: getAssetTypeForFileExtension(item.dataFormat),
-            assetServiceUri: `https://cdn.assets.scratch.mit.edu/internalapi/asset/${item.assetId}.${item.dataFormat}/get/`
+            assetServiceUri: buildLibraryAssetServiceUri(
+                libraryAssetUrlTemplate,
+                item.assetId,
+                item.dataFormat
+            )
         };
     }
 
@@ -117,7 +124,7 @@ const getItemIcons = function (item) {
         return {
             assetId: assetId,
             assetType: getAssetTypeForFileExtension(fileExtension),
-            assetServiceUri: `https://cdn.assets.scratch.mit.edu/internalapi/asset/${md5ext}/get/`
+            assetServiceUri: buildLibraryAssetServiceUri(libraryAssetUrlTemplate, md5ext)
         };
     }
 };
@@ -274,28 +281,34 @@ class LibraryComponent extends React.Component {
     }
     renderElement (data) {
         const key = this.constructKey(data);
-        const icons = getItemIcons(data);
-        return (<LibraryItem
-            bluetoothRequired={data.bluetoothRequired}
-            collaborator={data.collaborator}
-            description={data.description}
-            disabled={data.disabled}
-            extensionId={data.extensionId}
-            featured={data.featured}
-            hidden={data.hidden}
-            icons={icons}
-            id={key}
-            insetIconURL={data.insetIconURL}
-            internetConnectionRequired={data.internetConnectionRequired}
-            isPlaying={this.state.playingItem === key}
-            key={key}
-            name={data.name}
-            showPlayButton={this.props.showPlayButton}
-            onMouseEnter={this.handleMouseEnter}
-            onMouseLeave={this.handleMouseLeave}
-            onSelect={this.handleSelect}
-            isMemberOnly={data.isMemberOnly}
-        />);
+        return (
+            <LibraryAssetConfigContext.Consumer>
+                {({libraryAssetUrlTemplate}) => {
+                    const icons = getItemIcons(data, libraryAssetUrlTemplate);
+                    return (<LibraryItem
+                        bluetoothRequired={data.bluetoothRequired}
+                        collaborator={data.collaborator}
+                        description={data.description}
+                        disabled={data.disabled}
+                        extensionId={data.extensionId}
+                        featured={data.featured}
+                        hidden={data.hidden}
+                        icons={icons}
+                        id={key}
+                        insetIconURL={data.insetIconURL}
+                        internetConnectionRequired={data.internetConnectionRequired}
+                        isPlaying={this.state.playingItem === key}
+                        key={key}
+                        name={data.name}
+                        showPlayButton={this.props.showPlayButton}
+                        onMouseEnter={this.handleMouseEnter}
+                        onMouseLeave={this.handleMouseLeave}
+                        onSelect={this.handleSelect}
+                        isMemberOnly={data.isMemberOnly}
+                    />);
+                }}
+            </LibraryAssetConfigContext.Consumer>
+        );
     }
     renderData (data) {
         if (this.state.selectedTag !== ALL_TAG.tag || !this.props.withCategories) {
