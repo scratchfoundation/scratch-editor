@@ -168,15 +168,12 @@ describe('VMListenerHOC', () => {
             />
         );
 
-        // keydown with an HTML target (e.g. project title input) should not be forwarded to VM
-        const inputEl = document.createElement('input');
-        eventTriggers.keydown({key: 'A', target: inputEl});
+        // keyboard events in text inputs are ignored
+        eventTriggers.keydown({key: 'A', target: document.createElement('input')});
         expect(vm.postIOData).not.toHaveBeenLastCalledWith('keyboard', {key: 'A', isDown: true});
 
-        // keydown with an SVG target (Blockly workspace) should always be forwarded to VM
-        // even when a block has Blockly focus, so game controls work from the Code tab
-        const svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        eventTriggers.keydown({key: 'A', target: svgEl});
+        // keydown with other non-input targets are sent to the vm via postIOData
+        eventTriggers.keydown({key: 'A', target: document.createElement('div')});
         expect(vm.postIOData).toHaveBeenLastCalledWith('keyboard', {key: 'A', isDown: true});
 
         // keydown/up with target as the document are sent to the vm via postIOData
