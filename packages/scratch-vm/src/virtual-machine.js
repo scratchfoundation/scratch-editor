@@ -900,8 +900,9 @@ class VirtualMachine extends EventEmitter {
      * @param {!number} rotationCenterY y of point about which the costume rotates, relative to its upper left corner
      * @param {!number} bitmapResolution 1 for bitmaps that have 1 pixel per unit of stage,
      *     2 for double-resolution bitmaps
+     * @param {?string} provenance - an assetId of an asset that this one was based on
      */
-    updateBitmap (costumeIndex, bitmap, rotationCenterX, rotationCenterY, bitmapResolution) {
+    updateBitmap (costumeIndex, bitmap, rotationCenterX, rotationCenterY, bitmapResolution, provenance) {
         const costume = this.editingTarget.getCostumes()[costumeIndex];
         if (!(costume && this.runtime && this.runtime.renderer)) return;
         if (costume && costume.broken) delete costume.broken;
@@ -943,6 +944,7 @@ class VirtualMachine extends EventEmitter {
                     null, // id
                     true // generate md5
                 );
+                costume.asset.setProvenance(provenance);
                 costume.assetId = costume.asset.assetId;
                 costume.md5 = `${costume.assetId}.${costume.dataFormat}`;
                 this.emitTargetsUpdate();
@@ -960,8 +962,9 @@ class VirtualMachine extends EventEmitter {
      * @param {string} svg - new SVG for the renderer.
      * @param {number} rotationCenterX x of point about which the costume rotates, relative to its upper left corner
      * @param {number} rotationCenterY y of point about which the costume rotates, relative to its upper left corner
+     * @param {?string} provenance - an assetId of an asset that this one was based on
      */
-    updateSvg (costumeIndex, svg, rotationCenterX, rotationCenterY) {
+    updateSvg (costumeIndex, svg, rotationCenterX, rotationCenterY, provenance) {
         const costume = this.editingTarget.getCostumes()[costumeIndex];
         if (costume && costume.broken) delete costume.broken;
         if (costume && this.runtime && this.runtime.renderer) {
@@ -982,6 +985,7 @@ class VirtualMachine extends EventEmitter {
             null,
             true // generate md5
         );
+        costume.asset.setProvenance(provenance);
         costume.assetId = costume.asset.assetId;
         costume.md5 = `${costume.assetId}.${costume.dataFormat}`;
         this.emitTargetsUpdate();
