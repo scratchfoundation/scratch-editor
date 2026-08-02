@@ -83,8 +83,16 @@ const STUB_TOAST_TH = {
     tof: 'เซ็นเซอร์ระยะยังไม่พร้อม - แสดงค่าจำลอง 0',
     // Story 4.5 — AI (ai.classify) not ready on this board (no camera / model not
     // loaded / inference timeout). One-shot per session; reporter returns a mock label.
-    ai: 'AI ยังไม่พร้อม - แสดงผลจำลอง'
+    ai: 'AI ยังไม่พร้อม - แสดงผลจำลอง',
+    // Story 12.6 (FR45) — QR scanner not available on this board (no camera /
+    // capability). One-shot per session; the reporter returns '' (mock).
+    qr: 'เครื่องสแกน QR ยังไม่พร้อม - แสดงผลจำลอง'
 };
+
+// Story 12.6 (FR49 editor side) — one-shot hint when scanning is ON but nothing
+// has decoded for QR_HINT_MS; emitted on the same SPARK_STUB_WARNING bus.
+const QR_NO_DECODE_HINT_TH = 'ลองขยับการ์ดเข้าใกล้อีกนิด';
+const QR_HINT_MS = 5000;
 
 // Map a sensor family to its firmware threshold cmd (whenLoud/whenBright/whenNear).
 const SENSOR_THRESHOLD_CMD = {
@@ -162,6 +170,18 @@ class SparkPeripheral {
         // Story 4.5 — last ai.classify result {label, confidence, bbox, primitive};
         // the classify reporters return the label, aiConfidence reads confidence.
         this._lastAi = null;
+        // Story 12.6 (Epic 12 QR) — last decoded QR text (FR43 reporter cache;
+        // '' before any scan, reset on disconnect) + the most recent unconsumed
+        // sighting for the whenScanned HAT (FR42, edge-latch mirror of _shakeEdgeLatch).
+        this._lastScannedText = '';
+        this._qrPending = null;
+        // FR49 editor side — "nothing decoded for a while" one-shot hint bookkeeping.
+        this._qrHintTimer = null;
+        this._qrHintShown = false;
+        // Story 12.3 (FR48) — the board's announced capability Set, queried at
+        // connect. null = unknown/legacy firmware (pre-handshake) → blocks are NOT
+        // gated (backward compat); a Set that lacks 'qr_scan' → FR45 fallback.
+        this._capabilities = null;
         this._runtime.registerPeripheralExtension(extensionId, this);
     }
 
@@ -174,6 +194,7 @@ class SparkPeripheral {
         this._ws = new WebSocket(WS_URL);
         this._ws.onopen = () => {
             this._runtime.emit(this._runtime.constructor.PERIPHERAL_CONNECTED);
+            this._queryCapabilities(); // Story 12.3 — learn the board's feature set
         };
         this._ws.onmessage = evt => this._onMessage(evt);
         this._ws.onerror = () => this._handleDisconnect();
@@ -203,6 +224,13 @@ class SparkPeripheral {
         this._brightEdgeLatch = false;
         this._nearEdgeLatch = false;
         this._buttonEdgeLatch = {0: false, 1: false};
+        // Story 12.6 — clear the QR sighting latch + reset the reporter (FR43:
+        // reset on disconnect) + stop any pending decode-hint timer.
+        this._qrPending = null;
+        this._lastScannedText = '';
+        this._clearQrHintTimer();
+        // Story 12.3 — forget the announced capabilities; re-queried on reconnect.
+        this._capabilities = null;
     }
 
     // send(cmd, data) — wraps into {protocol, type, id, cmd, data} per middleware schema
@@ -272,6 +300,14 @@ class SparkPeripheral {
             this._brightEdgeLatch = true;
         } else if (msg.event === 'tof_near') {
             this._nearEdgeLatch = true;
+        } else if (msg.event === 'qr_seen') {
+            // Story 12.6 (FR42/FR43) — cache the latest text for the reporter and
+            // record the sighting for the whenScanned HAT (exact-match-after-trim,
+            // consumed once). Firmware enforces the 500 ms per-payload refractory.
+            const text = typeof msg.text === 'string' ? msg.text.trim() : '';
+            this._lastScannedText = text;
+            this._qrPending = {text};
+            this._noteQrDecode();
         }
     }
 
@@ -426,6 +462,50 @@ class SparkPeripheral {
         // plus a console fallback. The once-per-family-per-session discipline
         // is enforced by the caller's _stubWarningShown Set.
         this._runtime.emit('SPARK_STUB_WARNING', {text, family});
+    }
+
+    // Story 12.6 (FR49 editor) — one-shot "nothing decoded" hint while scanning.
+    // The timer is (re)armed when scanning turns on and cancelled by any decode;
+    // if it elapses first, the hint fires once. Same one-shot bus as the toasts.
+    _startQrHintTimer () {
+        this._clearQrHintTimer();
+        this._qrHintShown = false;
+        this._qrHintTimer = setTimeout(() => {
+            this._qrHintTimer = null;
+            if (!this._qrHintShown) {
+                this._qrHintShown = true;
+                this._runtime.emit('SPARK_STUB_WARNING', {text: QR_NO_DECODE_HINT_TH, family: 'qrHint'});
+            }
+        }, QR_HINT_MS);
+    }
+    _noteQrDecode () {
+        // A card decoded — cancel the pending "nothing decoded" hint.
+        this._clearQrHintTimer();
+    }
+    _clearQrHintTimer () {
+        if (this._qrHintTimer) {
+            clearTimeout(this._qrHintTimer);
+            this._qrHintTimer = null;
+        }
+    }
+
+    // Story 12.3 (FR48) — ask the board for its capability list at connect. A
+    // pre-handshake firmware answers invalid_cmd (or times out → null) → we stay
+    // in "unknown/legacy" mode and never gate a block (backward compatible).
+    _queryCapabilities () {
+        this.send('capabilities').then(resp => {
+            this._capabilities = (resp && resp.status === 'ok' && Array.isArray(resp.capabilities))
+                ? new Set(resp.capabilities)
+                : null;
+        }, () => {
+            this._capabilities = null;
+        });
+    }
+
+    // Story 12.3/12.6 — true only when the board announced its features AND the
+    // set lacks the queried capability. Unknown/legacy (null) → false (don't gate).
+    _lacksCapability (name) {
+        return this._capabilities !== null && !this._capabilities.has(name);
     }
 
     _handleDisconnect () {
@@ -773,6 +853,28 @@ class Scratch3SparkBlocks {
                     arguments: {
                         FIELD: {type: ArgumentType.STRING, menu: 'aiBboxFields', defaultValue: 'x'}
                     }
+                },
+                // ── QR card sensing (Epic 12 — Stories 12.4/12.6) ───
+                // Neutral primitives only: turn scanning on/off, a HAT that fires
+                // on a chosen text, and a reporter with the latest text. No game
+                // semantics, no card-name dropdown, no pack concept (FR44 design).
+                '---',
+                {
+                    opcode: 'setQrScan',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({id: 'spark.setQrScan', default: 'turn QR scanning [STATE]', description: 'Start/stop QR card scanning'}),
+                    arguments: {STATE: {type: ArgumentType.STRING, menu: 'qrScanState', defaultValue: 'on'}}
+                },
+                {
+                    opcode: 'whenScanned',
+                    blockType: BlockType.HAT,
+                    text: formatMessage({id: 'spark.whenScanned', default: 'when scanned [TEXT]', description: 'Hat: fires when a QR card with this exact text is scanned'}),
+                    arguments: {TEXT: {type: ArgumentType.STRING, defaultValue: 'เสือ'}}
+                },
+                {
+                    opcode: 'lastScannedText',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.lastScannedText', default: 'last scanned text', description: 'Reporter: the most recently decoded QR text (empty before any scan)'})
                 }
             ],
             menus: {
@@ -830,6 +932,14 @@ class Scratch3SparkBlocks {
                         {text: formatMessage({id: 'spark.sensorLevel.1', default: 'high', description: 'Sensor sensitivity level 1 (most sensitive)'}), value: '1'},
                         {text: formatMessage({id: 'spark.sensorLevel.2', default: 'medium', description: 'Sensor sensitivity level 2 (default)'}), value: '2'},
                         {text: formatMessage({id: 'spark.sensorLevel.3', default: 'low', description: 'Sensor sensitivity level 3 (least sensitive)'}), value: '3'}
+                    ]
+                },
+                // Story 12.6 — QR scanning on/off menu.
+                qrScanState: {
+                    acceptReporters: false,
+                    items: [
+                        {text: formatMessage({id: 'spark.qrScanState.on', default: 'on', description: 'Start QR scanning'}), value: 'on'},
+                        {text: formatMessage({id: 'spark.qrScanState.off', default: 'off', description: 'Stop QR scanning'}), value: 'off'}
                     ]
                 },
                 // Story 3.11 — orientation sensor-fusion algorithm for pitch/roll/yaw.
@@ -1062,6 +1172,58 @@ class Scratch3SparkBlocks {
         if (!Array.isArray(bb)) return 0;
         const idx = AI_BBOX_FIELDS.indexOf(args.FIELD);
         return idx >= 0 && typeof bb[idx] === 'number' ? bb[idx] : 0;
+    }
+
+    // ── QR card sensing (Epic 12 — Stories 12.4/12.6) ──────────────────────
+    setQrScan (args) {
+        // No board → no-op (no toast: "no scanner" is only meaningful on a
+        // connected board; mirrors the sensor reporters' isConnected guard).
+        if (!this._peripheral.isConnected()) return Promise.resolve(null);
+        // Story 12.3/FR45 — a board that announced its features but lacks qr_scan
+        // (e.g. camera-less substrate): one-shot Thai toast, no command sent. This
+        // is DISTINCT from the no-board case above (which is silent). A legacy
+        // board (capabilities unknown) falls through and relies on the response-
+        // based fallback below.
+        if (this._peripheral._lacksCapability('qr_scan')) {
+            if (!this._peripheral._stubWarningShown.has('qr')) {
+                this._peripheral._stubWarningShown.add('qr');
+                this._peripheral._showStubToast('qr');
+            }
+            return Promise.resolve(null);
+        }
+        const enable = args.STATE === 'on';
+        // Arm/cancel the FR49 "nothing decoded" hint alongside the command.
+        if (enable) this._peripheral._startQrHintTimer();
+        else this._peripheral._clearQrHintTimer();
+        return this._peripheral.send('qr_scan_enable', {enable}).then(resp => {
+            // FR45 — board without a working scanner (no camera / camera_error /
+            // hw_not_present): one-shot Thai toast, mock behavior (the reporter
+            // returns '' and the HAT stays inert). One .scratch works on both.
+            if (enable && (!resp || resp.status !== 'ok')) {
+                this._peripheral._clearQrHintTimer();
+                if (!this._peripheral._stubWarningShown.has('qr')) {
+                    this._peripheral._stubWarningShown.add('qr');
+                    this._peripheral._showStubToast('qr');
+                }
+            }
+            return resp;
+        }, () => {});
+    }
+    whenScanned (args) {
+        if (!this._peripheral.isConnected()) return false;
+        // FR42 — exact match after whitespace trim, consumed once per sighting
+        // (edge-latch, mirror of whenShake). Different targets don't fire.
+        const target = String(args.TEXT).trim();
+        const p = this._peripheral._qrPending;
+        if (p && p.text === target) {
+            this._peripheral._qrPending = null;
+            return true;
+        }
+        return false;
+    }
+    lastScannedText () {
+        // FR43 — synchronous cache like aiConfidence; '' before any scan.
+        return this._peripheral._lastScannedText;
     }
 }
 

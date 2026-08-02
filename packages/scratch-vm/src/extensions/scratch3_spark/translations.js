@@ -70,6 +70,12 @@ module.exports = {
         'spark.aiBboxField.x': 'x',
         'spark.aiBboxField.y': 'y',
         'spark.aiBboxField.w': 'กว้าง',
-        'spark.aiBboxField.h': 'สูง'
+        'spark.aiBboxField.h': 'สูง',
+        // Story 12.6 (Epic 12) — QR card sensing
+        'spark.setQrScan': 'เปิดการสแกน QR [STATE]',
+        'spark.qrScanState.on': 'เปิด',
+        'spark.qrScanState.off': 'ปิด',
+        'spark.whenScanned': 'เมื่อสแกนได้ [TEXT]',
+        'spark.lastScannedText': 'ข้อความที่สแกนล่าสุด'
     }
 };
