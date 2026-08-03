@@ -174,10 +174,19 @@ class SparkPeripheral {
         // '' before any scan, reset on disconnect) + the most recent unconsumed
         // sighting for the whenScanned HAT (FR42, edge-latch mirror of _shakeEdgeLatch).
         this._lastScannedText = '';
-        this._qrPending = null;
-        // FR49 editor side — "nothing decoded for a while" one-shot hint bookkeeping.
+        // 12-7 review P23: a short QUEUE of unconsumed sightings (two decodes
+        // inside one VM tick used to overwrite each other). Each entry
+        // {text (trimmed, for FR42 matching), stepMs (VM step that first saw it,
+        // null until polled)} — see whenScanned for the per-step latch (P22).
+        this._qrSightings = [];
+        // FR49 editor side — "nothing decoded for a while" hint bookkeeping.
+        // One-shot PER SESSION (12-7 review P21, matching the sibling toasts);
+        // reset in _resetEdgeLatches, not per setQrScan call.
         this._qrHintTimer = null;
         this._qrHintShown = false;
+        // 12-7 review P17 — generation token: a capabilities settlement from a
+        // dead session must not stomp the fresh session's Set.
+        this._capsGen = 0;
         // Story 12.3 (FR48) — the board's announced capability Set, queried at
         // connect. null = unknown/legacy firmware (pre-handshake) → blocks are NOT
         // gated (backward compat); a Set that lacks 'qr_scan' → FR45 fallback.
@@ -224,12 +233,16 @@ class SparkPeripheral {
         this._brightEdgeLatch = false;
         this._nearEdgeLatch = false;
         this._buttonEdgeLatch = {0: false, 1: false};
-        // Story 12.6 — clear the QR sighting latch + reset the reporter (FR43:
-        // reset on disconnect) + stop any pending decode-hint timer.
-        this._qrPending = null;
+        // Story 12.6 — clear the QR sightings + reset the reporter (FR43:
+        // reset on disconnect) + stop any pending decode-hint timer, and re-arm
+        // the once-per-session hint (12-7 review P21).
+        this._qrSightings = [];
         this._lastScannedText = '';
         this._clearQrHintTimer();
+        this._qrHintShown = false;
         // Story 12.3 — forget the announced capabilities; re-queried on reconnect.
+        // Bumping the generation token invalidates any in-flight query (P17).
+        this._capsGen++;
         this._capabilities = null;
     }
 
@@ -301,13 +314,21 @@ class SparkPeripheral {
         } else if (msg.event === 'tof_near') {
             this._nearEdgeLatch = true;
         } else if (msg.event === 'qr_seen') {
-            // Story 12.6 (FR42/FR43) — cache the latest text for the reporter and
-            // record the sighting for the whenScanned HAT (exact-match-after-trim,
-            // consumed once). Firmware enforces the 500 ms per-payload refractory.
-            const text = typeof msg.text === 'string' ? msg.text.trim() : '';
-            this._lastScannedText = text;
-            this._qrPending = {text};
-            this._noteQrDecode();
+            // Story 12.6 (FR42/FR43), reworked by the 12-7 review:
+            //   P20 — the reporter caches the RAW payload (FR43 says "the latest
+            //         scanned text"; trimming is a HAT-matching concern only)
+            //   P12 — whitespace-only payloads are junk: no cache, no latch (a
+            //         blank-target HAT must not fire on them)
+            //   P23 — sightings queue so two decodes inside one VM tick both
+            //         reach their HATs. Firmware enforces leave-and-return.
+            const raw = typeof msg.text === 'string' ? msg.text : '';
+            const trimmed = raw.trim();
+            if (trimmed !== '') {
+                this._lastScannedText = raw;
+                this._qrSightings.push({text: trimmed, stepMs: null});
+                if (this._qrSightings.length > 4) this._qrSightings.shift();
+                this._noteQrDecode();
+            }
         }
     }
 
@@ -469,7 +490,8 @@ class SparkPeripheral {
     // if it elapses first, the hint fires once. Same one-shot bus as the toasts.
     _startQrHintTimer () {
         this._clearQrHintTimer();
-        this._qrHintShown = false;
+        // NB: _qrHintShown is NOT reset here — the hint is one-shot per session
+        // (12-7 review P21), re-armed only by _resetEdgeLatches on disconnect.
         this._qrHintTimer = setTimeout(() => {
             this._qrHintTimer = null;
             if (!this._qrHintShown) {
@@ -493,11 +515,14 @@ class SparkPeripheral {
     // pre-handshake firmware answers invalid_cmd (or times out → null) → we stay
     // in "unknown/legacy" mode and never gate a block (backward compatible).
     _queryCapabilities () {
+        const gen = ++this._capsGen; // 12-7 review P17
         this.send('capabilities').then(resp => {
+            if (gen !== this._capsGen) return; // stale settlement from a dead session
             this._capabilities = (resp && resp.status === 'ok' && Array.isArray(resp.capabilities))
                 ? new Set(resp.capabilities)
                 : null;
         }, () => {
+            if (gen !== this._capsGen) return;
             this._capabilities = null;
         });
     }
@@ -1207,19 +1232,32 @@ class Scratch3SparkBlocks {
                 }
             }
             return resp;
-        }, () => {});
+        }, () => {
+            // 12-7 review P9: the send rejected (no_transport / timeout / WS
+            // drop) — scanning never started, so the armed 5 s hint would fire
+            // for a scan that is not running.
+            this._peripheral._clearQrHintTimer();
+        });
     }
     whenScanned (args) {
         if (!this._peripheral.isConnected()) return false;
-        // FR42 — exact match after whitespace trim, consumed once per sighting
-        // (edge-latch, mirror of whenShake). Different targets don't fire.
-        const target = String(args.TEXT).trim();
-        const p = this._peripheral._qrPending;
-        if (p && p.text === target) {
-            this._peripheral._qrPending = null;
-            return true;
+        // FR42 — exact match after whitespace trim. 12-7 review P22/P23: the
+        // latch clears per VM STEP, not per first consumer — every duplicate
+        // HAT polled within the same step sees the sighting; it expires when a
+        // LATER step polls. (runtime.currentMSecs is stamped once per step.)
+        const sightings = this._peripheral._qrSightings;
+        if (sightings.length === 0) return false;
+        const cur = this._peripheral._runtime.currentMSecs;
+        for (let i = sightings.length - 1; i >= 0; i--) {
+            if (sightings[i].stepMs !== null && sightings[i].stepMs !== cur) {
+                sightings.splice(i, 1); // consumed in an earlier step — expired
+            }
         }
-        return false;
+        const target = String(args.TEXT).trim();
+        const hit = sightings.find(sighting => sighting.text === target);
+        if (!hit) return false;
+        if (hit.stepMs === null) hit.stepMs = cur; // latch for the rest of this step
+        return true;
     }
     lastScannedText () {
         // FR43 — synchronous cache like aiConfidence; '' before any scan.

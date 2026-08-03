@@ -1,8 +1,9 @@
 // extension_spark_qr.js — Story 12.6 QR card-sensing Scratch blocks.
 // Drives the opcode handlers + the qr_seen event path against a stubbed
 // peripheral.send (no real socket): the qr_scan_enable wire shape, the
-// whenScanned edge-latch (exact-after-trim, once per sighting), the
-// lastScannedText reporter cache/reset, and the FR45 one-shot fallback toast.
+// whenScanned per-STEP edge-latch (exact-after-trim; every duplicate HAT in
+// the same VM step fires — 12-7 review P22/P23), the lastScannedText reporter
+// RAW cache/reset (P20), and the FR45 one-shot fallback toast.
 const test = require('tap').test;
 const Scratch3SparkBlocks = require('../../src/extensions/scratch3_spark/index.js');
 const translations = require('../../src/extensions/scratch3_spark/translations.js');
@@ -12,7 +13,10 @@ const makeExt = (opts = {}) => {
     const runtime = {
         registerPeripheralExtension: () => {},
         emit: (ev, payload) => emits.push({ev, payload}),
-        constructor: {PERIPHERAL_CONNECTED: 'c', PERIPHERAL_DISCONNECTED: 'd'}
+        constructor: {PERIPHERAL_CONNECTED: 'c', PERIPHERAL_DISCONNECTED: 'd'},
+        // the real Runtime stamps currentMSecs once per _step; whenScanned's
+        // per-step latch (12-7 P22) keys off it. Tests advance it manually.
+        currentMSecs: 1000
     };
     const ext = new Scratch3SparkBlocks(runtime);
     const sent = [];
@@ -54,23 +58,50 @@ test('setQrScan on/off sends qr_scan_enable {enable}', async t => {
     t.end();
 });
 
-test('lastScannedText is empty before any scan; caches the trimmed payload after qr_seen', t => {
+test('lastScannedText is empty before any scan; caches the RAW payload after qr_seen (12-7 P20)', t => {
     const {ext} = makeExt();
     t.equal(ext.lastScannedText(), '', 'empty before first scan');
     ext._peripheral._onEvent({event: 'qr_seen', text: '  เสือ  '});
-    t.equal(ext.lastScannedText(), 'เสือ', 'trimmed cache');
+    t.equal(ext.lastScannedText(), '  เสือ  ', 'raw cache — FR43 gives the student the text as scanned');
     t.end();
 });
 
-test('whenScanned fires exactly once for the matching trimmed text, not for others', t => {
+test('whitespace-only qr_seen is junk: no cache, no latch (12-7 P12)', t => {
     const {ext} = makeExt();
+    ext._peripheral._onEvent({event: 'qr_seen', text: '   '});
+    t.equal(ext.lastScannedText(), '', 'reporter unchanged');
+    t.equal(ext.whenScanned({TEXT: ''}), false, 'blank-target HAT does not fire on junk');
+    t.end();
+});
+
+test('whenScanned: per-step latch — duplicates fire in the SAME step, expires on a later step (12-7 P22)', t => {
+    const {ext} = makeExt();
+    const rt = ext._peripheral._runtime;
     ext._peripheral._onEvent({event: 'qr_seen', text: 'เสือ'});
-    t.equal(ext.whenScanned({TEXT: '  เสือ  '}), true, 'matches after trim, fires once');
-    t.equal(ext.whenScanned({TEXT: 'เสือ'}), false, 'consumed — does not re-fire on the same sighting');
+    rt.currentMSecs = 2000; // step N
+    t.equal(ext.whenScanned({TEXT: '  เสือ  '}), true, 'matches after trim');
+    t.equal(ext.whenScanned({TEXT: 'เสือ'}), true, 'duplicate HAT in the SAME step also fires');
+    rt.currentMSecs = 2033; // step N+1
+    t.equal(ext.whenScanned({TEXT: 'เสือ'}), false, 'expired on the next step — one sighting, one step');
     // a different card
     ext._peripheral._onEvent({event: 'qr_seen', text: 'ช้าง'});
+    rt.currentMSecs = 2066;
     t.equal(ext.whenScanned({TEXT: 'เสือ'}), false, 'other HAT does not fire for a different card');
     t.equal(ext.whenScanned({TEXT: 'ช้าง'}), true, 'the matching HAT fires');
+    t.end();
+});
+
+test('two qr_seen inside one VM tick: BOTH sightings reach their HATs (12-7 P23)', t => {
+    const {ext} = makeExt();
+    const rt = ext._peripheral._runtime;
+    ext._peripheral._onEvent({event: 'qr_seen', text: 'เสือ'});
+    ext._peripheral._onEvent({event: 'qr_seen', text: 'ช้าง'});
+    rt.currentMSecs = 3000;
+    t.equal(ext.whenScanned({TEXT: 'เสือ'}), true, 'first sighting not overwritten');
+    t.equal(ext.whenScanned({TEXT: 'ช้าง'}), true, 'second sighting fires too');
+    rt.currentMSecs = 3033;
+    t.equal(ext.whenScanned({TEXT: 'เสือ'}), false, 'both expired next step');
+    t.equal(ext.whenScanned({TEXT: 'ช้าง'}), false, 'both expired next step');
     t.end();
 });
 
