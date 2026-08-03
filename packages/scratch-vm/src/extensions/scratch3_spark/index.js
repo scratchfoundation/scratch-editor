@@ -730,7 +730,7 @@ class Scratch3SparkBlocks {
                 {
                     opcode: 'micLevel',
                     blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.micLevel', default: 'sound level', description: 'Mic level reporter (RMS)'})
+                    text: formatMessage({id: 'spark.micLevel', default: 'sound level', description: 'Mic level reporter (0..100 sound level, dB-mapped from the mic RMS in firmware)'})
                 },
                 {
                     opcode: 'setMicThreshold',
