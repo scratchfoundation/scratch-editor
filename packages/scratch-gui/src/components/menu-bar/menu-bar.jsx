@@ -544,7 +544,7 @@ class MenuBar extends React.Component {
                                         onClick={this.props.onOpenRegistration}
                                     >
                                         <FormattedMessage
-                                            defaultMessage="Join Scratch"
+                                            defaultMessage="Join MillieMod"
                                             description="Link for creating a Scratch account"
                                             id="gui.menuBar.joinScratch"
                                         />
