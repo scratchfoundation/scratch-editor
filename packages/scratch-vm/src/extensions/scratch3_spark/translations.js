@@ -10,7 +10,6 @@ module.exports = {
         'spark.isButtonPressed': 'กดปุ่ม [BTN] อยู่?',
         'spark.playTone': 'เล่นโน้ต [FREQ] Hz นาน [DUR] ms',
         'spark.stopBuzzer': 'หยุดเสียงบัซเซอร์',
-        'spark.capturePhoto': 'ถ่ายภาพมาที่สเตจ',
         'spark.color.red': 'แดง',
         'spark.color.green': 'เขียว',
         'spark.color.amber': 'อำพัน',

@@ -818,13 +818,14 @@ class Scratch3SparkBlocks {
                 // ══ major break: SENSORS → CAMERA (M3 module, delivered later) ══
                 '---',
                 '---',
-                // ── Camera (M3 — not in the M2 deliverable) ─────────
-                {
-                    opcode: 'capturePhoto',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({id: 'spark.capturePhoto', default: 'capture photo to stage', description: 'Capture camera image to stage'})
-                },
-                '---',
+                // The `capture photo to stage` block was removed 2026-08-06 (code review
+                // of Story 15.2). It emitted `cmd:'capture'`, which no middleware or
+                // firmware handler has ever implemented — the block sat in the palette
+                // doing nothing, while comments elsewhere cited it as a privacy control
+                // that was "disabled on purpose". It was neither implemented nor gated,
+                // and would have inherited no protection the day someone implemented it.
+                // Moving image pixels off the board is a teacher-panel path
+                // (`camPreview`, TEACHER_ONLY_CMDS), not a project-reachable block.
                 // ── On-device AI (ai.classify — Stories 4.2/4.3/4.4 firmware) ───────
                 // REPORTERS returning the inference label; aiConfidence reads the last
                 // result's confidence. On a board that can't run a primitive the reporter
@@ -1184,23 +1185,6 @@ class Scratch3SparkBlocks {
     }
     setTofThreshold (args) {
         return this._peripheral._setSensorThreshold('tof', parseInt(args.LEVEL, 10));
-    }
-
-    capturePhoto () {
-        return this._peripheral.send('capture', {}).then(resp => {
-            if (!resp || resp.status !== 'ok' || !resp.url) return;
-            return fetch(resp.url)
-                .then(r => r.blob())
-                .then(blob => new Promise(resolve => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.readAsDataURL(blob);
-                }))
-                .then(dataURI => {
-                    this.runtime.emit('SPARK_CAMERA_FRAME', dataURI);
-                })
-                .catch(err => log.warn('Spark camera capture failed:', err));
-        });
     }
 
     // ── On-device AI (ai.classify) — Story 4.5. Each reporter returns the inference

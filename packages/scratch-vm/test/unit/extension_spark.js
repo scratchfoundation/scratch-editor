@@ -65,10 +65,15 @@ test('getInfo contains Buzzer blocks', t => {
     t.end();
 });
 
-test('getInfo contains Camera blocks', t => {
+// Removed 2026-08-06 (code review of Story 15.2): `capturePhoto` emitted `cmd:'capture'`,
+// which no middleware or firmware handler ever implemented, and it was cited elsewhere as
+// a privacy control it never was. Pinned as ABSENT so it cannot drift back in without a
+// decision — moving image pixels off the board is a teacher-panel path, not a block.
+test('the never-implemented capturePhoto block is not in the palette', t => {
     const info = ext.getInfo();
     const opcodes = info.blocks.filter(b => typeof b === 'object').map(b => b.opcode);
-    t.ok(opcodes.includes('capturePhoto'), 'has capturePhoto');
+    t.notOk(opcodes.includes('capturePhoto'), 'capturePhoto is gone');
+    t.equal(typeof ext.capturePhoto, 'undefined', 'and so is its handler');
     t.end();
 });
 
