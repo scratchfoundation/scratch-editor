@@ -1,58 +1,74 @@
-$ui-primary: hsla(215, 100%, 95%, 1); /* #E5F0FF */
-$ui-secondary: hsla(215, 75%, 95%, 1); /* #E9F1FC */
-$ui-tertiary: hsla(215, 50%, 90%, 1); /* #D9E3F2 */
-
-$ui-modal-overlay: hsla(215, 100%, 65%, 0.9); /* 90% transparent version of motion-primary */
-$ui-alert-overlay: hsla(215, 100%, 65%, 0.4); /* 40% transparent version of motion-primary */
-
+/* ==========================================================================
+   1. BASE UI & BRANDING THEME (ORANGE / GINGER)
+   ========================================================================== */
+$ui-primary: hsla(28, 100%, 95%, 1); /* Cream white background */
+$ui-secondary: hsla(28, 75%, 95%, 1); /* Soft warm cream */
+$ui-tertiary: hsla(28, 50%, 90%, 1); /* Light sandy beige */
+$ui-modal-overlay: hsla(28, 100%, 55%, 0.9); /* 90% transparent bright ginger orange */
+$ui-alert-overlay: hsla(28, 100%, 55%, 0.4); /* 40% transparent bright ginger orange */
 $ui-white: hsla(0, 100%, 100%, 1); /* #FFFFFF */
 $ui-white-dim: hsla(0, 100%, 100%, 0.75); /* 25% transparent version of ui-white */
 $ui-white-transparent: hsla(0, 100%, 100%, 0.25); /* 25% transparent version of ui-white */
-$ui-transparent: hsla(0, 100%, 100%, 0); /* 25% transparent version of ui-white */
-
+$ui-transparent: hsla(0, 100%, 100%, 0); /* 100% transparent version of ui-white */
 $ui-black-transparent: hsla(0, 0%, 0%, 0.15); /* 15% transparent version of black */
 $ui-black-transparent-10: hsla(0, 0%, 0%, 0.10); /* 10% transparent version of black */
-
 $ui-black: hsla(0, 0%, 0%, 1); /* #000000 */
 
+/* ==========================================================================
+   2. CATEGORY BLOCK & ACCENT COLORS
+   ========================================================================== */
 $ui-green: hsla(163, 85%, 35%, 1); /* #0DA57A */
 $ui-green-2: hsla(163, 85%, 40%, 1); /* #0FBD8C */
+$ui-orange: hsla(15, 96%, 50%, 1); /* Deep rust / orange tabby stripe */
+$ui-alert-orange: hsla(15, 100%, 94%, 1); /* Soft peach alert background */
+$text-primary: hsla(25, 25%, 30%, 1); /* Deep warm charcoal / dark brown fur tone */
+$text-primary-transparent: hsla(25, 25%, 30%, 0.75);
 
-$ui-orange: hsla(37, 96%, 55%, 1); /* #FAA51D */
-$ui-alert-orange: hsla(32, 100%, 94%, 1); /* #FFF0DF */
-$text-primary: hsla(225, 15%, 40%, 1); /* #575E75 */
-$text-primary-transparent: hsla(225, 15%, 40%, 0.75);
+/* Category: Motion */
+$motion-primary: hsla(28, 100%, 55%, 1); /* Vibrant ginger orange */
+$motion-tertiary: hsla(20, 80%, 45%, 1); /* Deep marmalade orange */
 
-$motion-primary: hsla(215, 100%, 65%, 1); /* #4C97FF */
-$motion-tertiary: hsla(215, 60%, 50%, 1); /* #3373CC */
+/* Category: Looks (Remapped from pink to matching Orange tones) */
+$looks-secondary: hsla(28, 100%, 55%, 1); 
+$looks-transparent: hsla(28, 100%, 55%, 0.35); 
+$looks-light-transparent: hsla(28, 100%, 55%, 0.15); 
+$looks-secondary-dark: hsla(20, 80%, 45%, 1); 
 
-$looks-secondary: hsla(260, 60%, 60%, 1); /* #855CD6 */
-$looks-transparent: hsla(260, 60%, 60%, 0.35); /* 35% transparent version of looks-tertiary */
-$looks-light-transparent: hsla(260, 60%, 60%, 0.15); /* 15% transparent version of looks-tertiary */
-$looks-secondary-dark: 	hsla(260, 42%, 51%, 1); /* #714EB6 */
-
+/* Category: Events / Custom Red */
 $red-primary: hsla(20, 100%, 55%, 1); /* #FF661A */
 $red-tertiary: hsla(20, 100%, 45%, 1); /* #E64D00 */
 
+/* Category: Sound */
 $sound-primary: hsla(300, 53%, 60%, 1); /* #CF63CF */
 $sound-tertiary: hsla(300, 48%, 50%, 1); /* #BD42BD */
 
+/* Category: Control */
 $control-primary: hsla(38, 100%, 55%, 1); /* #FFAB19 */
 
-$data-primary: hsla(30, 100%, 55%, 1); /* #FF8C1A */
+/* Category: Variables / Data */
+$data-primary: hsla(30, 100%, 55%, 1);
 
-$pen-primary: hsla(163, 85%, 40%, 1); /* #0FBD8C */
-$pen-transparent: hsla(163, 85%, 40%, 0.25); /* #0FBD8C */
-$pen-tertiary: hsla(163, 86%, 30%, 1); /* #0B8E69 */
+/* ==========================================================================
+   3. BASE COMPONENT SYSTEM FALLBACKS
+   ========================================================================== */
+/* Extensions Category */
+$extensions-primary: hsla(185, 100%, 55%, 1);
+$extensions-light: hsla(185, 100%, 94%, 1);
+$extensions-tertiary: hsla(185, 100%, 45%, 1);
+$extensions-transparent: hsla(185, 100%, 55%, 0.25);
 
-$error-primary: hsla(30, 100%, 55%, 1); /* #FF8C1A */
-$error-light: hsla(30, 100%, 70%, 1); /* #FFB366 */
-$error-transparent: hsla(30, 100%, 55%, 0.25); /* #FF8C1A */
+/* Error UI states (Added error-transparent) */
+$error-primary: hsla(0, 100%, 55%, 1);
+$error-light: hsla(0, 100%, 94%, 1);
+$error-transparent: hsla(0, 100%, 55%, 0.25);
 
-$extensions-primary: hsla(163, 85%, 40%, 1); /* #0FBD8C */
-$extensions-tertiary: hsla(163, 85%, 30%, 1); /* #0B8E69 */
-$extensions-transparent: hsla(163, 85%, 40%, 0.35); /* 35% transparent version of extensions-primary */
-$extensions-light: hsla(163, 57%, 85%, 1); /* opaque version of extensions-transparent, on white bg */
+/* Pen / Extension Blocks (Added pen-transparent) */
+$pen-primary: hsla(165, 100%, 55%, 1);
+$pen-tertiary: hsla(165, 100%, 45%, 1);
+$pen-transparent: hsla(165, 100%, 55%, 0.25);
 
-$membership-blue: hsla(215, 60%, 46%, 1); /* #2F6ABC */
-$drop-highlight: hsla(215, 100%, 77%, 1); /* lighter than motion-primary */
+/* Drag & Drop highlighters */
+$drop-highlight: hsla(28, 100%, 55%, 0.3); /* Adjusted orange drag indicator tint */
+
+/* Account & Interface Extras */
+$membership-blue: hsla(215, 100%, 55%, 1);
