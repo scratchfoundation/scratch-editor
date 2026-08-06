@@ -52,6 +52,10 @@ module.exports = {
         'spark.sensorLevel.3': 'ต่ำ',
         // Story 4.5 — on-device AI (ai.classify)
         'spark.aiClassifyFace': 'ตรวจใบหน้า',
+        // Story 4.9: the '(~3 วินาที)' is part of the label on purpose. The block
+        // really does take about three seconds, and a child watching a sprite do
+        // nothing for that long will conclude the board is broken unless told.
+        'spark.aiClassifyFaceId': 'จำใบหน้าได้ (~3 วินาที)',
         'spark.aiClassifyColor': 'ตรวจสี [TARGET]',
         'spark.aiClassifyMotion': 'ตรวจการเคลื่อนไหว (ความไว [THRESHOLD])',
         'spark.aiClassifyImuGesture': 'ตรวจท่าทาง [GESTURE]',

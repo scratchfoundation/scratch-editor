@@ -130,8 +130,20 @@ const AI_MOCK_LABEL = {
     face: 'face_count_0',
     color: 'not_found',
     motion: 'still',
-    imu_gesture: 'none'
+    imu_gesture: 'none',
+    // Story 4.9: degrading to 'person_none' means a project written against face_id
+    // behaves on a board without the capability exactly as it does when nobody is
+    // enrolled — "I don't recognise anyone" — rather than erroring (FR28).
+    face_id: 'person_none'
 };
+
+// Story 4.9 (FR58): per-primitive block timeout. face_id runs a second model after
+// detection and measured ~2.75 s on board v2 (bench 2026-08-06, worst 2,832 ms; the
+// agreed budget is p95 < 3,500 ms). 8 s is deliberately LONGER than the middleware's
+// 6 s router timeout for this primitive, so a slow board produces a real error
+// response that the block can degrade on, instead of the block giving up first and
+// leaving the middleware talking to itself.
+const AI_TIMEOUT_MS = {face_id: 8000};
 
 class SparkPeripheral {
     constructor (runtime, extensionId) {
@@ -247,7 +259,11 @@ class SparkPeripheral {
     }
 
     // send(cmd, data) — wraps into {protocol, type, id, cmd, data} per middleware schema
-    send (cmd, data = {}) {
+    // `timeoutMs` defaults to the 3 s that suits every sensor read. Story 4.9's
+    // face_id needs more: recognition measured ~2.75 s on hardware (worst 2,832 ms),
+    // so the 3 s default left ~170 ms of margin and would have timed out
+    // intermittently — showing a mock label as if the board had answered.
+    send (cmd, data = {}, timeoutMs = 3000) {
         if (!this.isConnected()) return Promise.resolve(null);
         const id = Math.random().toString(36)
             .slice(2) + Date.now().toString(36);
@@ -256,7 +272,7 @@ class SparkPeripheral {
             const timer = setTimeout(() => {
                 this._pending.delete(id);
                 resolve(null);
-            }, 3000);
+            }, timeoutMs);
             this._pending.set(id, res => {
                 clearTimeout(timer);
                 resolve(res);
@@ -461,7 +477,7 @@ class SparkPeripheral {
             }
             return cacheMock();
         };
-        return this.send('ai.classify', {primitive, params}).then(resp => {
+        return this.send('ai.classify', {primitive, params}, AI_TIMEOUT_MS[primitive] ?? 3000).then(resp => {
             if (resp && resp.status === 'ok' && typeof resp.label === 'string') {
                 this._lastAi = {
                     label: resp.label,
@@ -859,6 +875,26 @@ class Scratch3SparkBlocks {
                     }
                 },
                 {
+                    // Story 4.9 (FR58). Returns an OPAQUE slot label — person_1..person_10,
+                    // or person_none. Never a human name: a name typed into a block would
+                    // travel inside the .sb3 file children share with each other.
+                    //
+                    // Enrolment is NOT a block. It lives in the teacher's Advanced panel
+                    // and the middleware refuses faceEnroll/faceForget on this channel, so
+                    // a project can ask "who is this?" but can never add anyone.
+                    //
+                    // This block takes ~3 s to answer (the recognition model runs after
+                    // detection). That is expected, not a hang — see the Thai label, which
+                    // says so, and Story 4.9 AC3's 3,500 ms budget.
+                    opcode: 'aiClassifyFaceId',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiClassifyFaceId',
+                        default: 'recognise face (takes ~3s)',
+                        description: 'AI: on-device face recognition against teacher-enrolled slots'
+                    })
+                },
+                {
                     opcode: 'aiConfidence',
                     blockType: BlockType.REPORTER,
                     text: formatMessage({
@@ -1172,6 +1208,12 @@ class Scratch3SparkBlocks {
     //    that can't run the primitive (FR28). aiConfidence reads the last result. ──
     aiClassifyFace () {
         return this._peripheral._classify('face', {});
+    }
+    aiClassifyFaceId () {
+        // No arguments by design: the only question a project may ask is "which
+        // enrolled slot is this?". Anything that would let a block choose or name a
+        // person belongs in the teacher panel, not here.
+        return this._peripheral._classify('face_id', {});
     }
     aiClassifyColor (args) {
         const target = args.TARGET === 'any' ? null : args.TARGET;
