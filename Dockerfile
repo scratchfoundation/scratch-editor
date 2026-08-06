@@ -62,6 +62,11 @@ COPY --from=builder /src/packages/scratch-gui/build/chunks/ /usr/share/nginx/htm
 COPY --from=builder /src/packages/scratch-gui/build/static/ /usr/share/nginx/html/static/
 COPY --from=builder /src/VERSION /usr/share/nginx/html/VERSION
 
+# Story 7.6: firmware update artifacts (firmware/manifest.json + .bin) — generated in the
+# BUILD CONTEXT by scripts/fetch-firmware.sh (the deploy-uat fetch step), so copy from context,
+# NOT --from=builder. Baked so the same nginx serves /firmware/ alongside Scratch (one host).
+COPY firmware/ /usr/share/nginx/html/firmware/
+
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 # Flat path under /usr/share/ — avoids /etc/nginx/templates/ (the base image's
 # 20-envsubst-on-templates.sh would render anything in there to the wrong

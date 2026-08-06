@@ -43,7 +43,7 @@ const POLL_INTERVAL_MS = 30;
 const LED_COLOR_MAP = {
     red: {r: 255, g: 0, b: 0},
     green: {r: 0, g: 255, b: 0},
-    amber: {r: 255, g: 191, b: 0},
+    amber: {r: 100, g: 255, b: 0},   // bench-tuned for the red+green LED (2026-05-17); NOT web-amber {255,191,0}, which reads too red on this hardware
     off: {r: 0, g: 0, b: 0}
 };
 const LED_COLOR_NAMES = Object.keys(LED_COLOR_MAP);
@@ -54,6 +54,19 @@ const ledColorMenuItems = () => LED_COLOR_NAMES.map(name => ({
         description: `LED color ${name}`
     }),
     value: name
+}));
+
+// Story 2.8 — which physical LED to address (single source). 'both' → no wire
+// `index` field (drives both LEDs, backward-compatible); 'led1'/'led2' → the
+// firmware's optional `index` 0/1. The board has two bi-color LEDs.
+const LED_TARGETS = [
+    {value: 'both', index: null},
+    {value: 'led1', index: 0},
+    {value: 'led2', index: 1}
+];
+const ledTargetMenuItems = () => LED_TARGETS.map(t => ({
+    text: formatMessage({id: `spark.ledTarget.${t.value}`, default: t.value, description: `LED target ${t.value}`}),
+    value: t.value
 }));
 
 const SparkButton = {A: 'A', B: 'B'};
@@ -67,8 +80,19 @@ const SparkButton = {A: 'A', B: 'B'};
 const STUB_TOAST_TH = {
     mic: 'ไมโครโฟนยังไม่พร้อม - แสดงค่าจำลอง 0',
     light: 'เซ็นเซอร์แสงยังไม่พร้อม - แสดงค่าจำลอง 0',
-    tof: 'เซ็นเซอร์ระยะยังไม่พร้อม - แสดงค่าจำลอง 0'
+    tof: 'เซ็นเซอร์ระยะยังไม่พร้อม - แสดงค่าจำลอง 0',
+    // Story 4.5 — AI (ai.classify) not ready on this board (no camera / model not
+    // loaded / inference timeout). One-shot per session; reporter returns a mock label.
+    ai: 'AI ยังไม่พร้อม - แสดงผลจำลอง',
+    // Story 12.6 (FR45) — QR scanner not available on this board (no camera /
+    // capability). One-shot per session; the reporter returns '' (mock).
+    qr: 'เครื่องสแกน QR ยังไม่พร้อม - แสดงผลจำลอง'
 };
+
+// Story 12.6 (FR49 editor side) — one-shot hint when scanning is ON but nothing
+// has decoded for QR_HINT_MS; emitted on the same SPARK_STUB_WARNING bus.
+const QR_NO_DECODE_HINT_TH = 'ลองขยับการ์ดเข้าใกล้อีกนิด';
+const QR_HINT_MS = 5000;
 
 // Map a sensor family to its firmware threshold cmd (whenLoud/whenBright/whenNear).
 const SENSOR_THRESHOLD_CMD = {
@@ -76,6 +100,50 @@ const SENSOR_THRESHOLD_CMD = {
     light: 'set_light_threshold',
     tof: 'set_tof_threshold'
 };
+
+// Story 4.5 — AI color-target menu (single source, like LED_COLOR_MAP). 'any' →
+// params.target:null (firmware reports the dominant color). Add a target = one row
+// here + one `spark.aiColor.<name>` line in translations.js.
+const AI_COLOR_TARGETS = ['any', 'red', 'green', 'blue', 'yellow'];
+const aiColorMenuItems = () => AI_COLOR_TARGETS.map(name => ({
+    text: formatMessage({id: `spark.aiColor.${name}`, default: name, description: `AI color target ${name}`}),
+    value: name
+}));
+// Story 4.5 — AI imu_gesture menu (single source; mirrors AI_COLOR_TARGETS). 'any' →
+// params.gesture:null (firmware recognizes any). Non-'any' values match the firmware
+// gesture_classify vocabulary (Story 4.2, incl. 'flip'). Add a gesture = one row here +
+// one `spark.aiGesture.<name>` line in translations.js.
+const AI_GESTURE_TARGETS = ['any', 'shake', 'tilt', 'flat', 'flip'];
+const aiGestureMenuItems = () => AI_GESTURE_TARGETS.map(name => ({
+    text: formatMessage({id: `spark.aiGesture.${name}`, default: name, description: `AI gesture target ${name}`}),
+    value: name
+}));
+// Story 4.5 — face bbox field accessor menu ([x,y,w,h] → one numeric field).
+const AI_BBOX_FIELDS = ['x', 'y', 'w', 'h'];
+const aiBboxMenuItems = () => AI_BBOX_FIELDS.map(name => ({
+    text: formatMessage({id: `spark.aiBboxField.${name}`, default: name, description: `AI bbox field ${name}`}),
+    value: name
+}));
+// Mock label returned by each AI reporter when the board can't run inference
+// (so a .scratch project keeps working / degrades gracefully — FR28).
+const AI_MOCK_LABEL = {
+    face: 'face_count_0',
+    color: 'not_found',
+    motion: 'still',
+    imu_gesture: 'none',
+    // Story 4.9: degrading to 'person_none' means a project written against face_id
+    // behaves on a board without the capability exactly as it does when nobody is
+    // enrolled — "I don't recognise anyone" — rather than erroring (FR28).
+    face_id: 'person_none'
+};
+
+// Story 4.9 (FR58): per-primitive block timeout. face_id runs a second model after
+// detection and measured ~2.75 s on board v2 (bench 2026-08-06, worst 2,832 ms; the
+// agreed budget is p95 < 3,500 ms). 8 s is deliberately LONGER than the middleware's
+// 6 s router timeout for this primitive, so a slow board produces a real error
+// response that the block can degrade on, instead of the block giving up first and
+// leaving the middleware talking to itself.
+const AI_TIMEOUT_MS = {face_id: 8000};
 
 class SparkPeripheral {
     constructor (runtime, extensionId) {
@@ -111,6 +179,30 @@ class SparkPeripheral {
         // sensor-pending toast has already been shown this session. Cleared on
         // disconnect so a re-connect re-arms the one-shot warnings.
         this._stubWarningShown = new Set();
+        // Story 4.5 — last ai.classify result {label, confidence, bbox, primitive};
+        // the classify reporters return the label, aiConfidence reads confidence.
+        this._lastAi = null;
+        // Story 12.6 (Epic 12 QR) — last decoded QR text (FR43 reporter cache;
+        // '' before any scan, reset on disconnect) + the most recent unconsumed
+        // sighting for the whenScanned HAT (FR42, edge-latch mirror of _shakeEdgeLatch).
+        this._lastScannedText = '';
+        // 12-7 review P23: a short QUEUE of unconsumed sightings (two decodes
+        // inside one VM tick used to overwrite each other). Each entry
+        // {text (trimmed, for FR42 matching), stepMs (VM step that first saw it,
+        // null until polled)} — see whenScanned for the per-step latch (P22).
+        this._qrSightings = [];
+        // FR49 editor side — "nothing decoded for a while" hint bookkeeping.
+        // One-shot PER SESSION (12-7 review P21, matching the sibling toasts);
+        // reset in _resetEdgeLatches, not per setQrScan call.
+        this._qrHintTimer = null;
+        this._qrHintShown = false;
+        // 12-7 review P17 — generation token: a capabilities settlement from a
+        // dead session must not stomp the fresh session's Set.
+        this._capsGen = 0;
+        // Story 12.3 (FR48) — the board's announced capability Set, queried at
+        // connect. null = unknown/legacy firmware (pre-handshake) → blocks are NOT
+        // gated (backward compat); a Set that lacks 'qr_scan' → FR45 fallback.
+        this._capabilities = null;
         this._runtime.registerPeripheralExtension(extensionId, this);
     }
 
@@ -123,6 +215,7 @@ class SparkPeripheral {
         this._ws = new WebSocket(WS_URL);
         this._ws.onopen = () => {
             this._runtime.emit(this._runtime.constructor.PERIPHERAL_CONNECTED);
+            this._queryCapabilities(); // Story 12.3 — learn the board's feature set
         };
         this._ws.onmessage = evt => this._onMessage(evt);
         this._ws.onerror = () => this._handleDisconnect();
@@ -152,10 +245,25 @@ class SparkPeripheral {
         this._brightEdgeLatch = false;
         this._nearEdgeLatch = false;
         this._buttonEdgeLatch = {0: false, 1: false};
+        // Story 12.6 — clear the QR sightings + reset the reporter (FR43:
+        // reset on disconnect) + stop any pending decode-hint timer, and re-arm
+        // the once-per-session hint (12-7 review P21).
+        this._qrSightings = [];
+        this._lastScannedText = '';
+        this._clearQrHintTimer();
+        this._qrHintShown = false;
+        // Story 12.3 — forget the announced capabilities; re-queried on reconnect.
+        // Bumping the generation token invalidates any in-flight query (P17).
+        this._capsGen++;
+        this._capabilities = null;
     }
 
     // send(cmd, data) — wraps into {protocol, type, id, cmd, data} per middleware schema
-    send (cmd, data = {}) {
+    // `timeoutMs` defaults to the 3 s that suits every sensor read. Story 4.9's
+    // face_id needs more: recognition measured ~2.75 s on hardware (worst 2,832 ms),
+    // so the 3 s default left ~170 ms of margin and would have timed out
+    // intermittently — showing a mock label as if the board had answered.
+    send (cmd, data = {}, timeoutMs = 3000) {
         if (!this.isConnected()) return Promise.resolve(null);
         const id = Math.random().toString(36)
             .slice(2) + Date.now().toString(36);
@@ -164,7 +272,7 @@ class SparkPeripheral {
             const timer = setTimeout(() => {
                 this._pending.delete(id);
                 resolve(null);
-            }, 3000);
+            }, timeoutMs);
             this._pending.set(id, res => {
                 clearTimeout(timer);
                 resolve(res);
@@ -221,6 +329,22 @@ class SparkPeripheral {
             this._brightEdgeLatch = true;
         } else if (msg.event === 'tof_near') {
             this._nearEdgeLatch = true;
+        } else if (msg.event === 'qr_seen') {
+            // Story 12.6 (FR42/FR43), reworked by the 12-7 review:
+            //   P20 — the reporter caches the RAW payload (FR43 says "the latest
+            //         scanned text"; trimming is a HAT-matching concern only)
+            //   P12 — whitespace-only payloads are junk: no cache, no latch (a
+            //         blank-target HAT must not fire on them)
+            //   P23 — sightings queue so two decodes inside one VM tick both
+            //         reach their HATs. Firmware enforces leave-and-return.
+            const raw = typeof msg.text === 'string' ? msg.text : '';
+            const trimmed = raw.trim();
+            if (trimmed !== '') {
+                this._lastScannedText = raw;
+                this._qrSightings.push({text: trimmed, stepMs: null});
+                if (this._qrSightings.length > 4) this._qrSightings.shift();
+                this._noteQrDecode();
+            }
         }
     }
 
@@ -328,6 +452,45 @@ class SparkPeripheral {
         return this.send(cmd, {level});
     }
 
+    // Story 4.5 — run an ai.classify primitive. Sends {primitive, params}; on a
+    // success response caches {label, confidence, bbox} and returns the label.
+    // Branch on the RESPONSE (not a build flag) so one .scratch works everywhere:
+    // hw_not_present (no camera) / model_load_failed (primitive not built) /
+    // inference_timeout / null timeout → return the declared mock label + a
+    // one-shot Thai 'ai' toast (FR28 graceful degradation, never a Scratch error).
+    _classify (primitive, params) {
+        const mock = AI_MOCK_LABEL[primitive] ?? 'not_found';
+        // Cache the mock as the last result so the companion reporters
+        // (aiConfidence / aiBbox) stay coherent with the block that just ran —
+        // otherwise a degraded call leaves a previous success's confidence/bbox
+        // stale (Story 4.5 code-review, 2026-07-25).
+        const cacheMock = () => {
+            this._lastAi = {label: mock, confidence: 0, bbox: null, primitive};
+            return mock;
+        };
+        if (!this.isConnected()) return Promise.resolve(cacheMock());
+        const fallback = resp => {
+            if (!this._stubWarningShown.has('ai')) {
+                this._stubWarningShown.add('ai');
+                log.warn(`spark: ai_not_ready (${primitive}/${resp?.error_code ?? 'timeout'}) — mock label`);
+                this._showStubToast('ai');
+            }
+            return cacheMock();
+        };
+        return this.send('ai.classify', {primitive, params}, AI_TIMEOUT_MS[primitive] ?? 3000).then(resp => {
+            if (resp && resp.status === 'ok' && typeof resp.label === 'string') {
+                this._lastAi = {
+                    label: resp.label,
+                    confidence: typeof resp.confidence === 'number' ? resp.confidence : 0,
+                    bbox: Array.isArray(resp.bbox) ? resp.bbox : null,
+                    primitive
+                };
+                return resp.label;
+            }
+            return fallback(resp);
+        }, () => fallback(null));
+    }
+
     _showStubToast (family) {
         const text = STUB_TOAST_TH[family];
         if (!text) return;
@@ -336,6 +499,54 @@ class SparkPeripheral {
         // plus a console fallback. The once-per-family-per-session discipline
         // is enforced by the caller's _stubWarningShown Set.
         this._runtime.emit('SPARK_STUB_WARNING', {text, family});
+    }
+
+    // Story 12.6 (FR49 editor) — one-shot "nothing decoded" hint while scanning.
+    // The timer is (re)armed when scanning turns on and cancelled by any decode;
+    // if it elapses first, the hint fires once. Same one-shot bus as the toasts.
+    _startQrHintTimer () {
+        this._clearQrHintTimer();
+        // NB: _qrHintShown is NOT reset here — the hint is one-shot per session
+        // (12-7 review P21), re-armed only by _resetEdgeLatches on disconnect.
+        this._qrHintTimer = setTimeout(() => {
+            this._qrHintTimer = null;
+            if (!this._qrHintShown) {
+                this._qrHintShown = true;
+                this._runtime.emit('SPARK_STUB_WARNING', {text: QR_NO_DECODE_HINT_TH, family: 'qrHint'});
+            }
+        }, QR_HINT_MS);
+    }
+    _noteQrDecode () {
+        // A card decoded — cancel the pending "nothing decoded" hint.
+        this._clearQrHintTimer();
+    }
+    _clearQrHintTimer () {
+        if (this._qrHintTimer) {
+            clearTimeout(this._qrHintTimer);
+            this._qrHintTimer = null;
+        }
+    }
+
+    // Story 12.3 (FR48) — ask the board for its capability list at connect. A
+    // pre-handshake firmware answers invalid_cmd (or times out → null) → we stay
+    // in "unknown/legacy" mode and never gate a block (backward compatible).
+    _queryCapabilities () {
+        const gen = ++this._capsGen; // 12-7 review P17
+        this.send('capabilities').then(resp => {
+            if (gen !== this._capsGen) return; // stale settlement from a dead session
+            this._capabilities = (resp && resp.status === 'ok' && Array.isArray(resp.capabilities))
+                ? new Set(resp.capabilities)
+                : null;
+        }, () => {
+            if (gen !== this._capsGen) return;
+            this._capabilities = null;
+        });
+    }
+
+    // Story 12.3/12.6 — true only when the board announced its features AND the
+    // set lacks the queried capability. Unknown/legacy (null) → false (don't gate).
+    _lacksCapability (name) {
+        return this._capabilities !== null && !this._capabilities.has(name);
     }
 
     _handleDisconnect () {
@@ -370,12 +581,18 @@ class Scratch3SparkBlocks {
             name: formatMessage({id: 'spark.categoryName', default: 'Sparky', description: 'Extension name'}),
             showStatusButton: true,
             blocks: [
+                // ══ OUTPUTS ══════════════════════════════════════════
                 // ── LED ─────────────────────────────────────────────
                 {
                     opcode: 'setLedColor',
                     blockType: BlockType.COMMAND,
-                    text: formatMessage({id: 'spark.setLedColor', default: 'set LED color to [COLOR]', description: 'Set LED color'}),
+                    text: formatMessage({id: 'spark.setLedColor', default: 'set LED [WHICH] color to [COLOR]', description: 'Set LED color (which LED + color)'}),
                     arguments: {
+                        WHICH: {
+                            type: ArgumentType.STRING,
+                            menu: 'ledTargets',
+                            defaultValue: 'both'
+                        },
                         COLOR: {
                             type: ArgumentType.STRING,
                             menu: 'ledColors',
@@ -386,14 +603,37 @@ class Scratch3SparkBlocks {
                 {
                     opcode: 'setLedBrightness',
                     blockType: BlockType.COMMAND,
-                    text: formatMessage({id: 'spark.setLedBrightness', default: 'set LED brightness to [BRIGHTNESS]', description: 'Set LED brightness 0-255'}),
+                    text: formatMessage({id: 'spark.setLedBrightness', default: 'set LED [WHICH] brightness to [BRIGHTNESS]', description: 'Set LED brightness 0-255 (which LED + level)'}),
                     arguments: {
+                        WHICH: {
+                            type: ArgumentType.STRING,
+                            menu: 'ledTargets',
+                            defaultValue: 'both'
+                        },
                         BRIGHTNESS: {
                             type: ArgumentType.NUMBER,
                             defaultValue: 128
                         }
                     }
                 },
+                '---',
+                // ── Buzzer ──────────────────────────────────────────
+                {
+                    opcode: 'playTone',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({id: 'spark.playTone', default: 'play tone [FREQ] Hz for [DUR] ms', description: 'Play buzzer tone'}),
+                    arguments: {
+                        FREQ: {type: ArgumentType.NUMBER, defaultValue: 440},
+                        DUR: {type: ArgumentType.NUMBER, defaultValue: 500}
+                    }
+                },
+                {
+                    opcode: 'stopBuzzer',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({id: 'spark.stopBuzzer', default: 'stop buzzer', description: 'Stop buzzer'})
+                },
+                // ══ major break: OUTPUTS → SENSORS / INPUTS (double '---' = wider gap) ══
+                '---',
                 '---',
                 // ── Button ──────────────────────────────────────────
                 {
@@ -421,30 +661,7 @@ class Scratch3SparkBlocks {
                     }
                 },
                 '---',
-                // ── Buzzer ──────────────────────────────────────────
-                {
-                    opcode: 'playTone',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({id: 'spark.playTone', default: 'play tone [FREQ] Hz for [DUR] ms', description: 'Play buzzer tone'}),
-                    arguments: {
-                        FREQ: {type: ArgumentType.NUMBER, defaultValue: 440},
-                        DUR: {type: ArgumentType.NUMBER, defaultValue: 500}
-                    }
-                },
-                {
-                    opcode: 'stopBuzzer',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({id: 'spark.stopBuzzer', default: 'stop buzzer', description: 'Stop buzzer'})
-                },
-                '---',
-                // ── Camera ──────────────────────────────────────────
-                {
-                    opcode: 'capturePhoto',
-                    blockType: BlockType.COMMAND,
-                    text: formatMessage({id: 'spark.capturePhoto', default: 'capture photo to stage', description: 'Capture camera image to stage'})
-                },
-                '---',
-                // ── IMU ─────────────────────────────────────────────
+                // ── Motion · Accelerometer ──────────────────────────
                 {
                     opcode: 'imuAccelX',
                     blockType: BlockType.REPORTER,
@@ -460,6 +677,8 @@ class Scratch3SparkBlocks {
                     blockType: BlockType.REPORTER,
                     text: formatMessage({id: 'spark.imuAccelZ', default: 'accel Z', description: 'IMU accelerometer Z axis (g)'})
                 },
+                '---',
+                // ── Motion · Gyroscope ──────────────────────────────
                 {
                     opcode: 'imuGyroX',
                     blockType: BlockType.REPORTER,
@@ -475,6 +694,8 @@ class Scratch3SparkBlocks {
                     blockType: BlockType.REPORTER,
                     text: formatMessage({id: 'spark.imuGyroZ', default: 'gyro Z', description: 'IMU gyroscope Z axis (deg/s)'})
                 },
+                '---',
+                // ── Motion · Angle ──────────────────────────────────
                 {
                     opcode: 'imuPitch',
                     blockType: BlockType.REPORTER,
@@ -490,6 +711,17 @@ class Scratch3SparkBlocks {
                     opcode: 'imuYaw',
                     blockType: BlockType.REPORTER,
                     text: formatMessage({id: 'spark.imuYaw', default: 'yaw', description: 'IMU heading / yaw (degrees, -180..180)'})
+                },
+                '---',
+                // ── Motion · Shake gesture + Fusion (Story 3.3 / 3.11) ──
+                {
+                    opcode: 'whenShake',
+                    blockType: BlockType.HAT,
+                    text: formatMessage({
+                        id: 'spark.whenShake',
+                        default: 'when shaken',
+                        description: 'Hat: when board is shaken'
+                    })
                 },
                 {
                     // Story 3.11 — pick the orientation sensor-fusion algorithm.
@@ -507,17 +739,6 @@ class Scratch3SparkBlocks {
                             defaultValue: 'complementary'
                         }
                     }
-                },
-                '---',
-                // ── IMU gesture (Story 3.3) ────────────────────────
-                {
-                    opcode: 'whenShake',
-                    blockType: BlockType.HAT,
-                    text: formatMessage({
-                        id: 'spark.whenShake',
-                        default: 'when shaken',
-                        description: 'Hat: when board is shaken'
-                    })
                 },
                 {
                     opcode: 'setShakeSensitivity',
@@ -541,15 +762,16 @@ class Scratch3SparkBlocks {
                 // without it the reporters return mock 0 + a one-shot Thai
                 // toast and the HATs stay inert (firmware sends no events). The
                 // branch is on the response, so one .scratch works on both.
-                {
-                    opcode: 'micLevel',
-                    blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.micLevel', default: 'sound level', description: 'Mic level reporter (RMS)'})
-                },
+                // ── Sound (microphone) ──────────────────────────────
                 {
                     opcode: 'whenLoud',
                     blockType: BlockType.HAT,
                     text: formatMessage({id: 'spark.whenLoud', default: 'when loud', description: 'Hat: when a loud sound happens'})
+                },
+                {
+                    opcode: 'micLevel',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.micLevel', default: 'sound level', description: 'Mic level reporter (0..100 sound level, dB-mapped from the mic RMS in firmware)'})
                 },
                 {
                     opcode: 'setMicThreshold',
@@ -557,15 +779,17 @@ class Scratch3SparkBlocks {
                     text: formatMessage({id: 'spark.setMicThreshold', default: 'set loud sensitivity to [LEVEL]', description: 'Set whenLoud threshold level 1/2/3'}),
                     arguments: {LEVEL: {type: ArgumentType.STRING, menu: 'sensorLevels', defaultValue: '2'}}
                 },
-                {
-                    opcode: 'lightLevel',
-                    blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.lightLevel', default: 'light level', description: 'Light level reporter (lux)'})
-                },
+                '---',
+                // ── Light ───────────────────────────────────────────
                 {
                     opcode: 'whenBright',
                     blockType: BlockType.HAT,
                     text: formatMessage({id: 'spark.whenBright', default: 'when bright', description: 'Hat: when it gets bright'})
+                },
+                {
+                    opcode: 'lightLevel',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.lightLevel', default: 'light level', description: 'Light level reporter (lux)'})
                 },
                 {
                     opcode: 'setLightThreshold',
@@ -573,27 +797,157 @@ class Scratch3SparkBlocks {
                     text: formatMessage({id: 'spark.setLightThreshold', default: 'set bright sensitivity to [LEVEL]', description: 'Set whenBright threshold level 1/2/3'}),
                     arguments: {LEVEL: {type: ArgumentType.STRING, menu: 'sensorLevels', defaultValue: '2'}}
                 },
-                {
-                    opcode: 'tofDistance',
-                    blockType: BlockType.REPORTER,
-                    text: formatMessage({id: 'spark.tofDistance', default: 'nearest distance', description: 'TOF distance reporter (mm; 9999 = no target)'})
-                },
+                '---',
+                // ── Distance (time-of-flight) ───────────────────────
                 {
                     opcode: 'whenNear',
                     blockType: BlockType.HAT,
                     text: formatMessage({id: 'spark.whenNear', default: 'when object near', description: 'Hat: when an object comes near'})
                 },
                 {
+                    opcode: 'tofDistance',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.tofDistance', default: 'nearest distance', description: 'TOF distance reporter (mm; 9999 = no target)'})
+                },
+                {
                     opcode: 'setTofThreshold',
                     blockType: BlockType.COMMAND,
                     text: formatMessage({id: 'spark.setTofThreshold', default: 'set near sensitivity to [LEVEL]', description: 'Set whenNear threshold level 1/2/3'}),
                     arguments: {LEVEL: {type: ArgumentType.STRING, menu: 'sensorLevels', defaultValue: '2'}}
+                },
+                // ══ major break: SENSORS → CAMERA (M3 module, delivered later) ══
+                '---',
+                '---',
+                // The `capture photo to stage` block was removed 2026-08-06 (code review
+                // of Story 15.2). It emitted `cmd:'capture'`, which no middleware or
+                // firmware handler has ever implemented — the block sat in the palette
+                // doing nothing, while comments elsewhere cited it as a privacy control
+                // that was "disabled on purpose". It was neither implemented nor gated,
+                // and would have inherited no protection the day someone implemented it.
+                // Moving image pixels off the board is a teacher-panel path
+                // (`camPreview`, TEACHER_ONLY_CMDS), not a project-reachable block.
+                // ── On-device AI (ai.classify — Stories 4.2/4.3/4.4 firmware) ───────
+                // REPORTERS returning the inference label; aiConfidence reads the last
+                // result's confidence. On a board that can't run a primitive the reporter
+                // returns a mock label + a one-shot Thai toast (FR28) — never an error.
+                {
+                    opcode: 'aiClassifyFace',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiClassifyFace',
+                        default: 'detect face',
+                        description: 'AI: on-device face detection (label face_count_N)'
+                    })
+                },
+                {
+                    opcode: 'aiClassifyColor',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiClassifyColor',
+                        default: 'detect color [TARGET]',
+                        description: 'AI: on-device color detection'
+                    }),
+                    arguments: {
+                        TARGET: {type: ArgumentType.STRING, menu: 'aiColorTargets', defaultValue: 'any'}
+                    }
+                },
+                {
+                    opcode: 'aiClassifyMotion',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiClassifyMotion',
+                        default: 'detect motion (sensitivity [THRESHOLD])',
+                        description: 'AI: on-device motion detection (motion_detected/still)'
+                    }),
+                    arguments: {
+                        THRESHOLD: {type: ArgumentType.NUMBER, defaultValue: 50}
+                    }
+                },
+                {
+                    opcode: 'aiClassifyImuGesture',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiClassifyImuGesture',
+                        default: 'detect gesture [GESTURE]',
+                        description: 'AI: on-device IMU-gesture (the camera-free AI floor)'
+                    }),
+                    arguments: {
+                        GESTURE: {type: ArgumentType.STRING, menu: 'aiGestures', defaultValue: 'any'}
+                    }
+                },
+                {
+                    // Story 4.9 (FR58). Returns an OPAQUE slot label — person_1..person_10,
+                    // or person_none. Never a human name: a name typed into a block would
+                    // travel inside the .sb3 file children share with each other.
+                    //
+                    // Enrolment is NOT a block. It lives in the teacher's Advanced panel
+                    // and the middleware refuses faceEnroll/faceForget on this channel, so
+                    // a project can ask "who is this?" but can never add anyone.
+                    //
+                    // This block takes ~3 s to answer (the recognition model runs after
+                    // detection). That is expected, not a hang — see the Thai label, which
+                    // says so, and Story 4.9 AC3's 3,500 ms budget.
+                    opcode: 'aiClassifyFaceId',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiClassifyFaceId',
+                        default: 'recognise face (takes ~3s)',
+                        description: 'AI: on-device face recognition against teacher-enrolled slots'
+                    })
+                },
+                {
+                    opcode: 'aiConfidence',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiConfidence',
+                        default: 'AI confidence',
+                        description: 'Confidence (0..1) of the last AI detection'
+                    })
+                },
+                {
+                    opcode: 'aiBbox',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({
+                        id: 'spark.aiBbox',
+                        default: 'AI box [FIELD]',
+                        description: 'Read x/y/w/h of the last AI detection bbox'
+                    }),
+                    arguments: {
+                        FIELD: {type: ArgumentType.STRING, menu: 'aiBboxFields', defaultValue: 'x'}
+                    }
+                },
+                // ── QR card sensing (Epic 12 — Stories 12.4/12.6) ───
+                // Neutral primitives only: turn scanning on/off, a HAT that fires
+                // on a chosen text, and a reporter with the latest text. No game
+                // semantics, no card-name dropdown, no pack concept (FR44 design).
+                '---',
+                {
+                    opcode: 'setQrScan',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({id: 'spark.setQrScan', default: 'turn QR scanning [STATE]', description: 'Start/stop QR card scanning'}),
+                    arguments: {STATE: {type: ArgumentType.STRING, menu: 'qrScanState', defaultValue: 'on'}}
+                },
+                {
+                    opcode: 'whenScanned',
+                    blockType: BlockType.HAT,
+                    text: formatMessage({id: 'spark.whenScanned', default: 'when scanned [TEXT]', description: 'Hat: fires when a QR card with this exact text is scanned'}),
+                    arguments: {TEXT: {type: ArgumentType.STRING, defaultValue: 'เสือ'}}
+                },
+                {
+                    opcode: 'lastScannedText',
+                    blockType: BlockType.REPORTER,
+                    text: formatMessage({id: 'spark.lastScannedText', default: 'last scanned text', description: 'Reporter: the most recently decoded QR text (empty before any scan)'})
                 }
             ],
             menus: {
                 ledColors: {
                     acceptReporters: true,
                     items: ledColorMenuItems()
+                },
+                // Story 2.8 — which physical LED (both / LED 1 / LED 2).
+                ledTargets: {
+                    acceptReporters: false,
+                    items: ledTargetMenuItems()
                 },
                 buttons: {
                     acceptReporters: true,
@@ -642,6 +996,14 @@ class Scratch3SparkBlocks {
                         {text: formatMessage({id: 'spark.sensorLevel.3', default: 'low', description: 'Sensor sensitivity level 3 (least sensitive)'}), value: '3'}
                     ]
                 },
+                // Story 12.6 — QR scanning on/off menu.
+                qrScanState: {
+                    acceptReporters: false,
+                    items: [
+                        {text: formatMessage({id: 'spark.qrScanState.on', default: 'on', description: 'Start QR scanning'}), value: 'on'},
+                        {text: formatMessage({id: 'spark.qrScanState.off', default: 'off', description: 'Stop QR scanning'}), value: 'off'}
+                    ]
+                },
                 // Story 3.11 — orientation sensor-fusion algorithm for pitch/roll/yaw.
                 // 'raw'/'smooth' are friendly names for none/complementary; Kalman/
                 // Madgwick/Mahony keep their (proper-noun) names.
@@ -654,6 +1016,21 @@ class Scratch3SparkBlocks {
                         {text: formatMessage({id: 'spark.fusionAlgo.madgwick', default: 'Madgwick', description: 'Fusion: Madgwick'}), value: 'madgwick'},
                         {text: formatMessage({id: 'spark.fusionAlgo.mahony', default: 'Mahony', description: 'Fusion: Mahony'}), value: 'mahony'}
                     ]
+                },
+                // Story 4.5 — AI color-target menu (single source: AI_COLOR_TARGETS).
+                aiColorTargets: {
+                    acceptReporters: true,
+                    items: aiColorMenuItems()
+                },
+                // Story 4.5 — AI imu_gesture menu (single source: AI_GESTURE_TARGETS).
+                aiGestures: {
+                    acceptReporters: true,
+                    items: aiGestureMenuItems()
+                },
+                // Story 4.5 — face bbox field accessor menu (AI_BBOX_FIELDS).
+                aiBboxFields: {
+                    acceptReporters: false,
+                    items: aiBboxMenuItems()
                 }
             }
         };
@@ -661,12 +1038,21 @@ class Scratch3SparkBlocks {
 
     setLedColor (args) {
         const color = args.COLOR in LED_COLOR_MAP ? LED_COLOR_MAP[args.COLOR] : LED_COLOR_MAP.off;
-        return this._peripheral.send('led', {pin: 2, ...color});
+        // Story 2.8 — 'both' (default) omits `index` (both LEDs, backward-compatible);
+        // 'led1'/'led2' add the firmware's per-LED index 0/1.
+        const target = LED_TARGETS.find(t => t.value === args.WHICH);
+        const payload = {pin: 2, ...color};
+        if (target && target.index !== null) payload.index = target.index;
+        return this._peripheral.send('led', payload);
     }
 
     setLedBrightness (args) {
         const val = Math.max(0, Math.min(255, Number(args.BRIGHTNESS) || 0));
-        return this._peripheral.send('pwm', {pin: 2, val});
+        // Story 2.8 — 'both' (default) omits index; 'led1'/'led2' → per-LED brightness.
+        const target = LED_TARGETS.find(t => t.value === args.WHICH);
+        const payload = {pin: 2, val};
+        if (target && target.index !== null) payload.index = target.index;
+        return this._peripheral.send('pwm', payload);
     }
 
     whenButtonPressed (args) {
@@ -801,21 +1187,107 @@ class Scratch3SparkBlocks {
         return this._peripheral._setSensorThreshold('tof', parseInt(args.LEVEL, 10));
     }
 
-    capturePhoto () {
-        return this._peripheral.send('capture', {}).then(resp => {
-            if (!resp || resp.status !== 'ok' || !resp.url) return;
-            return fetch(resp.url)
-                .then(r => r.blob())
-                .then(blob => new Promise(resolve => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => resolve(reader.result);
-                    reader.readAsDataURL(blob);
-                }))
-                .then(dataURI => {
-                    this.runtime.emit('SPARK_CAMERA_FRAME', dataURI);
-                })
-                .catch(err => log.warn('Spark camera capture failed:', err));
+    // ── On-device AI (ai.classify) — Story 4.5. Each reporter returns the inference
+    //    label; graceful fallback to a mock label + one-shot Thai toast on a board
+    //    that can't run the primitive (FR28). aiConfidence reads the last result. ──
+    aiClassifyFace () {
+        return this._peripheral._classify('face', {});
+    }
+    aiClassifyFaceId () {
+        // No arguments by design: the only question a project may ask is "which
+        // enrolled slot is this?". Anything that would let a block choose or name a
+        // person belongs in the teacher panel, not here.
+        return this._peripheral._classify('face_id', {});
+    }
+    aiClassifyColor (args) {
+        const target = args.TARGET === 'any' ? null : args.TARGET;
+        return this._peripheral._classify('color', {target});
+    }
+    aiClassifyMotion (args) {
+        // AC3: user-settable sensitivity, clamped 0..100 (default 50).
+        const raw = Math.round(Number(args.THRESHOLD));
+        const threshold = Number.isFinite(raw) ? Math.max(0, Math.min(100, raw)) : 50;
+        return this._peripheral._classify('motion', {threshold_pct: threshold});
+    }
+    aiClassifyImuGesture (args) {
+        // AC3: 'any' → null (firmware recognizes any); else the selected gesture.
+        const gesture = args.GESTURE === 'any' ? null : args.GESTURE;
+        return this._peripheral._classify('imu_gesture', {gesture});
+    }
+    aiConfidence () {
+        return this._peripheral._lastAi ? this._peripheral._lastAi.confidence : 0;
+    }
+    aiBbox (args) {
+        // AC4: read x/y/w/h of the last detection's bbox (0 when no bbox cached).
+        const bb = this._peripheral._lastAi && this._peripheral._lastAi.bbox;
+        if (!Array.isArray(bb)) return 0;
+        const idx = AI_BBOX_FIELDS.indexOf(args.FIELD);
+        return idx >= 0 && typeof bb[idx] === 'number' ? bb[idx] : 0;
+    }
+
+    // ── QR card sensing (Epic 12 — Stories 12.4/12.6) ──────────────────────
+    setQrScan (args) {
+        // No board → no-op (no toast: "no scanner" is only meaningful on a
+        // connected board; mirrors the sensor reporters' isConnected guard).
+        if (!this._peripheral.isConnected()) return Promise.resolve(null);
+        // Story 12.3/FR45 — a board that announced its features but lacks qr_scan
+        // (e.g. camera-less substrate): one-shot Thai toast, no command sent. This
+        // is DISTINCT from the no-board case above (which is silent). A legacy
+        // board (capabilities unknown) falls through and relies on the response-
+        // based fallback below.
+        if (this._peripheral._lacksCapability('qr_scan')) {
+            if (!this._peripheral._stubWarningShown.has('qr')) {
+                this._peripheral._stubWarningShown.add('qr');
+                this._peripheral._showStubToast('qr');
+            }
+            return Promise.resolve(null);
+        }
+        const enable = args.STATE === 'on';
+        // Arm/cancel the FR49 "nothing decoded" hint alongside the command.
+        if (enable) this._peripheral._startQrHintTimer();
+        else this._peripheral._clearQrHintTimer();
+        return this._peripheral.send('qr_scan_enable', {enable}).then(resp => {
+            // FR45 — board without a working scanner (no camera / camera_error /
+            // hw_not_present): one-shot Thai toast, mock behavior (the reporter
+            // returns '' and the HAT stays inert). One .scratch works on both.
+            if (enable && (!resp || resp.status !== 'ok')) {
+                this._peripheral._clearQrHintTimer();
+                if (!this._peripheral._stubWarningShown.has('qr')) {
+                    this._peripheral._stubWarningShown.add('qr');
+                    this._peripheral._showStubToast('qr');
+                }
+            }
+            return resp;
+        }, () => {
+            // 12-7 review P9: the send rejected (no_transport / timeout / WS
+            // drop) — scanning never started, so the armed 5 s hint would fire
+            // for a scan that is not running.
+            this._peripheral._clearQrHintTimer();
         });
+    }
+    whenScanned (args) {
+        if (!this._peripheral.isConnected()) return false;
+        // FR42 — exact match after whitespace trim. 12-7 review P22/P23: the
+        // latch clears per VM STEP, not per first consumer — every duplicate
+        // HAT polled within the same step sees the sighting; it expires when a
+        // LATER step polls. (runtime.currentMSecs is stamped once per step.)
+        const sightings = this._peripheral._qrSightings;
+        if (sightings.length === 0) return false;
+        const cur = this._peripheral._runtime.currentMSecs;
+        for (let i = sightings.length - 1; i >= 0; i--) {
+            if (sightings[i].stepMs !== null && sightings[i].stepMs !== cur) {
+                sightings.splice(i, 1); // consumed in an earlier step — expired
+            }
+        }
+        const target = String(args.TEXT).trim();
+        const hit = sightings.find(sighting => sighting.text === target);
+        if (!hit) return false;
+        if (hit.stepMs === null) hit.stepMs = cur; // latch for the rest of this step
+        return true;
+    }
+    lastScannedText () {
+        // FR43 — synchronous cache like aiConfidence; '' before any scan.
+        return this._peripheral._lastScannedText;
     }
 }
 

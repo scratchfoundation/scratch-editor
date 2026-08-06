@@ -1,0 +1,79 @@
+# Sparky Scratch Editor — GitLab CI (Story 7.4)
+#
+# Scope (7.4): test + build only. The current UAT deploy still runs on
+# GitHub Actions (`.github/workflows/deploy-uat.yml`); that workflow stays
+# alive until **Story 10.3** migrates the image build/push to the GitLab
+# Container Registry and wires ArgoCD. Story 7.5 keeps the GH-Actions
+# workflow working during the transition window (Node24 action-SHA bump,
+# deadline 2026-06-02). DO NOT remove or modify `.github/workflows/*` here.
+#
+# Cross-references:
+#   - Story 7.4 (this file)     — test/build CI on GitLab
+#   - Story 7.5                 — keep GH-Actions deploy alive (Node24)
+#   - Story 10.3                — image build/push to GitLab Container
+#                                 Registry + ArgoCD + retire deploy-uat.yml
+#
+# Per-workspace `lint` scripts exist on a subset of workspaces
+# (task-herder, scratch-render, scratch-vm, scratch-media-lib-scripts);
+# `--if-present` makes the run a no-op on workspaces without one. There is
+# NO top-level lint script today; adding one is out of scope for 7.4.
+
+stages:
+  - test
+  - build
+
+variables:
+  # Node 24 to match the editor's .nvmrc (24.15.0) and the Node24 bump
+  # tracked by Story 7.5 for the parallel GH-Actions deploy workflow.
+  NODE_IMAGE: 'node:24'
+  # Cache npm's download cache (not node_modules). `npm ci` always wipes and
+  # re-creates node_modules, so caching node_modules is wasted I/O and can
+  # leak state across MRs on the same branch. Caching `~/.npm` is the supported
+  # idiom and gives most of the install speedup.
+  npm_config_cache: '$CI_PROJECT_DIR/.npm'
+
+.node_cache: &node_cache
+  key:
+    files:
+      - package-lock.json
+    prefix: '$CI_COMMIT_REF_SLUG'
+  paths:
+    - .npm/
+
+test:
+  stage: test
+  image: $NODE_IMAGE
+  cache:
+    <<: *node_cache
+  before_script:
+    - npm ci --prefer-offline
+  script:
+    # Per-workspace lint (no-op on workspaces without a `lint` script).
+    - npm run lint --workspaces --if-present
+    # `--if-present` so workspaces without a `test` script (asset / tooling
+    # packages) don't break the pipeline. Lint already uses --if-present above;
+    # parity here was missing on the initial commit (Story 7.4 code review).
+    - npm test --workspaces --if-present
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH
+
+build:
+  stage: build
+  image: $NODE_IMAGE
+  needs:
+    - test
+  cache:
+    <<: *node_cache
+    policy: pull
+  before_script:
+    - npm ci --prefer-offline
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - packages/scratch-gui/build/
+    expire_in: 7 days
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH

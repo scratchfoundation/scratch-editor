@@ -1,13 +1,15 @@
 module.exports = {
     th: {
         'spark.categoryName': 'สปาร์กี้',
-        'spark.setLedColor': 'ตั้งสีไฟ LED เป็น [COLOR]',
-        'spark.setLedBrightness': 'ตั้งความสว่างไฟ LED เป็น [BRIGHTNESS]',
+        'spark.setLedColor': 'ตั้งสีไฟ LED [WHICH] เป็น [COLOR]',
+        'spark.ledTarget.both': 'ทั้งคู่',
+        'spark.ledTarget.led1': 'ดวงที่ 1',
+        'spark.ledTarget.led2': 'ดวงที่ 2',
+        'spark.setLedBrightness': 'ตั้งความสว่างไฟ LED [WHICH] เป็น [BRIGHTNESS]',
         'spark.whenButtonPressed': 'เมื่อกดปุ่ม [BTN]',
         'spark.isButtonPressed': 'กดปุ่ม [BTN] อยู่?',
         'spark.playTone': 'เล่นโน้ต [FREQ] Hz นาน [DUR] ms',
         'spark.stopBuzzer': 'หยุดเสียงบัซเซอร์',
-        'spark.capturePhoto': 'ถ่ายภาพมาที่สเตจ',
         'spark.color.red': 'แดง',
         'spark.color.green': 'เขียว',
         'spark.color.amber': 'อำพัน',
@@ -46,6 +48,37 @@ module.exports = {
         'spark.setTofThreshold': 'ตั้งความไวระยะใกล้เป็น [LEVEL]',
         'spark.sensorLevel.1': 'สูง',
         'spark.sensorLevel.2': 'ปานกลาง',
-        'spark.sensorLevel.3': 'ต่ำ'
+        'spark.sensorLevel.3': 'ต่ำ',
+        // Story 4.5 — on-device AI (ai.classify)
+        'spark.aiClassifyFace': 'ตรวจใบหน้า',
+        // Story 4.9: the '(~3 วินาที)' is part of the label on purpose. The block
+        // really does take about three seconds, and a child watching a sprite do
+        // nothing for that long will conclude the board is broken unless told.
+        'spark.aiClassifyFaceId': 'จำใบหน้าได้ (~3 วินาที)',
+        'spark.aiClassifyColor': 'ตรวจสี [TARGET]',
+        'spark.aiClassifyMotion': 'ตรวจการเคลื่อนไหว (ความไว [THRESHOLD])',
+        'spark.aiClassifyImuGesture': 'ตรวจท่าทาง [GESTURE]',
+        'spark.aiConfidence': 'ความมั่นใจ AI',
+        'spark.aiBbox': 'กรอบ AI [FIELD]',
+        'spark.aiColor.any': 'สีเด่น',
+        'spark.aiColor.red': 'แดง',
+        'spark.aiColor.green': 'เขียว',
+        'spark.aiColor.blue': 'น้ำเงิน',
+        'spark.aiColor.yellow': 'เหลือง',
+        'spark.aiGesture.any': 'ท่าใดก็ได้',
+        'spark.aiGesture.shake': 'เขย่า',
+        'spark.aiGesture.tilt': 'เอียง',
+        'spark.aiGesture.flat': 'ราบ',
+        'spark.aiGesture.flip': 'พลิก',
+        'spark.aiBboxField.x': 'x',
+        'spark.aiBboxField.y': 'y',
+        'spark.aiBboxField.w': 'กว้าง',
+        'spark.aiBboxField.h': 'สูง',
+        // Story 12.6 (Epic 12) — QR card sensing
+        'spark.setQrScan': 'เปิดการสแกน QR [STATE]',
+        'spark.qrScanState.on': 'เปิด',
+        'spark.qrScanState.off': 'ปิด',
+        'spark.whenScanned': 'เมื่อสแกนได้ [TEXT]',
+        'spark.lastScannedText': 'ข้อความที่สแกนล่าสุด'
     }
 };

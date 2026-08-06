@@ -4,6 +4,10 @@ on:
   push:
     branches: [uat]
   workflow_dispatch: {}
+  # Story 7.6: cross-forge trigger — spark-firmware GitLab CI fires this on a vX.Y.Z release
+  # so the image rebuilds with the freshly published firmware baked into /firmware/.
+  repository_dispatch:
+    types: [firmware-release]
 
 concurrency:
   group: uat-deploy
@@ -23,6 +27,16 @@ jobs:
       - name: Short SHA
         id: vars
         run: echo "sha=sha-$(git rev-parse --short=12 HEAD)" >> "$GITHUB_OUTPUT"
+
+      # Story 7.6: pull the latest published firmware from the GitLab pkg registry, verify
+      # sha256 (fail-closed), and generate firmware/manifest.json (incl. signature) into the
+      # build context so the Dockerfile bakes it into /usr/share/nginx/html/firmware/.
+      - name: Fetch published firmware + generate manifest
+        env:
+          GITLAB_API_BASE: ${{ vars.GITLAB_API_BASE }}
+          GITLAB_FW_PROJECT_ID: ${{ vars.GITLAB_FW_PROJECT_ID }}
+          GITLAB_FW_READ_TOKEN: ${{ secrets.GITLAB_FW_READ_TOKEN }}
+        run: ./scripts/fetch-firmware.sh
 
       - name: Log in to GHCR
         uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0

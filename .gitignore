@@ -134,3 +134,6 @@ dist
 .yarn/install-state.gz
 .pnp.*
 .tap/
+
+# local git worktrees (superpowers)
+.worktrees/
