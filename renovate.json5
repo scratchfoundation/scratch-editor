@@ -12,5 +12,19 @@
 
   // Attempt to reduce notification noise for updates that can auto-merge
   // See https://docs.renovatebot.com/key-concepts/automerge/#branch-vs-pr-automerging
-  "automergeType": "branch"
+  "automergeType": "branch",
+  "packageRules": [
+    {
+      // Held at 2.3.4 on purpose. From 2.3.5 on, this pulls in @radix-ui/react-collection 1.1.13+, which
+      // uses a static initialization block, which is not supported before Safari 16.4.
+      // Since we do not transpile node_modules, it reaches the browser untouched and
+      // Safari 15 fails to parse the entire bundle - the editor shows a blank
+      // screen and nothing loads.
+      // allowedVersions stops renovate proposing newer ones; automerge is off as a backstop.
+      // Lift both if @radix-ui fixes support for older versions, or once the browser floor is Safari 16.4+.
+      "matchPackageNames": ["@radix-ui/react-context-menu"],
+      "allowedVersions": "<2.3.5",
+      "automerge": false
+    }
+  ]
 }

@@ -125,7 +125,7 @@
   "dependencies": {
     "@mediapipe/face_detection": "0.4.1646425229",
     "@microbit/microbit-universal-hex": "0.2.2",
-    "@radix-ui/react-context-menu": "2.3.7",
+    "@radix-ui/react-context-menu": "2.3.4",
     "@scratch/scratch-paint": "15.0.1",
     "@scratch/scratch-render": "15.0.1",
     "@scratch/scratch-storage": "15.0.1",
