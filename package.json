@@ -1,6 +1,6 @@
 {
   "name": "scratch-editor",
-  "version": "15.0.1",
+  "version": "15.0.2-revert-react-context-menu-static-init.1",
   "private": "true",
   "description": "Scratch editor mono-repository",
   "keywords": [],

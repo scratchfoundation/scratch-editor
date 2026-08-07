@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-paint",
-  "version": "15.0.1",
+  "version": "15.0.2-revert-react-context-menu-static-init.1",
   "description": "Graphical User Interface for the Scratch 3.0 paint editor, which is used to make and edit sprites for use in projects.",
   "homepage": "https://github.com/scratchfoundation/scratch-paint#readme",
   "repository": {
@@ -68,7 +68,7 @@
   },
   "dependencies": {
     "@scratch/paper": "0.11.20221201200345",
-    "@scratch/scratch-svg-renderer": "15.0.1",
+    "@scratch/scratch-svg-renderer": "15.0.2-revert-react-context-menu-static-init.1",
     "classnames": "2.5.1",
     "keymirror": "0.1.1",
     "lodash.bindall": "4.4.0",

@@ -1,6 +1,6 @@
 {
   "name": "@scratch/scratch-vm",
-  "version": "15.0.1",
+  "version": "15.0.2-revert-react-context-menu-static-init.1",
   "description": "Virtual Machine for Scratch 3.0",
   "keywords": [],
   "homepage": "https://github.com/scratchfoundation/scratch-vm#readme",
@@ -60,9 +60,9 @@
     "allow-incomplete-coverage": true
   },
   "dependencies": {
-    "@scratch/scratch-render": "15.0.1",
-    "@scratch/scratch-storage": "15.0.1",
-    "@scratch/scratch-svg-renderer": "15.0.1",
+    "@scratch/scratch-render": "15.0.2-revert-react-context-menu-static-init.1",
+    "@scratch/scratch-storage": "15.0.2-revert-react-context-menu-static-init.1",
+    "@scratch/scratch-svg-renderer": "15.0.2-revert-react-context-menu-static-init.1",
     "@vernier/godirect": "1.8.3",
     "arraybuffer-loader": "1.0.8",
     "atob": "2.1.2",
