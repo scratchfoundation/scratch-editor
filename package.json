@@ -51,5 +51,8 @@
     "npm": "10.9.9",
     "semantic-release": "25.0.9",
     "ts-node": "10.9.2"
+  },
+  "overrides": {
+    "form-data": "4.0.4"
   }
 }
