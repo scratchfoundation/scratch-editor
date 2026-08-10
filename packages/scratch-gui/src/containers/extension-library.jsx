@@ -23,6 +23,13 @@ const messages = defineMessages({
     }
 });
 
+const testExtension = {
+    name: 'Test',
+    extensionId: 'coreExample',
+    description: 'A tiny test extension with one block that does nothing.',
+    featured: true
+};
+
 class ExtensionLibrary extends React.PureComponent {
     constructor (props) {
         super(props);
@@ -48,7 +55,7 @@ class ExtensionLibrary extends React.PureComponent {
         }
     }
     render () {
-        const extensionLibraryThumbnailData = extensionLibraryContent.map(extension => ({
+        const extensionLibraryThumbnailData = [...extensionLibraryContent, testExtension].map(extension => ({
             rawURL: extension.iconURL || extensionIcon,
             ...extension
         }));
