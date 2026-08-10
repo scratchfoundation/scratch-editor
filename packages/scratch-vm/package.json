@@ -85,7 +85,7 @@
   "devDependencies": {
     "@babel/core": "7.29.7",
     "@babel/preset-env": "7.29.7",
-    "adm-zip": "0.4.11",
+    "adm-zip": "0.6.0",
     "babel-loader": "9.2.1",
     "callsite": "1.0.0",
     "copy-webpack-plugin": "6.4.1",
