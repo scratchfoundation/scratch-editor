@@ -109,7 +109,7 @@
     "redux-throttle": "0.1.1",
     "regenerator-runtime": "0.13.9",
     "rimraf": "2.7.1",
-    "scratch-l10n": "6.1.108",
+    "scratch-l10n": "6.1.109",
     "scratch-webpack-configuration": "3.1.2",
     "style-loader": "4.0.0",
     "webpack": "5.109.2",
