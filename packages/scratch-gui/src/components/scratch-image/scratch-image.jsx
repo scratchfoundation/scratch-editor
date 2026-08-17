@@ -3,12 +3,15 @@ import React from 'react';
 import VisibilitySensor from 'react-visibility-sensor';
 
 import {legacyConfig} from '../../legacy-config';
+import {PLATFORM} from '../../lib/platform.js';
+import bindAll from 'lodash.bindall';
 
 class ScratchImage extends React.PureComponent {
     static init () {
         this._maxParallelism = 6;
         this._currentJobs = 0;
         this._pendingImages = new Set();
+        this._assetCache = new Map();
     }
 
     static loadPendingImages () {
@@ -17,13 +20,15 @@ class ScratchImage extends React.PureComponent {
             return;
         }
 
-        // Find the first visible image. If there aren't any, find the first non-visible image.
+        // Find the first visible image. Fall back to the first non-visible image only
+        // when parallelism is capped (desktop/Android), so that off-screen assets are
+        // eventually pre-loaded as slots free up.
         let nextImage;
         for (const image of this._pendingImages) {
             if (image.isVisible) {
                 nextImage = image;
                 break;
-            } else {
+            } else if (this._maxParallelism !== Infinity) {
                 // TODO: Why was this commented out on native branch?
                 nextImage = nextImage || image;
             }
@@ -35,14 +40,15 @@ class ScratchImage extends React.PureComponent {
         // 3) Pump the queue again
         if (nextImage) {
             this._pendingImages.delete(nextImage);
-            const imageSource = nextImage.props.imageSource;
+            const assetId = nextImage._pendingAssetId;
+            const assetType = nextImage._pendingAssetType;
             ++this._currentJobs;
             legacyConfig.storage.scratchStorage
-                .load(imageSource.assetType, imageSource.assetId)
+                .load(assetType, assetId)
                 .then(asset => {
+                    const dataURI = asset.encodeDataURI();
+                    ScratchImage._assetCache.set(assetId, dataURI);
                     if (!nextImage.wasUnmounted) {
-                        const dataURI = asset.encodeDataURI();
-
                         nextImage.setState({
                             imageURI: dataURI
                         });
@@ -55,12 +61,27 @@ class ScratchImage extends React.PureComponent {
 
     constructor (props) {
         super(props);
+        bindAll(this, [
+            'handleVisibilityChange'
+        ]);
         this.state = {};
+        if (props.platform === PLATFORM.WEB) {
+            ScratchImage._maxParallelism = Infinity;
+        }
         Object.assign(this.state, this._loadImageSource(props.imageSource));
     }
     componentWillReceiveProps (nextProps) {
+        if (this.props.platform !== nextProps.platform) {
+            ScratchImage._maxParallelism = nextProps.platform === PLATFORM.WEB ? Infinity : 6;
+        }
         const newState = this._loadImageSource(nextProps.imageSource);
         this.setState(newState);
+        // If a new asset was queued and this component is already visible, pump the
+        // queue immediately so the new frame loads without waiting for a scroll event
+        // (e.g. icon rotation on hover).
+        if (newState.lastRequestedAsset && this.isVisible) {
+            ScratchImage.loadPendingImages();
+        }
     }
     componentWillUnmount () {
         this.wasUnmounted = true;
@@ -82,7 +103,21 @@ class ScratchImage extends React.PureComponent {
                     lastRequestedAsset: null
                 };
             }
+            const cached = ScratchImage._assetCache.get(imageSource.assetId);
+            if (cached) {
+                ScratchImage._pendingImages.delete(this);
+                return {
+                    imageURI: cached,
+                    lastRequestedAsset: null
+                };
+            }
             if (this.state.lastRequestedAsset !== imageSource.assetId) {
+                // Capture assetId/assetType now so loadPendingImages uses the
+                // correct values. Reading props.imageSource at pop time would
+                // give the previous frame because componentWillReceiveProps
+                // fires before React updates this.props.
+                this._pendingAssetId = imageSource.assetId;
+                this._pendingAssetType = imageSource.assetType;
                 ScratchImage._pendingImages.add(this);
                 return {
                     lastRequestedAsset: imageSource.assetId
@@ -92,11 +127,18 @@ class ScratchImage extends React.PureComponent {
         // Nothing to do - don't change any state.
         return {};
     }
+    handleVisibilityChange (isVisible) {
+        this.isVisible = isVisible;
+        if (isVisible) {
+            ScratchImage.loadPendingImages();
+        }
+    }
     render () {
         const {
             // TODO: Does this cause issues for desktop?
             src: _src, // eslint-disable-line react/prop-types
             imageSource: _imageSource,
+            platform: _platform,
 
             ...imgProps
         } = this.props;
@@ -104,23 +146,16 @@ class ScratchImage extends React.PureComponent {
             <VisibilitySensor
                 intervalCheck
                 scrollCheck
+                onChange={this.handleVisibilityChange}
             >
-                {
-                    ({isVisible}) => {
-                        this.isVisible = isVisible;
-                        ScratchImage.loadPendingImages();
-                        return (
-                            <img
-                                src={this.state.imageURI}
-                                style={{
-                                    minWidth: '1px',
-                                    minHeight: '1px'
-                                }}
-                                {...imgProps}
-                            />
-                        );
-                    }
-                }
+                <img
+                    src={this.state.imageURI}
+                    style={{
+                        minWidth: '1px',
+                        minHeight: '1px'
+                    }}
+                    {...imgProps}
+                />
             </VisibilitySensor>
         );
     }
@@ -133,8 +168,7 @@ ScratchImage.ImageSourcePropType = PropTypes.oneOfType([
             Object.values(
                 legacyConfig.storage.scratchStorage.AssetType
             )
-        ).isRequired,
-        assetServiceUri: PropTypes.string.isRequired
+        ).isRequired
     }),
     PropTypes.shape({
         uri: PropTypes.string.isRequired
@@ -142,7 +176,8 @@ ScratchImage.ImageSourcePropType = PropTypes.oneOfType([
 ]);
 
 ScratchImage.propTypes = {
-    imageSource: ScratchImage.ImageSourcePropType.isRequired
+    imageSource: ScratchImage.ImageSourcePropType.isRequired,
+    platform: PropTypes.oneOf(Object.values(PLATFORM))
 };
 
 ScratchImage.init();
