@@ -57,7 +57,8 @@ describe('StageHeader Component', () => {
     const queryConfirmButton = () =>
         [...document.body.querySelectorAll('button')].find(button => button.textContent === 'yes');
 
-    const clickThumbnailButton = container => {
+    // Returns the prompt's confirm button, or undefined if the thumbnail button did not open the prompt.
+    const openThumbnailPrompt = container => {
         fireEvent.click(getThumbnailButton(container));
         return queryConfirmButton();
     };
@@ -68,15 +69,22 @@ describe('StageHeader Component', () => {
     });
 
     test('a capture failure re-enables the thumbnail button and reports the error', () => {
+        let reportFailure;
+        storeProjectThumbnail.mockImplementation((vm, callback, onError) => {
+            reportFailure = onError;
+        });
+
         const {container} = renderWithIntl(getComponent());
 
-        fireEvent.click(clickThumbnailButton(container));
-        expect(clickThumbnailButton(container)).toBeUndefined();
+        fireEvent.click(openThumbnailPrompt(container));
 
-        const onError = storeProjectThumbnail.mock.calls[0][2];
-        act(() => onError(new Error('decode failed')));
+        // Button implements `disabled` by dropping its onClick rather than by setting the DOM
+        // attribute, so a dead thumbnail button is only observable through the prompt not opening.
+        expect(openThumbnailPrompt(container)).toBeUndefined();
+
+        act(() => reportFailure(new Error('renderer exploded')));
 
         expect(onShowThumbnailError).toHaveBeenCalled();
-        expect(clickThumbnailButton(container)).toBeDefined();
+        expect(openThumbnailPrompt(container)).toBeDefined();
     });
 });
