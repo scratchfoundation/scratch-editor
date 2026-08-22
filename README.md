@@ -1,5 +1,4 @@
 # scratch-editor: The Scratch Editor Monorepo
-
 If you'd like to use Scratch, please visit the [Scratch website](https://scratch.mit.edu/). You can build your own
 Scratch project by pressing "Create" on that website or by visiting <https://scratch.mit.edu/projects/editor/>.
 
