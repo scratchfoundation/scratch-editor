@@ -1132,6 +1132,11 @@ class RenderWebGL extends EventEmitter {
             return false;
         }
 
+        if (candidateIDs) {
+            // sort candidate IDs into drawing order
+            const set = new Set(candidateIDs);
+            candidateIDs = this._drawList.filter(id => set.has(id));
+        }
         candidateIDs = (candidateIDs || this._drawList).filter(id => {
             const drawable = this._allDrawables[id];
             // default pick list ignores visible and ghosted sprites.
