@@ -15,7 +15,7 @@ jobs:
       is_prerelease: ${{ steps.semrel.outputs.is_prerelease }}
       do_release: ${{ steps.semrel.outputs.do_release }}
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           fetch-depth: 0 # full history for semantic-release
 
@@ -118,7 +118,7 @@ jobs:
     outputs:
       packages: ${{ steps.list-packages.outputs.packages }}
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
         with:
@@ -186,7 +186,7 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
       - uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6
         with:
@@ -265,7 +265,7 @@ jobs:
       NPM_TAG: ${{ needs.release-prep.outputs.npm_tag }}
       IS_PRERELEASE: ${{ needs.release-prep.outputs.is_prerelease }}
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
         with:
           token: ${{ secrets.PAT_RELEASE_PUSH }}
 
