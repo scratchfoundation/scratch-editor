@@ -1,4 +1,4 @@
-import cookie from 'cookie';
+import {parse} from 'cookie';
 
 import {DEFAULT_THEME, CAT_BLOCKS_THEME} from '.';
 
@@ -12,7 +12,7 @@ const isValidTheme = theme => [DEFAULT_THEME, CAT_BLOCKS_THEME].includes(theme);
 // For now, we'll take the user preference here as-is and switch to default theme if needed,
 // once we have the user info available.
 const detectTheme = () => {
-    const obj = cookie.parse(document.cookie) || {};
+    const obj = parse(document.cookie) || {};
     const themeCookie = obj[COOKIE_KEY];
 
     if (isValidTheme(themeCookie)) return themeCookie;

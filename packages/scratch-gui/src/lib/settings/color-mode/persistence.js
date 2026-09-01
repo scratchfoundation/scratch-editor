@@ -1,4 +1,4 @@
-import cookie from 'cookie';
+import {parse} from 'cookie';
 
 import {DEFAULT_MODE, HIGH_CONTRAST_MODE} from '.';
 
@@ -17,7 +17,7 @@ const systemPreferencesColorMode = () => {
 };
 
 const detectColorMode = () => {
-    const obj = cookie.parse(document.cookie) || {};
+    const obj = parse(document.cookie) || {};
     const colorModeCookie = obj.scratchtheme;
 
     if (isValidColorMode(colorModeCookie)) return colorModeCookie;
