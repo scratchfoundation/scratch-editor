@@ -635,7 +635,31 @@ const operators = function (isInitialSetup, isStage, targetId, colors) {
                 </shadow>
             </value>
         </block>
+        <block type="operator_gtoet">
+           <value name="OPERAND1">
+             <shadow type="text">
+                 <field name="TEXT"/>
+              </shadow>
+          </value>
+           <value name="OPERAND2">
+               <shadow type="text">
+                   <field name="TEXT">50</field>
+              </shadow>
+          </value>
+        </block>
         <block type="operator_lt">
+            <value name="OPERAND1">
+                <shadow type="text">
+                    <field name="TEXT"/>
+                </shadow>
+            </value>
+            <value name="OPERAND2">
+                <shadow type="text">
+                    <field name="TEXT">50</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="operator_ltoet">
             <value name="OPERAND1">
                 <shadow type="text">
                     <field name="TEXT"/>
