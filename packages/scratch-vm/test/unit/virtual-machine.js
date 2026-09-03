@@ -1151,10 +1151,84 @@ test('installTargets repairs dangling variable references on whole-project load'
 
     const extensions = {extensionIDs: new Set(), extensionURLs: new Map()};
     vm.installTargets([stage, sprite], extensions, true).then(() => {
-        t.equal(Object.keys(stage.variables).length, 2, 'variable and broadcast created on stage');
-        t.ok(stage.variables['mock var id'], 'dangling variable reference reconciled');
+        // Match the runtime's lookupOrCreateVariable: an undefined variable is created on
+        // the sprite that references it, while broadcasts always live on the stage.
+        t.equal(Object.keys(stage.variables).length, 1, 'broadcast created on stage');
         t.ok(stage.variables['mock broadcast message id'], 'dangling broadcast reference reconciled');
-        t.equal(Object.keys(sprite.variables).length, 0, 'no spurious sprite-local variables');
+        t.equal(Object.keys(sprite.variables).length, 1, 'variable created on the sprite');
+        t.ok(sprite.variables['mock var id'], 'dangling variable reference reconciled');
+        t.equal(sprite.variables['mock var id'].name, 'a mock variable');
+
+        t.end();
+    });
+});
+
+test('installTargets resolves a dangling reference to the sprite\'s own same-name local on whole-project load', t => {
+    // Regression for scratchfoundation/scratch-editor#601: two sprites each own a local
+    // "i", the stage owns a global "total", and one sprite's "for each" block carries a
+    // stale id with the name "i". Loading must resolve that field to the sprite's own "i"
+    // and leave every other variable, on every target, untouched.
+    const vm = new VirtualMachine();
+    const runtime = vm.runtime;
+
+    const stageSprite = new Sprite(null, runtime);
+    const stage = stageSprite.createClone();
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+    stage.createVariable('global total id', 'total', Variable.SCALAR_TYPE);
+
+    const makeSprite = name => {
+        const sprite = new Sprite(null, runtime);
+        const target = sprite.createClone();
+        target.isStage = false;
+        target.getName = () => name;
+        return target;
+    };
+    const makeVariableBlock = (blockId, opcode, fieldId, fieldValue) => ({
+        id: blockId,
+        opcode,
+        inputs: {},
+        fields: {
+            VARIABLE: {
+                name: 'VARIABLE',
+                id: fieldId,
+                value: fieldValue,
+                variableType: Variable.SCALAR_TYPE
+            }
+        },
+        next: null,
+        topLevel: true,
+        parent: null,
+        shadow: false,
+        x: 0,
+        y: 0
+    });
+
+    const setup = makeSprite('Setup');
+    setup.createVariable('setup i id', 'i', Variable.SCALAR_TYPE);
+    setup.blocks.createBlock(makeVariableBlock('setup loop', 'control_for_each', 'setup i id', 'i'));
+
+    const bsp = makeSprite('BSP');
+    bsp.createVariable('bsp i id', 'i', Variable.SCALAR_TYPE);
+    bsp.blocks.createBlock(makeVariableBlock('bsp loop', 'control_for_each', 'stale i id', 'i'));
+    bsp.blocks.createBlock(makeVariableBlock('bsp body', 'data_variable', 'bsp i id', 'i'));
+
+    const extensions = {extensionIDs: new Set(), extensionURLs: new Map()};
+    vm.installTargets([stage, setup, bsp], extensions, true).then(() => {
+        t.same(Object.keys(stage.variables), ['global total id'], 'no global created');
+        t.equal(stage.variables['global total id'].name, 'total', 'global not renamed');
+        t.same(Object.keys(setup.variables), ['setup i id'], 'other sprite untouched');
+        t.equal(setup.variables['setup i id'].name, 'i', 'other sprite local not renamed');
+        t.equal(setup.blocks.getBlock('setup loop').fields.VARIABLE.id, 'setup i id');
+        t.same(Object.keys(bsp.variables), ['bsp i id'], 'no new local on the affected sprite');
+        t.equal(bsp.variables['bsp i id'].name, 'i', 'affected sprite local not renamed');
+
+        const loopField = bsp.blocks.getBlock('bsp loop').fields.VARIABLE;
+        const bodyField = bsp.blocks.getBlock('bsp body').fields.VARIABLE;
+        t.equal(loopField.id, 'bsp i id', 'stale loop reference resolved to the sprite\'s own local');
+        t.equal(loopField.value, 'i');
+        t.equal(bodyField.id, 'bsp i id');
+        t.equal(bodyField.value, 'i');
 
         t.end();
     });
