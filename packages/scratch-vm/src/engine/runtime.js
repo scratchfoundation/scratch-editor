@@ -2595,12 +2595,16 @@ class Runtime extends EventEmitter {
      * the global before each target repairs its own references keeps those targets
      * sharing it rather than each minting a private local.
      *
-     * A same-name local on any referencing target is a stronger claim: that target
-     * would have resolved the reference to its own local by name at execution time,
-     * so the id is left for the per-target repair. Likewise when a same-name global
-     * already exists, since the per-target repair remaps to it. Broadcasts are
-     * skipped because they only ever live on the stage, so every target's repair
-     * already coalesces them there.
+     * An id defined on any target in the project does not qualify, even for
+     * targets that cannot see that definition: it is a stale reference to that
+     * target's local (a script once copied to other sprites), and the runtime
+     * would have given each other sprite its own local. A same-name local on any
+     * referencing target is likewise a stronger claim, judged by that target's own
+     * field name and type: it would have resolved the reference to its own local
+     * by name at execution time, so the id is left for the per-target repair. So
+     * is a same-name global, since the per-target repair remaps to it. Broadcasts
+     * are skipped because they only ever live on the stage, so every target's
+     * repair already coalesces them there.
      *
      * Run before `Target.reconcileVariableReferences` on whole-project load.
      * @param {Array<Target>} targets The targets being installed.
@@ -2609,34 +2613,42 @@ class Runtime extends EventEmitter {
         const stage = this.getTargetForStage();
         if (!stage) return;
 
+        const definedIds = new Set();
+        for (const target of targets) {
+            for (const varId in target.variables) {
+                if (Object.prototype.hasOwnProperty.call(target.variables, varId)) definedIds.add(varId);
+            }
+        }
+
+        // Each referring target keeps its own field name and type: two targets may
+        // display the same missing id under different stale names.
         const referrers = Object.create(null);
         for (const target of targets) {
             const references = target.blocks.getAllVariableAndListReferences();
             for (const varId in references) {
-                if (target.lookupVariableById(varId)) continue;
+                if (definedIds.has(varId)) continue;
                 const ref = references[varId][0];
-                if (!referrers[varId]) {
-                    referrers[varId] = {
-                        name: ref.referencingField.value,
-                        type: ref.type,
-                        targets: []
-                    };
-                }
-                referrers[varId].targets.push(target);
+                if (!referrers[varId]) referrers[varId] = [];
+                referrers[varId].push({
+                    target,
+                    name: ref.referencingField.value,
+                    type: ref.type
+                });
             }
         }
 
         for (const varId in referrers) {
-            const {name, type, targets: owners} = referrers[varId];
-            if (owners.length < 2) continue;
+            const refs = referrers[varId];
+            if (refs.length < 2) continue;
             // skipStage: only a local shadows here. (For the stage itself, "local"
             // means the globals, which the next check covers anyway.)
-            if (owners.some(owner => owner.lookupVariableByNameAndType(name, type, true))) continue;
-            if (stage.lookupVariableByNameAndType(name, type)) continue;
+            if (refs.some(({target, name, type}) => target.lookupVariableByNameAndType(name, type, true))) continue;
+            if (refs.some(({name, type}) => stage.lookupVariableByNameAndType(name, type))) continue;
+            const {name, type} = refs[0];
             stage.createVariable(varId, name, type);
             log.warn(
                 `Restored missing shared variable '${varId}' (name '${name}', type '${type}') as a global; ` +
-                `referenced by ${owners.map(owner => `'${owner.getName()}'`).join(', ')}.`
+                `referenced by ${refs.map(({target}) => `'${target.getName()}'`).join(', ')}.`
             );
         }
     }

@@ -1372,6 +1372,57 @@ test('installTargets on sprite import does not run the shared-definition restore
     });
 });
 
+test('installTargets does not restore a shared id that another sprite defines locally', t => {
+    // Sprite A owns the id as a local; B and C carry stale references to it from a
+    // script copied out of A long ago. That is not a lost global. The runtime gave
+    // B and C their own locals on execution, so the per-sprite repair does the same.
+    const vm = new VirtualMachine();
+    const runtime = vm.runtime;
+    const stage = makeStageTarget(runtime);
+    const spriteA = makeSpriteTarget(runtime, 'A');
+    const spriteB = makeSpriteTarget(runtime, 'B');
+    const spriteC = makeSpriteTarget(runtime, 'C');
+    spriteA.createVariable('a local id', 'i', Variable.SCALAR_TYPE);
+    spriteA.blocks.createBlock(makeDanglingVariableBlock('block A', 'a local id', 'i'));
+    spriteB.blocks.createBlock(makeDanglingVariableBlock('block B', 'a local id', 'i'));
+    spriteC.blocks.createBlock(makeDanglingVariableBlock('block C', 'a local id', 'i'));
+
+    const extensions = {extensionIDs: new Set(), extensionURLs: new Map()};
+    vm.installTargets([stage, spriteA, spriteB, spriteC], extensions, true).then(() => {
+        t.equal(Object.keys(stage.variables).length, 0, 'no global created');
+        t.same(Object.keys(spriteA.variables), ['a local id'], 'A untouched');
+        t.same(Object.keys(spriteB.variables), ['a local id'], 'B has its own local under the id');
+        t.same(Object.keys(spriteC.variables), ['a local id'], 'C has its own local under the id');
+        t.not(spriteB.variables['a local id'], spriteA.variables['a local id'], 'B\'s local is distinct from A\'s');
+        t.not(spriteC.variables['a local id'], spriteB.variables['a local id'], 'C\'s local is distinct from B\'s');
+        t.end();
+    });
+});
+
+test('installTargets judges a shadowing local by each referring sprite\'s own field name', t => {
+    // Two sprites reference the same missing id under different stale names, and
+    // one of them owns a local matching its own name. That sprite would have
+    // resolved to its local by name, so no global is restored.
+    const vm = new VirtualMachine();
+    const runtime = vm.runtime;
+    const stage = makeStageTarget(runtime);
+    const spriteA = makeSpriteTarget(runtime, 'A');
+    const spriteB = makeSpriteTarget(runtime, 'B');
+    spriteA.blocks.createBlock(makeDanglingVariableBlock('block A', 'missing id', 'score'));
+    spriteB.createVariable('b points id', 'points', Variable.SCALAR_TYPE);
+    spriteB.blocks.createBlock(makeDanglingVariableBlock('block B', 'missing id', 'points'));
+
+    const extensions = {extensionIDs: new Set(), extensionURLs: new Map()};
+    vm.installTargets([stage, spriteA, spriteB], extensions, true).then(() => {
+        t.equal(Object.keys(stage.variables).length, 0, 'no global restored');
+        t.equal(spriteB.blocks.getBlock('block B').fields.VARIABLE.id, 'b points id', 'B resolved to its local');
+        t.same(Object.keys(spriteB.variables), ['b points id'], 'B has only its own local');
+        t.same(Object.keys(spriteA.variables), ['missing id'], 'A created its own local');
+        t.equal(spriteA.variables['missing id'].name, 'score');
+        t.end();
+    });
+});
+
 test('installTargets does NOT rename clean local-vs-global name collisions on whole-project load', t => {
     // Regression guard: a project saved with a sprite-local variable that name-collides with
     // a stage global must load unchanged. The fixUpVariableReferences rename behavior is

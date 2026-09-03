@@ -1447,7 +1447,8 @@ test('reconcileVariableReferences normalizes field values across targets after a
     targetA.blocks.createBlock(makeBlockReferencing('block A', 'shared dangling id', 'shared name'));
     targetB.blocks.createBlock(makeBlockReferencing('block B', 'shared dangling id', 'shared name'));
 
-    // Reconcile each target in turn, as installTargets does, using the stage-creation path.
+    // Reconcile each target in turn on the stage-creation path (the sprite-import
+    // behavior; whole-project load never bumps names, so it cannot hit this case).
     targetA.reconcileVariableReferences(true);
     targetB.reconcileVariableReferences(true);
 
@@ -1746,6 +1747,53 @@ test('reconcileVariableReferences creates a cloud-prefixed missing variable on t
     t.equal(stage.variables['lost cloud id'].name, cloudName);
     t.equal(stage.variables['lost cloud id'].isCloud, false, 'not registered as a live cloud variable');
     t.equal(Object.keys(target.variables).length, 0, 'nothing created on the sprite');
+
+    t.end();
+});
+
+test('reconcileVariableReferences keeps a cloud-prefixed missing list on the sprite', t => {
+    // Only scalars can be cloud variables. A list whose name happens to start with
+    // the cloud prefix is an ordinary list and stays local, as lookupOrCreateList
+    // would have made it.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    const listName = `${Variable.CLOUD_PREFIX}items`;
+    target.blocks.createBlock({
+        id: 'a block',
+        opcode: 'data_listcontents',
+        inputs: {},
+        fields: {
+            LIST: {
+                name: 'LIST',
+                id: 'lost list id',
+                value: listName,
+                variableType: Variable.LIST_TYPE
+            }
+        },
+        next: null,
+        topLevel: true,
+        parent: null,
+        shadow: false,
+        x: 0,
+        y: 0
+    });
+
+    target.reconcileVariableReferences();
+
+    t.equal(Object.keys(stage.variables).length, 0, 'nothing created on the stage');
+    t.same(Object.keys(target.variables), ['lost list id'], 'list created on the sprite');
+    t.equal(target.variables['lost list id'].name, listName);
+    t.equal(target.variables['lost list id'].type, Variable.LIST_TYPE);
 
     t.end();
 });
