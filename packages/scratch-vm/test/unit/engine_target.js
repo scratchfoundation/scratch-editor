@@ -1626,6 +1626,103 @@ test('fixUpVariableReferences remaps a dangling reference to a same-name sprite-
     t.end();
 });
 
+test('reconcileVariableReferences on the stage keeps the original name despite a same-named sprite local', t => {
+    // A stage script with a dangling "i" while some sprite owns a local "i". The
+    // runtime would have created a global "i" on first execution; bumping it to "i2"
+    // would break name-based access such as a sensing block reading "i of Stage".
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const sprite = new Target(runtime);
+    sprite.isStage = false;
+    sprite.getName = () => 'Sprite';
+    sprite.createVariable('sprite i id', 'i', Variable.SCALAR_TYPE);
+
+    runtime.targets = [stage, sprite];
+
+    stage.blocks.createBlock(makeVariableFieldBlock('block A', 'data_variable', 'dangling A', 'i'));
+    stage.blocks.createBlock(makeVariableFieldBlock('block B', 'data_variable', 'dangling B', 'i'));
+
+    stage.reconcileVariableReferences();
+
+    t.same(Object.keys(stage.variables), ['dangling A'], 'one global created, keeping the first id');
+    t.equal(stage.variables['dangling A'].name, 'i', 'global keeps the original name');
+    t.equal(sprite.variables['sprite i id'].name, 'i', 'sprite local untouched');
+
+    const fieldA = stage.blocks.getBlock('block A').fields.VARIABLE;
+    const fieldB = stage.blocks.getBlock('block B').fields.VARIABLE;
+    t.equal(fieldA.id, 'dangling A');
+    t.equal(fieldB.id, 'dangling A', 'second dangling ref coalesces to the created global by name');
+    t.equal(fieldA.value, 'i');
+    t.equal(fieldB.value, 'i');
+
+    t.end();
+});
+
+test('reconcileVariableReferences with createMissingOnStage still bumps past a same-named sprite local', t => {
+    // Sprite import keeps the historical behavior: a leftover reference becomes a
+    // global whose name collides with nothing in the project.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const otherSprite = new Target(runtime);
+    otherSprite.isStage = false;
+    otherSprite.getName = () => 'Other';
+    otherSprite.createVariable('other i id', 'i', Variable.SCALAR_TYPE);
+
+    const imported = new Target(runtime);
+    imported.isStage = false;
+    imported.getName = () => 'Imported';
+
+    runtime.targets = [stage, otherSprite, imported];
+
+    imported.blocks.createBlock(makeVariableFieldBlock('a block', 'data_variable', 'dangling id', 'i'));
+
+    imported.reconcileVariableReferences(true);
+
+    t.same(Object.keys(stage.variables), ['dangling id'], 'global created');
+    t.equal(stage.variables['dangling id'].name, 'i2', 'name bumped past the other sprite\'s local');
+    t.equal(imported.blocks.getBlock('a block').fields.VARIABLE.value, 'i2', 'field shows the bumped name');
+    t.equal(Object.keys(imported.variables).length, 0, 'nothing created on the imported sprite');
+
+    t.end();
+});
+
+test('reconcileVariableReferences matches a dangling broadcast reference case-insensitively', t => {
+    // Broadcast names are matched case-insensitively at runtime, so a dangling
+    // "my message" should resolve to an existing "My Message" rather than create a
+    // second broadcast that differs only in case.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    stage.createVariable('existing broadcast id', 'My Message', Variable.BROADCAST_MESSAGE_TYPE);
+    addBroadcastBlocksTo(target);
+
+    target.reconcileVariableReferences();
+
+    t.same(Object.keys(stage.variables), ['existing broadcast id'], 'no second broadcast created');
+    const field = target.blocks.getBlock('boadcast shadow').fields.BROADCAST_OPTION;
+    t.equal(field.id, 'existing broadcast id', 'reference remapped to the existing broadcast');
+    t.equal(field.value, 'My Message', 'field displays the existing broadcast\'s name');
+
+    t.end();
+});
+
 test('reconcileVariableReferences does not log on clean references', t => {
     const runtime = new Runtime();
 

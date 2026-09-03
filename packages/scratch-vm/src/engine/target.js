@@ -668,13 +668,15 @@ class Target extends EventEmitter {
      * - If the referenced id is not defined anywhere, this target is checked for
      *   a variable with the same name and type, then the stage. If one exists,
      *   the field id is remapped to it. A sprite-local match wins over a global
-     *   one, exactly as it does at execution time.
-     * - Otherwise a new definition is created. By default it is created on this
-     *   target with the referenced name, as the runtime would have on first
-     *   execution. Broadcasts and references on the stage itself are always
-     *   created on the stage. With `createMissingOnStage` set, the new
-     *   definition is instead created on the stage with a non-conflicting name
-     *   and the field name is updated to match.
+     *   one, exactly as it does at execution time. Broadcasts match by name
+     *   case-insensitively, as `lookupBroadcastByInputValue` does.
+     * - Otherwise a new definition is created under the referenced name, as the
+     *   runtime would have on first execution: on this target, or on the stage
+     *   for broadcasts and for references on the stage itself. A same-named
+     *   local on another sprite is an ordinary Scratch configuration and does
+     *   not cause a rename. With `createMissingOnStage` set, the new definition
+     *   is instead created on the stage with a name that collides with nothing
+     *   in the project, and the field name is updated to match.
      *
      * Used during whole-project load to repair projects corrupted by historical
      * bugs that left dangling references, and as the definition-creation phase
@@ -693,13 +695,13 @@ class Target extends EventEmitter {
         const allReferences = this.blocks.getAllVariableAndListReferences(null, true);
         const conflictIdsToReplace = Object.create(null);
         const conflictNamesToReplace = Object.create(null);
-        // When a dangling reference triggers creation of a new stage variable, remember
-        // the original (pre-bump) name so subsequent dangling references with the same
-        // original name and type coalesce to the same stage variable instead of creating
-        // a second one. Scratchers who pasted scripts referencing what they called
-        // "score" twice almost certainly meant one variable, not two.
-        // (Locally-created definitions keep their original name, so later dangling
-        // references to that name coalesce through the by-name lookup instead.)
+        // When a dangling reference triggers creation of a new stage variable with a
+        // bumped name (createMissingOnStage only), remember the original name so
+        // subsequent dangling references with the same original name and type coalesce
+        // to the same stage variable instead of creating a second one. Scratchers who
+        // pasted scripts referencing what they called "score" twice almost certainly
+        // meant one variable, not two. (Definitions created under their original name
+        // need no such bookkeeping: later references find them via the by-name lookup.)
         const createdForOriginalName = Object.create(null);
         const originalNameKey = (name, type) => `${type}\u0000${name}`;
 
@@ -746,10 +748,20 @@ class Target extends EventEmitter {
             const varRef = allReferences[varId][0];
             const varName = varRef.referencingField.value;
             const varType = varRef.type;
-            const existingVar = this.lookupVariableByNameAndType(varName, varType);
+            const isBroadcast = varType === Variable.BROADCAST_MESSAGE_TYPE;
+            // Broadcast names match case-insensitively at runtime (hat matching and
+            // lookupBroadcastByInputValue both ignore case), so match the same way here
+            // rather than creating a second broadcast that differs only in case.
+            const existingVar = isBroadcast ?
+                stage.lookupBroadcastByInputValue(varName) :
+                this.lookupVariableByNameAndType(varName, varType);
             if (existingVar) {
                 if (!conflictIdsToReplace[varId]) {
                     conflictIdsToReplace[varId] = existingVar.id;
+                    if (existingVar.name !== varName) {
+                        // Only reachable for broadcasts; display the canonical name.
+                        conflictNamesToReplace[varId] = existingVar.name;
+                    }
                     const scope = Object.prototype.hasOwnProperty.call(this.variables, existingVar.id) ?
                         'local' : 'stage';
                     log.warn(
@@ -757,25 +769,10 @@ class Target extends EventEmitter {
                         `(name '${varName}', type '${varType}') to existing ${scope} variable '${existingVar.id}'.`
                     );
                 }
-            } else if (
-                !createMissingOnStage &&
-                !this.isStage &&
-                varType !== Variable.BROADCAST_MESSAGE_TYPE
-            ) {
-                // Nothing in scope has this name, so create it here with the referenced
-                // name, as the runtime's lookupOrCreateVariable / lookupOrCreateList would
-                // have on first execution. The name can't collide with anything in scope
-                // (the lookup above just failed), and a same-named local on another
-                // sprite is an ordinary Scratch configuration. Later dangling references
-                // to this name on this target now resolve to it via the by-name lookup.
-                this.createVariable(varId, varName, varType);
-                // Bring any other references to this id into agreement on the name.
-                conflictNamesToReplace[varId] = varName;
-                log.warn(
-                    `Reconciled dangling reference on '${this.getName()}': created local variable ` +
-                    `'${varId}' (name '${varName}', type '${varType}').`
-                );
-            } else {
+            } else if (createMissingOnStage) {
+                // Sprite import / backpack paste: a reference still undefined here was a
+                // global in the source project. Recreate it on the stage under a name
+                // that collides with nothing in this project.
                 const coalesceKey = originalNameKey(varName, varType);
                 const earlierCreated = createdForOriginalName[coalesceKey];
                 if (earlierCreated) {
@@ -809,6 +806,25 @@ class Target extends EventEmitter {
                         );
                     }
                 }
+            } else {
+                // Nothing in scope has this name, so create it under the referenced name,
+                // as the runtime's lookupOrCreateVariable / lookupOrCreateList would have
+                // on first execution: on this target, or on the stage for broadcasts and
+                // for the stage's own references. The name can't collide with anything in
+                // scope (the lookup above just failed). A same-named local on another
+                // sprite is an ordinary Scratch configuration, so no rename is needed, and
+                // renaming would break name-based access such as "i of Stage" in a
+                // sensing block. Later dangling references to this name on this target
+                // resolve to the new definition via the by-name lookup.
+                const owner = isBroadcast ? stage : this;
+                owner.createVariable(varId, varName, varType);
+                // Bring any other references to this id into agreement on the name.
+                conflictNamesToReplace[varId] = varName;
+                const scope = owner.isStage ? 'stage' : 'local';
+                log.warn(
+                    `Reconciled dangling reference on '${this.getName()}': created ${scope} variable ` +
+                    `'${varId}' (name '${varName}', type '${varType}').`
+                );
             }
         }
 
