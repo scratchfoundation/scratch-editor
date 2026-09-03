@@ -104,7 +104,7 @@ const ArgumentTypeMap = (() => {
     };
     map[ArgumentType.IMAGE] = {
         // Inline images are weird because they're not actually "arguments".
-        // They are more analagous to the label on a block.
+        // They are more analogous to the label on a block.
         fieldType: 'field_image'
     };
     return map;
@@ -323,7 +323,7 @@ class Runtime extends EventEmitter {
          */
         this.currentStepTime = null;
 
-        // Set an intial value for this.currentMSecs
+        // Set an initial value for this.currentMSecs
         this.updateCurrentMSecs();
 
         /**
@@ -366,7 +366,7 @@ class Runtime extends EventEmitter {
         const newCloudDataManager = cloudDataManager();
 
         /**
-         * Check wether the runtime has any cloud data.
+         * Check whether the runtime has any cloud data.
          * @type {function}
          * @returns {boolean} Whether or not the runtime currently has any
          * cloud variables.
@@ -1260,7 +1260,7 @@ class Runtime extends EventEmitter {
     }
 
     /**
-     * Helper for _convertPlaceholdes which handles inline images which are a specialized case of block "arguments".
+     * Helper for _convertPlaceholders which handles inline images which are a specialized case of block "arguments".
      * @param {object} argInfo Metadata about the inline image as specified by the extension
      * @returns {object} JSON blob for a scratch-blocks image field.
      * @private
@@ -1981,7 +1981,7 @@ class Runtime extends EventEmitter {
     /**
      * Move a target in the execution order by a relative amount.
      *
-     * A positve number will make the target execute earlier. A negative number
+     * A positive number will make the target execute earlier. A negative number
      * will make the target execute later in the order.
      * @param {Target} executableTarget target to move
      * @param {number} delta number of positions to move target by
@@ -2582,6 +2582,63 @@ class Runtime extends EventEmitter {
             varNames = varNames.concat(targetVarNames);
         }
         return varNames;
+    }
+
+    /**
+     * Restore, as globals on the stage, variables and lists whose definitions are
+     * missing from the project but which are still referenced from more than one
+     * target.
+     *
+     * A definition-dropping bug once left references pointing at ids defined
+     * nowhere. When several targets share such an id they almost certainly shared
+     * one variable, and the shared id is the strongest evidence of that. Restoring
+     * the global before each target repairs its own references keeps those targets
+     * sharing it rather than each minting a private local.
+     *
+     * A same-name local on any referencing target is a stronger claim: that target
+     * would have resolved the reference to its own local by name at execution time,
+     * so the id is left for the per-target repair. Likewise when a same-name global
+     * already exists, since the per-target repair remaps to it. Broadcasts are
+     * skipped because they only ever live on the stage, so every target's repair
+     * already coalesces them there.
+     *
+     * Run before `Target.reconcileVariableReferences` on whole-project load.
+     * @param {Array<Target>} targets The targets being installed.
+     */
+    restoreSharedMissingDefinitions (targets) {
+        const stage = this.getTargetForStage();
+        if (!stage) return;
+
+        const referrers = Object.create(null);
+        for (const target of targets) {
+            const references = target.blocks.getAllVariableAndListReferences();
+            for (const varId in references) {
+                if (target.lookupVariableById(varId)) continue;
+                const ref = references[varId][0];
+                if (!referrers[varId]) {
+                    referrers[varId] = {
+                        name: ref.referencingField.value,
+                        type: ref.type,
+                        targets: []
+                    };
+                }
+                referrers[varId].targets.push(target);
+            }
+        }
+
+        for (const varId in referrers) {
+            const {name, type, targets: owners} = referrers[varId];
+            if (owners.length < 2) continue;
+            // skipStage: only a local shadows here. (For the stage itself, "local"
+            // means the globals, which the next check covers anyway.)
+            if (owners.some(owner => owner.lookupVariableByNameAndType(name, type, true))) continue;
+            if (stage.lookupVariableByNameAndType(name, type)) continue;
+            stage.createVariable(varId, name, type);
+            log.warn(
+                `Restored missing shared variable '${varId}' (name '${name}', type '${type}') as a global; ` +
+                `referenced by ${owners.map(owner => `'${owner.getName()}'`).join(', ')}.`
+            );
+        }
     }
 
     /**

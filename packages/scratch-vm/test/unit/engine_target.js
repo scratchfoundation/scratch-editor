@@ -1723,6 +1723,33 @@ test('reconcileVariableReferences matches a dangling broadcast reference case-in
     t.end();
 });
 
+test('reconcileVariableReferences creates a cloud-prefixed missing variable on the stage', t => {
+    // Cloud variables are always global; a sprite-local "☁ score" would only confuse.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    const cloudName = `${Variable.CLOUD_PREFIX}score`;
+    target.blocks.createBlock(makeVariableFieldBlock('a block', 'data_variable', 'lost cloud id', cloudName));
+
+    target.reconcileVariableReferences();
+
+    t.same(Object.keys(stage.variables), ['lost cloud id'], 'created on the stage');
+    t.equal(stage.variables['lost cloud id'].name, cloudName);
+    t.equal(stage.variables['lost cloud id'].isCloud, false, 'not registered as a live cloud variable');
+    t.equal(Object.keys(target.variables).length, 0, 'nothing created on the sprite');
+
+    t.end();
+});
+
 test('reconcileVariableReferences does not log on clean references', t => {
     const runtime = new Runtime();
 
