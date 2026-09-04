@@ -58,7 +58,7 @@
     "base64-loader": "1.0.0",
     "css-tree": "3.2.1",
     "fastestsmallesttextencoderdecoder": "1.0.22",
-    "isomorphic-dompurify": "2.36.0",
+    "isomorphic-dompurify": "4.1.0",
     "svgo": "4.1.0",
     "transformation-matrix": "1.15.3",
     "tslog": "4.11.0"
