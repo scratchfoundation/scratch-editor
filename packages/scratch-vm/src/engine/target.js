@@ -766,8 +766,10 @@ class Target extends EventEmitter {
                         // Only reachable for broadcasts; display the canonical name.
                         conflictNamesToReplace[varId] = existingVar.name;
                     }
-                    const scope = Object.prototype.hasOwnProperty.call(this.variables, existingVar.id) ?
-                        'local' : 'stage';
+                    // On the stage, "this.variables" holds the globals; only a sprite's own
+                    // variable is local.
+                    const isOwnVariable = Object.prototype.hasOwnProperty.call(this.variables, existingVar.id);
+                    const scope = (isOwnVariable && !this.isStage) ? 'local' : 'stage';
                     log.warn(
                         `Reconciled dangling reference on '${this.getName()}': remapped id '${varId}' ` +
                         `(name '${varName}', type '${varType}') to existing ${scope} variable '${existingVar.id}'.`
