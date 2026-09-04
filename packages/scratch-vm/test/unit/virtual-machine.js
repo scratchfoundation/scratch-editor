@@ -1399,6 +1399,32 @@ test('installTargets does not restore a shared id that another sprite defines lo
     });
 });
 
+test('installTargets does not merge id-less references from different sprites', t => {
+    // A field serialized as a one-element array has no id, and the reference
+    // collector files every such field under the key "undefined". Two sprites with
+    // id-less fields share nothing, so each keeps the per-sprite behavior.
+    const vm = new VirtualMachine();
+    const runtime = vm.runtime;
+    const stage = makeStageTarget(runtime);
+    const spriteA = makeSpriteTarget(runtime, 'A');
+    const spriteB = makeSpriteTarget(runtime, 'B');
+    spriteA.blocks.createBlock(makeDanglingVariableBlock('block A', undefined, 'score'));
+    spriteB.blocks.createBlock(makeDanglingVariableBlock('block B', undefined, 'score'));
+
+    const extensions = {extensionIDs: new Set(), extensionURLs: new Map()};
+    vm.installTargets([stage, spriteA, spriteB], extensions, true).then(() => {
+        t.equal(Object.keys(stage.variables).length, 0, 'no global created');
+        const aVars = Object.values(spriteA.variables);
+        const bVars = Object.values(spriteB.variables);
+        t.equal(aVars.length, 1, 'A has its own variable');
+        t.equal(bVars.length, 1, 'B has its own variable');
+        t.equal(aVars[0].name, 'score');
+        t.equal(bVars[0].name, 'score');
+        t.not(aVars[0], bVars[0], 'the two are distinct');
+        t.end();
+    });
+});
+
 test('installTargets judges a shadowing local by each referring sprite\'s own field name', t => {
     // Two sprites reference the same missing id under different stale names, and
     // one of them owns a local matching its own name. That sprite would have

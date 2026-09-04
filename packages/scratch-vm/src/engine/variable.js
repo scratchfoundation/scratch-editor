@@ -65,16 +65,6 @@ class Variable {
     static get BROADCAST_MESSAGE_TYPE () {
         return 'broadcast_msg';
     }
-
-    /**
-     * Prefix the editor puts on cloud variable names: the cloud character
-     * followed by a space. The VM does not enforce it, but treats a name that
-     * carries it as belonging to a global when repairing references.
-     * @constant {string}
-     */
-    static get CLOUD_PREFIX () {
-        return '☁ ';
-    }
 }
 
 module.exports = Variable;

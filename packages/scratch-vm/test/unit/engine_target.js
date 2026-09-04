@@ -1724,8 +1724,10 @@ test('reconcileVariableReferences matches a dangling broadcast reference case-in
     t.end();
 });
 
-test('reconcileVariableReferences creates a cloud-prefixed missing variable on the stage', t => {
-    // Cloud variables are always global; a sprite-local "☁ score" would only confuse.
+test('reconcileVariableReferences keeps a cloud-prefixed missing variable on the sprite', t => {
+    // The cloud prefix is an editor naming convention, not scope metadata. The
+    // loader deliberately keeps a cloud-marked sprite-local as a regular local,
+    // and lookupOrCreateVariable creates locally regardless of the name.
     const runtime = new Runtime();
 
     const stage = new Target(runtime);
@@ -1738,62 +1740,14 @@ test('reconcileVariableReferences creates a cloud-prefixed missing variable on t
 
     runtime.targets = [stage, target];
 
-    const cloudName = `${Variable.CLOUD_PREFIX}score`;
-    target.blocks.createBlock(makeVariableFieldBlock('a block', 'data_variable', 'lost cloud id', cloudName));
-
-    target.reconcileVariableReferences();
-
-    t.same(Object.keys(stage.variables), ['lost cloud id'], 'created on the stage');
-    t.equal(stage.variables['lost cloud id'].name, cloudName);
-    t.equal(stage.variables['lost cloud id'].isCloud, false, 'not registered as a live cloud variable');
-    t.equal(Object.keys(target.variables).length, 0, 'nothing created on the sprite');
-
-    t.end();
-});
-
-test('reconcileVariableReferences keeps a cloud-prefixed missing list on the sprite', t => {
-    // Only scalars can be cloud variables. A list whose name happens to start with
-    // the cloud prefix is an ordinary list and stays local, as lookupOrCreateList
-    // would have made it.
-    const runtime = new Runtime();
-
-    const stage = new Target(runtime);
-    stage.isStage = true;
-    stage.getName = () => 'Stage';
-
-    const target = new Target(runtime);
-    target.isStage = false;
-    target.getName = () => 'Target';
-
-    runtime.targets = [stage, target];
-
-    const listName = `${Variable.CLOUD_PREFIX}items`;
-    target.blocks.createBlock({
-        id: 'a block',
-        opcode: 'data_listcontents',
-        inputs: {},
-        fields: {
-            LIST: {
-                name: 'LIST',
-                id: 'lost list id',
-                value: listName,
-                variableType: Variable.LIST_TYPE
-            }
-        },
-        next: null,
-        topLevel: true,
-        parent: null,
-        shadow: false,
-        x: 0,
-        y: 0
-    });
+    target.blocks.createBlock(makeVariableFieldBlock('a block', 'data_variable', 'lost cloud id', '☁ score'));
 
     target.reconcileVariableReferences();
 
     t.equal(Object.keys(stage.variables).length, 0, 'nothing created on the stage');
-    t.same(Object.keys(target.variables), ['lost list id'], 'list created on the sprite');
-    t.equal(target.variables['lost list id'].name, listName);
-    t.equal(target.variables['lost list id'].type, Variable.LIST_TYPE);
+    t.same(Object.keys(target.variables), ['lost cloud id'], 'created on the sprite');
+    t.equal(target.variables['lost cloud id'].name, '☁ score');
+    t.equal(target.variables['lost cloud id'].isCloud, false);
 
     t.end();
 });

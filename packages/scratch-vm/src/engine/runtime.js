@@ -2628,6 +2628,10 @@ class Runtime extends EventEmitter {
             for (const varId in references) {
                 if (definedIds.has(varId)) continue;
                 const ref = references[varId][0];
+                // A field serialized without an id is collected under the key
+                // "undefined". Two such fields on different targets share nothing but
+                // that accident, so leave them to the per-target repair.
+                if (typeof ref.referencingField.id !== 'string') continue;
                 if (!referrers[varId]) referrers[varId] = [];
                 referrers[varId].push({
                     target,

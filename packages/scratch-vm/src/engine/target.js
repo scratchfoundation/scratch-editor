@@ -672,8 +672,7 @@ class Target extends EventEmitter {
      *   case-insensitively, as `lookupBroadcastByInputValue` does.
      * - Otherwise a new definition is created under the referenced name, as the
      *   runtime would have on first execution: on this target, or on the stage
-     *   for broadcasts, for cloud-prefixed scalar names, and for references on
-     *   the stage itself. A same-named local on another sprite is an ordinary
+     *   for broadcasts and for references on the stage itself. A same-named local on another sprite is an ordinary
      *   Scratch configuration and does not cause a rename. With
      *   `createMissingOnStage` set, the new definition is instead created on
      *   the stage with a name that collides with nothing in the project, and
@@ -822,13 +821,7 @@ class Target extends EventEmitter {
                 // renaming would break name-based access such as "i of Stage" in a
                 // sensing block. Later dangling references to this name on this target
                 // resolve to the new definition via the by-name lookup.
-                // A scalar whose name carries the cloud prefix belonged to a cloud
-                // variable, and those are always global; a sprite-local "☁ score" would
-                // only confuse. Only scalars can be cloud, so a list keeps its scope.
-                const isCloudName = varType === Variable.SCALAR_TYPE &&
-                    typeof varName === 'string' &&
-                    varName.startsWith(Variable.CLOUD_PREFIX);
-                const owner = (isBroadcast || isCloudName) ? stage : this;
+                const owner = isBroadcast ? stage : this;
                 owner.createVariable(varId, varName, varType);
                 // Bring any other references to this id into agreement on the name.
                 conflictNamesToReplace[varId] = varName;
