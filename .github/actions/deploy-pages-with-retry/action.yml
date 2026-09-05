@@ -26,7 +26,7 @@ runs:
     - name: Deploy (attempt 1)
       id: deploy_pages_attempt_1
       continue-on-error: true
-      uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+      uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
       with:
         github_token: ${{ inputs.github_token }}
         publish_dir: ${{ inputs.publish_dir }}
@@ -42,7 +42,7 @@ runs:
       id: deploy_pages_attempt_2
       if: ${{ steps.deploy_pages_attempt_1.outcome == 'failure' }}
       continue-on-error: true
-      uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+      uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
       with:
         github_token: ${{ inputs.github_token }}
         publish_dir: ${{ inputs.publish_dir }}
@@ -56,7 +56,7 @@ runs:
 
     - name: Deploy (attempt 3)
       if: ${{ steps.deploy_pages_attempt_2.outcome == 'failure' }}
-      uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e # v4
+      uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4
       with:
         github_token: ${{ inputs.github_token }}
         publish_dir: ${{ inputs.publish_dir }}
