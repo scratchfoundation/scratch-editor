@@ -45,7 +45,7 @@
     "vite": "npm:rolldown-vite@7.3.1"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "4.1.11",
+    "@vitest/coverage-v8": "5.0.0",
     "eslint": "9.39.5",
     "eslint-config-scratch": "14.1.66",
     "prettier": "3.9.6",
@@ -53,6 +53,6 @@
     "typescript": "5.9.3",
     "unplugin-dts": "1.1.0",
     "vite": "npm:rolldown-vite@7.3.1",
-    "vitest": "4.1.11"
+    "vitest": "5.0.0"
   }
 }
