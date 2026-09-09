@@ -35,7 +35,12 @@ import throttle from 'redux-throttle';
 import decks from '../lib/libraries/decks/index.jsx';
 import {GUIConfig} from '../gui-config';
 
-const guiMiddleware = compose(applyMiddleware(throttle(300, {leading: true, trailing: true})));
+const buildGuiMiddleware = () => compose(applyMiddleware(throttle(300, {leading: true, trailing: true})));
+
+/**
+ * @deprecated Call {@link buildGuiMiddleware} once per store instead.
+ */
+const guiMiddleware = buildGuiMiddleware();
 
 const buildInitialState = (config: GUIConfig) => ({
     alerts: alertsInitialState,
@@ -184,6 +189,7 @@ const guiReducer = combineReducers({
 
 export {
     guiReducer as default,
+    buildGuiMiddleware,
     buildInitialState,
     guiMiddleware,
     initEmbedded,

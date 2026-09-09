@@ -70,8 +70,8 @@ export class EditorState {
             const guiRedux = require('../reducers/gui');
             const guiReducer = guiRedux.default;
             const {
+                buildGuiMiddleware,
                 buildInitialState,
-                guiMiddleware,
                 initFullScreen,
                 initPlayer,
                 initTelemetryModal,
@@ -106,7 +106,7 @@ export class EditorState {
                 locales: initializedLocales,
                 scratchGui: initializedGui
             };
-            enhancer = composeEnhancers(guiMiddleware);
+            enhancer = composeEnhancers(buildGuiMiddleware());
         }
         const reducer = combineReducers(reducers);
         this.store = createStore(reducer, initialState, enhancer);
