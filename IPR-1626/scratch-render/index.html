@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Scratch WebGL rendering demo</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+<canvas id="scratch-stage" width="10" height="10"></canvas>
+<canvas id="debug-canvas" width="10" height="10"></canvas>
+<p>
+    <label for="fudgeproperty">Property to tweak:</label>
+    <select id="fudgeproperty">
+        <option value="posx">Position X</option>
+        <option value="posy">Position Y</option>
+        <option value="direction">Direction</option>
+        <option value="scalex">Scale X</option>
+        <option value="scaley">Scale Y</option>
+        <option value="scaleboth">Scale (both dimensions)</option>
+        <option value="color">Color</option>
+        <option value="fisheye">Fisheye</option>
+        <option value="whirl">Whirl</option>
+        <option value="pixelate">Pixelate</option>
+        <option value="mosaic">Mosaic</option>
+        <option value="brightness">Brightness</option>
+        <option value="ghost">Ghost</option>
+    </select>
+    <label for="fudge">Property Value:</label>
+    <input type="range" id="fudge" style="width:50%" value="90" min="-90" max="270" step="any">
+</p>
+<p>
+    <label for="stage-scale">Stage scale:</label>
+    <input type="range" style="width:50%" id="stage-scale" value="1" min="1" max="2.5" step="any">
+</p>
+<p>
+    <label for="fudgeMin">Min:</label><input id="fudgeMin" type="number" value="0">
+    <label for="fudgeMax">Max:</label><input id="fudgeMax" type="number" value="200">
+</p>
+<script src="playground.js"></script>
+</body>
+</html>
