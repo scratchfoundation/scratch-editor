@@ -133,7 +133,7 @@
     "@scratch/scratch-vm": "15.1.1",
     "@tensorflow-models/face-detection": "1.0.3",
     "@tensorflow/tfjs": "4.22.0",
-    "@testing-library/user-event": "14.6.6",
+    "@testing-library/user-event": "14.6.7",
     "arraybuffer-loader": "1.0.8",
     "autoprefixer": "9.8.8",
     "balance-text": "3.3.1",
