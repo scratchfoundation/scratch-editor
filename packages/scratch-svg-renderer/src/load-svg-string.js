@@ -3,7 +3,8 @@ const convertFonts = require('./font-converter');
 const transformStrokeWidths = require('./transform-applier');
 const {sanitizeSvgText} = require('./sanitize-svg');
 const {Sandbox} = require('./sandbox/index');
-const {createMeasureSvgScript} = require('./sandbox/measure-svg-script');
+const MEASURE_URL = require('./sandbox/measure-svg.js?resource');
+const MEASURE_TEXT = require('./sandbox/measure-svg.js?source');
 const getFonts = require('scratch-render-fonts');
 
 /**
@@ -25,10 +26,17 @@ const MEASUREMENT_IDLE_TIMEOUT_MS = 10000;
  */
 const getMeasurementSandbox = () => {
     if (!measurementSandbox) {
+        // ~1.31 MB of base64 data URIs, sent as init data rather than baked
+        // into the handler so the handler can be a static asset.
         const fonts = getFonts();
         const fontCSS = Object.values(fonts).join('');
-        const script = createMeasureSvgScript(fontCSS);
-        measurementSandbox = new Sandbox(script, {idleTimeoutMs: MEASUREMENT_IDLE_TIMEOUT_MS});
+        measurementSandbox = new Sandbox(
+            [{url: MEASURE_URL, text: MEASURE_TEXT}],
+            {
+                idleTimeoutMs: MEASUREMENT_IDLE_TIMEOUT_MS,
+                init: fontCSS
+            }
+        );
     }
     return measurementSandbox;
 };

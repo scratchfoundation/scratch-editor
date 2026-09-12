@@ -15,9 +15,7 @@ test.beforeEach(async ({page}) => {
 
 test('basic script execution returns a result', async ({page}) => {
     const result = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(
-            'window.onSandboxMessage = function (p) { return p.a + p.b; }'
-        );
+        const sandbox = new window.Sandbox([{text: 'window.onSandboxMessage = function (p) { return p.a + p.b; }'}]);
         try {
             return await sandbox.send({a: 2, b: 3});
         } finally {
@@ -29,9 +27,7 @@ test('basic script execution returns a result', async ({page}) => {
 
 test('iframe is removed from DOM after destroy', async ({page}) => {
     await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(
-            'window.onSandboxMessage = function () { return "done"; }'
-        );
+        const sandbox = new window.Sandbox([{text: 'window.onSandboxMessage = function () { return "done"; }'}]);
         await sandbox.send(null);
         sandbox.destroy();
     });
@@ -44,9 +40,7 @@ test('iframe is removed from DOM after destroy', async ({page}) => {
 
 test('iframe has opaque origin (window.origin is "null")', async ({page}) => {
     const origin = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(
-            'window.onSandboxMessage = function () { return window.origin; }'
-        );
+        const sandbox = new window.Sandbox([{text: 'window.onSandboxMessage = function () { return window.origin; }'}]);
         try {
             return await sandbox.send(null);
         } finally {
@@ -58,7 +52,7 @@ test('iframe has opaque origin (window.origin is "null")', async ({page}) => {
 
 test('iframe cannot access parent.location', async ({page}) => {
     const result = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = function () {
                 try {
                     return parent.location.href;
@@ -66,7 +60,7 @@ test('iframe cannot access parent.location', async ({page}) => {
                     return {threw: true, message: e.message};
                 }
             }
-        `);
+        `}]);
         try {
             return await sandbox.send(null);
         } finally {
@@ -78,7 +72,7 @@ test('iframe cannot access parent.location', async ({page}) => {
 
 test('fetch is blocked by CSP (no connect-src)', async ({page}) => {
     const result = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = async function () {
                 try {
                     await fetch('https://example.com');
@@ -87,7 +81,7 @@ test('fetch is blocked by CSP (no connect-src)', async ({page}) => {
                     return {blocked: true, message: e.message};
                 }
             }
-        `);
+        `}]);
         try {
             return await sandbox.send(null);
         } finally {
@@ -100,7 +94,7 @@ test('fetch is blocked by CSP (no connect-src)', async ({page}) => {
 test('script errors are propagated as rejections', async ({page}) => {
     const error = await page.evaluate(async () => {
         const sandbox = new window.Sandbox(
-            'window.onSandboxMessage = function () { throw new Error("test error"); }'
+            [{text: 'window.onSandboxMessage = function () { throw new Error("test error"); }'}]
         );
         try {
             return await sandbox.send(null).catch(e => ({message: e.message}));
@@ -113,9 +107,7 @@ test('script errors are propagated as rejections', async ({page}) => {
 
 test('missing onSandboxMessage definition rejects', async ({page}) => {
     const error = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(
-            '/* no onSandboxMessage defined */'
-        );
+        const sandbox = new window.Sandbox([{text: '/* no onSandboxMessage defined */'}]);
         try {
             return await sandbox.send(null).catch(e => ({message: e.message}));
         } finally {
@@ -128,7 +120,7 @@ test('missing onSandboxMessage definition rejects', async ({page}) => {
 test('timeout rejects when script never responds', async ({page}) => {
     const error = await page.evaluate(async () => {
         const sandbox = new window.Sandbox(
-            'window.onSandboxMessage = function () { return new Promise(() => {}); }',
+            [{text: 'window.onSandboxMessage = function () { return new Promise(() => {}); }'}],
             {timeoutMs: 500}
         );
         try {
@@ -142,13 +134,13 @@ test('timeout rejects when script never responds', async ({page}) => {
 
 test('async onSandboxMessage is supported', async ({page}) => {
     const result = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = function (p) {
                 return new Promise(function (resolve) {
                     setTimeout(function () { resolve(p.x * 2); }, 50);
                 });
             }
-        `);
+        `}]);
         try {
             return await sandbox.send({x: 21});
         } finally {
@@ -169,9 +161,7 @@ test('iframe is created with sandbox="allow-scripts" attribute', async ({page}) 
             return originalAppendChild(node);
         };
 
-        const sandbox = new window.Sandbox(
-            'window.onSandboxMessage = function () { return true; }'
-        );
+        const sandbox = new window.Sandbox([{text: 'window.onSandboxMessage = function () { return true; }'}]);
         try {
             await sandbox.send(null);
             return capturedSandbox;
@@ -193,9 +183,7 @@ test('iframe srcdoc contains CSP meta tag', async ({page}) => {
             return originalAppendChild(node);
         };
 
-        const sandbox = new window.Sandbox(
-            'window.onSandboxMessage = function () { return true; }'
-        );
+        const sandbox = new window.Sandbox([{text: 'window.onSandboxMessage = function () { return true; }'}]);
         try {
             await sandbox.send(null);
             return capturedSrcdoc;
@@ -205,8 +193,33 @@ test('iframe srcdoc contains CSP meta tag', async ({page}) => {
     });
     expect(srcdoc).toContain('Content-Security-Policy');
     expect(srcdoc).toContain("default-src 'none'");
-    expect(srcdoc).toContain("script-src 'unsafe-inline' 'unsafe-eval'");
     expect(srcdoc).toContain('img-src data:');
+    // file://, so the scripts are embedded: an opaque frame cannot fetch them.
+    expect(srcdoc).toContain("script-src 'unsafe-inline'");
+    // Granting this again would undo the reason handlers became real files.
+    expect(srcdoc).not.toContain('unsafe-eval');
+});
+
+test('eval is unavailable inside the frame', async ({page}) => {
+    // The assertion above checks what we wrote; this checks what is enforced.
+    const result = await page.evaluate(async () => {
+        const sandbox = new window.Sandbox([{text: `
+            window.onSandboxMessage = function () {
+                try {
+                    return {blocked: false, value: (0, eval)('1 + 1')};
+                } catch (e) {
+                    return {blocked: true, name: e.name};
+                }
+            }
+        `}]);
+        try {
+            return await sandbox.send(null);
+        } finally {
+            sandbox.destroy();
+        }
+    });
+    expect(result.blocked).toBe(true);
+    expect(result.name).toBe('EvalError');
 });
 
 test('data: images are permitted by the CSP', async ({page}) => {
@@ -214,7 +227,7 @@ test('data: images are permitted by the CSP', async ({page}) => {
     // elements. The sandbox must be able to load them (measurement getBBox,
     // Paper.js raster import) — without img-src, default-src 'none' blocks them.
     const result = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = function (dataUri) {
                 return new Promise(function (resolve) {
                     var img = new Image();
@@ -223,7 +236,7 @@ test('data: images are permitted by the CSP', async ({page}) => {
                     img.src = dataUri;
                 });
             }
-        `);
+        `}]);
         try {
             // 1x1 transparent PNG.
             const png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB' +
@@ -240,13 +253,13 @@ test('data: images are permitted by the CSP', async ({page}) => {
 
 test('iframe is reused across send calls', async ({page}) => {
     const results = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             var counter = 0;
             window.onSandboxMessage = function () {
                 counter++;
                 return counter;
             };
-        `);
+        `}]);
         try {
             const r1 = await sandbox.send(null);
             const r2 = await sandbox.send(null);
@@ -260,15 +273,15 @@ test('iframe is reused across send calls', async ({page}) => {
     expect(results).toEqual([1, 2, 3]);
 });
 
-test('script is evaluated only once', async ({page}) => {
+test('frame scripts run at load, not once per send', async ({page}) => {
     const results = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
-            if (!window.__evalCount) window.__evalCount = 0;
-            window.__evalCount++;
+        const sandbox = new window.Sandbox([{text: `
+            if (!window.__runCount) window.__runCount = 0;
+            window.__runCount++;
             window.onSandboxMessage = function () {
-                return window.__evalCount;
+                return window.__runCount;
             };
-        `);
+        `}]);
         try {
             const r1 = await sandbox.send(null);
             const r2 = await sandbox.send(null);
@@ -277,24 +290,24 @@ test('script is evaluated only once', async ({page}) => {
             sandbox.destroy();
         }
     });
-    // Script only evaluated once, so __evalCount stays at 1.
+    // Top-level setup is not repeated between calls, so __runCount stays at 1.
     expect(results).toEqual([1, 1]);
 });
 
-test('warmUp evaluates the script and creates the iframe', async ({page}) => {
+test('warmUp creates the iframe and runs the frame scripts', async ({page}) => {
     const result = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
-            window.__sideEffect = 'set at eval time';
+        const sandbox = new window.Sandbox([{text: `
+            window.__sideEffect = 'set at load time';
             window.onSandboxMessage = function () {
                 return window.__sideEffect;
             };
-        `);
+        `}]);
         try {
             await sandbox.warmUp();
             return {
                 iframes: document.querySelectorAll('iframe').length,
-                // The script ran during warm-up, so its eval-time side
-                // effect is already observable on the first send.
+                // The frame loaded during warm-up, so its top-level setup is
+                // already observable on the first send.
                 sideEffect: await sandbox.send(null)
             };
         } finally {
@@ -302,39 +315,21 @@ test('warmUp evaluates the script and creates the iframe', async ({page}) => {
         }
     });
     expect(result.iframes).toBe(1);
-    expect(result.sideEffect).toBe('set at eval time');
+    expect(result.sideEffect).toBe('set at load time');
 });
 
-test('warmUp does not re-evaluate the script on the following send', async ({page}) => {
-    const evalCount = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
-            if (!window.__evalCount) window.__evalCount = 0;
-            window.__evalCount++;
-            window.onSandboxMessage = function () {
-                return window.__evalCount;
-            };
-        `);
-        try {
-            await sandbox.warmUp();
-            // The script was already evaluated during warm-up; send must not
-            // resend it, so __evalCount stays at 1.
-            return await sandbox.send(null);
-        } finally {
-            sandbox.destroy();
-        }
-    });
-    expect(evalCount).toBe(1);
-});
+// Frame scripts are <script> tags, so they cannot run twice. Init data can:
+// it rides on whichever message reaches a frame first, and both warmUp() and
+// send() can be that message.
+const COUNT_INIT = `
+    window.__initCount = 0;
+    window.onSandboxInit = function () { window.__initCount++; };
+    window.onSandboxMessage = function () { return window.__initCount; };
+`;
 
-test('warmUp is idempotent and does not re-evaluate the script', async ({page}) => {
-    const evalCount = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
-            if (!window.__evalCount) window.__evalCount = 0;
-            window.__evalCount++;
-            window.onSandboxMessage = function () {
-                return window.__evalCount;
-            };
-        `);
+test('warmUp is idempotent: init reaches the frame exactly once', async ({page}) => {
+    const initCount = await page.evaluate(async countInit => {
+        const sandbox = new window.Sandbox([{text: countInit}], {init: 'payload'});
         try {
             await sandbox.warmUp();
             await sandbox.warmUp();
@@ -342,15 +337,29 @@ test('warmUp is idempotent and does not re-evaluate the script', async ({page}) 
         } finally {
             sandbox.destroy();
         }
-    });
-    expect(evalCount).toBe(1);
+    }, COUNT_INIT);
+    expect(initCount).toBe(1);
+});
+
+test('warmUp concurrent with send still delivers init exactly once', async ({page}) => {
+    // warmUp() reads its guard before awaiting the iframe, so several callers
+    // can pass it at once. Only send()'s own check, made synchronously once
+    // the iframe resolves, keeps a second copy of init off the wire.
+    const initCount = await page.evaluate(async countInit => {
+        const sandbox = new window.Sandbox([{text: countInit}], {init: 'payload'});
+        try {
+            await Promise.all([sandbox.warmUp(), sandbox.warmUp(), sandbox.send(null)]);
+            return await sandbox.send(null);
+        } finally {
+            sandbox.destroy();
+        }
+    }, COUNT_INIT);
+    expect(initCount).toBe(1);
 });
 
 test('destroy removes iframe from DOM', async ({page}) => {
     const iframeCount = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(
-            'window.onSandboxMessage = function () { return true; }'
-        );
+        const sandbox = new window.Sandbox([{text: 'window.onSandboxMessage = function () { return true; }'}]);
         await sandbox.send(null);
         sandbox.destroy();
         return document.querySelectorAll('iframe').length;
@@ -361,7 +370,7 @@ test('destroy removes iframe from DOM', async ({page}) => {
 test('destroy rejects in-flight calls', async ({page}) => {
     const error = await page.evaluate(async () => {
         const sandbox = new window.Sandbox(
-            'window.onSandboxMessage = function () { return new Promise(() => {}); }'
+            [{text: 'window.onSandboxMessage = function () { return new Promise(() => {}); }'}]
         );
         const pending = sandbox.send(null).catch(e => ({message: e.message}));
         // Give the iframe time to start loading.
@@ -374,10 +383,10 @@ test('destroy rejects in-flight calls', async ({page}) => {
 
 test('is recreated after destroy', async ({page}) => {
     const result = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             var count = 0;
             window.onSandboxMessage = function () { return ++count; };
-        `);
+        `}]);
         await sandbox.send(null); // returns 1 on first iframe
         sandbox.destroy();
         // After destroy, the next send creates a fresh iframe with count at 0.
@@ -388,13 +397,13 @@ test('is recreated after destroy', async ({page}) => {
 
 test('multiple concurrent sends resolve independently', async ({page}) => {
     const results = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = function (p) {
                 return new Promise(function (resolve) {
                     setTimeout(function () { resolve(p.id); }, p.delay);
                 });
             }
-        `);
+        `}]);
         try {
             return await Promise.all([
                 sandbox.send({id: 'a', delay: 80}),
@@ -412,11 +421,11 @@ test('multiple concurrent sends resolve independently', async ({page}) => {
 
 test('array payload: processes all items in one round-trip', async ({page}) => {
     const results = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = function (items) {
                 return items.map(function (x) { return x * 2; });
             }
-        `);
+        `}]);
         try {
             return await sandbox.send([1, 2, 3, 4, 5]);
         } finally {
@@ -428,7 +437,7 @@ test('array payload: processes all items in one round-trip', async ({page}) => {
 
 test('array payload: preserves order with async handlers', async ({page}) => {
     const results = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = function (items) {
                 return Promise.all(items.map(function (p) {
                     return new Promise(function (resolve) {
@@ -436,7 +445,7 @@ test('array payload: preserves order with async handlers', async ({page}) => {
                     });
                 }));
             }
-        `);
+        `}]);
         try {
             return await sandbox.send([
                 {id: 'slow', delay: 80},
@@ -452,14 +461,14 @@ test('array payload: preserves order with async handlers', async ({page}) => {
 
 test('array payload: rejects if handler throws', async ({page}) => {
     const error = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = function (items) {
                 return Promise.all(items.map(function (p) {
                     if (p === 'bad') throw new Error('payload failed');
                     return p;
                 }));
             }
-        `);
+        `}]);
         try {
             return await sandbox.send(['ok', 'bad', 'ok']).catch(e => ({message: e.message}));
         } finally {
@@ -471,11 +480,11 @@ test('array payload: rejects if handler throws', async ({page}) => {
 
 test('array payload: empty array returns empty results', async ({page}) => {
     const results = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = function (items) {
                 return items.map(function (x) { return x; });
             }
-        `);
+        `}]);
         try {
             return await sandbox.send([]);
         } finally {
@@ -489,9 +498,7 @@ test('array payload: empty array returns empty results', async ({page}) => {
 
 test('does not tear down the iframe when idleTimeoutMs is unset (default)', async ({page}) => {
     const iframeCount = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(
-            'window.onSandboxMessage = function () { return true; }'
-        );
+        const sandbox = new window.Sandbox([{text: 'window.onSandboxMessage = function () { return true; }'}]);
         try {
             await sandbox.send(null);
             // Wait well past a typical idle window; with no idleTimeoutMs the
@@ -508,7 +515,7 @@ test('does not tear down the iframe when idleTimeoutMs is unset (default)', asyn
 test('tears down the idle iframe after idleTimeoutMs elapses', async ({page}) => {
     const iframeCount = await page.evaluate(async () => {
         const sandbox = new window.Sandbox(
-            'window.onSandboxMessage = function () { return true; }',
+            [{text: 'window.onSandboxMessage = function () { return true; }'}],
             {idleTimeoutMs: 150}
         );
         await sandbox.send(null);
@@ -522,13 +529,13 @@ test('tears down the idle iframe after idleTimeoutMs elapses', async ({page}) =>
 test('idle timer does not fire while a send is in flight', async ({page}) => {
     const result = await page.evaluate(async () => {
         // Handler resolves after 300ms — longer than the 100ms idle window.
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = function () {
                 return new Promise(function (resolve) {
                     setTimeout(function () { resolve('ok'); }, 300);
                 });
             }
-        `, {idleTimeoutMs: 100});
+        `}], {idleTimeoutMs: 100});
         try {
             // If the idle timer tore the iframe down mid-flight, this would
             // reject with "Sandbox destroyed" instead of resolving.
@@ -542,10 +549,10 @@ test('idle timer does not fire while a send is in flight', async ({page}) => {
 
 test('recreates a fresh iframe after idle teardown', async ({page}) => {
     const result = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             var count = 0;
             window.onSandboxMessage = function () { return ++count; };
-        `, {idleTimeoutMs: 150});
+        `}], {idleTimeoutMs: 150});
         try {
             const first = await sandbox.send(null); // 1 on the first iframe
             // Let the idle timer tear the iframe down.
@@ -562,10 +569,10 @@ test('recreates a fresh iframe after idle teardown', async ({page}) => {
 
 test('activity resets the idle timer', async ({page}) => {
     const result = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             var count = 0;
             window.onSandboxMessage = function () { return ++count; };
-        `, {idleTimeoutMs: 300});
+        `}], {idleTimeoutMs: 300});
         try {
             // Sends spaced under the idle window — the iframe should stay
             // alive throughout as each send resets the timer.
@@ -597,7 +604,7 @@ test('reused sandbox is faster than creating a new one per call', async ({page})
         // Fresh sandbox per call: create + send + destroy each time.
         const freshStart = performance.now();
         for (let i = 0; i < ITERATIONS; i++) {
-            const sb = new window.Sandbox(script);
+            const sb = new window.Sandbox([{text: script}]);
             await sb.send(i);
             sb.destroy();
         }
@@ -605,7 +612,7 @@ test('reused sandbox is faster than creating a new one per call', async ({page})
 
         // Reused: one sandbox, N sequential single-item sends.
         const reusedStart = performance.now();
-        const sandbox = new window.Sandbox(script);
+        const sandbox = new window.Sandbox([{text: script}]);
         for (let i = 0; i < ITERATIONS; i++) {
             await sandbox.send(i);
         }
@@ -614,7 +621,7 @@ test('reused sandbox is faster than creating a new one per call', async ({page})
 
         // Batch: one sandbox, sends BATCH_SIZE items per round-trip.
         const batchStart = performance.now();
-        const sandbox2 = new window.Sandbox(batchScript);
+        const sandbox2 = new window.Sandbox([{text: batchScript}]);
         for (let i = 0; i < ITERATIONS; i += BATCH_SIZE) {
             const chunk = Array.from({length: BATCH_SIZE}, (_, j) => i + j);
             await sandbox2.send(chunk);
@@ -634,4 +641,79 @@ test('reused sandbox is faster than creating a new one per call', async ({page})
     // Batch sends ITERATIONS/BATCH_SIZE round-trips instead of ITERATIONS,
     // so it must be faster than sequential sends.
     expect(batchMs * 1.5).toBeLessThan(reusedMs);
+});
+
+test('the frame ignores messages from windows other than its parent', async ({page}) => {
+    // Window references are reachable cross-origin, so without the source
+    // guard any page that embeds the editor could drive the sandbox.
+    const replied = await page.evaluate(async () => {
+        const sandbox = new window.Sandbox([{text: 'window.onSandboxMessage = function () { return "handled"; }'}]);
+        await sandbox.send(null);
+
+        // A sibling frame reaches the sandbox through the shared parent.
+        const FORGED_TICKET = 987654;
+        const attacker = document.createElement('iframe');
+        attacker.setAttribute('sandbox', 'allow-scripts');
+        attacker.srcdoc = `<script>
+            parent.frames[0].postMessage(
+                {__sandbox_payload: null, __sandbox_ticket: ${FORGED_TICKET}}, '*'
+            );
+        </script>`;
+
+        const sawReply = new Promise(resolve => {
+            window.addEventListener('message', event => {
+                if (event.data && event.data.__sandbox_ticket === FORGED_TICKET) resolve(true);
+            });
+            setTimeout(() => resolve(false), 1000);
+        });
+
+        document.body.appendChild(attacker);
+        try {
+            return await sawReply;
+        } finally {
+            attacker.remove();
+            sandbox.destroy();
+        }
+    });
+    expect(replied).toBe(false);
+});
+
+test('init data without an onSandboxInit handler fails loudly', async ({page}) => {
+    // Init is sent once per frame, so swallowing this would leave every later
+    // call answering with the data silently missing — for the measurement
+    // sandbox, text measured with no fonts loaded.
+    const error = await page.evaluate(async () => {
+        const sandbox = new window.Sandbox(
+            [{text: 'window.onSandboxMessage = function (p) { return p * 2; }'}],
+            {init: 'some-data', timeoutMs: 3000}
+        );
+        try {
+            await sandbox.send(21);
+            return null;
+        } catch (e) {
+            return e.message;
+        } finally {
+            sandbox.destroy();
+        }
+    });
+    expect(error).toContain('window.onSandboxInit');
+});
+
+test('a script missing this host\'s delivery form names itself', async ({page}) => {
+    // file:// embeds script text, so a url-only descriptor cannot be used here.
+    // Without this guard it fails deep in document generation with no clue
+    // which script was wrong.
+    const error = await page.evaluate(async () => {
+        const sandbox = new window.Sandbox([{url: '/nope.js'}], {timeoutMs: 3000});
+        try {
+            await sandbox.send(null);
+            return null;
+        } catch (e) {
+            return e.message;
+        } finally {
+            sandbox.destroy();
+        }
+    });
+    expect(error).toContain('scripts[0]');
+    expect(error).toContain("has no 'text'");
 });

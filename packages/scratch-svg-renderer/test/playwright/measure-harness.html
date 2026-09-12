@@ -5,8 +5,14 @@
     <title>Measure SVG Test Harness</title>
 </head>
 <body>
-<script src="../../src/sandbox/iframe-html.js"></script>
-<script src="../../src/sandbox/index.js"></script>
-<script src="../../src/sandbox/measure-svg-script.js"></script>
+<!--
+    The Sandbox references its frame scripts as bundler-emitted assets, so it
+    is loaded from the built bundle rather than from src/. Run `npm run build`
+    before these tests.
+-->
+<script src="../../dist/web/scratch-svg-renderer.js"></script>
+<script>
+    window.Sandbox = ScratchSVGRenderer.Sandbox;
+</script>
 </body>
 </html>

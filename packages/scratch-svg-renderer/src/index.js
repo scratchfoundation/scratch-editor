@@ -7,6 +7,7 @@ const sanitizeSvg = require('./sanitize-svg');
 const serializeSvgToString = require('./serialize-svg-to-string');
 const SvgElement = require('./svg-element');
 const convertFonts = require('./font-converter');
+const {Sandbox, usesUrlDelivery} = require('./sandbox/index');
 // /**
 //  * Export for NPM & Node.js
 //  * @type {RenderWebGL}
@@ -17,8 +18,10 @@ module.exports = {
     convertFonts: convertFonts,
     inlineSvgFonts: inlineSvgFonts,
     loadSvgString: loadSvgString,
+    Sandbox: Sandbox,
     sanitizeSvg: sanitizeSvg,
     serializeSvgToString: serializeSvgToString,
     SvgElement: SvgElement,
-    SVGRenderer: SVGRenderer
+    SVGRenderer: SVGRenderer,
+    usesUrlDelivery: usesUrlDelivery
 };

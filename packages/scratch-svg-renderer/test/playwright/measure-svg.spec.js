@@ -2,6 +2,13 @@ const fs = require('fs');
 const path = require('path');
 const {test, expect} = require('@playwright/test');
 
+// The real handler, read from disk: it is a frame script, so there is nothing
+// on `window` to reach for.
+const MEASURE_TEXT = fs.readFileSync(
+    path.resolve(__dirname, '../../src/sandbox/measure-svg.js'),
+    'utf8'
+);
+
 /**
  * Playwright tests for the display-side iframe measurement script.
  *
@@ -34,10 +41,10 @@ const negativeBboxSvg = '<svg xmlns="http://www.w3.org/2000/svg">' +
 
 test.beforeEach(async ({page}) => {
     await page.goto('measure-harness.html');
-    await page.waitForFunction(
-        () => typeof window.Sandbox === 'function' &&
-              typeof window.createMeasureSvgScript === 'function'
-    );
+    await page.waitForFunction(() => typeof window.Sandbox === 'function');
+    await page.evaluate(text => {
+        window.MEASURE_TEXT = text;
+    }, MEASURE_TEXT);
 });
 
 /**
@@ -77,8 +84,7 @@ const measureDirect = async function (page, svgString) {
  */
 const measureSandboxed = async function (page, svgString, fontCSS = '') {
     return page.evaluate(async ({svg, css}) => {
-        const script = window.createMeasureSvgScript(css);
-        const sandbox = new window.Sandbox(script);
+        const sandbox = new window.Sandbox([{text: window.MEASURE_TEXT}], {init: css});
         try {
             return await sandbox.send(svg);
         } finally {
@@ -129,8 +135,7 @@ test('negative-bbox measurements match direct getBBox', async ({page}) => {
 
 test('batch measurement returns an array of results', async ({page}) => {
     const results = await page.evaluate(async () => {
-        const script = window.createMeasureSvgScript('');
-        const sandbox = new window.Sandbox(script);
+        const sandbox = new window.Sandbox([{text: window.MEASURE_TEXT}], {init: ''});
         try {
             return await sandbox.send([
                 '<svg xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="10" height="10" fill="red"/></svg>',
@@ -156,8 +161,7 @@ test('single item returns a single object (not an array)', async ({page}) => {
 
 test('sandbox iframe is reused across multiple measurements', async ({page}) => {
     const results = await page.evaluate(async () => {
-        const script = window.createMeasureSvgScript('');
-        const sandbox = new window.Sandbox(script);
+        const sandbox = new window.Sandbox([{text: window.MEASURE_TEXT}], {init: ''});
         try {
             const r1 = await sandbox.send(
                 '<svg xmlns="http://www.w3.org/2000/svg"><rect x="0" y="0" width="10" height="10" fill="red"/></svg>'
@@ -180,8 +184,7 @@ test('sandbox iframe is reused across multiple measurements', async ({page}) => 
 
 test('rejects on invalid SVG content', async ({page}) => {
     const error = await page.evaluate(async () => {
-        const script = window.createMeasureSvgScript('');
-        const sandbox = new window.Sandbox(script);
+        const sandbox = new window.Sandbox([{text: window.MEASURE_TEXT}], {init: ''});
         try {
             return await sandbox.send('not-an-svg')
                 .catch(e => ({errorMessage: e.message}));
@@ -223,19 +226,22 @@ test('text bbox with Scratch fonts matches direct measurement', async ({page}) =
 });
 
 test('font @font-face rules are injected into the iframe', async ({page}) => {
-    // createMeasureSvgScript embeds the CSS into an IIFE that runs before
-    // window.onSandboxMessage is set. Appending a replacement handler lets
-    // us verify the @font-face rule was injected by querying document.fonts.
+    // A second script, running after the handler in document order, replaces
+    // onSandboxMessage so we can query document.fonts. Also the one place
+    // exercising a multi-script frame.
     const fontNames = await page.evaluate(async () => {
         const css = '@font-face { font-family: "TestFont"; src: local("Arial"); }';
-        const script = window.createMeasureSvgScript(css) + `
-            window.onSandboxMessage = function () {
-                var names = [];
-                document.fonts.forEach(function (f) { names.push(f.family); });
-                return names;
-            };
-            `;
-        const sandbox = new window.Sandbox(script);
+        const sandbox = new window.Sandbox(
+            [
+                {text: window.MEASURE_TEXT},
+                {text: `window.onSandboxMessage = function () {
+                    var names = [];
+                    document.fonts.forEach(function (f) { names.push(f.family); });
+                    return names;
+                };`}
+            ],
+            {init: css}
+        );
         try {
             return await sandbox.send(null);
         } finally {
@@ -250,7 +256,7 @@ test('font @font-face rules are injected into the iframe', async ({page}) => {
 // (style-src and font-src are required for inline font injection to work).
 test('CSP includes style-src and font-src directives', async ({page}) => {
     const cspContent = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = function () {
                 var metas = document.querySelectorAll('meta[http-equiv]');
                 for (var i = 0; i < metas.length; i++) {
@@ -260,7 +266,7 @@ test('CSP includes style-src and font-src directives', async ({page}) => {
                 }
                 return null;
             };
-        `);
+        `}]);
         try {
             return await sandbox.send(null);
         } finally {
@@ -275,7 +281,7 @@ test('CSP includes style-src and font-src directives', async ({page}) => {
 
 test('SVG is removed from iframe DOM after measurement', async ({page}) => {
     const bodyChildren = await page.evaluate(async () => {
-        const sandbox = new window.Sandbox(`
+        const sandbox = new window.Sandbox([{text: `
             window.onSandboxMessage = function (payload) {
                 if (payload === 'measure') {
                     var container = document.createElement('span');
@@ -285,10 +291,10 @@ test('SVG is removed from iframe DOM after measurement', async ({page}) => {
                     document.body.removeChild(container);
                     return { x: bbox.x, y: bbox.y, width: bbox.width, height: bbox.height };
                 }
-                // Just count body.children (excludes the script tag in head)
-                return document.body.children.length;
+                // Leftover measured content only; the frame's scripts are in the body too.
+                return document.body.querySelectorAll(':not(script)').length;
             }
-        `);
+        `}]);
         try {
             await sandbox.send('measure');
             return await sandbox.send('count');
@@ -296,6 +302,37 @@ test('SVG is removed from iframe DOM after measurement', async ({page}) => {
             sandbox.destroy();
         }
     });
-    // Only the script element should be in the body (from the srcdoc HTML)
-    expect(bodyChildren).toBeLessThanOrEqual(1);
+    // The measured SVG and its container must both be gone.
+    expect(bodyChildren).toBe(0);
+});
+
+test('init data is re-delivered to a frame recreated after idle teardown', async ({page}) => {
+    // Init data arrives with the first message to each frame, so a frame
+    // rebuilt after teardown must receive it again.
+    const fontNames = await page.evaluate(async () => {
+        const css = '@font-face { font-family: "TestFont"; src: local("Arial"); }';
+        const reportFonts = `window.onSandboxMessage = function () {
+            var names = [];
+            document.fonts.forEach(function (f) { names.push(f.family); });
+            return names;
+        };`;
+        const sandbox = new window.Sandbox(
+            [{text: window.MEASURE_TEXT}, {text: reportFonts}],
+            {init: css, idleTimeoutMs: 50}
+        );
+        try {
+            const before = await sandbox.send(null);
+            // Outlast the idle window, so the next send builds a fresh frame.
+            await new Promise(resolve => setTimeout(resolve, 150));
+            const framesAfterIdle = document.querySelectorAll('iframe').length;
+            const after = await sandbox.send(null);
+            return {before, after, framesAfterIdle};
+        } finally {
+            sandbox.destroy();
+        }
+    });
+
+    expect(fontNames.framesAfterIdle).toBe(0);
+    expect(fontNames.before).toContain('TestFont');
+    expect(fontNames.after).toContain('TestFont');
 });
