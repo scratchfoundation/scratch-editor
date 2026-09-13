@@ -562,9 +562,12 @@ class VirtualMachine extends EventEmitter {
 
             if (wholeProject) {
                 // A loaded project may carry dangling variable, list, or broadcast
-                // references baked in by historical bugs. Reconcile each target so
-                // those references resolve cleanly without renaming any legitimate
-                // local-vs-global name collisions.
+                // references baked in by historical bugs. First restore any
+                // definition that several targets still share, so they keep sharing
+                // it. Then reconcile each target so its remaining references resolve
+                // the way the runtime would have resolved them on execution, without
+                // renaming any legitimate local-vs-global name collisions.
+                this.runtime.restoreSharedMissingDefinitions(targets);
                 targets.forEach(target => target.reconcileVariableReferences());
             } else {
                 this.editingTarget.fixUpVariableReferences();
@@ -1503,7 +1506,7 @@ class VirtualMachine extends EventEmitter {
     }
 
     /**
-     * Reorder the sounds of a target if it exists. Return whether it occured.
+     * Reorder the sounds of a target if it exists. Return whether it occurred.
      * @param {!string} targetId ID of the target which owns the sounds.
      * @param {!number} soundIndex index of the sound to move.
      * @param {!number} newIndex index that the sound should be moved to.
