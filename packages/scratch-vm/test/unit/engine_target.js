@@ -408,7 +408,7 @@ test('duplicateVariables duplicates all variables', t => {
     t.equal(Object.prototype.hasOwnProperty.call(duplicateVariables, 'var ID 1'), true);
     t.equal(Object.prototype.hasOwnProperty.call(duplicateVariables, 'var ID 1'), true);
 
-    // Values of the duplicate varaiables should match the value of the original values at the time of duplication
+    // Values of the duplicate variables should match the value of the original values at the time of duplication
     t.equal(target.variables['var ID 1'].value, duplicateVariables['var ID 1'].value);
     t.equal(duplicateVariables['var ID 1'].value, 3);
     t.equal(target.variables['var ID 2'].value, duplicateVariables['var ID 2'].value);
@@ -967,7 +967,9 @@ test('fixUpVariableReferences on the stage creates broadcasts for undefined refe
     t.end();
 });
 
-test('reconcileVariableReferences creates a stage variable for an undefined variable reference', t => {
+test('reconcileVariableReferences creates a sprite-local variable for an undefined variable reference', t => {
+    // Project load: match what lookupOrCreateVariable would have done when the block
+    // first executed, which is to create the variable on the sprite under its own name.
     const runtime = new Runtime();
 
     const stage = new Target(runtime);
@@ -986,6 +988,39 @@ test('reconcileVariableReferences creates a stage variable for an undefined vari
 
     target.reconcileVariableReferences();
 
+    t.equal(Object.keys(stage.variables).length, 0, 'no variable created on stage');
+    t.equal(Object.keys(target.variables).length, 1, 'variable created on the sprite');
+    const newVar = target.variables['mock var id'];
+    t.ok(newVar, 'variable preserves the original id');
+    t.equal(newVar.name, 'a mock variable');
+    t.equal(newVar.type, Variable.SCALAR_TYPE);
+    t.equal(target.blocks.getBlock('a block').fields.VARIABLE.id, 'mock var id');
+    t.equal(target.blocks.getBlock('a block').fields.VARIABLE.value, 'a mock variable');
+
+    t.end();
+});
+
+test('reconcileVariableReferences with createMissingOnStage creates a stage variable', t => {
+    // Sprite import and backpack paste: an exported sprite carries its own locals, so an
+    // undefined reference must have been a global in the project it came from.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    target.blocks.createBlock(adapter(events.mockVariableBlock)[0]);
+
+    t.equal(Object.keys(stage.variables).length, 0);
+    t.equal(Object.keys(target.variables).length, 0);
+
+    target.reconcileVariableReferences(true);
+
     t.equal(Object.keys(stage.variables).length, 1, 'variable created on stage');
     const newVar = stage.variables['mock var id'];
     t.ok(newVar, 'variable preserves the original id');
@@ -997,7 +1032,7 @@ test('reconcileVariableReferences creates a stage variable for an undefined vari
     t.end();
 });
 
-test('reconcileVariableReferences creates a stage list for an undefined list reference', t => {
+test('reconcileVariableReferences creates a sprite-local list for an undefined list reference', t => {
     const runtime = new Runtime();
 
     const stage = new Target(runtime);
@@ -1017,11 +1052,41 @@ test('reconcileVariableReferences creates a stage list for an undefined list ref
 
     target.reconcileVariableReferences();
 
+    t.equal(Object.keys(stage.variables).length, 0, 'no list created on stage');
+    t.equal(Object.keys(target.variables).length, 1, 'list created on the sprite');
+    const newList = target.variables['mock list id'];
+    t.ok(newList, 'list preserves the original id');
+    t.equal(newList.name, 'a mock list');
+    t.equal(newList.type, Variable.LIST_TYPE);
+    t.equal(target.blocks.getBlock('another block').fields.LIST.id, 'mock list id');
+
+    t.end();
+});
+
+test('reconcileVariableReferences with createMissingOnStage creates a stage list', t => {
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    target.blocks.createBlock(adapter(events.mockListBlock)[0]);
+
+    t.equal(Object.keys(stage.variables).length, 0);
+
+    target.reconcileVariableReferences(true);
+
     t.equal(Object.keys(stage.variables).length, 1, 'list created on stage');
     const newList = stage.variables['mock list id'];
     t.ok(newList, 'list preserves the original id');
     t.equal(newList.name, 'a mock list');
     t.equal(newList.type, Variable.LIST_TYPE);
+    t.equal(Object.keys(target.variables).length, 0, 'no list on the sprite');
     t.equal(target.blocks.getBlock('another block').fields.LIST.id, 'mock list id');
 
     t.end();
@@ -1252,6 +1317,7 @@ test('reconcileVariableReferences coalesces same-original-name dangling refs to 
     // already uses it), the second ref must coalesce with the first rather than
     // create a second stage variable. A Scratcher who pasted two scripts referencing
     // what they called "score" almost certainly meant one variable, not two.
+    // Bumping only happens on the createMissingOnStage (sprite import) path.
     const runtime = new Runtime();
 
     const stage = new Target(runtime);
@@ -1309,7 +1375,7 @@ test('reconcileVariableReferences coalesces same-original-name dangling refs to 
         y: 0
     });
 
-    target.reconcileVariableReferences();
+    target.reconcileVariableReferences(true);
 
     const stageVars = Object.values(stage.variables);
     t.equal(stageVars.length, 1, 'exactly one new stage variable was created');
@@ -1342,7 +1408,7 @@ test('reconcileVariableReferences normalizes field values across targets after a
     stage.isStage = true;
     stage.getName = () => 'Stage';
 
-    // External collision forces unusedName to bump.
+    // External collision forces unusedName to bump (createMissingOnStage path only).
     const otherSprite = new Target(runtime);
     otherSprite.isStage = false;
     otherSprite.getName = () => 'Other';
@@ -1381,9 +1447,10 @@ test('reconcileVariableReferences normalizes field values across targets after a
     targetA.blocks.createBlock(makeBlockReferencing('block A', 'shared dangling id', 'shared name'));
     targetB.blocks.createBlock(makeBlockReferencing('block B', 'shared dangling id', 'shared name'));
 
-    // Match what installTargets does on whole-project load: reconcile each target in turn.
-    targetA.reconcileVariableReferences();
-    targetB.reconcileVariableReferences();
+    // Reconcile each target in turn on the stage-creation path (the sprite-import
+    // behavior; whole-project load never bumps names, so it cannot hit this case).
+    targetA.reconcileVariableReferences(true);
+    targetB.reconcileVariableReferences(true);
 
     const stageVars = Object.values(stage.variables);
     t.equal(stageVars.length, 1, 'one stage variable created across both targets');
@@ -1394,6 +1461,293 @@ test('reconcileVariableReferences normalizes field values across targets after a
     const fieldB = targetB.blocks.getBlock('block B').fields.VARIABLE;
     t.equal(fieldA.value, created.name, 'target A field value matches the resolved variable name');
     t.equal(fieldB.value, created.name, 'target B field value matches the resolved variable name');
+
+    t.end();
+});
+
+const makeVariableFieldBlock = (blockId, opcode, fieldId, fieldValue) => ({
+    id: blockId,
+    opcode,
+    inputs: {},
+    fields: {
+        VARIABLE: {
+            name: 'VARIABLE',
+            id: fieldId,
+            value: fieldValue,
+            variableType: Variable.SCALAR_TYPE
+        }
+    },
+    next: null,
+    topLevel: true,
+    parent: null,
+    shadow: false,
+    x: 0,
+    y: 0
+});
+
+test('reconcileVariableReferences remaps a dangling reference to a same-name sprite-local variable', t => {
+    // Regression for scratchfoundation/scratch-editor#601. A sprite has a local "i"
+    // and a "for each" block whose variable field carries a stale id but the name "i".
+    // Before the repair-on-load existed, lookupOrCreateVariable resolved that field to
+    // the local "i" by name at execution time. The repair must do the same rather
+    // than minting a global "i2" and rewriting only the stale field to use it, which
+    // left the loop counting "i2" while the loop body read "i".
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    // Another sprite also has a local "i", so a stage-side creation would have
+    // had to bump the name (which is how "i2" appeared in the report).
+    const otherSprite = new Target(runtime);
+    otherSprite.isStage = false;
+    otherSprite.getName = () => 'Other';
+    otherSprite.createVariable('other i id', 'i', Variable.SCALAR_TYPE);
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'BSP';
+    target.createVariable('local i id', 'i', Variable.SCALAR_TYPE);
+
+    runtime.targets = [stage, otherSprite, target];
+
+    target.blocks.createBlock(makeVariableFieldBlock('for each', 'control_for_each', 'stale i id', 'i'));
+    target.blocks.createBlock(makeVariableFieldBlock('body', 'data_variable', 'local i id', 'i'));
+
+    target.reconcileVariableReferences();
+
+    t.equal(Object.keys(stage.variables).length, 0, 'no global created');
+    t.same(Object.keys(target.variables), ['local i id'], 'no new local created');
+    t.equal(target.variables['local i id'].name, 'i', 'local not renamed');
+    t.equal(otherSprite.variables['other i id'].name, 'i', 'other sprite local not renamed');
+
+    const loopField = target.blocks.getBlock('for each').fields.VARIABLE;
+    const bodyField = target.blocks.getBlock('body').fields.VARIABLE;
+    t.equal(loopField.id, 'local i id', 'stale reference remapped to the local');
+    t.equal(loopField.value, 'i', 'loop field still displays "i"');
+    t.equal(bodyField.id, 'local i id', 'clean reference untouched');
+    t.equal(bodyField.value, 'i', 'body field still displays "i"');
+
+    t.end();
+});
+
+test('reconcileVariableReferences prefers a same-name sprite-local over a same-name global', t => {
+    // Same precedence as lookupVariableByNameAndType: locals first, then the stage.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+    stage.createVariable('global score id', 'score', Variable.SCALAR_TYPE);
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+    target.createVariable('local score id', 'score', Variable.SCALAR_TYPE);
+
+    runtime.targets = [stage, target];
+
+    target.blocks.createBlock(makeVariableFieldBlock('a block', 'data_variable', 'stale score id', 'score'));
+
+    target.reconcileVariableReferences();
+
+    t.equal(target.blocks.getBlock('a block').fields.VARIABLE.id, 'local score id',
+        'stale reference remapped to the local, not the global');
+    t.equal(Object.keys(stage.variables).length, 1, 'no new global');
+    t.equal(Object.keys(target.variables).length, 1, 'no new local');
+
+    t.end();
+});
+
+test('reconcileVariableReferences creates a local even when another sprite has a same-named local', t => {
+    // Same-named locals on different sprites are an ordinary Scratch configuration,
+    // so a locally-created definition keeps its name rather than being bumped.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const otherSprite = new Target(runtime);
+    otherSprite.isStage = false;
+    otherSprite.getName = () => 'Other';
+    otherSprite.createVariable('other i id', 'i', Variable.SCALAR_TYPE);
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, otherSprite, target];
+
+    target.blocks.createBlock(makeVariableFieldBlock('block A', 'data_variable', 'dangling A', 'i'));
+    target.blocks.createBlock(makeVariableFieldBlock('block B', 'data_variable', 'dangling B', 'i'));
+
+    target.reconcileVariableReferences();
+
+    t.equal(Object.keys(stage.variables).length, 0, 'no global created');
+    t.same(Object.keys(target.variables), ['dangling A'], 'one local created, keeping the first id');
+    t.equal(target.variables['dangling A'].name, 'i', 'name not bumped');
+
+    const fieldA = target.blocks.getBlock('block A').fields.VARIABLE;
+    const fieldB = target.blocks.getBlock('block B').fields.VARIABLE;
+    t.equal(fieldA.id, 'dangling A');
+    t.equal(fieldB.id, 'dangling A', 'second dangling ref coalesces to the created local by name');
+    t.equal(fieldA.value, 'i');
+    t.equal(fieldB.value, 'i');
+
+    t.end();
+});
+
+test('fixUpVariableReferences remaps a dangling reference to a same-name sprite-local variable', t => {
+    // The sprite-import path shares the by-name resolution; only the create-when-missing
+    // location differs.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+    target.createVariable('local i id', 'i', Variable.SCALAR_TYPE);
+
+    runtime.targets = [stage, target];
+
+    target.blocks.createBlock(makeVariableFieldBlock('a block', 'data_variable', 'stale i id', 'i'));
+
+    target.fixUpVariableReferences();
+
+    t.equal(Object.keys(stage.variables).length, 0, 'no global created');
+    t.same(Object.keys(target.variables), ['local i id'], 'no new local created');
+    t.equal(target.variables['local i id'].name, 'i', 'local not renamed');
+    t.equal(target.blocks.getBlock('a block').fields.VARIABLE.id, 'local i id', 'remapped to the local');
+
+    t.end();
+});
+
+test('reconcileVariableReferences on the stage keeps the original name despite a same-named sprite local', t => {
+    // A stage script with a dangling "i" while some sprite owns a local "i". The
+    // runtime would have created a global "i" on first execution; bumping it to "i2"
+    // would break name-based access such as a sensing block reading "i of Stage".
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const sprite = new Target(runtime);
+    sprite.isStage = false;
+    sprite.getName = () => 'Sprite';
+    sprite.createVariable('sprite i id', 'i', Variable.SCALAR_TYPE);
+
+    runtime.targets = [stage, sprite];
+
+    stage.blocks.createBlock(makeVariableFieldBlock('block A', 'data_variable', 'dangling A', 'i'));
+    stage.blocks.createBlock(makeVariableFieldBlock('block B', 'data_variable', 'dangling B', 'i'));
+
+    stage.reconcileVariableReferences();
+
+    t.same(Object.keys(stage.variables), ['dangling A'], 'one global created, keeping the first id');
+    t.equal(stage.variables['dangling A'].name, 'i', 'global keeps the original name');
+    t.equal(sprite.variables['sprite i id'].name, 'i', 'sprite local untouched');
+
+    const fieldA = stage.blocks.getBlock('block A').fields.VARIABLE;
+    const fieldB = stage.blocks.getBlock('block B').fields.VARIABLE;
+    t.equal(fieldA.id, 'dangling A');
+    t.equal(fieldB.id, 'dangling A', 'second dangling ref coalesces to the created global by name');
+    t.equal(fieldA.value, 'i');
+    t.equal(fieldB.value, 'i');
+
+    t.end();
+});
+
+test('reconcileVariableReferences with createMissingOnStage still bumps past a same-named sprite local', t => {
+    // Sprite import keeps the historical behavior: a leftover reference becomes a
+    // global whose name collides with nothing in the project.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const otherSprite = new Target(runtime);
+    otherSprite.isStage = false;
+    otherSprite.getName = () => 'Other';
+    otherSprite.createVariable('other i id', 'i', Variable.SCALAR_TYPE);
+
+    const imported = new Target(runtime);
+    imported.isStage = false;
+    imported.getName = () => 'Imported';
+
+    runtime.targets = [stage, otherSprite, imported];
+
+    imported.blocks.createBlock(makeVariableFieldBlock('a block', 'data_variable', 'dangling id', 'i'));
+
+    imported.reconcileVariableReferences(true);
+
+    t.same(Object.keys(stage.variables), ['dangling id'], 'global created');
+    t.equal(stage.variables['dangling id'].name, 'i2', 'name bumped past the other sprite\'s local');
+    t.equal(imported.blocks.getBlock('a block').fields.VARIABLE.value, 'i2', 'field shows the bumped name');
+    t.equal(Object.keys(imported.variables).length, 0, 'nothing created on the imported sprite');
+
+    t.end();
+});
+
+test('reconcileVariableReferences matches a dangling broadcast reference case-insensitively', t => {
+    // Broadcast names are matched case-insensitively at runtime, so a dangling
+    // "my message" should resolve to an existing "My Message" rather than create a
+    // second broadcast that differs only in case.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    stage.createVariable('existing broadcast id', 'My Message', Variable.BROADCAST_MESSAGE_TYPE);
+    addBroadcastBlocksTo(target);
+
+    target.reconcileVariableReferences();
+
+    t.same(Object.keys(stage.variables), ['existing broadcast id'], 'no second broadcast created');
+    const field = target.blocks.getBlock('boadcast shadow').fields.BROADCAST_OPTION;
+    t.equal(field.id, 'existing broadcast id', 'reference remapped to the existing broadcast');
+    t.equal(field.value, 'My Message', 'field displays the existing broadcast\'s name');
+
+    t.end();
+});
+
+test('reconcileVariableReferences keeps a cloud-prefixed missing variable on the sprite', t => {
+    // The cloud prefix is an editor naming convention, not scope metadata. The
+    // loader deliberately keeps a cloud-marked sprite-local as a regular local,
+    // and lookupOrCreateVariable creates locally regardless of the name.
+    const runtime = new Runtime();
+
+    const stage = new Target(runtime);
+    stage.isStage = true;
+    stage.getName = () => 'Stage';
+
+    const target = new Target(runtime);
+    target.isStage = false;
+    target.getName = () => 'Target';
+
+    runtime.targets = [stage, target];
+
+    target.blocks.createBlock(makeVariableFieldBlock('a block', 'data_variable', 'lost cloud id', '☁ score'));
+
+    target.reconcileVariableReferences();
+
+    t.equal(Object.keys(stage.variables).length, 0, 'nothing created on the stage');
+    t.same(Object.keys(target.variables), ['lost cloud id'], 'created on the sprite');
+    t.equal(target.variables['lost cloud id'].name, '☁ score');
+    t.equal(target.variables['lost cloud id'].isCloud, false);
 
     t.end();
 });

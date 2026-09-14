@@ -105,7 +105,7 @@ class Target extends EventEmitter {
     }
 
     /**
-     * Clear all edge-activaed hat values.
+     * Clear all edge-activated hat values.
      */
     clearEdgeActivatedValues () {
         this._edgeActivatedHatValues = {};
@@ -239,7 +239,7 @@ class Target extends EventEmitter {
      * Search begins for local lists; then look for globals.
      * @param {!string} id Id of the list.
      * @param {!string} name Name of the list.
-     * @returns {!Varible} Variable object representing the found/created list.
+     * @returns {!Variable} Variable object representing the found/created list.
      */
     lookupOrCreateList (id, name) {
         let list = this.lookupVariableById(id);
@@ -655,23 +655,42 @@ class Target extends EventEmitter {
 
     /**
      * Reconciles variable, list, and broadcast references on this target against
-     * the variables actually defined in the project, creating definitions on the
-     * stage for any references whose ids are not defined anywhere. Does not
-     * rename any existing variables.
+     * the variables actually defined in the project, creating definitions for any
+     * references whose ids are not defined anywhere. Does not rename any existing
+     * variables.
      *
-     * For each variable, list, or broadcast referenced by a block on this target:
+     * Resolution mirrors what the runtime's `lookupOrCreateVariable` and
+     * `lookupOrCreateList` do when a block executes, so repairing a project at
+     * load time gives the same result as running it did before the repair
+     * existed. For each variable, list, or broadcast referenced by a block:
      * - If the referenced id is found locally on this sprite or on the stage,
      *   the reference is already correct and nothing happens.
-     * - If the referenced id is not defined anywhere, the stage is checked for a
-     *   variable with the same name and type. If one exists, the field id is
-     *   remapped to that existing global. Otherwise, a new global is created on
-     *   the stage with a non-conflicting name and the field name is updated.
+     * - If the referenced id is not defined anywhere, this target is checked for
+     *   a variable with the same name and type, then the stage. If one exists,
+     *   the field id is remapped to it. A sprite-local match wins over a global
+     *   one, exactly as it does at execution time. Broadcasts match by name
+     *   case-insensitively, as `lookupBroadcastByInputValue` does.
+     * - Otherwise a new definition is created under the referenced name, as the
+     *   runtime would have on first execution: on this target, or on the stage
+     *   for broadcasts and for references on the stage itself. A same-named local on another sprite is an ordinary
+     *   Scratch configuration and does not cause a rename. With
+     *   `createMissingOnStage` set, the new definition is instead created on
+     *   the stage with a name that collides with nothing in the project, and
+     *   the field name is updated to match.
+     *
+     * Ids shared by several targets are handled first by
+     * `Runtime.restoreSharedMissingDefinitions` on whole-project load.
      *
      * Used during whole-project load to repair projects corrupted by historical
      * bugs that left dangling references, and as the definition-creation phase
      * of `fixUpVariableReferences` for sprite import and backpack paste.
+     * @param {boolean} [createMissingOnStage] Create definitions for references
+     * found nowhere as globals on the stage rather than locally. Sprite
+     * import and backpack paste use this, since an exported sprite carries its own
+     * locals and anything still undefined must have been a global in the source
+     * project.
      */
-    reconcileVariableReferences () {
+    reconcileVariableReferences (createMissingOnStage = false) {
         if (!this.runtime) return;
         const stage = this.runtime.getTargetForStage();
         if (!stage || !stage.variables) return;
@@ -679,11 +698,13 @@ class Target extends EventEmitter {
         const allReferences = this.blocks.getAllVariableAndListReferences(null, true);
         const conflictIdsToReplace = Object.create(null);
         const conflictNamesToReplace = Object.create(null);
-        // When a dangling reference triggers creation of a new stage variable, remember
-        // the original (pre-bump) name so subsequent dangling references with the same
-        // original name and type coalesce to the same stage variable instead of creating
-        // a second one. Scratchers who pasted scripts referencing what they called
-        // "score" twice almost certainly meant one variable, not two.
+        // When a dangling reference triggers creation of a new stage variable with a
+        // bumped name (createMissingOnStage only), remember the original name so
+        // subsequent dangling references with the same original name and type coalesce
+        // to the same stage variable instead of creating a second one. Scratchers who
+        // pasted scripts referencing what they called "score" twice almost certainly
+        // meant one variable, not two. (Definitions created under their original name
+        // need no such bookkeeping: later references find them via the by-name lookup.)
         const createdForOriginalName = Object.create(null);
         const originalNameKey = (name, type) => `${type}\u0000${name}`;
 
@@ -722,23 +743,41 @@ class Target extends EventEmitter {
                 }
                 continue;
             }
-            // The referenced id is not defined anywhere. Treat this as a reference
-            // to a global from a different project (or from a backpack paste / sprite
-            // import that lost its definition). Look for a same-name same-type global
-            // on the stage; if found, queue an id remap, otherwise create a fresh one.
+            // The referenced id is not defined anywhere. Resolve it the way the runtime
+            // would have when the block executed: by name and type on this target first,
+            // then on the stage. A sprite whose script carries a stale id for its own
+            // local variable (for example, a script pasted across sprites years ago)
+            // keeps sharing that one local with the rest of its scripts.
             const varRef = allReferences[varId][0];
             const varName = varRef.referencingField.value;
             const varType = varRef.type;
-            const existingVar = stage.lookupVariableByNameAndType(varName, varType);
+            const isBroadcast = varType === Variable.BROADCAST_MESSAGE_TYPE;
+            // Broadcast names match case-insensitively at runtime (hat matching and
+            // lookupBroadcastByInputValue both ignore case), so match the same way here
+            // rather than creating a second broadcast that differs only in case.
+            const existingVar = isBroadcast ?
+                stage.lookupBroadcastByInputValue(varName) :
+                this.lookupVariableByNameAndType(varName, varType);
             if (existingVar) {
                 if (!conflictIdsToReplace[varId]) {
                     conflictIdsToReplace[varId] = existingVar.id;
+                    if (existingVar.name !== varName) {
+                        // Only reachable for broadcasts; display the canonical name.
+                        conflictNamesToReplace[varId] = existingVar.name;
+                    }
+                    // On the stage, "this.variables" holds the globals; only a sprite's own
+                    // variable is local.
+                    const isOwnVariable = Object.prototype.hasOwnProperty.call(this.variables, existingVar.id);
+                    const scope = (isOwnVariable && !this.isStage) ? 'local' : 'stage';
                     log.warn(
                         `Reconciled dangling reference on '${this.getName()}': remapped id '${varId}' ` +
-                        `(name '${varName}', type '${varType}') to existing stage variable '${existingVar.id}'.`
+                        `(name '${varName}', type '${varType}') to existing ${scope} variable '${existingVar.id}'.`
                     );
                 }
-            } else {
+            } else if (createMissingOnStage) {
+                // Sprite import / backpack paste: a reference still undefined here was a
+                // global in the source project. Recreate it on the stage under a name
+                // that collides with nothing in this project.
                 const coalesceKey = originalNameKey(varName, varType);
                 const earlierCreated = createdForOriginalName[coalesceKey];
                 if (earlierCreated) {
@@ -772,18 +811,37 @@ class Target extends EventEmitter {
                         );
                     }
                 }
+            } else {
+                // Nothing in scope has this name, so create it under the referenced name,
+                // as the runtime's lookupOrCreateVariable / lookupOrCreateList would have
+                // on first execution: on this target, or on the stage for broadcasts and
+                // for the stage's own references. The name can't collide with anything in
+                // scope (the lookup above just failed). A same-named local on another
+                // sprite is an ordinary Scratch configuration, so no rename is needed, and
+                // renaming would break name-based access such as "i of Stage" in a
+                // sensing block. Later dangling references to this name on this target
+                // resolve to the new definition via the by-name lookup.
+                const owner = isBroadcast ? stage : this;
+                owner.createVariable(varId, varName, varType);
+                // Bring any other references to this id into agreement on the name.
+                conflictNamesToReplace[varId] = varName;
+                const scope = owner.isStage ? 'stage' : 'local';
+                log.warn(
+                    `Reconciled dangling reference on '${this.getName()}': created ${scope} variable ` +
+                    `'${varId}' (name '${varName}', type '${varType}').`
+                );
             }
         }
 
-        // Apply queued id remaps (merge the dangling references with the existing global).
+        // Apply queued id remaps (merge the dangling references with the existing variable).
         for (const conflictId in conflictIdsToReplace) {
             const existingId = conflictIdsToReplace[conflictId];
             const referencesToUpdate = allReferences[conflictId];
             this.mergeVariables(conflictId, existingId, referencesToUpdate);
         }
 
-        // Apply queued field-name updates for newly-created globals whose name was
-        // bumped to avoid a collision.
+        // Apply queued field-name updates so every reference to an id displays the
+        // name of the variable it now resolves to.
         for (const conflictId in conflictNamesToReplace) {
             const newName = conflictNamesToReplace[conflictId];
             const referencesToUpdate = allReferences[conflictId];
@@ -810,7 +868,9 @@ class Target extends EventEmitter {
         if (!stage || !stage.variables) return;
 
         // First, ensure every referenced variable, list, or broadcast has a definition.
-        this.reconcileVariableReferences();
+        // An exported sprite carries its own locals, so anything still undefined was a
+        // global in the project it came from; recreate it as a global here.
+        this.reconcileVariableReferences(true);
 
         // The stage's variables are the global scope; there's no local-vs-global
         // distinction to disambiguate.
