@@ -1,88 +1,61 @@
 /**
- * HTML template injected into sandboxed iframes via `srcdoc`.
+ * Builds the document for a sandboxed iframe's `srcdoc`: a `<meta>` CSP
+ * followed by the caller's scripts. See `runner.js` for what those scripts do.
  *
- * The iframe receives:
- *   - A strict Content-Security-Policy via <meta> (default-src 'none';
- *     script-src 'unsafe-inline' 'unsafe-eval').
- *   - A runner <script> that:
- *       1. Waits for `message` events from the parent.
- *       2. If `__sandbox_script` is present, evaluates it to define
- *          `window.onSandboxMessage`. The script is sent only with the
- *          first message; subsequent messages reuse the handler.
- *       3. Invokes `onSandboxMessage` with the payload and posts the
- *          result back.
- *       4. Reports errors back to the parent as `{__sandbox_error: message}`.
+ * A srcdoc frame inherits the CSP of the page that created it and cannot relax
+ * it. So on a page with a strict `script-src`, an inline script in the frame
+ * will not run, and the scripts have to be loaded by URL instead.
  *
- * Messages use `__sandbox_payload` / `__sandbox_result`
- * Batching is the caller's responsibility — pass an array as the payload
- * and handle it in the `onSandboxMessage` function.
+ * That does not work on `file://` hosts. The frame has an opaque origin, and
+ * such frames cannot load local files. Those hosts send no CSP of their own,
+ * so there the scripts are embedded as text and allowed by `'unsafe-inline'`.
  *
- * The caller's script must synchronously assign `window.onSandboxMessage` to a
- * function that accepts a payload and returns a result (or a Promise of a result).
+ * `index.js` chooses between the two. Neither policy allows `'unsafe-eval'`.
  */
-const CSP = "default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; " +
-    "style-src 'unsafe-inline'; font-src data:; img-src data:;";
 
-const IFRAME_HTML = `<!DOCTYPE html>
+const CSP = "default-src 'none'; style-src 'unsafe-inline'; font-src data:; img-src data:;";
+
+/**
+ * Build the frame document. The two delivery forms are separate parameters
+ * because one document cannot carry both: its policy names either the asset
+ * origins or `'unsafe-inline'`.
+ * @param {object} scripts Exactly one of the following.
+ * @param {string[]} [scripts.urls] Script URLs, resolved against this page.
+ * @param {string[]} [scripts.texts] Script sources to embed in the document.
+ *     Either way the scripts run in document order, and the frame's `load`
+ *     event waits for all of them, so a later script can use an earlier one.
+ * @returns {string} The document for `iframe.srcdoc`.
+ */
+const buildFrameDocument = ({urls, texts}) => {
+    let scriptSrc;
+    let scriptTags;
+
+    if (urls) {
+        // Relative URLs in a srcdoc document resolve against the parent page.
+        // Resolve them here so the policy can name their origins; normalization
+        // also percent-encodes the quotes and angle brackets that would
+        // otherwise escape the src attribute below.
+        const absolute = urls.map(url => new URL(url, document.baseURI).href);
+        const origins = absolute.map(href => new URL(href).origin);
+        scriptSrc = `script-src ${Array.from(new Set(origins)).join(' ')};`;
+        scriptTags = absolute.map(href => `<script src="${href}"></script>`);
+    } else {
+        // Inline handlers in attacker-supplied SVG run under this too, and can
+        // post a forged reply for another in-flight call. Accepted: file:// hosts
+        // only, same-project costume data, no escape from the opaque origin.
+        scriptSrc = "script-src 'unsafe-inline';";
+        scriptTags = texts.map(text => `<script>${text}</script>`);
+    }
+
+    return `<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Security-Policy" content="${CSP}">
+<meta http-equiv="Content-Security-Policy" content="${CSP} ${scriptSrc}">
 </head>
 <body>
-<script>
-window.addEventListener('message', function (event) {
-    try {
-        var scriptText = event.data.__sandbox_script;
-        var payload = event.data.__sandbox_payload;
-        var ticket = event.data.__sandbox_ticket;
-        var warm = event.data.__sandbox_warm;
-
-        // Evaluate the caller's script if provided. The script is sent only
-        // with the first message; subsequent messages reuse the
-        // previously-defined onSandboxMessage handler.
-        if (scriptText != null) {
-            (0, eval)(scriptText);
-        }
-
-        if (typeof window.onSandboxMessage !== 'function') {
-            throw new Error('Script did not define window.onSandboxMessage');
-        }
-
-        // A warm-up message only evaluates the caller's script — running its
-        // top-level setup (e.g. paper.setup, font decode) — so the first real
-        // send skips that cost. Acknowledge without invoking onSandboxMessage.
-        if (warm) {
-            parent.postMessage({__sandbox_result: undefined, __sandbox_ticket: ticket}, '*');
-            return;
-        }
-
-        // targetOrigin '*' is intentional: this iframe has an opaque origin
-        // (sandbox="allow-scripts" without allow-same-origin), so event.origin
-        // is always 'null' and cannot be used as a reliable targetOrigin across
-        // browsers and serving contexts. The parent-side listener guards with
-        // event.source === iframe.contentWindow, providing the necessary filtering.
-        Promise.resolve(window.onSandboxMessage(payload)).then(function (result) {
-            parent.postMessage({__sandbox_result: result, __sandbox_ticket: ticket}, '*');
-        }).catch(function (err) {
-            parent.postMessage({
-                __sandbox_error: err && err.message || String(err),
-                __sandbox_ticket: ticket
-            }, '*');
-        });
-    } catch (err) {
-        parent.postMessage({
-            __sandbox_error: err && err.message || String(err),
-            __sandbox_ticket: event.data && event.data.__sandbox_ticket
-        }, '*');
-    }
-});
-</script>
+${scriptTags.join('\n')}
 </body>
 </html>`;
+};
 
-// Support both CommonJS (Node / bundler) and plain browser <script> inclusion.
-if (typeof module === 'undefined') {
-    window.IFRAME_HTML = IFRAME_HTML;
-} else {
-    module.exports = {IFRAME_HTML};
-}
+module.exports = {buildFrameDocument};

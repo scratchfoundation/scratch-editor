@@ -18,6 +18,13 @@ export default eslintConfigScratch.defineConfig(
         }
     },
     {
+        // Untranspiled sandbox frame script: capped at the browserslist floor.
+        files: ['src/helper/paper-import.js'],
+        languageOptions: {
+            ecmaVersion: 2017
+        }
+    },
+    {
         files: ['{src,test}/**/*.{js,cjs,mjs,jsx,ts,tsx}'],
         extends: [
             eslintConfigScratch.legacy.es6,
