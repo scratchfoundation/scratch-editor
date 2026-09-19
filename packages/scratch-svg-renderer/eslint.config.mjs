@@ -12,6 +12,16 @@ export default eslintConfigScratch.defineConfig(
         }
     },
     {
+        // Untranspiled sandbox frame scripts: capped at the browserslist floor.
+        files: [
+            'src/sandbox/runner.js',
+            'src/sandbox/measure-svg.js'
+        ],
+        languageOptions: {
+            ecmaVersion: 2017
+        }
+    },
+    {
         files: [
             '*.{,c,m}js', // for example, webpack.config.js
             'test/**/*.{,c,m}js'
