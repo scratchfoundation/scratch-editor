@@ -32,7 +32,7 @@
     "eslint-config-scratch": "14.1.70",
     "jest": "30.5.1",
     "jest-junit": "16.0.0",
-    "prettier": "3.9.6"
+    "prettier": "3.9.7"
   },
   "jest": {
     "reporters": [
