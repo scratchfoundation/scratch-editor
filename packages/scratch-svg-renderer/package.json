@@ -20,7 +20,12 @@
       "node": "./dist/node/scratch-svg-renderer.js",
       "default": "./src/index.js"
     },
-    "./sandbox": "./src/sandbox/index.js"
+    "./sandbox": {
+      "webpack": "./src/sandbox/index.js",
+      "browser": "./dist/web/scratch-svg-renderer.js",
+      "node": "./dist/node/scratch-svg-renderer.js",
+      "default": "./dist/web/scratch-svg-renderer.js"
+    }
   },
   "main": "./dist/node/scratch-svg-renderer.js",
   "browser": "./dist/web/scratch-svg-renderer.js",
