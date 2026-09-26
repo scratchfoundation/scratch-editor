@@ -48,7 +48,7 @@
     "@vitest/coverage-v8": "4.1.11",
     "eslint": "9.39.5",
     "eslint-config-scratch": "14.1.79",
-    "prettier": "3.9.8",
+    "prettier": "3.9.9",
     "rimraf": "6.1.2",
     "typescript": "5.9.3",
     "unplugin-dts": "1.1.1",
