@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_scratch_scratch_paint=self.webpackChunk_scratch_scratch_paint||[]).push([[279],{5486:function(c,s,e){c.exports=e.p+"assets/paper-core.min.b713dd57159e76223708.js?resource"}}]);

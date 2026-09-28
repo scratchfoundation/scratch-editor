@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkGUI=self.webpackChunkGUI||[]).push([[279],{5486(e,s,c){e.exports=c.p+"static/assets/paper-core.min.b713dd57159e76223708.js?resource"}}]);
