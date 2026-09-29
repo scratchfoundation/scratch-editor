@@ -43,12 +43,7 @@
     "watch": "webpack --progress --watch --watch-poll"
   },
   "browserslist": [
-    "Chrome >= 63",
-    "Edge >= 15",
-    "Firefox >= 57",
-    "Safari >= 8",
-    "Android >= 63",
-    "iOS >= 8"
+    "baseline widely available"
   ],
   "tap": {
     "allow-incomplete-coverage": true
