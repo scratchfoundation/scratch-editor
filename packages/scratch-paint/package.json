@@ -36,9 +36,7 @@
     "watch": "webpack --progress --watch"
   },
   "browserslist": [
-    "last 3 versions",
-    "Safari >= 8",
-    "iOS >= 8"
+    "baseline widely available"
   ],
   "jest": {
     "moduleNameMapper": {
