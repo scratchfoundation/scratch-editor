@@ -1926,6 +1926,10 @@ class Runtime extends EventEmitter {
         // threads are stepped. See ScratchRuntime.as for original implementation
         newThreads.forEach(thread => {
             execute(this.sequencer, thread);
+            if (thread.status === Thread.STATUS_DONE) {
+                // Thread might be done after `execute`.
+                return;
+            }
             thread.goToNextBlock();
         });
         return newThreads;
