@@ -76,7 +76,7 @@
     "eslint-config-scratch": "14.1.87",
     "globals": "16.5.0",
     "html-webpack-plugin": "5.6.8",
-    "playwright-chromium": "1.63.0",
+    "playwright-chromium": "1.64.0",
     "scratch-render-fonts": "1.0.254",
     "scratch-webpack-configuration": "3.1.2",
     "tap": "21.8.0",

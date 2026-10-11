@@ -71,7 +71,7 @@
   "devDependencies": {
     "@babel/core": "7.29.7",
     "@babel/preset-env": "7.29.7",
-    "@playwright/test": "1.63.0",
+    "@playwright/test": "1.64.0",
     "babel-loader": "9.2.1",
     "canvas": "3.2.3",
     "copy-webpack-plugin": "6.4.1",
