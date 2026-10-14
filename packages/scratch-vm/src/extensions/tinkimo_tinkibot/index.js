@@ -4,6 +4,7 @@ const uuid = require('uuid');
 
 const ArgumentType = require('../../extension-support/argument-type');
 const BlockType = require('../../extension-support/block-type');
+const Cast = require('../../util/cast');
 
 const categoryStyles = require('./common');
 
@@ -85,7 +86,7 @@ class TinkibotBlocks {
                 description: 'Name of the Tinkibot Display category.'
             }), [
                 'display_image', 'display_letter', 'display_number', 'mosaic', 'write_text', 'text_colour',
-                'background_colour', 'clear'
+                'background_colour', 'backlight', 'clear'
             ])
         ];
     }
@@ -364,6 +365,21 @@ class TinkibotBlocks {
                         },                                                                           
                     }
                 }, 
+                {
+                    opcode: 'backlight',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({
+                        id: 'tinkibot.backlight',
+                        default: 'Set backlight to [INTENSITY]',
+                        description: 'Set the display backlight intensity from 0 to 100'
+                    }),
+                    arguments: {
+                        INTENSITY: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 80
+                        }
+                    }
+                },
                 {
                     opcode: 'clear',
                     blockType: BlockType.COMMAND,
@@ -895,6 +911,11 @@ class TinkibotBlocks {
 
     clear () {
         return this._sendCommand({command: 'clear'});
+    }
+
+    backlight (args) {
+        const intensity = Math.max(0, Math.min(100, Cast.toNumber(args.INTENSITY)));
+        return this._sendCommand({command: 'set', backlight: intensity});
     }
 
     mosaic (args) {

@@ -53,7 +53,7 @@ test('Tinkibot is loaded when the virtual machine starts', t => {
 });
 
 test('Tinkibot blocks are grouped into focused categories', t => {
-    const extension = new TinkibotBlocks({});
+    const extension = new TinkibotBlocks(makeRuntime());
     const infos = extension.getInfos();
     const categories = Object.fromEntries(infos.map(info => [info.name, info.blocks.map(block => block.opcode)]));
 
@@ -64,7 +64,7 @@ test('Tinkibot blocks are grouped into focused categories', t => {
         Sensors: ['measure_line_sensor', 'measure_distance', 'measure_voltage'],
         Sounds: ['volume', 'play_sound'],
         Display: ['display_image', 'display_letter', 'display_number', 'mosaic', 'write_text', 'text_colour',
-            'background_colour', 'clear']
+            'background_colour', 'backlight', 'clear']
     });
     t.strictSame(infos.map(info => info.color1), ['#B832D0', '#007F96', '#12833A', '#7950E8', '#AD5E00']);
     for (const [index, info] of infos.entries()) {
@@ -81,7 +81,7 @@ test('Tinkibot blocks are grouped into focused categories', t => {
 });
 
 test('Every Tinkibot block is assigned to exactly one category', t => {
-    const extension = new TinkibotBlocks({});
+    const extension = new TinkibotBlocks(makeRuntime());
     const allOpcodes = extension._getCombinedInfo().blocks
         .filter(block => block !== '---')
         .map(block => block.opcode)
@@ -94,17 +94,61 @@ test('Every Tinkibot block is assigned to exactly one category', t => {
     t.end();
 });
 
+test('Tinkibot backlight is a Display command with a numeric input defaulting to 80', t => {
+    const extension = new TinkibotBlocks(makeRuntime());
+    const display = extension.getInfos().find(info => info.id === 'tinkibotDisplay');
+    const block = display.blocks.find(info => info.opcode === 'backlight');
+
+    t.match(block, {
+        blockType: 'command',
+        text: 'Set backlight to [INTENSITY]',
+        arguments: {INTENSITY: {type: 'number', defaultValue: 80}}
+    });
+    const vm = new VirtualMachine();
+    const category = vm.runtime.getBlocksXML().find(info => info.id === 'tinkibotDisplay');
+    t.match(category.xml, /type="tinkibotDisplay_backlight"/);
+    t.match(category.xml, /<value name="INTENSITY"><shadow type="math_number"><field name="NUM">80<\/field>/);
+    t.end();
+});
+
+test('Tinkibot backlight clamps numeric and variable values and waits for the set response', async t => {
+    global.window = {};
+    global.WebSocket = MockWebSocket;
+    t.teardown(() => {
+        delete global.window;
+        delete global.WebSocket;
+    });
+
+    const extension = new TinkibotBlocks(makeRuntime());
+    pairRobot(extension);
+    MockWebSocket.instance.open();
+    const cases = [[80, 80], ['42', 42], [0, 0], [100, 100], [-10, 0], [120, 100], [37.5, 37.5], ['invalid', 0]];
+    for (const [input, expected] of cases) {
+        const result = extension.backlight({INTENSITY: input});
+        await new Promise(resolve => setImmediate(resolve));
+        t.strictSame(MockWebSocket.instance.sent.at(-1), {
+            'command': 'set',
+            'backlight': expected,
+            'nickname': 'orange',
+            'bot-uuid': 'orange-robot-uuid',
+            'blocks-uuid': extension._blocksUuid
+        });
+        MockWebSocket.instance.respond('set', 'OK');
+        t.equal(await result, 'OK');
+    }
+});
+
 test('Tinkibot commands wait for each response before sending the next command', async t => {
     global.window = {};
     global.WebSocket = MockWebSocket;
 
-    const extension = new TinkibotBlocks({});
+    const extension = new TinkibotBlocks(makeRuntime());
     pairRobot(extension);
     const first = extension.move({DIRECTION: 'forward', DISTANCE: 10});
     const second = extension.rotate({ROTATION: 'left', DEGREES: 90});
 
     MockWebSocket.instance.open();
-    await Promise.resolve();
+    await new Promise(resolve => setImmediate(resolve));
     t.strictSame(MockWebSocket.instance.sent, [
         {command: 'move', direction: 'forward', distance: 10, nickname: 'orange',
             'bot-uuid': 'orange-robot-uuid', 'blocks-uuid': extension._blocksUuid}
@@ -112,7 +156,7 @@ test('Tinkibot commands wait for each response before sending the next command',
 
     MockWebSocket.instance.respond('move', 'moved');
     t.equal(await first, 'moved');
-    await Promise.resolve();
+    await new Promise(resolve => setImmediate(resolve));
     t.strictSame(MockWebSocket.instance.sent, [
         {command: 'move', direction: 'forward', distance: 10, nickname: 'orange',
             'bot-uuid': 'orange-robot-uuid', 'blocks-uuid': extension._blocksUuid},
@@ -131,11 +175,11 @@ test('Tinkibot reporters return the response for their own request', async t => 
     global.window = {};
     global.WebSocket = MockWebSocket;
 
-    const extension = new TinkibotBlocks({});
+    const extension = new TinkibotBlocks(makeRuntime());
     pairRobot(extension);
     const distance = extension.measure_distance();
     MockWebSocket.instance.open();
-    await Promise.resolve();
+    await new Promise(resolve => setImmediate(resolve));
     MockWebSocket.instance.respond('measure_distance', 42);
 
     t.equal(await distance, 42);
@@ -350,7 +394,7 @@ test('Tinkibot blocks require a claimed robot', async t => {
     global.WebSocket = MockWebSocket;
     const alerts = [];
     global.alert = message => alerts.push(message);
-    const extension = new TinkibotBlocks({});
+    const extension = new TinkibotBlocks(makeRuntime());
 
     await t.rejects(extension.measure_voltage(), {message: 'No Tinkibot robot is claimed'});
     t.strictSame(MockWebSocket.instance.sent, []);
@@ -365,19 +409,19 @@ test('Tinkibot volume command accepts the proxy response and releases the queue'
     global.window = {};
     global.WebSocket = MockWebSocket;
 
-    const extension = new TinkibotBlocks({});
+    const extension = new TinkibotBlocks(makeRuntime());
     pairRobot(extension);
     const volume = extension.volume({VALUE: 5});
     const distance = extension.measure_distance();
 
     MockWebSocket.instance.open();
-    await Promise.resolve();
+    await new Promise(resolve => setImmediate(resolve));
     t.match(MockWebSocket.instance.sent, [{command: 'set', volume: 5, nickname: 'orange',
         'bot-uuid': 'orange-robot-uuid', 'blocks-uuid': extension._blocksUuid}]);
 
     MockWebSocket.instance.respond('set', 'OK set volume 5');
     t.equal(await volume, 'OK set volume 5');
-    await Promise.resolve();
+    await new Promise(resolve => setImmediate(resolve));
     t.match(MockWebSocket.instance.sent, [
         {command: 'set', volume: 5, nickname: 'orange', 'bot-uuid': 'orange-robot-uuid'},
         {command: 'measure_distance', nickname: 'orange', 'bot-uuid': 'orange-robot-uuid'}
@@ -398,16 +442,16 @@ test('Tinkibot command errors warn the user and release the queue', async t => {
         'No Tinkibot robots are connected.'
     );
 
-    const extension = new TinkibotBlocks({});
+    const extension = new TinkibotBlocks(makeRuntime());
     pairRobot(extension);
     const sound = extension.play_sound({SOUND: 'startup'});
     const distance = extension.measure_distance();
 
     MockWebSocket.instance.open();
-    await Promise.resolve();
+    await new Promise(resolve => setImmediate(resolve));
     MockWebSocket.instance.respond('error', 'command_failed:no_robots_connected');
     await t.rejects(sound, {message: 'command_failed:no_robots_connected'});
-    await Promise.resolve();
+    await new Promise(resolve => setImmediate(resolve));
     t.match(MockWebSocket.instance.sent, [
         {command: 'play_sound', sound: 'startup', nickname: 'orange', 'bot-uuid': 'orange-robot-uuid'},
         {command: 'measure_distance', nickname: 'orange', 'bot-uuid': 'orange-robot-uuid'}
