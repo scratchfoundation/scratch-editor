@@ -1,5 +1,38 @@
 import {Blocks} from '../../../src/containers/blocks.jsx';
 
+describe('Blocks container handleCustomProceduresClose', () => {
+    test('selects the My Blocks category after closing', () => {
+        // The My Blocks category has toolboxitemid="myBlocks" but its
+        // display name is a translated string like "My Blocks".
+        // A correct implementation must find the category even when the
+        // display name doesn't match the toolbox item ID.
+        const myBlocksItem = {name: 'Mis Bloques'};
+        const toolbox = {
+            selectedItem: null,
+            getToolboxItemById: jest.fn(id => (id === 'myBlocks' ? myBlocksItem : null)),
+            // Simulates real selectCategoryByName: looks up by display name, not ID
+            selectCategoryByName: jest.fn(name => {
+                toolbox.selectedItem = (name === 'Mis Bloques') ? myBlocksItem : null;
+            }),
+            setSelectedItem: jest.fn(item => {
+                toolbox.selectedItem = item;
+            })
+        };
+        const instance = {
+            props: {onRequestCloseCustomProcedures: jest.fn()},
+            workspace: {getToolbox: jest.fn().mockReturnValue(toolbox)},
+            updateToolbox: jest.fn()
+        };
+
+        Blocks.prototype.handleCustomProceduresClose.call(instance, {});
+
+        // The category must actually be resolved and selected.
+        // If the lookup silently fails, selectedItem will be null
+        // and the toolbox won't scroll.
+        expect(toolbox.selectedItem).toBe(myBlocksItem);
+    });
+});
+
 describe('Blocks container onWorkspaceUpdate', () => {
     let instance;
 
