@@ -50,10 +50,7 @@
     "watch": "webpack --watch"
   },
   "browserslist": [
-    "Chrome >= 63",
-    "Edge >= 15",
-    "Firefox >= 57",
-    "Safari >= 11"
+    "baseline widely available"
   ],
   "tap": {
     "allow-incomplete-coverage": true
