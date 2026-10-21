@@ -178,7 +178,7 @@
     "react-style-proptype": "3.2.2",
     "react-tabs": "5.2.0",
     "react-tooltip": "4.5.1",
-    "react-virtualized": "9.22.6",
+    "react-virtualized": "10.0.0",
     "react-visibility-sensor": "5.1.1",
     "redux-throttle": "0.1.1",
     "scratch-audio": "2.0.272",
