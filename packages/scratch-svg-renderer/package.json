@@ -81,7 +81,7 @@
     "jsdom": "13.2.0",
     "mkdirp": "2.1.6",
     "rimraf": "3.0.2",
-    "scratch-render-fonts": "1.0.255",
+    "scratch-render-fonts": "1.0.256",
     "scratch-webpack-configuration": "3.1.2",
     "tap": "21.8.0",
     "webpack": "5.112.0",
@@ -89,6 +89,6 @@
     "webpack-dev-server": "5.2.7"
   },
   "peerDependencies": {
-    "scratch-render-fonts": "1.0.255"
+    "scratch-render-fonts": "1.0.256"
   }
 }

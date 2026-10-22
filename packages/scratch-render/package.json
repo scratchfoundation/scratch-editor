@@ -77,7 +77,7 @@
     "globals": "16.5.0",
     "html-webpack-plugin": "5.6.8",
     "playwright-chromium": "1.64.1",
-    "scratch-render-fonts": "1.0.255",
+    "scratch-render-fonts": "1.0.256",
     "scratch-webpack-configuration": "3.1.2",
     "tap": "21.8.0",
     "terser-webpack-plugin": "5.6.1",
@@ -87,6 +87,6 @@
     "webpack-dev-server": "5.2.7"
   },
   "peerDependencies": {
-    "scratch-render-fonts": "1.0.255"
+    "scratch-render-fonts": "1.0.256"
   }
 }
