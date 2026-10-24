@@ -1,0 +1,483 @@
+#!/usr/bin/env bash
+# sbx-template: sbx-up 0.3.1
+#
+# Start this project's sbx sandbox.
+#
+#   config/sbx/bin/sbx-up                  preflight, then create/attach (sbx env run)
+#   config/sbx/bin/sbx-up --create         preflight, then create without attaching
+#   config/sbx/bin/sbx-up --check          preflight (and direct-mode guards) only
+#   config/sbx/bin/sbx-up --name NAME      another sandbox for this project, e.g. one per task
+#   config/sbx/bin/sbx-up --port PORT      host port for the published port (on create)
+#   config/sbx/bin/sbx-up --direct         direct mode: work on the live project directory
+#   config/sbx/bin/sbx-up --accept         direct mode: accept reported changes as the new baseline
+#   config/sbx/bin/sbx-up --skip-secrets   skip the stored-secret checks (e.g. a create from a script)
+#   config/sbx/bin/sbx-up -- <args>        extra arguments for `sbx env run`
+#
+# Clone mode (the default): the agent works on a private clone inside the VM,
+# the project directory is mounted read-only, and its commits reach the host
+# through the sandbox-<name> git remote (git fetch sandbox-<name>).
+#
+# Direct mode (--direct, chosen when the sandbox is created) shares the live
+# project directory, so sbx-up adds two protections:
+# - read-only overlay: writes the git-ignored local.sbxenv.yaml, which mounts
+#   the hook and config paths that exist read-only, and passes it to sbx;
+# - guards: .git/config stays writable, so its keys are compared with a
+#   snapshot taken outside the workspace; only keys git writes in normal use
+#   that can't make it run code or reach another host are left out. Protected
+#   paths are hashed too, because a nested read-only mount can be bypassed by
+#   renaming its parent directory. Changes are reported before preflight runs
+#   anything, at session end and again at the next start; nothing is reverted.
+#
+# Preflight checks this machine against the project's requirements
+# (config/sbx/sbx-up.conf). A failed check prints the matching section of
+# config/sbx/README.md and stops.
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd -P)"
+# shellcheck source-path=SCRIPTDIR source=sbx-lib.sh
+. "$(dirname "${BASH_SOURCE[0]}")/sbx-lib.sh"
+conf="$root/config/sbx/sbx-up.conf"
+guide="$root/config/sbx/README.md"
+env_file="$root/sbxenv.yaml"
+local_env_file="$root/local.sbxenv.yaml"
+
+mode=run
+accept=false
+skip_secrets=false
+direct=false
+name=""
+host_port=""
+passthrough=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --create) mode=create ;;
+    --check) mode=check ;;
+    --accept) accept=true ;;
+    --skip-secrets) skip_secrets=true ;;
+    --direct) direct=true ;;
+    --name) name="${2:?--name needs a value}"; shift ;;
+    --port) host_port="${2:?--port needs a value}"; shift ;;
+    --) shift; passthrough=("$@"); break ;;
+    -h|--help) awk 'NR > 1 && !/^#/ { exit } NR > 1' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) echo "unknown argument: $1 (see --help)" >&2; exit 2 ;;
+  esac
+  shift
+done
+
+# --- project configuration ----------------------------------------------------
+# KEY=VALUE lines; parsed, never sourced.
+conf_get() {
+  [ -f "$conf" ] || return 0
+  sed -n "s/^[[:space:]]*$1=//p" "$conf" | tail -n1 | sed 's/^"\(.*\)"$/\1/'
+}
+default_name="$(env_name "$env_file")"
+[ -n "$name" ] || name="$default_name"
+[ -n "$name" ] || { echo "sbxenv.yaml has no name: (or pass --name)" >&2; exit 2; }
+required_secrets="$(conf_get REQUIRED_SECRETS)"
+min_docker_volume="$(conf_get MIN_DOCKER_VOLUME)"
+extra_protected="$(conf_get PROTECT)"
+
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/sbx-up/$name"
+
+# Hidden-risk paths: content that runs on the host or changes how the host's
+# tools behave. Kept only if they exist, because sbx refuses a missing
+# read-only path and an empty placeholder (e.g. .claude/settings.json) would
+# change host behaviour.
+# Missing ones are still hashed, so creating one is reported.
+protected_candidates=(
+  .git/hooks
+  .git/config.worktree
+  .husky
+  .vscode
+  .claude/settings.json
+  .claude/settings.local.json
+  .mcp.json
+  .cursor/hooks.json
+  .cursor/hooks
+  .cursor/mcp.json
+  .codex/config.toml
+  .codex/hooks.json
+  .github/hooks
+  .github/workflows
+  config/sbx
+  sbxenv.yaml
+)
+# shellcheck disable=SC2206
+[ -n "$extra_protected" ] && protected_candidates+=($extra_protected)
+
+existing_protected=()
+for p in "${protected_candidates[@]}"; do
+  [ -e "$root/$p" ] && existing_protected+=("$p")
+done
+
+# --- output -------------------------------------------------------------------
+ok()   { printf '  \033[32m✓\033[0m %s\n' "$*"; }
+warn() { printf '  \033[33m!\033[0m %s\n' "$*"; }
+bad()  { printf '  \033[31m✗\033[0m %s\n' "$*"; }
+
+# Print one "## <heading>" section of the developer guide.
+guide_section() {
+  echo
+  echo "From config/sbx/README.md:"
+  echo
+  awk -v h="## $1" '
+    $0 == h { on = 1; print; next }
+    on && /^## / { exit }
+    on { print }
+  ' "$guide" | sed 's/^/    /'
+  echo
+}
+
+stop_with() { guide_section "$1"; exit 1; }
+
+# --- preflight ----------------------------------------------------------------
+# Host ports a new sandbox would publish: each ports[].host in sbxenv.yaml,
+# with ${{ env.args.<arg> }} taken from --port (hostPort), a passed
+# `--env-arg <arg>=<value>`, or the arg's default. One port per line.
+new_host_ports() {
+  local a env_arg_values=() take=false
+  for a in ${passthrough[@]+"${passthrough[@]}"}; do
+    if [ "$take" = true ]; then env_arg_values+=("$a"); take=false
+    elif [ "$a" = --env-arg ]; then take=true
+    fi
+  done
+  python3 -I - "$env_file" "$host_port" ${env_arg_values[@]+"${env_arg_values[@]}"} <<'EOF'
+import re, sys
+env_file, host_port, overrides = sys.argv[1], sys.argv[2], sys.argv[3:]
+args, hosts, section, arg = {}, [], None, None
+for line in open(env_file).read().splitlines():
+    if not line.strip() or line.lstrip().startswith("#"):
+        continue
+    if not line[0].isspace():
+        section = line.split(":", 1)[0]
+        continue
+    if section == "args":
+        m = re.match(r"^  ([A-Za-z0-9_]+):\s*$", line)
+        if m:
+            arg = m.group(1)
+        m = re.match(r"""^\s+default:\s*["']?([0-9]+)["']?\s*$""", line)
+        if m and arg:
+            args[arg] = m.group(1)
+    elif section == "ports":
+        m = re.match(r"^\s*(?:-\s*)?host:\s*(.+?)\s*$", line)
+        if m:
+            hosts.append(m.group(1).strip("\"'"))
+for o in overrides:
+    k, _, v = o.partition("=")
+    args[k] = v
+if host_port:
+    args["hostPort"] = host_port
+for h in hosts:
+    m = re.fullmatch(r"\$\{\{\s*env\.args\.([A-Za-z0-9_]+)\s*\}\}", h)
+    v = args.get(m.group(1), "") if m else h
+    if v.isdigit():
+        print(v)
+EOF
+}
+
+# Succeeds if something on this machine already listens on 127.0.0.1:$1,
+# where sbx publishes ports.
+port_in_use() {
+  python3 -I -c '
+import socket, sys
+s = socket.socket()
+try:
+    s.bind(("127.0.0.1", int(sys.argv[1])))
+except OSError:
+    sys.exit(0)
+finally:
+    s.close()
+sys.exit(1)
+' "$1"
+}
+
+preflight() {
+  echo "Preflight for sandbox '$name'"
+
+  if ! "$root/config/sbx/bin/bootstrap.sh" --check >/dev/null 2>&1; then
+    bad "machine baseline"
+    "$root/config/sbx/bin/bootstrap.sh" --check || true
+    stop_with "Set up your machine"
+  fi
+  ok "machine baseline (bootstrap.sh --check)"
+
+  if [ -n "$min_docker_volume" ] && [ -n "$existing" ]; then
+    ok "Docker volume: sized when sandbox '$name' was created"
+  elif [ -n "$min_docker_volume" ]; then
+    # DOCKER_SANDBOXES_DOCKER_SIZE overrides the setting for one create.
+    local have source=sandbox.disk.dockerVolume
+    if [ -n "${DOCKER_SANDBOXES_DOCKER_SIZE:-}" ]; then
+      have="$DOCKER_SANDBOXES_DOCKER_SIZE"; source=DOCKER_SANDBOXES_DOCKER_SIZE
+    else
+      have="$(sbx settings get sandbox.disk.dockerVolume)"
+    fi
+    if [ "$(to_mib "$have")" -lt "$(to_mib "$min_docker_volume")" ]; then
+      bad "$source is $have; this project needs at least $min_docker_volume"
+      stop_with "Docker volume size"
+    fi
+    ok "$source $have (needs $min_docker_volume)"
+  fi
+
+  # Only a create publishes ports; sbx would fail on a taken one after the
+  # kits are built.
+  if [ -z "$existing" ]; then
+    local port ports=""
+    for port in $(new_host_ports); do
+      if port_in_use "$port"; then
+        bad "host port $port is in use (another sandbox or service); pick a free one with --port"
+        stop_with "One sandbox per task"
+      fi
+      ports="$ports $port"
+    done
+    [ -z "$ports" ] || ok "host ports free:$ports"
+  fi
+
+  if [ "$skip_secrets" = true ]; then
+    warn "secret checks skipped (--skip-secrets)"
+  else
+    local s
+    for s in $required_secrets; do
+      if [ -n "$(sbx secret ls --sandbox "$name" --service "$s" -q 2>/dev/null)" ]; then
+        ok "secret '$s' stored for sandbox '$name'"
+      else
+        bad "no '$s' secret stored for sandbox '$name'"
+        case "$s" in
+          github) stop_with "GitHub token" ;;
+          *) stop_with "Project credentials" ;;
+        esac
+      fi
+    done
+  fi
+}
+
+# --- guards -------------------------------------------------------------------
+# Every key in .git/config, .git/config.worktree and the files they include, as
+# "<file>: key=value", except the few git and sbx write in normal use that can't
+# make git run code or reach another host. An allowlist, because the keys that
+# run code (hooks, pagers, diff and merge drivers, transports, extensions, ...)
+# keep growing. sbx itself rewrites each clone-mode sandbox's sandbox-<name>
+# remote on every start; that is skipped while the URL has sbx's form.
+# Included files are read whether or not their includeIf condition holds now: a
+# branch switch on the host can make an onbranch: condition hold later.
+guarded_gitconfig() {
+  local queue=() seen=$'\n' f label key p dir
+  for f in config config.worktree; do
+    [ -f "$root/.git/$f" ] && queue+=("$root/.git/$f")
+  done
+  while [ "${#queue[@]}" -gt 0 ]; do
+    f="${queue[0]}"
+    queue=("${queue[@]:1}")
+    case "$seen" in *$'\n'"$f"$'\n'*) continue ;; esac
+    seen="$seen$f"$'\n'
+    case "$f" in
+      "$root/.git/config" | "$root/.git/config.worktree") label="${f#"$root/.git/"}" ;;
+      "$root/"*) label="${f#"$root/"}" ;;
+      *) label="$f" ;;
+    esac
+    # Relative include paths are relative to the including file; resolve them
+    # so the same file isn't read twice under two names.
+    while IFS= read -r -d '' key; do
+      p="${key#*$'\n'}"
+      case "$p" in
+        \~/*) p="$HOME/${p#\~/}" ;;
+        /*) ;;
+        *) p="$(dirname "$f")/$p" ;;
+      esac
+      dir="$(cd "$(dirname "$p")" 2>/dev/null && pwd -P)" || continue
+      [ -f "$dir/${p##*/}" ] && queue+=("$dir/${p##*/}")
+    done < <(git config --file "$f" --no-includes --null \
+      --get-regexp '^include(if\..*)?\.path$' 2>/dev/null)
+    git config --file "$f" --list --no-includes 2>/dev/null | label="$label" awk '
+      {
+        i = index($0, "=")
+        if (i) { k = tolower(substr($0, 1, i - 1)); v = substr($0, i + 1) }
+        else   { k = tolower($0); v = "" }
+      }
+      k ~ /^branch\..*\.(merge|description|vscode-merge-base)$/ { next }
+      # A remote name, not a URL or a path.
+      k ~ /^branch\..*\.(remote|pushremote)$/ && v ~ /^[A-Za-z0-9._-]+$/ { next }
+      k ~ /^remote\..*\.(fetch|tagopt|prune|prunetags)$/ { next }
+      k ~ /^remote\.sandbox-.*\.url$/ && v ~ /^git:\/\/127\.0\.0\.1:[0-9]+\/[^\/]+$/ { next }
+      { print ENVIRON["label"] ": " $0 }
+    '
+  done | LC_ALL=C sort
+}
+
+path_digest() {
+  local p="$root/$1"
+  if [ -d "$p" ]; then
+    (cd "$p" && find . \( -type f -o -type l \) -print0 | LC_ALL=C sort -z \
+      | xargs -0 "${sha256[@]}" 2>&1) | "${sha256[@]}" | cut -c1-64
+  elif [ -e "$p" ]; then
+    "${sha256[@]}" < "$p" | cut -c1-64
+  else
+    echo missing
+  fi
+}
+
+protected_digests() {
+  local p
+  for p in "${protected_candidates[@]}"; do
+    printf '%s %s\n' "$(path_digest "$p")" "$p"
+  done
+}
+
+take_snapshot() {
+  mkdir -p "$state_dir"
+  guarded_gitconfig > "$state_dir/gitconfig-v2"
+  protected_digests > "$state_dir/protected"
+}
+
+# Compare with the snapshot. Prints the changes and returns 1 if there are any.
+check_guards() {
+  [ -f "$state_dir/gitconfig-v2" ] && [ -f "$state_dir/protected" ] || return 0
+  local changed=0 line
+
+  local git_diff
+  git_diff="$(diff <(cat "$state_dir/gitconfig-v2") <(guarded_gitconfig) | grep '^[<>]' || true)"
+  if [ -n "$git_diff" ]; then
+    changed=1
+    echo
+    bad ".git/config changed (any key that can make host git run code or change remotes):"
+    while IFS= read -r line; do
+      case "$line" in
+        "< "*) echo "      - ${line#< }" ;;
+        "> "*) echo "      + ${line#> }" ;;
+      esac
+    done <<< "$git_diff"
+    echo "    Review each one. Remove an unwanted key with"
+    echo "      git config --file .git/<file> --unset-all <key>"
+    echo "    or restore a value with"
+    echo "      git config --file .git/<file> <key> <old value>"
+    echo "    For an included file (shown by its path from the project root), use --file <path>."
+  fi
+
+  local path_diff
+  path_diff="$(diff <(cat "$state_dir/protected") <(protected_digests) | sed -n 's/^> [^ ]* //p' || true)"
+  if [ -n "$path_diff" ]; then
+    changed=1
+    echo
+    bad "protected paths changed or appeared since the last baseline (existing ones are read-only in the sandbox; if you didn't change them on the host, the agent created them or worked around the mount):"
+    while IFS= read -r line; do echo "      $line"; done <<< "$path_diff"
+    echo "    Check them with 'git status' and 'git diff' before you run anything on the host."
+  fi
+
+  if [ "$changed" = 1 ]; then
+    echo
+    echo "    Nothing was reverted. Once reviewed, accept the current state with"
+    echo "      config/sbx/bin/sbx-up --accept"
+    return 1
+  fi
+  return 0
+}
+
+guards_at_start() {
+  if [ ! -f "$state_dir/gitconfig-v2" ]; then
+    take_snapshot
+    if [ -f "$state_dir/gitconfig" ]; then
+      rm -f "$state_dir/gitconfig"
+      warn "guards now cover every .git/config key; new baseline recorded in $state_dir"
+      echo "      Check .git/config and .git/config.worktree once by hand."
+    else
+      ok "guard baseline recorded in $state_dir"
+    fi
+    return
+  fi
+  if check_guards; then
+    ok "no guarded changes since the last session"
+  elif [ "$accept" = true ]; then
+    take_snapshot
+    warn "changes accepted; new baseline recorded"
+  else
+    exit 1
+  fi
+}
+
+# --- read-only overlay --------------------------------------------------------
+write_local_env() {
+  {
+    echo "# Generated by config/sbx/bin/sbx-up --direct on every start; do not edit or commit."
+    echo "# Turns off clone mode and mounts the project's hidden-risk paths read-only."
+    echo 'schemaVersion: "1"'
+    echo "workspace:"
+    echo "  path: ."
+    echo "  clone: false"
+    echo "additionalWorkspaces:"
+    local p
+    for p in "${existing_protected[@]}"; do
+      # sbx already mounts its environment files read-only.
+      [ "$p" = sbxenv.yaml ] && continue
+      echo "  - path: ./$p"
+      echo "    readOnly: true"
+    done
+  } > "$local_env_file"
+}
+
+# --- mode -----------------------------------------------------------------------
+# The mode is fixed when the sandbox is created.
+resolve_mode() {
+  local rm_files="sbxenv.yaml"
+  [ -n "$existing" ] || return 0
+  [ "$existing" = direct ] && rm_files="sbxenv.yaml local.sbxenv.yaml"
+  if [ "$existing" = direct ] && [ "$direct" = false ]; then
+    warn "sandbox '$name' was created in direct mode; using direct mode"
+    echo "      For clone mode, remove it first: sbx env rm${name_args[*]:+ ${name_args[*]}} $rm_files"
+    direct=true
+  elif [ "$existing" = clone ] && [ "$direct" = true ]; then
+    bad "sandbox '$name' was created in clone mode; --direct applies only when a sandbox is created"
+    echo "      Remove it first (sbx env rm${name_args[*]:+ ${name_args[*]}} $rm_files), or use another --name."
+    exit 2
+  fi
+}
+
+# --- main ---------------------------------------------------------------------
+name_args=()
+[ "$name" = "$default_name" ] || name_args=(--name "$name")
+env_args=(${name_args[@]+"${name_args[@]}"})
+[ -z "$host_port" ] || env_args+=(--env-arg "hostPort=$host_port")
+
+command -v sbx >/dev/null || { bad "sbx is not installed"; stop_with "Set up your machine"; }
+# Fails (and stops) if sbx can't list sandboxes: guessing "clone" for a
+# direct-mode sandbox would skip its guards.
+existing="$(sandbox_field "$name" mode "$env_file")"
+resolve_mode
+env_files=("$env_file")
+if [ "$direct" = true ]; then
+  # Before preflight, which runs host tools in the shared project directory.
+  echo "Guards for sandbox '$name'"
+  guards_at_start
+  write_local_env
+  env_files+=("$local_env_file")
+fi
+
+preflight
+if [ "$direct" = true ]; then
+  ok "direct mode; read-only: ${existing_protected[*]}"
+else
+  [ "$accept" = false ] || warn "--accept applies to direct mode only; ignored"
+  ok "clone mode: the project directory is read-only in the sandbox"
+fi
+
+[ "$mode" = check ] && exit 0
+
+cd "$root"
+status=0
+verb=run
+[ "$mode" = create ] && verb=create
+sbx env "$verb" ${env_args[@]+"${env_args[@]}"} ${passthrough[@]+"${passthrough[@]}"} "${env_files[@]}" || status=$?
+
+# The sandbox keeps running after create, so the session hasn't ended yet;
+# the next start (or `--check`) runs the guards.
+[ "$verb" = run ] || exit "$status"
+
+echo
+if [ "$direct" = false ]; then
+  echo "Session ended. The sandbox's commits reach this repository with"
+  echo "  git fetch sandbox-$name"
+  echo "while the sandbox runs (sbx exec $name true starts it); they land in refs/sandboxes/$name/."
+  exit "$status"
+fi
+echo "Session ended; checking guards"
+check_guards || exit 1
+ok "no guarded changes"
+exit "$status"

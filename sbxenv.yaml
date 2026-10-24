@@ -1,0 +1,46 @@
+# sbx-template: sbxenv.yaml 0.1.0
+# Docker Sandboxes environment for this repository: the agent-free
+# config/sbx/scratch-editor workload, Docker's Claude Code mixin and the company
+# layer (base-toolkit). The sandbox starts a login shell; run `claude` in it.
+#
+# Developer setup and daily use: config/sbx/README.md.
+#
+# The agent works on a private clone of this repository inside the VM (clone
+# mode); this directory is mounted read-only, and the agent's commits come back
+# with `git fetch sandbox-<name>`. Start it with the wrapper, which checks your
+# machine first:
+#   config/sbx/bin/sbx-up                              # this sandbox
+#   config/sbx/bin/sbx-up --name scratch-editor-task-1 --port 8602   # one per task
+#   config/sbx/bin/sbx-up --direct                     # live directory, for pairing
+#
+# Plain sbx works too (clone mode only; direct mode needs the wrapper's
+# read-only mounts and .git/config checks):
+#   sbx env plan   # Preview what would be created
+#   sbx env run    # Create the sandbox, or attach to the existing one
+#   sbx env rm     # Remove it (and its sandbox-scoped secrets)
+#
+# If your host Docker can't export OCI images, set SBX_KIT_BUILDER=sandbox so
+# sbx builds the local kits in its builder sandbox instead.
+schemaVersion: "1"
+name: scratch-editor
+
+args:
+  hostPort:
+    default: "8601"
+    description: Host port for the scratch-gui dev server; give each parallel sandbox its own.
+
+agent: scratch-editor
+kits:
+  - ./config/sbx/scratch-editor
+  - docker/sbx-kit-claude-mixin:2.1.292
+  # Company layer, copied from the toolkit (version in its yaml header).
+  - ./config/sbx/base-toolkit
+
+workspace:
+  path: .
+  clone: true
+
+ports:
+  # scratch-gui dev server: `npm start` at the repository root (webpack serve).
+  - sandbox: 8601
+    host: ${{ env.args.hostPort }}

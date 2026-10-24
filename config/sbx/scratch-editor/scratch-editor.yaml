@@ -1,0 +1,54 @@
+# syntax=docker/sandbox-kit:3
+# sbx-template: workload.yaml 0.1.0
+# yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
+#
+# Agent-free workload for this repository: Node, the browsers and X server the
+# test suites use, and Docker Engine. sbxenv.yaml adds Claude Code and the
+# company layer (base-toolkit) as mixins.
+#
+# The allowlist names every host the project's own tooling needs, even where
+# the global balanced policy already allows it, so the sandbox also works
+# under a deny-all baseline. Company-wide hosts (GitHub, VS Code Remote-SSH)
+# come from the base-toolkit mixin.
+schemaVersion: "3"
+kind: workload
+displayName: Scratch Editor
+description: SBX env for the scratch-editor repository, with Node, Playwright and Selenium browser dependencies and Docker Engine.
+
+version: "0.1.0"
+
+provides:
+  - "node@24.22.0"
+
+capabilities:
+  - type: com.docker.sandbox/sbx@1
+
+  - type: com.docker.sandbox/network-policy@1
+    config:
+      runtime:
+        allow:
+          # npm: package-lock.json (every package resolves here).
+          - registry.npmjs.org:443
+
+          # Playwright browsers: `npx playwright install` for scratch-gui and
+          # scratch-render tests (.github/actions/test-package/action.yml),
+          # and playwright-chromium's install script (scratch-render).
+          # cdn.playwright.dev redirects Chromium (Chrome for Testing) to
+          # storage.googleapis.com.
+          - cdn.playwright.dev:443
+          - playwright.download.prss.microsoft.com:443
+          - playwright.azureedge.net:443
+          - storage.googleapis.com:443
+
+          # Node headers for node-gyp: canvas is built from source in the VM
+          # (see scratch-editor.dockerfile).
+          - nodejs.org:443
+
+          # micro:bit firmware: scratch-gui's prepare script
+          # (packages/scratch-gui/scripts/prepare.mjs), run by `npm ci`.
+          - downloads.scratch.mit.edu:443
+
+          # Scratch asset and project CDNs: scratch-vm's integration tests
+          # load project assets (packages/scratch-vm/test/fixtures/make-test-storage.js).
+          - cdn.assets.scratch.mit.edu:443
+          - cdn.projects.scratch.mit.edu:443

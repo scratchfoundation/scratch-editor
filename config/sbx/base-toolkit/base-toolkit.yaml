@@ -1,0 +1,111 @@
+# syntax=docker/sandbox-kit:3
+# sbx-template: base-toolkit 0.2.0
+# yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
+#
+# Company layer for sbx sandboxes, added to any project workload next to
+# Docker's Claude Code mixin:
+#   kits:
+#     - ./config/sbx/<project>
+#     - docker/sbx-kit-claude-mixin:<version>
+#     - <this kit>
+#
+# It brings:
+#   - Claude Code managed settings: auto permission mode, bypass mode disabled
+#     (managed settings beat the ~/.claude/settings.json the Claude mixin seeds),
+#     no updates (the Claude mixin's pin is the version), no telemetry or error
+#     reporting (it would only hit the network policy), and an MCP allowlist
+#     that only managed settings can extend: the sbx MCP gateway, the in-VM
+#     chrome-devtools server, and Figma (the claude.ai connector or a direct
+#     server). Other claude.ai connectors stay off, because their traffic goes
+#     through Anthropic's MCP proxy, which the network policy can't tell apart.
+#   - git: the developer's identity, HTTPS for GitHub with a per-sandbox token
+#     injected by the proxy, global ignores
+#   - gh, and chrome-devtools-mcp with a headless Chromium inside the sandbox
+#   - agent context: how to behave in the sandbox, as Claude Code's managed
+#     CLAUDE.md (always loaded) and in the sbx kit index for other agents
+#   - hosts every project needs: GitHub, VS Code Remote-SSH
+schemaVersion: "3"
+kind: mixin
+displayName: Base toolkit
+description: Company layer for sbx sandboxes - Claude Code policy, git over HTTPS with a per-sandbox GitHub token, gh, chrome-devtools-mcp, agent context.
+
+version: "0.2.0"
+
+provides:
+  - "base-toolkit@0.2.0"
+
+# chrome-devtools-mcp runs on the workload's Node.
+requires:
+  - "node >= 20.19.0"
+
+capabilities:
+  - type: com.docker.sandbox/git-identity@1
+    description: Attribute commits to the developer's Git identity
+
+  - type: com.docker.sandbox/credential@1
+    optional: true
+    description: GitHub access for git and gh (a fine-grained PAT stored per sandbox)
+    config:
+      service: github
+      phase: runtime
+      apiKey:
+        name: GH_TOKEN
+        proxyManaged: true
+        inject:
+          - {domain: api.github.com, header: Authorization, format: "Bearer %s"}
+          - {domain: uploads.github.com, header: Authorization, format: "Bearer %s"}
+          - {domain: github.com, scheme: basic, username: x-access-token}
+
+  - type: com.docker.sandbox/network-policy@1
+    config:
+      runtime:
+        allow:
+          # git over HTTPS, gh, release assets and raw files.
+          - github.com:443
+          - api.github.com:443
+          - uploads.github.com:443
+          - codeload.github.com:443
+          - objects.githubusercontent.com:443
+          - release-assets.githubusercontent.com:443
+          - raw.githubusercontent.com:443
+
+          # VS Code Remote-SSH: server download and extension marketplace.
+          - update.code.visualstudio.com:443
+          - vscode.download.prss.microsoft.com:443
+          - marketplace.visualstudio.com:443
+          - "*.gallery.vsassets.io:443"
+          - "*.gallerycdn.vsassets.io:443"
+          - "*.vscode-cdn.net:443"
+
+  - type: com.docker.sandbox/agent-context@1
+    config:
+      contentFile: ./base-toolkit-context.md
+
+  - type: com.docker.sandbox/lifecycle@1
+    config:
+      startup:
+        # After the Claude mixin's install hooks, which rewrite ~/.claude.json.
+        - command:
+            - sh
+            - -c
+            - >-
+              claude mcp get chrome-devtools >/dev/null 2>&1
+              || claude mcp add --scope user chrome-devtools -- sandbox-chrome-devtools-mcp
+          user: agent
+          description: Register chrome-devtools-mcp in Claude Code (user scope)
+
+        # sbx writes ~/.gitconfig with its own core.excludesFile, which
+        # overrides any system-level one, so merge the company ignores into
+        # that file instead.
+        - command:
+            - sh
+            - -c
+            - >-
+              f="$(git config --global core.excludesFile || true)";
+              f="${f:-$HOME/.config/git/ignore}";
+              case "$f" in "~/"*) f="$HOME/${f#\~/}";; esac;
+              mkdir -p "$(dirname "$f")" && touch "$f";
+              grep -v -e '^#' -e '^$' /etc/gitignore | while IFS= read -r l; do
+              grep -qxF -- "$l" "$f" || printf '%s\n' "$l" >> "$f"; done
+          user: agent
+          description: Add the company git ignores to the global excludes file

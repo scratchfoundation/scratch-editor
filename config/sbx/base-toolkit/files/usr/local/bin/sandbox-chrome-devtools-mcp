@@ -1,0 +1,26 @@
+#!/bin/sh
+# chrome-devtools-mcp against the sandbox's own headless Chromium. Never
+# attaches to a browser outside the sandbox. Extra arguments pass through.
+#
+# Chromium contacts Google on its own at startup, which the network policy
+# turns into approval prompts on every browser session. These flags point
+# those services at a closed local port, or turn them off; pages the agent
+# opens, Google's included, are unaffected:
+#   --gaia-url               account checks (accounts.google.com/ListAccounts)
+#   --google-base-url        AI Mode eligibility (www.google.com/async/folae)
+#   --component-updater      component updates (update.googleapis.com)
+#   NetworkTimeServiceQuerying  network time (clients2.google.com:80)
+#   PreconnectToSearch       preconnect to the default search engine
+set -eu
+off=http://127.0.0.1:9
+exec node /opt/base-toolkit/chrome-devtools-mcp/node_modules/chrome-devtools-mcp/build/src/bin/chrome-devtools-mcp.js \
+  --headless \
+  --isolated \
+  --no-usage-statistics \
+  --no-performance-crux \
+  --executablePath "$(cat /opt/base-toolkit/chromium-path)" \
+  --chromeArg="--gaia-url=$off" \
+  --chromeArg="--google-base-url=$off" \
+  --chromeArg="--component-updater=url-source=$off" \
+  --chromeArg="--disable-features=NetworkTimeServiceQuerying,PreconnectToSearch" \
+  "$@"
