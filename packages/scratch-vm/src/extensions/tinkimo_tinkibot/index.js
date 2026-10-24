@@ -79,14 +79,14 @@ class TinkibotBlocks {
                 id: 'tinkibot.category.sounds',
                 default: 'Sounds',
                 description: 'Name of the Tinkibot Sounds category.'
-            }), ['volume', 'play_sound']),
+            }), ['volume', 'play_sound', 'preload_audio']),
             this._categoryInfo(info, 'tinkibotDisplay', formatMessage({
                 id: 'tinkibot.category.display',
                 default: 'Display',
                 description: 'Name of the Tinkibot Display category.'
             }), [
                 'display_image', 'display_letter', 'display_number', 'mosaic', 'write_text', 'text_colour',
-                'background_colour', 'backlight', 'clear'
+                'background_colour', 'backlight', 'preload_image', 'clear'
             ])
         ];
     }
@@ -103,7 +103,7 @@ class TinkibotBlocks {
     _getCombinedInfo () {
         the_locale = this._setLocale();        
 
-        return {
+        const info = {
             id: 'tinkibot',
             name: formatMessage({
                 id: 'tinkibot.categoryName',
@@ -140,6 +140,22 @@ class TinkibotBlocks {
                             defaultValue: 'startup',
                             menu: "sound_options"
                         },
+                    }
+                },
+                {
+                    opcode: 'preload_audio',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({
+                        id: 'tinkibot.preloadAudio',
+                        default: 'preload [AUDIO] for use',
+                        description: 'Load a sound into memory for quick playback'
+                    }),
+                    arguments: {
+                        AUDIO: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'startup',
+                            menu: 'sound_options'
+                        }
                     }
                 },
                 '---',                          
@@ -377,6 +393,22 @@ class TinkibotBlocks {
                         INTENSITY: {
                             type: ArgumentType.NUMBER,
                             defaultValue: 80
+                        }
+                    }
+                },
+                {
+                    opcode: 'preload_image',
+                    blockType: BlockType.COMMAND,
+                    text: formatMessage({
+                        id: 'tinkibot.preloadImage',
+                        default: 'preload [IMAGE] for use',
+                        description: 'Load an image into memory for quick display'
+                    }),
+                    arguments: {
+                        IMAGE: {
+                            type: ArgumentType.STRING,
+                            defaultValue: 'logo',
+                            menu: 'preload_image_options'
                         }
                     }
                 },
@@ -620,6 +652,16 @@ class TinkibotBlocks {
                 },                                                                                                           
             }
         };
+        info.menus.preload_image_options = {
+            acceptReporters: true,
+            items: [...new Set([
+                ...info.menus.image_options.items,
+                ...info.menus.letter_options.items,
+                ...info.menus.number_options.items,
+                ...info.menus.mosaic_options.items
+            ])]
+        };
+        return info;
     }
 
 
@@ -879,6 +921,14 @@ class TinkibotBlocks {
 
     play_sound (args) {
         return this._sendCommand({command: 'play_sound', sound: args.SOUND});
+    }
+
+    preload_audio (args) {
+        return this._sendCommand({command: 'preload:audio', audio: args.AUDIO});
+    }
+
+    preload_image (args) {
+        return this._sendCommand({command: 'preload:image', image: args.IMAGE});
     }
 
     display_image (args) {

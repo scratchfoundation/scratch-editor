@@ -62,9 +62,9 @@ test('Tinkibot blocks are grouped into focused categories', t => {
             'rotate', 'arc', 'wiggle', 'moonwalk'],
         Interaction: ['read_button', 'when_button_event', 'button_led'],
         Sensors: ['measure_line_sensor', 'measure_distance', 'measure_voltage'],
-        Sounds: ['volume', 'play_sound'],
+        Sounds: ['volume', 'play_sound', 'preload_audio'],
         Display: ['display_image', 'display_letter', 'display_number', 'mosaic', 'write_text', 'text_colour',
-            'background_colour', 'backlight', 'clear']
+            'background_colour', 'backlight', 'preload_image', 'clear']
     });
     t.strictSame(infos.map(info => info.color1), ['#B832D0', '#007F96', '#12833A', '#7950E8', '#AD5E00']);
     for (const [index, info] of infos.entries()) {
@@ -502,4 +502,63 @@ test('Tinkibot button events start event hats and filter by their menus', t => {
     delete global.window;
     delete global.WebSocket;
     t.end();
+});
+
+test('Tinkibot preload blocks provide combined media menus', t => {
+    const infos = new TinkibotBlocks(makeRuntime()).getInfos();
+    const display = infos.find(info => info.id === 'tinkibotDisplay');
+    const sounds = infos.find(info => info.id === 'tinkibotSounds');
+    t.match(display.blocks.find(block => block.opcode === 'preload_image'), {
+        blockType: 'command',
+        text: 'preload [IMAGE] for use',
+        arguments: {IMAGE: {type: 'string', menu: 'preload_image_options'}}
+    });
+    t.match(sounds.blocks.find(block => block.opcode === 'preload_audio'), {
+        blockType: 'command',
+        text: 'preload [AUDIO] for use',
+        arguments: {AUDIO: {type: 'string', menu: 'sound_options'}}
+    });
+    const menus = display.menus;
+    t.strictSame(menus.preload_image_options.items, [...new Set([
+        ...menus.image_options.items, ...menus.letter_options.items,
+        ...menus.number_options.items, ...menus.mosaic_options.items
+    ])]);
+    const vm = new VirtualMachine();
+    const categories = Object.fromEntries(vm.runtime.getBlocksXML().map(info => [info.id, info.xml]));
+    t.match(categories.tinkibotDisplay, /type="tinkibotDisplay_preload_image"/);
+    t.match(categories.tinkibotSounds, /type="tinkibotSounds_preload_audio"/);
+    t.end();
+});
+
+test('Tinkibot preloads media through the proxy and waits for its response', async t => {
+    global.window = {};
+    global.WebSocket = MockWebSocket;
+    t.teardown(() => {
+        delete global.window;
+        delete global.WebSocket;
+    });
+    const extension = new TinkibotBlocks(makeRuntime());
+    pairRobot(extension);
+    MockWebSocket.instance.open();
+    for (const [method, argument, media, name] of [
+        ['preload_image', 'IMAGE', 'image', 'happy'],
+        ['preload_image', 'IMAGE', 'image', 'robot_logo'],
+        ['preload_audio', 'AUDIO', 'audio', 'beep'],
+        ['preload_audio', 'AUDIO', 'audio', 'dance']
+    ]) {
+        const command = `preload:${media}`;
+        const result = extension[method]({[argument]: name});
+        await new Promise(resolve => setImmediate(resolve));
+        t.strictSame(MockWebSocket.instance.sent.at(-1), {
+            'command': command,
+            [media]: name,
+            'nickname': 'orange',
+            'bot-uuid': 'orange-robot-uuid',
+            'blocks-uuid': extension._blocksUuid
+        });
+        MockWebSocket.instance.respond('unrelated', 'ignore');
+        t.equal(extension._pendingResponse.command, command);
+        MockWebSocket.instance.respond(command, 'OK');
+        t.equal(await result, 'OK');
+    }
 });
