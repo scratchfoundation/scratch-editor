@@ -47,7 +47,7 @@
   "devDependencies": {
     "@vitest/coverage-v8": "4.1.12",
     "eslint": "9.39.5",
-    "eslint-config-scratch": "14.1.90",
+    "eslint-config-scratch": "14.1.93",
     "prettier": "3.9.10",
     "rimraf": "6.1.2",
     "typescript": "5.9.3",
