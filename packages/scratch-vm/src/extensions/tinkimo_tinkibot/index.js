@@ -924,11 +924,11 @@ class TinkibotBlocks {
     }
 
     preload_audio (args) {
-        return this._sendCommand({command: 'preload:audio', audio: args.AUDIO});
+        return this._sendCommand({command: 'preload:audio', file: args.AUDIO});
     }
 
     preload_image (args) {
-        return this._sendCommand({command: 'preload:image', image: args.IMAGE});
+        return this._sendCommand({command: 'preload:image', file: args.IMAGE});
     }
 
     display_image (args) {

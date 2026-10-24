@@ -551,7 +551,7 @@ test('Tinkibot preloads media through the proxy and waits for its response', asy
         await new Promise(resolve => setImmediate(resolve));
         t.strictSame(MockWebSocket.instance.sent.at(-1), {
             'command': command,
-            [media]: name,
+            'file': name,
             'nickname': 'orange',
             'bot-uuid': 'orange-robot-uuid',
             'blocks-uuid': extension._blocksUuid
