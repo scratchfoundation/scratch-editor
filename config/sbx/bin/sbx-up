@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sbx-template: sbx-up 0.3.2
+# sbx-template: sbx-up 0.3.3
 #
 # Start this project's sbx sandbox.
 #
@@ -20,13 +20,19 @@
 # Direct mode (--direct, chosen when the sandbox is created) shares the live
 # project directory, so sbx-up adds two protections:
 # - read-only overlay: writes the git-ignored local.sbxenv.yaml, which mounts
-#   the hook and config paths that exist read-only, and passes it to sbx;
+#   the hook and config paths that exist read-only, and passes it to sbx.
+#   The pinned sbx refuses to rename a directory that holds one of them, so
+#   the agent can't move config/sbx aside and leave a different sbx-up;
+#   acceptance.sh's readonly check tests that on every sbx upgrade;
 # - guards: .git/config stays writable, so its keys are compared with a
 #   snapshot taken outside the workspace; only keys git writes in normal use
 #   that can't make it run code or reach another host are left out. Protected
-#   paths are hashed too, because a nested read-only mount can be bypassed by
-#   renaming its parent directory. Changes are reported before preflight runs
-#   anything, at session end and again at the next start; nothing is reverted.
+#   paths are hashed, and skip-worktree and assume-unchanged marks (which hide
+#   edits from git status) are compared too. Changes are reported before
+#   preflight runs anything, at session end and again at the next start;
+#   nothing is reverted.
+# Direct mode needs .git to be a directory: in a linked worktree it is a file
+# pointing outside the project, which the guards can't cover.
 #
 # Preflight checks this machine against the project's requirements
 # (config/sbx/sbx-up.conf). A failed check prints the matching section of
@@ -87,6 +93,7 @@ state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/sbx-up/$name"
 protected_candidates=(
   .git/hooks
   .git/config.worktree
+  .git/info
   .husky
   .vscode
   .claude/settings.json
@@ -99,6 +106,9 @@ protected_candidates=(
   .codex/hooks.json
   .github/hooks
   .github/workflows
+  .npmrc
+  .yarnrc
+  .yarnrc.yml
   config/sbx
   sbxenv.yaml
 )
@@ -322,15 +332,29 @@ protected_digests() {
   done
 }
 
+# Index entries marked skip-worktree (S) or assume-unchanged (lowercase tag):
+# git status stops showing changes to them, so a new mark can hide an edit.
+index_marks() {
+  git -C "$root" ls-files -v 2>/dev/null | awk '$1 == "S" || $1 ~ /^[a-z]$/' | LC_ALL=C sort
+}
+
+snapshot_files=(gitconfig-v2 protected index-marks)
+
 take_snapshot() {
   mkdir -p "$state_dir"
   guarded_gitconfig > "$state_dir/gitconfig-v2"
   protected_digests > "$state_dir/protected"
+  index_marks > "$state_dir/index-marks"
+}
+
+have_snapshot() {
+  local f
+  for f in "${snapshot_files[@]}"; do [ -f "$state_dir/$f" ] || return 1; done
 }
 
 # Compare with the snapshot. Prints the changes and returns 1 if there are any.
 check_guards() {
-  [ -f "$state_dir/gitconfig-v2" ] && [ -f "$state_dir/protected" ] || return 0
+  have_snapshot || return 0
   local changed=0 line
 
   local git_diff
@@ -362,6 +386,24 @@ check_guards() {
     echo "    Check them with 'git status' and 'git diff' before you run anything on the host."
   fi
 
+  local marks_diff
+  marks_diff="$(diff <(cat "$state_dir/index-marks") <(index_marks) | grep '^[<>]' || true)"
+  if [ -n "$marks_diff" ]; then
+    changed=1
+    echo
+    bad "skip-worktree or assume-unchanged marks changed (git status hides changes to marked files):"
+    while IFS= read -r line; do
+      case "$line" in
+        "< "*) echo "      - ${line#< }" ;;
+        "> "*) echo "      + ${line#> }" ;;
+      esac
+    done <<< "$marks_diff"
+    echo "    Clear an unwanted mark with"
+    echo "      git update-index --no-skip-worktree <path>    (S)"
+    echo "      git update-index --no-assume-unchanged <path> (lowercase tag)"
+    echo "    then check the file with 'git diff'."
+  fi
+
   if [ "$changed" = 1 ]; then
     echo
     echo "    Nothing was reverted. Once reviewed, accept the current state with"
@@ -372,15 +414,9 @@ check_guards() {
 }
 
 guards_at_start() {
-  if [ ! -f "$state_dir/gitconfig-v2" ]; then
+  if ! have_snapshot; then
     take_snapshot
-    if [ -f "$state_dir/gitconfig" ]; then
-      rm -f "$state_dir/gitconfig"
-      warn "guards now cover every .git/config key; new baseline recorded in $state_dir"
-      echo "      Check .git/config and .git/config.worktree once by hand."
-    else
-      ok "guard baseline recorded in $state_dir"
-    fi
+    ok "guard baseline recorded in $state_dir"
     return
   fi
   if check_guards; then
@@ -443,6 +479,11 @@ existing="$(sandbox_field "$name" mode "$env_file")"
 resolve_mode
 env_files=("$env_file")
 if [ "$direct" = true ]; then
+  if [ ! -d "$root/.git" ]; then
+    bad "direct mode needs .git to be a directory; here it is a file (a linked worktree?), which the guards can't cover"
+    echo "      Use clone mode, or run sbx-up --direct in the main checkout."
+    exit 2
+  fi
   # Before preflight, which runs host tools in the shared project directory.
   echo "Guards for sandbox '$name'"
   guards_at_start

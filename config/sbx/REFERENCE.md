@@ -1,4 +1,4 @@
-<!-- sbx-template: SANDBOX-REFERENCE.md 0.4.0 -->
+<!-- sbx-template: SANDBOX-REFERENCE.md 0.4.1 -->
 # Sandbox reference (sbx)
 
 The details behind the [sandbox guide](README.md): setup steps, task
@@ -148,8 +148,15 @@ clone-mode sandbox next to it.
 
 In direct mode `sbx-up` mounts the files that run code or change tools on
 your machine read-only (see [What the sandbox protects](#what-the-sandbox-protects))
-and runs the [session-end guards](#session-end-guards). Remove a direct-mode
-sandbox with `sbx env rm sbxenv.yaml local.sbxenv.yaml`.
+and runs the [session-end guards](#session-end-guards). sbx also refuses to
+rename a directory that holds a read-only path (`config`, `.git`, …), so the
+agent can't move one aside; `config/sbx/bin/acceptance.sh --only readonly`
+checks that. Remove a direct-mode sandbox with
+`sbx env rm sbxenv.yaml local.sbxenv.yaml`.
+
+Direct mode needs a regular checkout. In a linked worktree `.git` is a file
+pointing outside the project, which the guards can't cover, so `sbx-up`
+refuses `--direct` there.
 
 ### Install on one side only
 
@@ -219,9 +226,10 @@ Protected:
 - Clone mode: your project directory is read-only in the sandbox, including
   `.git`. The agent's changes reach your checkout only as commits you fetch.
 - Direct mode: files that run code or change tools on your machine are read-only
-  in the sandbox: `.git/hooks`, `.git/config.worktree`, `.husky`, `.vscode`,
-  `.claude/settings*.json`, `.mcp.json`, the hook and MCP files of Copilot
-  (`.github/hooks`), Cursor and Codex, `.github/workflows`, `sbxenv.yaml`,
+  in the sandbox: `.git/hooks`, `.git/config.worktree`, `.git/info`,
+  `.husky`, `.vscode`, `.claude/settings*.json`, `.mcp.json`, the hook and
+  MCP files of Copilot (`.github/hooks`), Cursor and Codex,
+  `.github/workflows`, `.npmrc`, `.yarnrc`, `.yarnrc.yml`, `sbxenv.yaml`,
   `config/sbx/`. The guards report any of them that the agent creates.
 - Claude runs in `auto` permission mode; bypass mode is disabled. Claude
   updates are off; the version is pinned in `sbxenv.yaml`. These are
@@ -259,12 +267,16 @@ anything else runs), `sbx-up` compares:
   tracking (`branch.*` with a remote name), `remote.*.fetch` and the
   `sandbox-<name>` remotes sbx manages are left out; every other key could
   make git on your machine run code or reach another host;
-- the read-only paths, by hash, including ones that didn't exist before.
+- the read-only paths, by hash, including ones that didn't exist before;
+- the files marked skip-worktree or assume-unchanged, which `git status`
+  stops showing changes to.
 
 If something changed it prints the old and new values and exits 1. Nothing is
 reverted. Review it (`git config --file .git/<file> --unset-all <key>` removes
 a key; an included file is shown by its path from the project root, so use
-`--file <path>`), then accept the current state with `config/sbx/bin/sbx-up --accept`.
+`--file <path>`; `git update-index --no-skip-worktree <path>` or
+`--no-assume-unchanged <path>` clears a mark), then accept the current state
+with `config/sbx/bin/sbx-up --accept`.
 Editing `config/sbx/` or `sbxenv.yaml` on your machine also shows up
 here; accept it the same way.
 

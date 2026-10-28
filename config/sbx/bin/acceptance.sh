@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sbx-template: acceptance.sh 0.3.2
+# sbx-template: acceptance.sh 0.3.3
 #
 # Acceptance checks for a project's sbx sandbox, run from the host.
 #
@@ -42,8 +42,8 @@
 #                MCP takes a screenshot and reads the console
 #   readonly     direct mode: read-only paths deny writes, and their parent
 #                directories can't be renamed
-#   git-config   direct mode: sbx-up --check reports .git/config edits made in
-#                the VM
+#   git-config   direct mode: sbx-up --check reports .git/config edits and a
+#                skip-worktree mark made in the VM
 #   remove       (--destructive) removing the sandbox also removes its
 #                sandbox-scoped secrets
 #
@@ -58,7 +58,8 @@
 # readonly renames protected parent directories only if the mount allows it,
 # and renames them back at once; git-config edits .git/config (and
 # .git/config.worktree) from the VM, adds a file under .git that it includes,
-# and restores them from host-side copies.
+# and marks one tracked file skip-worktree, then restores the files from
+# host-side copies and clears the mark.
 # Each change is undone on exit, also after a failure or Ctrl-C. Secret
 # values are never printed: credential checks compare inside the VM and print
 # only the result.
@@ -122,6 +123,7 @@ policy_rule=false        # example.org allowed for the sandbox
 clone_branch=""          # throwaway branch in the VM clone, fetched on the host
 ports_server=false       # test web server in the VM
 git_config_backup=false  # .git/config (and config.worktree) edited from the VM
+marked_file=""           # tracked file marked skip-worktree from the VM
 cleanup() {
   if [ "$policy_rule" = true ] && ! sbx policy rm network --sandbox "$name" --resource example.org:443 --force >/dev/null 2>>"$log"; then
     echo "  ! example.org is still allowed; remove it with: sbx policy rm network --sandbox $name --resource example.org:443" >&2
@@ -592,9 +594,10 @@ check_git_config() {
   cp -p "$root/.git/config" "$work/git-config"
   [ ! -f "$root/.git/config.worktree" ] || cp -p "$root/.git/config.worktree" "$work/git-config.worktree"
   git_config_backup=true
+  marked_file="$(git -C "$root" ls-files | sed -n 1p)"
   # The fsmonitor command doesn't exist, so a host git run in between fails
   # instead of running anything.
-  vm >/dev/null <<'EOF' || true
+  vm -e MARK="$marked_file" >/dev/null <<'EOF' || true
 git config core.hooksPath /tmp/sbx-acceptance-hooks
 git config alias.st '!echo sbx-acceptance'
 git config core.editor 'sh -c true'
@@ -608,6 +611,7 @@ git config core.repositoryformatversion 1
 git config extensions.worktreeConfig true
 git config --file .git/config.worktree core.fsmonitor sbx-acceptance-fsmonitor 2>/dev/null
 b="$(git symbolic-ref --short HEAD 2>/dev/null)" && git branch -q --set-upstream-to=origin/main "$b" 2>/dev/null
+[ -z "$MARK" ] || git update-index --skip-worktree -- "$MARK"
 true
 EOF
   out="$(sbx_up_check 2>&1)" || rc=$?
@@ -627,6 +631,9 @@ EOF
       || bad git-config "does not report ${key#*:} ($file)"
   done
   grep -q "branch\." <<< "$out" && bad git-config "reports the tracking change" || ok git-config "ignores the tracking change"
+  if [ -z "$marked_file" ]; then skip git-config "no tracked file to mark skip-worktree"
+  else grep -qF "+ S $marked_file" <<< "$out" && ok git-config "reports the skip-worktree mark" \
+    || bad git-config "does not report the skip-worktree mark"; fi
   cleanup_git_config
   guards_clean && ok git-config ".git/config restored; snapshot unchanged" || bad git-config "guards still report changes after the restore"
 }
@@ -637,6 +644,8 @@ cleanup_git_config() {
   if [ -f "$work/git-config.worktree" ]; then cat "$work/git-config.worktree" > "$root/.git/config.worktree"
   else rm -f "$root/.git/config.worktree"; fi
   rm -f "$root/.git/sbx-acceptance.gitconfig" "$work/git-config" "$work/git-config.worktree"
+  [ -z "$marked_file" ] || git -C "$root" update-index --no-skip-worktree -- "$marked_file"
+  marked_file=""
   git_config_backup=false
 }
 
