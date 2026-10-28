@@ -1,6 +1,6 @@
-# sbx-template: sbxenv.yaml 0.1.0
+# sbx-template: sbxenv.yaml 0.1.1
 # Docker Sandboxes environment for this repository: the agent-free
-# config/sbx/scratch-editor workload, Docker's Claude Code mixin and the company
+# config/sbx/scratch-editor workload, Docker's Claude Code mixin and the global
 # layer (base-toolkit). The sandbox starts a login shell; run `claude` in it.
 #
 # Developer setup and daily use: config/sbx/README.md.
@@ -33,7 +33,7 @@ agent: scratch-editor
 kits:
   - ./config/sbx/scratch-editor
   - docker/sbx-kit-claude-mixin:2.1.292
-  # Company layer, copied from the toolkit (version in its yaml header).
+  # Global layer, copied from the toolkit (version in its yaml header).
   - ./config/sbx/base-toolkit
 
 workspace:

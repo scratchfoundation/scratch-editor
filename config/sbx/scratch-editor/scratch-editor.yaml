@@ -1,14 +1,14 @@
 # syntax=docker/sandbox-kit:3
-# sbx-template: workload.yaml 0.1.0
+# sbx-template: workload.yaml 0.1.1
 # yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
 #
 # Agent-free workload for this repository: Node, the browsers and X server the
 # test suites use, and Docker Engine. sbxenv.yaml adds Claude Code and the
-# company layer (base-toolkit) as mixins.
+# global layer (base-toolkit) as mixins.
 #
 # The allowlist names every host the project's own tooling needs, even where
 # the global balanced policy already allows it, so the sandbox also works
-# under a deny-all baseline. Company-wide hosts (GitHub, VS Code Remote-SSH)
+# under a deny-all baseline. Hosts every project needs (GitHub, VS Code Remote-SSH)
 # come from the base-toolkit mixin.
 schemaVersion: "3"
 kind: workload

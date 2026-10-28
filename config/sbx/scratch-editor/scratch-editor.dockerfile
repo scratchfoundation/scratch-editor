@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
-# sbx-template: workload.dockerfile 0.1.2
+# sbx-template: workload.dockerfile 0.1.3
 #
 # Agent-free workload for this repository: Node 24 (.nvmrc), the system
 # libraries and X server the Playwright tests need, Chromium with chromedriver
 # for scratch-gui's Selenium integration tests, the toolchain to build canvas,
-# and Docker Engine. Claude Code and the company layer come from mixins
+# and Docker Engine. Claude Code and the global layer come from mixins
 # (sbxenv.yaml).
 #
 # Base image requirements:
@@ -115,6 +115,17 @@ RUN touch /etc/sandbox-persistent.sh \
  && printf '%s\n' '. /etc/sandbox-persistent.sh' > /etc/profile.d/sandbox-persistent.sh \
  && printf '%s\n' '. /etc/sandbox-persistent.sh' >> /home/agent/.bashrc \
  && printf 'export PATH="%s"\n' "$PATH" > /etc/profile.d/00-path.sh
+
+# MCP: this project's MCP servers, added to the global allowlist in
+# /etc/claude-code/managed-settings.json (Claude Code merges the files in
+# managed-settings.d/ into it). One entry per server, e.g.
+# {"serverUrl": "https://mcp.example.com/*"} or {"serverCommand": ["example-mcp"]};
+# config/sbx/REFERENCE.md "MCP servers" says what else each kind needs.
+COPY <<'JSON' /etc/claude-code/managed-settings.d/50-project.json
+{
+  "allowedMcpServers": []
+}
+JSON
 
 USER agent
 

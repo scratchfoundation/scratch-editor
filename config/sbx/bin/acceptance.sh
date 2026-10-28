@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sbx-template: acceptance.sh 0.3.0
+# sbx-template: acceptance.sh 0.3.2
 #
 # Acceptance checks for a project's sbx sandbox, run from the host.
 #
@@ -52,8 +52,9 @@
 # comes from the sandbox's mounts (sandbox_field in sbx-lib.sh).
 #
 # What it changes and puts back: policy allows example.org for the sandbox,
-# then removes the rule; clone commits on a throwaway branch in the VM,
-# fetches it on the host, then deletes the branch and the fetched refs;
+# then removes the rule; clone commits on a throwaway branch in the VM
+# (skipping the project's commit hooks), fetches it on the host, then deletes
+# the branch and the fetched refs;
 # readonly renames protected parent directories only if the mount allows it,
 # and renames them back at once; git-config edits .git/config (and
 # .git/config.worktree) from the VM, adds a file under .git that it includes,
@@ -262,7 +263,7 @@ git config --get-all url.https://github.com/.insteadof | grep -qx 'git@github.co
   && r pass "the rewrite is not in the shared .git/config" || r fail "url.* rewrite found in .git/config"
 x="$(git config --global core.excludesFile)"; x="${x/#\~/$HOME}"
 grep -qx '.claude/settings.local.json' "$x" 2>/dev/null \
-  && r pass "global ignore includes the company entries" || r fail "global ignore lacks .claude/settings.local.json"
+  && r pass "global ignore includes the global layer's entries" || r fail "global ignore lacks .claude/settings.local.json"
 for c in gh sandbox-chrome-devtools-mcp docker; do
   command -v "$c" >/dev/null && r pass "$c installed" || r fail "$c missing"
 done
@@ -297,7 +298,9 @@ EOF
   vm -e B="$b" > "$work/out" <<'EOF' || true
 rm -f .sbx-acceptance-clone-probe
 cur="$(git symbolic-ref -q --short HEAD || git rev-parse HEAD)"
-git switch -q -c "$B" && git commit -q --allow-empty -m "sbx acceptance check" && git rev-parse HEAD
+# --no-verify: this tests the clone round trip, not the project's commit hooks
+# (a commit-msg hook such as commitlint would reject the probe's message).
+git switch -q -c "$B" && git commit -q --no-verify --allow-empty -m "sbx acceptance check" && git rev-parse HEAD
 git checkout -q "$cur"
 EOF
   sha="$(tail -n1 "$work/out")"

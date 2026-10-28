@@ -1,8 +1,8 @@
 # syntax=docker/sandbox-kit:3
-# sbx-template: base-toolkit 0.2.0
+# sbx-template: base-toolkit 0.2.1
 # yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
 #
-# Company layer for sbx sandboxes, added to any project workload next to
+# Global layer for sbx sandboxes, added to any project workload next to
 # Docker's Claude Code mixin:
 #   kits:
 #     - ./config/sbx/<project>
@@ -27,12 +27,12 @@
 schemaVersion: "3"
 kind: mixin
 displayName: Base toolkit
-description: Company layer for sbx sandboxes - Claude Code policy, git over HTTPS with a per-sandbox GitHub token, gh, chrome-devtools-mcp, agent context.
+description: Global layer for sbx sandboxes - Claude Code policy, git over HTTPS with a per-sandbox GitHub token, gh, chrome-devtools-mcp, agent context.
 
-version: "0.2.0"
+version: "0.2.1"
 
 provides:
-  - "base-toolkit@0.2.0"
+  - "base-toolkit@0.2.1"
 
 # chrome-devtools-mcp runs on the workload's Node.
 requires:
@@ -95,7 +95,7 @@ capabilities:
           description: Register chrome-devtools-mcp in Claude Code (user scope)
 
         # sbx writes ~/.gitconfig with its own core.excludesFile, which
-        # overrides any system-level one, so merge the company ignores into
+        # overrides any system-level one, so merge the global layer's ignores into
         # that file instead.
         - command:
             - sh
@@ -108,4 +108,4 @@ capabilities:
               grep -v -e '^#' -e '^$' /etc/gitignore | while IFS= read -r l; do
               grep -qxF -- "$l" "$f" || printf '%s\n' "$l" >> "$f"; done
           user: agent
-          description: Add the company git ignores to the global excludes file
+          description: Add the global layer's git ignores to the global excludes file

@@ -3,7 +3,7 @@
 # Overlay for the base-toolkit mixin. Everything is fetched at build time on the
 # host, so the sandbox needs no install-phase network access for it.
 #   /etc/claude-code/managed-settings.json       Claude Code policy (auto mode)
-#   /etc/claude-code/CLAUDE.md                   company rules (base-toolkit-context.md), always loaded
+#   /etc/claude-code/CLAUDE.md                   global rules (base-toolkit-context.md), always loaded
 #   /etc/gitconfig, /etc/gitignore               HTTPS rewrite for GitHub, global ignores
 #   /usr/local/bin/gh                            GitHub CLI
 #   /opt/base-toolkit/chrome-devtools-mcp        chrome-devtools-mcp (runs on the workload's Node)

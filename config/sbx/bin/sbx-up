@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sbx-template: sbx-up 0.3.1
+# sbx-template: sbx-up 0.3.2
 #
 # Start this project's sbx sandbox.
 #
@@ -30,14 +30,14 @@
 #
 # Preflight checks this machine against the project's requirements
 # (config/sbx/sbx-up.conf). A failed check prints the matching section of
-# config/sbx/README.md and stops.
+# config/sbx/REFERENCE.md and stops.
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd -P)"
 # shellcheck source-path=SCRIPTDIR source=sbx-lib.sh
 . "$(dirname "${BASH_SOURCE[0]}")/sbx-lib.sh"
 conf="$root/config/sbx/sbx-up.conf"
-guide="$root/config/sbx/README.md"
+guide="$root/config/sbx/REFERENCE.md"
 env_file="$root/sbxenv.yaml"
 local_env_file="$root/local.sbxenv.yaml"
 
@@ -115,10 +115,10 @@ ok()   { printf '  \033[32m✓\033[0m %s\n' "$*"; }
 warn() { printf '  \033[33m!\033[0m %s\n' "$*"; }
 bad()  { printf '  \033[31m✗\033[0m %s\n' "$*"; }
 
-# Print one "## <heading>" section of the developer guide.
+# Print one "## <heading>" section of the developer reference.
 guide_section() {
   echo
-  echo "From config/sbx/README.md:"
+  echo "From config/sbx/REFERENCE.md:"
   echo
   awk -v h="## $1" '
     $0 == h { on = 1; print; next }
