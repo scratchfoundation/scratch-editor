@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sbx-template: bootstrap.sh 0.3.0
+# sbx-template: bootstrap.sh 0.3.1
 #
 # Per-machine baseline for Docker Sandboxes (sbx). Idempotent: a second run
 # changes nothing.
@@ -49,7 +49,7 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --check) mode=check ;;
     --docker-volume) docker_volume="${2:?--docker-volume needs a size, e.g. 50g}"; shift ;;
-    -h|--help) sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -h|--help) awk 'NR > 1 && !/^#/ { exit } NR > 1' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "unknown argument: $1" >&2; exit 2 ;;
   esac
   shift
@@ -123,8 +123,12 @@ elif [ ! -f "$restart_marker" ]; then
   ok "SSH agent forwarding is off"
 elif [ "$mode" = apply ] && restart_daemon_if_idle; then
   ok "SSH agent forwarding is off (daemon restarted to apply it)"
-else
+elif [ "$mode" = apply ]; then
   warn "SSH agent forwarding is set to off but the daemon hasn't restarted since; run 'sbx daemon restart' once your sandboxes are stopped, then rerun this script"
+else
+  # The running daemon may still forward the agent, so sbx-up's preflight
+  # must not pass until it restarts.
+  fail "SSH agent forwarding is set to off but the daemon hasn't restarted since; stop your sandboxes and run 'sbx daemon restart' (or rerun this script without --check)"
 fi
 
 # --- global network policy ----------------------------------------------------

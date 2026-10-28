@@ -1,4 +1,4 @@
-<!-- sbx-template: SANDBOX-REFERENCE.md 0.4.1 -->
+<!-- sbx-template: SANDBOX-REFERENCE.md 0.4.2 -->
 # Sandbox reference (sbx)
 
 The details behind the [sandbox guide](README.md): setup steps, task
@@ -20,6 +20,10 @@ missing, so keep the section headings stable.
 
 ## Known limits
 
+- **Pull requests go out from your terminal.** The sandbox's GitHub token is
+  read-only for contents ([why](#github-token)). The agent commits in its
+  clone; you [fetch its work](README.md#getting-your-work-out), then push
+  and open the pull request yourself.
 - **The Claude desktop app over SSH is for trusted work only.** It gives the
   sandbox session tools that run on your machine (your Chrome, scheduled
   tasks, session control), which the sandbox's MCP allowlist doesn't filter.
@@ -68,15 +72,18 @@ create it with `DOCKER_SANDBOXES_DOCKER_SIZE=<size> config/sbx/bin/sbx-up`.
 
 git and gh in the sandbox use a fine-grained personal access token that
 only this sandbox can use. The sbx proxy adds it to requests; the sandbox
-never sees it.
+never sees it. The token lets the agent fetch, and read and comment on pull
+requests; it can't push.
 
 1. Open the prefilled form:
-   <https://github.com/settings/personal-access-tokens/new?name=sbx-scratch-editor&description=Docker%20Sandbox%20scratch-editor%20(git%2C%20gh)&target_name=scratchfoundation&expires_in=30&contents=write&pull_requests=write>
+   <https://github.com/settings/personal-access-tokens/new?name=sbx-scratch-editor&description=Docker%20Sandbox%20scratch-editor%20(git%2C%20gh)&target_name=scratchfoundation&expires_in=30&contents=read&pull_requests=write>
    (or GitHub → Settings → Developer settings → Personal access tokens →
    Fine-grained tokens → Generate new token).
 2. Check that it says: resource owner `scratchfoundation`, expiration 30 days or
-   less, permissions Contents read and write, Pull requests read and write,
-   Metadata read.
+   less, permissions Contents **read-only**, Pull requests read and write,
+   Metadata read. Read-only contents means the agent can't push: a pushed
+   branch would run the repository's CI (deploys included) before anyone
+   reviewed it. You push from your terminal after reviewing.
 3. Repository access: **Only select repositories** →
    `scratch-editor`. The link can't preselect this.
 4. If `scratchfoundation` requires approval for fine-grained tokens, the token works
@@ -220,7 +227,7 @@ Known issue:
 
 Protected:
 - Your home directory, SSH keys, keychain or keyring, `~/.claude` and other projects
-  aren't visible. Docker in the sandbox is its own daemon.
+  aren't visible.
 - Credentials (your Claude login and any token stored with `sbx secret set`)
   stay on your machine; the sandbox sees placeholders.
 - Clone mode: your project directory is read-only in the sandbox, including
@@ -232,10 +239,10 @@ Protected:
   `.github/workflows`, `.npmrc`, `.yarnrc`, `.yarnrc.yml`, `sbxenv.yaml`,
   `config/sbx/`. The guards report any of them that the agent creates.
 - Claude runs in `auto` permission mode; bypass mode is disabled. Claude
-  updates are off; the version is pinned in `sbxenv.yaml`. These are
-  guardrails, not a boundary: the agent is in the VM's `docker` group, which
-  makes it root in the VM, so it can remove them. The network policy and the
-  credential proxy run on your machine and still apply.
+  updates are off; the version is pinned in `sbxenv.yaml`. The agent isn't
+  root in the VM (no Docker group, no sudo), so it can't change these
+  settings. The network policy and the credential proxy run on your machine
+  and apply either way.
 - Only the MCP servers the global layer allows load; see
   [MCP servers](#mcp-servers).
 

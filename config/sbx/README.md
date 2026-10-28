@@ -1,4 +1,4 @@
-<!-- sbx-template: SANDBOX-README.md 0.4.0 -->
+<!-- sbx-template: SANDBOX-README.md 0.4.1 -->
 # Sandbox (sbx)
 
 You can run Claude Code in a sandbox: a small VM with its own copy of this
@@ -41,8 +41,8 @@ git fetch sandbox-scratch-editor
 ```
 
 Its branches land under `refs/sandboxes/scratch-editor/`. Look at the changes, then
-turn the branch into a normal one and push it, or let the
-agent push from the sandbox:
+turn the branch into a normal one, push it and open the pull request from
+your terminal (the sandbox's token can't push):
 
 ```bash
 git log -p develop..refs/sandboxes/scratch-editor/<branch>

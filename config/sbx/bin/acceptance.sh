@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# sbx-template: acceptance.sh 0.3.3
+# sbx-template: acceptance.sh 0.3.4
 #
 # Acceptance checks for a project's sbx sandbox, run from the host.
 #
@@ -12,8 +12,8 @@
 #                            (session, web, and ports through chrome-devtools
 #                            MCP); needs /login done and uses your subscription
 #   --repo OWNER/NAME        github, token-scope: a test repo the sandbox's
-#                            github secret is scoped to; github pushes a branch
-#                            there and opens and closes a draft PR
+#                            github secret is scoped to; github tries a push
+#                            there, which the read-only token must refuse
 #   --other-repo OWNER/NAME  token-scope: a private repo outside the token's
 #                            scope (default: the project's origin)
 #   --destructive            remove: remove the sandbox and its sandbox-scoped
@@ -25,7 +25,8 @@
 #   clone        clone mode: files made in the VM stay there; a commit made in
 #                the VM reaches the host with git fetch sandbox-NAME
 #   isolation    only the project from the host home, no SSH keys or agent, a
-#                private Docker daemon
+#                private Docker daemon (or, without Docker, an agent that isn't
+#                root and can't write the managed settings)
 #   credentials  the environment and ~/.claude/.credentials.json hold
 #                placeholders only
 #   session      (--claude) auto mode, mcp-gateway and chrome-devtools loaded
@@ -34,8 +35,9 @@
 #   policy       example.org is blocked, works once allowed, and is blocked
 #                again once the rule is removed
 #   registries   the package registries of the workload's clients are reachable
-#   github       (--repo) clone, push and a draft PR work through the scoped
-#                token; the host's origin is unchanged
+#   github       (--repo) clone and reading pull requests work through the
+#                scoped token, a push is refused (Contents read-only); the
+#                host's origin is unchanged
 #   token-scope  (--repo, --other-repo) the token is refused outside its scope
 #   ports        the published port reaches a server in the VM; headless
 #                Chromium screenshots it; with --claude, the chrome-devtools
@@ -266,9 +268,10 @@ git config --get-all url.https://github.com/.insteadof | grep -qx 'git@github.co
 x="$(git config --global core.excludesFile)"; x="${x/#\~/$HOME}"
 grep -qx '.claude/settings.local.json' "$x" 2>/dev/null \
   && r pass "global ignore includes the global layer's entries" || r fail "global ignore lacks .claude/settings.local.json"
-for c in gh sandbox-chrome-devtools-mcp docker; do
+for c in gh sandbox-chrome-devtools-mcp; do
   command -v "$c" >/dev/null && r pass "$c installed" || r fail "$c missing"
 done
+command -v dockerd >/dev/null && r pass "docker installed" || r skip "no Docker in the workload (optional)"
 EOF
   collect setup < "$work/out"
 }
@@ -339,10 +342,20 @@ done
 ls "$HOME"/.ssh/id_* >/dev/null 2>&1 && r fail "SSH keys in the VM home" || r pass "no SSH keys in the VM"
 ssh-add -l >/dev/null 2>&1; rc=$?
 [ "$rc" = 2 ] && r pass "no SSH agent reachable" || r fail "an SSH agent answers (ssh-add -l exit $rc)"
-id="$(docker info --format '{{.ID}}' 2>/dev/null)"
-if [ -z "$id" ]; then r fail "no Docker daemon in the VM"
-elif [ -n "$HOST_DOCKER_ID" ] && [ "$id" = "$HOST_DOCKER_ID" ]; then r fail "the VM talks to the host's Docker daemon"
-else r pass "private Docker daemon"; fi
+if command -v dockerd >/dev/null; then
+  id="$(docker info --format '{{.ID}}' 2>/dev/null)"
+  if [ -z "$id" ]; then r fail "no Docker daemon in the VM"
+  elif [ -n "$HOST_DOCKER_ID" ] && [ "$id" = "$HOST_DOCKER_ID" ]; then r fail "the VM talks to the host's Docker daemon"
+  else r pass "private Docker daemon"; fi
+else
+  # Without Docker the agent should not be root in the VM, which is what
+  # keeps the managed settings from being changed.
+  id -nG | tr ' ' '\n' | grep -qx docker && r fail "the agent is in the docker group without Docker" \
+    || r pass "no Docker, and the agent isn't in the docker group"
+  sudo -n true 2>/dev/null && r fail "the agent can sudo" || r pass "no passwordless sudo"
+  ( : >> /etc/claude-code/managed-settings.json ) 2>/dev/null && r fail "the agent can write the managed settings" \
+    || r pass "the agent can't write the managed settings"
+fi
 EOF
   collect isolation < "$work/out"
 }
@@ -433,7 +446,7 @@ EOF
 
 check_github() {
   if [ -z "$repo" ]; then
-    skip github "git push and draft PR (needs --repo OWNER/NAME with a scoped github secret)"
+    skip github "clone, push refused, PR read (needs --repo OWNER/NAME with a scoped github secret)"
     return
   fi
   local origin_before
@@ -446,21 +459,16 @@ if ! git clone -q --depth 1 "git@github.com:$REPO.git" repo 2>/dev/null; then
 fi
 r pass "clone of git@github.com:$REPO (rewritten to HTTPS)"
 cd repo
-git switch -q -c "$b" && git commit -q --allow-empty -m "sbx acceptance check"
+git switch -q -c "$b" && git commit -q --no-verify --allow-empty -m "sbx acceptance check"
+# The token is read-only for contents, so the agent can't push branches
+# (which would run the repository's CI); developers push from the host.
 if git push -q -u origin "$b" 2>/dev/null; then
-  r pass "git push -u"
-  [ "$(git config "branch.$b.remote")" = origin ] && r pass "upstream tracking written" || r fail "no upstream tracking"
-  url="$(gh pr create --repo "$REPO" --head "$b" --draft --title "sbx acceptance check" --body "Opened and closed by config/sbx/bin/acceptance.sh." 2>/dev/null)"
-  if [ -n "$url" ]; then
-    r pass "gh pr create --draft"
-    gh pr close "$url" --repo "$REPO" --delete-branch >/dev/null 2>&1 && r pass "draft PR closed, branch deleted" || r fail "could not close $url"
-  else
-    r fail "gh pr create failed"
-    git push -q origin --delete "$b" 2>/dev/null || true
-  fi
+  r fail "git push worked: the token can write contents (create it with Contents read-only)"
+  git push -q origin --delete "$b" 2>/dev/null || true
 else
-  r fail "git push -u failed"
+  r pass "git push refused (Contents read-only)"
 fi
+gh pr list --repo "$REPO" --limit 1 >/dev/null 2>&1 && r pass "gh reads pull requests" || r fail "gh pr list failed"
 cd /; rm -rf "$d"
 EOF
   collect github < "$work/out"

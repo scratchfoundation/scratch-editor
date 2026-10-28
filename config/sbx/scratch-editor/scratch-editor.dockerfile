@@ -1,11 +1,12 @@
 # syntax=docker/dockerfile:1
-# sbx-template: workload.dockerfile 0.1.3
+# sbx-template: workload.dockerfile 0.1.4
 #
 # Agent-free workload for this repository: Node 24 (.nvmrc), the system
 # libraries and X server the Playwright tests need, Chromium with chromedriver
-# for scratch-gui's Selenium integration tests, the toolchain to build canvas,
-# and Docker Engine. Claude Code and the global layer come from mixins
-# (sbxenv.yaml).
+# for scratch-gui's Selenium integration tests, and the toolchain to build
+# canvas. No Docker Engine: the project runs no containers, and without it the
+# agent isn't in the docker group, so it isn't root in the VM. Claude Code and
+# the global layer come from mixins (sbxenv.yaml).
 #
 # Base image requirements:
 # https://docs.docker.com/ai/sandboxes/customize/author/base-images/
@@ -25,16 +26,12 @@ RUN apt-get update \
       jq less procps unzip xz-utils vim \
  && rm -rf /var/lib/apt/lists/*
 
-# Shared libraries headless Chromium needs (Playwright's debian13 "chromium"
-# list), plus fonts so pages and emoji render. The browser itself comes from
-# the base-toolkit mixin, for chrome-devtools-mcp.
+# Fonts so pages and emoji render. The shared libraries Chromium needs come
+# from `playwright install-deps` below; the browser chrome-devtools-mcp drives
+# comes from the base-toolkit mixin.
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
-      libasound2t64 libatk-bridge2.0-0t64 libatk1.0-0t64 libatspi2.0-0t64 \
-      libcairo2 libcups2t64 libdbus-1-3 libdrm2 libgbm1 libglib2.0-0t64 \
-      libnspr4 libnss3 libpango-1.0-0 libx11-6 libxcb1 libxcomposite1 \
-      libxdamage1 libxext6 libxfixes3 libxkbcommon0 libxrandr2 \
-      libfontconfig1 libfreetype6 fonts-liberation fonts-noto-color-emoji \
+      fonts-liberation fonts-noto-color-emoji \
  && rm -rf /var/lib/apt/lists/*
 
 # scratch-gui's integration tests (test/helpers/selenium-helper.js) drive
@@ -60,20 +57,6 @@ RUN apt-get update \
 # node-gyp. canvas is the only package here that uses prebuild-install.
 RUN printf 'buildFromSource=true\n' > /etc/prebuild-installrc
 
-# Docker Engine from Docker's apt repo. sbx starts dockerd itself, but only
-# runs the container in Docker-in-Docker mode (the privileges dockerd needs
-# for iptables, plus a volume at /var/lib/docker) when the image carries the
-# start-docker label.
-LABEL com.docker.sandboxes.start-docker="true"
-RUN install -m 0755 -d /etc/apt/keyrings \
- && curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc \
- && printf 'Types: deb\nURIs: https://download.docker.com/linux/debian\nSuites: %s\nComponents: stable\nSigned-By: /etc/apt/keyrings/docker.asc\n' \
-      "$(. /etc/os-release && echo "$VERSION_CODENAME")" > /etc/apt/sources.list.d/docker.sources \
- && apt-get update \
- && apt-get install -y --no-install-recommends \
-      docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin \
- && rm -rf /var/lib/apt/lists/*
-
 COPY --from=node /usr/local/bin/node /usr/local/bin/node
 COPY --from=node /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=node /usr/local/include/node /usr/local/include/node
@@ -88,10 +71,10 @@ RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
 RUN npx --yes playwright@1.64.1 install-deps chromium firefox \
  && rm -rf /var/lib/apt/lists/* /root/.npm
 
-# The `agent` user (uid/gid 1000) in the docker group, with the home layout
-# the sandbox runtime expects.
+# The `agent` user (uid/gid 1000), with the home layout the sandbox runtime
+# expects.
 RUN groupadd --gid 1000 agent \
- && useradd --uid 1000 --gid 1000 --groups docker --create-home --shell /bin/bash agent \
+ && useradd --uid 1000 --gid 1000 --create-home --shell /bin/bash agent \
  && mkdir -p /home/agent/workspace /home/agent/.local/bin \
       /home/agent/.local/share /home/agent/.local/state /home/agent/.config \
       /home/agent/.docker/sandbox/locks \
@@ -141,8 +124,7 @@ RUN node --version \
  && npm --version \
  && chromium --version \
  && chromedriver --version \
- && command -v xvfb-run \
- && command -v dockerd && docker compose version
+ && command -v xvfb-run
 
 WORKDIR /home/agent/workspace
 ENTRYPOINT ["bash"]

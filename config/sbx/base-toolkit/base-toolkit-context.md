@@ -54,6 +54,8 @@ developer's machine is here except the project. It comes in one of two modes;
 - **GitHub.** When the project sets one up, `git` and `gh` authenticate
   through the sandbox proxy with a token scoped to this repository.
   `GH_TOKEN` holds a placeholder, not the real token; don't print or copy it.
+  The token can fetch and work with pull requests but not push: commit on a
+  branch and tell the developer, who reviews and pushes from their machine.
   Other repositories are expected to fail.
 - **MCP servers.** Only the servers on the allowlist (the global layer's
   plus this project's) load here. A server from the project's `.mcp.json`

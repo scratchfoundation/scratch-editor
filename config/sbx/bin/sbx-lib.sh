@@ -1,5 +1,5 @@
 # shellcheck shell=bash
-# sbx-template: sbx-lib.sh 0.1.0
+# sbx-template: sbx-lib.sh 0.1.1
 #
 # Helpers shared by sbx-up, bootstrap.sh and acceptance.sh; sourced, never run.
 
@@ -8,15 +8,15 @@
 # shellcheck disable=SC2034  # used by the scripts that source this file
 if command -v sha256sum >/dev/null 2>&1; then sha256=(sha256sum); else sha256=(shasum -a 256); fi
 
-# A size such as 50g, 512MiB or a byte count, in MiB.
+# A size such as 50g, 1.5g, 512MiB or a byte count, in whole MiB. awk, because
+# bash arithmetic has no decimals.
 to_mib() {
   local v; v="$(printf '%s' "$1" | tr '[:upper:]' '[:lower:]' | sed 's/i\{0,1\}b\{0,1\}$//')"
-  case "$v" in
-    *t) echo $(( ${v%t} * 1024 * 1024 )) ;;
-    *g) echo $(( ${v%g} * 1024 )) ;;
-    *m) echo $(( ${v%m} )) ;;
-    *)  echo $(( v / 1024 / 1024 )) ;;
-  esac
+  awk -v v="$v" 'BEGIN {
+    u = substr(v, length(v))
+    f = u == "t" ? 1048576 : u == "g" ? 1024 : u == "m" ? 1 : 1 / 1048576
+    printf "%d\n", (v + 0) * f
+  }'
 }
 
 # name: from an sbxenv.yaml, without quotes, a trailing comment or a CR.

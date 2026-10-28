@@ -1,5 +1,5 @@
 # syntax=docker/sandbox-kit:3
-# sbx-template: base-toolkit 0.2.1
+# sbx-template: base-toolkit 0.2.2
 # yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
 #
 # Global layer for sbx sandboxes, added to any project workload next to
@@ -29,10 +29,10 @@ kind: mixin
 displayName: Base toolkit
 description: Global layer for sbx sandboxes - Claude Code policy, git over HTTPS with a per-sandbox GitHub token, gh, chrome-devtools-mcp, agent context.
 
-version: "0.2.1"
+version: "0.2.2"
 
 provides:
-  - "base-toolkit@0.2.1"
+  - "base-toolkit@0.2.2"
 
 # chrome-devtools-mcp runs on the workload's Node.
 requires:

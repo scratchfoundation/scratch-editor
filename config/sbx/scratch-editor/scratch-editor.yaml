@@ -2,8 +2,8 @@
 # sbx-template: workload.yaml 0.1.1
 # yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
 #
-# Agent-free workload for this repository: Node, the browsers and X server the
-# test suites use, and Docker Engine. sbxenv.yaml adds Claude Code and the
+# Agent-free workload for this repository: Node, and the browsers and X server
+# the test suites use. sbxenv.yaml adds Claude Code and the
 # global layer (base-toolkit) as mixins.
 #
 # The allowlist names every host the project's own tooling needs, even where
@@ -13,9 +13,9 @@
 schemaVersion: "3"
 kind: workload
 displayName: Scratch Editor
-description: SBX env for the scratch-editor repository, with Node, Playwright and Selenium browser dependencies and Docker Engine.
+description: SBX env for the scratch-editor repository, with Node and the Playwright and Selenium browser dependencies.
 
-version: "0.1.0"
+version: "0.2.0"
 
 provides:
   - "node@24.22.0"
