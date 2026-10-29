@@ -1,0 +1,12 @@
+# System git config for sbx sandboxes (base-toolkit mixin).
+#
+# Host remotes are SSH, but the sandbox has no SSH keys: git reaches GitHub
+# over HTTPS and the sbx proxy adds the per-sandbox token. The rewrite lives
+# here, not in the repository's .git/config, so the host's remotes stay SSH.
+#
+# sbx owns ~/.gitconfig (user.name / user.email from the git-identity
+# capability, and core.excludesFile); the mixin merges /etc/gitignore into that
+# excludes file at startup.
+[url "https://github.com/"]
+	insteadOf = git@github.com:
+	insteadOf = ssh://git@github.com/

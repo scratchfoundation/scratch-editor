@@ -1,0 +1,11 @@
+# Global ignores for sbx sandboxes (base-toolkit mixin), merged at startup into
+# the excludes file sbx configures. The host's global gitignore isn't visible
+# in the sandbox, so local-only files would otherwise show up in `git status`
+# and get committed.
+.claude/settings.local.json
+CLAUDE.local.md
+.env
+.env.*
+!.env.example
+.DS_Store
+local.sbxenv.yaml

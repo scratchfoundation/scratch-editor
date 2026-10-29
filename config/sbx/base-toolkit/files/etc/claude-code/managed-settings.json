@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "defaultMode": "auto",
+    "disableBypassPermissionsMode": "disable"
+  },
+  "env": {
+    "DISABLE_UPDATES": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  },
+  "allowManagedMcpServersOnly": true,
+  "allowedMcpServers": [
+    { "serverUrl": "http://mcp-gateway.docker.internal/mcp" },
+    { "serverCommand": ["sandbox-chrome-devtools-mcp"] },
+    { "serverUrl": "https://mcp.figma.com/*" }
+  ],
+  "attribution": {
+    "commit": ""
+  }
+}
