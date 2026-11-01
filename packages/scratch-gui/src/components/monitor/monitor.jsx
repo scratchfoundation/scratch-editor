@@ -52,6 +52,9 @@ const MonitorComponent = props => (
             defaultClassNameDragging={styles.dragging}
             disabled={!props.draggable}
             onStop={props.onDragEnd}
+            scale={props.scale} // Used for moving the monitor at the correct speed
+            grid={[1 * props.scale, 1 * props.scale]} // Tell the Draggable to round the coordinates
+            // See https://github.com/react-grid-layout/react-draggable/issues/664 on why it's not just [1, 1]
         >
             <Box
                 className={styles.monitorContainer}
@@ -154,6 +157,7 @@ MonitorComponent.propTypes = {
     category: PropTypes.oneOf(Object.keys(categoryColorMap)),
     componentRef: PropTypes.func.isRequired,
     draggable: PropTypes.bool.isRequired,
+    scale: PropTypes.number,
     label: PropTypes.string.isRequired,
     mode: PropTypes.oneOf(monitorModes),
     onDragEnd: PropTypes.func.isRequired,
