@@ -5,9 +5,9 @@
  */
 module.exports = function (svgString) {
     // Add root svg namespace if it does not exist.
-    const svgAttrs = svgString.match(/<svg [^>]*>/);
+    const svgAttrs = svgString.match(/<svg(\s[^>]*)?>/);
     if (svgAttrs && svgAttrs[0].indexOf('xmlns=') === -1) {
-        svgString = svgString.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+        svgString = svgString.replace(/<svg(?=[\s>])/, '<svg xmlns="http://www.w3.org/2000/svg"');
     }
 
     // There are some SVGs from Illustrator that use undeclared entities.

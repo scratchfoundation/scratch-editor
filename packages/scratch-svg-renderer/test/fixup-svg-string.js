@@ -44,6 +44,15 @@ test('fixupSvgString should correct namespace declarations bound to reserved nam
     t.end();
 });
 
+test('fixupSvgString should add the SVG namespace to a root with or without attributes', t => {
+    t.equal(fixupSvgString('<svg><rect/></svg>'), '<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>');
+    t.equal(fixupSvgString('<svg width="10"><rect/></svg>'),
+        '<svg xmlns="http://www.w3.org/2000/svg" width="10"><rect/></svg>');
+    t.equal(fixupSvgString('<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>'),
+        '<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>');
+    t.end();
+});
+
 test('fixupSvgString shouldn\'t correct non-attributes', t => {
     const dontFix = fixupSvgString('<text>xmlns:test="http://www/w3.org/XML/1998/namespace" is not an xmlns attribute</text>');
 

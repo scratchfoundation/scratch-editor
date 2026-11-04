@@ -74,12 +74,14 @@ test('prefixed versions of fixtures sanitize the same as unprefixed versions', t
 });
 
 test('keeps the SVG namespace when only a prefix is declared for it', t => {
-    const doc = parseXml(sanitizeSvg.sanitizeSvgText(
-        `<svg:svg xmlns:svg="${SVG_NAMESPACE}" width="10" height="10"><svg:rect width="5" height="5"/></svg:svg>`
-    ));
-    t.equal(doc.documentElement.localName, 'svg');
-    t.equal(doc.documentElement.namespaceURI, SVG_NAMESPACE);
-    t.equal(doc.getElementsByTagNameNS(SVG_NAMESPACE, 'rect').length, 1);
+    for (const rootAttributes of [' width="10" height="10"', '']) {
+        const doc = parseXml(sanitizeSvg.sanitizeSvgText(
+            `<svg:svg xmlns:svg="${SVG_NAMESPACE}"${rootAttributes}><svg:rect width="5" height="5"/></svg:svg>`
+        ));
+        t.equal(doc.documentElement.localName, 'svg');
+        t.equal(doc.documentElement.namespaceURI, SVG_NAMESPACE, `root attributes: "${rootAttributes}"`);
+        t.equal(doc.getElementsByTagNameNS(SVG_NAMESPACE, 'rect').length, 1);
+    }
     t.end();
 });
 
