@@ -1,0 +1,1 @@
+"use strict";(globalThis.webpackChunk_scratch_scratch_paint||=[]).push([[279],{5486(s,c,e){s.exports=e.p+"assets/paper-core.min.8852eb425c10cd1c3828.js?resource"}}]);
