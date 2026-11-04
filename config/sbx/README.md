@@ -1,4 +1,4 @@
-<!-- sbx-template: SANDBOX-README.md 0.4.1 -->
+<!-- sbx-template: SANDBOX-README.md 0.4.2 -->
 # Sandbox (sbx)
 
 You can run Claude Code in a sandbox: a small VM with its own copy of this
@@ -81,8 +81,8 @@ sbx policy approval respond <approval-id> --option allow
 - If Claude keeps failing with `ECONNRESET`, run `sbx daemon restart` on
   your machine and start a new session. Approve a blocked site before you ask
   Claude to fetch from it: a failed fetch can cause this.
-- Only some MCP servers work in the sandbox (Figma does, through the
-  claude.ai connector); see [MCP servers](REFERENCE.md#mcp-servers).
+- Only some MCP servers work in the sandbox (Figma and Confluence do,
+  through their claude.ai connectors); see [MCP servers](REFERENCE.md#mcp-servers).
 - To run several tasks side by side, give each its own sandbox:
   [one sandbox per task](REFERENCE.md#one-sandbox-per-task).
 - `config/sbx/bin/acceptance.sh` checks that the sandbox works as intended.

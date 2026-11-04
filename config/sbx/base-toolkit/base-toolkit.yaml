@@ -1,5 +1,5 @@
 # syntax=docker/sandbox-kit:3
-# sbx-template: base-toolkit 0.2.2
+# sbx-template: base-toolkit 0.2.3
 # yaml-language-server: $schema=https://raw.githubusercontent.com/docker/sandbox-kit-spec/main/schema/kit.schema.json
 #
 # Global layer for sbx sandboxes, added to any project workload next to
@@ -15,8 +15,9 @@
 #     no updates (the Claude mixin's pin is the version), no telemetry or error
 #     reporting (it would only hit the network policy), and an MCP allowlist
 #     that only managed settings can extend: the sbx MCP gateway, the in-VM
-#     chrome-devtools server, and Figma (the claude.ai connector or a direct
-#     server). Other claude.ai connectors stay off, because their traffic goes
+#     chrome-devtools server, Figma (the claude.ai connector or a direct
+#     server) and Atlassian for Confluence (the claude.ai connector). Other
+#     claude.ai connectors stay off, because their traffic goes
 #     through Anthropic's MCP proxy, which the network policy can't tell apart.
 #   - git: the developer's identity, HTTPS for GitHub with a per-sandbox token
 #     injected by the proxy, global ignores
@@ -29,10 +30,10 @@ kind: mixin
 displayName: Base toolkit
 description: Global layer for sbx sandboxes - Claude Code policy, git over HTTPS with a per-sandbox GitHub token, gh, chrome-devtools-mcp, agent context.
 
-version: "0.2.2"
+version: "0.2.3"
 
 provides:
-  - "base-toolkit@0.2.2"
+  - "base-toolkit@0.2.3"
 
 # chrome-devtools-mcp runs on the workload's Node.
 requires:

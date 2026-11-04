@@ -1,4 +1,4 @@
-<!-- sbx-template: SANDBOX-REFERENCE.md 0.4.2 -->
+<!-- sbx-template: SANDBOX-REFERENCE.md 0.4.3 -->
 # Sandbox reference (sbx)
 
 The details behind the [sandbox guide](README.md): setup steps, task
@@ -261,8 +261,8 @@ Not protected, so review it:
   `*.googleapis.com`, `*.githubusercontent.com`, …), so the network policy
   can't stop a determined exfiltration. Keeping secrets out of the sandbox is
   the main protection.
-- Figma traffic goes through Anthropic's MCP proxy, which the network policy
-  can't scope.
+- Figma and Confluence traffic goes through Anthropic's MCP proxy, which the
+  network policy can't scope.
 
 ## Session-end guards
 
@@ -306,6 +306,7 @@ two parts:
   pages the project serves.
 - `mcp-gateway`: the sbx MCP gateway, which sbx adds to every sandbox.
 - Figma, through the claude.ai connector ([below](#figma)).
+- Confluence, through the claude.ai Atlassian connector ([below](#confluence)).
 
 **Blocked:** everything else, including other claude.ai connectors.
 
@@ -343,6 +344,14 @@ Figma has approved, and sbx isn't one, so registering Figma with sbx
 Code inside the sandbox would store the Figma token in the VM, which the
 sandbox is built to avoid. With the connector, the Figma login stays on
 claude.ai and the sandbox holds no Figma token.
+
+### Confluence
+
+Connect Atlassian under claude.ai → Settings → Connectors. After the next
+`claude` start in the sandbox, its tools are available as `claude.ai Atlassian MCP`.
+The connector holds the Atlassian login on claude.ai, so the sandbox holds no
+Atlassian token. It's Atlassian's single MCP server, so the same allowlist
+entry also exposes Jira and anything else your Atlassian sign-in grants.
 
 ## Checking the sandbox
 

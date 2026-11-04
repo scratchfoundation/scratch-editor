@@ -11,7 +11,8 @@
   "allowedMcpServers": [
     { "serverUrl": "http://mcp-gateway.docker.internal/mcp" },
     { "serverCommand": ["sandbox-chrome-devtools-mcp"] },
-    { "serverUrl": "https://mcp.figma.com/*" }
+    { "serverUrl": "https://mcp.figma.com/*" },
+    { "serverUrl": "https://mcp.atlassian.com/*" }
   ],
   "attribution": {
     "commit": ""
