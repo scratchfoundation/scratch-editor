@@ -72,6 +72,17 @@ test('stripSvgTagPrefixes shouldn\'t change CDATA text', t => {
     t.end();
 });
 
+test('stripSvgTagPrefixes should take linear time with many unterminated CDATA markers', t => {
+    // A scan that restarts its search for `]]>` at every marker takes many seconds on this input.
+    const svgString = `<svg:svg><!-- ${'<![CDATA['.repeat(100000)} --></svg:svg>`;
+    const start = Date.now();
+    const fixed = stripSvgTagPrefixes(svgString);
+    t.ok(Date.now() - start < 1000, 'should finish quickly');
+    // Everything after an unterminated CDATA marker is left unchanged.
+    t.equal(fixed, `<svg><!-- ${'<![CDATA['.repeat(100000)} --></svg:svg>`);
+    t.end();
+});
+
 test('stripSvgTagPrefixes shouldn\'t strip prefixes bound to other namespaces', t => {
     const svgString =
         '<svg xmlns="http://www.w3.org/2000/svg" xmlns:foo="http://example.com/ns" ' +
