@@ -58,7 +58,7 @@ test('prefixed versions of fixtures sanitize the same as unprefixed versions', t
     const rawSvgFilenames = fs.readdirSync(dirPath)
         .filter(filename => filename.endsWith('.sanitized.svg'))
         .map(filename => filename.replace('.sanitized.svg', '.svg'));
-    for (const prefix of ['svg']) {
+    for (const prefix of ['svg', 'foo']) {
         for (const rawSvgFilename of rawSvgFilenames) {
             const rawSvgString = fs.readFileSync(path.resolve(dirPath, rawSvgFilename)).toString();
             if (rawSvgString.includes(`xmlns:${prefix}=`)) continue;
@@ -80,6 +80,50 @@ test('keeps the SVG namespace when only a prefix is declared for it', t => {
     t.equal(doc.documentElement.localName, 'svg');
     t.equal(doc.documentElement.namespaceURI, SVG_NAMESPACE);
     t.equal(doc.getElementsByTagNameNS(SVG_NAMESPACE, 'rect').length, 1);
+    t.end();
+});
+
+test('keeps elements whose prefix is bound to the SVG namespace', t => {
+    const doc = parseXml(sanitizeSvg.sanitizeSvgText(
+        `<foo:svg xmlns:foo="${SVG_NAMESPACE}" width="10" height="10">` +
+        '<foo:g><foo:circle r="5" fill="red"/></foo:g>' +
+        '</foo:svg>'
+    ));
+    t.equal(doc.documentElement.localName, 'svg');
+    t.equal(doc.documentElement.namespaceURI, SVG_NAMESPACE);
+    const circle = doc.getElementsByTagNameNS(SVG_NAMESPACE, 'circle')[0];
+    t.ok(circle);
+    t.equal(circle.getAttribute('fill'), 'red');
+    t.end();
+});
+
+test('strips dangerous content from elements with a custom SVG prefix', t => {
+    const sanitized = sanitizeSvg.sanitizeSvgText(
+        `<foo:svg xmlns:foo="${SVG_NAMESPACE}" onload="alert(1)" viewBox="0 0 10 10">` +
+        '<foo:script>alert(2)</foo:script>' +
+        '<foo:style>@import url("https://example.com/style.css");</foo:style>' +
+        '<foo:foreignObject><img src="x" onerror="alert(3)"/></foo:foreignObject>' +
+        '<foo:image href="https://example.com/image.png"/>' +
+        '<foo:rect width="5" height="5" onclick="alert(4)"/>' +
+        '</foo:svg>'
+    );
+    t.notMatch(sanitized, /alert/);
+    t.notMatch(sanitized, /script/i);
+    t.notMatch(sanitized, /foreignObject/i);
+    t.notMatch(sanitized, /example\.com/);
+    t.match(sanitized, /<rect width="5" height="5"/);
+    t.end();
+});
+
+test('decides by namespace, not by element name', t => {
+    const sanitized = sanitizeSvg.sanitizeSvgText(
+        `<svg xmlns="${SVG_NAMESPACE}" xmlns:ns1="${SVG_NAMESPACE}" xmlns:ns2="http://example.com/ns">` +
+        '<ns1:rect id="svg-rect" width="5" height="5"/>' +
+        '<ns2:rect id="other-rect" width="5" height="5"/>' +
+        '</svg>'
+    );
+    t.match(sanitized, /id="svg-rect"/);
+    t.notMatch(sanitized, /other-rect/);
     t.end();
 });
 

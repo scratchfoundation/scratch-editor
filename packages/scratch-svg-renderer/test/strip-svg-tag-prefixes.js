@@ -44,3 +44,26 @@ test('stripSvgTagPrefixes should strip `svg:` prefix from tag names', t => {
 
     t.end();
 });
+
+test('stripSvgTagPrefixes should strip other prefixes bound to the SVG namespace', t => {
+    const fixed = stripSvgTagPrefixes(
+        '<foo:svg xmlns:foo="http://www.w3.org/2000/svg" xmlns:a.b=\'http://www.w3.org/2000/svg\'>' +
+        '<foo:g><a.b:rect/></foo:g>' +
+        '</foo:svg>'
+    );
+    t.equal(fixed,
+        '<svg xmlns:foo="http://www.w3.org/2000/svg" xmlns:a.b=\'http://www.w3.org/2000/svg\'>' +
+        '<g><rect/></g>' +
+        '</svg>');
+    t.end();
+});
+
+test('stripSvgTagPrefixes shouldn\'t strip prefixes bound to other namespaces', t => {
+    const svgString =
+        '<svg xmlns="http://www.w3.org/2000/svg" xmlns:foo="http://example.com/ns" ' +
+        'xmlns:bar="https://www.w3.org/2000/svg" xmlns:aXb="http://example.com/ns">' +
+        '<foo:rect/><bar:rect/><aXb:rect/><undeclared:rect/>' +
+        '</svg>';
+    t.equal(stripSvgTagPrefixes(svgString), svgString);
+    t.end();
+});
