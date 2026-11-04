@@ -58,6 +58,20 @@ test('stripSvgTagPrefixes should strip other prefixes bound to the SVG namespace
     t.end();
 });
 
+test('stripSvgTagPrefixes shouldn\'t change CDATA text', t => {
+    const svgString =
+        '<svg:svg xmlns:svg="http://www.w3.org/2000/svg">' +
+        '<svg:text><![CDATA[<svg:path> xmlns:foo="http://www.w3.org/2000/svg" <foo:g>]]></svg:text>' +
+        '<foo:g/>' +
+        '</svg:svg>';
+    t.equal(stripSvgTagPrefixes(svgString),
+        '<svg xmlns:svg="http://www.w3.org/2000/svg">' +
+        '<text><![CDATA[<svg:path> xmlns:foo="http://www.w3.org/2000/svg" <foo:g>]]></text>' +
+        '<foo:g/>' +
+        '</svg>');
+    t.end();
+});
+
 test('stripSvgTagPrefixes shouldn\'t strip prefixes bound to other namespaces', t => {
     const svgString =
         '<svg xmlns="http://www.w3.org/2000/svg" xmlns:foo="http://example.com/ns" ' +

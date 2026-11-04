@@ -127,6 +127,15 @@ test('decides by namespace, not by element name', t => {
     t.end();
 });
 
+test('keeps CDATA text that looks like a prefixed tag', t => {
+    const doc = parseXml(sanitizeSvg.sanitizeSvgText(
+        `<svg:svg xmlns:svg="${SVG_NAMESPACE}" width="10" height="10">` +
+        '<svg:text><![CDATA[<svg:path>]]></svg:text></svg:svg>'
+    ));
+    t.equal(doc.getElementsByTagNameNS(SVG_NAMESPACE, 'text')[0].textContent, '<svg:path>');
+    t.end();
+});
+
 // The fixups in fixupSvgString rely on DOMPurify's normalized output, so they run after it. These cases break if
 // they run on the raw input instead.
 test('fixups still handle input that DOMPurify normalizes', t => {
