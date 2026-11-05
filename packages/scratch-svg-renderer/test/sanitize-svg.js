@@ -138,6 +138,15 @@ test('keeps CDATA text that looks like a prefixed tag', t => {
     t.end();
 });
 
+test('keeps prefixed elements after a comment that contains a CDATA marker', t => {
+    const doc = parseXml(sanitizeSvg.sanitizeSvgText(
+        `<!-- <![CDATA[ --><svg:svg xmlns:svg="${SVG_NAMESPACE}"><svg:rect width="5" height="5"/></svg:svg>`
+    ));
+    t.equal(doc.documentElement.namespaceURI, SVG_NAMESPACE);
+    t.equal(doc.getElementsByTagNameNS(SVG_NAMESPACE, 'rect').length, 1);
+    t.end();
+});
+
 // The fixups in fixupSvgString rely on DOMPurify's normalized output, so they run after it. These cases break if
 // they run on the raw input instead.
 test('fixups still handle input that DOMPurify normalizes', t => {

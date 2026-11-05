@@ -72,14 +72,24 @@ test('stripSvgTagPrefixes shouldn\'t change CDATA text', t => {
     t.end();
 });
 
-test('stripSvgTagPrefixes should take linear time with many unterminated CDATA markers', t => {
-    // A scan that restarts its search for `]]>` at every marker takes many seconds on this input.
-    const svgString = `<svg:svg><!-- ${'<![CDATA['.repeat(100000)} --></svg:svg>`;
-    const start = Date.now();
-    const fixed = stripSvgTagPrefixes(svgString);
-    t.ok(Date.now() - start < 1000, 'should finish quickly');
-    // Everything after an unterminated CDATA marker is left unchanged.
-    t.equal(fixed, `<svg><!-- ${'<![CDATA['.repeat(100000)} --></svg:svg>`);
+test('stripSvgTagPrefixes shouldn\'t change comments or treat markers inside them as CDATA', t => {
+    t.equal(stripSvgTagPrefixes('<!-- <![CDATA[ <svg:g> --><svg:svg><svg:rect/></svg:svg>'),
+        '<!-- <![CDATA[ <svg:g> --><svg><rect/></svg>');
+    t.equal(stripSvgTagPrefixes('<svg:svg><svg:text><![CDATA[<!-- <svg:g>]]></svg:text><svg:rect/></svg:svg>'),
+        '<svg><text><![CDATA[<!-- <svg:g>]]></text><rect/></svg>');
+    t.end();
+});
+
+test('stripSvgTagPrefixes should take linear time with many unterminated start markers', t => {
+    // A scan that restarts its search for a terminator at every marker takes many seconds on these inputs.
+    for (const marker of ['<![CDATA[', '<!--']) {
+        const svgString = `<svg:svg><svg:rect/>${marker.repeat(100000)}</svg:svg>`;
+        const start = Date.now();
+        const fixed = stripSvgTagPrefixes(svgString);
+        t.ok(Date.now() - start < 1000, `should finish quickly with repeated "${marker}"`);
+        // Everything after an unterminated start marker is left unchanged.
+        t.equal(fixed, `<svg><rect/>${marker.repeat(100000)}</svg:svg>`);
+    }
     t.end();
 });
 
