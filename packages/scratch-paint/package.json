@@ -31,7 +31,7 @@
     "lint": "eslint",
     "prepublishOnly": "echo \"Please publish through CI only.\" && exit 1",
     "start": "webpack serve",
-    "test": "npm run unit",
+    "test": "npm run lint && npm run unit",
     "unit": "jest",
     "watch": "webpack --progress --watch"
   },
