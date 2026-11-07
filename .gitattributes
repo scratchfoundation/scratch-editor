@@ -38,6 +38,7 @@
 *.json5 text eol=lf
 *.jsx text eol=lf
 *.md text eol=lf
+*.mjs text eol=lf
 *.mustache text eol=lf
 *.pjs text eol=lf
 *.py text eol=lf
