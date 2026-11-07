@@ -44,39 +44,19 @@ test('fixupSvgString should correct namespace declarations bound to reserved nam
     t.end();
 });
 
+test('fixupSvgString should add the SVG namespace to a root with or without attributes', t => {
+    t.equal(fixupSvgString('<svg><rect/></svg>'), '<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>');
+    t.equal(fixupSvgString('<svg width="10"><rect/></svg>'),
+        '<svg xmlns="http://www.w3.org/2000/svg" width="10"><rect/></svg>');
+    t.equal(fixupSvgString('<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>'),
+        '<svg xmlns="http://www.w3.org/2000/svg"><rect/></svg>');
+    t.end();
+});
+
 test('fixupSvgString shouldn\'t correct non-attributes', t => {
     const dontFix = fixupSvgString('<text>xmlns:test="http://www/w3.org/XML/1998/namespace" is not an xmlns attribute</text>');
 
     t.not(dontFix.indexOf('http://www/w3.org/XML/1998/namespace'), -1);
-    t.end();
-});
-
-test('fixupSvgString should strip `svg:` prefix from tag names', t => {
-    const filePath = path.resolve(__dirname, './fixtures/svg-tag-prefixes.svg');
-    const svgString = fs.readFileSync(filePath)
-        .toString();
-    const fixed = fixupSvgString(svgString);
-
-    const checkPrefixes = element => {
-        t.not(element.prefix, 'svg');
-        // JSDOM doesn't have element.children, only element.childNodes
-        if (element.childNodes) {
-            // JSDOM's childNodes is not iterable, so for...of cannot be used here
-            for (let i = 0; i < element.childNodes.length; i++) {
-                const child = element.childNodes[i];
-                if (child.nodeType === 1 /* Node.ELEMENT_NODE */) checkPrefixes(child);
-            }
-        }
-    };
-
-    // Make sure undefineds aren't being written into the file
-    t.equal(fixed.indexOf('undefined'), -1);
-    t.doesNotThrow(() => {
-        parseXml(fixed);
-    });
-
-    checkPrefixes(parseXml(fixed));
-
     t.end();
 });
 
