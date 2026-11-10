@@ -29,13 +29,9 @@ The editor is split into **packages** (folders inside packages/). Each one does 
 | **Package**                                               | **What you see in the editor**                                                                          | **Level for hacking**                                                                 |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | **scratch-gui**<br><br>**(gui - Graphic User Interface)** | Everything around the Stage: menu bar, Code/Costumes/Sounds tabs, block palette, sprite list, libraries | Start here - You can modify the look and functionality of most features in the Editor |
-| ---                                                       | ---                                                                                                     | ---                                                                                   |
 | **scratch-vm**<br><br>**(vm - Virtual Machine)**          | What blocks _do_ when they run: motion, looks, sounds, variables, extensions                            | Make new blocks!                                                                      |
-| ---                                                       | ---                                                                                                     | ---                                                                                   |
 | **scratch-paint**                                         | The **Costumes** tab drawing tools: brush, eraser, shapes, fill, color picker                           | New drawing tools                                                                     |
-| ---                                                       | ---                                                                                                     | ---                                                                                   |
 | **scratch-render**                                        | The **Stage**: drawing sprites, effects like ghost/color/whirl, the pen                                 | Shader magic (advanced)                                                               |
-| ---                                                       | ---                                                                                                     | ---                                                                                   |
 
 ## 4. Where to make fun changes
 
