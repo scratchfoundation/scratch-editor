@@ -3,6 +3,7 @@
  * as possible
  */
 const fixupSvgString = require('./fixup-svg-string');
+const stripSvgTagPrefixes = require('./strip-svg-tag-prefixes');
 const DOMPurify = require('isomorphic-dompurify');
 const {cssHasExternalUrls, filterCssText, isInternalRef} = require('./util/svg-url-helpers');
 
@@ -91,7 +92,8 @@ sanitizeSvg.sanitizeByteStream = function (rawData) {
  * @returns {string} sanitized SVG text
  */
 sanitizeSvg.sanitizeSvgText = function (rawSvgText) {
-    let sanitizedText = DOMPurify.sanitize(rawSvgText, {
+    // Prefixed tags must be fixed before DOMPurify, which would otherwise drop them.
+    let sanitizedText = DOMPurify.sanitize(stripSvgTagPrefixes(rawSvgText), {
         USE_PROFILES: {svg: true},
         FORBID_TAGS: ['a', 'audio', 'canvas', 'video'],
         // Allow data URI in image tags (e.g. SVGs converted from bitmap)
@@ -104,7 +106,8 @@ sanitizeSvg.sanitizeSvgText = function (rawSvgText) {
         sanitizedText = sanitizedText.substring(5, sanitizedText.length);
     }
 
-    // also use our custom fixup rules
+    // Also use our custom fixup rules. These run after DOMPurify because they rely on its normalized output, e.g.
+    // consistent quoting and whitespace, with comments and scripts already removed.
     sanitizedText = fixupSvgString(sanitizedText);
     return sanitizedText;
 };
