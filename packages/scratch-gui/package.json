@@ -191,7 +191,7 @@
     "@reduxjs/toolkit": "2.14.0",
     "@testing-library/jest-dom": "5.17.0",
     "@testing-library/react": "14.3.1",
-    "@testing-library/user-event": "14.6.8",
+    "@testing-library/user-event": "14.6.9",
     "@types/jest": "25.2.3",
     "@types/prop-types": "15.7.15",
     "@types/react-modal": "3.16.3",
