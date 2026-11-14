@@ -140,7 +140,7 @@
     "cookie": "0.6.0",
     "core-js": "2.6.12",
     "dapjs": "2.3.0",
-    "driver.js": "1.10.2",
+    "driver.js": "1.11.0",
     "es6-object-assign": "1.1.0",
     "fastestsmallesttextencoderdecoder": "1.0.22",
     "get-float-time-domain-data": "0.1.0",
