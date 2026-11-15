@@ -61,7 +61,7 @@
   "devDependencies": {
     "@babel/core": "7.29.13",
     "@babel/polyfill": "7.12.1",
-    "@babel/preset-env": "7.29.7",
+    "@babel/preset-env": "7.29.14",
     "@scratch/scratch-storage": "15.3.0",
     "@scratch/scratch-vm": "15.3.0",
     "babel-loader": "9.2.1",

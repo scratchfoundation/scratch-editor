@@ -79,7 +79,7 @@
     "@babel/cli": "7.29.7",
     "@babel/core": "7.29.13",
     "@babel/node": "7.29.7",
-    "@babel/preset-env": "7.29.7",
+    "@babel/preset-env": "7.29.14",
     "@babel/preset-react": "7.29.7",
     "@testing-library/react": "14.3.1",
     "autoprefixer": "9.8.8",
