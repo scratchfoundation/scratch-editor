@@ -1,13 +1,36 @@
 # Hacking the Scratch Editor 🛠️
 
-Welcome! This guide shows you how the Scratch Editor's code is put together, so you can jump in and build something fun. You don't need to understand everything. Pick one part and start poking at it.
+Welcome! This guide shows you how the Scratch Editor's code is put together, so you can jump in and build something fun. You don't need to understand everything. Pick one part and start poking at it. If you already have the editor running locally, then __skip to Section 3__ for an overview of each package and get to hacking!
 
-## 1. Get it running
+Before you start, make sure you have:
+- A free GitHub account
+- Git installed (check with git --version)
+- Node.js version 24 (check with node --version)
+- A code editor, like VS Code
+- About 5 GB of free disk space and a decent Wi-Fi connection
 
-You need [Node.js](https://nodejs.org/) installed. From the top folder of this repo:
+## 1. Cloning the repo
+A fork is your own copy of the project on GitHub. You can change it however you like without affecting the real Scratch.
+- Go to https://github.com/scratchfoundation/scratch-editor.
+- Click __Fork__ (top right), then __Create fork__.
+
+In your code editor’s terminal, navigate to the directory where you want your fork to be downloaded. You may need to use these commands:
+- pwd: show the current directory your terminal is in
+- ls: to show the contents of the current directory
+- cd: move into a directory
+
+In that same terminal, download ("clone") your fork and step inside. To do this, replace YOUR-USERNAME with your GitHub username and paste this:
+git clone https://github.com/YOUR-USERNAME/scratch-editor.git
+
+## 2. Get it running
+
+You need [Node.js](https://nodejs.org/) installed. From the top folder (```/scratch-editor```) of this repo:
 
 ```
 npm ci       # install everything (takes a few minutes the first time)
+```
+```
+npm run build   # build all the packages once
 ```
 
 And then after navigating to packages/scratch-gui:
@@ -16,11 +39,11 @@ And then after navigating to packages/scratch-gui:
 npm start    # start the editor
 ```
 
-Open [**http://localhost:8601/**](http://localhost:8601/) in your browser.
+When the terminal says compiled successfully, then open [**http://localhost:8601/**](http://localhost:8601/) in your browser.
 
 Leave npm start running while you work. Note: When you save a file that is located in scratch-gui, scratch-vm, scratch-paint, or scratch-render, the page will automatically reload to show your change.
 
-## 2. What each package does
+## 3. What each package does
 
 The editor is split into **packages** (folders inside packages/). Each one does one job:
 
