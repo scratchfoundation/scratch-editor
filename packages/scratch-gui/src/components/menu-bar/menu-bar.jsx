@@ -17,6 +17,7 @@ import ShareButton from './share-button.jsx';
 import {ComingSoonTooltip} from '../coming-soon/coming-soon.jsx';
 import Divider from '../divider/divider.jsx';
 import SaveStatus from './save-status.jsx';
+import SB3Downloader from '../../containers/sb3-downloader.jsx';
 import ProjectWatcher from '../../containers/project-watcher.jsx';
 import ProjectTitleInput from './project-title-input.jsx';
 import AuthorInfo from './author-info.jsx';
@@ -492,8 +493,21 @@ class MenuBar extends React.Component {
                 logged in, and whether a session is available to log in with */}
                 <div className={styles.accountInfoGroup}>
                     <div className={styles.menuBarItem}>
-                        {this.props.canSave && (
+                        {this.props.canSave ? (
                             <SaveStatus className={classNames(styles.hoverable, styles.menuBarItem)} />
+                        ) : this.props.showSaveToComputer && (
+                            <SB3Downloader>{(className, downloadProjectCallback) => (
+                                <button
+                                    className={classNames(className, styles.hoverable, styles.menuBarItem)}
+                                    onClick={this.getSaveToComputerHandler(downloadProjectCallback)}
+                                >
+                                    <FormattedMessage
+                                        defaultMessage="Save to your computer"
+                                        description="Menu bar item for downloading a project to your computer" // eslint-disable-line @stylistic/max-len
+                                        id="gui.menuBar.downloadToComputer"
+                                    />
+                                </button>
+                            )}</SB3Downloader>
                         )}
                     </div>
 
@@ -708,6 +722,7 @@ MenuBar.propTypes = {
     renderLogin: PropTypes.func,
     shouldSaveBeforeTransition: PropTypes.func,
     showComingSoon: PropTypes.bool,
+    showSaveToComputer: PropTypes.bool,
     username: PropTypes.string,
     avatarBadge: PropTypes.number,
     userOwnsProject: PropTypes.bool,
