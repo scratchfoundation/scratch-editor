@@ -192,6 +192,7 @@ const GUIComponent = props => {
         onUpdateProjectThumbnail,
         showComingSoon,
         showNewFeatureCallouts,
+        showSaveToComputer,
         soundsTabVisible,
         stageSizeMode,
         targetIsStage,
@@ -358,6 +359,7 @@ const GUIComponent = props => {
                             logo={logo}
                             renderLogin={renderLogin}
                             showComingSoon={showComingSoon}
+                            showSaveToComputer={showSaveToComputer}
                             onClickAbout={onClickAbout}
                             onClickLogo={onClickLogo}
                             onLogOut={onLogOut}
@@ -654,6 +656,7 @@ GUIComponent.propTypes = {
     setTheme: PropTypes.func.isRequired,
     showComingSoon: PropTypes.bool,
     showNewFeatureCallouts: PropTypes.bool,
+    showSaveToComputer: PropTypes.bool,
     soundsTabVisible: PropTypes.bool,
     stageSizeMode: PropTypes.oneOf(Object.keys(STAGE_SIZE_MODES)),
     setPlatform: PropTypes.func,
@@ -694,6 +697,7 @@ GUIComponent.defaultProps = {
     loading: false,
     menuBarHidden: false,
     showComingSoon: false,
+    showSaveToComputer: false,
     showNewFeatureCallouts: false,
     stageSizeMode: STAGE_SIZE_MODES.large,
     useExternalPeripheralList: false

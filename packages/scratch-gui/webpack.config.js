@@ -169,6 +169,7 @@ const buildConfig = baseConfig.clone()
             guistandalone: './src/playground/standalone.jsx',
             blocksonly: './src/playground/blocks-only.jsx',
             compatibilitytesting: './src/playground/compatibility-testing.jsx',
+            sitemaintenance: './src/playground/site-maintenance.jsx',
             player: './src/playground/player.jsx'
         },
         output: {
@@ -207,6 +208,13 @@ const buildConfig = baseConfig.clone()
         filename: 'compatibility-testing.html',
         template: 'src/playground/index.ejs',
         title: 'Scratch 3.0 GUI: Compatibility Testing'
+    }))
+    .addPlugin(new HtmlWebpackPlugin({
+        ...commonHtmlWebpackPluginOptions,
+        chunks: ['sitemaintenance'],
+        filename: 'site-maintenance.html',
+        template: 'src/playground/index.ejs',
+        title: 'Scratch'
     }))
     .addPlugin(new HtmlWebpackPlugin({
         ...commonHtmlWebpackPluginOptions,

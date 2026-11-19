@@ -20,7 +20,11 @@ describe('MenuBar Component', () => {
             locale: 'en-US'
         },
         scratchGui: {
+            alerts: {
+                alertsList: []
+            },
             menus: menuInitialState,
+            projectChanged: false,
             projectState: {
                 loadingState: LoadingState.NOT_LOADED
             },
@@ -56,6 +60,42 @@ describe('MenuBar Component', () => {
         const {container} = renderWithIntl(getComponent({onClickAbout}));
         const button = container.querySelector('button[aria-label="About menu"]');
         expect(button).toBeTruthy();
+    });
+
+    describe('Save to your computer button', () => {
+        const findSaveToComputerButton = container =>
+            Array.from(container.querySelectorAll('button'))
+                .find(button => button.textContent === 'Save to your computer');
+
+        test('is absent by default', () => {
+            const {container} = renderWithIntl(getComponent());
+            expect(findSaveToComputerButton(container)).toBeFalsy();
+        });
+
+        test('is shown when showSaveToComputer is set and canSave is not', () => {
+            const {container} = renderWithIntl(getComponent({showSaveToComputer: true}));
+            expect(findSaveToComputerButton(container)).toBeTruthy();
+        });
+
+        test('defers to the online save status when canSave is set', () => {
+            const {container} = renderWithIntl(getComponent({canSave: true, showSaveToComputer: true}));
+            expect(findSaveToComputerButton(container)).toBeFalsy();
+        });
+
+        test('clicking it saves the project and reports telemetry', () => {
+            const onProjectTelemetryEvent = jest.fn();
+            const saveProjectSb3 = jest.spyOn(store.getState().scratchGui.vm, 'saveProjectSb3')
+                .mockReturnValue(new Promise(() => {}));
+            const {container} = renderWithIntl(getComponent({
+                showSaveToComputer: true,
+                onProjectTelemetryEvent
+            }));
+
+            fireEvent.click(findSaveToComputerButton(container));
+            expect(saveProjectSb3).toHaveBeenCalledTimes(1);
+            expect(onProjectTelemetryEvent).toHaveBeenCalledWith('projectDidSave', expect.anything());
+            saveProjectSb3.mockRestore();
+        });
     });
 
     describe('triggering About button handler', () => {
