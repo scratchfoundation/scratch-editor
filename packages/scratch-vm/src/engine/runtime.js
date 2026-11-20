@@ -1644,7 +1644,7 @@ class Runtime extends EventEmitter {
         // How many seconds should an action "cost" after we've exhausted the burst allowance?
         // Setting this too high makes the extension frustrating to use, but setting it too low costs us real money.
         // We should tune this over time based on user feedback and our budget.
-        const secondsPerAction = 4;
+        const secondsPerAction = 1;
 
         const productionDomains = ['scratch.mit.edu', 'scratch.org'];
         const isProductionHost = typeof window !== 'undefined' &&
@@ -1662,7 +1662,7 @@ class Runtime extends EventEmitter {
         // numbers to find a good balance between user experience and our monetary costs. My first attempt was
         // definitely too low; sorry! Once we're done tuning, we'll probably remove this override.
         const extensionServiceQueueOptions = {
-            burstLimit: 3, // How many actions can be sent in a short time if we haven't done any for a while?
+            burstLimit: 5, // How many actions can be sent in a short time if we haven't done any for a while?
             concurrency: 1, // Number of concurrent connections to the service
             queueCostLimit: 10, // Don't queue more actions than can finish before the `fetchWithTimeout` timeout.
             sustainRate: 1 / secondsPerAction, // See `secondsPerAction` above.
