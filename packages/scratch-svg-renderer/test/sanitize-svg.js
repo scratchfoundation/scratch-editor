@@ -1,8 +1,18 @@
 const test = require('tap').test;
 const fs = require('fs');
 const path = require('path');
+const {JSDOM} = require('jsdom');
 
 const sanitizeSvg = require('../src/sanitize-svg');
+
+const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
+const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
+
+const {window} = new JSDOM();
+const domParser = new window.DOMParser();
+
+// Parse the way loadSvgString does
+const parseXml = xmlString => domParser.parseFromString(xmlString, 'text/xml');
 
 // find all svg fixtures with filenames ending '.sanitized.svg', and compare their
 // content to the result when we run sanitizeSvg.sanitizeSvgText() on the raw
@@ -31,5 +41,135 @@ test('compare svg content before and after sanitize-svg sanitizes it', t => {
         t.equal(testSanitizedSvgString, correctSvgString,
             `sanitizing ${rawSvgFilename} should match ${correctSvgFilename}`);
     });
+    t.end();
+});
+
+const declarePrefix = (svgText, prefix) =>
+    svgText.replace(/<svg\b/, `<svg xmlns:${prefix}="${SVG_NAMESPACE}"`);
+
+const prefixAllTags = (svgText, prefix) =>
+    svgText.replace(/<(\/?)([A-Za-z][\w.-]*)(?=[\s/>])/g, `<$1${prefix}:$2`);
+
+// Inkscape and other tools can write every SVG element with a namespace prefix, like <svg:path>. Rewrite each
+// fixture that way, and check that it sanitizes exactly like the unprefixed version, so that everything the fixtures
+// expect to be stripped is still stripped when prefixed.
+test('prefixed versions of fixtures sanitize the same as unprefixed versions', t => {
+    const dirPath = path.resolve(__dirname, './fixtures/');
+    const rawSvgFilenames = fs.readdirSync(dirPath)
+        .filter(filename => filename.endsWith('.sanitized.svg'))
+        .map(filename => filename.replace('.sanitized.svg', '.svg'));
+    for (const prefix of ['svg', 'foo']) {
+        for (const rawSvgFilename of rawSvgFilenames) {
+            const rawSvgString = fs.readFileSync(path.resolve(dirPath, rawSvgFilename)).toString();
+            if (rawSvgString.includes(`xmlns:${prefix}=`)) continue;
+
+            const declaredSvgString = declarePrefix(rawSvgString, prefix);
+            const prefixedSvgString = prefixAllTags(declaredSvgString, prefix);
+            t.not(prefixedSvgString, declaredSvgString, `${rawSvgFilename} should have tags to prefix`);
+            t.equal(sanitizeSvg.sanitizeSvgText(prefixedSvgString), sanitizeSvg.sanitizeSvgText(declaredSvgString),
+                `sanitizing ${rawSvgFilename} with "${prefix}:" tag prefixes should match the unprefixed result`);
+        }
+    }
+    t.end();
+});
+
+test('keeps the SVG namespace when only a prefix is declared for it', t => {
+    for (const rootAttributes of [' width="10" height="10"', '']) {
+        const doc = parseXml(sanitizeSvg.sanitizeSvgText(
+            `<svg:svg xmlns:svg="${SVG_NAMESPACE}"${rootAttributes}><svg:rect width="5" height="5"/></svg:svg>`
+        ));
+        t.equal(doc.documentElement.localName, 'svg');
+        t.equal(doc.documentElement.namespaceURI, SVG_NAMESPACE, `root attributes: "${rootAttributes}"`);
+        t.equal(doc.getElementsByTagNameNS(SVG_NAMESPACE, 'rect').length, 1);
+    }
+    t.end();
+});
+
+test('keeps elements whose prefix is bound to the SVG namespace', t => {
+    const doc = parseXml(sanitizeSvg.sanitizeSvgText(
+        `<foo:svg xmlns:foo="${SVG_NAMESPACE}" width="10" height="10">` +
+        '<foo:g><foo:circle r="5" fill="red"/></foo:g>' +
+        '</foo:svg>'
+    ));
+    t.equal(doc.documentElement.localName, 'svg');
+    t.equal(doc.documentElement.namespaceURI, SVG_NAMESPACE);
+    const circle = doc.getElementsByTagNameNS(SVG_NAMESPACE, 'circle')[0];
+    t.ok(circle);
+    t.equal(circle.getAttribute('fill'), 'red');
+    t.end();
+});
+
+test('strips dangerous content from elements with a custom SVG prefix', t => {
+    const sanitized = sanitizeSvg.sanitizeSvgText(
+        `<foo:svg xmlns:foo="${SVG_NAMESPACE}" onload="alert(1)" viewBox="0 0 10 10">` +
+        '<foo:script>alert(2)</foo:script>' +
+        '<foo:style>@import url("https://example.com/style.css");</foo:style>' +
+        '<foo:foreignObject><img src="x" onerror="alert(3)"/></foo:foreignObject>' +
+        '<foo:image href="https://example.com/image.png"/>' +
+        '<foo:rect width="5" height="5" onclick="alert(4)"/>' +
+        '</foo:svg>'
+    );
+    t.notMatch(sanitized, /alert/);
+    t.notMatch(sanitized, /script/i);
+    t.notMatch(sanitized, /foreignObject/i);
+    t.notMatch(sanitized, /example\.com/);
+    t.match(sanitized, /<rect width="5" height="5"/);
+    t.end();
+});
+
+test('decides by namespace, not by element name', t => {
+    const sanitized = sanitizeSvg.sanitizeSvgText(
+        `<svg xmlns="${SVG_NAMESPACE}" xmlns:ns1="${SVG_NAMESPACE}" xmlns:ns2="http://example.com/ns">` +
+        '<ns1:rect id="svg-rect" width="5" height="5"/>' +
+        '<ns2:rect id="other-rect" width="5" height="5"/>' +
+        '</svg>'
+    );
+    t.match(sanitized, /id="svg-rect"/);
+    t.notMatch(sanitized, /other-rect/);
+    t.end();
+});
+
+test('keeps CDATA text that looks like a prefixed tag', t => {
+    const doc = parseXml(sanitizeSvg.sanitizeSvgText(
+        `<svg:svg xmlns:svg="${SVG_NAMESPACE}" width="10" height="10">` +
+        '<svg:text><![CDATA[<svg:path>]]></svg:text></svg:svg>'
+    ));
+    t.equal(doc.getElementsByTagNameNS(SVG_NAMESPACE, 'text')[0].textContent, '<svg:path>');
+    t.end();
+});
+
+test('keeps prefixed elements after a comment that contains a CDATA marker', t => {
+    const doc = parseXml(sanitizeSvg.sanitizeSvgText(
+        `<!-- <![CDATA[ --><svg:svg xmlns:svg="${SVG_NAMESPACE}"><svg:rect width="5" height="5"/></svg:svg>`
+    ));
+    t.equal(doc.documentElement.namespaceURI, SVG_NAMESPACE);
+    t.equal(doc.getElementsByTagNameNS(SVG_NAMESPACE, 'rect').length, 1);
+    t.end();
+});
+
+// The fixups in fixupSvgString rely on DOMPurify's normalized output, so they run after it. These cases break if
+// they run on the raw input instead.
+test('fixups still handle input that DOMPurify normalizes', t => {
+    const keepsContentBetweenScripts = sanitizeSvg.sanitizeSvgText(
+        `<svg xmlns="${SVG_NAMESPACE}"><script>a()</script><rect id="keep-me"/><script>b()</script></svg>`
+    );
+    t.match(keepsContentBetweenScripts, /<rect id="keep-me"/, 'keeps content between two scripts');
+
+    const newlineAfterSvg = parseXml(sanitizeSvg.sanitizeSvgText(
+        '<svg\n  width="10" height="10"><rect width="5" height="5"/></svg>'
+    ));
+    t.equal(newlineAfterSvg.documentElement.namespaceURI, SVG_NAMESPACE, 'adds xmlns after a newline in <svg');
+
+    const svgInComment = parseXml(sanitizeSvg.sanitizeSvgText(
+        '<!-- exported from <svg editor> --><svg width="10" height="10"><rect width="5" height="5"/></svg>'
+    ));
+    t.equal(svgInComment.documentElement.namespaceURI, SVG_NAMESPACE, 'adds xmlns to the root, not a comment');
+
+    const spacedImageHref = parseXml(sanitizeSvg.sanitizeSvgText(
+        `<svg xmlns="${SVG_NAMESPACE}" xmlns:xlink="${XLINK_NAMESPACE}">` +
+        '<image xlink:href = "data:img/png;base64,iVBORw0KGgo="/></svg>'
+    ));
+    t.match(spacedImageHref.getElementsByTagName('image')[0].getAttributeNS(XLINK_NAMESPACE, 'href'),
+        /^data:image\/png;/, 'corrects the mime type with spaces around =');
     t.end();
 });

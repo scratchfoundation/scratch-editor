@@ -5,9 +5,9 @@
  */
 module.exports = function (svgString) {
     // Add root svg namespace if it does not exist.
-    const svgAttrs = svgString.match(/<svg [^>]*>/);
+    const svgAttrs = svgString.match(/<svg(\s[^>]*)?>/);
     if (svgAttrs && svgAttrs[0].indexOf('xmlns=') === -1) {
-        svgString = svgString.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ');
+        svgString = svgString.replace(/<svg(?=[\s>])/, '<svg xmlns="http://www.w3.org/2000/svg"');
     }
 
     // There are some SVGs from Illustrator that use undeclared entities.
@@ -42,12 +42,6 @@ module.exports = function (svgString) {
             ($0, $1) => `${$1}"http://dummy.namespace"`
         );
     }
-
-    // Strip `svg:` prefix (sometimes added by Inkscape) from all tags. They interfere with DOMPurify (prefixed tag
-    // names are not recognized) and the paint editor.
-    // This matches opening and closing tags--the capture group captures the slash if it exists, and it is reinserted
-    // in the replacement text.
-    svgString = svgString.replace(/<(\/?)\s*svg:/g, '<$1');
 
     // The <metadata> element is not needed for rendering and sometimes contains
     // unparseable garbage from Illustrator :( Empty out the contents.
