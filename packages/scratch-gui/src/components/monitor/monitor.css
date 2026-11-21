@@ -185,3 +185,7 @@ body .monitor-container {
 .footer-length {
     text-align: center;
 }
+
+.context-menu {
+    pointer-events: all;
+}

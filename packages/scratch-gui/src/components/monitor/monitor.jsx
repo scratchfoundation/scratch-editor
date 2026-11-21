@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import {FormattedMessage} from 'react-intl';
 import * as ContextMenu from '@radix-ui/react-context-menu';
+import classNames from 'classnames';
 import Box from '../box/box.jsx';
 import DefaultMonitor from './default-monitor.jsx';
 import LargeMonitor from './large-monitor.jsx';
@@ -45,7 +46,10 @@ const getCategoryColor = (colorMode, category) => {
 };
 
 const MonitorComponent = props => (
-    <ContextMenu.Root id={`monitor-${props.label}`}>
+    <ContextMenu.Root
+        id={`monitor-${props.label}`}
+        modal={false}
+    >
         <Draggable
             bounds=".monitor-overlay"
             cancel=".no-drag"
@@ -77,7 +81,10 @@ const MonitorComponent = props => (
             </Box>
         </Draggable>
         <ContextMenu.Content
-            className={contextMenuStyles.contextMenuContent}
+            className={classNames(
+                styles.contextMenu,
+                contextMenuStyles.contextMenuContent
+            )}
             collisionPadding={10}
             sticky="always"
         >
