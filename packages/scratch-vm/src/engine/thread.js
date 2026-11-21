@@ -251,7 +251,7 @@ class Thread {
     /**
      * Reset the stack frame for use by the next block.
      * (avoids popping and re-pushing a new stack frame - keeps the warpmode the same
-     * @param {string} blockId Block ID to push to stack.
+     * @param {string | null} blockId Block ID to push to stack.
      */
     reuseStackForNextBlock (blockId) {
         this.stack[this.stack.length - 1] = blockId;
