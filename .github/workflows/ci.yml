@@ -86,6 +86,27 @@ jobs:
             packages/**/dist
             packages/**/playground
 
+  legal:
+    name: License files
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - uses: ./.github/actions/install-dependencies
+      - name: Check LICENSE and TRADEMARK files match their sources
+        run: |
+          npm run update-legal
+          # --porcelain also catches LICENSE files that exist only untracked (a package that never committed one)
+          changes=$(git status --porcelain -- LICENSE TRADEMARK 'packages/*/LICENSE' 'packages/*/TRADEMARK')
+          if [ -n "$changes" ]; then
+            echo "$changes"
+            echo "::error::LICENSE/TRADEMARK files are out of date. Run 'npm run update-legal' and commit the result."
+            exit 1
+          fi
+
   test:
     name: Test
     needs: build
