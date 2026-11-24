@@ -44,6 +44,14 @@ cd "$MONOREPO_ROOT"
 # field scripts/npm-version.sh and scripts/update-gha-workflows.ts read.
 WORKSPACE_JSON=$(npm query .workspace)
 
+# npm query walks the installed tree. Without node_modules it finds no
+# workspaces, which would make this script (and the CI check that runs it)
+# silently skip every package.
+if [ "$(jq 'length' <<<"$WORKSPACE_JSON")" -eq 0 ]; then
+    echo "Error: npm found no workspaces. Run 'npm ci' (or 'npm install') first." >&2
+    exit 1
+fi
+
 # "." is the monorepo root: it gets a LICENSE but is the TRADEMARK source.
 target_dirs=()
 if [ "$#" -eq 0 ]; then
