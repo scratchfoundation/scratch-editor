@@ -208,6 +208,10 @@ jobs:
           name: build
           path: packages
 
+      # scratch-gui and scratch-vm pin this exact version, so publish it before them.
+      - name: Publish scratch-blocks
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-blocks
+
       - name: Publish scratch-svg-renderer
         run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-svg-renderer
 
@@ -247,9 +251,6 @@ jobs:
 
       - name: Publish scratch-paint
         run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-paint
-
-      - name: Publish scratch-blocks
-        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-blocks
 
     # update-gha-workflows.ts: insert new "Publish <package>" steps before this line.
 
