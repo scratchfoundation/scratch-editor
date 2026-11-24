@@ -127,14 +127,8 @@ jobs:
     #   - or it's a PR from our fork (not some other fork)
     # - and
     #   - it's not a Renovate branch (just to reduce noise)
-    if: ${{
-        (needs.build.outputs.any-workspace == 'true') &&
-        (
-          (!github.event.pull_request) ||
-          (github.event.pull_request.head.repo.full_name == github.repository)
-        ) &&
-        (!startsWith((github.head_ref || github.ref_name), 'renovate/'))
-      }}
+    if: ${{ (needs.build.outputs.any-workspace == 'true') && ( (!github.event.pull_request) || (github.event.pull_request.head.repo.full_name
+      == github.repository) ) && (!startsWith((github.head_ref || github.ref_name), 'renovate/')) }}
     uses: ./.github/workflows/deploy-playground-preview.yml
     with:
       # even `develop` should be published to a subdirectory
