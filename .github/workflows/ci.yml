@@ -88,6 +88,8 @@ jobs:
 
   legal:
     name: License files
+    # Like lint: gate PRs, but don't fail CI on a push that already landed.
+    if: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5

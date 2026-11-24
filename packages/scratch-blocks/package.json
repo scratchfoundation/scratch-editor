@@ -25,7 +25,7 @@
     "i18n:src": "node scripts/validate-en-json.mjs",
     "prepublishOnly": "echo \"Please publish through CI only.\" && exit 1",
     "start": "webpack serve --open --mode development",
-    "test": "npm run test:lint && vitest run",
+    "test": "vitest run",
     "test:browser": "vitest run --project browser",
     "test:lint": "eslint && prettier --check .",
     "test:unit": "vitest run --project unit",
