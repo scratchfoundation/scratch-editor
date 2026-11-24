@@ -43,7 +43,7 @@
     "eslint": "9.39.5",
     "eslint-config-scratch": "14.1.97",
     "playwright": "1.65.1",
-    "prettier": "3.8.5",
+    "prettier": "3.9.10",
     "scratch-l10n": "6.2.13",
     "source-map-loader": "5.0.0",
     "ts-loader": "9.6.2",

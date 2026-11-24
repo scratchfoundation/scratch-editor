@@ -174,8 +174,7 @@ const PROCEDURE_DEF_CONTEXTMENU = function (this: Blockly.BlockSvg) {
       customContextMenu: function (
         this: Blockly.BlockSvg,
         menuOptions: (
-          | Blockly.ContextMenuRegistry.ContextMenuOption
-          | Blockly.ContextMenuRegistry.LegacyContextMenuOption
+          Blockly.ContextMenuRegistry.ContextMenuOption | Blockly.ContextMenuRegistry.LegacyContextMenuOption
         )[],
       ) {
         // Add the edit option at the end.
@@ -221,8 +220,7 @@ const PROCEDURE_CALL_CONTEXTMENU = {
   customContextMenu: function (
     this: Blockly.BlockSvg,
     menuOptions: (
-      | Blockly.ContextMenuRegistry.ContextMenuOption
-      | Blockly.ContextMenuRegistry.LegacyContextMenuOption
+      Blockly.ContextMenuRegistry.ContextMenuOption | Blockly.ContextMenuRegistry.LegacyContextMenuOption
     )[],
   ) {
     menuOptions.push(ScratchProcedures.makeEditOption(this))
