@@ -7,7 +7,7 @@ import {ReactComponentLike} from 'prop-types';
 import {compose} from 'redux';
 
 export {EditorState, type EditorStateParams} from './lib/editor-state';
-export {type AccountMenuOptions} from './lib/account-menu-options';
+export {type AccountMenuItem, type AccountMenuOptions} from './lib/account-menu-options';
 
 export {setAppElement} from 'react-modal';
 
