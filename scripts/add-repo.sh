@@ -464,7 +464,7 @@ if [ -r "${PACKAGE_PATH}/package.json" ]; then
         '.version |= $MONOREPO_VERSION' \
         '.repository.url |= $MONOREPO_URL' \
         'del(.repository.sha)' \
-        'if (.scripts.prepare == "husky install") or (.scripts.prepare == "husky") then del(.scripts.prepare) else . end' \
+        'if (.scripts.prepare // "" | test("^husky( install)?( \\|\\| true)?$")) then del(.scripts.prepare) else . end' \
         'del(.scripts."semantic-release")' \
         'del(.scripts.commitmsg)' \
         'del(.scripts.version)' \
