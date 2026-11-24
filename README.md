@@ -10,6 +10,8 @@ packages. Use this if you'd like to learn about how the Scratch editor works or 
 
 The `packages` directory in this repository contains:
 
+- `scratch-blocks` provides the block palette and the code area where you drag blocks to build scripts. It's built on
+  [Blockly](https://github.com/RaspberryPiFoundation/blockly).
 - `scratch-gui` provides the buttons, menus, and other elements that you interact with when creating and editing a
   project. It's also the "glue" that brings most of the other modules together at runtime.
 - `scratch-media-lib-scripts` builds (or rebuilds) media libraries for the editor.
@@ -24,6 +26,15 @@ The `packages` directory in this repository contains:
 _Please add to this list as more packages are migrated to the monorepo._
 
 Each package has its own `README.md` file with more information about that package.
+
+## Licensing
+
+Most of this repository is licensed under the [GNU Affero General Public License v3.0](LICENSE) (`AGPL-3.0-only`).
+`packages/scratch-blocks` is licensed under the [Apache License 2.0](packages/scratch-blocks/LICENSE) (`Apache-2.0`).
+
+Each package's `license` field in its `package.json` and the `LICENSE` file beside it say which license applies to
+that package. The license texts live in `LICENSES/`, named by SPDX identifier, and `npm run update-legal` copies the
+right one into each package (and the repository root) based on its `license` field. CI checks that they match.
 
 ## Monorepo migration
 
