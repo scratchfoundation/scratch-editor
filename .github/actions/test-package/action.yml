@@ -24,7 +24,8 @@ runs:
       # Lint gates PRs and Renovate branches (which can automerge without a PR), but not other pushes, so an urgent
       # commit that lands without passing lint can still build and publish. Packages whose `test` script already
       # runs lint aren't listed here yet.
-      if: ${{ (github.event_name == 'pull_request' || startsWith(github.ref_name, 'renovate/')) && inputs.package_name == 'scratch-blocks' }}
+      if: ${{ (github.event_name == 'pull_request' || startsWith(github.ref_name, 'renovate/')) && inputs.package_name ==
+        'scratch-blocks' }}
       working-directory: ./packages/${{ inputs.package_name }}
       shell: bash
       run: npm run test:lint
