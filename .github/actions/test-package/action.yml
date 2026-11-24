@@ -11,7 +11,7 @@ runs:
   using: composite
   steps:
     - name: Install Playwright
-      if: ${{ inputs.package_name == 'scratch-render' || inputs.package_name == 'scratch-gui' }}
+      if: ${{ inputs.package_name == 'scratch-blocks' || inputs.package_name == 'scratch-render' || inputs.package_name == 'scratch-gui' }}
       shell: bash
       # Install both browsers for any package that needs Playwright,
       # even if a particular package only uses one of them — keeping
