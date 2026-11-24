@@ -410,7 +410,8 @@ echo "==> Fixing up ${PACKAGE_DIR}/package.json..."
 # Remove repo-level metadata that doesn't apply inside a workspace. The
 # monorepo provides its own equivalents at the root, and per-package
 # copies (e.g. GitHub workflow YAMLs under packages/*/.github/workflows/)
-# are inert: GitHub Actions only honors workflows at the repo root.
+# are inert: GitHub Actions only honors workflows at the repo root, and npm
+# ignores (with a warning) any .npmrc inside a workspace.
 rm -rf "${PACKAGE_PATH}/.github" \
        "${PACKAGE_PATH}/.husky" \
        "${PACKAGE_PATH}/package-lock.json" \
@@ -437,6 +438,7 @@ rm -rf "${PACKAGE_PATH}/.github" \
        "${PACKAGE_PATH}/.editorconfig" \
        "${PACKAGE_PATH}/.gitattributes" \
        "${PACKAGE_PATH}/.nvmrc" \
+       "${PACKAGE_PATH}/.npmrc" \
        "${PACKAGE_PATH}/.circleci" \
        "${PACKAGE_PATH}/.travis.yml" \
        "${PACKAGE_PATH}/.appveyor.yml"
