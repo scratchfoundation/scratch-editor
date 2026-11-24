@@ -1,4 +1,4 @@
-import * as ScratchBlocks from 'scratch-blocks';
+import * as ScratchBlocks from '@scratch/scratch-blocks';
 import {defaultColors} from './settings/color-mode';
 
 const categorySeparator = '<sep gap="36"/>';

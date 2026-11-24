@@ -15,6 +15,7 @@
   "license": "AGPL-3.0-only",
   "author": "Scratch Foundation",
   "workspaces": [
+    "packages/scratch-blocks",
     "packages/task-herder",
     "packages/scratch-storage",
     "packages/scratch-svg-renderer",
