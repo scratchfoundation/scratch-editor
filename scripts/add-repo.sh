@@ -366,6 +366,23 @@ else
     echo "==> Using specified source branch: ${SOURCE_BRANCH}"
 fi
 
+# 2a. Make sure the monorepo has the text for the package's license before
+# anything is merged. update-legal (step 8a) writes the package's LICENSE from
+# LICENSES/<id>.txt and would otherwise fail after the merge.
+SOURCE_LICENSE=$(git -C "${BUILD_TMP}/${REPO_NAME}" show "${SOURCE_BRANCH}:package.json" | jq -r '.license // empty')
+if [ -z "$SOURCE_LICENSE" ]; then
+    echo "Error: ${REPO_NAME}#${SOURCE_BRANCH} package.json has no \"license\" field." >&2
+    rm -rf "$BUILD_TMP"
+    exit 1
+fi
+if [ ! -f "${MONOREPO_ROOT}/LICENSES/${SOURCE_LICENSE}.txt" ]; then
+    echo "Error: ${REPO_NAME} is licensed \"${SOURCE_LICENSE}\", but LICENSES/${SOURCE_LICENSE}.txt doesn't exist." >&2
+    echo "Add the license text there (named by its SPDX id) and commit it, then re-run." >&2
+    rm -rf "$BUILD_TMP"
+    exit 1
+fi
+echo "==> Package license: ${SOURCE_LICENSE} (LICENSES/${SOURCE_LICENSE}.txt)"
+
 # 3. Rewrite history so everything lives under packages/<repo-name>/.
 move_repository_subdirectory "$REPO_NAME" "${PACKAGE_DIR}/"
 
@@ -692,12 +709,12 @@ echo "==> Normalizing package-lock.json..."
 npm install --package-lock-only --no-audit --no-fund
 npm install --prefer-offline --no-audit --no-fund
 
-# 8a. Refresh the new package's LICENSE/TRADEMARK from the monorepo root so it
-# matches every other workspace. Runs after step 8 because update-legal
+# 8a. Write the new package's LICENSE from LICENSES/<id>.txt per its license
+# field, and refresh its TRADEMARK from the root. Runs after step 8 because update-legal
 # resolves the target via `npm query .workspace`, which walks the installed
 # tree — a lockfile-only update isn't enough; the full install above must
 # have populated node_modules with the new workspace symlink first.
-echo "==> Refreshing LICENSE/TRADEMARK from monorepo root..."
+echo "==> Writing LICENSE from LICENSES/${SOURCE_LICENSE}.txt and TRADEMARK from monorepo root..."
 npm run update-legal -- "${NPM_ORGANIZATION}/${REPO_NAME}"
 
 # 9. Commit the integration fixups as one cumulative commit.
@@ -708,7 +725,7 @@ if ! git diff --cached --quiet; then
 
 - Renamed package to ${NPM_ORGANIZATION}/${REPO_NAME}
 - Removed standalone-repo metadata (CI/release configs, hooks, repo-level dotfiles)
-- Refreshed LICENSE/TRADEMARK from monorepo root
+- Wrote LICENSE from LICENSES/${SOURCE_LICENSE}.txt; refreshed TRADEMARK
 - Rewired inter-package dependencies to use workspace versions
 - Added to root workspaces list
 - Regenerated package-lock.json"
