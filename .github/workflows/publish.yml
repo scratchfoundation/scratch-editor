@@ -208,8 +208,20 @@ jobs:
           name: build
           path: packages
 
+      # Publish in the order of the root package.json `workspaces` list, which puts every package after the ones it
+      # depends on. Packages pin each other's exact versions, so if a step fails, everything already published can
+      # still be installed.
+      - name: Publish task-herder
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/task-herder
+
+      - name: Publish scratch-storage
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-storage
+
       - name: Publish scratch-svg-renderer
         run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-svg-renderer
+
+      - name: Publish scratch-paint
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-paint
 
       - name: Publish scratch-render
         run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-render
@@ -232,21 +244,12 @@ jobs:
           bash ./scripts/prepare-standalone-gui.sh
           npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-gui-standalone
 
-      - name: Publish task-herder
-        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/task-herder
-
       - name: Publish scratch-media-lib-scripts
         run: |
           npm run build --workspace @scratch/scratch-media-lib-scripts
           npm publish --access=public --tag="$NPM_TAG" --workspace=@scratch/scratch-media-lib-scripts
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish scratch-storage
-        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-storage
-
-      - name: Publish scratch-paint
-        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-paint
 
     # update-gha-workflows.ts: insert new "Publish <package>" steps before this line.
 
