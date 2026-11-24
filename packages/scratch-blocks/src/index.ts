@@ -29,6 +29,7 @@ import './events/events_block_comment_create'
 import './events/events_block_comment_delete'
 import './events/events_block_comment_move'
 import './events/events_block_comment_resize'
+import './events/events_scratch_block_create'
 import './events/events_scratch_variable_create'
 import { registerFieldColourSlider, FieldColourSlider } from './fields/field_colour_slider'
 import { registerFieldMatrix } from './fields/field_matrix'
@@ -42,6 +43,8 @@ import { registerScratchFieldNumber } from './fields/scratch_field_number'
 import { registerScratchFieldVariable } from './fields/scratch_field_variable'
 import './flyout_checkbox_icon'
 import { buildGlowFilter, glowStack } from './glows'
+import { ScratchNavigator } from './keyboard_navigation/scratch_navigator'
+import * as keyboardShortcuts from './keyboard_shortcuts'
 import { registerRecyclableBlockFlyoutInflater } from './recyclable_block_flyout_inflater'
 import './renderer/cat/renderer'
 import './renderer/renderer'
@@ -91,6 +94,56 @@ function sanitizeTheme(theme?: ScratchBlocksTheme) {
   return ScratchBlocksTheme.CLASSIC
 }
 
+/**
+ * Disables Blockly's built-in accessibility shortcuts. This is a stopgap that
+ * should be removed once a decision is made on how to handle collisions between
+ * shortcuts and the "when <key> pressed" block.
+ */
+function disableA11yShortcuts() {
+  const a11yShortcuts = [
+    Blockly.ShortcutItems.names.FOCUS_WORKSPACE,
+    Blockly.ShortcutItems.names.FOCUS_TOOLBOX,
+    Blockly.ShortcutItems.names.START_MOVE,
+    Blockly.ShortcutItems.names.START_MOVE_STACK,
+    Blockly.ShortcutItems.names.FINISH_MOVE,
+    Blockly.ShortcutItems.names.ABORT_MOVE,
+    Blockly.ShortcutItems.names.MOVE_UP,
+    Blockly.ShortcutItems.names.MOVE_DOWN,
+    Blockly.ShortcutItems.names.MOVE_LEFT,
+    Blockly.ShortcutItems.names.MOVE_RIGHT,
+    Blockly.ShortcutItems.names.NAVIGATE_RIGHT,
+    Blockly.ShortcutItems.names.NAVIGATE_LEFT,
+    Blockly.ShortcutItems.names.NAVIGATE_UP,
+    Blockly.ShortcutItems.names.NAVIGATE_DOWN,
+    Blockly.ShortcutItems.names.DISCONNECT,
+    Blockly.ShortcutItems.names.NEXT_STACK,
+    Blockly.ShortcutItems.names.PREVIOUS_STACK,
+    Blockly.ShortcutItems.names.INFORMATION,
+    Blockly.ShortcutItems.names.EXTENDED_INFORMATION,
+    Blockly.ShortcutItems.names.PERFORM_ACTION,
+    Blockly.ShortcutItems.names.DUPLICATE,
+    Blockly.ShortcutItems.names.CLEANUP,
+    Blockly.ShortcutItems.names.SHOW_TOOLTIP,
+    Blockly.ShortcutItems.names.NEXT_HEADING,
+    Blockly.ShortcutItems.names.PREVIOUS_HEADING,
+    Blockly.ShortcutItems.names.TOGGLE_SCREENREADER,
+    Blockly.ShortcutItems.names.JUMP_TOP_STACK,
+    Blockly.ShortcutItems.names.JUMP_BOTTOM_STACK,
+    Blockly.ShortcutItems.names.JUMP_BLOCK_START,
+    Blockly.ShortcutItems.names.JUMP_BLOCK_END,
+    Blockly.ShortcutItems.names.JUMP_FIRST_BLOCK,
+    Blockly.ShortcutItems.names.JUMP_LAST_BLOCK,
+    Blockly.ShortcutItems.names.JUMP_PREVIOUS_PAGE,
+    Blockly.ShortcutItems.names.JUMP_NEXT_PAGE,
+    Blockly.ShortcutItems.names.SCROLL_LEFT,
+    Blockly.ShortcutItems.names.SCROLL_RIGHT,
+    Blockly.ShortcutItems.names.SCROLL_UP,
+    Blockly.ShortcutItems.names.SCROLL_DOWN,
+  ]
+
+  a11yShortcuts.forEach((shortcut) => Blockly.ShortcutRegistry.registry.unregister(shortcut))
+}
+
 export function inject(container: Element, options: ScratchBlocksOptions) {
   registerScratchFieldAngle()
   registerFieldColourSlider()
@@ -108,7 +161,7 @@ export function inject(container: Element, options: ScratchBlocksOptions) {
   registerScratchContinuousCategory()
 
   const scratchTheme = sanitizeTheme(options.scratchTheme)
-
+  const showZoomControls = options.zoom?.controls ?? false
   Object.assign(options, {
     renderer: `scratch_${scratchTheme}`,
     plugins: {
@@ -116,18 +169,17 @@ export function inject(container: Element, options: ScratchBlocksOptions) {
       flyoutsVerticalToolbox: CheckableContinuousFlyout,
       metricsManager: ContinuousMetrics,
     },
+    zoom: {
+      ...options.zoom,
+      controls: false,
+    },
   })
   const workspace = Blockly.inject(container, options)
+  workspace.setNavigator(new ScratchNavigator())
 
   buildGlowFilter(workspace)
 
-  // Replace Blockly's sprite-sheet zoom controls with SVG-file-based ones so
-  // each button is a separate file and the correct set is picked up via
-  // pathToMedia (which varies by Scratch color mode).
-  const originalZoomControls = workspace.zoomControls_
-  if (originalZoomControls) {
-    originalZoomControls.dispose()
-
+  if (showZoomControls) {
     const scratchZoomControls = new ScratchZoomControls(workspace)
     const zoomControlsSvg = scratchZoomControls.createDom()
     workspace.svgGroup_.appendChild(zoomControlsSvg)
@@ -190,10 +242,15 @@ if (!blockCommentMenuItem) {
 Blockly.ContextMenuRegistry.registry.unregister('blockDelete')
 contextMenuItems.registerDeleteBlock()
 contextMenuItems.registerDuplicateBlock()
-contextMenuItems.registerCopyShortcut()
-contextMenuItems.registerCutShortcut()
 Blockly.ContextMenuRegistry.registry.unregister('workspaceDelete')
+
 contextMenuItems.registerDeleteAll()
+keyboardShortcuts.registerDisconnectBlock()
+keyboardShortcuts.registerDuplicate()
+keyboardShortcuts.registerCopy()
+keyboardShortcuts.registerCut()
+disableA11yShortcuts()
+
 Blockly.comments.CommentView.defaultCommentSize = new Blockly.utils.Size(200, 200)
 
 // When the focused block is deleted and has no parent or nearby neighbor,
