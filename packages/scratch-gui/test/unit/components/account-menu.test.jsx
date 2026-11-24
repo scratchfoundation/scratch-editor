@@ -86,7 +86,17 @@ describe('AccountMenu Component', () => {
         expect(getItemLabels(container)).toEqual(['Settings']);
     });
 
-    test('clicking a custom item with onClick calls the handler', () => {
+    test('an empty list of custom items leaves only sign out', () => {
+        const {container} = renderOpenMenu({
+            menuOpts: {
+                ...builtInMenuOpts,
+                menuItems: []
+            }
+        });
+        expect(getItemLabels(container)).toEqual(['Sign out']);
+    });
+
+    test('clicking a custom item with onClick calls the handler and closes the menu', () => {
         const onClick = jest.fn();
         const {container} = renderOpenMenu({
             menuOpts: {
@@ -99,5 +109,7 @@ describe('AccountMenu Component', () => {
 
         fireEvent.click(item);
         expect(onClick).toHaveBeenCalledTimes(1);
+        expect(container.querySelector('button[aria-label="Account menu"]')
+            .getAttribute('aria-expanded')).toBe('false');
     });
 });

@@ -4,14 +4,12 @@ import PropTypes from 'prop-types';
  * A custom item in the account menu. Provide an `href` to navigate to, an `onClick` handler, or both
  * (in which case `onClick` takes precedence, matching the behavior of the built-in menu items).
  */
-export interface AccountMenuItem {
+export type AccountMenuItem = {
     /** Unique identifier, used as the React key. */
     id: string;
     /** Already-localized text to display. */
     label: string;
-    href?: string;
-    onClick?: () => void;
-}
+} & ({href: string; onClick?: () => void} | {href?: string; onClick: () => void});
 
 export interface AccountMenuOptions {
     canHaveSession: boolean;
@@ -29,8 +27,12 @@ export interface AccountMenuOptions {
 
     /**
      * When set, replaces the built-in account menu items (profile, my stuff, my classes, my class
-     * and account settings) with these items, in the given order. "Sign out" is not affected and is
-     * still controlled by `canLogout`.
+     * and account settings) with these items, in the given order. An empty array leaves only
+     * "Sign out" in the menu.
+     *
+     * Not affected by this option:
+     * - "Sign out", which is still controlled by `canLogout`
+     * - the "My Stuff" button in the menu bar, which is still controlled by `myStuffUrl`
      */
     menuItems?: AccountMenuItem[];
 }
