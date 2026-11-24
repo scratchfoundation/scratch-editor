@@ -7,6 +7,16 @@ import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
+    reporters: [
+      'default',
+      // Read by the monorepo's CI test-results summary (publish-unit-test-result-action).
+      'junit',
+      // GitHub Actions annotations are only added by default when reporters aren't customized.
+      ...(process.env.GITHUB_ACTIONS === 'true' ? ['github-actions'] : []),
+    ],
+    outputFile: {
+      junit: 'test-results/junit.xml',
+    },
     projects: [
       {
         test: {

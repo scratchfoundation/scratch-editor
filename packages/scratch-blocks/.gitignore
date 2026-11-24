@@ -11,6 +11,9 @@ npm-*
 # Build output
 /dist
 
+# Test reports
+/test-results
+
 # GitHub Pages (Jekyll)
 /gh-pages/Gemfile.lock
 /gh-pages/_site
