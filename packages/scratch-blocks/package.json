@@ -23,7 +23,6 @@
     "format": "prettier --write . && eslint --fix",
     "i18n:push": "tx-push-src scratch-editor blocks msg/json/en.json",
     "i18n:src": "node scripts/validate-en-json.mjs",
-    "prepare": "husky || true",
     "prepublishOnly": "echo \"Please publish through CI only.\" && exit 1",
     "start": "webpack serve --open --mode development",
     "test": "vitest run",
