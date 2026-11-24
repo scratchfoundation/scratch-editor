@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import CustomProceduresComponent from '../components/custom-procedures/custom-procedures.jsx';
 import {getColorsForMode, colorModeMap} from '../lib/settings/color-mode';
-import * as ScratchBlocks from 'scratch-blocks';
+import * as ScratchBlocks from '@scratch/scratch-blocks';
 import {connect} from 'react-redux';
 
 class CustomProcedures extends React.Component {

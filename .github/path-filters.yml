@@ -15,6 +15,9 @@ any-workspace:
   - *global
   - "packages/**"
 
+scratch-blocks:
+  - *global
+  - "packages/scratch-blocks/**"
 task-herder:
   - *global
   - "packages/task-herder/**"
@@ -42,6 +45,7 @@ scratch-vm:
   - "packages/task-herder/**"
 scratch-gui:
   - *global
+  - "packages/scratch-blocks/**"
   - "packages/scratch-gui/**"
   - "packages/scratch-paint/**"
   - "packages/scratch-render/**"

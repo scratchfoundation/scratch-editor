@@ -1,0 +1,56 @@
+{
+  "name": "@scratch/scratch-blocks",
+  "version": "15.3.0",
+  "description": "Scratch Blocks is a library for building creative computing interfaces.",
+  "homepage": "https://github.com/scratchfoundation/scratch-blocks#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scratchfoundation/scratch-editor.git"
+  },
+  "license": "Apache-2.0",
+  "author": "Massachusetts Institute of Technology",
+  "exports": {
+    ".": {
+      "import": "./dist/main.mjs",
+      "types": "./dist/types/src/index.d.ts",
+      "default": "./dist/main.mjs"
+    }
+  },
+  "main": "./dist/main.mjs",
+  "types": "./dist/types/src/index.d.ts",
+  "scripts": {
+    "build": "webpack --mode production",
+    "format": "prettier --write . && eslint --fix",
+    "i18n:push": "tx-push-src scratch-editor blocks msg/json/en.json",
+    "i18n:src": "node scripts/validate-en-json.mjs",
+    "prepublishOnly": "echo \"Please publish through CI only.\" && exit 1",
+    "start": "webpack serve --open --mode development",
+    "test": "vitest run",
+    "test:browser": "vitest run --project browser",
+    "test:lint": "eslint && prettier --check .",
+    "test:unit": "vitest run --project unit",
+    "test:watch": "vitest",
+    "watch": "webpack --mode development --watch"
+  },
+  "dependencies": {
+    "@blockly/continuous-toolbox": "^7.0.8",
+    "@blockly/field-colour": "^6.0.11",
+    "blockly": "^12.4.1"
+  },
+  "devDependencies": {
+    "@vitest/browser": "4.1.12",
+    "@vitest/browser-playwright": "4.1.12",
+    "eslint": "9.39.5",
+    "eslint-config-scratch": "14.1.97",
+    "playwright": "1.65.1",
+    "prettier": "3.9.10",
+    "scratch-l10n": "6.2.13",
+    "source-map-loader": "5.0.0",
+    "ts-loader": "9.6.2",
+    "typescript": "5.9.3",
+    "vitest": "4.1.12",
+    "webpack": "5.113.0",
+    "webpack-cli": "6.0.1",
+    "webpack-dev-server": "5.2.7"
+  }
+}

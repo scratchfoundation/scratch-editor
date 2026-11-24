@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    /* Type Checking */
+    "noImplicitAny": true,
+    "strict": true,
+
+    /* Modules */
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+
+    /* Emit */
+    "declaration": true,
+    "declarationDir": "./dist/types/",
+    "declarationMap": true,
+    "outDir": "./dist/",
+    "sourceMap": true,
+
+    /* JavaScript Support */
+    "allowJs": true,
+
+    /* Interop Constraints */
+    "forceConsistentCasingInFileNames": true,
+
+    /* Language and Environment */
+    "target": "es2020"
+  },
+  "include": ["./eslint.config.mjs", "./prettier.config.mjs", "./src/", "./tests/", "./types/", "./vitest.config.ts"]
+}

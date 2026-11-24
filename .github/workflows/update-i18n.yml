@@ -44,3 +44,8 @@ jobs:
         with:
           package_name: scratch-gui
           tx_token: ${{ secrets.TX_TOKEN }}
+      - name: Update i18n in scratch-blocks
+        uses: ./.github/actions/update-i18n
+        with:
+          package_name: scratch-blocks
+          tx_token: ${{ secrets.TX_TOKEN }}

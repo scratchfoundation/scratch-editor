@@ -82,6 +82,7 @@
   "devDependencies": {
     "@babel/core": "7.29.13",
     "@babel/preset-env": "7.29.14",
+    "@scratch/scratch-blocks": "15.3.0",
     "adm-zip": "0.4.11",
     "babel-loader": "9.2.1",
     "callsite": "1.0.0",
@@ -96,7 +97,6 @@
     "in-publish": "2.0.1",
     "js-md5": "0.7.3",
     "pngjs": "3.4.0",
-    "scratch-blocks": "2.2.14",
     "scratch-l10n": "6.2.13",
     "scratch-render-fonts": "1.0.259",
     "scratch-webpack-configuration": "3.1.3",

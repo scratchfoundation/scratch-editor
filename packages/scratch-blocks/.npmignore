@@ -1,0 +1,26 @@
+# Development files
+/.circleci
+.eslintrc
+/.editorconfig
+/.eslintignore
+/.gitattributes
+/.github
+/.tx
+/tests
+/webpack.config.js
+
+# Localization / I18N
+common.pyc
+.settings
+.project
+*.pyc
+*.komodoproject
+/nbproject/private/
+
+/accessible/*
+
+# Build created files
+/gh-pages
+
+# Exclude already built packages from testing with npm pack
+/scratch-blocks-*.{tar,tgz}

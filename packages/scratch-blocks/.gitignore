@@ -1,0 +1,24 @@
+# macOS
+.DS_Store
+
+# npm
+/node_modules
+npm-*
+
+# Editor
+.vscode
+
+# Build output
+/dist
+
+# Test reports
+/test-results
+
+# GitHub Pages (Jekyll)
+/gh-pages/Gemfile.lock
+/gh-pages/_site
+/gh-pages/main.js
+
+# Browser test artifacts like failure screenshots
+/.vitest-attachments/
+/tests/browser/__screenshots__/

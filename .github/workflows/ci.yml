@@ -86,6 +86,29 @@ jobs:
             packages/**/dist
             packages/**/playground
 
+  legal:
+    name: License files
+    # Like lint: gate PRs and Renovate branches (which can automerge without a PR), but don't fail CI on other pushes.
+    if: ${{ github.event_name == 'pull_request' || startsWith(github.ref_name, 'renovate/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          cache: 'npm'
+          node-version-file: '.nvmrc'
+      - uses: ./.github/actions/install-dependencies
+      - name: Check LICENSE and TRADEMARK files match their sources
+        run: |
+          npm run update-legal
+          # --porcelain also catches LICENSE files that exist only untracked (a package that never committed one)
+          changes=$(git status --porcelain -- LICENSE TRADEMARK 'packages/*/LICENSE' 'packages/*/TRADEMARK')
+          if [ -n "$changes" ]; then
+            echo "$changes"
+            echo "::error::LICENSE/TRADEMARK files are out of date. Run 'npm run update-legal' and commit the result."
+            exit 1
+          fi
+
   test:
     name: Test
     needs: build
@@ -104,14 +127,8 @@ jobs:
     #   - or it's a PR from our fork (not some other fork)
     # - and
     #   - it's not a Renovate branch (just to reduce noise)
-    if: ${{
-        (needs.build.outputs.any-workspace == 'true') &&
-        (
-          (!github.event.pull_request) ||
-          (github.event.pull_request.head.repo.full_name == github.repository)
-        ) &&
-        (!startsWith((github.head_ref || github.ref_name), 'renovate/'))
-      }}
+    if: ${{ (needs.build.outputs.any-workspace == 'true') && ( (!github.event.pull_request) || (github.event.pull_request.head.repo.full_name
+      == github.repository) ) && (!startsWith((github.head_ref || github.ref_name), 'renovate/')) }}
     uses: ./.github/workflows/deploy-playground-preview.yml
     with:
       # even `develop` should be published to a subdirectory

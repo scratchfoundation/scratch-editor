@@ -11,7 +11,8 @@ runs:
   using: composite
   steps:
     - name: Install Playwright
-      if: ${{ inputs.package_name == 'scratch-render' || inputs.package_name == 'scratch-gui' }}
+      if: ${{ inputs.package_name == 'scratch-blocks' || inputs.package_name == 'scratch-render' || inputs.package_name
+        == 'scratch-gui' }}
       shell: bash
       # Install both browsers for any package that needs Playwright,
       # even if a particular package only uses one of them — keeping
@@ -19,6 +20,15 @@ runs:
       # per-package browser list, and Firefox in scratch-render is
       # cheap unused weight rather than a correctness problem.
       run: npx playwright install --with-deps chromium firefox
+    - name: Lint
+      # Lint gates PRs and Renovate branches (which can automerge without a PR), but not other pushes, so an urgent
+      # commit that lands without passing lint can still build and publish. Packages whose `test` script already
+      # runs lint aren't listed here yet.
+      if: ${{ (github.event_name == 'pull_request' || startsWith(github.ref_name, 'renovate/')) && inputs.package_name ==
+        'scratch-blocks' }}
+      working-directory: ./packages/${{ inputs.package_name }}
+      shell: bash
+      run: npm run test:lint
     - name: Test
       working-directory: ./packages/${{ inputs.package_name }}
       shell: bash

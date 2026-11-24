@@ -211,6 +211,9 @@ jobs:
       # Publish in the order of the root package.json `workspaces` list, which puts every package after the ones it
       # depends on. Packages pin each other's exact versions, so if a step fails, everything already published can
       # still be installed.
+      - name: Publish scratch-blocks
+        run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/scratch-blocks
+
       - name: Publish task-herder
         run: npm publish --access=public --tag="$NPM_TAG" --ignore-scripts --workspace=@scratch/task-herder
 
