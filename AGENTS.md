@@ -64,10 +64,15 @@ Each package defines its own `test` and `build` scripts; see "Packages at a glan
 [Conventional Commits](https://www.conventionalcommits.org/) format. A commit that doesn't conform will be
 rejected by the pre-commit hook.
 
+**Licenses differ by package.** Most packages are `AGPL-3.0-only`; `scratch-blocks` is `Apache-2.0`. Each
+package's `license` field picks its text from `LICENSES/`, and `npm run update-legal` writes the `LICENSE` files.
+Don't edit `LICENSE` files by hand or copy code between packages with different licenses without asking.
+
 ## Repository layout
 
 ```text
 packages/
+├── scratch-blocks/         Block palette and code area, built on Blockly (Apache-2.0)
 ├── scratch-gui/            React-based editor UI
 ├── scratch-vm/             Virtual machine that runs Scratch projects
 ├── scratch-render/         WebGL renderer for the stage
@@ -81,6 +86,7 @@ scripts/                    Monorepo-level utility scripts
 
 | Package | Language | Bundler | Tests |
 | - | - | - | - |
+| `scratch-blocks` | TypeScript | webpack | Vitest (unit + browser) |
 | `scratch-gui` | JavaScript / JSX (some TypeScript) | webpack | Jest |
 | `scratch-vm` | JavaScript | webpack | Tap |
 | `scratch-render` | JavaScript | webpack | Tap |
@@ -100,7 +106,7 @@ unless that migration is the explicit goal of the task.
 **For new packages**: follow the org defaults — TypeScript, Vite, Vitest, `eslint-config-scratch`.
 
 All packages use ESLint 9 flat config (`eslint.config.mjs`) with `eslint-config-scratch`. If a package also uses
-Prettier (currently `task-herder`), run `npm run format` in addition to lint.
+Prettier (currently `scratch-blocks` and `task-herder`), run `npm run format` in addition to lint.
 
 Browser builds target [Baseline Widely Available](https://web.dev/baseline), via the browserslist query
 `baseline widely available`. Runtime floors in `packages/scratch-gui/src/lib/supported-browser.js` should match
