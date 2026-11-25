@@ -1,13 +1,13 @@
 import stylesAccountMenu from './account-menu.css';
 import stylesMenuBar from './menu-bar.css';
 import classNames from 'classnames';
-import React from 'react';
+import React, {useCallback} from 'react';
 import useMenuNavigation from '../../hooks/use-menu-navigation';
 import {useIntl, FormattedMessage, defineMessage} from 'react-intl';
 import {connect} from 'react-redux';
 import PropTypes from 'prop-types';
 
-import {AccountMenuOptionsPropTypes} from '../../lib/account-menu-options';
+import {AccountMenuItemPropTypes, AccountMenuOptionsPropTypes} from '../../lib/account-menu-options';
 
 import MenuBarMenu from './menu-bar-menu.jsx';
 import {MenuSection} from '../menu/menu.jsx';
@@ -21,6 +21,36 @@ const accountMenu = defineMessage({
     description: 'accessibility label for account menu'
 });
 
+const CustomMenuItem = ({
+    item,
+    onClose,
+    onParentKeyDown
+}) => {
+    const {href, label, onClick} = item;
+
+    const handleClick = useCallback(() => {
+        onClose();
+        onClick();
+    }, [onClose, onClick]);
+
+    return (
+        <MenuItemContainer
+            href={href}
+            onClick={onClick ? handleClick : null}
+            isDataMenuItem
+            onParentKeyDown={onParentKeyDown}
+        >
+            {label}
+        </MenuItemContainer>
+    );
+};
+
+CustomMenuItem.propTypes = {
+    item: AccountMenuItemPropTypes.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onParentKeyDown: PropTypes.func
+};
+
 const AccountMenu = ({
     menuOpts,
     username,
@@ -31,13 +61,18 @@ const AccountMenu = ({
 }) => {
     const {
         avatarUrl,
+        canLogout,
+        menuItems
+    } = menuOpts;
+
+    // Custom menu items, when provided, replace the built-in ones
+    const {
         myStuffUrl,
         profileUrl,
         myClassesUrl,
         myClassUrl,
-        accountSettingsUrl,
-        canLogout
-    } = menuOpts;
+        accountSettingsUrl
+    } = menuItems ? {} : menuOpts;
 
     const intl = useIntl();
 
@@ -165,6 +200,15 @@ const AccountMenu = ({
                         />
                     </MenuItemContainer>
                 ) : null}
+
+                {menuItems ? menuItems.map(item => (
+                    <CustomMenuItem
+                        key={item.id}
+                        item={item}
+                        onClose={handleOnClose}
+                        onParentKeyDown={handleKeyDownOpenMenu}
+                    />
+                )) : null}
     
                 {canLogout ? (
                     <MenuSection>

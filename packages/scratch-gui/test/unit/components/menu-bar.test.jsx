@@ -98,6 +98,37 @@ describe('MenuBar Component', () => {
         });
     });
 
+    describe('My Stuff / My Dashboard button', () => {
+        const getLoggedInComponent = accountMenuOptions => getComponent({
+            username: 'someone',
+            accountMenuOptions: {
+                canHaveSession: true,
+                ...accountMenuOptions
+            }
+        });
+
+        test('shows the My Stuff button when only myStuffUrl is set', () => {
+            const {container} = renderWithIntl(getLoggedInComponent({myStuffUrl: '/mystuff'}));
+            expect(container.querySelector('a[aria-label="My Stuff"]').getAttribute('href')).toBe('/mystuff');
+            expect(container.querySelector('a[aria-label="My Dashboard"]')).toBeFalsy();
+        });
+
+        test('shows the My Dashboard button instead of My Stuff when dashboardUrl is set', () => {
+            const {container} = renderWithIntl(getLoggedInComponent({
+                myStuffUrl: '/mystuff',
+                dashboardUrl: '/dashboard'
+            }));
+            expect(container.querySelector('a[aria-label="My Dashboard"]').getAttribute('href')).toBe('/dashboard');
+            expect(container.querySelector('a[aria-label="My Stuff"]')).toBeFalsy();
+        });
+
+        test('shows neither button when no URL is set', () => {
+            const {container} = renderWithIntl(getLoggedInComponent({}));
+            expect(container.querySelector('a[aria-label="My Stuff"]')).toBeFalsy();
+            expect(container.querySelector('a[aria-label="My Dashboard"]')).toBeFalsy();
+        });
+    });
+
     describe('triggering About button handler', () => {
         test('clicking on About button calls the handler', () => {
             const onClickAbout = jest.fn();
