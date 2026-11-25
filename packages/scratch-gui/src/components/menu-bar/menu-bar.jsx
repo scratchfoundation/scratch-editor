@@ -60,6 +60,7 @@ import styles from './menu-bar.css';
 
 import helpIcon from '../../lib/assets/icon--tutorials.svg';
 import mystuffIcon from './icon--mystuff.png';
+import dashboardIcon from './icon--dashboard.svg';
 import profileIcon from './icon--profile.png';
 import remixIcon from './icon--remix.svg';
 import dropdownCaret from './dropdown-caret.svg';
@@ -97,6 +98,11 @@ const ariaMessages = defineMessages({
         id: 'gui.menuBar.myStuff',
         defaultMessage: 'My Stuff',
         description: 'accessibility text for the my stuff button'
+    },
+    myDashboard: {
+        id: 'gui.menuBar.myDashboard',
+        defaultMessage: 'My Dashboard',
+        description: 'accessibility text for the my dashboard button'
     }
 });
 
@@ -316,6 +322,22 @@ class MenuBar extends React.Component {
 
         const menuOpts = this.props.accountMenuOptions;
 
+        // The dashboard button takes the place of the My Stuff button
+        let myStuffButton = null;
+        if (menuOpts.dashboardUrl) {
+            myStuffButton = {
+                href: menuOpts.dashboardUrl,
+                ariaLabel: ariaMessages.myDashboard,
+                icon: dashboardIcon
+            };
+        } else if (menuOpts.myStuffUrl) {
+            myStuffButton = {
+                href: menuOpts.myStuffUrl,
+                ariaLabel: ariaMessages.myStuff,
+                icon: mystuffIcon
+            };
+        }
+
         return (
             <Box
                 className={classNames(
@@ -515,10 +537,10 @@ class MenuBar extends React.Component {
                         this.props.username ? (
                             // ************ user is logged in ************
                             <React.Fragment>
-                                {menuOpts.myStuffUrl ? (
+                                {myStuffButton ? (
                                     <a
-                                        href={menuOpts.myStuffUrl}
-                                        aria-label={this.props.intl.formatMessage(ariaMessages.myStuff)}
+                                        href={myStuffButton.href}
+                                        aria-label={this.props.intl.formatMessage(myStuffButton.ariaLabel)}
                                     >
                                         <div
                                             className={classNames(
@@ -529,7 +551,7 @@ class MenuBar extends React.Component {
                                         >
                                             <img
                                                 className={styles.mystuffIcon}
-                                                src={mystuffIcon}
+                                                src={myStuffButton.icon}
                                             />
                                         </div>
                                     </a>

@@ -20,6 +20,8 @@ export interface AccountMenuOptions {
 
     avatarUrl?: string;
     myStuffUrl?: string;
+    /** When set, a "My Dashboard" button is shown in the menu bar instead of the "My Stuff" button. */
+    dashboardUrl?: string;
     profileUrl?: string;
     myClassesUrl?: string;
     myClassUrl?: string;
@@ -32,7 +34,7 @@ export interface AccountMenuOptions {
      *
      * Not affected by this option:
      * - "Sign out", which is still controlled by `canLogout`
-     * - the "My Stuff" button in the menu bar, which is still controlled by `myStuffUrl`
+     * - the "My Stuff" button in the menu bar, which is still controlled by `myStuffUrl` (or `dashboardUrl`)
      */
     menuItems?: AccountMenuItem[];
 }
@@ -53,6 +55,7 @@ export const AccountMenuOptionsPropTypes = PropTypes.shape({
 
     avatarUrl: PropTypes.string,
     myStuffUrl: PropTypes.string,
+    dashboardUrl: PropTypes.string,
     profileUrl: PropTypes.string,
     myClassesUrl: PropTypes.string,
     myClassUrl: PropTypes.string,
