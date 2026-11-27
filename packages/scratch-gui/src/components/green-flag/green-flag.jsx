@@ -4,6 +4,7 @@ import React, {useCallback} from 'react';
 import {defineMessage, useIntl} from 'react-intl';
 
 import greenFlagIcon from './icon--green-flag.svg';
+import prideFlagIcon from './icon--pride-flag.svg';
 import styles from './green-flag.css';
 
 const startProjectMessage = defineMessage({
@@ -50,7 +51,7 @@ const GreenFlagComponent = function (props) {
                     }
                 )}
                 draggable={false}
-                src={greenFlagIcon}
+                src={new Date().getMonth() === 5 ? prideFlagIcon : greenFlagIcon}
                 title={title}
             />
         </button>
