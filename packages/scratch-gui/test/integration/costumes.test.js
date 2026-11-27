@@ -161,6 +161,20 @@ describe('Working with costumes', () => {
         await expect(logs).toEqual([]);
     });
 
+    test('Adding a webp from file', async () => {
+        await loadUri(uri);
+        await clickText('Costumes');
+        const el = await findByXpath('//button[@aria-label="Choose a Costume"]');
+        await driver.actions().mouseMove(el)
+            .perform();
+        await driver.sleep(500); // Wait for thermometer menu to come up
+        const input = await findByXpath('//input[@type="file"]');
+        await input.sendKeys(path.resolve(__dirname, '../fixtures/webpfile.webp'));
+        await clickText('webpfile', scope.costumesTab);
+        const logs = await getLogs();
+        await expect(logs).toEqual([]);
+    });
+
     test('Adding several costumes with a gif', async () => {
         await loadUri(uri);
         await clickText('Costumes');
