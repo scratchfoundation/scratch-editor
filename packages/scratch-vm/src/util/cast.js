@@ -167,7 +167,12 @@ class Cast {
             return true;
         } else if (typeof val === 'string') {
             // If it contains a decimal point, don't consider it an int.
-            return val.indexOf('.') < 0;
+            if (val.toLowerCase().split('e').length === 2) {
+                return Number(val) === parseInt(Number(val), 10);
+            } else {
+                // If it contains a decimal point, don't consider it an int.
+                return val.indexOf('.') < 0;
+            }
         }
         return false;
     }

@@ -151,7 +151,7 @@ test('isInt', t => {
     t.equal(cast.isInt('0'), true);
     t.equal(cast.isInt('1'), true);
     t.equal(cast.isInt('0.0'), false);
-    t.equal(cast.isInt('0.1e10'), false);
+    t.equal(cast.isInt('0.1e10'), true);
     t.equal(cast.isInt('3.14'), false);
 
     // Boolean
