@@ -27,7 +27,8 @@ const VirtualMachine = require('../../src/virtual-machine');
 //   const FIXTURES = ['procedure.sb2', 'monitors.sb3'];
 const FIXTURES = fs.readdirSync(FIXTURES_DIR, {recursive: true, withFileTypes: true})
     .filter(f => f.isFile() && (f.name.endsWith('.sb2') || f.name.endsWith('.sb3')))
-    .map(f => path.relative(FIXTURES_DIR, path.join(f.parentPath, f.name)))
+    // Names use '/' on every platform so they match the exclusion list and the snapshot layout.
+    .map(f => path.relative(FIXTURES_DIR, path.join(f.parentPath, f.name)).replaceAll(path.sep, '/'))
     // Filter out projects that cause intentional load errors or hang on vm.quit().
     .filter(name => ![
         'missing_png.sb2',
