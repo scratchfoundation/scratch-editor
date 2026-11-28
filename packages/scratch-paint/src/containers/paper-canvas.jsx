@@ -233,32 +233,33 @@ class PaperCanvas extends React.Component {
         // 5. Send the sanitized SVG to the sandboxed iframe where Paper.js
         // runs importSVG (which does DOM-append) in an opaque-origin
         // context. Receive the Paper.js JSON and viewBox back.
-        getPaperSandbox().then(sandbox => sandbox.send({svg})).then(result => {
-            // Discard the result if a newer import has already started.
-            if (generation !== this._importGeneration) return;
+        getPaperSandbox().then(sandbox => sandbox.send({svg}))
+            .then(result => {
+                // Discard the result if a newer import has already started.
+                if (generation !== this._importGeneration) return;
 
-            const {paperJSON, viewBox} = result;
+                const {paperJSON, viewBox} = result;
 
-            // Import the JSON into the parent's active layer. Paper.js's
-            // activeLayer.importJSON() creates the item, adds it to the
-            // layer, and returns it. This reconstructs the scene graph
-            // without triggering DOM insertion of untrusted SVG content.
-            const item = paper.project.activeLayer.importJSON(paperJSON);
-            if (!item) {
-                log.info(svg);
-                throw new Error('importJSON returned null');
-            }
+                // Import the JSON into the parent's active layer. Paper.js's
+                // activeLayer.importJSON() creates the item, adds it to the
+                // layer, and returns it. This reconstructs the scene graph
+                // without triggering DOM insertion of untrusted SVG content.
+                const item = paper.project.activeLayer.importJSON(paperJSON);
+                if (!item) {
+                    log.info(svg);
+                    throw new Error('importJSON returned null');
+                }
 
-            // Remove from the layer — initializeSvg re-adds with
-            // positioning, matching the original importSVG onLoad flow.
-            item.remove();
+                // Remove from the layer — initializeSvg re-adds with
+                // positioning, matching the original importSVG onLoad flow.
+                item.remove();
 
-            // Continue with the existing post-import flow.
-            this.queuedImport = this.recalibrateSize(() => {
-                this.props.updateViewBounds(paper.view.matrix);
-                this.initializeSvg(item, rotationCenterX, rotationCenterY, viewBox);
-            });
-        })
+                // Continue with the existing post-import flow.
+                this.queuedImport = this.recalibrateSize(() => {
+                    this.props.updateViewBounds(paper.view.matrix);
+                    this.initializeSvg(item, rotationCenterX, rotationCenterY, viewBox);
+                });
+            })
             .catch(err => {
                 // Discard errors from superseded imports — the newer import
                 // is responsible for its own error handling.
