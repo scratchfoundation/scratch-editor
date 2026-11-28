@@ -123,7 +123,7 @@
     "react-redux": "^8",
     "react-responsive": "^9",
     "react-style-proptype": "^3",
-    "react-tooltip": "^4",
+    "react-tooltip": "^4 || ^6.0.0",
     "redux": "^4",
     "scratch-render-fonts": "1.0.259"
   }
