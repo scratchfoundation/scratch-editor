@@ -1866,7 +1866,8 @@ class RenderWebGL extends EventEmitter {
      * Get the convex hull points for a particular Drawable.
      * To do this, calculate it based on the drawable's Silhouette.
      * @param {int} drawableID The Drawable IDs calculate convex hull for.
-     * @returns {Array<Array<number>>} points Convex hull points, as [[x, y], ...]
+     * @returns {Array<Array<number>>} points Convex hull points, as [[x, y], ...] in skin units. Each point is a
+     * corner of a skin unit, so the hull covers the touching units entirely.
      */
     _getConvexHullPointsForDrawable (drawableID) {
         const drawable = this._allDrawables[drawableID];
@@ -1914,20 +1915,23 @@ class RenderWebGL extends EventEmitter {
         const _pixelPos = twgl.v3.create();
         const _effectPos = twgl.v3.create();
 
-        let currentPoint;
-
         // *Not* Scratch Space-- +y is bottom
         // Loop over all rows of pixels, starting at the top
+        // Each skin unit is sampled at its center. Skin units can be coarser than the silhouette's texels (bitmap
+        // costumes are resolution 2, two texels per unit), and a center sample makes isTouchingLinear's 2x2 texel
+        // neighbourhood cover exactly that unit's texels, including the last column and row.
+        // The hull polygon is built from the corners of the first and last touching unit of each row: the left
+        // corners (x, y) and (x, y + 1) of the first unit, and the right corners (x + 1, y) and (x + 1, y + 1) of the
+        // last, so the hull covers those units entirely.
         for (let y = 0; y < height; y++) {
-            _pixelPos[1] = y / height;
+            _pixelPos[1] = (y + 0.5) / height;
 
             // We start at the leftmost point, then go rightwards until we hit an opaque pixel
             let x = 0;
             for (; x < width; x++) {
-                _pixelPos[0] = x / width;
+                _pixelPos[0] = (x + 0.5) / width;
                 EffectTransform.transformPoint(drawable, _pixelPos, _effectPos);
                 if (drawable.skin.isTouchingLinear(_effectPos)) {
-                    currentPoint = [x, y];
                     break;
                 }
             }
@@ -1937,48 +1941,53 @@ class RenderWebGL extends EventEmitter {
                 continue;
             }
 
-            // Because leftEndPointIndex is initialized to -1, this is skipped for the first two rows.
-            // It runs only when there are enough points in the left hull to make at least one line.
-            // If appending the current point to the left hull makes a counter-clockwise turn,
-            // we want to append the current point. Otherwise, we decrement the index of the "last" hull point until the
-            // current point makes a counter-clockwise turn.
-            // This decrementing has the same effect as popping from the point list, but is hopefully faster.
-            while (leftEndPointIndex > 0) {
-                if (determinant(leftHull[leftEndPointIndex], leftHull[leftEndPointIndex - 1], currentPoint) > 0) {
-                    break;
-                } else {
-                    // leftHull.pop();
-                    --leftEndPointIndex;
+            for (const currentPoint of [[x, y], [x, y + 1]]) {
+                // Because leftEndPointIndex is initialized to -1, this is skipped for the first two points.
+                // It runs only when there are enough points in the left hull to make at least one line.
+                // If appending the current point to the left hull makes a counter-clockwise turn,
+                // we want to append the current point. Otherwise, we decrement the index of the "last" hull point
+                // until the current point makes a counter-clockwise turn.
+                // This decrementing has the same effect as popping from the point list, but is hopefully faster.
+                while (leftEndPointIndex > 0) {
+                    if (determinant(leftHull[leftEndPointIndex], leftHull[leftEndPointIndex - 1], currentPoint) > 0) {
+                        break;
+                    } else {
+                        // leftHull.pop();
+                        --leftEndPointIndex;
+                    }
                 }
+
+                // This has the same effect as pushing to the point list.
+                // This "list head pointer" coding style leaves excess points dangling at the end of the list,
+                // but that doesn't matter; we simply won't copy them over to the final hull.
+
+                // leftHull.push(currentPoint);
+                leftHull[++leftEndPointIndex] = currentPoint;
             }
-
-            // This has the same effect as pushing to the point list.
-            // This "list head pointer" coding style leaves excess points dangling at the end of the list,
-            // but that doesn't matter; we simply won't copy them over to the final hull.
-
-            // leftHull.push(currentPoint);
-            leftHull[++leftEndPointIndex] = currentPoint;
 
             // Now we repeat the process for the right side, looking leftwards for a pixel.
             for (x = width - 1; x >= 0; x--) {
-                _pixelPos[0] = x / width;
+                _pixelPos[0] = (x + 0.5) / width;
                 EffectTransform.transformPoint(drawable, _pixelPos, _effectPos);
                 if (drawable.skin.isTouchingLinear(_effectPos)) {
-                    currentPoint = [x, y];
                     break;
                 }
             }
 
-            // Because we're coming at this from the right, it goes clockwise this time.
-            while (rightEndPointIndex > 0) {
-                if (determinant(rightHull[rightEndPointIndex], rightHull[rightEndPointIndex - 1], currentPoint) < 0) {
-                    break;
-                } else {
-                    --rightEndPointIndex;
+            for (const currentPoint of [[x + 1, y], [x + 1, y + 1]]) {
+                // Because we're coming at this from the right, it goes clockwise this time.
+                while (rightEndPointIndex > 0) {
+                    if (determinant(
+                        rightHull[rightEndPointIndex], rightHull[rightEndPointIndex - 1], currentPoint
+                    ) < 0) {
+                        break;
+                    } else {
+                        --rightEndPointIndex;
+                    }
                 }
-            }
 
-            rightHull[++rightEndPointIndex] = currentPoint;
+                rightHull[++rightEndPointIndex] = currentPoint;
+            }
         }
 
         // Start off "hullPoints" with the left hull points.

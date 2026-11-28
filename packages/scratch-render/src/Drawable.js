@@ -598,15 +598,13 @@ class Drawable {
 
         const projection = twgl.m4.ortho(-1, 1, -1, 1, -1, 1);
         const skinSize = this.skin.size;
-        const halfXPixel = 1 / skinSize[0] / 2;
-        const halfYPixel = 1 / skinSize[1] / 2;
         const tm = twgl.m4.multiply(this._uniforms.u_modelMatrix, projection);
         for (let i = 0; i < this._convexHullPoints.length; i++) {
             const point = this._convexHullPoints[i];
             const dstPoint = this._transformedHullPoints[i];
 
-            dstPoint[0] = 0.5 + (-point[0] / skinSize[0]) - halfXPixel;
-            dstPoint[1] = (point[1] / skinSize[1]) - 0.5 + halfYPixel;
+            dstPoint[0] = 0.5 - (point[0] / skinSize[0]);
+            dstPoint[1] = (point[1] / skinSize[1]) - 0.5;
             twgl.m4.transformPoint(tm, dstPoint, dstPoint);
         }
 
