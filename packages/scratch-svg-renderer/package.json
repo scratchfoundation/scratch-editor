@@ -62,7 +62,7 @@
     "fastestsmallesttextencoderdecoder": "1.0.22",
     "isomorphic-dompurify": "2.36.0",
     "svgo": "4.1.0",
-    "transformation-matrix": "1.15.3",
+    "transformation-matrix": "3.1.0",
     "tslog": "4.11.0"
   },
   "devDependencies": {
