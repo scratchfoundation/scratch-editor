@@ -97,7 +97,7 @@
     "jest-environment-jsdom": "29.7.0",
     "jest-junit": "13.2.0",
     "json": "9.0.6",
-    "mkdirp": "1.0.4",
+    "mkdirp": "3.0.1",
     "postcss-import": "12.0.1",
     "postcss-loader": "4.3.0",
     "postcss-simple-vars": "5.0.2",
