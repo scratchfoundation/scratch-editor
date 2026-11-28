@@ -138,7 +138,7 @@
     "classnames": "2.5.1",
     "computed-style-to-inline-style": "3.0.0",
     "cookie": "0.6.0",
-    "core-js": "2.6.12",
+    "core-js": "3.51.0",
     "dapjs": "2.3.0",
     "driver.js": "1.14.0",
     "es6-object-assign": "1.1.0",
