@@ -134,7 +134,7 @@
     "@tensorflow-models/face-detection": "1.0.3",
     "@tensorflow/tfjs": "4.22.0",
     "balance-text": "3.3.1",
-    "bowser": "1.9.4",
+    "bowser": "2.15.1",
     "classnames": "2.5.1",
     "computed-style-to-inline-style": "3.0.0",
     "cookie": "0.6.0",
