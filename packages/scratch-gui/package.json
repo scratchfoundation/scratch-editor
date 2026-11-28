@@ -204,7 +204,7 @@
     "buffer": "6.0.3",
     "cheerio": "1.2.0",
     "copy-webpack-plugin": "6.4.1",
-    "cross-env": "7.0.3",
+    "cross-env": "10.1.0",
     "css-loader": "5.2.7",
     "eslint": "9.39.5",
     "eslint-config-scratch": "14.1.97",
