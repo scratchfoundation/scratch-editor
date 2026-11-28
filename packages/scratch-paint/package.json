@@ -124,7 +124,7 @@
     "react-responsive": "^9",
     "react-style-proptype": "^3",
     "react-tooltip": "^4",
-    "redux": "^4",
+    "redux": "^4 || ^5.0.0",
     "scratch-render-fonts": "1.0.260"
   }
 }
