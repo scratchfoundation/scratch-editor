@@ -147,7 +147,7 @@
     "get-user-media-promise": "1.1.4",
     "immutable": "3.8.4",
     "intl": "1.2.5",
-    "js-base64": "2.6.4",
+    "js-base64": "3.9.7",
     "keymirror": "0.1.1",
     "lodash.bindall": "4.4.0",
     "lodash.debounce": "4.0.8",
