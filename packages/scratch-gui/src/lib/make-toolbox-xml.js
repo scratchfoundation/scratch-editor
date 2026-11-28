@@ -774,6 +774,22 @@ const myBlocks = function (isInitialSetup, isStage, targetId, colors) {
     `;
 };
 
+const Hack = function (isInitialSetup, isStage, targetId, colors) {
+    // Note: the category's secondaryColour matches up with the blocks' tertiary color, both used for border color.
+    return `
+    <category
+        name="${ScratchBlocks.ScratchMsgs.translate(
+            'CATEGORY_HACKBLOCKS',
+            'ハックブロック達'
+        )}"
+        toolboxitemid="Hack"
+        colour="${colors.colourPrimary}"
+        secondaryColour="${colors.colourTertiary}"
+        custom="PROCEDURE">
+    </category>
+    `;
+};
+
 
 const xmlOpen = '<xml style="display: none">';
 const xmlClose = '</xml>';
@@ -834,7 +850,8 @@ const makeToolboxXML = function (isInitialSetup, isStage = true, targetId, categ
         sensingXML, gap,
         operatorsXML, gap,
         variablesXML, gap,
-        myBlocksXML
+        myBlocksXML, gap,
+        HackXML
     ];
 
     for (const extensionCategory of categoriesXML) {
