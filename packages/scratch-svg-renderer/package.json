@@ -71,7 +71,7 @@
     "@playwright/test": "1.65.1",
     "babel-loader": "9.2.1",
     "canvas": "3.2.3",
-    "copy-webpack-plugin": "6.4.1",
+    "copy-webpack-plugin": "14.0.0",
     "eslint": "9.39.5",
     "eslint-config-scratch": "14.1.97",
     "globals": "16.5.0",
