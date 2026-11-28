@@ -87,7 +87,7 @@
     "babel-loader": "9.2.1",
     "babel-plugin-react-intl": "3.5.1",
     "canvas": "3.2.3",
-    "css-loader": "5.2.7",
+    "css-loader": "7.1.5",
     "eslint": "9.39.5",
     "eslint-config-scratch": "14.1.97",
     "gh-pages": "3.2.3",
