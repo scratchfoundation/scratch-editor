@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check Out GitHub Pages Branch
-        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           # replace `fetch-depth` with `shallow-since` if and when actions/checkout#619 (or an equivalent) gets merged
           # then remove the "Fetch a bit more history" step below
