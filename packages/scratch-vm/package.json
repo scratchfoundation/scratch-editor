@@ -41,7 +41,7 @@
     "docs": "typedoc",
     "i18n:push": "tx-push-src scratch-editor extensions translations/core/en.json",
     "i18n:src": "mkdirp translations/core && format-message extract --out-file translations/core/en.json src/extensions/**/index.js",
-    "lint": "eslint && format-message lint src/**/*.js",
+    "lint": "eslint && format-message lint \"src/*/*.js\"",
     "prepublishOnly": "echo \"Please publish through CI only.\" && exit 1",
     "start": "webpack serve",
     "tap": "tap ./test/{unit,integration}/*.js",
