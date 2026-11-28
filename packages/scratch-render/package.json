@@ -65,7 +65,7 @@
     "@scratch/scratch-storage": "15.3.0",
     "@scratch/scratch-vm": "15.3.0",
     "babel-loader": "9.2.1",
-    "copy-webpack-plugin": "6.4.1",
+    "copy-webpack-plugin": "14.0.0",
     "docdash": "0.4.0",
     "eslint": "9.39.5",
     "eslint-config-scratch": "14.1.97",
