@@ -46,7 +46,7 @@
     "@babel/polyfill": "7.12.1",
     "@babel/preset-env": "7.29.14",
     "@types/jest": "29.5.14",
-    "babel-loader": "9.2.1",
+    "babel-loader": "10.1.1",
     "eslint": "9.39.5",
     "eslint-config-scratch": "14.1.97",
     "file-loader": "6.2.0",

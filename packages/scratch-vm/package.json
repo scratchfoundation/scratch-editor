@@ -83,7 +83,7 @@
     "@babel/core": "7.29.13",
     "@babel/preset-env": "7.29.14",
     "adm-zip": "0.4.11",
-    "babel-loader": "9.2.1",
+    "babel-loader": "10.1.1",
     "callsite": "1.0.0",
     "copy-webpack-plugin": "6.4.1",
     "docdash": "1.2.0",

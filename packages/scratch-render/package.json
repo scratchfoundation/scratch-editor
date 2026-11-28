@@ -64,7 +64,7 @@
     "@babel/preset-env": "7.29.14",
     "@scratch/scratch-storage": "15.3.0",
     "@scratch/scratch-vm": "15.3.0",
-    "babel-loader": "9.2.1",
+    "babel-loader": "10.1.1",
     "copy-webpack-plugin": "6.4.1",
     "docdash": "0.4.0",
     "eslint": "9.39.5",
