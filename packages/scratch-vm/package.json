@@ -94,7 +94,7 @@
     "format-message-cli": "6.2.4",
     "globals": "16.5.0",
     "in-publish": "2.0.1",
-    "js-md5": "0.7.3",
+    "js-md5": "0.11.0",
     "pngjs": "3.4.0",
     "scratch-blocks": "2.2.17",
     "scratch-l10n": "6.2.16",
